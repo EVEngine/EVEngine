@@ -1,0 +1,12 @@
+file(GLOB_RECURSE all_scripts ${CMAKE_CURRENT_SOURCE_DIR}/*.nut)
+file(GLOB_RECURSE all_glsl ${CMAKE_CURRENT_SOURCE_DIR}/*.glsl)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/scripts_content.cpp
+  COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_CURRENT_SOURCE_DIR}/integrate.cmake"
+  DEPENDS ${all_scripts} ${all_glsl} ${CMAKE_CURRENT_SOURCE_DIR}/template.cpp.in 
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_library(EVScripts ${CMAKE_CURRENT_BINARY_DIR}/scripts_content.cpp)
+
+
