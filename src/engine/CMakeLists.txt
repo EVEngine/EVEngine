@@ -7,4 +7,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 add_executable(eve main.cpp)
 
 set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static libSDL2.a dl X11 pthread)
-target_link_libraries(eve  EVCmdLine EVDevTools EVEngine EVWindow EVEngine EVScripts ${ThirdParty})
+target_link_libraries(eve EVCmdLine EVDevTools EVWindow EVEngine EVScripts ${ThirdParty})

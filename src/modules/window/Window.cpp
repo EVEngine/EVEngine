@@ -1,29 +1,29 @@
 #include "window/Window.h"
 
-#include "window/sdl/Window.h"
-
 #include <simplesquirrel/simplesquirrel.hpp>
 
-namespace eve
-{
+#include "window/sdl/Window.h"
 
-namespace window
-{
+namespace eve {
+
+namespace window {
+
+const char* Window::name = "Window";
 
 Window* Window::create() {
-    return new sdl::Window();
+    auto p = registered_modules.find(name);
+    if (p != registered_modules.end()) return (Window*)(p->second);
+    auto n                   = new sdl::Window();
+    registered_modules[name] = n;
+    return n;
 }
 
 void Window::expose(ssq::Table& table) {
-    auto cls = table.addClass("Window", Window::create);
+    auto cls = table.addClass(name, Window::create);
     expose(cls);
 }
 
-void Window::expose(ssq::Class& cls) {
-    cls.addFunc("getModuleType", &Window::getModuleType);
-}
+void Window::expose(ssq::Class& cls) { cls.addFunc("getName", &Window::getName); }
 
-} // namespace window
-
-
-}
+}  // namespace window
+}  // namespace eve

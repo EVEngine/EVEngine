@@ -1,44 +1,32 @@
 #pragma once
 #include <cstdint>
+#include <string>
+#include <unordered_map>
 
-namespace ssq
-{
-    class VM;
-	class Table;
-	class Class;
-} // namespace ssq
+namespace ssq {
+class VM;
+class Table;
+class Class;
+}  // namespace ssq
 
-#define SSQ_REG \
+#define SSQ_REG                            \
     static void expose(ssq::Table& table); \
-	static void expose(ssq::Class& vm);
+    static void expose(ssq::Class& vm);
 
-
-namespace eve
-{
+namespace eve {
 
 class Module {
 public:
-    enum class ModuleType : uint32_t
-    {
-        event = 1,
-        filesystem,
-        graphics,
-        image,
-        math,
-        network,
-        system,
-        thread,
-        window,
-    };
-
-
     virtual ~Module() {}
+    virtual std::string getName() const = 0;
 
-    virtual uint32_t getModuleType() const = 0;
-    // virtual const char *getName() const = 0;
+    template <typename T>
+    T* getInstance() {
+        return static_cast<T*>(registered_modules[T::name]);
+    }
 
-    static void expose(ssq::VM& vm);
+protected:
+    static std::unordered_map<std::string, Module*> registered_modules;
 };
 
-
-} // namespace eve
+}  // namespace eve

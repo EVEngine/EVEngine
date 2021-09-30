@@ -37,13 +37,14 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/modules
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
         ${CMAKE_BINARY_DIR}/src/engine
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/binary/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party-binary/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform
     )
 endfunction()
 
 function(set_library)
     link_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/binary/lib
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party-binary/lib
     )
 endfunction()
 
@@ -128,16 +129,15 @@ function(load_third_party)
         SOURCE_DIR       ${CMAKE_CURRENT_SOURCE_DIR}/third-party
         BINARY_DIR       ${CMAKE_CURRENT_SOURCE_DIR}/third-party/build-debug
         CMAKE_ARGS       -DCMAKE_BUILD_TYPE=Debug
-        BUILD_COMMAND    ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/third-party/build/ --target install --parallel 16
+        BUILD_COMMAND    ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/third-party/build-debug/ --target install --parallel 16
         BUILD_ALWAYS     1
         EXCLUDE_FROM_ALL 1
     )
     ADD_CUSTOM_TARGET(deps DEPENDS third-party)
     ADD_CUSTOM_TARGET(deps-d DEPENDS third-party-debug)
 
-    set(SDL2_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/third-party/binary)
+    set(SDL2_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/third-party-binary)
     findpkg(SDL2)
-    
 endfunction()
 
 

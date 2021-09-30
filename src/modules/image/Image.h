@@ -1,12 +1,10 @@
 #pragma once
 
-#include "common/config.h"
 #include "common/Module.h"
+#include "image/ImageData.h"
+#include "image/CompressedImageData.h"
 #include "filesystem/File.h"
-#include "ImageData.h"
-#include "CompressedImageData.h"
 
-// C++
 #include <list>
 
 namespace eve

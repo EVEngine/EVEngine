@@ -32,7 +32,7 @@
 #include "magpie/PKMHandler.h"
 #include "magpie/ASTCHandler.h"
 
-namespace love
+namespace eve
 {
 namespace image
 {
@@ -217,4 +217,4 @@ std::vector<StrongRef<ImageData>> Image::newVolumeLayers(ImageData *src)
 }
 
 } // image
-} // love
+} // eve

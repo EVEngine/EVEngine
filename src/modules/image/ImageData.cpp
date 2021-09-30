@@ -26,7 +26,7 @@
 
 using love::thread::Lock;
 
-namespace love
+namespace eve
 {
 namespace image
 {
@@ -902,4 +902,4 @@ StringMap<FormatHandler::EncodedFormat, FormatHandler::ENCODED_MAX_ENUM>::Entry 
 StringMap<FormatHandler::EncodedFormat, FormatHandler::ENCODED_MAX_ENUM> ImageData::encodedFormats(ImageData::encodedFormatEntries, sizeof(ImageData::encodedFormatEntries));
 
 } // image
-} // love
+} // eve

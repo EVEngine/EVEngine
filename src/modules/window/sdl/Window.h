@@ -1,31 +1,27 @@
 #pragma once
 
-#include "window/Window.h"
 #include <SDL2/SDL.h>
+
 #include <string>
 
-namespace eve
-{
-namespace window
-{
-namespace sdl
-{
+#include "window/Window.h"
 
+namespace eve {
+namespace window {
+namespace sdl {
 
-
-class Window final: public eve::window::Window
-{
+class Window final : public eve::window::Window {
 public:
-	Window();
-	virtual ~Window();
+    Window();
+    ~Window();
 
+    void setGraphics(graphics::Graphics* graphics) override;
 
 private:
+    graphics::Graphics* graphics;
 
-}; // Window
+};  // Window
 
-
-
-}
-}
-}
+}  // namespace sdl
+}  // namespace window
+}  // namespace eve
