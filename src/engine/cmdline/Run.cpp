@@ -4,9 +4,6 @@
 #include "window/Window.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <filesystem>
-
-using namespace std::filesystem;
 
 namespace eve
 {

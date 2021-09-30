@@ -1,15 +1,27 @@
-set(GTEST_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/third-party/binary)
-find_package(GTest REQUIRED)
-
 enable_testing()
 
-add_executable(
-  hello_test
-  hello_test.cpp
+file(GLOB_RECURSE all_test_cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
+file(GLOB_RECURSE all_test_scripts ${CMAKE_CURRENT_SOURCE_DIR}/*.nut)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
+  COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_CURRENT_SOURCE_DIR}/integrate.cmake"
+  DEPENDS ${all_test_scripts} ${CMAKE_CURRENT_SOURCE_DIR}/template.cpp.in
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
-target_link_libraries(hello_test
-  gtest_main gtest pthread
+
+add_executable(
+  unit_test
+  ${all_test_cpp}
+  ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
+)
+
+
+set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static libSDL2.a dl X11 pthread)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVDevTools EVCommon)
+
+target_link_libraries(unit_test
+  gtest_main gtest ${EVELIBS} ${ThirdParty}
 )
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(unit_test)

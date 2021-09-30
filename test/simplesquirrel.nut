@@ -1,0 +1,4 @@
+
+function exportClass() {
+    return true;
+}
