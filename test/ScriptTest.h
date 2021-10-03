@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 #include <iostream>
+#include <simplesquirrel/simplesquirrel.hpp>
 
 #include "window/Window.h"
-#include <simplesquirrel/simplesquirrel.hpp>
+#include "filesystem/Filesystem.h"
 
 #define UnitSciptTest(name, content) \
     class name : public ScriptTest { \
@@ -28,6 +29,7 @@ protected:
   static void expose(ssq::VM& vm) {
     auto table = vm.addTable("eve");
     window::Window::expose(table);
+    filesystem::Filesystem::expose(table);
   }
 
   const char* script;

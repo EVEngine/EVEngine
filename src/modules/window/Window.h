@@ -15,24 +15,24 @@ class Graphics;
 namespace window {
 
 struct WindowSettings {
-    std::string fullscreen_type = "desktop";
-    double      refreshrate     = 0.0;
-    int         x               = 0;
-    int         y               = 0;
-    int         vsync           = 1;
-    int         msaa            = 0;
-    int         depth           = 0;
-    int         minwidth        = 1;
-    int         minheight       = 1;
-    int         display         = 0;
-    bool        borderless      = false;
-    bool        centered        = true;
-    bool        high_dpi        = false;
-    bool        use_dpi_scale   = true;
-    bool        use_position    = false;
-    bool        fullscreen      = false;
-    bool        stencil         = true;
-    bool        resizable       = false;
+    double refreshrate   = 0.0;
+    int    x             = 0;
+    int    y             = 0;
+    int    vsync         = 1;
+    int    msaa          = 0;
+    int    depth         = 0;
+    int    minwidth      = 1;
+    int    minheight     = 1;
+    int    display       = 0;
+    bool   borderless    = false;
+    bool   centered      = true;
+    bool   high_dpi      = false;
+    bool   use_dpi_scale = true;
+    bool   use_position  = false;
+    bool   fullscreen    = false;
+    bool   desktop_mode  = true;
+    bool   stencil       = true;
+    bool   resizable     = false;
 };
 
 class Window : public Module {
@@ -69,13 +69,13 @@ public:
 
     virtual void setGraphics(graphics::Graphics* graphics) = 0;
 
-    // virtual bool setWindowSettings(int width = 800, int height = 600, const WindowSettings *settings = nullptr) = 0;
-    // virtual void getWindowSettings(int &width, int &height, WindowSettings &settings) = 0;
+    virtual bool setWindowSettings(int width = 800, int height = 600, const WindowSettings* settings = nullptr) = 0;
+    virtual void getWindowSettings(int& width, int& height, WindowSettings& settings)                           = 0;
 
-    // virtual void close() = 0;
+    virtual void close() = 0;
 
-    // virtual bool setFullscreen(bool fullscreen, FullscreenType fstype) = 0;
-    // virtual bool setFullscreen(bool fullscreen) = 0;
+    virtual bool setFullscreen(bool fullscreen, bool desktop_mode) = 0;
+    virtual bool setFullscreen(bool fullscreen)                    = 0;
 
     // virtual bool onSizeChanged(int width, int height) = 0;
 

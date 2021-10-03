@@ -1,10 +1,13 @@
 
-#include "Filesystem.h"
+#include "filesystem/Filesystem.h"
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <cstring>
 
+#include <cstring>
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include "filesystem/physfs/Filesystem.h"
 
 #if defined(EVENGINE_MACOSX)
 #include "macosx/macosx.h"
@@ -12,6 +15,7 @@
 #include "ios/ios.h"
 #elif defined(EVENGINE_WINDOWS)
 #include <windows.h>
+
 #include "common/utf8.h"
 #elif defined(EVENGINE_LINUX)
 #include <unistd.h>
@@ -19,6 +23,31 @@
 
 namespace eve {
 namespace filesystem {
+
+Module_IMPL(Filesystem)
+
+Filesystem *Filesystem::create() {
+    auto p = registered_modules.find(name);
+    if (p != registered_modules.end()) return (Filesystem *)(p->second);
+    auto n                   = new physfs::Filesystem();
+    registered_modules[name] = n;
+    return n;
+}
+
+void Filesystem::expose(ssq::Table &table) {
+    auto cls = table.addClass(name, Filesystem::create);
+    expose(cls);
+}
+
+void Filesystem::expose(ssq::Class &cls) {
+    cls.addFunc("getName", &Filesystem::getName);
+    cls.addFunc("init", &Filesystem::init);
+    cls.addFunc("setFused", &Filesystem::setFused);
+    cls.addFunc("isFused", &Filesystem::isFused);
+    cls.addFunc("setupWriteDirectory", &Filesystem::setupWriteDirectory);
+    cls.addFunc("setAndroidSaveExternal", &Filesystem::setAndroidSaveExternal);
+    cls.addFunc("isAndroidSaveExternal", &Filesystem::isAndroidSaveExternal);
+}
 
 FileData *Filesystem::newFileData(const void *data, std::string filename, size_t size) const {
     FileData *fd = new FileData(std::string(filename), size);
@@ -60,6 +89,7 @@ std::string Filesystem::getExecutablePath() const {
 #error Missing implementation for Filesystem::getExecutablePath!
 #endif
 }
+
 
 }  // namespace filesystem
 }  // namespace eve

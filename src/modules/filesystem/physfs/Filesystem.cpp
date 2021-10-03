@@ -98,8 +98,6 @@ Filesystem::~Filesystem() {
     if (PHYSFS_isInit()) PHYSFS_deinit();
 }
 
-std::string Filesystem::getName() const { return "filesystem"; }
-
 void Filesystem::init(std::string arg0) {
     if (!PHYSFS_init(arg0.c_str()))
         throw Exception("Failed to initialize filesystem: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));

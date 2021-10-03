@@ -13,6 +13,14 @@ class Class;
     static void expose(ssq::Table& table); \
     static void expose(ssq::Class& vm);
 
+#define Module_REG \
+    SSQ_REG \
+    static const char* name; \
+    virtual std::string getName() const { return name; } \
+
+#define Module_IMPL(ModuleName) \
+    const char* ModuleName::name = #ModuleName;
+
 namespace eve {
 
 class Module {
@@ -21,7 +29,7 @@ public:
     virtual std::string getName() const = 0;
 
     template <typename T>
-    T* getInstance() {
+    static T* getInstance() {
         return static_cast<T*>(registered_modules[T::name]);
     }
 

@@ -1,4 +1,3 @@
-
-
 const char* simplesquirrel_content = R"(@simplesquirrel_content@)";
-
+const char* filesystem_content     = R"(@filesystem_content@)";
+const char* window_content         = R"(@window_content@)";

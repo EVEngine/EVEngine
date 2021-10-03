@@ -1,0 +1,4 @@
+
+function basicWindow() {
+    return true;
+}

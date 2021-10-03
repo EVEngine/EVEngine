@@ -10,7 +10,11 @@
 namespace eve {
 namespace filesystem {
 
-extern bool hack_setupWriteDirectory();
+static bool hack_setupWriteDirectory() {
+    if (Module::getInstance<Filesystem>() != 0)
+		return Module::getInstance<Filesystem>()->setupWriteDirectory();
+	return false;
+}
 
 namespace physfs {
 

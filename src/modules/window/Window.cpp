@@ -8,7 +8,7 @@ namespace eve {
 
 namespace window {
 
-const char* Window::name = "Window";
+Module_IMPL(Window)
 
 Window* Window::create() {
     auto p = registered_modules.find(name);
@@ -23,7 +23,9 @@ void Window::expose(ssq::Table& table) {
     expose(cls);
 }
 
-void Window::expose(ssq::Class& cls) { cls.addFunc("getName", &Window::getName); }
+void Window::expose(ssq::Class& cls) {
+    cls.addFunc("getName", &Window::getName);
+}
 
 }  // namespace window
 }  // namespace eve

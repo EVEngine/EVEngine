@@ -31,6 +31,8 @@ namespace filesystem {
 
 class Filesystem : public Module {
 public:
+    Module_REG
+
     struct Info {
         // Numbers will be -1 if they cannot be determined.
         int64_t     size;
@@ -41,7 +43,7 @@ public:
     Filesystem() {}
     virtual ~Filesystem() {}
 
-    virtual std::string getName() const { return "filesystem"; }
+    static Filesystem* create();
 
     virtual void init(std::string arg0) = 0;
 

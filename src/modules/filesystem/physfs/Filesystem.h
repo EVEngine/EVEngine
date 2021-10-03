@@ -15,9 +15,6 @@ public:
     Filesystem();
     virtual ~Filesystem();
 
-    // Implements Module.
-    std::string getName() const override;
-
     void init(std::string arg0) override;
 
     void setFused(bool fused) override;
