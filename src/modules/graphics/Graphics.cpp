@@ -2,7 +2,9 @@
 namespace eve {
 namespace graphics {
 
-const char* Graphics::name = "Graphics";
+Module_IMPL(Graphics);
+
+
 
 }  // namespace graphics
 }  // namespace eve

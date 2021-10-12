@@ -15,29 +15,33 @@ class Graphics;
 namespace window {
 
 struct WindowSettings {
-    double refreshrate   = 0.0;
-    int    x             = 0;
-    int    y             = 0;
-    int    vsync         = 1;
-    int    msaa          = 0;
-    int    depth         = 0;
-    int    minwidth      = 1;
-    int    minheight     = 1;
-    int    display       = 0;
-    bool   borderless    = false;
-    bool   centered      = true;
-    bool   high_dpi      = false;
-    bool   use_dpi_scale = true;
-    bool   use_position  = false;
-    bool   fullscreen    = false;
-    bool   desktop_mode  = true;
-    bool   stencil       = true;
-    bool   resizable     = false;
+    float    refreshrate   = 0.0;
+    float    dpi_scale     = 1.0;
+    int32_t  x             = 0;
+    int32_t  y             = 0;
+    uint16_t width         = 1366;
+    uint16_t height        = 768;
+    uint16_t minwidth      = 1;
+    uint16_t minheight     = 1;
+    uint8_t  vsync         = 1;
+    uint8_t  msaa          = 0;
+    uint8_t  depth         = 0;
+    uint8_t  display       = 0;
+    bool     borderless    = false;
+    bool     centered      = true;
+    bool     high_dpi      = false;
+    bool     use_dpi_scale = true;
+    bool     use_position  = false;
+    bool     fullscreen    = false;
+    bool     desktop_mode  = true;
+    bool     stencil       = true;
+    bool     resizable     = false;
+    bool     always_on_top = false;
 };
 
 class Window : public Module {
 public:
-    SSQ_REG
+    Module_REG;
 
     struct WindowSize {
         int width  = 0;
@@ -48,29 +52,28 @@ public:
 
     struct MessageBoxData {
         std::string type;
-
         std::string title;
         std::string message;
 
-        std::vector<std::string> buttons;
-        int                      enterButtonIndex;
-        int                      escapeButtonIndex;
-
+        int  enterButtonIndex;
+        int  escapeButtonIndex;
         bool attachToWindow;
+
+        std::vector<std::string> buttons;
     };
 
     virtual ~Window() {}
-
-    // Implements Module.
-    virtual std::string getName() const { return name; }
-    static const char*  name;
 
     static Window* create();
 
     virtual void setGraphics(graphics::Graphics* graphics) = 0;
 
-    virtual bool setWindowSettings(int width = 800, int height = 600, const WindowSettings* settings = nullptr) = 0;
-    virtual void getWindowSettings(int& width, int& height, WindowSettings& settings)                           = 0;
+    virtual void setSize(int width, int height) = 0;
+    virtual int  getWidth() const               = 0;
+    virtual int  getHeight() const              = 0;
+
+    virtual bool           setWindowSettings(WindowSettings settings) = 0;
+    virtual WindowSettings getWindowSettings()                        = 0;
 
     virtual void close() = 0;
 

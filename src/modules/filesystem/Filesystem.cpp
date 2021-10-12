@@ -24,7 +24,7 @@
 namespace eve {
 namespace filesystem {
 
-Module_IMPL(Filesystem)
+Module_IMPL(Filesystem);
 
 Filesystem *Filesystem::create() {
     auto p = registered_modules.find(name);
@@ -35,7 +35,7 @@ Filesystem *Filesystem::create() {
 }
 
 void Filesystem::expose(ssq::Table &table) {
-    auto cls = table.addClass(name, Filesystem::create);
+    auto cls = table.addClass(name, Filesystem::create, false);
     expose(cls);
 }
 
@@ -89,7 +89,6 @@ std::string Filesystem::getExecutablePath() const {
 #error Missing implementation for Filesystem::getExecutablePath!
 #endif
 }
-
 
 }  // namespace filesystem
 }  // namespace eve

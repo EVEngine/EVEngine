@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "common/Exception.h"
-#include "graphics/Graphics.h"
+// #include "graphics/Graphics.h"
 
 #ifdef EVENGINE_ANDROID
 #include "android.h"
@@ -27,6 +27,11 @@
 #endif
 
 namespace eve {
+
+namespace graphic{
+    class Graphics;
+}
+
 namespace window {
 namespace sdl {
 
@@ -39,19 +44,28 @@ Window::~Window() { SDL_QuitSubSystem(SDL_INIT_VIDEO); }
 
 void Window::setGraphics(graphics::Graphics *graphics) { this->graphics = graphics; }
 
-bool Window::setWindowSettings(int width, int height, const WindowSettings *settings) {
-    WindowSettings f;
+void Window::setSize(int width, int height) {
+    WindowSettings f = settings;
+    f.width          = width;
+    f.height         = height;
 
-    if (settings) f = *settings;
-    f.minwidth  = std::max(f.minwidth, 1);
-    f.minheight = std::max(f.minheight, 1);
+    setWindowSettings(f);
+}
+
+int Window::getWidth() const { return settings.width; }
+
+int Window::getHeight() const { return settings.height; }
+
+bool Window::setWindowSettings(WindowSettings f) {
+    f.minwidth  = std::max(f.minwidth, (uint16_t)1);
+    f.minheight = std::max(f.minheight, (uint16_t)1);
 
     // f.display = std::min(std::max(f.display, 0), getDisplayCount() - 1);
-    if (width == 0 || height == 0) {
+    if (f.width == 0 || f.height == 0) {
         SDL_DisplayMode mode = {};
         SDL_GetDesktopDisplayMode(f.display, &mode);
-        width  = mode.w;
-        height = mode.h;
+        f.width  = mode.w;
+        f.height = mode.h;
     }
 
     Uint32 sdlflags = SDL_WINDOW_VULKAN;
@@ -90,10 +104,9 @@ bool Window::setWindowSettings(int width, int height, const WindowSettings *sett
     }
 
     if (f.resizable) sdlflags |= SDL_WINDOW_RESIZABLE;
-
     if (f.borderless) sdlflags |= SDL_WINDOW_BORDERLESS;
-
     if (f.high_dpi) sdlflags |= SDL_WINDOW_ALLOW_HIGHDPI;
+    if (f.always_on_top) sdlflags |= SDL_WINDOW_ALWAYS_ON_TOP;
 
     int x = f.x;
     int y = f.y;
@@ -113,7 +126,7 @@ bool Window::setWindowSettings(int width, int height, const WindowSettings *sett
 
     close();
 
-    if (!createWindowAndContext(x, y, width, height, sdlflags, f.msaa, f.stencil, f.depth)) return false;
+    if (!createWindowAndContext(x, y, f.width, f.height, sdlflags, f.msaa, f.stencil, f.depth)) return false;
 
     // Make sure the window keeps any previously set icon.
     // setIcon(icon.get());
@@ -137,13 +150,10 @@ bool Window::setWindowSettings(int width, int height, const WindowSettings *sett
         // fromPixels((double) pixelWidth, (double) pixelHeight, scaledw, scaledh);
         // graphics->setMode((int) scaledw, (int) scaledh, pixelWidth, pixelHeight, f.stencil);
     }
+    return true;
 }
 
-void Window::getWindowSettings(int &width, int &height, WindowSettings &settings) {
-    width    = this->width;
-    height   = this->height;
-    settings = this->settings;
-}
+WindowSettings Window::getWindowSettings() { return settings; }
 
 bool Window::setFullscreen(bool fullscreen, bool desktop_mode) {
     if (!window) return false;
@@ -192,6 +202,13 @@ bool Window::setFullscreen(bool fullscreen, bool desktop_mode) {
 bool Window::setFullscreen(bool fullscreen) { return setFullscreen(fullscreen, settings.desktop_mode); }
 
 bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowflags, int msaa, bool stencil, int depth) {
+    window = SDL_CreateWindow(title.c_str(), x, y, w, h, windowflags);
+
+    if (!window) {
+        throw Exception("Window Create Failed: %s", SDL_GetError());
+        return false;
+    }
+
     return true;
 }
 

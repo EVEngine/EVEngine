@@ -15,11 +15,11 @@ class Class;
 
 #define Module_REG \
     SSQ_REG \
-    static const char* name; \
     virtual std::string getName() const { return name; } \
+    static const char* name
 
 #define Module_IMPL(ModuleName) \
-    const char* ModuleName::name = #ModuleName;
+    const char* ModuleName::name = #ModuleName
 
 namespace eve {
 

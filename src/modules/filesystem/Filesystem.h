@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "filesystem/File.h"
-#include "filesystem/FileData.h"
 #include "common/Module.h"
 #include "common/config.h"
+#include "filesystem/File.h"
+#include "filesystem/FileData.h"
 
 #define EVENGINE_APPDATA_PREFIX ""
 #ifdef EVENGINE_WINDOWS
@@ -31,7 +31,7 @@ namespace filesystem {
 
 class Filesystem : public Module {
 public:
-    Module_REG
+    Module_REG;
 
     struct Info {
         // Numbers will be -1 if they cannot be determined.
@@ -43,7 +43,7 @@ public:
     Filesystem() {}
     virtual ~Filesystem() {}
 
-    static Filesystem* create();
+    static Filesystem *create();
 
     virtual void init(std::string arg0) = 0;
 
@@ -63,7 +63,7 @@ public:
      * @param external Bool for whether
      * Android should use external file storage.
      **/
-    virtual void setAndroidSaveExternal(bool useExternal = false)  { this->useExternal = useExternal; }
+    virtual void setAndroidSaveExternal(bool useExternal = false) { this->useExternal = useExternal; }
 
     /**
      * Gets whether the Android save is external.
@@ -94,8 +94,9 @@ public:
 
     virtual bool mount(std::string archive, std::string mountpoint, bool appendToPath = false)                 = 0;
     virtual bool mount(Data *data, std::string archivename, std::string mountpoint, bool appendToPath = false) = 0;
-    virtual bool unmount(std::string archive)                                                                  = 0;
-    virtual bool unmount(Data *data)                                                                           = 0;
+
+    virtual bool unmount(std::string archive) = 0;
+    virtual bool unmount(Data *data)          = 0;
 
     /**
      * Creates a new file.

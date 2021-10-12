@@ -17,8 +17,12 @@ public:
 
     void setGraphics(graphics::Graphics *graphics) override;
 
-    bool setWindowSettings(int width = 800, int height = 600, const WindowSettings *settings = nullptr) override;
-    void getWindowSettings(int &width, int &height, WindowSettings &settings) override;
+    void setSize(int width, int height) override;
+    int  getWidth() const override;
+    int  getHeight() const override;
+
+    bool           setWindowSettings(WindowSettings settings) override;
+    WindowSettings getWindowSettings() override;
 
     void close() override;
 
@@ -28,7 +32,7 @@ public:
 private:
     graphics::Graphics *graphics = nullptr;
 
-    int width, height;
+    int width = 800, height = 600;
 
     WindowSettings settings;
 
@@ -43,7 +47,7 @@ private:
     bool mouseGrabbed;
     bool displayedWindowError;
 
-    SDL_Window *window;
+    SDL_Window *window = nullptr;
 
     bool createWindowAndContext(int x, int y, int w, int h, Uint32 windowflags, int msaa, bool stencil, int depth);
     void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);
