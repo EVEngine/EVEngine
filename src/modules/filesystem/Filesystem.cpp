@@ -47,6 +47,29 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("setupWriteDirectory", &Filesystem::setupWriteDirectory);
     cls.addFunc("setAndroidSaveExternal", &Filesystem::setAndroidSaveExternal);
     cls.addFunc("isAndroidSaveExternal", &Filesystem::isAndroidSaveExternal);
+    cls.addFunc("setIdentity", &Filesystem::setIdentity);
+    cls.addFunc("getIdentity", &Filesystem::getIdentity);
+    cls.addFunc("setSource", &Filesystem::setSource);
+    cls.addFunc("getSource", &Filesystem::getSource);
+    cls.addFunc("newFile", &Filesystem::newFile);
+    cls.addFunc("newFileData", &Filesystem::newFileData);
+    cls.addFunc("getWorkingDirectory", &Filesystem::getWorkingDirectory);
+    cls.addFunc("getUserDirectory", &Filesystem::getUserDirectory);
+    cls.addFunc("getAppdataDirectory", &Filesystem::getAppdataDirectory);
+    cls.addFunc("getSaveDirectory", &Filesystem::getSaveDirectory);
+    cls.addFunc("getSourceBaseDirectory", &Filesystem::getSourceBaseDirectory);
+    cls.addFunc("getRealDirectory", &Filesystem::getRealDirectory);
+    cls.addFunc("createDirectory", &Filesystem::createDirectory);
+    cls.addFunc("remove", &Filesystem::remove);
+    cls.addFunc("read", &Filesystem::read);
+    cls.addFunc("write", &Filesystem::write);
+    cls.addFunc("append", &Filesystem::append);
+    cls.addFunc("getDirectoryItems", &Filesystem::getDirectoryItems);
+    cls.addFunc("setSymlinksEnabled", &Filesystem::setSymlinksEnabled);
+    cls.addFunc("areSymlinksEnabled", &Filesystem::areSymlinksEnabled);
+    cls.addFunc("getRequirePath", &Filesystem::getRequirePath);
+    cls.addFunc("getCRequirePath", &Filesystem::getCRequirePath);
+    cls.addFunc("getRequirePath", &Filesystem::getRequirePath);
 }
 
 FileData *Filesystem::newFileData(const void *data, std::string filename, size_t size) const {

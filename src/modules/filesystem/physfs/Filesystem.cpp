@@ -414,9 +414,10 @@ std::string Filesystem::getUserDirectory() {
     // PHYSFS_getUserDir doesn't give exactly the path we want on iOS.
     static std::string userDir = normalize(ios::getHomeDirectory());
 #else
-    static std::string userDir = normalize(PHYSFS_getUserDir());
+    const char* dir = PHYSFS_getUserDir();
+    static std::string userDir;
+    if (dir) userDir = normalize(dir);
 #endif
-
     return userDir;
 }
 
@@ -549,16 +550,18 @@ void Filesystem::append(std::string filename, const void *data, int64_t size) co
     if (!file.write(data, size)) throw eve::Exception("Data could not be written.");
 }
 
-void Filesystem::getDirectoryItems(std::string dir, std::vector<std::string> &items) {
-    if (!PHYSFS_isInit()) return;
+std::vector<std::string> Filesystem::getDirectoryItems(std::string dir) {
+    std::vector<std::string> items;
+    if (!PHYSFS_isInit()) return items;
 
     char **rc = PHYSFS_enumerateFiles(dir.c_str());
 
-    if (rc == nullptr) return;
+    if (rc == nullptr) return items;
 
     for (char **i = rc; *i != 0; i++) items.push_back(*i);
 
     PHYSFS_freeList(rc);
+    return items;
 }
 
 void Filesystem::setSymlinksEnabled(bool enable) {

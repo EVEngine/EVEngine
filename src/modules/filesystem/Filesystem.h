@@ -26,8 +26,7 @@
 #define EVENGINE_MAX_PATH MAXPATHLEN
 #endif
 
-namespace eve {
-namespace filesystem {
+namespace eve::filesystem {
 
 class Filesystem : public Module {
 public:
@@ -190,7 +189,7 @@ public:
      * This "native" method returns a table of all
      * files in a given directory.
      **/
-    virtual void getDirectoryItems(std::string dir, std::vector<std::string> &items) = 0;
+    virtual std::vector<std::string> getDirectoryItems(std::string dir) = 0;
 
     /**
      * Enable or disable symbolic link support in love.filesystem.
@@ -227,5 +226,4 @@ private:
     bool useExternal;
 };  // Filesystem
 
-}  // namespace filesystem
-}  // namespace eve
+}  // namespace eve::filesystem
