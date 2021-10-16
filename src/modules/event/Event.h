@@ -1,30 +1,29 @@
 #pragma once
 
-#include "common/Module.h"
-
 #include <queue>
-#include <variant>
-#include <vector>
 #include <string>
+#include <vector>
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include "common/Module.h"
 
 namespace eve {
 namespace event {
 
 class Message {
 public:
-    Message(const std::string &name, const std::vector<std::variant> &vargs = {});
+    Message(const std::string &name, const std::vector<ssq::Object> &vargs = {});
     ~Message();
 
-    const std::string               name;
-    const std::vector<std::variant> args;
+    const std::string name;
+
+    const std::vector<ssq::Object> args;
 };  // Message
 
 class Event : public Module {
 public:
+    Module_REG;
     virtual ~Event();
-
-    // Implements Module.
-    virtual std::string getName() const { return "event"; }
 
     void         push(Message *msg);
     Message *    poll();

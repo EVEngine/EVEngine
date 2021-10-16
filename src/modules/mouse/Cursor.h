@@ -1,15 +1,11 @@
 #pragma once
 
-#include "image/ImageData.h"
-#include "common/Object.h"
-#include "common/StringMap.h"
+#include <string>
 
-namespace eve
-{
-namespace mouse
+namespace eve::mouse
 {
 
-class Cursor : public Object
+class Cursor 
 {
 public:
 	virtual ~Cursor();
@@ -22,16 +18,15 @@ public:
 	/**
 	 * Returns whether this Cursor is system-defined or a custom image.
 	 **/
-	virtual CursorType getType() const = 0;
+	virtual bool isCustom() const = 0;
 
 	/**
-	 * Returns the type type of system cursor used, if this Cursor is using a
+	 * Returns the type of system cursor used, if this Cursor is using a
 	 * system-defined image.
 	 **/
-	virtual SystemCursor getSystemType() const = 0;
+	virtual std::string getSystemType() const = 0;
 };
 
-} // mouse
-} // eve
+} // eve::mouse
 
 

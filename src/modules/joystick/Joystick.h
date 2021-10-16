@@ -34,7 +34,7 @@ namespace eve
 namespace joystick
 {
 
-class Joystick : public Object
+class Joystick
 {
 public:
 

@@ -1,37 +1,36 @@
 
 #include "event/Event.h"
 
-namespace eve {
-namespace event {
+namespace eve::event {
 
-Message::Message(const std::string &name, const std::vector<std::variant> &vargs) : name(name), args(vargs) {}
-
+Message::Message(const std::string &name, const std::vector<ssq::Object> &vargs) : name(name), args(vargs) {}
 Message::~Message() {}
+
+Module_IMPL(Event);
 
 Event::~Event() {}
 
 void Event::push(Message *msg) {
     // Lock lock(mutex);
-    msg->retain();
+    // msg->retain();
     queue.push(msg);
 }
 
-bool Event::poll(Message *&msg) {
+Message *Event::poll() {
     // Lock lock(mutex);
-    if (queue.empty()) return false;
-    msg = queue.front();
+    if (queue.empty()) return nullptr;
+    auto msg = queue.front();
     queue.pop();
-    return true;
+    return msg;
 }
 
 void Event::clear() {
     // Lock lock(mutex);
     while (!queue.empty()) {
         // std::queue::pop will remove the first (front) element.
-        queue.front()->release();
+        delete queue.front();
         queue.pop();
     }
 }
 
-}  // namespace event
-}  // namespace eve
+}  // namespace eve::event

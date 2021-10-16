@@ -1,6 +1,5 @@
 #pragma once
 
-// LOVE
 #include "Joystick.h"
 #include "common/Module.h"
 

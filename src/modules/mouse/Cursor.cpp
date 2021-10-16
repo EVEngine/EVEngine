@@ -20,62 +20,12 @@
 
 #include "Cursor.h"
 
-namespace eve
+namespace eve::mouse
 {
-namespace mouse
-{
-
-love::Type Cursor::type("Cursor", &Object::type);
 
 Cursor::~Cursor()
 {
 }
 
-bool Cursor::getConstant(const char *in, SystemCursor &out)
-{
-	return systemCursors.find(in, out);
-}
 
-bool Cursor::getConstant(SystemCursor in, const char *&out)
-{
-	return systemCursors.find(in, out);
-}
-
-bool Cursor::getConstant(const char *in, CursorType &out)
-{
-	return types.find(in, out);
-}
-
-bool Cursor::getConstant(CursorType in, const char *&out)
-{
-	return types.find(in, out);
-}
-
-StringMap<Cursor::SystemCursor, Cursor::CURSOR_MAX_ENUM>::Entry Cursor::systemCursorEntries[] =
-{
-	{"arrow", Cursor::CURSOR_ARROW},
-	{"ibeam", Cursor::CURSOR_IBEAM},
-	{"wait", Cursor::CURSOR_WAIT},
-	{"crosshair", Cursor::CURSOR_CROSSHAIR},
-	{"waitarrow", Cursor::CURSOR_WAITARROW},
-	{"sizenwse", Cursor::CURSOR_SIZENWSE},
-	{"sizenesw", Cursor::CURSOR_SIZENESW},
-	{"sizewe", Cursor::CURSOR_SIZEWE},
-	{"sizens", Cursor::CURSOR_SIZENS},
-	{"sizeall", Cursor::CURSOR_SIZEALL},
-	{"no", Cursor::CURSOR_NO},
-	{"hand", Cursor::CURSOR_HAND},
-};
-
-StringMap<Cursor::SystemCursor, Cursor::CURSOR_MAX_ENUM> Cursor::systemCursors(Cursor::systemCursorEntries, sizeof(Cursor::systemCursorEntries));
-
-StringMap<Cursor::CursorType, Cursor::CURSORTYPE_MAX_ENUM>::Entry Cursor::typeEntries[] =
-{
-	{"system", Cursor::CURSORTYPE_SYSTEM},
-	{"image", Cursor::CURSORTYPE_IMAGE},
-};
-
-StringMap<Cursor::CursorType, Cursor::CURSORTYPE_MAX_ENUM> Cursor::types(Cursor::typeEntries, sizeof(Cursor::typeEntries));
-
-} // mouse
-} // eve
+} // eve::mouse

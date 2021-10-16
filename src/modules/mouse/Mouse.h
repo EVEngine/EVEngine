@@ -1,27 +1,26 @@
 #pragma once
 
-#include "Cursor.h"
 #include "common/Module.h"
-#include "image/ImageData.h"
+#include "mouse/Cursor.h"
 
-// C++
 #include <vector>
 
-namespace eve
-{
-namespace mouse
+
+namespace eve::image {
+class ImageData;
+}
+
+namespace eve::mouse
 {
 
 class Mouse : public Module
 {
 public:
+    Module_REG;
 
-	virtual ~Mouse() {}
+	virtual ~Mouse();
 
-	// Implements Module.
-	virtual std::string getName() const { return "mouse"; }
-
-	virtual Cursor *newCursor(image::ImageData *data, int hotx, int hoty) = 0;
+	virtual Cursor *newCursor(eve::image::ImageData *data, int hotx, int hoty) = 0;
 	virtual Cursor *getSystemCursor(std::string cursortype) = 0;
 
 	virtual void setCursor(Cursor *cursor) = 0;
@@ -47,7 +46,6 @@ public:
 
 }; // Mouse
 
-} // mouse
-} // eve
+} // eve::mouse
 
 
