@@ -9,7 +9,7 @@ namespace eve::mouse::sdl {
 // we want them in pixel coordinates (may be different with high-DPI enabled.)
 static void windowToDPICoords(double *x, double *y)
 {
-	auto window = Module::getInstance<window::Window>();
+	auto window = getModInst(window,Window);
 	// if (window)
 	// 	window->windowToDPICoords(x, y);
 }
@@ -17,7 +17,7 @@ static void windowToDPICoords(double *x, double *y)
 // And vice versa for setting mouse coordinates.
 static void DPIToWindowCoords(double *x, double *y)
 {
-	auto window = Module::getInstance<window::Window>();
+	auto window = getModInst(window,Window);
 	// if (window)
 		// window->DPIToWindowCoords(x, y);
 }
@@ -120,7 +120,7 @@ void Mouse::getPosition(double &x, double &y) const
 
 void Mouse::setPosition(double x, double y)
 {
-	auto window = Module::getInstance<window::Window>();
+	auto window = getModInst(window,Window);
 
 	SDL_Window *handle = nullptr;
 	// if (window)
@@ -185,14 +185,14 @@ bool Mouse::isVisible() const
 
 void Mouse::setGrabbed(bool grab)
 {
-	auto window = Module::getInstance<window::Window>();
+	auto window = getModInst(window,Window);
 	// if (window)
 	// 	window->setMouseGrab(grab);
 }
 
 bool Mouse::isGrabbed() const
 {
-	auto window = Module::getInstance<window::Window>();
+	auto window = getModInst(window,Window);
 	// if (window)
 	// 	return window->isMouseGrabbed();
 	// else

@@ -17,7 +17,7 @@ namespace eve::event::sdl
 // we want them in pixel coordinates (may be different with high-DPI enabled.)
 static void windowToDPICoords(double *x, double *y)
 {
-	auto window = Module::getInstance<window::Window>();
+	auto window = getModInst(window,Window);
 	// if (window)
 	// 	window->windowToDPICoords(x, y);
 }
@@ -27,7 +27,7 @@ static void normalizedToDPICoords(double *x, double *y)
 {
 	double w = 1.0, h = 1.0;
 
-	auto window = Module::getInstance<window::Window>();
+	auto window = getModInst(window,Window);
 	if (window)
 	{
 		w = window->getWidth();
@@ -47,7 +47,7 @@ static void normalizedToDPICoords(double *x, double *y)
 // handling inside the function which triggered them on some backends.
 static int SDLCALL watchAppEvents(void * /*udata*/, SDL_Event *event)
 {
-	auto gfx = Module::getInstance<graphics::Graphics>();
+	auto gfx = getModInst(graphics,Graphics);
 
 	switch (event->type)
 	{
@@ -130,7 +130,7 @@ void Event::exceptionIfInRenderPass(const char *name)
 	// happens inside SDL_PumpEvents - which is called by SDL_PollEvent and
 	// friends. It's probably a bad idea to call those functions while a Canvas
 	// is active.
-	auto gfx = Module::getInstance<graphics::Graphics>();
+	auto gfx = getModInst(graphics,Graphics);
 	// if (gfx != nullptr && gfx->isCanvasActive())
 	// 	throw eve::Exception("%s cannot be called while a Canvas is active in eve.graphics.", name);
 }
@@ -145,4 +145,4 @@ Message *Event::convert(const SDL_Event &e)
 	return msg;
 }
 
-} 
+}

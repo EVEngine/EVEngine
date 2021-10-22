@@ -13,7 +13,7 @@ typedef glm::vec4 Color;
 
 class Graphics : public Module {
 public:
-    Module_REG;
+    Module_REG(Graphics);
     virtual ~Graphics() {}
 
     /**

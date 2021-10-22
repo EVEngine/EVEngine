@@ -15,7 +15,7 @@ public:
     Filesystem();
     virtual ~Filesystem();
 
-    void init(std::string arg0) override;
+    void init(const char* arg0) override;
 
     void setFused(bool fused) override;
     bool isFused() const override;

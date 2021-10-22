@@ -62,6 +62,9 @@ int main(int argc, char **argv)
         return app.exit(e);
     }
 
+    Cmdline* cmd = Cmdline::create();
+    cmd->setArg0(argv[0]);
+
     if (build->parsed()) {
         if (debug && release) {
             cerr << rang::fg::red << "Build type can not be both debug and release" << rang::fg::reset << endl;
@@ -70,18 +73,18 @@ int main(int argc, char **argv)
         if (!debug && !release) { release = true; }
 
         current_path = get_remaining(run);
-        res = cmdBuild(current_path, output_path, platform);
+        res = cmd->Build(current_path, output_path, platform);
     }
 
     if (create->parsed()) {
         string name = get_remaining(create, "mygame");
-        res = cmdCreate(".", name);
+        res = cmd->Create(".", name);
         cout << rang::fg::green << "Created " << name << " in current path" << rang::fg::reset << endl;
     }
 
     if (run->parsed() || argc == 1) {
         current_path = get_remaining(run);
-        res = cmdRun(current_path);
+        res = cmd->Run(current_path);
     }
 
     if (version) {

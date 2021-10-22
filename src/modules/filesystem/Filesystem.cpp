@@ -24,15 +24,7 @@
 namespace eve {
 namespace filesystem {
 
-Module_IMPL(Filesystem);
-
-Filesystem *Filesystem::create() {
-    auto p = registered_modules.find(name);
-    if (p != registered_modules.end()) return (Filesystem *)(p->second);
-    auto n                   = new physfs::Filesystem();
-    registered_modules[name] = n;
-    return n;
-}
+Module_IMPL(Filesystem, new physfs::Filesystem());
 
 void Filesystem::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Filesystem::create, false);
@@ -41,7 +33,6 @@ void Filesystem::expose(ssq::Table &table) {
 
 void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Filesystem::getName);
-    cls.addFunc("init", &Filesystem::init);
     cls.addFunc("setFused", &Filesystem::setFused);
     cls.addFunc("isFused", &Filesystem::isFused);
     cls.addFunc("setupWriteDirectory", &Filesystem::setupWriteDirectory);
@@ -59,6 +50,7 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("getSaveDirectory", &Filesystem::getSaveDirectory);
     cls.addFunc("getSourceBaseDirectory", &Filesystem::getSourceBaseDirectory);
     cls.addFunc("getRealDirectory", &Filesystem::getRealDirectory);
+    cls.addFunc("getExecutablePath", &Filesystem::getExecutablePath);
     cls.addFunc("createDirectory", &Filesystem::createDirectory);
     cls.addFunc("remove", &Filesystem::remove);
     cls.addFunc("read", &Filesystem::read);
@@ -70,6 +62,7 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("getRequirePath", &Filesystem::getRequirePath);
     cls.addFunc("getCRequirePath", &Filesystem::getCRequirePath);
     cls.addFunc("getRequirePath", &Filesystem::getRequirePath);
+    cls.addFunc("isRealDirectory", &Filesystem::isRealDirectory);
 }
 
 FileData *Filesystem::newFileData(const void *data, std::string filename, size_t size) const {

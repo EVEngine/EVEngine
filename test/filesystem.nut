@@ -17,6 +17,8 @@ function basic() {
 
 function getPaths() {
     local p = eve.Filesystem();
+    p.setIdentity("mygame", true);
+    p.setupWriteDirectory();
     print("getWorkingDirectory: "+p.getWorkingDirectory());
     print("getUserDirectory: "+p.getUserDirectory());
     print("getAppdataDirectory: "+p.getAppdataDirectory());

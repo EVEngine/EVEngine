@@ -28,6 +28,7 @@
 #include "common/b64.h"
 #include "common/utf8.h"
 #include "common/Exception.h"
+#include "cmdline/cmdline.h"
 
 // PhysFS
 #include "physfs/physfs.h"
@@ -88,6 +89,8 @@ namespace physfs {
 Filesystem::Filesystem() : fused(false), fusedSet(false) {
     requirePath  = {"?.lua", "?/init.lua"};
     cRequirePath = {"??"};
+    if (auto* c = getModInst(eve,Cmdline)) init(c->getArg0().c_str());
+    else init(NULL);
 }
 
 Filesystem::~Filesystem() {
@@ -98,8 +101,8 @@ Filesystem::~Filesystem() {
     if (PHYSFS_isInit()) PHYSFS_deinit();
 }
 
-void Filesystem::init(std::string arg0) {
-    if (!PHYSFS_init(arg0.c_str()))
+void Filesystem::init(const char* arg0) {
+    if (!PHYSFS_init(arg0))
         throw Exception("Failed to initialize filesystem: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 
     // Enable symlinks by default.
@@ -243,7 +246,7 @@ std::string Filesystem::getSource() const { return game_source.c_str(); }
 bool Filesystem::setupWriteDirectory() {
     if (!PHYSFS_isInit()) return false;
 
-    // These must all be set.
+    // These must have one be set.
     if (save_identity.empty() || save_path_full.empty() || save_path_relative.empty()) return false;
 
     // We need to make sure the write directory is created. To do that, we also

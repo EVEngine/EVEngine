@@ -11,8 +11,7 @@ namespace eve::touch
 class Touch : public Module
 {
 public:
-	Module_REG;
-
+	Module_REG(Touch);
 	struct TouchInfo
 	{
 		int64_t id;  // Identifier. Only unique for the duration of the touch-press.

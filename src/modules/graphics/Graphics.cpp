@@ -1,10 +1,10 @@
-#include "Graphics.h"
-namespace eve {
-namespace graphics {
+#include "graphics/Graphics.h"
+#include "graphics/vulkan/Graphics.h"
 
-Module_IMPL(Graphics);
+namespace eve::graphics {
+
+// Module_IMPL(Graphics, new vulkan::Graphics());
 
 
 
-}  // namespace graphics
-}  // namespace eve
+}  // namespace eve::graphics

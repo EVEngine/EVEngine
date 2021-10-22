@@ -8,15 +8,7 @@ namespace eve {
 
 namespace window {
 
-Module_IMPL(Window);
-
-Window* Window::create() {
-    auto p = registered_modules.find(name);
-    if (p != registered_modules.end()) return (Window*)(p->second);
-    auto n                   = new sdl::Window();
-    registered_modules[name] = n;
-    return n;
-}
+Module_IMPL(Window, new sdl::Window());
 
 void Window::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Window::create, false);

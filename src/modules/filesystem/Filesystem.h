@@ -30,7 +30,7 @@ namespace eve::filesystem {
 
 class Filesystem : public Module {
 public:
-    Module_REG;
+    Module_REG(Filesystem);
 
     struct Info {
         // Numbers will be -1 if they cannot be determined.
@@ -42,9 +42,7 @@ public:
     Filesystem() {}
     virtual ~Filesystem() {}
 
-    static Filesystem *create();
-
-    virtual void init(std::string arg0) = 0;
+    virtual void init(const char* arg0) = 0;
 
     virtual void setFused(bool fused) = 0;
     virtual bool isFused() const      = 0;

@@ -1,12 +1,23 @@
 
 #include "event/Event.h"
+#include "event/sdl/Event.h"
 
 namespace eve::event {
 
 Message::Message(const std::string &name, const std::vector<ssq::Object> &vargs) : name(name), args(vargs) {}
 Message::~Message() {}
 
-Module_IMPL(Event);
+Module_IMPL(Event, new sdl::Event());
+
+
+void Event::expose(ssq::Table &table) {
+    auto cls = table.addClass(name, Event::create, false);
+    expose(cls);
+}
+
+void Event::expose(ssq::Class &cls) {
+    cls.addFunc("getName", &Event::getName);
+}
 
 Event::~Event() {}
 

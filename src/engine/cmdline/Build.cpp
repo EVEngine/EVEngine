@@ -2,7 +2,7 @@
 
 namespace eve
 {
-int cmdBuild(std::string path, std::string output, std::string platform) {
+int Cmdline::Build(std::string path, std::string output, std::string platform) {
 
     return 0;
 }

@@ -22,7 +22,7 @@ public:
 
 class Event : public Module {
 public:
-    Module_REG;
+    Module_REG(Event);
     virtual ~Event();
 
     void         push(Message *msg);

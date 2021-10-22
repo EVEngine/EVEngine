@@ -11,8 +11,8 @@ namespace eve {
 namespace filesystem {
 
 static bool hack_setupWriteDirectory() {
-    if (Module::getInstance<Filesystem>() != 0)
-		return Module::getInstance<Filesystem>()->setupWriteDirectory();
+    if (auto* f = getModInst(filesystem,Filesystem))
+		return f->setupWriteDirectory();
 	return false;
 }
 

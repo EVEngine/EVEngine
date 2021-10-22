@@ -41,7 +41,7 @@ struct WindowSettings {
 
 class Window : public Module {
 public:
-    Module_REG;
+    Module_REG(Window);
 
     struct WindowSize {
         int width  = 0;
@@ -63,8 +63,6 @@ public:
     };
 
     virtual ~Window() {}
-
-    static Window* create();
 
     virtual void setGraphics(graphics::Graphics* graphics) = 0;
 

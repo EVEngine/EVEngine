@@ -16,7 +16,7 @@ namespace eve::mouse
 class Mouse : public Module
 {
 public:
-    Module_REG;
+    Module_REG(Mouse);
 
 	virtual ~Mouse();
 

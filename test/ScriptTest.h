@@ -4,6 +4,7 @@
 
 #include "window/Window.h"
 #include "filesystem/Filesystem.h"
+#include "mouse/Mouse.h"
 
 #define UnitSciptTest(name, content) \
     class name : public ScriptTest { \
@@ -27,9 +28,7 @@ protected:
 
   // void TearDown() override {}
   static void expose(ssq::VM& vm) {
-    auto table = vm.addTable("eve");
-    window::Window::expose(table);
-    filesystem::Filesystem::expose(table);
+    ModuleManager::expose(vm);
   }
 
   const char* script;

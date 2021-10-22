@@ -17,10 +17,11 @@ add_executable(
 
 
 set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static physfs libSDL2.a dl X11 pthread)
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVDevTools EVCommon)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVDevTools EVCommon)
 
 target_link_libraries(unit_test
-  gtest_main gtest ${EVELIBS} ${ThirdParty}
+  gtest_main gtest 
+  -Wl,--whole-archive ${EVELIBS} -Wl,--no-whole-archive ${ThirdParty}
 )
 
 include(GoogleTest)

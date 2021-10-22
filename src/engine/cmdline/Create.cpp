@@ -5,11 +5,11 @@ using namespace std::filesystem;
 
 namespace eve
 {
-    
+
 
 
 // create a new project
-int cmdCreate(std::string path, std::string name) {
+int Cmdline::Create(std::string path, std::string name) {
     create_directory(path+"/"+name);
     return 0;
 }

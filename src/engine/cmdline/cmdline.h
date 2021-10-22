@@ -2,36 +2,50 @@
 
 #include <string>
 
-namespace eve
-{
+#include "common/Module.h"
 
-int cmdRun(std::string path);
+namespace eve {
 
-// build the project, need to download tools and source code
-int cmdBuild(std::string path, std::string output, std::string platform);
+class Cmdline : public Module {
+public:
+    Module_REG(Cmdline);
 
-// package game into a single executable file / apk 
-int cmdPackage(std::string path, std::string output);
+    int Run(std::string path);
 
-// run test if it has
-int cmdTest(std::string path);
+    // build the project, need to download tools and source code
+    int Build(std::string path, std::string output, std::string platform);
 
-// zip the current folder
-int cmdZip(std::string path);
+    // package game into a single executable file / apk
+    int Package(std::string path, std::string output);
 
-// start dev server for hot reload
-int cmdDevServer(std::string path);
+    // run test if it has
+    int Test(std::string path);
 
-// get third-party source code 
-int cmdGet(std::string url);
+    // zip the current folder
+    int Zip(std::string path);
 
-// clean the project and remove internal objects
-int cmdClean(std::string path);
+    // start dev server for hot reload
+    int DevServer(std::string path);
 
-// show documentation for the module/function/type
-int cmdDoc(std::string name);
+    // get third-party source code
+    int Get(std::string url);
 
-// create a new project
-int cmdCreate(std::string path, std::string name);
+    // clean the project and remove internal objects
+    int Clean(std::string path);
 
-} // namespace eve
+    // show documentation for the module/function/type
+    int Doc(std::string name);
+
+    // create a new project
+    int Create(std::string path, std::string name);
+
+    // this will be used in physfs filesystem
+    void setArg0(std::string arg0) { this->arg0 = arg0; }
+    std::string getArg0() { return arg0; }
+
+protected:
+    Cmdline();
+    std::string arg0;
+};
+
+}  // namespace eve

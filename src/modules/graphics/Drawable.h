@@ -5,6 +5,8 @@
 namespace eve::graphics
 {
 
+class Graphics;
+
 class Drawable {
 public:
     virtual ~Drawable() {}

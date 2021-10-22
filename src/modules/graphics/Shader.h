@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common/Resource.h"
 #include <string>
 #include <map>
 #include <vector>
@@ -13,7 +12,7 @@ namespace eve::graphics
 class Graphics;
 
 // A GLSL shader
-class Shader : public Resource
+class Shader
 {
 public:
 	enum ShaderType
