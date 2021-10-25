@@ -89,7 +89,7 @@ namespace physfs {
 Filesystem::Filesystem() : fused(false), fusedSet(false) {
     requirePath  = {"?.lua", "?/init.lua"};
     cRequirePath = {"??"};
-    if (auto* c = getModInst(eve,Cmdline)) init(c->getArg0().c_str());
+    if (auto* c = getModInst(eve::cmd,Cmdline)) init(c->getArgv(0).c_str());
     else init(NULL);
 }
 

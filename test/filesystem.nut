@@ -35,5 +35,8 @@ function readDir() {
         print(p.getName());
         return false;
     }
+    p.setIdentity("mygame", true);
+    p.setupWriteDirectory();
+    p.setSource(".");
     return true;
 }

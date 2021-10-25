@@ -1,12 +1,29 @@
 #pragma once
 
 #include <string>
+#include <functional>
+#include <memory>
 
 #include "common/Module.h"
+namespace CLI
+{
+    class App;
+    class Formatter;
+} // namespace CLI
 
-namespace eve {
+
+namespace eve::cmd {
+
+class Cmdline;
+class Register;
+struct Handler {
+    virtual ~Handler() {}
+    virtual void setup(CLI::App&, std::shared_ptr<CLI::Formatter>) = 0;
+    virtual int parse(CLI::App&, Cmdline&) = 0;
+};
 
 class Cmdline : public Module {
+
 public:
     Module_REG(Cmdline);
 
@@ -39,13 +56,35 @@ public:
     // create a new project
     int Create(std::string path, std::string name);
 
-    // this will be used in physfs filesystem
-    void setArg0(std::string arg0) { this->arg0 = arg0; }
-    std::string getArg0() { return arg0; }
+    // this will run passed argv by parsing it
+    int runArgs(unsigned argc, char** argv);
 
+    // this will be used in physfs filesystem
+    std::string getArgv(unsigned i) { return argv[i]; }
+    unsigned getArgc() { return argc; }
+
+    static std::string get_remaining(CLI::App* sub, std::string default_path = ".");
+
+    friend Register;
 protected:
     Cmdline();
-    std::string arg0;
+
+    unsigned argc;
+    char** argv;
+
+    static std::vector<std::function<Handler*()>>& handers();
+    static void registerCmd(std::function<Handler*()> handler);
 };
+
+#define CMD_REG(name) \
+    static eve::cmd::Handler* name##_create() { return new name(); } \
+    Register name##_cmd_reg(name##_create)
+
+struct Register {
+    Register(std::function<Handler*()> handler) {
+        Cmdline::registerCmd(handler);
+    }
+};
+
 
 }  // namespace eve
