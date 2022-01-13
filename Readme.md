@@ -38,5 +38,20 @@ EVEngine
 比如你可以设定一个脚本，对脚本中的一个函数进行热修改，并且反复执行观看效果
 
 
+## 构建方式
 
+确保系统上已经安装有以下工具：
+1. git - 下载源码
+2. cmake - 构建工具
+3. vulkan SDK 1.2 及以上 - 图形SDK
+
+然后执行以下步骤来下载并构建整个引擎：
+```sh
+git clone https://github.com/EVEngine/EVEngine
+cd EVEngine
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make deps
+make -j`nproc`
+```
 

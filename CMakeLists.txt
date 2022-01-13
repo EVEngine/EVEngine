@@ -130,6 +130,7 @@ function(load_third_party)
     endif()
     ExternalProject_Add(third-party
         GIT_REPOSITORY   ${GIT_HTTPS_LINK}
+        GIT_TAG          origin/main
         SOURCE_DIR       ${CMAKE_CURRENT_SOURCE_DIR}/third-party
         BINARY_DIR       ${CMAKE_CURRENT_SOURCE_DIR}/third-party/build
         CMAKE_ARGS       -DCMAKE_BUILD_TYPE=Release
