@@ -1,4 +1,6 @@
-const char* simplesquirrel_content = R"(@simplesquirrel_content@)";
-const char* filesystem_content     = R"(@filesystem_content@)";
-const char* window_content         = R"(@window_content@)";
-const char* mouse_content         = R"(@mouse_content@)";
+const char* simplesquirrel_content = R"content(@simplesquirrel_content@)content";
+const char* filesystem_content     = R"content(@filesystem_content@)content";
+const char* window_content         = R"content(@window_content@)content";
+const char* mouse_content          = R"content(@mouse_content@)content";
+const char* model_content          = R"content(@model_content@)content";
+const char* model2_content         = R"content(@model2_content@)content";

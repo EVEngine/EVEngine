@@ -77,7 +77,6 @@ int Cmdline::runArgs(unsigned argc, char** argv) {
 }
 
 
-
 std::string Cmdline::get_remaining(CLI::App* sub, std::string default_path) {
     auto paths = sub->remaining();
     if (paths.size() > 1) {

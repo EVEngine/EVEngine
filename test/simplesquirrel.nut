@@ -48,3 +48,38 @@ function testDefClass() {
 function getterTest() {
     return true;
 }
+
+
+class Canvas {
+    function print(text) {
+        ::print(text)
+    }
+}
+
+class Avatar {
+
+    name = ""
+    fps = ""
+
+    </ type = Canvas />
+    can = null
+
+    constructor(_name){
+        name = _name
+        can = Canvas()
+    }
+
+    function getCanvas() {
+        return can
+    }
+
+    function update(dt) {
+        fps = dt+" ms"
+    }
+
+    function draw() {
+        can.print(fps)
+    }
+
+}
+

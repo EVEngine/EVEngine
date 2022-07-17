@@ -1,7 +1,10 @@
 #pragma once
 
 #include "graphics/Drawable.h"
+#include <glm/vec4.hpp>
+#include <optional>
 
+typedef glm::vec4 Color;
 namespace eve::graphics
 {
 
@@ -11,7 +14,12 @@ public:
     Canvas();
     ~Canvas();
 
-    virtual void draw(Graphics* gfx, const glm::mat4& matrix);
+    // draw current content on target Canvas
+    virtual void draw(Canvas* C, const glm::mat4& matrix) const;
+
+
+    virtual void clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) = 0;
+
 };
 
 

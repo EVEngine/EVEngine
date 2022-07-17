@@ -1,8 +1,10 @@
 #pragma once
 
+#include "common/Object.h"
+
 namespace eve {
 
-class Data {
+class Data : public Object {
 public:
     /**
      * Destructor.

@@ -45,7 +45,7 @@ public:
 class ModuleManager {
 public:
     typedef Module* (*creator_t)();
-    typedef void (*exposer_t)(ssq::Table&);
+    typedef void    (*exposer_t)(ssq::Table&);
 
     static ModuleManager& inst();
 

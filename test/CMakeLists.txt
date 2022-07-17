@@ -20,7 +20,7 @@ set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_stat
 set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVDevTools EVCommon)
 
 target_link_libraries(unit_test
-  gtest_main gtest 
+  gtest_main gtest
   -Wl,--whole-archive ${EVELIBS} -Wl,--no-whole-archive ${ThirdParty}
 )
 

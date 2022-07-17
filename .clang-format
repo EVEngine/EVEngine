@@ -15,9 +15,25 @@ BraceWrapping:
     AfterUnion: false
     BeforeCatch: false
     BeforeElse: false
+    
 
 CompactNamespaces: false
-AlignConsecutiveAssignments: 'true'
-AlignConsecutiveDeclarations: 'true'
-AlignEscapedNewlines: 'true'
-AlignTrailingComments: 'true'
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
+AlignConsecutiveBitFields: true
+AlignEscapedNewlines: true
+AlignTrailingComments: true
+AlignAfterOpenBracket: true
+
+AlwaysBreakTemplateDeclarations: true
+BreakBeforeConceptDeclarations: true
+Cpp11BracedListStyle: true
+FixNamespaceComments: true
+IndentRequires: true
+IncludeBlocks: Preserve
+PointerAlignment: Left
+MaxEmptyLinesToKeep: 2
+
+SortIncludes: true
+SortUsingDeclarations: true

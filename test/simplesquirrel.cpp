@@ -123,12 +123,42 @@ TEST_F(SimpleSquirrelTest, PerformInteration) {
         sq_pop(v,2); //pops key and val before the nex iteration
     }
 
-    sq_pop(v,1); //pops the null iterator
+    sq_pop(v,2); //pops the null iterator
 }
 
 
 TEST_F(SimpleSquirrelTest, GetterTest) {
 
-
     EXPECT_TRUE(vm.callFunc(vm.findFunc("getterTest"), vm).toBool());
+}
+
+
+TEST_F(SimpleSquirrelTest, GetAttr) {
+    ssq::Class cls = vm.findClass("Avatar");
+    auto& v = vm.getHandle();
+    sq_pushobject(v, cls.getRaw());
+    sq_pushnull(v);  //null iterator
+    while(SQ_SUCCEEDED(sq_next(v,-2)))
+    {
+        //here -1 is the value and -2 is the key
+        const char* name;
+        sq_getstring(v, -2, &name);
+        printf("%s\n", name);
+
+        sq_pop(v,1); //pops key and val before the nex iteration
+        sq_getattributes(v, -3);
+
+        // loop table
+        sq_pushnull(v);  //null iterator
+        while(SQ_SUCCEEDED(sq_next(v,-2))) {
+            const char* key;
+            sq_getstring(v, -2, &key);
+            SQObjectType t = sq_gettype(v, -1);
+            printf("  %s %d\n", key,t==OT_CLASS? 1:0);
+            sq_pop(v,2);
+        }
+        sq_pop(v,2); // pops iterator and table
+    }
+
+    sq_pop(v,2); //pops the null iterator and object
 }

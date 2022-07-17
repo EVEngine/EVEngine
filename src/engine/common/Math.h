@@ -33,10 +33,10 @@
 #define EVE_M_2_SQRTPI 1.12837916709551257390
 #define EVE_M_SQRT2    1.41421356237309504880
 #define EVE_M_SQRT1_2  0.707106781186547524401
-#define EVE_M_TORAD	(float)(EVE_M_PI/180.0)
+#define EVE_M_TORAD	   (float)(EVE_M_PI/180.0)
 #define EVE_M_TODEG    (float)(180.0/EVE_M_PI)
-#define EVE_TORAD(x)	(float)(x*EVE_M_TORAD)
-#define EVE_TODEG(x)	(float)(x*EVE_M_TODEG)
+#define EVE_TORAD(x)   (float)(x*EVE_M_TORAD)
+#define EVE_TODEG(x)   (float)(x*EVE_M_TODEG)
 
 namespace eve
 {

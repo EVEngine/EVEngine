@@ -3,15 +3,14 @@
 #include "common/Module.h"
 #include "graphics/Shader.h"
 #include "graphics/Drawable.h"
+#include "graphics/Canvas.h"
 #include <vector>
 #include <optional>
 #include <glm/glm.hpp>
 
 namespace eve::graphics {
 
-typedef glm::vec4 Color;
-
-class Graphics : public Module {
+class Graphics : public Module, public Canvas {
 public:
     Module_REG(Graphics);
     virtual ~Graphics() {}
@@ -21,8 +20,7 @@ public:
 	 **/
 	void reset();
 
-	virtual void clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) = 0;
-
+	
     virtual void present() = 0;
 
     /**
@@ -39,26 +37,6 @@ public:
 	double getScreenDPIScale() const;
 
 
-    /**
-	 * Sets the current constant color.
-	 **/
-	virtual void setColor(Color c) = 0;
-
-	/**
-	 * Gets current color.
-	 **/
-	Color getColor() const;
-
-    	/**
-	 * Sets the background Color.
-	 **/
-	void setBackgroundColor(Color c);
-
-	/**
-	 * Gets the current background color.
-	 **/
-	Color getBackgroundColor() const;
-
 	// void setFont(Font *font);
 	// Font *getFont();
 
@@ -71,48 +49,6 @@ public:
 	void setCanvas();
 
 
-    /**
-	 * Sets the line width.
-	 * @param width The new width of the line.
-	 **/
-	void setLineWidth(float width);
-	float getLineWidth() const;
-
-	/**
-	 * Sets the line style.
-	 * @param style LINE_ROUGH or LINE_SMOOTH.
-	 **/
-	void setLineStyle(std::string style);
-	std::string getLineStyle() const;
-
-	/**
-	 * Sets the line join mode.
-	 **/
-	void setLineJoin(std::string style);
-	std::string getLineJoin() const;
-
-	/**
-	 * Sets the size of points.
-	 **/
-	virtual void setPointSize(float size) = 0;
-
-	/**
-	 * Gets the point size.
-	 **/
-	float getPointSize() const;
-
-	/**
-	 * Sets whether graphics will be drawn as wireframe lines instead of filled
-	 * triangles (has no effect for drawn points.)
-	 * This should only be used as a debugging tool. The wireframe lines do not
-	 * behave the same as regular love.graphics lines.
-	 **/
-	virtual void setWireframe(bool enable) = 0;
-
-    /**
-	 * Gets whether wireframe drawing mode is enabled.
-	 **/
-	bool isWireframe() const;
 
 
     void draw(Drawable *drawable, const glm::mat4 &m);
@@ -212,7 +148,6 @@ public:
 	void rotate(float r);
 	void scale(float x, float y = 1.0f);
 	void translate(float x, float y);
-	void shear(float kx, float ky);
 	void origin();
 
 	// void applyTransform(love::math::Transform *transform);
