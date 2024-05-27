@@ -1,4 +1,4 @@
-build/
+build*/
 third-party/
 third-party-binary/
 .vscode/

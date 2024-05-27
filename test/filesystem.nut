@@ -1,6 +1,7 @@
 
 
 function basic() {
+    print("start basic test");
     if (eve.Filesystem == null) {
         print("can not find filesystem");
         return false;

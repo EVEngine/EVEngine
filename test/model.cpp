@@ -1,9 +1,11 @@
 #include "common/Model.h"
 #include "ScriptTest.h"
+#include "squirrel.h"
 
-#include "sqclass.h"
+#include "sqobject.h"
 #include "sqpcheader.h"
 #include "sqtable.h"
+#include "sqclass.h"
 #include "sqvm.h"
 
 extern const char* model_content;
@@ -11,12 +13,16 @@ extern const char* model2_content;
 
 class ModelScriptTest : public ::testing::Test {
 public:
-    ModelScriptTest() : vm(2048, ssq::Libs::ALL) {}
+    struct Model {
+        std::map<std::string, ssq::Object> models;
+        std::vector<ssq::Object>           instances;
+        std::vector<ssq::Object>           updates;
+    };
 
+    ModelScriptTest() : vm(2048, ssq::Libs::ALL) {model = new Model();}
+    ~ModelScriptTest() { delete model;}
 protected:
-    std::map<std::string, ssq::Object> models;
-    std::vector<ssq::Object>           instances;
-    std::vector<ssq::Object>           updates;
+    Model* model;
 
     void SetUp() override {
         expose(vm);
@@ -31,7 +37,7 @@ protected:
     }
 
     void update() {
-        for (int i = 0; i < instances.size(); ++i) {
+        for (int i = 0; i < model->instances.size(); ++i) {
         }
     }
 
@@ -70,9 +76,9 @@ protected:
                 }
             }
         });
-        eve.addFunc("reg", [&](ssq::Object obj) { instances.push_back(obj); });
-        eve.addFunc("set", [&](std::string s, ssq::Object obj) { models[s] = obj; });
-        eve.addFunc("get", [&](std::string s) { return models[s]; });
+        eve.addFunc("reg", [&](ssq::Object obj) { model->instances.push_back(obj); });
+        eve.addFunc("set", [&](std::string s, ssq::Object obj) { model->models[s] = obj; });
+        eve.addFunc("get", [&](std::string s) { return model->models[s]; });
     }
 
     const char* script;
