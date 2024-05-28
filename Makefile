@@ -33,16 +33,16 @@ build/linux-debug/Makefile:
 
 # build/android:
 
-test/win32: 
+test/win32: build/win32
 	build/win32/test/Release/unit_test.exe
 
-test/win32-debug: 
+test/win32-debug: build/win32-debug
 	build/win32-debug/test/Debug/unit_test.exe
 
-test/linux: 
+test/linux: build/linux
 	build/linux/test/unit_test
 
-test/linux-debug: 
+test/linux-debug: build/linux-debug
 	build/linux-debug/test/unit_test
 
 	

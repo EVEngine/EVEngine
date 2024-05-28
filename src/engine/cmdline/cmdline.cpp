@@ -43,7 +43,7 @@ void Cmdline::expose(ssq::Class& cls) {
 
 int Cmdline::runArgs(unsigned argc, char** argv) {
     CLI::App app{"EVEngine - A Modern Game Engine"};
-    bool version;
+    bool version = false;
     app.add_flag("-v,--version", version, "Print version string");
     auto formatter = std::make_shared<MyFormatter>();
 

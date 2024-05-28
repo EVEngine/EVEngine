@@ -27,7 +27,7 @@ class Cmdline : public Module {
 public:
     Module_REG(Cmdline);
 
-    int Run(std::string path);
+    int Run(std::string path, std::string root);
 
     // build the project, need to download tools and source code
     int Build(std::string path, std::string output, std::string platform);
