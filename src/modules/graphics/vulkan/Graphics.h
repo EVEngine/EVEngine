@@ -3,8 +3,10 @@
 namespace eve::graphics::vulkan
 {
 
-class Graphics : public eve::graphics::Graphics {
+class Graphics final : public eve::graphics::Graphics {
 public:
+
+
 
 
 
