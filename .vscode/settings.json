@@ -96,7 +96,8 @@
         "xloctime": "cpp",
         "xmemory": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "*.in": "c"
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/win32-debug"
 }

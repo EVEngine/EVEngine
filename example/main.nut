@@ -70,9 +70,9 @@ class Enemies extends eve::EntityContainer {
 
 
 class Player extends eve::GameObject {
-    
-    update()
-
+    update() {
+        
+    }
 }
 
 
