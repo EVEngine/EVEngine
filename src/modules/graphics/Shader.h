@@ -34,6 +34,12 @@ public:
 	Shader();
 	virtual ~Shader();
 
+	int sendToVar(const std::string &name, const void *data, size_t size);
+	int getFromVar(const std::string &name, void *data, size_t size);
+
+	
+
+
 }; // Shader
 
 } // eve::graphics

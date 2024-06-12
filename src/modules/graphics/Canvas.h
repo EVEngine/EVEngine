@@ -19,6 +19,11 @@ public:
 
 
     virtual void clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) = 0;
+    virtual ImageData* getImageData() = 0;
+    virtual ImageData* cloneImageData() = 0;
+
+    virtual Color getPixel(int x, int y) = 0;
+    
 
 };
 

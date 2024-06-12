@@ -1,5 +1,7 @@
 #pragma once
 #include "graphics/Graphics.h"
+#include "vkbuilder.hpp"
+
 namespace eve::graphics::vulkan
 {
 
@@ -8,8 +10,14 @@ public:
 
 
 
+  vkb::Instance inst;
+  vkb::Device device;
+  vkb::Swapchain swapchain;
 
-
+  vk::RenderPass renderpass;
+  vk::Pipeline pipeline;
+  vkb::Present present;
+  vkb::HostVertexBuffer buffer;
 };
 
 } // namespace eve::graphics::sd
