@@ -15,10 +15,10 @@ DataView::DataView(Data *data, size_t offset, size_t size)
 	, size(size)
 {
 	if (offset >= data->getSize() || size > data->getSize() || offset > data->getSize() - size)
-		throw love::Exception("Offset and size of Data View must fit within the original Data's size.");
+		throw eve::Exception("Offset and size of Data View must fit within the original Data's size.");
 
 	if (size == 0)
-		throw love::Exception("DataView size must be greater than 0.");
+		throw eve::Exception("DataView size must be greater than 0.");
 }
 
 DataView::DataView(const DataView &d)
@@ -39,7 +39,7 @@ DataView *DataView::clone() const
 
 void *DataView::getData() const
 {
-	return (uint8 *) data->getData() + offset;
+	return (uint8_t *) data->getData() + offset;
 }
 
 size_t DataView::getSize() const

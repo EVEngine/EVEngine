@@ -13,13 +13,6 @@ namespace eve
 namespace data
 {
 
-enum EncodeFormat
-{
-	ENCODE_BASE64,
-	ENCODE_HEX,
-	ENCODE_MAX_ENUM
-};
-
 enum ContainerType
 {
 	CONTAINER_DATA,
@@ -38,7 +31,7 @@ enum ContainerType
  *              Specific formats may not use every level.
  * @return The newly compressed data.
  **/
-CompressedData *compress(Compressor::Format format, const char *rawbytes, size_t rawsize, int level = -1);
+CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize, int level = -1);
 
 /**
  * Decompresses existing compressed data into raw bytes.
@@ -60,10 +53,10 @@ char *decompress(CompressedData *data, size_t &decompressedsize);
  *               bytes of the newly decompressed data.
  * @return The newly decompressed data (allocated with new[]).
  **/
-char *decompress(Compressor::Format format, const char *cbytes, size_t compressedsize, size_t &rawsize);
+char *decompress(std::string format, const char *cbytes, size_t compressedsize, size_t &rawsize);
 
-char *encode(EncodeFormat format, const char *src, size_t srclen, size_t &dstlen, size_t linelen = 0);
-char *decode(EncodeFormat format, const char *src, size_t srclen, size_t &dstlen);
+char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen, size_t linelen = 0);
+char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen);
 
 /**
  * Hash the input, producing an set of bytes as output.
@@ -73,19 +66,11 @@ char *decode(EncodeFormat format, const char *src, size_t srclen, size_t &dstlen
  * @return An std::string of bytes, representing the result of the hash
  *         function.
  **/
-std::string hash(HashFunction::Function function, Data *input);
-std::string hash(HashFunction::Function function, const char *input, uint64_t size);
-void hash(HashFunction::Function function, Data *input, HashFunction::Value &output);
-void hash(HashFunction::Function function, const char *input, uint64_t size, HashFunction::Value &output);
+std::string hash(std::string function, Data *input);
+std::string hash(std::string function, const char *input, uint64_t size);
+void hash(std::string function, Data *input, HashFunction::Value &output);
+void hash(std::string function, const char *input, uint64_t size, HashFunction::Value &output);
 
-
-bool getConstant(const char *in, EncodeFormat &out);
-bool getConstant(EncodeFormat in, const char *&out);
-std::vector<std::string> getConstants(EncodeFormat);
-
-bool getConstant(const char *in, ContainerType &out);
-bool getConstant(ContainerType in, const char *&out);
-std::vector<std::string> getConstants(ContainerType);
 
 
 class DataModule : public Module

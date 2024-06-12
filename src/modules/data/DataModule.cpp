@@ -18,11 +18,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  **/
 
-// LOVE
 #include "DataModule.h"
 #include "common/b64.h"
-#include "common/int.h"
-#include "common/StringMap.h"
+#include "common/Exception.h"
+#include "HashFunction.h"
 
 // STL
 #include <cmath>
@@ -34,7 +33,7 @@ namespace
 
 static const char hexchars[] = "0123456789abcdef";
 
-char *bytesToHex(const love::uint8 *src, size_t srclen, size_t &dstlen)
+char *bytesToHex(const uint8_t *src, size_t srclen, size_t &dstlen)
 {
 	dstlen = srclen * 2;
 
@@ -48,12 +47,12 @@ char *bytesToHex(const love::uint8 *src, size_t srclen, size_t &dstlen)
 	}
 	catch (std::exception &)
 	{
-		throw love::Exception("Out of memory.");
+		throw eve::Exception("Out of memory.");
 	}
 
 	for (size_t i = 0; i < srclen; i++)
 	{
-		love::uint8 b = src[i];
+		uint8_t b = src[i];
 		dst[i * 2 + 0] = hexchars[b >> 4];
 		dst[i * 2 + 1] = hexchars[b & 0xF];
 	}
@@ -62,21 +61,21 @@ char *bytesToHex(const love::uint8 *src, size_t srclen, size_t &dstlen)
 	return dst;
 }
 
-love::uint8 nibble(char c)
+uint8_t nibble(char c)
 {
 	if (c >= '0' && c <= '9')
-		return (love::uint8) (c - '0');
+		return (uint8_t) (c - '0');
 
 	if (c >= 'A' && c <= 'F')
-		return (love::uint8) (c - 'A' + 0x0a);
+		return (uint8_t) (c - 'A' + 0x0a);
 
 	if (c >= 'a' && c <= 'f')
-		return (love::uint8) (c - 'a' + 0x0a);
+		return (uint8_t) (c - 'a' + 0x0a);
 
 	return 0;
 }
 
-love::uint8 *hexToBytes(const char *src, size_t srclen, size_t &dstlen)
+uint8_t *hexToBytes(const char *src, size_t srclen, size_t &dstlen)
 {
 	if (srclen >= 2 && src[0] == '0' && (src[1] == 'x' || src[1] == 'X'))
 	{
@@ -89,14 +88,14 @@ love::uint8 *hexToBytes(const char *src, size_t srclen, size_t &dstlen)
 	if (dstlen == 0)
 		return nullptr;
 
-	love::uint8 *dst = nullptr;
+	uint8_t *dst = nullptr;
 	try
 	{
-		dst = new love::uint8[dstlen];
+		dst = new uint8_t[dstlen];
 	}
 	catch (std::exception &)
 	{
-		throw love::Exception("Out of memory.");
+		throw eve::Exception("Out of memory.");
 	}
 
 	for (size_t i = 0; i < dstlen; i++)
@@ -117,12 +116,12 @@ namespace eve
 namespace data
 {
 
-CompressedData *compress(Compressor::Format format, const char *rawbytes, size_t rawsize, int level)
+CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize, int level)
 {
 	Compressor *compressor = Compressor::getCompressor(format);
 
 	if (compressor == nullptr)
-		throw love::Exception("Invalid compression format.");
+		throw eve::Exception("Invalid compression format.");
 
 	size_t compressedsize = 0;
 	char *cbytes = compressor->compress(format, rawbytes, rawsize, level, compressedsize);
@@ -133,7 +132,7 @@ CompressedData *compress(Compressor::Format format, const char *rawbytes, size_t
 	{
 		data = new CompressedData(format, cbytes, compressedsize, rawsize, true);
 	}
-	catch (love::Exception &)
+	catch (eve::Exception &)
 	{
 		delete[] cbytes;
 		throw;
@@ -153,62 +152,54 @@ char *decompress(CompressedData *data, size_t &decompressedsize)
 	return rawbytes;
 }
 
-char *decompress(Compressor::Format format, const char *cbytes, size_t compressedsize, size_t &rawsize)
+char *decompress(std::string format, const char *cbytes, size_t compressedsize, size_t &rawsize)
 {
 	Compressor *compressor = Compressor::getCompressor(format);
 
 	if (compressor == nullptr)
-		throw love::Exception("Invalid compression format.");
+		throw eve::Exception("Invalid compression format.");
 
 	return compressor->decompress(format, cbytes, compressedsize, rawsize);
 }
 
-char *encode(EncodeFormat format, const char *src, size_t srclen, size_t &dstlen, size_t linelen)
+char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen, size_t linelen)
 {
-	switch (format)
-	{
-	case ENCODE_BASE64:
-	default:
+	if (format == "hex")
+		return bytesToHex((const uint8_t *) src, srclen, dstlen);
+	else
 		return b64_encode(src, srclen, linelen, dstlen);
-	case ENCODE_HEX:
-		return bytesToHex((const uint8 *) src, srclen, dstlen);
-	}
 }
 
-char *decode(EncodeFormat format, const char *src, size_t srclen, size_t &dstlen)
+char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen)
 {
-	switch (format)
-	{
-	case ENCODE_BASE64:
-	default:
-		return b64_decode(src, srclen, dstlen);
-	case ENCODE_HEX:
+	if (format == "hex")
 		return (char *) hexToBytes(src, srclen, dstlen);
-	}
+	else
+		return b64_decode(src, srclen, dstlen);
 }
 
-std::string hash(HashFunction::Function function, Data *input)
+std::string hash(std::string function, Data *input)
 {
 	return hash(function, (const char*) input->getData(), input->getSize());
 }
 
-std::string hash(HashFunction::Function function, const char *input, uint64_t size)
+std::string hash(std::string function, const char *input, uint64_t size)
 {
 	HashFunction::Value output;
 	hash(function, input, size, output);
 	return std::string(output.data, output.size);
 }
 
-void hash(HashFunction::Function function, Data *input, HashFunction::Value &output)
+void hash(std::string function, Data *input, HashFunction::Value &output)
 {
 	hash(function, (const char*) input->getData(), input->getSize(), output);
 }
 
-void hash(HashFunction::Function function, const char *input, uint64_t size, HashFunction::Value &output)
+void hash(std::string function, const char *input, uint64_t size, HashFunction::Value &output)
 {
 	HashFunction *hashfunction = HashFunction::getHashFunction(function);
 	if (hashfunction == nullptr)
-		throw love::Exception("Invalid hash function.");
+		throw eve::Exception("Invalid hash function.");
 
 	hashfunction->hash(function, input, size, output);
 }
@@ -241,51 +232,6 @@ ByteData *DataModule::newByteData(void *d, size_t size, bool own)
 	return new ByteData(d, size, own);
 }
 
-static StringMap<EncodeFormat, ENCODE_MAX_ENUM>::Entry encoderEntries[] =
-{
-	{ "base64", ENCODE_BASE64 },
-	{ "hex",    ENCODE_HEX    },
-};
-
-static StringMap<EncodeFormat, ENCODE_MAX_ENUM> encoders(encoderEntries, sizeof(encoderEntries));
-
-static StringMap<ContainerType, CONTAINER_MAX_ENUM>::Entry containerEntries[] =
-{
-	{ "data",   CONTAINER_DATA   },
-	{ "string", CONTAINER_STRING },
-};
-
-static StringMap<ContainerType, CONTAINER_MAX_ENUM> containers(containerEntries, sizeof(containerEntries));
-
-bool getConstant(const char *in, EncodeFormat &out)
-{
-	return encoders.find(in, out);
-}
-
-bool getConstant(EncodeFormat in, const char *&out)
-{
-	return encoders.find(in, out);
-}
-
-std::vector<std::string> getConstants(EncodeFormat)
-{
-	return encoders.getNames();
-}
-
-bool getConstant(const char *in, ContainerType &out)
-{
-	return containers.find(in, out);
-}
-
-bool getConstant(ContainerType in, const char *&out)
-{
-	return containers.find(in, out);
-}
-
-std::vector<std::string> getConstants(ContainerType)
-{
-	return containers.getNames();
-}
 
 } // data
 } // eve

@@ -21,7 +21,7 @@
 #pragma once
 
 #include "common/Data.h"
-#include "common/StringMap.h"
+#include <string>
 
 namespace eve
 {
@@ -31,17 +31,6 @@ namespace data
 class HashFunction
 {
 public:
-
-	enum Function
-	{
-		FUNCTION_MD5,
-		FUNCTION_SHA1,
-		FUNCTION_SHA224,
-		FUNCTION_SHA256,
-		FUNCTION_SHA384,
-		FUNCTION_SHA512,
-		FUNCTION_MAX_ENUM
-	};
 
 	struct Value
 	{
@@ -55,8 +44,16 @@ public:
 	 * @param[in] function The selected hash function.
 	 * @return An instance of HashFunction for the given function, or NULL if
 	 *         not available.
+	 * 
+	 * Available functions:
+	 * - "md5"
+	 * - "sha1"
+	 * - "sha224"
+	 * - "sha256"
+	 * - "sha384"
+	 * - "sha512"
 	 **/
-	static HashFunction *getHashFunction(Function function);
+	static HashFunction *getHashFunction(std::string function);
 
 	virtual ~HashFunction() {}
 
@@ -68,17 +65,13 @@ public:
 	 * @param[in] length The length of the input data.
 	 * @param[out] output The result of the hash function.
 	 **/
-	virtual void hash(Function function, const char *input, uint64_t length, Value &output) const = 0;
+	virtual void hash(std::string function, const char *input, uint64_t length, Value &output) const = 0;
 
 	/**
 	 * @param[in] function The requested hash function.
 	 * @return Whether this HashFunction instance implements the given function.
 	 **/
-	virtual bool isSupported(Function function) const = 0;
-
-	static bool getConstant(const char *in, Function &out);
-	static bool getConstant(const Function &in, const char *&out);
-	static std::vector<std::string> getConstants(Function);
+	virtual bool isSupported(std::string function) const = 0;
 
 protected:
 

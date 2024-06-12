@@ -1,27 +1,6 @@
-/**
- * Copyright (c) 2006-2021 LOVE Development Team
- *
- * This software is provided 'as-is', without any express or implied
- * warranty.  In no event will the authors be held liable for any damages
- * arising from the use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- **/
-
 #pragma once
 
-// LOVE
-#include "common/StringMap.h"
+#include <string>
 
 namespace eve
 {
@@ -35,20 +14,16 @@ class Compressor
 {
 public:
 
-	enum Format
-	{
-		FORMAT_LZ4,
-		FORMAT_ZLIB,
-		FORMAT_GZIP,
-		FORMAT_DEFLATE,
-		FORMAT_MAX_ENUM
-	};
-
 	/**
 	 * Gets a Compressor that can compress and decompress a specific format.
 	 * Returns null if there are no supported compressors for the given format.
+	 * Available formats are:
+	 * - "lz4"
+	 * - "zlib"
+	 * - "gzip"
+	 * - "deflate"
 	 **/
-	static Compressor *getCompressor(Format format);
+	static Compressor *getCompressor(std::string format);
 
 	virtual ~Compressor() {}
 
@@ -65,7 +40,7 @@ public:
 	 *
 	 * @return The newly compressed data (allocated with new[]).
 	 **/
-	virtual char *compress(Format format, const char *data, size_t dataSize, int level, size_t &compressedSize) = 0;
+	virtual char *compress(std::string format, const char *data, size_t dataSize, int level, size_t &compressedSize) = 0;
 
 	/**
 	 * Decompresses compressed data, and returns the decompressed result.
@@ -79,16 +54,12 @@ public:
 	 *
 	 * @return The decompressed data (allocated with new[]).
 	 **/
-	virtual char *decompress(Format format, const char *data, size_t dataSize, size_t &decompressedSize) = 0;
+	virtual char *decompress(std::string format, const char *data, size_t dataSize, size_t &decompressedSize) = 0;
 
 	/**
 	 * Gets whether a specific format is supported by this backend.
 	 **/
-	virtual bool isSupported(Format format) const = 0;
-
-	static bool getConstant(const char *in, Format &out);
-	static bool getConstant(Format in, const char *&out);
-	static std::vector<std::string> getConstants(Format);
+	virtual bool isSupported(std::string format) const = 0;
 
 protected:
 

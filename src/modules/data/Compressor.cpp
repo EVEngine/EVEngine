@@ -1,10 +1,12 @@
 #include "Compressor.h"
 #include "common/config.h"
+#include "common/Exception.h"
 
-#include "libraries/lz4/lz4.h"
-#include "libraries/lz4/lz4hc.h"
+#include "lz4/lz4.h"
+#include "lz4/lz4hc.h"
 
 #include <zlib.h>
+#include <vector>
 
 namespace eve
 {
@@ -15,16 +17,16 @@ class LZ4Compressor : public Compressor
 {
 public:
 
-	char *compress(Format format, const char *data, size_t dataSize, int level, size_t &compressedSize) override
+	char *compress(std::string format, const char *data, size_t dataSize, int level, size_t &compressedSize) override
 	{
-		if (format != FORMAT_LZ4)
-			throw love::Exception("Invalid format (expecting LZ4)");
+		if (format != "lz4")
+			throw eve::Exception("Invalid format (expecting LZ4)");
 
 		if (dataSize > LZ4_MAX_INPUT_SIZE)
-			throw love::Exception("Data is too large for LZ4 compressor.");
+			throw eve::Exception("Data is too large for LZ4 compressor.");
 
 		// We use a custom header to store some info with the compressed data.
-		const size_t headersize = sizeof(uint32);
+		const size_t headersize = sizeof(uint32_t);
 
 		int maxdestsize = LZ4_compressBound((int) dataSize);
 		size_t maxsize = headersize + (size_t) maxdestsize;
@@ -36,15 +38,15 @@ public:
 		}
 		catch (std::bad_alloc &)
 		{
-			throw love::Exception("Out of memory.");
+			throw eve::Exception("Out of memory.");
 		}
 
 		// Store the size of the uncompressed data as a header.
 #ifdef LOVE_BIG_ENDIAN
 		// Make sure it's little-endian for storage.
-		*(uint32 *) compressedbytes = swapuint32((uint32) dataSize);
+		*(uint32_t *) compressedbytes = swapuint32((uint32_t) dataSize);
 #else
-		*(uint32 *) compressedbytes = (uint32) dataSize;
+		*(uint32_t *) compressedbytes = (uint32_t) dataSize;
 #endif
 
 		// Use LZ4-HC for compression level 9 and higher.
@@ -57,7 +59,7 @@ public:
 		if (csize <= 0)
 		{
 			delete[] compressedbytes;
-			throw love::Exception("Could not LZ4-compress data.");
+			throw eve::Exception("Could not LZ4-compress data.");
 		}
 
 		// We allocated space for the maximum possible amount of data, but the
@@ -78,23 +80,23 @@ public:
 		return compressedbytes;
 	}
 
-	char *decompress(Format format, const char *data, size_t dataSize, size_t &decompressedSize) override
+	char *decompress(std::string format, const char *data, size_t dataSize, size_t &decompressedSize) override
 	{
-		if (format != FORMAT_LZ4)
-			throw love::Exception("Invalid format (expecting LZ4)");
+		if (format != "lz4")
+			throw eve::Exception("Invalid format (expecting LZ4)");
 
-		const size_t headersize = sizeof(uint32);
+		const size_t headersize = sizeof(uint32_t);
 		char *rawbytes = nullptr;
 
 		if (dataSize < headersize)
-			throw love::Exception("Invalid LZ4-compressed data size.");
+			throw eve::Exception("Invalid LZ4-compressed data size.");
 
 		// Extract the original uncompressed size (stored in our custom header.)
 #ifdef LOVE_BIG_ENDIAN
 		// Convert from stored little-endian to big-endian.
-		uint32 rawsize = swapuint32(*(uint32 *) data);
+		uint32_t rawsize = swapuint32(*(uint32_t *) data);
 #else
-		uint32 rawsize = *(uint32 *) data;
+		uint32_t rawsize = *(uint32_t *) data;
 #endif
 
 		try
@@ -103,7 +105,7 @@ public:
 		}
 		catch (std::bad_alloc &)
 		{
-			throw love::Exception("Out of memory.");
+			throw eve::Exception("Out of memory.");
 		}
 
 		// If the uncompressed size is passed in as an argument (non-zero) and
@@ -115,7 +117,7 @@ public:
 			if (LZ4_decompress_fast(data + headersize, rawbytes, (int) decompressedSize) < 0)
 			{
 				delete[] rawbytes;
-				throw love::Exception("Could not decompress LZ4-compressed data.");
+				throw eve::Exception("Could not decompress LZ4-compressed data.");
 			}
 		}
 		else
@@ -127,7 +129,7 @@ public:
 			if (result < 0)
 			{
 				delete[] rawbytes;
-				throw love::Exception("Could not decompress LZ4-compressed data.");
+				throw eve::Exception("Could not decompress LZ4-compressed data.");
 			}
 
 			decompressedSize = (size_t) result;
@@ -136,9 +138,9 @@ public:
 		return rawbytes;
 	}
 
-	bool isSupported(Format format) const override
+	bool isSupported(std::string format) const override
 	{
-		return format == FORMAT_LZ4;
+		return format == "lz4";
 	}
 
 }; // LZ4Compressor
@@ -152,18 +154,18 @@ private:
 	// (compressBound, compress2, and uncompress), but modified to support both
 	// zlib and gzip.
 
-	uLong zlibCompressBound(Format format, uLong sourceLen)
+	uLong zlibCompressBound(std::string format, uLong sourceLen)
 	{
 		uLong size = sourceLen + (sourceLen >> 12) + (sourceLen >> 14) + (sourceLen >> 25) + 13;
 
 		// The gzip header is slightly larger than the zlib header.
-		if (format == FORMAT_GZIP)
+		if (format == "gzip")
 			size += 18 - 6;
 
 		return size;
 	}
 
-	int zlibCompress(Format format, Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen, int level)
+	int zlibCompress(std::string format, Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen, int level)
 	{
 		z_stream stream = {};
 
@@ -174,9 +176,9 @@ private:
 		stream.avail_out = (uInt) (*destLen);
 
 		int windowbits = 15;
-		if (format == FORMAT_GZIP)
+		if (format == "gzip")
 			windowbits += 16; // This tells zlib to use a gzip header.
-		else if (format == FORMAT_DEFLATE)
+		else if (format == "deflate")
 			windowbits = -windowbits;
 
 		int err = deflateInit2(&stream, level, Z_DEFLATED, windowbits, 8, Z_DEFAULT_STRATEGY);
@@ -197,7 +199,7 @@ private:
 		return deflateEnd(&stream);
 	}
 
-	int zlibDecompress(Format format, Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen)
+	int zlibDecompress(std::string format, Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen)
 	{
 		z_stream stream = {};
 
@@ -210,7 +212,7 @@ private:
 		// 15 is the default. Adding 32 makes zlib auto-detect the header type.
 		int windowbits = 15 + 32;
 
-		if (format == FORMAT_DEFLATE)
+		if (format == "deflate")
 			windowbits = -15;
 
 		int err = inflateInit2(&stream, windowbits);
@@ -235,10 +237,10 @@ private:
 
 public:
 
-	char *compress(Format format, const char *data, size_t dataSize, int level, size_t &compressedSize) override
+	char *compress(std::string format, const char *data, size_t dataSize, int level, size_t &compressedSize) override
 	{
 		if (!isSupported(format))
-			throw love::Exception("Invalid format (expecting zlib or gzip)");
+			throw eve::Exception("Invalid format (expecting zlib or gzip)");
 
 		if (level < 0)
 			level = Z_DEFAULT_COMPRESSION;
@@ -254,7 +256,7 @@ public:
 		}
 		catch (std::bad_alloc &)
 		{
-			throw love::Exception("Out of memory.");
+			throw eve::Exception("Out of memory.");
 		}
 
 		uLongf destlen = maxsize;
@@ -263,7 +265,7 @@ public:
 		if (status != Z_OK)
 		{
 			delete[] compressedbytes;
-			throw love::Exception("Could not zlib/gzip-compress data.");
+			throw eve::Exception("Could not zlib/gzip-compress data.");
 		}
 
 		// We allocated space for the maximum possible amount of data, but the
@@ -284,10 +286,10 @@ public:
 		return compressedbytes;
 	}
 
-	char *decompress(Format format, const char *data, size_t dataSize, size_t &decompressedSize) override
+	char *decompress(std::string format, const char *data, size_t dataSize, size_t &decompressedSize) override
 	{
 		if (!isSupported(format))
-			throw love::Exception("Invalid format (expecting zlib or gzip)");
+			throw eve::Exception("Invalid format (expecting zlib or gzip)");
 
 		char *rawbytes = nullptr;
 
@@ -303,7 +305,7 @@ public:
 			}
 			catch (std::bad_alloc &)
 			{
-				throw love::Exception("Out of memory.");
+				throw eve::Exception("Out of memory.");
 			}
 
 			uLongf destLen = (uLongf) rawsize;
@@ -318,7 +320,7 @@ public:
 			{
 				// For any error other than "not enough room", throw an exception.
 				delete[] rawbytes;
-				throw love::Exception("Could not decompress zlib/gzip-compressed data.");
+				throw eve::Exception("Could not decompress zlib/gzip-compressed data.");
 			}
 
 			// Not enough room in the output buffer: try again with a larger size.
@@ -329,14 +331,14 @@ public:
 		return rawbytes;
 	}
 
-	bool isSupported(Format format) const override
+	bool isSupported(std::string format) const override
 	{
-		return format == FORMAT_ZLIB || format == FORMAT_GZIP || format == FORMAT_DEFLATE;
+		return format == "zlib" || format == "gzip" || format == "deflate";
 	}
 
 }; // zlibCompressor
 
-Compressor *Compressor::getCompressor(Format format)
+Compressor *Compressor::getCompressor(std::string format)
 {
 	static LZ4Compressor lz4compressor;
 	static zlibCompressor zlibcompressor;
@@ -351,31 +353,6 @@ Compressor *Compressor::getCompressor(Format format)
 
 	return nullptr;
 }
-
-bool Compressor::getConstant(const char *in, Format &out)
-{
-	return formatNames.find(in, out);
-}
-
-bool Compressor::getConstant(Format in, const char *&out)
-{
-	return formatNames.find(in, out);
-}
-
-std::vector<std::string> Compressor::getConstants(Format)
-{
-	return formatNames.getNames();
-}
-
-StringMap<Compressor::Format, Compressor::FORMAT_MAX_ENUM>::Entry Compressor::formatEntries[] =
-{
-	{ "lz4",     FORMAT_LZ4     },
-	{ "zlib",    FORMAT_ZLIB    },
-	{ "gzip",    FORMAT_GZIP    },
-	{ "deflate", FORMAT_DEFLATE },
-};
-
-StringMap<Compressor::Format, Compressor::FORMAT_MAX_ENUM> Compressor::formatNames(Compressor::formatEntries, sizeof(Compressor::formatEntries));
 
 } // data
 } // eve

@@ -99,5 +99,5 @@
         "xutility": "cpp",
         "*.in": "c"
     },
-    "cmake.buildDirectory": "${workspaceFolder}/build/win32-debug"
+    "cmake.buildDirectory": "${workspaceFolder}/build/win32-debug",
 }

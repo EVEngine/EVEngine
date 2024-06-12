@@ -1,80 +1,46 @@
 #include "CompressedData.h"
+#include "common/Exception.h"
 
-namespace eve
-{
-namespace data
-{
+namespace eve {
+namespace data {
 
-CompressedData::CompressedData(Compressor::Format format, char *cdata, size_t compressedsize, size_t rawsize, bool own)
-	: format(format)
-	, data(nullptr)
-	, dataSize(compressedsize)
-	, originalSize(rawsize)
-{
-	if (own)
-		data = cdata;
-	else
-	{
-		try
-		{
-			data = new char[dataSize];
-		}
-		catch (std::bad_alloc &)
-		{
-			throw love::Exception("Out of memory.");
-		}
+CompressedData::CompressedData(std::string format, char *cdata, size_t compressedsize, size_t rawsize, bool own)
+    : format(format), data(nullptr), dataSize(compressedsize), originalSize(rawsize) {
+    if (own)
+        data = cdata;
+    else {
+        try {
+            data = new char[dataSize];
+        } catch (std::bad_alloc &) {
+            throw eve::Exception("Create CompressedData run out of memory.");
+        }
 
-		memcpy(data, cdata, dataSize);
-	}
+        memcpy(data, cdata, dataSize);
+    }
 }
 
 CompressedData::CompressedData(const CompressedData &c)
-	: format(c.format)
-	, data(nullptr)
-	, dataSize(c.dataSize)
-	, originalSize(c.originalSize)
-{
-	try
-	{
-		data = new char[dataSize];
-	}
-	catch (std::bad_alloc &)
-	{
-		throw love::Exception("Out of memory.");
-	}
+    : format(c.format), data(nullptr), dataSize(c.dataSize), originalSize(c.originalSize) {
+    try {
+        data = new char[dataSize];
+    } catch (std::bad_alloc &) {
+        throw eve::Exception("Copy CompressedData run out of memory.");
+    }
 
-	memcpy(data, c.data, dataSize);
+    memcpy(data, c.data, dataSize);
 }
 
-CompressedData::~CompressedData()
-{
-	delete[] data;
-}
+CompressedData::~CompressedData() { delete[] data; }
 
-CompressedData *CompressedData::clone() const
-{
-	return new CompressedData(*this);
-}
+CompressedData *CompressedData::clone() const { return new CompressedData(*this); }
 
-Compressor::Format CompressedData::getFormat() const
-{
-	return format;
-}
+std::string CompressedData::getFormat() const { return format; }
 
-size_t CompressedData::getDecompressedSize() const
-{
-	return originalSize;
-}
+size_t CompressedData::getDecompressedSize() const { return originalSize; }
 
-void *CompressedData::getData() const
-{
-	return data;
-}
+void *CompressedData::getData() const { return data; }
 
-size_t CompressedData::getSize() const
-{
-	return dataSize;
-}
+size_t CompressedData::getSize() const { return dataSize; }
 
-} // data
-} // eve
+}  // namespace data
+}  // namespace eve

@@ -15,7 +15,7 @@ function(main)
     load_third_party()
     set_include()
     check_ipo()
-    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD 20)
 
     add_subdirectory(platform/${BUILD_PLATFORM})
     add_subdirectory(src/engine)
