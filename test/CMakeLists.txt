@@ -33,7 +33,7 @@ else()
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-    set(ThirdParty ${ThirdParty} gtest_maind gtestd simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d ${SystemLibraries})
+    set(ThirdParty ${ThirdParty} gtest_maind gtestd simplesquirrel_static sqstdlib_static squirrel_static SDL2d ${SystemLibraries})
 else()
     set(ThirdParty ${ThirdParty} gtest_main gtest simplesquirrel_static sqstdlib_static squirrel_static SDL2 ${SystemLibraries})
 endif()

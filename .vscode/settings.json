@@ -97,7 +97,8 @@
         "xmemory": "cpp",
         "xtr1common": "cpp",
         "xutility": "cpp",
-        "*.in": "c"
+        "*.in": "c",
+        "xstddef": "cpp"
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/win32-debug",
 }

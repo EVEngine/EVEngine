@@ -13,7 +13,7 @@ elseif(UNIX)
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d SDL2maind ${SystemLibraries})
+    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d SDL2maind ${SystemLibraries})
 else()
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main ${SystemLibraries})
 endif()
