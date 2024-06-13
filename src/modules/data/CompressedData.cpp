@@ -1,6 +1,8 @@
 #include "CompressedData.h"
 #include "common/Exception.h"
 
+#include <cstring>
+
 namespace eve {
 namespace data {
 

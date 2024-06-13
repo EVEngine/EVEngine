@@ -24,7 +24,7 @@ namespace eve {
  */
 class Resource : public Object {
 public:
-    virtual ~Resource() = 0 {}
+    virtual ~Resource() {}
 
     std::string getUri() const { return uri; }
 	std::vector<eve::ref<Resource>> getDependencies() const { return dependencies; }

@@ -7,6 +7,7 @@
 
 #include <zlib.h>
 #include <vector>
+#include <cstring>
 
 namespace eve
 {

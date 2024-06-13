@@ -2,6 +2,7 @@
 #pragma once
 
 #include "common/Data.h"
+#include <cstddef>
 
 namespace eve
 {

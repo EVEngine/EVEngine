@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Object.h"
+#include <cstddef>
 
 namespace eve {
 
