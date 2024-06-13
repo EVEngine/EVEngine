@@ -7,6 +7,9 @@ set(EVENGINE_PATCH_VERSION "0")
 
 option(BUILD_TESTING "enable testing" ON)
 message("Build UnitTest: " ${BUILD_TESTING})
+if (CMAKE_BUILD_TYPE STREQUAL "")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
+endif()
 
 include(CTest)
 
