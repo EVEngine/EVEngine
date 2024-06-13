@@ -1,3 +1,14 @@
+INSIDE_DOCKER=$(shell [ -f /.dockerenv ] && echo 1 || echo 0 )
+PWD = $(shell pwd)
+
+ifeq ($(INSIDE_DOCKER), 0)
+	DOCKER = docker run -it --rm --volume="$(PWD):/home/evengine/src" evengine 
+	DOCKER_START = docker run -it --volume="$(PWD):/home/evengine/src" evengine 
+else
+	DOCKER = 
+endif
+
+
 .PHONY: all build/win32 build/linux build/win32-debug build/linux-debug
 
 debug: build/win32-debug build/linux-debug 
@@ -45,4 +56,16 @@ test/linux: build/linux
 test/linux-debug: build/linux-debug
 	build/linux-debug/test/unit_test
 
-	
+
+# make: build/.build-docker
+# 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"
+
+# deps: build/.build-docker
+# 	$(DOCKER) /bin/bash -c "cd src/third-party && bash build.sh"
+
+# start: build/.build-docker
+# 	$(DOCKER_START) /bin/bash
+
+# build/.build-docker: Dockerfile
+# 	docker build . --tag evengine
+# 	mkdir -p build && touch $@

@@ -2,7 +2,6 @@
 
 #include "common/Module.h"
 #include "image/ImageData.h"
-#include "image/CompressedImageData.h"
 #include "filesystem/File.h"
 
 #include <list>
@@ -22,12 +21,10 @@ namespace image
 class Image : public Module
 {
 public:
+    Module_REG(Image);
+
 	Image();
 	virtual ~Image();
-
-	// Implements Module.
-	ModuleType getModuleType() const override { return M_IMAGE; }
-	const char *getName() const override;
 
 	/**
 	 * Creates new ImageData from FileData.
@@ -60,7 +57,7 @@ public:
 	 * @param data The FileData containing the compressed image data.
 	 * @return The new CompressedImageData.
 	 **/
-	CompressedImageData *newCompressedData(Data *data);
+	// CompressedImageData *newCompressedData(Data *data);
 
 	/**
 	 * Determines whether a FileData is Compressed image data or not.
@@ -68,8 +65,8 @@ public:
 	 **/
 	bool isCompressed(Data *data);
 
-	std::vector<StrongRef<ImageData>> newCubeFaces(ImageData *src);
-	std::vector<StrongRef<ImageData>> newVolumeLayers(ImageData *src);
+	std::vector<ref<ImageData>> newCubeFaces(ImageData *src);
+	std::vector<ref<ImageData>> newVolumeLayers(ImageData *src);
 
 	const std::list<FormatHandler *> &getFormatHandlers() const;
 

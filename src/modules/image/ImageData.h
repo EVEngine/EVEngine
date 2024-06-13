@@ -3,7 +3,6 @@
 
 #include "common/Data.h"
 #include "common/pixelformat.h"
-#include "common/floattypes.h"
 #include "common/Color.h"
 #include "filesystem/FileData.h"
 #include "thread/threads.h"
@@ -18,7 +17,7 @@ namespace image
 /**
  * Represents raw pixel data.
  **/
-class ImageData : public Object
+class ImageData : public Resource
 {
 public:
 
@@ -36,8 +35,8 @@ public:
 	typedef void (*PixelGetFunction)(const Pixel *p, Colorf &c);
 
 	ImageData(Data *data);
-	ImageData(int width, int height, PixelFormat format = PIXELFORMAT_RGBA8);
-	ImageData(int width, int height, PixelFormat format, void *data, bool own);
+	ImageData(int width, int height, std::string format = "RGBA8");
+	ImageData(int width, int height, std::string format, void *data, bool own);
 	ImageData(const ImageData &c);
 	virtual ~ImageData();
 
@@ -97,11 +96,11 @@ public:
 	PixelSetFunction getPixelSetFunction() const { return pixelSetFunction; }
 	PixelGetFunction getPixelGetFunction() const { return pixelGetFunction; }
 
-	static bool validPixelFormat(PixelFormat format);
-	static bool canPaste(PixelFormat src, PixelFormat dst);
+	static bool validPixelFormat(std::string format);
+	static bool canPaste(std::string src, std::string dst);
 
-	static PixelSetFunction getPixelSetFunction(PixelFormat format);
-	static PixelGetFunction getPixelGetFunction(PixelFormat format);
+	static PixelSetFunction getPixelSetFunction(std::string format);
+	static PixelGetFunction getPixelGetFunction(std::string format);
 
 	static bool getConstant(const char *in, FormatHandler::EncodedFormat &out);
 	static bool getConstant(FormatHandler::EncodedFormat in, const char *&out);
@@ -110,7 +109,7 @@ public:
 private:
 
 	// Create imagedata. Initialize with data if not null.
-	void create(int width, int height, PixelFormat format, void *data = nullptr);
+	void create(int width, int height, std::string format, void *data = nullptr);
 
 	// Decode and load an encoded format.
 	void decode(Data *data);

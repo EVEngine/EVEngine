@@ -37,7 +37,8 @@ namespace eve
 namespace image
 {
 
-love::Type Image::type("image", &Module::type);
+Module_IMPL(Filesystem, new physfs::Filesystem());
+
 
 Image::Image()
 {
