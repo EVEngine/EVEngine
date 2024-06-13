@@ -1,7 +1,6 @@
 
 #pragma once
 
-// LOVE
 #include "common/Data.h"
 #include "common/pixelformat.h"
 #include "common/floattypes.h"
@@ -19,7 +18,7 @@ namespace image
 /**
  * Represents raw pixel data.
  **/
-class ImageData : public ImageDataBase
+class ImageData : public Object
 {
 public:
 
@@ -83,7 +82,7 @@ public:
 	 * @param f The file to save the encoded image data to.
 	 * @param format The format of the encoded data.
 	 **/
-	love::filesystem::FileData *encode(FormatHandler::EncodedFormat format, const char *filename, bool writefile) const;
+	filesystem::FileData *encode(FormatHandler::EncodedFormat format, const char *filename, bool writefile) const;
 
 	love::thread::Mutex *getMutex() const;
 

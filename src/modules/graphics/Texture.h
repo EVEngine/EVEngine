@@ -13,7 +13,7 @@ public:
     void draw(Graphics* gfx, const glm::mat4& matrix) override;
 
     // If you just want to draw part of the texture
-    void draw(Graphics *gfx, Quad *quad, const Matrix4 &m);
+    // void draw(Graphics *gfx, Quad *quad, const Matrix4 &m);
 
     int width;
 	int height;
@@ -25,7 +25,7 @@ public:
 	int pixelWidth;
 	int pixelHeight;
 
-    SamplerState samplerState;
+    // SamplerState samplerState;
 };
 
 } // namespace eve::graphics
