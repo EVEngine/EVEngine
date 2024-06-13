@@ -21,6 +21,8 @@ namespace image
 class Image : public Module
 {
 public:
+	using FormatHandler = medialoader::FormatHandler;
+
     Module_REG(Image);
 
 	Image();
@@ -39,7 +41,7 @@ public:
 	 * @param height The height of the ImageData.
 	 * @return The new ImageData.
 	 **/
-	ImageData *newImageData(int width, int height, PixelFormat format = PIXELFORMAT_RGBA8);
+	ImageData *newImageData(int width, int height, std::string format = "RGBA8");
 
 	/**
 	 * Creates empty ImageData with the given size.
@@ -50,7 +52,7 @@ public:
 	 *        copy it.
 	 * @return The new ImageData.
 	 **/
-	ImageData *newImageData(int width, int height, PixelFormat format, void *data, bool own = false);
+	ImageData *newImageData(int width, int height, std::string format, void *data, bool own = false);
 
 	/**
 	 * Creates new CompressedImageData from FileData.

@@ -18,31 +18,29 @@
  * 3. This notice may not be removed or altered from any source distribution.
  **/
 
-// LOVE
 #include "Image.h"
 #include "common/config.h"
 
-#include "magpie/PNGHandler.h"
-#include "magpie/STBHandler.h"
-#include "magpie/EXRHandler.h"
+#include "medialoader/image/PNGHandler.h"
+#include "medialoader/image/STBHandler.h"
+#include "medialoader/image/EXRHandler.h"
 
-#include "magpie/ddsHandler.h"
-#include "magpie/PVRHandler.h"
-#include "magpie/KTXHandler.h"
-#include "magpie/PKMHandler.h"
-#include "magpie/ASTCHandler.h"
+#include "medialoader/image/ddsHandler.h"
+#include "medialoader/image/PVRHandler.h"
+#include "medialoader/image/KTXHandler.h"
+#include "medialoader/image/PKMHandler.h"
+#include "medialoader/image/ASTCHandler.h"
 
 namespace eve
 {
 namespace image
 {
 
-Module_IMPL(Filesystem, new physfs::Filesystem());
-
+Module_IMPL(Image, new Image());
 
 Image::Image()
 {
-	using namespace magpie;
+	using namespace medialoader;
 
 	float16Init(); // Makes sure half-float conversions can be used.
 
@@ -62,47 +60,41 @@ Image::~Image()
 {
 	// ImageData objects reference the FormatHandlers in our list, so we should
 	// release them instead of deleting them completely here.
-	for (FormatHandler *handler : formatHandlers)
-		handler->release();
+
+	// TODO： Check if this is necessary
+	// for (FormatHandler *handler : formatHandlers)
+	// 	handler->release();
 }
 
-const char *Image::getName() const
-{
-	return "love.image.magpie";
-}
 
-love::image::ImageData *Image::newImageData(Data *data)
+ImageData *Image::newImageData(Data *data)
 {
 	return new ImageData(data);
 }
 
-love::image::ImageData *Image::newImageData(int width, int height, PixelFormat format)
+ImageData *Image::newImageData(int width, int height, std::string format)
 {
 	return new ImageData(width, height, format);
 }
 
-love::image::ImageData *Image::newImageData(int width, int height, PixelFormat format, void *data, bool own)
+ImageData *Image::newImageData(int width, int height, std::string format, void *data, bool own)
 {
 	return new ImageData(width, height, format, data, own);
 }
 
-love::image::CompressedImageData *Image::newCompressedData(Data *data)
-{
-	return new CompressedImageData(formatHandlers, data);
-}
 
 bool Image::isCompressed(Data *data)
 {
 	for (FormatHandler *handler : formatHandlers)
 	{
-		if (handler->canParseCompressed(data))
+		if (handler->canParseCompressed((const char*)data->getData(), data->getSize()))
 			return true;
 	}
 
 	return false;
 }
 
-const std::list<FormatHandler *> &Image::getFormatHandlers() const
+const std::list<medialoader::FormatHandler *> &Image::getFormatHandlers() const
 {
 	return formatHandlers;
 }
@@ -114,7 +106,7 @@ ImageData *Image::newPastedImageData(ImageData *src, int sx, int sy, int w, int 
 	{
 		res->paste(src, 0, 0, sx, sy, w, h);
 	}
-	catch (love::Exception &)
+	catch (eve::Exception &)
 	{
 		res->release();
 		throw;
@@ -122,10 +114,10 @@ ImageData *Image::newPastedImageData(ImageData *src, int sx, int sy, int w, int 
 	return res;
 }
 
-std::vector<StrongRef<ImageData>> Image::newCubeFaces(love::image::ImageData *src)
+std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData *src)
 {
 	// The faces array is always ordered +x, -x, +y, -y, +z, -z.
-	std::vector<StrongRef<ImageData>> faces;
+	std::vector<eve::ref<ImageData>> faces;
 
 	int totalW = src->getWidth();
 	int totalH = src->getHeight();
@@ -189,14 +181,14 @@ std::vector<StrongRef<ImageData>> Image::newCubeFaces(love::image::ImageData *sr
 			faces.emplace_back(newPastedImageData(src, i * w, 0, w, h), Acquire::NORETAIN);
 	}
 	else
-		throw love::Exception("Unknown cubemap image dimensions!");
+		throw eve::Exception("Unknown cubemap image dimensions!");
 
 	return faces;
 }
 
-std::vector<StrongRef<ImageData>> Image::newVolumeLayers(ImageData *src)
+std::vector<eve::ref<ImageData>> Image::newVolumeLayers(ImageData *src)
 {
-	std::vector<StrongRef<ImageData>> layers;
+	std::vector<eve::ref<ImageData>> layers;
 
 	int totalW = src->getWidth();
 	int totalH = src->getHeight();
@@ -212,7 +204,7 @@ std::vector<StrongRef<ImageData>> Image::newVolumeLayers(ImageData *src)
 			layers.emplace_back(newPastedImageData(src, 0, i * totalW, totalW, totalW), Acquire::NORETAIN);
 	}
 	else
-		throw love::Exception("Cannot extract volume layers from source ImageData.");
+		throw eve::Exception("Cannot extract volume layers from source ImageData.");
 
 	return layers;
 }

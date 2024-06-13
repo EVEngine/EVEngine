@@ -2,12 +2,16 @@
 #pragma once
 
 #include "common/Data.h"
-#include "common/pixelformat.h"
-#include "common/Color.h"
+#include "common/Resource.h"
+
+#include "medialoader/image/pixelformat.h"
+#include "medialoader/image/floattypes.h"
+#include "medialoader/image/Color.h"
+#include "medialoader/image/FormatHandler.h"
+
 #include "filesystem/FileData.h"
-#include "thread/threads.h"
-#include "ImageDataBase.h"
-#include "FormatHandler.h"
+
+#include <cstdint>
 
 namespace eve
 {
@@ -20,15 +24,18 @@ namespace image
 class ImageData : public Resource
 {
 public:
+	using float16 = medialoader::float16;
+	using Colorf = medialoader::Colorf;
+	using FormatHandler = medialoader::FormatHandler;
 
 	union Pixel
 	{
-		uint8   rgba8[4];
-		uint16  rgba16[4];
-		float16 rgba16f[4];
-		float   rgba32f[4];
-		uint16  packed16;
-		uint32  packed32;
+		uint8_t   rgba8[4];
+		uint16_t  rgba16[4];
+		float16   rgba16f[4];
+		float     rgba32f[4];
+		uint16_t  packed16;
+		uint32_t  packed32;
 	};
 
 	typedef void (*PixelSetFunction)(const Colorf &c, Pixel *p);
@@ -83,13 +90,13 @@ public:
 	 **/
 	filesystem::FileData *encode(FormatHandler::EncodedFormat format, const char *filename, bool writefile) const;
 
-	love::thread::Mutex *getMutex() const;
-
 	// Implements ImageDataBase.
-	ImageData *clone() const override;
-	void *getData() const override;
-	size_t getSize() const override;
-	bool isSRGB() const override;
+	ImageData *clone() const;
+	void *getData() const;
+	size_t getSize() const;
+	bool isSRGB() const;
+
+	std::string getFormat() const;
 
 	size_t getPixelSize() const;
 
@@ -119,7 +126,7 @@ private:
 
 	// The format handler that was used to decode the ImageData. We need to know
 	// this so we can properly delete memory allocated by the decoder.
-	StrongRef<FormatHandler> decodeHandler;
+	eve::ref<FormatHandler> decodeHandler;
 
 	PixelSetFunction pixelSetFunction;
 	PixelGetFunction pixelGetFunction;
