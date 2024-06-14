@@ -96,6 +96,8 @@ public:
 	size_t getSize() const;
 	bool isSRGB() const;
 
+	int getWidth() const;
+	int getHeight() const;
 	std::string getFormat() const;
 
 	size_t getPixelSize() const;
@@ -124,9 +126,12 @@ private:
 	// The actual data.
 	unsigned char *data = nullptr;
 
+	int width, height;
+	std::string format;
+
 	// The format handler that was used to decode the ImageData. We need to know
 	// this so we can properly delete memory allocated by the decoder.
-	eve::ref<FormatHandler> decodeHandler;
+	FormatHandler* decodeHandler;
 
 	PixelSetFunction pixelSetFunction;
 	PixelGetFunction pixelGetFunction;

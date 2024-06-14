@@ -21,16 +21,18 @@
 #include "ImageData.h"
 #include "Image.h"
 #include "filesystem/Filesystem.h"
+#include "medialoader/image/pixelformat.h"
 
 #include <algorithm>  // min/max
 
+using namespace medialoader;
 
 namespace eve {
 namespace image {
 
-ImageData::ImageData(Data *data) : ImageDataBase("UNKNOWN", 0, 0) { decode(data); }
+ImageData::ImageData(Data *data) : Resource("") { decode(data); }
 
-ImageData::ImageData(int width, int height, PixelFormat format) : ImageDataBase(format, width, height) {
+ImageData::ImageData(int width, int height, std::string format) : Resource(""), width(width), height(height), format(format) {
     if (!validPixelFormat(format)) throw eve::Exception("Unsupported pixel format for ImageData");
 
     create(width, height, format);
@@ -39,8 +41,9 @@ ImageData::ImageData(int width, int height, PixelFormat format) : ImageDataBase(
     memset(data, 0, getSize());
 }
 
-ImageData::ImageData(int width, int height, PixelFormat format, void *data, bool own)
-    : ImageDataBase(format, width, height) {
+ImageData::ImageData(int width, int height, std::string format, void *data, bool own)
+    : Resource(""), width(width), height(height), format(format) 
+{
     if (!validPixelFormat(format)) throw eve::Exception("Unsupported pixel format for ImageData");
 
     if (own)
@@ -49,12 +52,16 @@ ImageData::ImageData(int width, int height, PixelFormat format, void *data, bool
         create(width, height, format, data);
 }
 
-ImageData::ImageData(const ImageData &c) : ImageDataBase(c.format, c.width, c.height) {
+ImageData::ImageData(const ImageData &c) : Resource(c.getUri()) {
+    width  = c.width;   
+    height = c.height;
+    format = c.format;
+
     create(width, height, format, c.getData());
 }
 
 ImageData::~ImageData() {
-    if (decodeHandler.get())
+    if (decodeHandler)
         decodeHandler->freeRawPixels(data);
     else
         delete[] data;
@@ -68,8 +75,8 @@ eve::image::ImageData *ImageData::clone() const {
     }
 }
 
-void ImageData::create(int width, int height, PixelFormat format, void *data) {
-    size_t datasize = width * height * getPixelFormatSize(format);
+void ImageData::create(int width, int height, std::string format, void *data) {
+    size_t datasize = width * height * getPixelFormatSize(getPixelFormatFromName(format));
 
     try {
         this->data = new unsigned char[datasize];
@@ -90,18 +97,18 @@ void ImageData::decode(Data *data) {
     FormatHandler              *decoder = nullptr;
     FormatHandler::DecodedImage decodedimage;
 
-    auto module = Module::getInstance<Image>(Module::M_IMAGE);
+    auto module = ModuleManager::getInstance<Image>("image");
 
     if (module == nullptr) throw eve::Exception("eve.image must be loaded in order to decode an ImageData.");
 
     for (FormatHandler *handler : module->getFormatHandlers()) {
-        if (handler->canDecode(data)) {
+        if (handler->canDecode((const char*)data->getData(), data->getSize())) {
             decoder = handler;
             break;
         }
     }
 
-    if (decoder) decodedimage = decoder->decode(data);
+    if (decoder) decodedimage = decoder->decode((const char*)data->getData(), data->getSize());
 
     if (decodedimage.data == nullptr) {
         auto filedata = dynamic_cast<filesystem::FileData *>(data);
@@ -145,34 +152,31 @@ eve::filesystem::FileData *ImageData::encode(FormatHandler::EncodedFormat encode
     rawimage.height = height;
     rawimage.size   = getSize();
     rawimage.data   = data;
-    rawimage.format = format;
+    rawimage.format = getPixelFormatFromName(format);
 
-    auto module = Module::getInstance<Image>(Module::M_IMAGE);
+    auto module = ModuleManager::getInstance<Image>("image");
 
     if (module == nullptr) throw eve::Exception("eve.image must be loaded in order to encode an ImageData.");
 
     for (FormatHandler *handler : module->getFormatHandlers()) {
-        if (handler->canEncode(format, encodedFormat)) {
+        if (handler->canEncode(getPixelFormatFromName(format), encodedFormat)) {
             encoder = handler;
             break;
         }
     }
 
     if (encoder != nullptr) {
-        thread::Lock lock(mutex);
         encodedimage = encoder->encode(rawimage, encodedFormat);
     }
 
     if (encoder == nullptr || encodedimage.data == nullptr) {
-        const char *fname = "unknown";
-        eve::getConstant(format, fname);
-        throw eve::Exception("No suitable image encoder for %s format.", fname);
+        throw eve::Exception("No suitable image encoder for %s format.", format.c_str());
     }
 
     eve::filesystem::FileData *filedata = nullptr;
 
     try {
-        filedata = new eve::filesystem::FileData(encodedimage.size, filename);
+        filedata = new eve::filesystem::FileData(filename, encodedimage.size);
     } catch (eve::Exception &) {
         encoder->freeRawPixels(encodedimage.data);
         throw;
@@ -182,17 +186,17 @@ eve::filesystem::FileData *ImageData::encode(FormatHandler::EncodedFormat encode
     encoder->freeRawPixels(encodedimage.data);
 
     if (writefile) {
-        auto fs = Module::getInstance<filesystem::Filesystem>(Module::M_FILESYSTEM);
+        auto fs = ModuleManager::getInstance<eve::filesystem::Filesystem>("filesystem");
 
         if (fs == nullptr) {
-            filedata->release();
+            // filedata->release();
             throw eve::Exception("eve.filesystem must be loaded in order to write an encoded ImageData to a file.");
         }
 
         try {
             fs->write(filename, filedata->getData(), filedata->getSize());
         } catch (eve::Exception &) {
-            filedata->release();
+            // filedata->release();
             throw;
         }
     }
@@ -208,36 +212,42 @@ bool ImageData::isSRGB() const { return false; }
 
 bool ImageData::inside(int x, int y) const { return x >= 0 && x < getWidth() && y >= 0 && y < getHeight(); }
 
+int ImageData::getWidth() const { return width; }
+
+int ImageData::getHeight() const { return height; }
+
+std::string ImageData::getFormat() const { return format; }
+
 static float clamp01(float x) { return std::min(std::max(x, 0.0f), 1.0f); }
 
-static void setPixelR8(const Colorf &c, ImageData::Pixel *p) { p->rgba8[0] = (uint8)(clamp01(c.r) * 255.0f + 0.5f); }
+static void setPixelR8(const Colorf &c, ImageData::Pixel *p) { p->rgba8[0] = (uint8_t)(clamp01(c.r) * 255.0f + 0.5f); }
 
 static void setPixelRG8(const Colorf &c, ImageData::Pixel *p) {
-    p->rgba8[0] = (uint8)(clamp01(c.r) * 255.0f + 0.5f);
-    p->rgba8[1] = (uint8)(clamp01(c.g) * 255.0f + 0.5f);
+    p->rgba8[0] = (uint8_t)(clamp01(c.r) * 255.0f + 0.5f);
+    p->rgba8[1] = (uint8_t)(clamp01(c.g) * 255.0f + 0.5f);
 }
 
 static void setPixelRGBA8(const Colorf &c, ImageData::Pixel *p) {
-    p->rgba8[0] = (uint8)(clamp01(c.r) * 255.0f + 0.5f);
-    p->rgba8[1] = (uint8)(clamp01(c.g) * 255.0f + 0.5f);
-    p->rgba8[2] = (uint8)(clamp01(c.b) * 255.0f + 0.5f);
-    p->rgba8[3] = (uint8)(clamp01(c.a) * 255.0f + 0.5f);
+    p->rgba8[0] = (uint8_t)(clamp01(c.r) * 255.0f + 0.5f);
+    p->rgba8[1] = (uint8_t)(clamp01(c.g) * 255.0f + 0.5f);
+    p->rgba8[2] = (uint8_t)(clamp01(c.b) * 255.0f + 0.5f);
+    p->rgba8[3] = (uint8_t)(clamp01(c.a) * 255.0f + 0.5f);
 }
 
 static void setPixelR16(const Colorf &c, ImageData::Pixel *p) {
-    p->rgba16[0] = (uint16)(clamp01(c.r) * 65535.0f + 0.5f);
+    p->rgba16[0] = (uint16_t)(clamp01(c.r) * 65535.0f + 0.5f);
 }
 
 static void setPixelRG16(const Colorf &c, ImageData::Pixel *p) {
-    p->rgba16[0] = (uint16)(clamp01(c.r) * 65535.0f + 0.5f);
-    p->rgba16[1] = (uint16)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[0] = (uint16_t)(clamp01(c.r) * 65535.0f + 0.5f);
+    p->rgba16[1] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
 }
 
 static void setPixelRGBA16(const Colorf &c, ImageData::Pixel *p) {
-    p->rgba16[0] = (uint16)(clamp01(c.r) * 65535.0f + 0.5f);
-    p->rgba16[1] = (uint16)(clamp01(c.b) * 65535.0f + 0.5f);
-    p->rgba16[2] = (uint16)(clamp01(c.g) * 65535.0f + 0.5f);
-    p->rgba16[3] = (uint16)(clamp01(c.a) * 65535.0f + 0.5f);
+    p->rgba16[0] = (uint16_t)(clamp01(c.r) * 65535.0f + 0.5f);
+    p->rgba16[1] = (uint16_t)(clamp01(c.b) * 65535.0f + 0.5f);
+    p->rgba16[2] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[3] = (uint16_t)(clamp01(c.a) * 65535.0f + 0.5f);
 }
 
 static void setPixelR16F(const Colorf &c, ImageData::Pixel *p) { p->rgba16f[0] = float32to16(c.r); }
@@ -270,36 +280,36 @@ static void setPixelRGBA32F(const Colorf &c, ImageData::Pixel *p) {
 
 static void setPixelRGBA4(const Colorf &c, ImageData::Pixel *p) {
     // LSB->MSB: [a, b, g, r]
-    uint16 r    = (uint16)(clamp01(c.r) * 0xF + 0.5);
-    uint16 g    = (uint16)(clamp01(c.g) * 0xF + 0.5);
-    uint16 b    = (uint16)(clamp01(c.b) * 0xF + 0.5);
-    uint16 a    = (uint16)(clamp01(c.a) * 0xF + 0.5);
+    uint16_t r    = (uint16_t)(clamp01(c.r) * 0xF + 0.5);
+    uint16_t g    = (uint16_t)(clamp01(c.g) * 0xF + 0.5);
+    uint16_t b    = (uint16_t)(clamp01(c.b) * 0xF + 0.5);
+    uint16_t a    = (uint16_t)(clamp01(c.a) * 0xF + 0.5);
     p->packed16 = (r << 12) | (g << 8) | (b << 4) | (a << 0);
 }
 
 static void setPixelRGB5A1(const Colorf &c, ImageData::Pixel *p) {
     // LSB->MSB: [a, b, g, r]
-    uint16 r    = (uint16)(clamp01(c.r) * 0x1F + 0.5);
-    uint16 g    = (uint16)(clamp01(c.g) * 0x1F + 0.5);
-    uint16 b    = (uint16)(clamp01(c.b) * 0x1F + 0.5);
-    uint16 a    = (uint16)(clamp01(c.a) * 0x1 + 0.5);
+    uint16_t r    = (uint16_t)(clamp01(c.r) * 0x1F + 0.5);
+    uint16_t g    = (uint16_t)(clamp01(c.g) * 0x1F + 0.5);
+    uint16_t b    = (uint16_t)(clamp01(c.b) * 0x1F + 0.5);
+    uint16_t a    = (uint16_t)(clamp01(c.a) * 0x1 + 0.5);
     p->packed16 = (r << 11) | (g << 6) | (b << 1) | (a << 0);
 }
 
 static void setPixelRGB565(const Colorf &c, ImageData::Pixel *p) {
     // LSB->MSB: [b, g, r]
-    uint16 r    = (uint16)(clamp01(c.r) * 0x1F + 0.5);
-    uint16 g    = (uint16)(clamp01(c.g) * 0x3F + 0.5);
-    uint16 b    = (uint16)(clamp01(c.b) * 0x1F + 0.5);
+    uint16_t r    = (uint16_t)(clamp01(c.r) * 0x1F + 0.5);
+    uint16_t g    = (uint16_t)(clamp01(c.g) * 0x3F + 0.5);
+    uint16_t b    = (uint16_t)(clamp01(c.b) * 0x1F + 0.5);
     p->packed16 = (r << 11) | (g << 5) | (b << 0);
 }
 
 static void setPixelRGB10A2(const Colorf &c, ImageData::Pixel *p) {
     // LSB->MSB: [r, g, b, a]
-    uint32 r    = (uint32)(clamp01(c.r) * 0x3FF + 0.5);
-    uint32 g    = (uint32)(clamp01(c.g) * 0x3FF + 0.5);
-    uint32 b    = (uint32)(clamp01(c.b) * 0x3FF + 0.5);
-    uint32 a    = (uint32)(clamp01(c.a) * 0x3 + 0.5);
+    uint32_t r    = (uint32_t)(clamp01(c.r) * 0x3FF + 0.5);
+    uint32_t g    = (uint32_t)(clamp01(c.g) * 0x3FF + 0.5);
+    uint32_t b    = (uint32_t)(clamp01(c.b) * 0x3FF + 0.5);
+    uint32_t a    = (uint32_t)(clamp01(c.a) * 0x3 + 0.5);
     p->packed32 = (r << 0) | (g << 10) | (b << 20) | (a << 30);
 }
 
@@ -443,8 +453,6 @@ void ImageData::setPixel(int x, int y, const Colorf &c) {
 
     if (pixelSetFunction == nullptr) throw eve::Exception("Unhandled pixel format %d in ImageData::setPixel", format);
 
-    Lock lock(mutex);
-
     pixelSetFunction(c, p);
 }
 
@@ -456,8 +464,6 @@ void ImageData::getPixel(int x, int y, Colorf &c) const {
 
     if (pixelGetFunction == nullptr) throw eve::Exception("Unhandled pixel format %d in ImageData::setPixel", format);
 
-    Lock lock(mutex);
-
     pixelGetFunction(p, c);
 }
 
@@ -468,14 +474,14 @@ Colorf ImageData::getPixel(int x, int y) const {
 }
 
 union Row {
-    uint8   *u8;
-    uint16  *u16;
+    uint8_t   *u8;
+    uint16_t  *u16;
     float16 *f16;
     float   *f32;
 };
 
 static void pasteRGBA8toRGBA16(Row src, Row dst, int w) {
-    for (int i = 0; i < w * 4; i++) dst.u16[i] = (uint16)src.u8[i] << 8u;
+    for (int i = 0; i < w * 4; i++) dst.u16[i] = (uint16_t)src.u8[i] << 8u;
 }
 
 static void pasteRGBA8toRGBA16F(Row src, Row dst, int w) {
@@ -499,11 +505,11 @@ static void pasteRGBA16toRGBA32F(Row src, Row dst, int w) {
 }
 
 static void pasteRGBA16FtoRGBA8(Row src, Row dst, int w) {
-    for (int i = 0; i < w * 4; i++) dst.u8[i] = (uint8)(clamp01(float16to32(src.f16[i])) * 255.0f + 0.5f);
+    for (int i = 0; i < w * 4; i++) dst.u8[i] = (uint8_t)(clamp01(float16to32(src.f16[i])) * 255.0f + 0.5f);
 }
 
 static void pasteRGBA16FtoRGBA16(Row src, Row dst, int w) {
-    for (int i = 0; i < w * 4; i++) dst.u16[i] = (uint16)(clamp01(float16to32(src.f16[i])) * 65535.0f + 0.5f);
+    for (int i = 0; i < w * 4; i++) dst.u16[i] = (uint16_t)(clamp01(float16to32(src.f16[i])) * 65535.0f + 0.5f);
 }
 
 static void pasteRGBA16FtoRGBA32F(Row src, Row dst, int w) {
@@ -511,11 +517,11 @@ static void pasteRGBA16FtoRGBA32F(Row src, Row dst, int w) {
 }
 
 static void pasteRGBA32FtoRGBA8(Row src, Row dst, int w) {
-    for (int i = 0; i < w * 4; i++) dst.u8[i] = (uint8)(clamp01(src.f32[i]) * 255.0f + 0.5f);
+    for (int i = 0; i < w * 4; i++) dst.u8[i] = (uint8_t)(clamp01(src.f32[i]) * 255.0f + 0.5f);
 }
 
 static void pasteRGBA32FtoRGBA16(Row src, Row dst, int w) {
-    for (int i = 0; i < w * 4; i++) dst.u16[i] = (uint16)(clamp01(src.f32[i]) * 65535.0f + 0.5f);
+    for (int i = 0; i < w * 4; i++) dst.u16[i] = (uint16_t)(clamp01(src.f32[i]) * 65535.0f + 0.5f);
 }
 
 static void pasteRGBA32FtoRGBA16F(Row src, Row dst, int w) {
@@ -569,11 +575,8 @@ void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, in
 
     if (sy + sh > srcH) sh = srcH - sy;
 
-    Lock lock2(src->mutex);
-    Lock lock1(mutex);
-
-    uint8 *s = (uint8 *)src->getData();
-    uint8 *d = (uint8 *)getData();
+    uint8_t *s = (uint8_t *)src->getData();
+    uint8_t *d = (uint8_t *)getData();
 
     auto getfunction = src->pixelGetFunction;
     auto setfunction = pixelSetFunction;
@@ -632,9 +635,8 @@ void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, in
     }
 }
 
-eve::thread::Mutex *ImageData::getMutex() const { return mutex; }
 
-size_t ImageData::getPixelSize() const { return getPixelFormatSize(format); }
+size_t ImageData::getPixelSize() const { return getPixelFormatSize(getPixelFormatFromName(format)); }
 
 bool ImageData::validPixelFormat(std::string format) {
     if (format == "R8") return true;

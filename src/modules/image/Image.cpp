@@ -108,7 +108,7 @@ ImageData *Image::newPastedImageData(ImageData *src, int sx, int sy, int w, int 
 	}
 	catch (eve::Exception &)
 	{
-		res->release();
+		// res->release();
 		throw;
 	}
 	return res;
@@ -132,12 +132,12 @@ std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData *src)
 		int w = totalW / 3;
 		int h = totalH / 4;
 
-		faces.emplace_back(newPastedImageData(src, 1*w, 1*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 1*w, 3*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 1*w, 0*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 1*w, 2*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 0*w, 1*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 2*w, 1*h, w, h), Acquire::NORETAIN);
+		faces.emplace_back(newPastedImageData(src, 1*w, 1*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 1*w, 3*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 1*w, 0*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 1*w, 2*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 0*w, 1*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 2*w, 1*h, w, h));
 	}
 	else if (totalW % 4 == 0 && totalH % 3 == 0 && totalW / 4 == totalH / 3)
 	{
@@ -148,12 +148,12 @@ std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData *src)
 		int w = totalW / 4;
 		int h = totalH / 3;
 
-		faces.emplace_back(newPastedImageData(src, 2*w, 1*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 0*w, 1*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 1*w, 0*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 1*w, 2*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 1*w, 1*h, w, h), Acquire::NORETAIN);
-		faces.emplace_back(newPastedImageData(src, 3*w, 1*h, w, h), Acquire::NORETAIN);
+		faces.emplace_back(newPastedImageData(src, 2*w, 1*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 0*w, 1*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 1*w, 0*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 1*w, 2*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 1*w, 1*h, w, h));
+		faces.emplace_back(newPastedImageData(src, 3*w, 1*h, w, h));
 	}
 	else if (totalH % 6 == 0 && totalW == totalH / 6)
 	{
@@ -168,7 +168,7 @@ std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData *src)
 		int h = totalH / 6;
 
 		for (int i = 0; i < 6; i++)
-			faces.emplace_back(newPastedImageData(src, 0, i * h, w, h), Acquire::NORETAIN);
+			faces.emplace_back(newPastedImageData(src, 0, i * h, w, h));
 	}
 	else if (totalW % 6 == 0 && totalW / 6 == totalH)
 	{
@@ -178,7 +178,7 @@ std::vector<eve::ref<ImageData>> Image::newCubeFaces(ImageData *src)
 		int h = totalH;
 
 		for (int i = 0; i < 6; i++)
-			faces.emplace_back(newPastedImageData(src, i * w, 0, w, h), Acquire::NORETAIN);
+			faces.emplace_back(newPastedImageData(src, i * w, 0, w, h));
 	}
 	else
 		throw eve::Exception("Unknown cubemap image dimensions!");
@@ -196,12 +196,12 @@ std::vector<eve::ref<ImageData>> Image::newVolumeLayers(ImageData *src)
 	if (totalW % totalH == 0)
 	{
 		for (int i = 0; i < totalW / totalH; i++)
-			layers.emplace_back(newPastedImageData(src, i * totalH, 0, totalH, totalH), Acquire::NORETAIN);
+			layers.emplace_back(newPastedImageData(src, i * totalH, 0, totalH, totalH));
 	}
 	else if (totalH % totalW == 0)
 	{
 		for (int i = 0; i < totalH / totalW; i++)
-			layers.emplace_back(newPastedImageData(src, 0, i * totalW, totalW, totalW), Acquire::NORETAIN);
+			layers.emplace_back(newPastedImageData(src, 0, i * totalW, totalW, totalW));
 	}
 	else
 		throw eve::Exception("Cannot extract volume layers from source ImageData.");

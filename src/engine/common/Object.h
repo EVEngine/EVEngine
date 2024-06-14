@@ -64,10 +64,11 @@ public:
         return *this;
     }
 
-    operator T*() const   { checkDirty(); return ptr; }
-    T* operator->() const { checkDirty(); return ptr; }
-    T& operator*() const  { checkDirty(); return *ptr; }
+    operator T*()    { checkDirty(); return ptr; }
+    T* operator->()  { checkDirty(); return ptr; }
+    T& operator*()   { checkDirty(); return *ptr; }
 
+    T* get()  { checkDirty(); return ptr; }
 protected:
     void checkDirty() { if (ptr->isDirty()) ptr = ptr->getUpdate(); }
 
