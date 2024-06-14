@@ -7,6 +7,8 @@
 
 namespace eve {
 
+class Resource;
+
 /**
  * @brief Resource is a game object that is managed by the ResourceManager.
  * It can be loaded from a file or generated at runtime.

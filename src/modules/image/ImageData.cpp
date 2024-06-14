@@ -24,6 +24,7 @@
 #include "medialoader/image/pixelformat.h"
 
 #include <algorithm>  // min/max
+#include <cstring>    // memcpy
 
 using namespace medialoader;
 

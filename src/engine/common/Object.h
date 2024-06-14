@@ -1,7 +1,13 @@
 #pragma once
 
+#include <type_traits>
+
 namespace eve
 {
+
+class Object;
+template <typename T>
+concept DerivedFromObject = std::is_base_of_v<eve::Object, T>;
 
 /**
  * @brief Object is the base class for all game objects.
@@ -22,6 +28,7 @@ protected:
     virtual ~Object() {}
 
     template <typename T>
+        // requires DerivedFromObject<T>
     friend class ref;
 
     bool isDirty() const { return this != update; }
@@ -37,15 +44,25 @@ protected:
 
 /**
  * @brief ref is a smart pointer that automatically calls ref() and unref() on the object.
+ * Type T must be a subclass of Object.
  */
 template <typename T>
+    // requires DerivedFromObject<T>
 class ref {
 public:
+    // Default constructor creates a null pointer.
     ref() : ptr(nullptr) {}
+
+    // Constructor from a raw pointer.
     ref(T* ptr) : ptr(ptr) { ptr->ref(); }
+
+    // Copy constructor.
     ref(const ref& other) : ptr(other.ptr) { ptr->ref(); }
+
+    // Destructor. will call unref() on the object.
     ~ref() { ptr->unref(); }
 
+    // Assignment operator. The old object will be unref() and the new one will be ref().
     ref& operator=(const ref& other) {
         if (ptr != other.ptr) {
             ptr->unref();
@@ -55,6 +72,7 @@ public:
         return *this;
     }
 
+    // Assignment operator from a raw pointer.
     ref& operator=(T* other) {
         if (ptr != other) {
             ptr->unref();
