@@ -28,7 +28,6 @@ protected:
     virtual ~Object() {}
 
     template <typename T>
-        // requires DerivedFromObject<T>
     friend class ref;
 
     bool isDirty() const { return this != update; }
@@ -47,9 +46,10 @@ protected:
  * Type T must be a subclass of Object.
  */
 template <typename T>
-    // requires DerivedFromObject<T>
 class ref {
 public:
+    static_assert( DerivedFromObject<T> );
+
     // Default constructor creates a null pointer.
     ref() : ptr(nullptr) {}
 
