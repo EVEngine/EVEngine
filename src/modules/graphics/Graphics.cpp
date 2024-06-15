@@ -3,7 +3,7 @@
 
 namespace eve::graphics {
 
-// Module_IMPL(Graphics, new vulkan::Graphics());
+Module_IMPL(Graphics, new vulkan::Graphics());
 
 
 

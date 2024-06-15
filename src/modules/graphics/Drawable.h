@@ -14,7 +14,7 @@ public:
     /**
 	 * Draws the object with the specified transformation matrix.
 	 **/
-    virtual void draw(Graphics* gfx, const glm::mat4& matrix) = 0;
+    virtual void draw(Graphics* gfx, const glm::mat4& matrix) const = 0;
 };
 
 } // namespace eve::graphics

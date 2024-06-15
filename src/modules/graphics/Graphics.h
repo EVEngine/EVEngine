@@ -50,7 +50,6 @@ public:
 
 
 
-
     void draw(Drawable *drawable, const glm::mat4 &m);
 	// void draw(Texture *texture, Quad *quad, const glm::mat4 &m);
 	// void drawLayer(Texture *texture, int layer, const glm::mat4 &m);
