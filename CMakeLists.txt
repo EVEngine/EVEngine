@@ -65,6 +65,8 @@ macro(create_module libname folder)
     add_dependencies(${libname} third-party check_sources_${folder})
 endmacro()
 
+
+# This function will set the include directories for the project
 function(set_include)
     include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/engine
@@ -75,6 +77,8 @@ function(set_include)
     )
 endfunction()
 
+
+#  Get available build based on the platform you are using
 macro(get_available_build)
     set(AVAILABLE_PLATFORM "")
 
@@ -126,6 +130,8 @@ macro(get_available_build)
     endif()
 endmacro()
 
+
+# This macro will find the package and print out the version
 macro(findpkg name)
     find_package(${name} REQUIRED)
 
@@ -134,6 +140,7 @@ macro(findpkg name)
     endif()
 endmacro()
 
+# This function will check if the compiler support IPO and LTO
 function(check_ipo)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT ipo_supported OUTPUT error)
@@ -146,6 +153,8 @@ function(check_ipo)
     endif()
 endfunction()
 
+
+# This function will check the third party project
 function(check_third_party_project name repo)
     include(ExternalProject)
 
@@ -172,6 +181,7 @@ function(check_third_party_project name repo)
     link_directories(${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
 endfunction()
 
+# Load third party project from github
 function(load_third_party)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         message("Build Type: Release")
