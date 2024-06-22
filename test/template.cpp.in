@@ -1,5 +1,6 @@
 const char* simplesquirrel_content = R"content(@simplesquirrel_content@)content";
 const char* filesystem_content     = R"content(@filesystem_content@)content";
+const char* graphic_content        = R"content(@graphic_content@)content";
 const char* window_content         = R"content(@window_content@)content";
 const char* mouse_content          = R"content(@mouse_content@)content";
 const char* model_content          = R"content(@model_content@)content";

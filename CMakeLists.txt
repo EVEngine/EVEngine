@@ -13,6 +13,8 @@ endif()
 
 include(CTest)
 
+
+# This is the main function of the build script
 function(main)
     get_available_build()
     load_third_party()
@@ -30,6 +32,12 @@ function(main)
         add_subdirectory(test)
     endif()
 endfunction()
+
+
+# This marco will create a module with the given name and folder
+# It will scan the source code and create a xxx_src.txt file in the build folder
+# When the build is triggered, it will check the real source code and see
+# if there is any change. If there is, it will rescan the source code 
 
 macro(create_module libname folder)
     execute_process(COMMAND ${CMAKE_COMMAND}

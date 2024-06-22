@@ -1,8 +1,24 @@
 enable_testing()
 
-file(GLOB_RECURSE all_test_cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(all_test_cpp 
+  ECS.cpp
+  filesystem.cpp
+  graphic.cpp
+  model.cpp
+  mouse.cpp
+  simplesquirrel.cpp
+  window.cpp
+)
 
-file(GLOB_RECURSE all_test_scripts ${CMAKE_CURRENT_SOURCE_DIR}/*.nut)
+file(all_test_scripts 
+  filesystem.nut
+  graphic.nut
+  model.nut
+  model2.nut
+  mouse.nut
+  simplesquirrel.nut
+  window.nut
+)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
   DEPENDS ${all_test_scripts} ${CMAKE_CURRENT_SOURCE_DIR}/template.cpp.in
