@@ -1,6 +1,6 @@
 enable_testing()
 
-file(all_test_cpp 
+file(GLOB all_test_cpp 
   ECS.cpp
   filesystem.cpp
   graphic.cpp
@@ -10,7 +10,7 @@ file(all_test_cpp
   window.cpp
 )
 
-file(all_test_scripts 
+file(GLOB all_test_scripts 
   filesystem.nut
   graphic.nut
   model.nut
@@ -54,7 +54,7 @@ else()
     set(ThirdParty ${ThirdParty} gtest_main gtest simplesquirrel_static sqstdlib_static squirrel_static SDL2 ${SystemLibraries})
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVDevTools EVCommon)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVDevTools EVCommon)
 
 target_link_libraries(unit_test ${EVELIBS} ${ThirdParty})
 

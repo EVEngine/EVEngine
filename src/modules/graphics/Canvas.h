@@ -13,11 +13,11 @@ namespace eve::graphics
 class Canvas : public eve::graphics::Drawable
 {
 public:
-    Canvas();
-    ~Canvas();
+    Canvas() {}
+    ~Canvas() {}
 
     // draw current content on target Canvas
-    virtual void draw(Canvas* C, const glm::mat4& matrix) const;
+    virtual void draw(Canvas* C, const glm::mat4& matrix) const = 0;
 
 
     virtual void clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) = 0;

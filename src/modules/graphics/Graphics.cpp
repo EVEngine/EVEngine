@@ -14,10 +14,14 @@ void Graphics::expose(ssq::Table &table) {
 
 
 void Graphics::expose(ssq::Class &cls) {
+    cls.addFunc("getName", &Graphics::getName);
     cls.addFunc("reset", &Graphics::reset);
     cls.addFunc("present", &Graphics::present);
 }
 
+
+void Graphics::reset() {
+}
 
 
 }  // namespace eve::graphics
