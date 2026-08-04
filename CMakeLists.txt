@@ -74,7 +74,28 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
         ${CMAKE_BINARY_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/platform
+        # sunxfancy/ECS.hpp (git submodule) + its zeroerr.hpp dependency
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/zeroerr
     )
+
+    # Prefer system Vulkan SDK; otherwise use third-party headers + local import lib.
+    unset(Vulkan_INCLUDE_DIR CACHE)
+    unset(Vulkan_LIBRARY CACHE)
+    find_package(Vulkan QUIET)
+    if(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
+        message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
+        include_directories(${Vulkan_INCLUDE_DIRS})
+        set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
+    else()
+        unset(Vulkan_INCLUDE_DIR CACHE)
+        unset(Vulkan_LIBRARY CACHE)
+        set(_eve_vk_inc ${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
+        set(_eve_vk_lib ${CMAKE_CURRENT_SOURCE_DIR}/cmake/vulkan/vulkan-1.lib)
+        include_directories(${_eve_vk_inc})
+        set(EVENGINE_VULKAN_LIB ${_eve_vk_lib} CACHE INTERNAL "Vulkan link target")
+        message(STATUS "Vulkan: using ${_eve_vk_inc} + ${_eve_vk_lib}")
+    endif()
 endfunction()
 
 

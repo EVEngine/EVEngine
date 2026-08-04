@@ -29,6 +29,8 @@ public:
     bool setFullscreen(bool fullscreen, bool desktop_mode) override;
     bool setFullscreen(bool fullscreen) override;
 
+    void *getHandle() const override { return window; }
+
 private:
     graphics::Graphics *graphics = nullptr;
 

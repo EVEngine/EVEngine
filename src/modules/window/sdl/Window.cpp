@@ -1,6 +1,7 @@
 #include "Window.h"
 
 #include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_vulkan.h>
 
 #include <algorithm>
 #include <cstdio>
@@ -8,7 +9,7 @@
 #include <vector>
 
 #include "common/Exception.h"
-// #include "graphics/Graphics.h"
+#include "graphics/Graphics.h"
 
 #ifdef EVENGINE_ANDROID
 #include "android.h"
@@ -146,9 +147,16 @@ bool Window::setWindowSettings(WindowSettings f) {
     updateSettings(f, false);
 
     if (graphics) {
-        double scaledw, scaledh;
-        // fromPixels((double) pixelWidth, (double) pixelHeight, scaledw, scaledh);
-        // graphics->setMode((int) scaledw, (int) scaledh, pixelWidth, pixelHeight, f.stencil);
+        int pw = 0, ph = 0;
+        SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
+        if (pw <= 0 || ph <= 0) {
+            pw = f.width;
+            ph = f.height;
+        }
+        pixelWidth  = pw;
+        pixelHeight = ph;
+        graphics->initWithWindow(window);
+        graphics->setViewportSize(f.width, f.height, pw, ph);
     }
     return true;
 }
@@ -234,7 +242,16 @@ void Window::close(bool allowExceptions) {
     open = false;
 }
 
-void Window::updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport) {}
+void Window::updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport) {
+    settings = newsettings;
+    if (window) {
+        SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+        SDL_Vulkan_GetDrawableSize(window, &pixelWidth, &pixelHeight);
+    }
+    if (updateGraphicsViewport && graphics && window) {
+        graphics->setViewportSize(windowWidth, windowHeight, pixelWidth, pixelHeight);
+    }
+}
 
 }  // namespace sdl
 }  // namespace window

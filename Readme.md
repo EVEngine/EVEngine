@@ -38,22 +38,224 @@ Evolutionary Vision Engine
 比如你可以设定一个脚本，对脚本中的一个函数进行热修改，并且反复执行观看效果
 
 
-## 构建方式
+## 环境要求
 
-确保系统上已经安装有以下工具：
-1. git - 下载源码
-2. cmake - 构建工具
-3. vulkan SDK 1.2 及以上 - 图形SDK
+### 通用依赖
 
-然后执行以下步骤来下载并构建整个引擎：
+| 依赖 | 版本要求 | 说明 |
+|------|----------|------|
+| Git | 任意较新版本 | 拉取源码；首次配置时会自动下载 `third-party` |
+| CMake | **≥ 3.21** | 主构建系统 |
+| C++ 编译器 | 支持 **C++20** | MSVC / GCC / Clang |
+| Vulkan SDK | **≥ 1.2** | 图形后端；需正确设置环境变量 |
+
+第三方库（SDL2、Box2D、Squirrel、Poco、ImGui、OpenAL Soft、FreeType、GLM、VKBuilder 等）由 CMake 的 `ExternalProject` 自动从 [EVEngine/third-party](https://github.com/EVEngine/third-party) 拉取并编译，一般无需手动安装。
+
+### Windows
+
+| 组件 | 推荐配置 |
+|------|----------|
+| 操作系统 | Windows 10 / 11（x64） |
+| IDE / 工具链 | **Visual Studio 2026**（含「使用 C++ 的桌面开发」工作负载） |
+| CMake 生成器 | `Visual Studio 18 2026`（与仓库根目录 `Makefile` 一致） |
+| Vulkan SDK | 从 [LunarG](https://vulkan.lunarg.com/) 安装，安装后确认用户环境变量 `VULKAN_SDK`（例如 `C:\VulkanSDK\1.4.357.0`），并把 `%VULKAN_SDK%\Bin` 加入 `PATH`（含 `glslc`）。装完后请**新开终端 / 重启 Cursor** 再 cmake |
+| 可选 | Git for Windows、将 CMake / Ninja 加入 `PATH` |
+
+> 若使用 Visual Studio 2022，可将 `Makefile` 中的生成器改为 `"Visual Studio 17 2022"`。
+
+### Linux
+
+| 组件 | 推荐配置 |
+|------|----------|
+| 发行版 | Ubuntu 20.04+ 或同等环境 |
+| 编译器 | GCC 10+ 或 Clang 12+ |
+| 基础包 | `build-essential`、`cmake`、`git`、`ninja-build`（可选） |
+| 系统库 | `libx11-dev`、`libxxf86vm-dev`、`libxi-dev`、`libxcursor-dev`、`libxrandr-dev`、`libxinerama-dev`（SDL2 / 窗口相关） |
+| Vulkan | `vulkan-sdk` 或发行版提供的 `libvulkan-dev` + validation layers；确保 `glslc` / SDK 路径可用 |
+
+Ubuntu 示例：
+
 ```sh
-git clone https://github.com/EVEngine/EVEngine
-cd EVEngine
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make deps
-make -j`nproc`
+sudo apt update
+sudo apt install -y build-essential cmake git ninja-build \
+    libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev
+# Vulkan SDK：按 LunarG 官方文档安装，或使用发行版 vulkan 相关包
 ```
 
-## 在WSL下同时开发Windows下和Linux下引擎
+### WSL（同时开发 Windows / Linux）
 
+推荐在 **WSL2（Ubuntu）** 中开发 Linux 目标，在 Windows 主机侧用 Visual Studio 编译 Win32 目标。源码放在 Windows 文件系统（例如 `C:\Users\...\EVEngine`），通过 `/mnt/c/...` 挂载到 WSL。
+
+要点：
+
+1. Windows 侧安装 VS 2026 + Vulkan SDK；WSL 侧按上面的 Linux 依赖安装一套工具链与 Vulkan。
+2. 在仓库根目录直接使用 `make`：Windows 目标走 `cmake.exe`，Linux 目标走 WSL 内的 `cmake`。
+3. 第三方产物按平台分目录存放（如 `build/third-party/win32`、`build/third-party/linux-debug`），互不覆盖。
+4. 若在 WSL 里编译位于 `/mnt/c` 的源码，I/O 可能较慢；追求速度可将仓库 clone 到 WSL 原生文件系统（如 `~/src/EVEngine`），Windows 侧再单独 clone 一份。
+
+
+## 获取源码
+
+```sh
+git clone --recurse-submodules https://github.com/EVEngine/EVEngine
+cd EVEngine
+# 若已 clone 未带子模块：
+# git submodule update --init --recursive
+```
+
+首次 CMake 配置时会自动拉取 `third-party`；若目录已存在且含 `CMakeLists.txt`，则直接使用本地副本。ECS 使用子模块 [`external/ECS.hpp`](https://github.com/sunxfancy/ECS.hpp)。
+
+
+## 快速开始（推荐：根目录 Makefile）
+
+仓库根目录的 `Makefile` 封装了 Windows / Linux 的 Debug / Release 配置与编译。在已安装 `make` 的环境中（Git Bash、WSL、Linux）于仓库根目录执行：
+
+```sh
+# 同时编译 Windows + Linux 的 Debug
+make debug
+
+# 同时编译 Windows + Linux 的 Release
+make release
+
+# 仅 Windows Release / Debug
+make build/win32
+make build/win32-debug
+
+# 仅 Linux Release / Debug
+make build/linux
+make build/linux-debug
+```
+
+产物目录约定：
+
+| 目标 | 构建目录 | 说明 |
+|------|----------|------|
+| Win32 Release | `build/win32` | VS 工程 + Release 二进制 |
+| Win32 Debug | `build/win32-debug` | VS 工程 + Debug 二进制 |
+| Linux Release | `build/linux` | Unix Makefiles |
+| Linux Debug | `build/linux-debug` | Unix Makefiles |
+
+主程序可执行文件名一般为 `eve`（Windows 下为 `eve.exe`，路径随 VS 的 `Release` / `Debug` 配置子目录变化）。
+
+
+## 分步编译说明
+
+### 1. 配置（Configure）
+
+等价于 Makefile 中的配置步骤，也可手动执行。
+
+**Windows（Visual Studio 2026，x64）：**
+
+```sh
+cmake.exe -G "Visual Studio 18 2026" -A x64 -DCMAKE_BUILD_TYPE=Release -B build/win32 -S .
+# Debug：
+cmake.exe -G "Visual Studio 18 2026" -A x64 -DCMAKE_BUILD_TYPE=Debug -B build/win32-debug -S .
+```
+
+**Linux：**
+
+```sh
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -B build/linux -S .
+# Debug：
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -B build/linux-debug -S .
+```
+
+可选 CMake 变量：
+
+| 变量 | 默认 | 说明 |
+|------|------|------|
+| `CMAKE_BUILD_TYPE` | `Debug`（未指定时） | `Debug` 或 `Release`；影响第三方库安装路径后缀（如 `win32-debug`） |
+| `BUILD_PLATFORM` | 按宿主自动选择 | `win32` / `linux` / `macosx` 等 |
+| `BUILD_TESTING` | `ON` | 是否编译单元测试 |
+
+### 2. 编译第三方依赖（deps）
+
+第三方通过自定义目标 `deps` / `third-party` 构建。配置完成后：
+
+```sh
+# 以 Windows Debug 为例
+cmake.exe --build build/win32-debug --target deps -j 32
+
+# Linux
+cmake --build build/linux-debug --target deps -j 32
+```
+
+首次编译第三方耗时较长，产物位于 `build/third-party/<平台>[-debug]/` 与 `build/third-party-binary/<平台>[-debug]/`。之后增量构建会复用已安装结果。
+
+### 3. 编译引擎本体
+
+```sh
+# Windows（需指定 --config，因为是多配置生成器）
+cmake.exe --build build/win32 --config Release -j 32
+cmake.exe --build build/win32-debug --config Debug -j 32
+
+# Linux
+cmake --build build/linux -j 32
+cmake --build build/linux-debug -j 32
+```
+
+也可直接用前文的 `make build/win32` 等目标一步完成配置 + 编译。
+
+
+## 运行单元测试
+
+默认开启 `BUILD_TESTING`。编译完成后：
+
+```sh
+make test/win32-debug    # 运行 build/win32-debug/test/Debug/unit_test.exe
+make test/win32          # 运行 Release 测试
+make test/linux-debug
+make test/linux
+```
+
+或直接执行对应路径下的 `unit_test` / `unit_test.exe`。
+
+
+## Docker（可选）
+
+仓库提供基于 Ubuntu 20.04 的 `Dockerfile`（含 `build-essential`、`cmake`、`clang-12` 等）。可用于隔离的 Linux 构建环境：
+
+```sh
+docker build . --tag evengine
+docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
+```
+
+进入容器后，在挂载的源码目录按 Linux 流程配置并编译即可。注意容器内仍需自行准备 Vulkan 相关运行时/SDK（镜像默认未安装完整 Vulkan SDK）。
+
+
+## 常见问题
+
+1. **CMake 报找不到 Vulkan**  
+   确认已安装 Vulkan SDK，且 `VULKAN_SDK`（Windows）或 `VULKAN_SDK` / `PKG_CONFIG_PATH`（Linux）指向正确路径；重新打开终端后再配置。
+
+2. **Windows 生成器名称不匹配**  
+   `Makefile` 当前使用 `Visual Studio 18 2026`。若本机是 VS 2022，请改生成器字符串或升级 IDE。
+
+3. **首次 `deps` 很慢或网络失败**  
+   `third-party` 从 GitHub 拉取。可手动 `git clone https://github.com/EVEngine/third-party` 到仓库根目录的 `third-party/`，再重新配置。
+
+4. **`CMAKE_BUILD_TYPE` 与第三方路径**  
+   Debug / Release 使用不同的第三方安装目录（带 `-debug` 后缀）。切换构建类型后需重新跑对应目录下的 `deps`。
+
+5. **并行度**  
+   Makefile 默认 `-j 32`。机器核心较少时可改为 `-j$(nproc)`（Linux）或较小数字，避免内存不足。
+
+
+## 项目结构（简要）
+
+```
+EVEngine/
+├── CMakeLists.txt      # 主 CMake：平台检测、第三方、子目录
+├── Makefile            # Windows / Linux Debug·Release 快捷入口
+├── platform/           # 平台相关代码与打包模板
+├── src/
+│   ├── engine/         # 引擎核心、DevTools、命令行
+│   ├── modules/        # 功能模块
+│   └── scripts/        # 脚本侧集成
+├── test/               # 单元测试
+├── third-party/        # 自动下载的第三方源码（可本地预置）
+├── cmake/              # 源码扫描等辅助脚本
+└── docs/               # 设计文档
+```
+
+更多设计说明见 `docs/` 目录。

@@ -13,11 +13,18 @@ elseif(UNIX)
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d SDL2maind ${SystemLibraries})
+    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d SDL2maind
+        medialoader_imagemdd zlibstaticd ${SystemLibraries})
 else()
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main ${SystemLibraries})
+    if(WIN32)
+        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+            medialoader_imagemd zlibstatic ${SystemLibraries})
+    else()
+        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+            medialoader_image z ${SystemLibraries})
+    endif()
 endif()
 
-set(EVELIBS EVWindow EVMouse EVEvent EVCmdLine EVDevTools EVScripts EVCommon)
+set(EVELIBS EVWindow EVMouse EVEvent EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem)
 
-target_link_libraries(eve ${EVELIBS} ${ThirdParty})
+target_link_libraries(eve ${EVELIBS} ${ThirdParty} ${EVENGINE_VULKAN_LIB})

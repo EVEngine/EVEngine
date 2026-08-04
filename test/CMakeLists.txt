@@ -6,6 +6,7 @@ file(GLOB all_test_cpp
   graphic.cpp
   model.cpp
   mouse.cpp
+  RenderSystem.cpp
   simplesquirrel.cpp
   window.cpp
 )
@@ -40,12 +41,12 @@ endif()
 
 if(WIN32)
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(ThirdParty ${ThirdParty} physfsmdd)
+    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd zlibstaticd)
   else()
-    set(ThirdParty ${ThirdParty} physfsmd)
+    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd zlibstatic)
   endif()
 else()
-  set(ThirdParty ${ThirdParty} physfs)
+  set(ThirdParty ${ThirdParty} physfs medialoader_image z)
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
@@ -54,9 +55,9 @@ else()
     set(ThirdParty ${ThirdParty} gtest_main gtest simplesquirrel_static sqstdlib_static squirrel_static SDL2 ${SystemLibraries})
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVDevTools EVCommon)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVImage EVDevTools EVCommon)
 
-target_link_libraries(unit_test ${EVELIBS} ${ThirdParty})
+target_link_libraries(unit_test ${EVELIBS} ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 
 include(GoogleTest)
 gtest_discover_tests(unit_test)

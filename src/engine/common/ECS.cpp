@@ -1,32 +1,12 @@
 #include "common/ECS.h"
 #include <simplesquirrel/simplesquirrel.hpp>
-namespace eve
-{
 
-ComponentManager& ComponentManager::inst() {
-    static ComponentManager instance;
-    return instance;
+namespace eve {
+
+void exposeECS(ssq::Table& table) {
+    // 预留：将 ECS.hpp 的实体/组件模型暴露给 Squirrel。
+    // 游戏热路径应通过声明实体与改组件完成，而不是每帧调用绘制 API。
+    table.addFunc("ecsReady", []() { return true; });
 }
 
-class ScriptComponentRegister : public IComponentRegister {
-public:
-    ScriptComponentRegister(ssq::Class cls) : data(cls.getHandle()) {
-        cls.addFunc("new", [](){
-        });
-    }
-
-    ssq::Array data;
-};
-
-void ComponentManager::expose(ssq::Table& table) {
-    table.addFunc("component", [](std::string name, ssq::Class cls) {
-        auto& c = inst().script_components;
-        if (c.find(name) == c.end()) {
-            c.insert(std::make_pair(name, new ScriptComponentRegister(cls)));
-        }
-    });
-}
-
-
-
-} // namespace eve
+}  // namespace eve

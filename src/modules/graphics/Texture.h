@@ -2,27 +2,39 @@
 
 #include "graphics/Drawable.h"
 #include "graphics/Quad.h"
+#include <cstdint>
+#include <vector>
 
 namespace eve::graphics {
 
+class Graphics;
+
+/**
+ * GPU texture created via Graphics::newTexture.
+ * Owns GPU resources through an opaque backend handle.
+ */
 class Texture : public Drawable {
 public:
-    void draw(Graphics* gfx, const glm::mat4& matrix) const override;
+    Texture();
+    ~Texture() override;
 
-    // If you just want to draw part of the texture
-    // void draw(Graphics *gfx, Quad *quad, const Matrix4 &m);
+    void draw(Graphics *gfx, const glm::mat4 &matrix) const override;
 
-    int width;
-    int height;
+    int getWidth() const { return width; }
+    int getHeight() const { return height; }
+    int getPixelWidth() const { return pixelWidth; }
+    int getPixelHeight() const { return pixelHeight; }
 
-    int depth;
-    int layers;
-    int mipmapCount;
+    /** Backend-private GPU object (vulkan::GpuTexture*). */
+    void *gpuHandle = nullptr;
 
-    int pixelWidth;
-    int pixelHeight;
-
-    // SamplerState samplerState;
+    int width = 0;
+    int height = 0;
+    int depth = 1;
+    int layers = 1;
+    int mipmapCount = 1;
+    int pixelWidth = 0;
+    int pixelHeight = 0;
 };
 
 }  // namespace eve::graphics

@@ -4,9 +4,16 @@
 #include "graphics/Shader.h"
 #include "graphics/Drawable.h"
 #include "graphics/Canvas.h"
+#include "graphics/Texture.h"
 #include <vector>
 #include <optional>
+#include <cstdint>
+#include <string>
 #include <glm/glm.hpp>
+
+namespace eve::image {
+class ImageData;
+}
 
 namespace eve::graphics {
 
@@ -24,17 +31,44 @@ public:
     virtual void present() = 0;
 
     /**
-	 * Sets the current graphics display viewport dimensions.
-	 **/
-	virtual void setViewportSize(int width, int height, int pixelwidth, int pixelheight) = 0;
+     * Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
+     * Must be called after the window exists (SDL_WINDOW_VULKAN).
+     **/
+    virtual void initWithWindow(void *nativeWindow) = 0;
 
-    int getWidth() const;
-	int getHeight() const;
-	int getPixelWidth() const;
-	int getPixelHeight() const;
+    /**
+     * Sets the current graphics display viewport dimensions.
+     **/
+    virtual void setViewportSize(int width, int height, int pixelwidth, int pixelheight) = 0;
 
-	double getCurrentDPIScale() const;
-	double getScreenDPIScale() const;
+    int getWidth() const { return width; }
+    int getHeight() const { return height; }
+    int getPixelWidth() const { return pixelWidth; }
+    int getPixelHeight() const { return pixelHeight; }
+
+    double getCurrentDPIScale() const {
+        return (width > 0) ? double(pixelWidth) / double(width) : 1.0;
+    }
+    double getScreenDPIScale() const { return getCurrentDPIScale(); }
+
+    /** Internal immediate-mode helper used by RenderSystem / Batcher. */
+    virtual void drawSolidRect(float x, float y, float w, float h, const Color &color) = 0;
+
+    /** Create RGBA8 texture from CPU pixels (size = width*height*4). Caller owns Texture*. */
+    virtual Texture *newTexture(int width, int height, const uint8_t *rgba) = 0;
+
+    /** Create texture from ImageData (RGBA8 required for now). */
+    virtual Texture *newTexture(image::ImageData *data) = 0;
+
+    /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure. */
+    virtual Texture *newTextureFromFile(const std::string &filename) = 0;
+
+    /** Draw a textured quad (full UV 0..1). texture may be null → solid. */
+    virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
+                                  const Color &color) = 0;
+
+    Color getBackgroundColor() const { return backgroundColor; }
+    void setBackgroundColor(const Color &c) { backgroundColor = c; }
 
 
 	// void setFont(Font *font);
@@ -160,8 +194,11 @@ public:
 	// virtual void drawQuads(int start, int count, const vertex::Attributes &attributes, const vertex::BufferBindings &buffers, Texture *texture) = 0;
 
 protected:
-
-
+    int width = 0;
+    int height = 0;
+    int pixelWidth = 0;
+    int pixelHeight = 0;
+    Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
 };
 
 }  // namespace graphics

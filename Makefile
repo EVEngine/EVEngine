@@ -18,7 +18,7 @@ build/win32: build/win32/EVEngine.sln
 	cmake.exe --build $@ --config Release -j 32
 
 build/win32/EVEngine.sln:
-	cmake.exe -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -A x64 -B build/win32 -S .
+	cmake.exe -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=Release -A x64 -B build/win32 -S .
 
 build/linux: build/linux/Makefile
 	cmake --build $@ -j 32
@@ -30,7 +30,7 @@ build/win32-debug: build/win32-debug/EVEngine.sln
 	cmake.exe --build $@ --config Debug -j 32
 
 build/win32-debug/EVEngine.sln:
-	cmake.exe -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -A x64 -B build/win32-debug -S .
+	cmake.exe -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=Debug -A x64 -B build/win32-debug -S .
 
 build/linux-debug: build/linux-debug/Makefile
 	cmake --build $@ -j 32

@@ -31,6 +31,8 @@
 #include "medialoader/image/PKMHandler.h"
 #include "medialoader/image/ASTCHandler.h"
 
+#include <simplesquirrel/simplesquirrel.hpp>
+
 namespace eve
 {
 namespace image
@@ -207,6 +209,15 @@ std::vector<eve::ref<ImageData>> Image::newVolumeLayers(ImageData *src)
 		throw eve::Exception("Cannot extract volume layers from source ImageData.");
 
 	return layers;
+}
+
+void Image::expose(ssq::Table &table) {
+	auto cls = table.addClass(name, Image::create, false);
+	expose(cls);
+}
+
+void Image::expose(ssq::Class &cls) {
+	cls.addFunc("getName", &Image::getName);
 }
 
 } // image

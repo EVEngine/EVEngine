@@ -31,9 +31,9 @@ using namespace medialoader;
 namespace eve {
 namespace image {
 
-ImageData::ImageData(Data *data) : Resource("") { decode(data); }
+ImageData::ImageData(Data *data) : Resource(""), decodeHandler(nullptr) { decode(data); }
 
-ImageData::ImageData(int width, int height, std::string format) : Resource(""), width(width), height(height), format(format) {
+ImageData::ImageData(int width, int height, std::string format) : Resource(""), width(width), height(height), format(format), decodeHandler(nullptr) {
     if (!validPixelFormat(format)) throw eve::Exception("Unsupported pixel format for ImageData");
 
     create(width, height, format);
@@ -43,7 +43,7 @@ ImageData::ImageData(int width, int height, std::string format) : Resource(""), 
 }
 
 ImageData::ImageData(int width, int height, std::string format, void *data, bool own)
-    : Resource(""), width(width), height(height), format(format) 
+    : Resource(""), width(width), height(height), format(format), decodeHandler(nullptr)
 {
     if (!validPixelFormat(format)) throw eve::Exception("Unsupported pixel format for ImageData");
 
@@ -53,7 +53,7 @@ ImageData::ImageData(int width, int height, std::string format, void *data, bool
         create(width, height, format, data);
 }
 
-ImageData::ImageData(const ImageData &c) : Resource(c.getUri()) {
+ImageData::ImageData(const ImageData &c) : Resource(c.getUri()), decodeHandler(nullptr) {
     width  = c.width;   
     height = c.height;
     format = c.format;
@@ -98,7 +98,7 @@ void ImageData::decode(Data *data) {
     FormatHandler              *decoder = nullptr;
     FormatHandler::DecodedImage decodedimage;
 
-    auto module = ModuleManager::getInstance<Image>("image");
+    auto module = Image::create();
 
     if (module == nullptr) throw eve::Exception("eve.image must be loaded in order to decode an ImageData.");
 
@@ -135,7 +135,30 @@ void ImageData::decode(Data *data) {
     this->width  = decodedimage.width;
     this->height = decodedimage.height;
     this->data   = decodedimage.data;
-    this->format = decodedimage.format;
+    // PixelFormat enum must not be assigned into std::string (that becomes a single char).
+    this->format = [pf = decodedimage.format]() -> std::string {
+        switch (pf) {
+            case PIXELFORMAT_R8: return "R8";
+            case PIXELFORMAT_RG8: return "RG8";
+            case PIXELFORMAT_RGBA8:
+            case PIXELFORMAT_sRGBA8: return "RGBA8";
+            case PIXELFORMAT_R16: return "R16";
+            case PIXELFORMAT_RG16: return "RG16";
+            case PIXELFORMAT_RGBA16: return "RGBA16";
+            case PIXELFORMAT_R16F: return "R16F";
+            case PIXELFORMAT_RG16F: return "RG16F";
+            case PIXELFORMAT_RGBA16F: return "RGBA16F";
+            case PIXELFORMAT_R32F: return "R32F";
+            case PIXELFORMAT_RG32F: return "RG32F";
+            case PIXELFORMAT_RGBA32F: return "RGBA32F";
+            case PIXELFORMAT_RGBA4: return "RGBA4";
+            case PIXELFORMAT_RGB5A1: return "RGB5A1";
+            case PIXELFORMAT_RGB565: return "RGB565";
+            case PIXELFORMAT_RGB10A2: return "RGB10A2";
+            case PIXELFORMAT_RG11B10F: return "RG11B10F";
+            default: return "RGBA8";
+        }
+    }();
 
     decodeHandler = decoder;
 
@@ -155,7 +178,7 @@ eve::filesystem::FileData *ImageData::encode(FormatHandler::EncodedFormat encode
     rawimage.data   = data;
     rawimage.format = getPixelFormatFromName(format);
 
-    auto module = ModuleManager::getInstance<Image>("image");
+    auto module = Image::create();
 
     if (module == nullptr) throw eve::Exception("eve.image must be loaded in order to encode an ImageData.");
 
@@ -187,7 +210,7 @@ eve::filesystem::FileData *ImageData::encode(FormatHandler::EncodedFormat encode
     encoder->freeRawPixels(encodedimage.data);
 
     if (writefile) {
-        auto fs = ModuleManager::getInstance<eve::filesystem::Filesystem>("filesystem");
+        auto fs = eve::filesystem::Filesystem::create();
 
         if (fs == nullptr) {
             // filedata->release();

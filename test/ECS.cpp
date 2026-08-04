@@ -1,24 +1,60 @@
 #include <gtest/gtest.h>
 #include "common/ECS.h"
 
-using namespace eve;
-
-struct position {
-    int x, y;
-};
-
-ComponentRegister<position> position_reg;
-
-
-class Person : public Entity {
+class Node : public ecs::Entity {
 public:
-    Component<position> pos;
-    Person() : Entity(), pos(*this) {}
+    ENTITY(Node, ecs::Entity)
+
+    void release() override {}
+
+    struct Position {
+        float x = 0;
+        float y = 0;
+    };
+    COMPONENT(Position, position)
 };
 
+class Movable : public Node {
+public:
+    ENTITY(Movable, Node)
 
-TEST(ECS, basic) {
-    Person person_a;
-    person_a.pos->x = 10;
-    person_a.pos->y = 0;
+    void release() override {}
+
+    struct Velocity {
+        float dx = 1;
+        float dy = 1;
+    };
+    COMPONENT(Velocity, velocity)
+};
+
+TEST(ECS, basicCreateAndComponent) {
+    Node* a = Node::create();
+    Movable* b = Movable::create();
+
+    a->position()->x = 10;
+    a->position()->y = 0;
+
+    b->position()->x = 0;
+    b->position()->y = 10;
+    b->velocity()->dx = 2;
+    b->velocity()->dy = 2;
+
+    EXPECT_FLOAT_EQ(a->position()->x, 10);
+    EXPECT_FLOAT_EQ(b->position()->y, 10);
+    EXPECT_FLOAT_EQ(b->velocity()->dx, 2);
+}
+
+TEST(ECS, viewIncludesSubclass) {
+    Node::create();
+    Movable::create();
+
+    int count = 0;
+    auto view = ecs::View<Node, Node::Position>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [pos] = *it;
+        pos->x = 0;
+        pos->y = 0;
+        ++count;
+    }
+    EXPECT_GE(count, 2);
 }

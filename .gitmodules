@@ -1,0 +1,3 @@
+[submodule "external/ECS.hpp"]
+	path = external/ECS.hpp
+	url = https://github.com/sunxfancy/ECS.hpp.git
