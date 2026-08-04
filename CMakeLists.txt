@@ -29,6 +29,13 @@ function(main)
     add_subdirectory(src/scripts)
 
     if(BUILD_TESTING)
+        set(BUILD_TEST OFF CACHE BOOL "" FORCE)
+        set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+        set(USE_MOLD OFF CACHE BOOL "" FORCE)
+        set(COLORFUL_OUTPUT OFF CACHE STRING "" FORCE)
+        add_subdirectory(external/zeroerr)
+        # EVEngine provides test/main.cpp; keep zeroerr's own main for standalone builds.
+        target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
         add_subdirectory(test)
     endif()
 endfunction()
@@ -74,9 +81,9 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
         ${CMAKE_BINARY_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/platform
-        # sunxfancy/ECS.hpp (git submodule) + its zeroerr.hpp dependency
+        # sunxfancy/ECS.hpp (git submodule) + zeroerr headers
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/zeroerr
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
     )
 
     # Prefer system Vulkan SDK; otherwise use third-party headers + local import lib.

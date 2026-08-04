@@ -117,7 +117,7 @@ for (auto it = view.begin(); it != view.end(); ++it) {
 | `ComponentManager::expose` 脚本钩子 | 保留为 `eve::exposeECS`，后续对接脚本侧 Entity 声明 |
 | `test/ECS.cpp` 旧 API | 改为 ECS.hpp 风格用例 |
 
-子模块路径：`external/ECS.hpp`（`src/ECS.hpp`）。依赖其 `#include "zeroerr.hpp"`，include 路径需包含 `third-party/zeroerr`（或安装后的 binary include）。
+子模块路径：`external/ECS.hpp`（`src/ECS.hpp`）。依赖其 `#include "zeroerr.hpp"` 时，include 路径需包含 `external/zeroerr/include`（本仓库已通过 submodule 接入）。
 
 
 ## 3. 声明式公共 API（脚本 / 游戏逻辑）

@@ -1,5 +1,7 @@
-#include <gtest/gtest.h>
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 #include "common/ECS.h"
+#include <cmath>
 
 class Node : public ecs::Entity {
 public:
@@ -27,7 +29,7 @@ public:
     COMPONENT(Velocity, velocity)
 };
 
-TEST(ECS, basicCreateAndComponent) {
+TEST_CASE("ECS.basicCreateAndComponent") {
     Node* a = Node::create();
     Movable* b = Movable::create();
 
@@ -39,12 +41,12 @@ TEST(ECS, basicCreateAndComponent) {
     b->velocity()->dx = 2;
     b->velocity()->dy = 2;
 
-    EXPECT_FLOAT_EQ(a->position()->x, 10);
-    EXPECT_FLOAT_EQ(b->position()->y, 10);
-    EXPECT_FLOAT_EQ(b->velocity()->dx, 2);
+    CHECK(std::abs(a->position()->x - 10.f) < 1e-5f);
+    CHECK(std::abs(b->position()->y - 10.f) < 1e-5f);
+    CHECK(std::abs(b->velocity()->dx - 2.f) < 1e-5f);
 }
 
-TEST(ECS, viewIncludesSubclass) {
+TEST_CASE("ECS.viewIncludesSubclass") {
     Node::create();
     Movable::create();
 
@@ -56,5 +58,5 @@ TEST(ECS, viewIncludesSubclass) {
         pos->y = 0;
         ++count;
     }
-    EXPECT_GE(count, 2);
+    CHECK_GE(count, 2);
 }

@@ -1,4 +1,7 @@
-#include <gtest/gtest.h>
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include <cassert>
 #include <iostream>
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -14,19 +17,16 @@
 
 using namespace eve;
 
-class ScriptTest : public ::testing::Test {
+class ScriptTest {
 public:
   ScriptTest(const char* script)
-    : vm(2048, ssq::Libs::ALL), script(script) {}
-
-protected:
-  void SetUp() override {
+    : vm(2048, ssq::Libs::ALL), script(script) {
     expose(vm);
     ssq::Script s = vm.compileSource(script);
     vm.run(s);
   }
 
-  // void TearDown() override {}
+protected:
   static void expose(ssq::VM& vm) {
     ModuleManager::expose(vm);
   }

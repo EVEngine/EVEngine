@@ -1,6 +1,6 @@
 # GoogleTest → zeroerr 测试框架迁移设计
 
-> 状态：已讨论确认；待写实现计划。  
+> 状态：已讨论确认；实现计划见 `docs/superpowers/plans/2026-08-04-zeroerr-test-framework.md`。  
 > 范围：用 [zeroerr](https://github.com/sunxfancy/zeroerr) 完全替换 GoogleTest；CTest 支持按用例单独运行；同步清理 third-party。
 
 ## 1. 目标

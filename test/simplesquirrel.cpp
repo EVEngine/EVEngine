@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 
 #include "ScriptTest.h"
 #include "sqpcheader.h"
@@ -9,7 +10,9 @@
 extern const char* simplesquirrel_content;
 UnitSciptTest(SimpleSquirrelTest, simplesquirrel_content);
 
-TEST_F(SimpleSquirrelTest, ExportClass) { EXPECT_TRUE(vm.callFunc(vm.findFunc("exportClass"), vm).toBool()); }
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") {
+    CHECK(vm.callFunc(vm.findFunc("exportClass"), vm).toBool());
+}
 
 class A {
 public:
@@ -40,9 +43,6 @@ public:
     B() { std::cerr << "B()" << std::endl; }
     ~B() { std::cerr << "~B()" << std::endl; }
 
-    // void print() { std::cerr << a->data << std::endl; }
-    // void setA(A* a) { this->a = a; }
-    // A* a;
     void          setA(ssq::Instance a) { this->a = a; }
     void          print() { std::cerr << a.to<A*>()->data << std::endl; }
     ssq::Instance a;
@@ -65,15 +65,15 @@ void B::expose(ssq::Class& cls) {
     cls.addFunc("print", &B::print);
 }
 
-TEST_F(SimpleSquirrelTest, RefTest) {
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.RefTest") {
     A::expose(vm);
     B::expose(vm);
-    EXPECT_TRUE(vm.callFunc(vm.findFunc("refTest"), vm).toBool());
+    CHECK(vm.callFunc(vm.findFunc("refTest"), vm).toBool());
 }
 
-TEST_F(SimpleSquirrelTest, TestDefClass) {
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
     auto root = vm.getRaw();
-    EXPECT_EQ(sq_type(root), OT_TABLE);
+    CHECK_EQ(sq_type(root), OT_TABLE);
     auto rt = _table(root);
     for (SQInteger i = 0; i < rt->_numofnodes; i++) {
         if (sq_type(rt->_nodes[i].key) != OT_NULL) {
@@ -87,7 +87,7 @@ TEST_F(SimpleSquirrelTest, TestDefClass) {
 
     ssq::Class cls = vm.findClass("Test1");
     auto o = cls.getRaw();
-    EXPECT_EQ(o._type, OT_CLASS);
+    CHECK_EQ(o._type, OT_CLASS);
     auto pclass = o._unVal.pClass;
 
     auto t = pclass->_members;
@@ -105,11 +105,11 @@ TEST_F(SimpleSquirrelTest, TestDefClass) {
     ssq::Object obj = cls.find("attr1");
     ssq::Class attr = obj.toClass();
 
-    EXPECT_TRUE(vm.callFunc(vm.findFunc("testDefClass"), vm).toBool());
+    CHECK(vm.callFunc(vm.findFunc("testDefClass"), vm).toBool());
 }
 
 
-TEST_F(SimpleSquirrelTest, PerformInteration) {
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.PerformInteration") {
     ssq::Class cls = vm.findClass("Test1");
     auto& v = vm.getHandle();
     sq_pushobject(v, cls.getRaw());
@@ -127,13 +127,12 @@ TEST_F(SimpleSquirrelTest, PerformInteration) {
 }
 
 
-TEST_F(SimpleSquirrelTest, GetterTest) {
-
-    EXPECT_TRUE(vm.callFunc(vm.findFunc("getterTest"), vm).toBool());
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") {
+    CHECK(vm.callFunc(vm.findFunc("getterTest"), vm).toBool());
 }
 
 
-TEST_F(SimpleSquirrelTest, GetAttr) {
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetAttr") {
     ssq::Class cls = vm.findClass("Avatar");
     auto& v = vm.getHandle();
     sq_pushobject(v, cls.getRaw());

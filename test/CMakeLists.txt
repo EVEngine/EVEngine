@@ -1,6 +1,6 @@
 enable_testing()
 
-file(GLOB all_test_cpp 
+file(GLOB all_test_cpp
   ECS.cpp
   filesystem.cpp
   graphic.cpp
@@ -9,9 +9,10 @@ file(GLOB all_test_cpp
   RenderSystem.cpp
   simplesquirrel.cpp
   window.cpp
+  main.cpp
 )
 
-file(GLOB all_test_scripts 
+file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
   model.nut
@@ -50,14 +51,14 @@ else()
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-    set(ThirdParty ${ThirdParty} gtest_maind gtestd simplesquirrel_static sqstdlib_static squirrel_static SDL2d ${SystemLibraries})
+    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d ${SystemLibraries})
 else()
-    set(ThirdParty ${ThirdParty} gtest_main gtest simplesquirrel_static sqstdlib_static squirrel_static SDL2 ${SystemLibraries})
+    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 ${SystemLibraries})
 endif()
 
 set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVImage EVDevTools EVCommon)
 
-target_link_libraries(unit_test ${EVELIBS} ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 
-include(GoogleTest)
-gtest_discover_tests(unit_test)
+include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
+zeroerr_discover_tests(unit_test)

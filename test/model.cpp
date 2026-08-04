@@ -1,5 +1,6 @@
 #include "common/Model.h"
 #include "ScriptTest.h"
+#include <cassert>
 #include "squirrel.h"
 
 #include "sqobject.h"
@@ -11,7 +12,7 @@
 extern const char* model_content;
 extern const char* model2_content;
 
-class ModelScriptTest : public ::testing::Test {
+class ModelScriptTest {
 public:
     struct Model {
         std::map<std::string, ssq::Object> models;
@@ -19,12 +20,8 @@ public:
         std::vector<ssq::Object>           updates;
     };
 
-    ModelScriptTest() : vm(2048, ssq::Libs::ALL) {model = new Model();}
-    ~ModelScriptTest() { delete model;}
-protected:
-    Model* model;
-
-    void SetUp() override {
+    ModelScriptTest() : vm(2048, ssq::Libs::ALL) {
+        model = new Model();
         expose(vm);
         ssq::Script s1 = vm.compileSource(model_content);
         ssq::Script s2 = vm.compileSource(model2_content);
@@ -35,6 +32,10 @@ protected:
         vm.callFunc(vm.findFunc("update"), vm);
         printf("-----------------------------\n");
     }
+    ~ModelScriptTest() { delete model; }
+
+protected:
+    Model* model;
 
     void update() {
         for (int i = 0; i < model->instances.size(); ++i) {
@@ -47,7 +48,7 @@ protected:
 
         static bool first = true;
 
-        auto isClick = eve.addFunc("isClick", [&]() {
+        eve.addFunc("isClick", [&]() {
             if (first) {
                 first = false;
                 return true;
@@ -55,10 +56,10 @@ protected:
                 return false;
         });
 
-        auto createModel = eve.addFunc("model", [](ssq::Object cls) {
+        eve.addFunc("model", [](ssq::Object cls) {
             printf("eve.model(class)\n");
             auto o = cls.getRaw();
-            EXPECT_EQ(o._type, OT_CLASS);
+            CHECK_EQ(o._type, OT_CLASS);
             auto pclass = o._unVal.pClass;
             auto t      = pclass->_members;
             for (SQInteger i = 0; i < t->_numofnodes; i++) {
@@ -86,4 +87,6 @@ protected:
 };
 
 
-TEST_F(ModelScriptTest, basic) { EXPECT_TRUE(vm.callFunc(vm.findFunc("basic"), vm).toBool()); }
+TEST_CASE_FIXTURE(ModelScriptTest, "ModelScriptTest.basic") {
+    CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool());
+}

@@ -1,4 +1,5 @@
-#include <gtest/gtest.h>
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
 #include <SDL2/SDL.h>
 #include <vector>
@@ -6,6 +7,7 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
+#include <cmath>
 
 #include "common/Exception.h"
 #include "filesystem/Filesystem.h"
@@ -19,23 +21,23 @@
 
 using namespace eve::graphics;
 
-TEST(Batcher, addRectProducesSixVertices) {
+TEST_CASE("Batcher.addRectProducesSixVertices") {
     Batcher b;
     b.addRect(10, 20, 30, 40, Color(1, 0, 0, 1));
-    ASSERT_EQ(b.vertices().size(), 6u);
-    EXPECT_FLOAT_EQ(b.vertices()[0].pos.x, 10);
-    EXPECT_FLOAT_EQ(b.vertices()[0].pos.y, 20);
+    REQUIRE_EQ(b.vertices().size(), 6u);
+    CHECK(std::abs(b.vertices()[0].pos.x - 10.f) < 1e-5f);
+    CHECK(std::abs(b.vertices()[0].pos.y - 20.f) < 1e-5f);
 }
 
-TEST(Batcher, toNDCMapsTopLeftOrigin) {
+TEST_CASE("Batcher.toNDCMapsTopLeftOrigin") {
     Batcher b;
     b.addRect(0, 0, 100, 100, Color(1, 1, 1, 1));
     b.toNDC(100, 100);
-    EXPECT_NEAR(b.vertices()[0].pos.x, -1.0f, 1e-5);
-    EXPECT_NEAR(b.vertices()[0].pos.y, 1.0f, 1e-5);
+    CHECK(std::abs(b.vertices()[0].pos.x - (-1.0f)) < 1e-5f);
+    CHECK(std::abs(b.vertices()[0].pos.y - 1.0f) < 1e-5f);
 }
 
-TEST(RenderSystem, drawsVisibleSpritesViaMocklessPath) {
+TEST_CASE("RenderSystem.drawsVisibleSpritesViaMocklessPath") {
     auto *a = Renderable2D::create();
     a->transform()->x = 5;
     a->transform()->y = 6;
@@ -44,8 +46,8 @@ TEST(RenderSystem, drawsVisibleSpritesViaMocklessPath) {
     a->sprite()->r = 0.2f;
     a->sprite()->visible = true;
 
-    EXPECT_FLOAT_EQ(a->transform()->x, 5);
-    EXPECT_FLOAT_EQ(a->sprite()->width, 16);
+    CHECK(std::abs(a->transform()->x - 5.f) < 1e-5f);
+    CHECK(std::abs(a->sprite()->width - 16.f) < 1e-5f);
 
     int visible = 0;
     auto view = ecs::View<Renderable2D, Renderable2D::Transform2D, Renderable2D::Sprite>();
@@ -53,7 +55,7 @@ TEST(RenderSystem, drawsVisibleSpritesViaMocklessPath) {
         auto [xf, sp] = *it;
         if (sp->visible) ++visible;
     }
-    EXPECT_GE(visible, 1);
+    CHECK_GE(visible, 1);
 }
 
 static std::vector<uint8_t> makeCheckerRGBA(int w, int h, int cell, uint8_t r0, uint8_t g0, uint8_t b0,
@@ -96,21 +98,21 @@ static eve::filesystem::Filesystem *bootstrapFilesystemForSaveIO() {
     return fs;
 }
 
-TEST(GraphicsSmoke, clearAndPresentWindow) {
+TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
-    ASSERT_NE(win, nullptr);
-    ASSERT_NE(gfx, nullptr);
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
 
     win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 480;
     s.centered = true;
-    ASSERT_TRUE(win->setWindowSettings(s)) << "Failed to create Vulkan window";
+    REQUIRE(win->setWindowSettings(s));
 
-    ASSERT_GT(gfx->getWidth(), 0);
-    ASSERT_GT(gfx->getPixelWidth(), 0);
+    REQUIRE_GT(gfx->getWidth(), 0);
+    REQUIRE_GT(gfx->getPixelWidth(), 0);
 
     gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.22f, 1.0f));
 
@@ -124,17 +126,17 @@ TEST(GraphicsSmoke, clearAndPresentWindow) {
     const char *tmpName = "evengine_smoke_checker.png";
     std::unique_ptr<eve::filesystem::FileData> encoded(
         src.encode(medialoader::FormatHandler::ENCODED_PNG, tmpName, true));
-    ASSERT_NE(encoded, nullptr);
+    REQUIRE(encoded.get() != nullptr);
 
     Texture *fromFile = gfx->newTextureFromFile(tmpName);
-    ASSERT_NE(fromFile, nullptr);
+    REQUIRE(fromFile != nullptr);
 
     auto stripePx = makeStripeRGBA(64, 64, 8);
     eve::image::ImageData imageData(64, 64, "RGBA8");
     std::memcpy(imageData.getData(), stripePx.data(), stripePx.size());
     Texture *stripes = gfx->newTexture(&imageData);
-    ASSERT_NE(stripes, nullptr);
-    ASSERT_NE(stripes, fromFile);
+    REQUIRE(stripes != nullptr);
+    REQUIRE(stripes != fromFile);
 
     auto *solid = Renderable2D::create();
     solid->transform()->x = 40;
@@ -186,24 +188,107 @@ TEST(GraphicsSmoke, clearAndPresentWindow) {
 
     fs->remove(tmpName);
     win->close();
-    SUCCEED();
 }
 
-TEST(GraphicsSmoke, newTextureFromFileThrowsOnMissing) {
+TEST_CASE("GraphicsSmoke.newTextureFromFileThrowsOnMissing") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
-    ASSERT_NE(win, nullptr);
-    ASSERT_NE(gfx, nullptr);
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
 
     win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
     s.centered = true;
-    ASSERT_TRUE(win->setWindowSettings(s));
+    REQUIRE(win->setWindowSettings(s));
 
     bootstrapFilesystemForSaveIO();
-    EXPECT_THROW(gfx->newTextureFromFile("definitely_missing_evengine_xyz.png"), eve::Exception);
+    bool threw = false;
+    try {
+        gfx->newTextureFromFile("definitely_missing_evengine_xyz.png");
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+
+    win->close();
+}
+
+TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 640;
+    s.height = 480;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    Canvas *c = gfx->newCanvas(64, 64);
+    REQUIRE(c != nullptr);
+    gfx->setCanvas(c);
+    gfx->clear(Color(0.2f, 0.4f, 0.6f, 1.0f), std::nullopt, std::nullopt);
+    gfx->drawSolidRect(0, 0, 64, 64, Color(1.0f, 0.0f, 0.0f, 1.0f));
+    gfx->setCanvas();
+
+    Color p = c->getPixel(32, 32);
+    CHECK(std::abs(p.r - 1.0f) < 0.05f);
+    CHECK(std::abs(p.g - 0.0f) < 0.05f);
+    CHECK(std::abs(p.b - 0.0f) < 0.05f);
+
+    std::unique_ptr<eve::image::ImageData> img(c->newImageData());
+    REQUIRE(img->getWidth() == 64);
+    REQUIRE(img->getHeight() == 64);
+    auto *px = static_cast<uint8_t *>(img->getData());
+    CHECK(px[(32 * 64 + 32) * 4 + 0] >= 200);
+
+    gfx->setCanvas(c);
+    bool presentThrew = false;
+    try {
+        gfx->present();
+    } catch (const eve::Exception &) {
+        presentThrew = true;
+    }
+    CHECK(presentThrew);
+    gfx->setCanvas();
+
+    Canvas *c2 = gfx->newCanvas(128, 128);
+    REQUIRE(c2 != nullptr);
+    REQUIRE(c2->getTexture() != nullptr);
+
+    auto *off = Renderable2D::create();
+    off->transform()->x = 0;
+    off->transform()->y = 0;
+    off->sprite()->width = 128;
+    off->sprite()->height = 128;
+    off->sprite()->r = 0.1f;
+    off->sprite()->g = 0.8f;
+    off->sprite()->b = 0.3f;
+    off->sprite()->canvas = c2;
+    off->sprite()->visible = true;
+
+    auto *onScreen = Renderable2D::create();
+    onScreen->transform()->x = 80;
+    onScreen->transform()->y = 80;
+    onScreen->sprite()->width = 192;
+    onScreen->sprite()->height = 192;
+    onScreen->sprite()->texture = c2->getTexture();
+    onScreen->sprite()->r = 1;
+    onScreen->sprite()->g = 1;
+    onScreen->sprite()->b = 1;
+    onScreen->sprite()->visible = true;
+
+    for (int frame = 0; frame < 30; ++frame) {
+        RenderSystem::render(*gfx);
+        SDL_Delay(8);
+    }
+
+    Color p2 = c2->getPixel(64, 64);
+    CHECK(std::abs(p2.g - 0.8f) < 0.15f);
 
     win->close();
 }
