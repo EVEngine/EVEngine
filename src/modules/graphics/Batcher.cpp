@@ -1,4 +1,5 @@
 #include "graphics/Batcher.h"
+#include "zeroerr/assert.h"
 
 namespace eve::graphics {
 
@@ -23,6 +24,8 @@ void Batcher::addTexturedRect(float x, float y, float w, float h, const Color &c
 }
 
 void Batcher::toNDC(int logicalW, int logicalH) {
+    ASSERT_GT(logicalW, 0);
+    ASSERT_GT(logicalH, 0);
     if (logicalW <= 0 || logicalH <= 0) return;
     const float sx = 2.0f / float(logicalW);
     const float sy = 2.0f / float(logicalH);

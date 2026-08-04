@@ -27,4 +27,4 @@ endif()
 
 set(EVELIBS EVWindow EVMouse EVEvent EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem)
 
-target_link_libraries(eve ${EVELIBS} ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+target_link_libraries(eve ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})

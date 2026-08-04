@@ -292,3 +292,79 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
 
     win->close();
 }
+
+TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 320;
+    s.height = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    Canvas *rt = gfx->newCanvas(100, 100);
+    auto *cam = Camera2D::createCamera();
+    cam->data()->canvas = rt;
+    cam->data()->active = true;
+    cam->data()->x = 50.f;
+    cam->data()->y = 50.f;
+    cam->data()->zoom = 1.f;
+    cam->data()->r = 0.f;
+    cam->data()->g = 0.f;
+    cam->data()->b = 0.f;
+    cam->data()->a = 1.f;
+
+    // Create override camera before any render/View (ECS create after heavy GPU
+    // work has been flaky on this path); wire it up later via Sprite.camera.
+    auto *camOverride = Camera2D::createCamera();
+    camOverride->data()->canvas = rt;
+    camOverride->data()->active = false;
+    camOverride->data()->x = 40.f;
+    camOverride->data()->y = 40.f;
+    camOverride->data()->zoom = 1.f;
+    camOverride->data()->r = 0.f;
+    camOverride->data()->g = 0.f;
+    camOverride->data()->b = 0.f;
+    camOverride->data()->a = 1.f;
+
+    auto *sp = Renderable2D::create();
+    sp->transform()->x = 40.f;
+    sp->transform()->y = 40.f;
+    sp->sprite()->width = 20.f;
+    sp->sprite()->height = 20.f;
+    sp->sprite()->r = 1.f;
+    sp->sprite()->g = 0.f;
+    sp->sprite()->b = 0.f;
+    sp->sprite()->canvas = rt;
+    sp->sprite()->visible = true;
+
+    RenderSystem::render(*gfx);
+
+    Color mid = rt->getPixel(45, 45);
+    CHECK(std::abs(mid.r - 1.f) < 0.08f);
+
+    cam->data()->zoom = 2.f;
+    RenderSystem::render(*gfx);
+    Color z = rt->getPixel(35, 35);
+    CHECK(std::abs(z.r - 1.f) < 0.08f);
+    Color outside = rt->getPixel(80, 80);
+    CHECK(outside.r < 0.2f);
+
+    sp->sprite()->camera = camOverride;
+    cam->data()->zoom = 1.f;
+    RenderSystem::render(*gfx);
+    // Override cam center (40,40): sprite lands at (50,50)-(70,70).
+    // Default cam would have left it at (40,40)-(60,60).
+    Color ov = rt->getPixel(65, 65);
+    CHECK(std::abs(ov.r - 1.f) < 0.08f);
+    Color notDefault = rt->getPixel(45, 45);
+    CHECK(notDefault.r < 0.2f);
+
+    sp->sprite()->visible = false;
+    cam->data()->active = false;
+    win->close();
+}

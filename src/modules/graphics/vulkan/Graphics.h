@@ -9,6 +9,8 @@
 
 namespace eve::graphics::vulkan {
 
+class OffscreenCanvas;
+
 struct ColorVertex {
     glm::vec2 pos;
     glm::vec4 color;
@@ -70,18 +72,38 @@ public:
     Texture *newTextureFromFile(const std::string &filename) override;
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
 
+    Canvas *newCanvas(int width, int height) override;
+    void setCanvas(Canvas *canvas) override;
+    bool isCanvasActive() const override;
+    Canvas *getCanvas() const override;
+
+    Texture *getTexture() override;
+    image::ImageData *newImageData() override;
+
     void draw(eve::graphics::Graphics *gfx, const glm::mat4 &matrix) const override;
     void draw(Canvas *C, const glm::mat4 &matrix) const override;
     void clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) override;
     Color getPixel(int x, int y) override;
 
+    vkb::Device &getDevice() { return device; }
+    vk::CommandPool getUploadPool() const { return uploadPool; }
+    vk::DescriptorSetLayout getTexSetLayout() const { return texSetLayout; }
+    vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
+    vk::RenderPass getOffscreenRenderPass() const { return offscreenRenderPass; }
+
+    friend class OffscreenCanvas;
+
 private:
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
+    void ensureOffscreenPipelines();
     void destroySwapchainResources();
     void flushBatch();
+    void flushToSwapchain();
+    void flushToOffscreen(OffscreenCanvas *canvas);
 
     bool initialized = false;
+    Canvas *activeCanvas = nullptr;
     bool swapchainDirty = false;
     void *sdlWindow = nullptr;
     vk::SurfaceKHR surface;
@@ -101,6 +123,10 @@ private:
     vk::PipelineLayout texPipelineLayout;
     vk::CommandPool uploadPool;
 
+    vk::RenderPass offscreenRenderPass;
+    vk::Pipeline offscreenSolidPipeline;
+    vk::Pipeline offscreenTexPipeline;
+
     vkb::Present presentModel;
 
     Batcher solidBatch;
@@ -115,6 +141,7 @@ private:
 
     std::vector<std::unique_ptr<Texture>> ownedTextures;
     std::vector<std::unique_ptr<GpuTexture>> ownedGpuTextures;
+    std::vector<std::unique_ptr<eve::graphics::Canvas>> ownedCanvases;
 };
 
 }  // namespace eve::graphics::vulkan

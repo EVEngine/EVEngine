@@ -1,5 +1,6 @@
 #define VKB_IMPL
 #include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/Canvas.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -12,6 +13,7 @@
 #include "filesystem/Filesystem.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
+#include "zeroerr/assert.h"
 
 #include <memory>
 
@@ -25,6 +27,7 @@ namespace eve::graphics::vulkan {
 Graphics::~Graphics() {
     if (!initialized) return;
     device->waitIdle();
+    ownedCanvases.clear();
     ownedTextures.clear();
     for (auto &g : ownedGpuTextures) {
         if (g->sampler) device->destroySampler(g->sampler);
@@ -35,6 +38,9 @@ Graphics::~Graphics() {
     if (pipelineLayout) device->destroyPipelineLayout(pipelineLayout);
     if (texPipeline) device->destroyPipeline(texPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
+    if (offscreenSolidPipeline) device->destroyPipeline(offscreenSolidPipeline);
+    if (offscreenTexPipeline) device->destroyPipeline(offscreenTexPipeline);
+    if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
     texSetLayoutUnique.reset();
     if (descriptorPool) device->destroyDescriptorPool(descriptorPool);
     if (uploadPool) device->destroyCommandPool(uploadPool);
@@ -46,6 +52,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     if (initialized) return;
     sdlWindow = nativeWindow;
     auto *window = static_cast<SDL_Window *>(nativeWindow);
+    ASSERT(window != nullptr);
     if (!window) throw Exception("Graphics::initWithWindow: null SDL_Window");
 
     unsigned int count = 0;
@@ -232,14 +239,154 @@ void Graphics::createTexturedPipeline() {
     device->destroyShaderModule(fragModule);
 }
 
-void Graphics::setViewportSize(int w, int h, int pw, int ph) {
-    if (w <= 0 || h <= 0) throw Exception("setViewportSize: invalid logical size");
-    const int newPw = pw > 0 ? pw : w;
-    const int newPh = ph > 0 ? ph : h;
-    const bool changed =
-        (w != width) || (h != height) || (newPw != pixelWidth) || (newPh != pixelHeight);
-    width = w;
-    height = h;
+void Graphics::ensureOffscreenPipelines() {
+    if (offscreenRenderPass) return;
+
+    vkb::RenderPassBuilder rpBuilder{device};
+    vk::AttachmentDescription ad{};
+    ad.format = vk::Format::eR8G8B8A8Unorm;
+    ad.samples = vk::SampleCountFlagBits::e1;
+    ad.loadOp = vk::AttachmentLoadOp::eClear;
+    ad.storeOp = vk::AttachmentStoreOp::eStore;
+    ad.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+    ad.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+    ad.initialLayout = vk::ImageLayout::eUndefined;
+    ad.finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    offscreenRenderPass =
+        rpBuilder.addAttachment(ad)
+            .addSubpass(vkb::SubpassBuilder().addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal))
+            .addDependency(VK_SUBPASS_EXTERNAL, 0)
+            .build();
+
+    std::vector<uint32_t> vert(color_vert_spv, color_vert_spv + color_vert_spv_count);
+    std::vector<uint32_t> frag(color_frag_spv, color_frag_spv + color_frag_spv_count);
+    vkb::PipelineBuilder solidBuilder{device, swapchain};
+    offscreenSolidPipeline =
+        solidBuilder.useClassicPipeline(vert, frag)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<ColorVertex>()
+                                     .addAttributeDescription<ColorVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eCounterClockwise)
+            .build(offscreenRenderPass);
+
+    // Textured offscreen pipeline mirrors createTexturedPipeline but with offscreen RP.
+    std::vector<uint32_t> tvert(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);
+    std::vector<uint32_t> tfrag(textured_frag_spv, textured_frag_spv + textured_frag_spv_count);
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, tvert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, tfrag);
+
+    vk::PipelineShaderStageCreateInfo stages[2]{};
+    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
+    stages[0].module = vertModule;
+    stages[0].pName = "main";
+    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
+    stages[1].module = fragModule;
+    stages[1].pName = "main";
+
+    auto binding = TexturedVertex::getBindingDescription(0);
+    auto attrs = TexturedVertex::getAttributeDescription(0);
+    vk::PipelineVertexInputStateCreateInfo vi{};
+    vi.vertexBindingDescriptionCount = 1;
+    vi.pVertexBindingDescriptions = &binding;
+    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
+    vi.pVertexAttributeDescriptions = attrs.data();
+
+    vk::PipelineInputAssemblyStateCreateInfo ia{};
+    ia.topology = vk::PrimitiveTopology::eTriangleList;
+    vk::PipelineViewportStateCreateInfo vp{};
+    vp.viewportCount = 1;
+    vp.scissorCount = 1;
+    vk::PipelineRasterizationStateCreateInfo rs{};
+    rs.polygonMode = vk::PolygonMode::eFill;
+    rs.cullMode = vk::CullModeFlagBits::eNone;
+    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.lineWidth = 1.0f;
+    vk::PipelineMultisampleStateCreateInfo ms{};
+    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
+    vk::PipelineColorBlendAttachmentState blendAtt{};
+    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+    blendAtt.blendEnable = true;
+    blendAtt.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
+    blendAtt.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+    blendAtt.colorBlendOp = vk::BlendOp::eAdd;
+    blendAtt.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+    blendAtt.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+    blendAtt.alphaBlendOp = vk::BlendOp::eAdd;
+    vk::PipelineColorBlendStateCreateInfo blend{};
+    blend.attachmentCount = 1;
+    blend.pAttachments = &blendAtt;
+    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
+    vk::PipelineDynamicStateCreateInfo dyn{};
+    dyn.dynamicStateCount = 2;
+    dyn.pDynamicStates = dynStates;
+
+    vk::GraphicsPipelineCreateInfo pci{};
+    pci.stageCount = 2;
+    pci.pStages = stages;
+    pci.pVertexInputState = &vi;
+    pci.pInputAssemblyState = &ia;
+    pci.pViewportState = &vp;
+    pci.pRasterizationState = &rs;
+    pci.pMultisampleState = &ms;
+    pci.pColorBlendState = &blend;
+    pci.pDynamicState = &dyn;
+    pci.layout = texPipelineLayout;
+    pci.renderPass = offscreenRenderPass;
+    pci.subpass = 0;
+    auto result = device->createGraphicsPipeline(nullptr, pci);
+    if (result.result != vk::Result::eSuccess)
+        throw Exception("failed to create offscreen textured pipeline");
+    offscreenTexPipeline = result.value;
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
+}
+
+Texture *Graphics::getTexture() { return nullptr; }
+
+image::ImageData *Graphics::newImageData() {
+    throw Exception("Graphics::newImageData: screen readback not implemented");
+}
+
+Color Graphics::getPixel(int, int) {
+    throw Exception("Graphics::getPixel: screen readback not implemented");
+}
+
+Canvas *Graphics::newCanvas(int w, int h) {
+    ASSERT(initialized);
+    ASSERT_GT(w, 0);
+    ASSERT_GT(h, 0);
+    if (!initialized) throw Exception("newCanvas: graphics not initialized");
+    if (w <= 0 || h <= 0) throw Exception("newCanvas: invalid size");
+    ensureOffscreenPipelines();
+    auto c = std::make_unique<OffscreenCanvas>(this, w, h);
+    Canvas *raw = c.get();
+    ownedCanvases.push_back(std::move(c));
+    return raw;
+}
+
+void Graphics::setCanvas(Canvas *canvas) {
+    Canvas *next = canvas;
+    if (next == static_cast<Canvas *>(this)) next = nullptr;
+    if (next == activeCanvas) return;
+    if (!solidBatch.empty() || !texturedBatches.empty()) flushBatch();
+    activeCanvas = next;
+}
+
+bool Graphics::isCanvasActive() const {
+    return activeCanvas != nullptr;
+}
+
+Canvas *Graphics::getCanvas() const {
+    return activeCanvas ? activeCanvas : const_cast<Graphics *>(this);
+}
+
+void Graphics::setViewportSize(int newW, int newH, int newPw, int newPh) {
+    bool changed = (newW != width) || (newH != height) || (newPw != pixelWidth) || (newPh != pixelHeight);
+    width = newW;
+    height = newH;
     pixelWidth = newPw;
     pixelHeight = newPh;
     if (initialized && changed) swapchainDirty = true;
@@ -250,6 +397,9 @@ void Graphics::clear(std::optional<Color> color, std::optional<int>, std::option
     hasPendingClear = true;
     solidBatch.clear();
     texturedBatches.clear();
+    if (auto *oc = dynamic_cast<OffscreenCanvas *>(activeCanvas)) {
+        oc->clear(clearColor, std::nullopt, std::nullopt);
+    }
 }
 
 void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &color) {
@@ -257,6 +407,10 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
 }
 
 Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba) {
+    ASSERT(initialized);
+    ASSERT_GT(w, 0);
+    ASSERT_GT(h, 0);
+    ASSERT(rgba != nullptr);
     if (!initialized) throw Exception("newTexture: graphics not initialized");
     if (w <= 0 || h <= 0 || !rgba) throw Exception("newTexture: invalid args");
 
@@ -297,6 +451,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba) {
 }
 
 Texture *Graphics::newTexture(image::ImageData *data) {
+    ASSERT(data != nullptr);
     if (!data) throw Exception("newTexture: null ImageData");
     if (data->getFormat() != "RGBA8")
         throw Exception("newTexture: only RGBA8 ImageData supported for now");
@@ -305,6 +460,7 @@ Texture *Graphics::newTexture(image::ImageData *data) {
 }
 
 Texture *Graphics::newTextureFromFile(const std::string &filename) {
+    ASSERT(!filename.empty());
     if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
 
     auto *fs = filesystem::Filesystem::create();
@@ -329,6 +485,92 @@ void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, flo
 
 void Graphics::flushBatch() {
     if (!initialized) return;
+    if (isCanvasActive()) {
+        auto *oc = dynamic_cast<OffscreenCanvas *>(activeCanvas);
+        if (!oc) throw Exception("flushBatch: active canvas is not an OffscreenCanvas");
+        flushToOffscreen(oc);
+    } else {
+        flushToSwapchain();
+    }
+}
+
+void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
+    Batcher solid = solidBatch;
+    auto textured = std::move(texturedBatches);
+    solidBatch.clear();
+    texturedBatches.clear();
+
+    const Color cc = canvas->pendingClearColor();
+    const bool needClear = canvas->takePendingClear();
+    if (solid.empty() && textured.empty() && !needClear) return;
+
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                canvas->colorImage().setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
+
+                                vk::ClearValue cv{
+                                    vk::ClearColorValue(std::array<float, 4>{cc.r, cc.g, cc.b, cc.a})};
+                                vk::RenderPassBeginInfo rpBegin{};
+                                rpBegin.renderPass = offscreenRenderPass;
+                                rpBegin.framebuffer = canvas->framebuffer();
+                                rpBegin.renderArea.extent =
+                                    vk::Extent2D{uint32_t(canvas->getWidth()), uint32_t(canvas->getHeight())};
+                                rpBegin.clearValueCount = 1;
+                                rpBegin.pClearValues = &cv;
+                                cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+
+                                vk::Viewport vp{0.f, 0.f, float(canvas->getWidth()), float(canvas->getHeight()),
+                                                0.f, 1.f};
+                                vk::Rect2D scissor{{0, 0},
+                                                   {uint32_t(canvas->getWidth()), uint32_t(canvas->getHeight())}};
+                                cb.setViewport(0, 1, &vp);
+                                cb.setScissor(0, 1, &scissor);
+
+                                vkb::HostVertexBuffer solidBuf;
+                                std::vector<vkb::HostVertexBuffer> texBufs;
+                                texBufs.reserve(textured.size());
+
+                                if (!solid.empty() && offscreenSolidPipeline) {
+                                    Batcher ndc = solid;
+                                    ndc.toNDC(canvas->getWidth(), canvas->getHeight());
+                                    std::vector<ColorVertex> gpuVerts;
+                                    gpuVerts.reserve(ndc.vertices().size());
+                                    for (const auto &v : ndc.vertices())
+                                        gpuVerts.push_back(ColorVertex{v.pos, v.color});
+                                    solidBuf.allocate<ColorVertex>(device, gpuVerts);
+                                    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, offscreenSolidPipeline);
+                                    vk::DeviceSize offset = 0;
+                                    cb.bindVertexBuffers(0, 1, solidBuf, &offset);
+                                    cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
+                                }
+
+                                if (offscreenTexPipeline) {
+                                    for (auto &tb : textured) {
+                                        if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) continue;
+                                        auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
+                                        Batcher ndc = tb.batch;
+                                        ndc.toNDC(canvas->getWidth(), canvas->getHeight());
+                                        std::vector<TexturedVertex> gpuVerts;
+                                        gpuVerts.reserve(ndc.vertices().size());
+                                        for (const auto &v : ndc.vertices())
+                                            gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
+                                        texBufs.emplace_back();
+                                        texBufs.back().allocate<TexturedVertex>(device, gpuVerts);
+                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, offscreenTexPipeline);
+                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
+                                                              &gpu->descriptorSet, 0, nullptr);
+                                        vk::DeviceSize offset = 0;
+                                        cb.bindVertexBuffers(0, 1, texBufs.back(), &offset);
+                                        cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
+                                    }
+                                }
+
+                                cb.endRenderPass();
+                                canvas->colorImage().setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+}
+
+void Graphics::flushToSwapchain() {
     if (swapchainDirty) {
         device->waitIdle();
         createSwapchainAndPipeline();
@@ -349,7 +591,6 @@ void Graphics::flushBatch() {
     cb.setViewport(0, 1, &vp);
     cb.setScissor(0, 1, &scissor);
 
-    // Keep host buffers alive until after drawFrame.
     vkb::HostVertexBuffer solidBuf;
     std::vector<vkb::HostVertexBuffer> texBufs;
     texBufs.reserve(textured.size());
@@ -398,11 +639,11 @@ void Graphics::flushBatch() {
 
 void Graphics::present() {
     if (!initialized) return;
+    if (isCanvasActive()) throw Exception("present: cannot present while a Canvas is active");
     flushBatch();
 }
 
 void Graphics::draw(eve::graphics::Graphics *, const glm::mat4 &) const {}
 void Graphics::draw(Canvas *, const glm::mat4 &) const {}
-Color Graphics::getPixel(int, int) { return Color(0, 0, 0, 0); }
 
 }  // namespace eve::graphics::vulkan

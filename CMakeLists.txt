@@ -23,19 +23,22 @@ function(main)
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+    # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
+    set(BUILD_TEST OFF CACHE BOOL "" FORCE)
+    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(USE_MOLD OFF CACHE BOOL "" FORCE)
+    set(COLORFUL_OUTPUT OFF CACHE STRING "" FORCE)
+    add_subdirectory(external/zeroerr)
+    target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
+    # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).
+    add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:ZEROERR_NO_ASSERT>)
+
     add_subdirectory(platform/${BUILD_PLATFORM})
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
     add_subdirectory(src/scripts)
 
     if(BUILD_TESTING)
-        set(BUILD_TEST OFF CACHE BOOL "" FORCE)
-        set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-        set(USE_MOLD OFF CACHE BOOL "" FORCE)
-        set(COLORFUL_OUTPUT OFF CACHE STRING "" FORCE)
-        add_subdirectory(external/zeroerr)
-        # EVEngine provides test/main.cpp; keep zeroerr's own main for standalone builds.
-        target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
         add_subdirectory(test)
     endif()
 endfunction()

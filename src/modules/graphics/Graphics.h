@@ -79,10 +79,15 @@ public:
 
 	Shader *getShader() const;
 
-	// void setCanvas(RenderTarget rt, uint32 temporaryRTFlags);
-	void setCanvas();
+    /** Create an offscreen render target (sampleable). Owned by Graphics. */
+    virtual Canvas *newCanvas(int width, int height) = 0;
 
+    /** nullptr or this → screen. Switching flushes pending draws to the previous target. */
+    virtual void setCanvas(Canvas *canvas) = 0;
+    void setCanvas() { setCanvas(nullptr); }
 
+    virtual bool isCanvasActive() const = 0;
+    virtual Canvas *getCanvas() const = 0;
 
     void draw(Drawable *drawable, const glm::mat4 &m);
 	// void draw(Texture *texture, Quad *quad, const glm::mat4 &m);
