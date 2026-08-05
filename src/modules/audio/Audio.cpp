@@ -73,10 +73,14 @@ void Audio::registerStream(Source *s) {
     streamSources.push_back(s);
 }
 
-void Audio::unregisterStream(Source *s) {
+void Audio::unregisterSource(Source *s) {
     std::lock_guard<std::mutex> lock(mutex);
     streamSources.erase(std::remove(streamSources.begin(), streamSources.end(), s), streamSources.end());
     allSources.erase(std::remove(allSources.begin(), allSources.end(), s), allSources.end());
+}
+
+void Audio::unregisterStream(Source *s) {
+    unregisterSource(s);
 }
 
 void Audio::notifyWorker() { cv.notify_all(); }
@@ -138,8 +142,13 @@ void Audio::pause(Source *s) {
         s->pause();
 }
 void Audio::stopAll() {
-    std::lock_guard<std::mutex> lock(mutex);
-    for (Source *s : allSources) {
+    // Copy under lock, then stop outside — avoids deadlock with Source::~Source → unregisterSource.
+    std::vector<Source *> copy;
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        copy = allSources;
+    }
+    for (Source *s : copy) {
         if (s)
             s->stop();
     }

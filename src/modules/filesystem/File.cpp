@@ -9,7 +9,8 @@ File::~File() {}
 FileData *File::read(int64_t size) {
     bool isopen = isOpen();
 
-    if (!isopen && !open("r")) throw eve::Exception("Could not read file %s.", getFilename().c_str());
+    // PhysFS backend expects binary modes ("rb"); plain "r" never opens a handle.
+    if (!isopen && !open("rb")) throw eve::Exception("Could not read file %s.", getFilename().c_str());
 
     int64_t max = getSize();
     int64_t cur = tell();
@@ -29,6 +30,7 @@ FileData *File::read(int64_t size) {
     if (bytesRead < size) {
         FileData *tmpFileData = new FileData(getFilename(), bytesRead);
         memcpy(tmpFileData->getData(), fileData->getData(), (size_t)bytesRead);
+        delete fileData;
         fileData = tmpFileData;
     }
 

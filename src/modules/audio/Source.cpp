@@ -43,10 +43,13 @@ Source::Source(Audio *audio, sound::Decoder *decoder, bool streaming, bool takeD
 
 Source::~Source() {
     stop();
-    if (streaming && audio)
-        audio->unregisterStream(this);
+    if (audio) {
+        // Static sources are tracked in allSources but never registered as streams;
+        // always detach so stopAll cannot touch a deleted Source.
+        audio->unregisterSource(this);
+        audio = nullptr;
+    }
     if (alSource) {
-        alSourceStop(alSource);
         alSourcei(alSource, AL_BUFFER, 0);
         alDeleteSources(1, &alSource);
         alSource = 0;
@@ -117,6 +120,8 @@ void Source::pause() {
 }
 
 void Source::stop() {
+    if (!alSource)
+        return;
     alSourceStop(alSource);
     playing = false;
     if (streaming) {

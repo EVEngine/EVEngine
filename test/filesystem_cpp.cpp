@@ -129,6 +129,14 @@ TEST_CASE("filesystem.File.openReadWriteSeek") {
     CHECK_EQ(file->getSize(), 10);
     CHECK_EQ(file->tell(), 0);
 
+    char buf[4] = {};
+    // CHECK_EQ evaluates lhs twice (compare + print) — do not put side-effecting reads there.
+    const int64_t nRead = file->read(buf, 4);
+    CHECK_EQ(nRead, 4);
+    CHECK(std::memcmp(buf, "0123", 4) == 0);
+    CHECK(file->seek(0));
+    CHECK_EQ(file->tell(), 0);
+
     std::unique_ptr<eve::filesystem::FileData> head(file->read(4));
     REQUIRE(head.get() != nullptr);
     CHECK_EQ(head->getSize(), 4u);
@@ -138,6 +146,12 @@ TEST_CASE("filesystem.File.openReadWriteSeek") {
     std::unique_ptr<eve::filesystem::FileData> chunk(file->read(2));
     REQUIRE(chunk.get() != nullptr);
     CHECK_EQ(chunk->getSize(), 2u);
+    CHECK(std::memcmp(chunk->getData(), "01", 2) == 0);
+
+    // Love-style "r" alias must open for reading.
+    CHECK(file->close());
+    CHECK(file->open("r"));
+    CHECK_EQ(file->getMode(), std::string("rb"));
     CHECK(file->close());
     CHECK(!file->isOpen());
 

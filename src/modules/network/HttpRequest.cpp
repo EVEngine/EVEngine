@@ -53,16 +53,19 @@ bool HttpRequest::submit() {
     auto headers = headers_;
     auto body = body_;
     int timeoutMs = timeoutMs_ >= 0 ? timeoutMs_ : net_->getTimeout();
-    (void)verifySsl_;
+    // -1 = inherit Network default; request-level setVerifySsl overrides.
+    const bool verifySsl = verifySsl_ < 0 ? net_->getVerifySsl() : (verifySsl_ != 0);
 
     // Dedicated thread: HTTP would block NetWorker and prevent accept/poll.
-    std::thread([self, method, url, headers, body, timeoutMs]() {
+    std::thread([self, method, url, headers, body, timeoutMs, verifySsl]() {
         NetCompletion c;
         c.kind   = NetKind::Http;
         c.handle = self;
         try {
             Poco::URI uri(url);
             if (uri.getScheme() == "https") {
+                // TLS stack (Poco NetSSL) is not linked yet; honor verifySsl once HTTPS is enabled.
+                (void)verifySsl;
                 c.type   = NetEvType::Err;
                 c.reason = "tls";
                 self->net_->post(std::move(c));

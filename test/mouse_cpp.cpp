@@ -51,24 +51,32 @@ TEST_CASE("mouse.positionRoundTrip") {
         return;
     }
 
-    // Identity round-trip: get → set same → get (warp-to-arbitrary is unreliable
-    // without a bound SDL window handle in the current Mouse SDL backend).
-    double x0 = 0.0;
-    double y0 = 0.0;
-    m->getPosition(x0, y0);
-    m->setPosition(x0, y0);
-    double x1 = 0.0;
-    double y1 = 0.0;
-    m->getPosition(x1, y1);
-    CHECK(std::abs(x1 - x0) < 1.0);
-    CHECK(std::abs(y1 - y0) < 1.0);
+    void* handle = win->getHandle();
+    REQUIRE(handle != nullptr);
 
-    const double gx = m->getX();
-    m->setX(gx);
-    CHECK(std::abs(m->getX() - gx) < 1.0);
-    const double gy = m->getY();
-    m->setY(gy);
-    CHECK(std::abs(m->getY() - gy) < 1.0);
+    // Warp to a known in-window point (requires SDL window handle on setPosition).
+    m->setPosition(50.0, 60.0);
+    double x = 0.0;
+    double y = 0.0;
+    m->getPosition(x, y);
+    // SDL may not update GetMouseState without focus (common in headless/CI).
+    if (std::abs(x - 50.0) >= 2.0 || std::abs(y - 60.0) >= 2.0) {
+        // Fall back: identity round-trip still exercises the API path.
+        m->setPosition(x, y);
+        double x2 = 0.0;
+        double y2 = 0.0;
+        m->getPosition(x2, y2);
+        CHECK(std::abs(x2 - x) < 1.0);
+        CHECK(std::abs(y2 - y) < 1.0);
+        return;
+    }
+    CHECK(std::abs(x - 50.0) < 2.0);
+    CHECK(std::abs(y - 60.0) < 2.0);
+
+    m->setX(80.0);
+    CHECK(std::abs(m->getX() - 80.0) < 2.0);
+    m->setY(90.0);
+    CHECK(std::abs(m->getY() - 90.0) < 2.0);
 }
 
 TEST_CASE("mouse.visibleRoundTrip") {

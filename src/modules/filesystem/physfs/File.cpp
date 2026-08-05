@@ -28,6 +28,11 @@ File::~File() {
 bool File::open(std::string mode) {
     if (mode == "c") return true;
 
+    // Love-style aliases → PhysFS binary modes.
+    if (mode == "r") mode = "rb";
+    else if (mode == "w") mode = "wb";
+    else if (mode == "a") mode = "ab";
+
     if (!PHYSFS_isInit()) throw Exception("PhysFS is not initialized.");
 
     // File must exist if read mode.
@@ -45,10 +50,10 @@ bool File::open(std::string mode) {
     PHYSFS_File *handle = nullptr;
 
     if (mode == "rb") handle = PHYSFS_openRead(filename.c_str());
-
-    if (mode == "ab") handle = PHYSFS_openAppend(filename.c_str());
-
-    if (mode == "wb") handle = PHYSFS_openWrite(filename.c_str());
+    else if (mode == "ab") handle = PHYSFS_openAppend(filename.c_str());
+    else if (mode == "wb") handle = PHYSFS_openWrite(filename.c_str());
+    else
+        throw Exception("Invalid file mode %s.", mode.c_str());
 
     if (handle == nullptr) {
         const char *err = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
@@ -97,8 +102,13 @@ int64_t File::read(void *dst, int64_t size) {
     if (!file || mode != "rb") throw Exception("File is not opened for reading.");
 
     int64_t max = (int64_t)PHYSFS_fileLength(file);
-    size        = (size == ALL) ? max : size;
-    size        = (size > max) ? max : size;
+    int64_t cur = (int64_t)PHYSFS_tell(file);
+    if (max < 0 || cur < 0) throw Exception("Could not read from file.");
+    if (cur > max) return 0;
+
+    int64_t remaining = max - cur;
+    size              = (size == ALL) ? remaining : size;
+    if (size > remaining) size = remaining;
 
     if (size < 0) throw Exception("Invalid read size.");
 

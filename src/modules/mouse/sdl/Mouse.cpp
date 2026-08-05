@@ -1,4 +1,5 @@
 #include "mouse/sdl/Mouse.h"
+#include "window/Window.h"
 #include "window/sdl/Window.h"
 
 #include <SDL2/SDL_mouse.h>
@@ -120,19 +121,20 @@ void Mouse::getPosition(double &x, double &y) const
 
 void Mouse::setPosition(double x, double y)
 {
-	auto window = getModInst(window,Window);
+	// Avoid `auto window = getModInst(window, ...)` — local name shadows namespace `window`.
+	auto *winMod = eve::ModuleManager::getInstance<eve::window::Window>("Window");
 
 	SDL_Window *handle = nullptr;
-	// if (window)
-	// 	handle = (SDL_Window *) window->getHandle();
+	if (winMod)
+		handle = (SDL_Window *) winMod->getHandle();
 
 	DPIToWindowCoords(&x, &y);
-	SDL_WarpMouseInWindow(handle, (int) x, (int) y);
-
-	// SDL_WarpMouse doesn't directly update SDL's internal mouse state in Linux
-	// and Windows, so we call SDL_PumpEvents now to make sure the next
-	// getPosition call always returns the updated state.
-	SDL_PumpEvents();
+	if (handle) {
+		SDL_WarpMouseInWindow(handle, (int) x, (int) y);
+		// SDL_WarpMouse doesn't directly update SDL's internal mouse state on
+		// Linux/Windows; pump so the next getPosition sees the new coords.
+		SDL_PumpEvents();
+	}
 }
 
 void Mouse::setX(double x)

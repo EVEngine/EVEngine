@@ -47,6 +47,7 @@ public:
     // Internal for Source/worker
     void registerStream(Source *s);
     void unregisterStream(Source *s);
+    void unregisterSource(Source *s);
     void notifyWorker();
 
 private:
