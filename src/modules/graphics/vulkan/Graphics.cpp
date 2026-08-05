@@ -93,6 +93,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
 
 void Graphics::destroySwapchainResources() {
     presentModel = vkb::Present{};
+    depthImage = vkb::DepthStencilImage{};
 }
 
 void Graphics::createSwapchainAndPipeline() {
@@ -103,13 +104,28 @@ void Graphics::createSwapchainAndPipeline() {
     swapchain.destroy();
     swapchain = swapRet;
 
+    depthImage = vkb::DepthStencilImage{device, swapchain.extent.width, swapchain.extent.height, depthFormat};
+
     if (!renderpass) {
         vkb::RenderPassBuilder rpBuilder{device};
-        renderpass = rpBuilder.addPresentAttachment(swapchain.image_format, vk::AttachmentLoadOp::eClear)
-                         .addSubpass(vkb::SubpassBuilder().addAttachmentRef(
-                             0, vk::ImageLayout::eColorAttachmentOptimal))
-                         .addDependency(VK_SUBPASS_EXTERNAL, 0)
-                         .build();
+        renderpass =
+            rpBuilder.addPresentAttachment(swapchain.image_format, vk::AttachmentLoadOp::eClear)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addDependency(VK_SUBPASS_EXTERNAL, 0,
+                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                               {},
+                               vk::AccessFlagBits::eColorAttachmentRead |
+                                   vk::AccessFlagBits::eColorAttachmentWrite |
+                                   vk::AccessFlagBits::eDepthStencilAttachmentWrite)
+                .build();
     }
 
     if (!pipeline) {
@@ -131,7 +147,7 @@ void Graphics::createSwapchainAndPipeline() {
     }
 
     vkb::PresentBuilder presentBuilder{device, swapchain};
-    presentModel = presentBuilder.build(renderpass);
+    presentModel = presentBuilder.build(renderpass, depthImage.imageView());
     swapchainDirty = false;
 }
 
@@ -196,6 +212,10 @@ void Graphics::createTexturedPipeline() {
     vk::PipelineMultisampleStateCreateInfo ms{};
     ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
 
+    vk::PipelineDepthStencilStateCreateInfo ds{};
+    ds.depthTestEnable = false;
+    ds.depthWriteEnable = false;
+
     vk::PipelineColorBlendAttachmentState blendAtt{};
     blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
                               vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
@@ -224,6 +244,7 @@ void Graphics::createTexturedPipeline() {
     pci.pViewportState = &vp;
     pci.pRasterizationState = &rs;
     pci.pMultisampleState = &ms;
+    pci.pDepthStencilState = &ds;
     pci.pColorBlendState = &blend;
     pci.pDynamicState = &dyn;
     pci.layout = texPipelineLayout;
@@ -582,8 +603,11 @@ void Graphics::flushToSwapchain() {
     texturedBatches.clear();
 
     presentModel.begin();
-    vk::ClearColorValue ccv(std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
-    presentModel.beginRenderPass(renderpass, vk::ClearValue(ccv));
+    std::array<vk::ClearValue, 2> clears{};
+    clears[0].color =
+        vk::ClearColorValue(std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
+    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
 
     auto &cb = presentModel.getCurrentCommandBuffer();
     vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};

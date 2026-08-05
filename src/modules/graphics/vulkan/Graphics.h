@@ -128,6 +128,8 @@ private:
     vk::Pipeline offscreenTexPipeline;
 
     vkb::Present presentModel;
+    vkb::DepthStencilImage depthImage;
+    vk::Format depthFormat = vk::Format::eD32Sfloat;
 
     Batcher solidBatch;
     struct TexturedBatch {
