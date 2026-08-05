@@ -144,8 +144,12 @@ private:
     void flushBatch();
     void flushToSwapchain();
     void flushToOffscreen(OffscreenCanvas *canvas);
+    void captureSwapchainImage(uint32_t imageIndex);
+    void ensurePresentCaptureHook();
 
     bool initialized = false;
+    bool hasPresentedFrame = false;
+    std::vector<uint8_t> lastFrameRgba;
     Canvas *activeCanvas = nullptr;
     bool swapchainDirty = false;
     void *sdlWindow = nullptr;

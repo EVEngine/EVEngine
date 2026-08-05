@@ -9,7 +9,7 @@ else
 endif
 
 
-.PHONY: all build/win32 build/linux build/win32-debug build/linux-debug
+.PHONY: all build/win32 build/linux build/win32-debug build/linux-debug example
 
 debug: build/win32-debug build/linux-debug 
 release: build/win32 build/linux
@@ -26,11 +26,15 @@ build/linux: build/linux/Makefile
 build/linux/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release  -B build/linux -S .
 
-build/win32-debug: build/win32-debug/EVEngine.sln
-	cmake.exe --build $@ --config Debug -j 32
+# win32-debug: Ninja + MSVC cl；via cmake/with-msvc.cmd (vcvars) so STL headers resolve
+# Emits build/win32-debug/compile_commands.json for clangd
+WITH_MSVC = cmake\with-msvc.cmd
 
-build/win32-debug/EVEngine.sln:
-	cmake.exe -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=Debug -A x64 -B build/win32-debug -S .
+build/win32-debug: build/win32-debug/build.ninja
+	$(WITH_MSVC) cmake.exe --build $@ -j 32
+
+build/win32-debug/build.ninja:
+	$(WITH_MSVC) cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -B build/win32-debug -S .
 
 build/linux-debug: build/linux-debug/Makefile
 	cmake --build $@ -j 32
@@ -49,8 +53,8 @@ test: test/win32-debug test/linux-debug
 test/win32: 
 	build/win32/test/Release/unit_test.exe
 
-test/win32-debug: 
-	build/win32-debug/test/Debug/unit_test.exe
+test/win32-debug:
+	build/win32-debug/test/unit_test.exe
 
 test/linux: 
 	build/linux/test/unit_test
@@ -58,7 +62,8 @@ test/linux:
 test/linux-debug: 
 	build/linux-debug/test/unit_test
 
-
+example:
+	cd example && ../build/win32-debug/src/engine/eve.exe run 
 # make: build/.build-docker
 # 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"
 

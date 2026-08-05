@@ -101,4 +101,9 @@
         "xstddef": "cpp"
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/win32-debug",
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.arguments": [
+        "--background-index",
+        "--clang-tidy=false"
+    ]
 }

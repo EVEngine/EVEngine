@@ -94,6 +94,13 @@ public:
     Color getBackgroundColor() const { return backgroundColor; }
     void setBackgroundColor(const Color &c) { backgroundColor = c; }
 
+    /**
+     * When true, each present copies the swapchain to a CPU buffer for getPixel/newImageData.
+     * Default false — full-frame readback is expensive; enable only for tests / tools.
+     */
+    void setScreenReadbackEnabled(bool enabled) { screenReadbackEnabled = enabled; }
+    bool isScreenReadbackEnabled() const { return screenReadbackEnabled; }
+
 
 	// void setFont(Font *font);
 	// Font *getFont();
@@ -229,6 +236,7 @@ protected:
     int pixelHeight = 0;
     Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
     bool frameHad3D = false;
+    bool screenReadbackEnabled = false;
 };
 
 }  // namespace graphics

@@ -5,7 +5,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 
+#include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstring>
 #include <stdexcept>
 #include <vector>
 
@@ -114,6 +117,11 @@ void Graphics::createSwapchainAndPipeline() {
     vkb::SwapchainBuilder swapchainBuilder{device};
     if (pixelWidth > 0 && pixelHeight > 0)
         swapchainBuilder.set_desired_extent(uint32_t(pixelWidth), uint32_t(pixelHeight));
+    // Prefer UNORM so clear/draw Color floats match getPixel without sRGB encode.
+    swapchainBuilder.set_desired_format(
+        {vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear});
+    // Allow screen getPixel / newImageData readback after present.
+    swapchainBuilder.add_image_usage_flags(vk::ImageUsageFlagBits::eTransferSrc);
     auto swapRet = swapchainBuilder.set_old_swapchain(swapchain).build();
     swapchain.destroy();
     swapchain = swapRet;
@@ -162,6 +170,7 @@ void Graphics::createSwapchainAndPipeline() {
 
     vkb::PresentBuilder presentBuilder{device, swapchain};
     presentModel = presentBuilder.build(renderpass, depthImage.imageView());
+    ensurePresentCaptureHook();
     swapchainDirty = false;
 }
 
@@ -494,12 +503,125 @@ void Graphics::ensureOffscreenPipelines() {
 
 Texture *Graphics::getTexture() { return nullptr; }
 
-image::ImageData *Graphics::newImageData() {
-    throw Exception("Graphics::newImageData: screen readback not implemented");
+void Graphics::ensurePresentCaptureHook() {
+    presentModel.after_render_before_present = [this](uint32_t imageIndex) {
+        if (!screenReadbackEnabled) return;
+        captureSwapchainImage(imageIndex);
+    };
 }
 
-Color Graphics::getPixel(int, int) {
-    throw Exception("Graphics::getPixel: screen readback not implemented");
+void Graphics::captureSwapchainImage(uint32_t imageIndex) {
+    if (pixelWidth <= 0 || pixelHeight <= 0) return;
+
+    const vk::Format fmt = swapchain.image_format;
+    const bool bgra = (fmt == vk::Format::eB8G8R8A8Unorm || fmt == vk::Format::eB8G8R8A8Srgb);
+    const bool rgba = (fmt == vk::Format::eR8G8B8A8Unorm || fmt == vk::Format::eR8G8B8A8Srgb);
+    if (!bgra && !rgba)
+        throw Exception("Graphics::captureSwapchainImage: unsupported swapchain format");
+
+    auto &images = swapchain.get_images();
+    if (imageIndex >= images.size())
+        throw Exception("Graphics::captureSwapchainImage: invalid image index");
+
+    const vk::DeviceSize byteSize =
+        vk::DeviceSize(pixelWidth) * vk::DeviceSize(pixelHeight) * 4;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+
+    const vk::Image image = images[imageIndex];
+    // Called after submit waitIdle, before present — image still acquired, layout PresentSrcKHR.
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                vk::ImageMemoryBarrier toTransfer{};
+                                toTransfer.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                toTransfer.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                                toTransfer.oldLayout = vk::ImageLayout::ePresentSrcKHR;
+                                toTransfer.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+                                toTransfer.image = image;
+                                toTransfer.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+                                toTransfer.srcAccessMask = vk::AccessFlagBits::eMemoryRead;
+                                toTransfer.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+                                cb.pipelineBarrier(vk::PipelineStageFlagBits::eBottomOfPipe,
+                                                   vk::PipelineStageFlagBits::eTransfer, {}, 0, nullptr, 0,
+                                                   nullptr, 1, &toTransfer);
+
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                                region.imageExtent =
+                                    vk::Extent3D{uint32_t(pixelWidth), uint32_t(pixelHeight), 1};
+                                cb.copyImageToBuffer(image, vk::ImageLayout::eTransferSrcOptimal,
+                                                     staging.buffer, region);
+
+                                vk::ImageMemoryBarrier toPresent = toTransfer;
+                                toPresent.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+                                toPresent.newLayout = vk::ImageLayout::ePresentSrcKHR;
+                                toPresent.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+                                toPresent.dstAccessMask = vk::AccessFlagBits::eMemoryRead;
+                                cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                                                   vk::PipelineStageFlagBits::eBottomOfPipe, {}, 0, nullptr, 0,
+                                                   nullptr, 1, &toPresent);
+                            });
+
+    lastFrameRgba.resize(size_t(byteSize));
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    const size_t rowBytes = size_t(pixelWidth) * 4;
+    auto *src = static_cast<const uint8_t *>(mapped);
+    for (int y = 0; y < pixelHeight; ++y) {
+        const uint8_t *srcRow = src + size_t(y) * rowBytes;
+        uint8_t *dstRow = lastFrameRgba.data() + size_t(pixelHeight - 1 - y) * rowBytes;
+        if (bgra) {
+            for (int x = 0; x < pixelWidth; ++x) {
+                const uint8_t *s = srcRow + size_t(x) * 4;
+                uint8_t *d = dstRow + size_t(x) * 4;
+                d[0] = s[2];
+                d[1] = s[1];
+                d[2] = s[0];
+                d[3] = s[3];
+            }
+        } else {
+            std::memcpy(dstRow, srcRow, rowBytes);
+        }
+    }
+    device->unmapMemory(staging.memory);
+    staging.release();
+    hasPresentedFrame = true;
+}
+
+image::ImageData *Graphics::newImageData() {
+    if (!hasPresentedFrame || lastFrameRgba.empty())
+        throw Exception("Graphics::newImageData: no presented frame");
+    auto *img = new image::ImageData(pixelWidth, pixelHeight, "RGBA8");
+    std::memcpy(img->getData(), lastFrameRgba.data(), lastFrameRgba.size());
+    return img;
+}
+
+Color Graphics::getPixel(int x, int y) {
+    if (!hasPresentedFrame || lastFrameRgba.empty())
+        throw Exception("Graphics::getPixel: no presented frame");
+    if (x < 0 || y < 0 || x >= width || y >= height)
+        throw Exception("Graphics::getPixel: out of bounds (%d,%d)", x, y);
+
+    const int pxX = (width > 0) ? int((int64_t(x) * pixelWidth) / width) : x;
+    const int pxY = (height > 0) ? int((int64_t(y) * pixelHeight) / height) : y;
+    const int cx = std::min(std::max(pxX, 0), pixelWidth - 1);
+    const int cy = std::min(std::max(pxY, 0), pixelHeight - 1);
+    const size_t i = (size_t(cy) * size_t(pixelWidth) + size_t(cx)) * 4;
+    float r = lastFrameRgba[i + 0] / 255.f;
+    float g = lastFrameRgba[i + 1] / 255.f;
+    float b = lastFrameRgba[i + 2] / 255.f;
+    float a = lastFrameRgba[i + 3] / 255.f;
+    // If surface ended up sRGB, convert encoded bytes back to linear Color space.
+    const vk::Format fmt = swapchain.image_format;
+    if (fmt == vk::Format::eB8G8R8A8Srgb || fmt == vk::Format::eR8G8B8A8Srgb) {
+        auto toLinear = [](float u) {
+            return (u <= 0.04045f) ? (u / 12.92f) : std::pow((u + 0.055f) / 1.055f, 2.4f);
+        };
+        r = toLinear(r);
+        g = toLinear(g);
+        b = toLinear(b);
+    }
+    return Color(r, g, b, a);
 }
 
 Canvas *Graphics::newCanvas(int w, int h) {
@@ -792,6 +914,7 @@ void Graphics::flushToSwapchain() {
     presentModel.endRenderPass();
     presentModel.end();
     presentModel.drawFrame();
+    // hasPresentedFrame set by capture hook during drawFrame
     hasPendingClear = false;
     swapchainPassOpen = false;
     frameHad3D = false;

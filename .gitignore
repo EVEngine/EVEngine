@@ -3,3 +3,4 @@ third-party/
 third-party-binary/
 .history/
 docs/superpowers/
+.worktrees/
