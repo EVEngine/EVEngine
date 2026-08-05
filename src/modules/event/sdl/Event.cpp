@@ -138,10 +138,7 @@ void Event::exceptionIfInRenderPass(const char *name)
 Message *Event::convert(const SDL_Event &e)
 {
 	Message *msg = nullptr;
-
-	std::vector<ssq::Object> vargs;
-	vargs.reserve(4);
-
+	(void)e;
 	return msg;
 }
 

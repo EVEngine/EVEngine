@@ -6,6 +6,7 @@ file(GLOB all_test_cpp
   graphic.cpp
   model.cpp
   mouse.cpp
+  network.cpp
   RenderSystem.cpp
   simplesquirrel.cpp
   window.cpp
@@ -35,28 +36,38 @@ add_executable(
 
 
 if(WIN32)
-    set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi)
+    set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi)
 elseif(UNIX)
     set(SystemLibraries ${SystemLibraries} dl X11 pthread)
 endif()
 
 if(WIN32)
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd zlibstaticd)
+    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd zlibstaticd lz4mdd)
   else()
-    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd zlibstatic)
+    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd zlibstatic lz4md)
   endif()
 else()
-  set(ThirdParty ${ThirdParty} physfs medialoader_image z)
+  set(ThirdParty ${ThirdParty} physfs medialoader_image z lz4)
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d ${SystemLibraries})
+    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d
+        PocoFoundationmdd PocoNetmdd
+        ${SystemLibraries})
 else()
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 ${SystemLibraries})
+    if(WIN32)
+        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
+            PocoFoundationmd PocoNetmd
+            ${SystemLibraries})
+    else()
+        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
+            PocoFoundation PocoNet
+            ${SystemLibraries})
+    endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVImage EVDevTools EVCommon)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVImage EVDevTools EVCommon EVEvent EVNetwork EVData)
 
 target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 
