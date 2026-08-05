@@ -5,12 +5,23 @@
 #include "audio/Source.h"
 #include "sound/Sound.h"
 #include "data/ByteData.h"
+#include "common/Exception.h"
 
 #include <chrono>
 #include <cstring>
 #include <cstdint>
+#include <iostream>
 #include <thread>
 #include <vector>
+
+static eve::audio::Audio *tryCreateAudio() {
+    try {
+        return eve::audio::Audio::create();
+    } catch (const eve::Exception &) {
+        std::cerr << "N/A: OpenAL device not available\n";
+        return nullptr;
+    }
+}
 
 static std::vector<char> makeSilentWav(int samples = 441) {
     const int dataBytes = samples * 2;
@@ -93,6 +104,118 @@ TEST_CASE("audio.spatial.api") {
     src->play();
     audio->pump();
     src->stop();
+    delete src;
+    delete sd;
+}
+
+TEST_CASE("audio.stopAll") {
+    auto *audio = tryCreateAudio();
+    if (!audio)
+        return;
+
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav(44100);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *sd = sound->newSoundData(&data);
+    auto *src1 = audio->newSource(sd);
+    auto *src2 = audio->newSource(sd);
+    src1->play();
+    src2->play();
+    audio->pump();
+    CHECK(src1->isPlaying());
+    CHECK(src2->isPlaying());
+    audio->stopAll();
+    audio->pump();
+    CHECK(!src1->isPlaying());
+    CHECK(!src2->isPlaying());
+    delete src1;
+    delete src2;
+    delete sd;
+}
+
+TEST_CASE("audio.pause") {
+    auto *audio = tryCreateAudio();
+    if (!audio)
+        return;
+
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav(44100);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *sd = sound->newSoundData(&data);
+    auto *src = audio->newSource(sd);
+    src->play();
+    audio->pump();
+    CHECK(src->isPlaying());
+    audio->pause(src);
+    CHECK(!src->isPlaying());
+    delete src;
+    delete sd;
+}
+
+TEST_CASE("audio.source.seekTell") {
+    auto *audio = tryCreateAudio();
+    if (!audio)
+        return;
+
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav(44100);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *sd = sound->newSoundData(&data);
+    auto *src = audio->newSource(sd);
+
+    CHECK(src->getDuration() > 0.9);
+    src->play();
+    audio->pump();
+    CHECK(src->seek(0.5));
+    audio->pump();
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    double pos = src->tell();
+    // OpenAL tell() can drift after pump/sleep; keep a loose window around seek(0.5).
+    CHECK(pos >= 0.40);
+    CHECK(pos <= 0.65);
+    src->stop();
+
+    delete src;
+    delete sd;
+}
+
+TEST_CASE("audio.source.pitch") {
+    auto *audio = tryCreateAudio();
+    if (!audio)
+        return;
+
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav();
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *sd = sound->newSoundData(&data);
+    auto *src = audio->newSource(sd);
+
+    src->setPitch(1.5f);
+    CHECK(src->getPitch() == 1.5f);
+    src->setPitch(0.5f);
+    CHECK(src->getPitch() == 0.5f);
+
+    delete src;
+    delete sd;
+}
+
+TEST_CASE("audio.volumeRoundTrip") {
+    auto *audio = tryCreateAudio();
+    if (!audio)
+        return;
+
+    audio->setVolume(0.75f);
+    CHECK(audio->getVolume() == 0.75f);
+
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav();
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *sd = sound->newSoundData(&data);
+    auto *src = audio->newSource(sd);
+
+    src->setVolume(0.3f);
+    CHECK(src->getVolume() == 0.3f);
+
     delete src;
     delete sd;
 }

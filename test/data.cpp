@@ -3,10 +3,13 @@
 
 #include "data/ByteData.h"
 #include "data/DataModule.h"
+#include "data/DataView.h"
 #include "data/JsonDocument.h"
 #include "data/XmlDocument.h"
+#include "common/Exception.h"
 
 #include <cstring>
+#include <memory>
 #include <string>
 
 TEST_CASE("data.JsonObjectRoundTrip") {
@@ -111,4 +114,206 @@ TEST_CASE("data.XmlEmptyNew") {
     REQUIRE(doc != nullptr);
     CHECK(!doc->empty());
     delete doc;
+}
+
+TEST_CASE("data.ByteData.roundTrip") {
+    const char raw[] = "hello";
+    eve::data::ByteData bytes(raw, sizeof(raw) - 1);
+    CHECK_EQ(bytes.getSize(), 5u);
+    CHECK(std::memcmp(bytes.getData(), raw, 5) == 0);
+    std::unique_ptr<eve::data::ByteData> cloned(bytes.clone());
+    REQUIRE(cloned.get() != nullptr);
+    CHECK_EQ(cloned->getSize(), 5u);
+    CHECK(std::memcmp(cloned->getData(), raw, 5) == 0);
+}
+
+TEST_CASE("data.ByteData.sizeZeroThrows") {
+    bool threw = false;
+    try {
+        eve::data::ByteData z(0);
+        (void)z;
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+}
+
+TEST_CASE("data.ByteData.ownFalseCopies") {
+    char buf[] = {'a', 'b', 'c'};
+    eve::data::ByteData bytes(buf, 3, false);
+    buf[0] = 'z';
+    CHECK_EQ(static_cast<char*>(bytes.getData())[0], 'a');
+}
+
+TEST_CASE("data.DataView.windowAndBounds") {
+    auto* dm = eve::data::DataModule::create();
+    const char raw[] = "abcdef";
+    std::unique_ptr<eve::data::ByteData> base(dm->newByteData(raw, 6));
+    std::unique_ptr<eve::data::DataView> view(dm->newDataView(base.get(), 2, 3));
+    REQUIRE(view.get() != nullptr);
+    CHECK_EQ(view->getSize(), 3u);
+    CHECK(std::memcmp(view->getData(), "cde", 3) == 0);
+    std::unique_ptr<eve::data::DataView> cloned(view->clone());
+    CHECK_EQ(cloned->getSize(), 3u);
+
+    bool threw = false;
+    try {
+        dm->newDataView(base.get(), 5, 10);
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+
+    threw = false;
+    try {
+        dm->newDataView(base.get(), 0, 0);
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+}
+
+TEST_CASE("data.DataModule.newByteDataFactories") {
+    auto* dm = eve::data::DataModule::create();
+    std::unique_ptr<eve::data::ByteData> a(dm->newByteData(4));
+    REQUIRE(a.get() != nullptr);
+    CHECK_EQ(a->getSize(), 4u);
+
+    const char raw[] = "xy";
+    std::unique_ptr<eve::data::ByteData> b(dm->newByteData(raw, 2));
+    CHECK(std::memcmp(b->getData(), "xy", 2) == 0);
+
+    char* owned = new char[2]{'p', 'q'};
+    std::unique_ptr<eve::data::ByteData> c(dm->newByteData(owned, 2, true));
+    CHECK(std::memcmp(c->getData(), "pq", 2) == 0);
+}
+
+TEST_CASE("data.compress.lz4RoundTrip") {
+    const char raw[] = "aaaaaaaaaaaaaaaaevengine-compress";
+    const size_t n = sizeof(raw) - 1;
+    std::unique_ptr<eve::data::CompressedData> cdata(
+        eve::data::compress("lz4", raw, n, -1));
+    REQUIRE(cdata.get() != nullptr);
+    CHECK_EQ(cdata->getFormat(), std::string("lz4"));
+    CHECK_EQ(cdata->getDecompressedSize(), n);
+    CHECK_GT(cdata->getSize(), 0u);
+
+    size_t outn = 0;
+    std::unique_ptr<char[]> out(eve::data::decompress(cdata.get(), outn));
+    REQUIRE(out.get() != nullptr);
+    CHECK_EQ(outn, n);
+    CHECK(std::memcmp(out.get(), raw, n) == 0);
+
+    std::unique_ptr<eve::data::CompressedData> cloned(cdata->clone());
+    CHECK_EQ(cloned->getFormat(), std::string("lz4"));
+}
+
+TEST_CASE("data.compress.invalidFormatThrows") {
+    bool threw = false;
+    try {
+        eve::data::compress("nope", "x", 1, -1);
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+    CHECK(eve::data::Compressor::getCompressor("nope") == nullptr);
+    CHECK(eve::data::Compressor::getCompressor("lz4") != nullptr);
+}
+
+TEST_CASE("data.decompress.invalidFormatThrows") {
+    bool threw = false;
+    try {
+        size_t rawsize = 0;
+        eve::data::decompress("nope", "x", 1, rawsize);
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+}
+
+TEST_CASE("data.encode.hexAndBase64RoundTrip") {
+    const char raw[] = "Hi";
+    size_t dstlen = 0;
+    std::unique_ptr<char[]> hex(eve::data::encode("hex", raw, 2, dstlen));
+    REQUIRE(hex.get() != nullptr);
+    CHECK_GT(dstlen, 0u);
+
+    size_t backn = 0;
+    std::unique_ptr<char[]> back(eve::data::decode("hex", hex.get(), dstlen, backn));
+    REQUIRE(back.get() != nullptr);
+    CHECK_EQ(backn, 2u);
+    CHECK(std::memcmp(back.get(), raw, 2) == 0);
+
+    dstlen = 0;
+    std::unique_ptr<char[]> b64(eve::data::encode("base64", raw, 2, dstlen));
+    REQUIRE(b64.get() != nullptr);
+    backn = 0;
+    std::unique_ptr<char[]> back2(eve::data::decode("base64", b64.get(), dstlen, backn));
+    REQUIRE(back2.get() != nullptr);
+    CHECK_EQ(backn, 2u);
+    CHECK(std::memcmp(back2.get(), raw, 2) == 0);
+}
+
+TEST_CASE("data.hash.md5KnownAndInvalid") {
+    const char* msg = "abc";
+    // MD5("abc") = 900150983cd24fb0d6963f7d28e17f72
+    std::string dig = eve::data::hash("md5", msg, 3);
+    CHECK_EQ(dig.size(), 16u);
+    static const unsigned char expect[16] = {
+        0x90, 0x01, 0x50, 0x98, 0x3c, 0xd2, 0x4f, 0xb0,
+        0xd6, 0x96, 0x3f, 0x7d, 0x28, 0xe1, 0x7f, 0x72};
+    CHECK(std::memcmp(dig.data(), expect, 16) == 0);
+
+    eve::data::ByteData bytes(msg, 3);
+    std::string dig2 = eve::data::hash("md5", &bytes);
+    CHECK(dig == dig2);
+
+    eve::data::HashFunction::Value val{};
+    eve::data::hash("md5", msg, 3, val);
+    CHECK_EQ(val.size, 16u);
+
+    CHECK(eve::data::HashFunction::getHashFunction("md5") != nullptr);
+    CHECK(eve::data::HashFunction::getHashFunction("nope") == nullptr);
+
+    bool threw = false;
+    try {
+        eve::data::hash("nope", msg, 3);
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+}
+
+TEST_CASE("data.Json.decodeWithoutErrorPtr") {
+    auto* dm = eve::data::DataModule::create();
+    std::unique_ptr<eve::data::JsonDocument> ok(dm->decodeJson("{\"n\":1}"));
+    REQUIRE(ok.get() != nullptr);
+    CHECK(ok->isObject());
+    std::unique_ptr<eve::data::JsonDocument> bad(dm->decodeJson("{bad"));
+    CHECK(bad.get() == nullptr);
+}
+
+TEST_CASE("data.Xml.decodeWithoutErrorPtrAndEncodeData") {
+    auto* dm = eve::data::DataModule::create();
+    std::unique_ptr<eve::data::XmlDocument> ok(dm->decodeXml("<r/>"));
+    REQUIRE(ok.get() != nullptr);
+    CHECK(!ok->empty());
+    std::unique_ptr<eve::data::ByteData> encoded(dm->encodeXmlData(ok.get(), false));
+    REQUIRE(encoded.get() != nullptr);
+    CHECK_GT(encoded->getSize(), 0u);
+
+    std::unique_ptr<eve::data::XmlDocument> bad(dm->decodeXml("<r>"));
+    CHECK(bad.get() == nullptr);
+
+    CHECK(dm->encodeXmlData(nullptr, false) == nullptr);
+}
+
+TEST_CASE("data.JsonDocument.queryBoundaries") {
+    auto* dm = eve::data::DataModule::create();
+    std::unique_ptr<eve::data::JsonDocument> arr(dm->decodeJson("[1]", nullptr));
+    REQUIRE(arr.get() != nullptr);
+    CHECK(arr->isArray());
+    CHECK(!arr->isObject());
+    CHECK(arr->array());
+    CHECK(!arr->object());
 }

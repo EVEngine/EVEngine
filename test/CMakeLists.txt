@@ -4,10 +4,13 @@ file(GLOB all_test_cpp
   ECS.cpp
   data.cpp
   filesystem.cpp
+  filesystem_cpp.cpp
   graphic.cpp
   medialoader_model_link.cpp
   model.cpp
   mouse.cpp
+  mouse_cpp.cpp
+  touch.cpp
   network.cpp
   RenderSystem.cpp
   RenderSystem3D.cpp
@@ -15,8 +18,11 @@ file(GLOB all_test_cpp
   sound.cpp
   audio.cpp
   window.cpp
+  window_cpp.cpp
+  image.cpp
   event.cpp
   timer.cpp
+  timer_cpp.cpp
   main.cpp
 )
 
@@ -78,7 +84,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio)
 
 target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 

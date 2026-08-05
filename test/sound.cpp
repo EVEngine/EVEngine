@@ -5,6 +5,7 @@
 #include "sound/Decoder.h"
 #include "sound/SoundData.h"
 #include "data/ByteData.h"
+#include "common/Exception.h"
 
 #include <cstring>
 #include <cstdint>
@@ -65,4 +66,94 @@ TEST_CASE("sound.newSoundDataEmpty") {
     CHECK(sd->getChannelCount() == 2);
     CHECK(sd->getSize() == 100 * 2 * 2);
     delete sd;
+}
+
+TEST_CASE("sound.decoder.seekRewindIsFinished") {
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav(44100);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *dec = sound->newDecoder(&data);
+    REQUIRE(dec != nullptr);
+    CHECK(dec->isSeekable());
+    CHECK(!dec->isFinished());
+    CHECK(dec->getDuration() > 0.9);
+
+    CHECK(dec->decode() > 0);
+    CHECK(dec->seek(0.5));
+    CHECK(!dec->isFinished());
+
+    while (!dec->isFinished()) {
+        if (dec->decode() <= 0)
+            break;
+    }
+    CHECK(dec->isFinished());
+
+    CHECK(dec->rewind());
+    CHECK(!dec->isFinished());
+    CHECK(dec->decode() > 0);
+    delete dec;
+}
+
+TEST_CASE("sound.decoder.clone") {
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav(4410);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *dec = sound->newDecoder(&data);
+    REQUIRE(dec != nullptr);
+
+    auto *cloned = dec->clone();
+    REQUIRE(cloned != nullptr);
+    CHECK(cloned->getSampleRate() == dec->getSampleRate());
+    CHECK(cloned->getChannelCount() == dec->getChannelCount());
+    CHECK(cloned->getBitDepth() == dec->getBitDepth());
+
+    dec->decode();
+    CHECK(cloned->decode() > 0);
+    delete cloned;
+    delete dec;
+}
+
+TEST_CASE("sound.newSoundDataFromDecoder") {
+    auto *sound = eve::sound::Sound::create();
+    auto wav = makeSilentWav(4410);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto *dec = sound->newDecoder(&data);
+    REQUIRE(dec != nullptr);
+
+    auto *sd = sound->newSoundDataFromDecoder(dec);
+    REQUIRE(sd != nullptr);
+    CHECK(sd->getSampleCount() == 4410);
+    CHECK(sd->getSampleRate() == 44100);
+    CHECK(sd->getChannelCount() == 1);
+    CHECK(sd->getBitDepth() == 16);
+    CHECK(sd->getSize() == 4410 * 2);
+    delete sd;
+    delete dec;
+}
+
+TEST_CASE("sound.invalidData") {
+    auto *sound = eve::sound::Sound::create();
+
+    try {
+        sound->newDecoder(nullptr);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+
+    try {
+        const char garbage[] = "not a sound file";
+        eve::data::ByteData bad(garbage, sizeof(garbage) - 1);
+        sound->newDecoder(&bad);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+
+    try {
+        sound->newSoundDataFromDecoder(nullptr);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
 }

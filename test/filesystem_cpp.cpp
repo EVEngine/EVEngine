@@ -1,0 +1,205 @@
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "common/Exception.h"
+#include "filesystem/Filesystem.h"
+#include "filesystem/File.h"
+#include "filesystem/FileData.h"
+
+#include <cstring>
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace {
+
+eve::filesystem::Filesystem* fs() {
+    return eve::filesystem::Filesystem::create();
+}
+
+// Unique identity per case to avoid cross-talk on the singleton write dir.
+void useIdentity(const char* id) {
+    auto* f = fs();
+    REQUIRE(f->setIdentity(id, true));
+    REQUIRE(f->setupWriteDirectory());
+}
+
+}  // namespace
+
+TEST_CASE("filesystem.identityAndPaths") {
+    useIdentity("ev_ut_fs_paths");
+    auto* f = fs();
+    CHECK_EQ(f->getIdentity(), std::string("ev_ut_fs_paths"));
+    CHECK(!f->getWorkingDirectory().empty());
+    CHECK(!f->getUserDirectory().empty());
+    CHECK(!f->getAppdataDirectory().empty());
+    CHECK(!f->getSaveDirectory().empty());
+    CHECK(!f->getExecutablePath().empty());
+
+    f->setFused(true);
+    CHECK(f->isFused());
+    // fusedSet is sticky — second call ignored; still true
+    f->setFused(false);
+    CHECK(f->isFused());
+
+    f->setSymlinksEnabled(false);
+    CHECK(!f->areSymlinksEnabled());
+    f->setSymlinksEnabled(true);
+    CHECK(f->areSymlinksEnabled());
+
+    auto& req = f->getRequirePath();
+    CHECK_GE(req.size(), 0u);
+    (void)f->getCRequirePath();
+
+    // Android-only APIs: exercise default getters/setters on desktop
+    f->setAndroidSaveExternal(true);
+    CHECK(f->isAndroidSaveExternal());
+    f->setAndroidSaveExternal(false);
+    CHECK(!f->isAndroidSaveExternal());
+}
+
+TEST_CASE("filesystem.writeReadAppendRemove") {
+    useIdentity("ev_ut_fs_rw");
+    auto* f = fs();
+    const char* name = "ut_rw.txt";
+    const char* payload = "hello-fs";
+    f->write(name, payload, static_cast<int64_t>(std::strlen(payload)));
+
+    std::unique_ptr<eve::filesystem::FileData> data(f->read(name));
+    REQUIRE(data.get() != nullptr);
+    CHECK_EQ(data->getSize(), std::strlen(payload));
+    CHECK(std::memcmp(data->getData(), payload, data->getSize()) == 0);
+
+    const char* more = "!";
+    f->append(name, more, 1);
+    std::unique_ptr<eve::filesystem::FileData> data2(f->read(name));
+    REQUIRE(data2.get() != nullptr);
+    CHECK_EQ(data2->getSize(), std::strlen(payload) + 1);
+
+    eve::filesystem::Filesystem::Info fileInfo{};
+    REQUIRE(f->getInfo(name, fileInfo));
+    CHECK_EQ(fileInfo.type, std::string("file"));
+    CHECK_GE(fileInfo.size, 0);
+
+    CHECK(f->createDirectory("ut_subdir"));
+    auto items = f->getDirectoryItems("");
+    bool found = false;
+    for (const auto& it : items) {
+        if (it == name || it == "ut_subdir" || it == "ut_subdir/") found = true;
+    }
+    CHECK(found);
+
+    CHECK(f->remove(name));
+    CHECK(!f->getInfo(name, fileInfo));
+
+    bool threw = false;
+    try {
+        f->read("definitely_missing_ut_file_zzz.dat");
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+}
+
+TEST_CASE("filesystem.setSourceSecondCallFails") {
+    auto* f = fs();
+    // First call may succeed or already be set by earlier process use.
+    (void)f->setSource(".");
+    CHECK(!f->setSource("somewhere_else"));
+}
+
+TEST_CASE("filesystem.File.openReadWriteSeek") {
+    useIdentity("ev_ut_fs_file");
+    auto* f = fs();
+    const char* name = "ev_sub/ut_file_api.bin";
+    CHECK(f->createDirectory("ev_sub"));
+    f->write(name, "0123456789", 10);
+
+    std::unique_ptr<eve::filesystem::FileData> viaFs(f->read(name));
+    REQUIRE(viaFs.get() != nullptr);
+    CHECK_EQ(viaFs->getSize(), 10u);
+    CHECK(std::memcmp(viaFs->getData(), "0123456789", 10) == 0);
+
+    std::unique_ptr<eve::filesystem::File> file(f->newFile(name));
+    REQUIRE(file.get() != nullptr);
+    CHECK_EQ(file->getFilename(), std::string(name));
+    CHECK(file->open("rb"));
+    CHECK(file->isOpen());
+    CHECK_EQ(file->getMode(), std::string("rb"));
+    CHECK_EQ(file->getSize(), 10);
+    CHECK_EQ(file->tell(), 0);
+
+    std::unique_ptr<eve::filesystem::FileData> head(file->read(4));
+    REQUIRE(head.get() != nullptr);
+    CHECK_EQ(head->getSize(), 4u);
+    CHECK(std::memcmp(head->getData(), "0123", 4) == 0);
+    CHECK(file->seek(0));
+    CHECK_EQ(file->tell(), 0);
+    std::unique_ptr<eve::filesystem::FileData> chunk(file->read(2));
+    REQUIRE(chunk.get() != nullptr);
+    CHECK_EQ(chunk->getSize(), 2u);
+    CHECK(file->close());
+    CHECK(!file->isOpen());
+
+    bool badMode = false;
+    try {
+        std::unique_ptr<eve::filesystem::File> f2(f->newFile(name));
+        if (!f2->open("not-a-mode"))
+            badMode = true;
+    } catch (const eve::Exception&) {
+        badMode = true;
+    }
+    CHECK(badMode);
+
+    f->remove(name);
+}
+
+TEST_CASE("filesystem.FileData.metaAndClone") {
+    useIdentity("ev_ut_fs_filedata");
+    auto* f = fs();
+    const char raw[] = "meta";
+    std::unique_ptr<eve::filesystem::FileData> fd(
+        f->newFileData(raw, "folder/shot.png", 4));
+    REQUIRE(fd.get() != nullptr);
+    CHECK_EQ(fd->getSize(), 4u);
+    CHECK(std::memcmp(fd->getData(), raw, 4) == 0);
+    CHECK_EQ(fd->getFilename(), std::string("folder/shot.png"));
+    CHECK_EQ(fd->getExtension(), std::string("png"));
+    CHECK_EQ(fd->getName(), std::string("folder/shot"));
+    std::unique_ptr<eve::filesystem::FileData> cloned(fd->clone());
+    CHECK_EQ(cloned->getExtension(), std::string("png"));
+}
+
+TEST_CASE("filesystem.mount.missingReturnsFalse") {
+    auto* f = fs();
+    CHECK(!f->mount("Z:/evengine_definitely_missing_archive_xxx.zip", "/m", false));
+    CHECK(!f->unmount("Z:/evengine_definitely_missing_archive_xxx.zip"));
+}
+
+TEST_CASE("filesystem.mount.realDirRoundTrip") {
+    useIdentity("ev_ut_fs_mount");
+    auto* f = fs();
+    f->write("mounted_marker.txt", "M", 1);
+    std::string realSave = f->getSaveDirectory();
+    f->allowMountingForPath(realSave);
+    REQUIRE(f->isRealDirectory(realSave));
+    REQUIRE(f->mount(realSave, "/mnt", false));
+    CHECK(f->unmount(realSave));
+    f->remove("mounted_marker.txt");
+}
+
+TEST_CASE("filesystem.File.bufferAndFlush") {
+    useIdentity("ev_ut_fs_buf");
+    auto* f = fs();
+    const char* name = "ut_buf.txt";
+    std::unique_ptr<eve::filesystem::File> file(f->newFile(name));
+    CHECK(file->setBuffer("full", 4096));
+    REQUIRE(file->open("wb"));
+    int64_t sz = 0;
+    CHECK_EQ(file->getBuffer(sz), std::string("full"));
+    CHECK_EQ(sz, 4096);
+    CHECK(file->write("x", 1));
+    CHECK(file->flush());
+    CHECK(file->close());
+    f->remove(name);
+}

@@ -3,9 +3,13 @@
 
 #include "event/Event.h"
 
+using eve::event::Event;
+using eve::event::Message;
+using eve::event::Variant;
+
 TEST_CASE("Event.quitMessageSurvivesPumpPoll") {
-    auto* ev = eve::event::Event::create();
-    ev->push(new eve::event::Message("quit"));
+    auto* ev = Event::create();
+    ev->push(new Message("quit"));
     auto* msg = ev->poll();
     REQUIRE(msg != nullptr);
     CHECK(msg->name == "quit");
@@ -14,6 +18,89 @@ TEST_CASE("Event.quitMessageSurvivesPumpPoll") {
 }
 
 TEST_CASE("Event.pollNameReturnsEmptyWhenEmpty") {
-    auto* ev = eve::event::Event::create();
+    auto* ev = Event::create();
     CHECK(ev->pollName() == "");
+}
+
+TEST_CASE("event.Variant.makeNil") {
+    auto v = Variant::makeNil();
+    CHECK(static_cast<int>(v.type) == static_cast<int>(Variant::Type::Nil));
+    CHECK(v.i == 0);
+    CHECK(v.s.empty());
+    CHECK(v.p == nullptr);
+}
+
+TEST_CASE("event.Variant.makeInt") {
+    auto v = Variant::makeInt(-42);
+    CHECK(static_cast<int>(v.type) == static_cast<int>(Variant::Type::Int));
+    CHECK(v.i == -42);
+}
+
+TEST_CASE("event.Variant.makeString") {
+    auto v = Variant::makeString("hello");
+    CHECK(static_cast<int>(v.type) == static_cast<int>(Variant::Type::String));
+    CHECK(v.s == "hello");
+}
+
+TEST_CASE("event.Variant.makePtr") {
+    int x = 7;
+    auto v = Variant::makePtr(&x);
+    CHECK(static_cast<int>(v.type) == static_cast<int>(Variant::Type::Ptr));
+    CHECK(v.p == &x);
+}
+
+TEST_CASE("event.Message.withArgs") {
+    std::vector<Variant> args;
+    args.push_back(Variant::makeInt(100));
+    args.push_back(Variant::makeString("payload"));
+    args.push_back(Variant::makeNil());
+    Message msg("custom", args);
+    CHECK(msg.name == "custom");
+    REQUIRE(msg.args.size() == 3);
+    CHECK(static_cast<int>(msg.args[0].type) == static_cast<int>(Variant::Type::Int));
+    CHECK(msg.args[0].i == 100);
+    CHECK(msg.args[1].s == "payload");
+    CHECK(static_cast<int>(msg.args[2].type) == static_cast<int>(Variant::Type::Nil));
+}
+
+TEST_CASE("event.pushPollRoundTrip") {
+    auto* ev = Event::create();
+    ev->push(new Message("first"));
+    ev->push(new Message("second"));
+    auto* m1 = ev->poll();
+    REQUIRE(m1 != nullptr);
+    CHECK(m1->name == "first");
+    delete m1;
+    auto* m2 = ev->poll();
+    REQUIRE(m2 != nullptr);
+    CHECK(m2->name == "second");
+    delete m2;
+    CHECK(ev->poll() == nullptr);
+}
+
+TEST_CASE("event.pollNameConsumesMessage") {
+    auto* ev = Event::create();
+    ev->push(new Message("hello"));
+    CHECK(ev->pollName() == "hello");
+    CHECK(ev->pollName() == "");
+    CHECK(ev->poll() == nullptr);
+}
+
+TEST_CASE("event.pollEmptyQueue") {
+    auto* ev = Event::create();
+    CHECK(ev->poll() == nullptr);
+}
+
+TEST_CASE("event.clearThenPollEmpty") {
+    auto* ev = Event::create();
+    ev->push(new Message("a"));
+    ev->push(new Message("b"));
+    ev->clear();
+    CHECK(ev->poll() == nullptr);
+    CHECK(ev->pollName() == "");
+}
+
+TEST_CASE("event.pumpSmoke") {
+    auto* ev = Event::create();
+    ev->pump();
 }
