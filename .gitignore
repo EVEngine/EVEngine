@@ -4,3 +4,8 @@ third-party-binary/
 .history/
 docs/superpowers/
 .worktrees/
+platform/android/apk/local.properties
+platform/android/apk/.gradle/
+platform/android/apk/app/build/
+platform/android/apk/build/
+platform/android/apk/app/src/main/jniLibs/
