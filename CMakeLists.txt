@@ -37,6 +37,10 @@ function(main)
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(USE_MOLD OFF CACHE BOOL "" FORCE)
     set(COLORFUL_OUTPUT OFF CACHE STRING "" FORCE)
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+        message(STATUS "Android build: unit tests disabled")
+    endif()
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).
@@ -102,10 +106,23 @@ function(set_include)
 
     # Prefer system Vulkan SDK; otherwise use third-party headers + local import lib.
     # On Apple, MoltenVK from the LunarG Vulkan SDK is required (no Win32 .lib fallback).
+    # On Android, link the NDK loader (libvulkan.so).
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
-    if(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        find_library(ANDROID_VULKAN_LIB vulkan)
+        if(NOT ANDROID_VULKAN_LIB)
+            message(FATAL_ERROR "Android NDK libvulkan not found (need ANDROID_PLATFORM >= 24)")
+        endif()
+        if(Vulkan_INCLUDE_DIRS)
+            include_directories(${Vulkan_INCLUDE_DIRS})
+        else()
+            include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
+        endif()
+        set(EVENGINE_VULKAN_LIB ${ANDROID_VULKAN_LIB} CACHE INTERNAL "Vulkan link target")
+        message(STATUS "Vulkan (Android): ${ANDROID_VULKAN_LIB}")
+    elseif(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
         message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
         include_directories(${Vulkan_INCLUDE_DIRS})
         set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
@@ -132,7 +149,12 @@ endfunction()
 macro(get_available_build)
     set(AVAILABLE_PLATFORM "")
 
-    if(UNIX)
+    # Cross-compiling for Android (NDK toolchain) must win over host Apple/Linux detection.
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        list(APPEND AVAILABLE_PLATFORM "android")
+        set(BUILD_PLATFORM "android" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
+        SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
+    elseif(UNIX)
         if(APPLE)
             list(APPEND AVAILABLE_PLATFORM "macosx")
             list(APPEND AVAILABLE_PLATFORM "ios")
@@ -227,12 +249,31 @@ function(check_third_party_project name repo)
         set(GIT_HTTPS_LINK ${repo})
     endif()
 
+    set(_eve_tp_cmake_args
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
+    )
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        list(APPEND _eve_tp_cmake_args
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DANDROID_ABI=${ANDROID_ABI}
+            -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+            -DANDROID_STL=${ANDROID_STL}
+            -DANDROID_NDK=${ANDROID_NDK}
+            -DCMAKE_SYSTEM_NAME=Android
+        )
+        if(CMAKE_MAKE_PROGRAM)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM})
+        endif()
+        message(STATUS "third-party Android toolchain: ABI=${ANDROID_ABI} PLATFORM=${ANDROID_PLATFORM}")
+    endif()
+
     ExternalProject_Add(${name}
         GIT_REPOSITORY ${GIT_HTTPS_LINK}
         GIT_TAG origin/main
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
         BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
-        CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
+        CMAKE_ARGS ${_eve_tp_cmake_args}
         BUILD_COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --parallel 32
         BUILD_ALWAYS 0
         EXCLUDE_FROM_ALL 1

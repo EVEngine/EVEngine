@@ -20,7 +20,19 @@ else
 	endif
 endif
 
-.PHONY: all build/win32 build/linux build/macosx build/win32-debug build/linux-debug build/macosx-debug debug release example
+ANDROID_SDK ?= $(HOME)/Library/Android/sdk
+ANDROID_NDK ?= $(ANDROID_SDK)/ndk/26.1.10909125
+ANDROID_ABI ?= arm64-v8a
+ANDROID_PLATFORM ?= android-24
+ANDROID_STL ?= c++_shared
+APK_DIR = platform/android/apk
+JNI_LIBS = $(APK_DIR)/app/src/main/jniLibs/$(ANDROID_ABI)
+JAVA_HOME ?= $(shell brew --prefix openjdk@17 2>/dev/null)/libexec/openjdk.jdk/Contents/Home
+BUILD_DIR ?= build/android-debug
+
+.PHONY: all build/win32 build/linux build/macosx build/android \
+	build/win32-debug build/linux-debug build/macosx-debug build/android-debug \
+	debug release example sync/android-libs install/android-debug run/android-debug log/android
 
 debug: build/$(PLATFORM)-debug
 release: build/$(PLATFORM)
@@ -42,6 +54,23 @@ build/macosx: build/macosx/Makefile
 
 build/macosx/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx -B build/macosx -S .
+
+build/android: build/android/build.ninja
+	cmake --build $@ --target deps -j 8
+	cmake --build $@ -j 8
+	$(MAKE) sync/android-libs BUILD_DIR=build/android
+	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleRelease
+
+build/android/build.ninja:
+	cmake -G Ninja \
+		-DCMAKE_TOOLCHAIN_FILE=$(ANDROID_NDK)/build/cmake/android.toolchain.cmake \
+		-DANDROID_ABI=$(ANDROID_ABI) \
+		-DANDROID_PLATFORM=$(ANDROID_PLATFORM) \
+		-DANDROID_STL=$(ANDROID_STL) \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_PLATFORM=android \
+		-DBUILD_TESTING=OFF \
+		-B build/android -S .
 
 # win32-debug: Ninja + MSVC cl；via cmake/with-msvc.cmd (vcvars) so STL headers resolve
 # Emits build/win32-debug/compile_commands.json with MSVC INCLUDE paths for clangd
@@ -65,11 +94,45 @@ build/macosx-debug: build/macosx-debug/Makefile
 build/macosx-debug/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B build/macosx-debug -S .
 
-# build/uwp:
-# 	cmake.exe -G "Visual Studio 17 2022" -B $@ -S . -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10
-# 	cmake.exe --build $@ --config $(BUILD_TYPE) -j 32
+build/android-debug: build/android-debug/build.ninja
+	cmake --build $@ --target deps -j 8
+	cmake --build $@ -j 8
+	$(MAKE) sync/android-libs BUILD_DIR=build/android-debug
+	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleDebug
 
-# build/android:
+build/android-debug/build.ninja:
+	cmake -G Ninja \
+		-DCMAKE_TOOLCHAIN_FILE=$(ANDROID_NDK)/build/cmake/android.toolchain.cmake \
+		-DANDROID_ABI=$(ANDROID_ABI) \
+		-DANDROID_PLATFORM=$(ANDROID_PLATFORM) \
+		-DANDROID_STL=$(ANDROID_STL) \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DBUILD_PLATFORM=android \
+		-DBUILD_TESTING=OFF \
+		-B build/android-debug -S .
+
+# Copy native shared libraries into the Gradle jniLibs tree.
+sync/android-libs:
+	mkdir -p $(JNI_LIBS)
+	cp -f $(BUILD_DIR)/src/engine/libmain.so $(JNI_LIBS)/
+	@TP_DIR=build/third-party-binary/$$(basename $(BUILD_DIR)); \
+	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android-debug; fi; \
+	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android; fi; \
+	  cp -f "$$TP_DIR/lib/libSDL2.so" $(JNI_LIBS)/; \
+	  if [ -f "$$TP_DIR/lib/libhidapi.so" ]; then cp -f "$$TP_DIR/lib/libhidapi.so" $(JNI_LIBS)/; fi
+	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" $(JNI_LIBS)/
+	@echo "Synced native libs -> $(JNI_LIBS)"
+	ls -la $(JNI_LIBS)
+
+install/android-debug:
+	$(ANDROID_SDK)/platform-tools/adb install -r \
+		$(APK_DIR)/app/build/outputs/apk/debug/app-debug.apk
+
+run/android-debug: install/android-debug
+	$(ANDROID_SDK)/platform-tools/adb shell am start -n com.evengine.example/.EVEngineActivity
+
+log/android:
+	$(ANDROID_SDK)/platform-tools/adb logcat -s EVEngineActivity:I SDL:V SDL/APP:V vulkan:V libc:F DEBUG:F
 
 test: test/$(PLATFORM)-debug
 

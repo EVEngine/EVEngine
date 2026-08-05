@@ -1,13 +1,32 @@
-
 create_module(EVCommon common)
 create_module(EVDevTools devtools)
 create_module(EVCmdLine cmdline)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
-add_executable(eve main.cpp)
+
+if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+    # SDLActivity loads libmain.so and calls SDL_main (via SDL_main.h macro on main).
+    add_library(main SHARED main.cpp)
+    set(EVENGINE_NATIVE_TARGET main)
+else()
+    add_executable(eve main.cpp)
+    set(EVENGINE_NATIVE_TARGET eve)
+endif()
 
 if(WIN32)
     set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
+elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+    find_library(ANDROID_LOG_LIB log)
+    find_library(ANDROID_LIB android)
+    find_library(ANDROID_OPENSLES_LIB OpenSLES)
+    set(SystemLibraries ${SystemLibraries}
+        ${ANDROID_LOG_LIB}
+        ${ANDROID_LIB}
+        ${ANDROID_OPENSLES_LIB}
+        dl
+        m
+        c++_shared
+    )
 elseif(APPLE)
     set(SystemLibraries ${SystemLibraries}
         dl pthread iconv
@@ -45,27 +64,36 @@ else()
             vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md
             PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
             ${SystemLibraries})
+    elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        # SDL2 is shared (loaded by Java); other deps are static where possible.
+        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+            medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
+            vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
+            PocoFoundation PocoNet PocoJSON PocoXML
+            ${SystemLibraries})
+    elseif(APPLE)
+        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+            medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
+            vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
+            PocoFoundation PocoNet PocoJSON PocoXML
+            ${SystemLibraries})
     else()
-        if(APPLE)
-            set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-                medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
-                vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
-                PocoFoundation PocoNet PocoJSON PocoXML
-                ${SystemLibraries})
-        else()
-            set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-                medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
-                vorbis vorbisfile modplug mpg123 OpenAL
-                PocoFoundation PocoNet PocoJSON PocoXML
-                ${SystemLibraries})
-        endif()
+        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+            medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
+            vorbis vorbisfile modplug mpg123 OpenAL
+            PocoFoundation PocoNet PocoJSON PocoXML
+            ${SystemLibraries})
     endif()
 endif()
 
-set(EVELIBS EVWindow EVMouse EVEvent EVTimer EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
+if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+    set(EVELIBS EVWindow EVMouse EVEvent EVTimer EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
+else()
+    set(EVELIBS EVWindow EVMouse EVEvent EVTimer EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
+endif()
 
 if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
 endif()
 
-target_link_libraries(eve ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+target_link_libraries(${EVENGINE_NATIVE_TARGET} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
