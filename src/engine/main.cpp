@@ -44,10 +44,11 @@ int main(int argc, char **argv)
 {
 #if defined(EVENGINE_IOS)
     // UIKit launches with no CLI args; inject `run <bundle game dir>` like Android Activity.
+    // Qualify eve::ios to avoid ambiguity with std::ios after using-directives.
     static std::string gamePath;
     static std::vector<char *> injected;
     if (argc <= 1) {
-        gamePath = ios::getGameDirectory();
+        gamePath = eve::ios::getGameDirectory();
         if (gamePath.empty())
             gamePath = ".";
         static char runFlag[] = "run";
@@ -55,7 +56,7 @@ int main(int argc, char **argv)
         argc = static_cast<int>(injected.size());
         argv = injected.data();
     }
-    ios::initAudioSessionInterruptionHandler();
+    eve::ios::initAudioSessionInterruptionHandler();
 #endif
     return requireModInst(eve::cmd,Cmdline)->runArgs(argc, argv);
 }

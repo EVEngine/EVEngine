@@ -5,6 +5,10 @@
 #include <filesystem>
 #include <rang.hpp>
 
+#if defined(EVENGINE_IOS)
+#include "ios/ios.h"
+#endif
+
 using namespace std::filesystem;
 using namespace std;
 
@@ -34,15 +38,22 @@ CMD_REG(DocArgs);
 
 #ifdef _WIN32
 #define OPEN_WEB_PAGE_CMD "start "
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) && !defined(EVENGINE_IOS)
 #define OPEN_WEB_PAGE_CMD "open "
-#elif defined(__unix__)
+#elif defined(__unix__) && !defined(EVENGINE_ANDROID)
 #define OPEN_WEB_PAGE_CMD "xdg-open "
 #endif
 
 static inline int openWebPage(string url) {
+#if defined(EVENGINE_IOS)
+    return eve::ios::openURL(url) ? 0 : -1;
+#elif defined(OPEN_WEB_PAGE_CMD)
     string cmd = OPEN_WEB_PAGE_CMD + url;
     return system(cmd.c_str());
+#else
+    (void)url;
+    return -1;
+#endif
 }
 
 // create a new project

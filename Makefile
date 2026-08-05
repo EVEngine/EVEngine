@@ -130,13 +130,20 @@ build/android-debug/build.ninja:
 		-B build/android-debug -S .
 
 build/ios: build/ios/EVEngine.xcodeproj
-	@test -n "$(IOS_DEVELOPMENT_TEAM)" || (echo "Set IOS_DEVELOPMENT_TEAM=<TeamID> for signing"; exit 1)
-	cd build/ios && xcodebuild -scheme eve -configuration Release \
-		-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-		DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-		CODE_SIGN_STYLE=Automatic \
-		-allowProvisioningUpdates \
-		build
+	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
+		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
+		cd build/ios && xcodebuild -scheme eve -configuration Release \
+			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
+			CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+			build; \
+	else \
+		cd build/ios && xcodebuild -scheme eve -configuration Release \
+			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
+			DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
+			CODE_SIGN_STYLE=Automatic \
+			-allowProvisioningUpdates \
+			build; \
+	fi
 
 build/ios/EVEngine.xcodeproj:
 	cmake -G Xcode \
@@ -153,14 +160,22 @@ build/ios/EVEngine.xcodeproj:
 		-B build/ios -S .
 
 build/ios-debug: build/ios-debug/EVEngine.xcodeproj
-	@test -n "$(IOS_DEVELOPMENT_TEAM)" || (echo "Set IOS_DEVELOPMENT_TEAM=<TeamID> for signing"; exit 1)
 	cmake --build build/ios-debug --target deps -j 8
-	cd build/ios-debug && xcodebuild -scheme eve -configuration Debug \
-		-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-		DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-		CODE_SIGN_STYLE=Automatic \
-		-allowProvisioningUpdates \
-		build
+	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
+		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
+		echo "  Xcode → Settings → Accounts → add Apple ID, then export IOS_DEVELOPMENT_TEAM=<TeamID>"; \
+		cd build/ios-debug && xcodebuild -scheme eve -configuration Debug \
+			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
+			CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+			build; \
+	else \
+		cd build/ios-debug && xcodebuild -scheme eve -configuration Debug \
+			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
+			DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
+			CODE_SIGN_STYLE=Automatic \
+			-allowProvisioningUpdates \
+			build; \
+	fi
 
 build/ios-debug/EVEngine.xcodeproj:
 	cmake -G Xcode \

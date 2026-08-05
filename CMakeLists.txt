@@ -78,7 +78,14 @@ macro(create_module libname folder)
     file(READ ${CMAKE_CURRENT_BINARY_DIR}/${folder}_src.txt module_src)
     string(REPLACE "\n" ";" module_src "${module_src}")
 
-    add_library(${libname} OBJECT ${module_src})
+    # Xcode + OBJECT libraries often emit hashed object filenames that the
+    # dependent link phase still references without the hash (duplicate basenames
+    # like Window.cpp). Use STATIC archives under Xcode to keep linking stable.
+    if(CMAKE_GENERATOR MATCHES "Xcode")
+        add_library(${libname} STATIC ${module_src})
+    else()
+        add_library(${libname} OBJECT ${module_src})
+    endif()
 
     add_custom_target(check_sources_${folder}
         ALL
@@ -316,24 +323,20 @@ function(check_third_party_project name repo)
         message(STATUS "third-party Android toolchain: ABI=${ANDROID_ABI} PLATFORM=${ANDROID_PLATFORM}")
     elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
         find_program(_eve_ninja ninja REQUIRED)
+        set(_eve_ios_tp_toolchain "${CMAKE_SOURCE_DIR}/cmake/ios.toolchain.cmake")
         list(APPEND _eve_tp_cmake_args
-            -DCMAKE_SYSTEM_NAME=iOS
+            -DCMAKE_TOOLCHAIN_FILE=${_eve_ios_tp_toolchain}
             -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
             -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
             -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
             -DIOS=TRUE
             -DVIDEO_COCOA=OFF
+            -DVIDEO_OPENGL=OFF
             -DCMAKE_MAKE_PROGRAM=${_eve_ninja}
         )
-        if(CMAKE_C_COMPILER)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
-        endif()
-        if(CMAKE_CXX_COMPILER)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
-        endif()
         # Force Ninja for deps: parent Xcode generator makes SDL try_compile unbearably slow.
         set(_eve_tp_use_ninja TRUE)
-        message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET} GEN=Ninja")
+        message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET} GEN=Ninja FILE=${_eve_ios_tp_toolchain}")
     endif()
 
     set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --parallel 8)
