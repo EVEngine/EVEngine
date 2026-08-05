@@ -9,10 +9,16 @@ else
 endif
 
 
-.PHONY: all build/win32 build/linux build/win32-debug build/linux-debug example
+ifeq ($(OS),Windows_NT)
+	PLATFORM = win32
+else
+	PLATFORM = linux
+endif
 
-debug: build/win32-debug build/linux-debug 
-release: build/win32 build/linux
+.PHONY: all build/win32 build/linux build/win32-debug build/linux-debug debug release example
+
+debug: build/$(PLATFORM)-debug
+release: build/$(PLATFORM)
 
 build/win32: build/win32/EVEngine.sln
 	cmake.exe --build $@ --config Release -j 32
@@ -48,7 +54,7 @@ build/linux-debug/Makefile:
 
 # build/android:
 
-test: test/win32-debug test/linux-debug
+test: test/$(PLATFORM)-debug
 
 test/win32: 
 	build/win32/test/Release/unit_test.exe
