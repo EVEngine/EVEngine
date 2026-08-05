@@ -22,6 +22,15 @@ function(main)
     check_ipo()
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    # cl.exe gets STL/UCRT from %INCLUDE% (vcvars); CMake omits those from compile_commands.json.
+    # Export them so clangd can resolve <cstdint> etc. Configure via cmake/with-msvc.cmd.
+    if(MSVC AND DEFINED ENV{INCLUDE} AND NOT "$ENV{INCLUDE}" STREQUAL "")
+        set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES $ENV{INCLUDE})
+        set(CMAKE_C_STANDARD_INCLUDE_DIRECTORIES $ENV{INCLUDE})
+        message(STATUS "Exported MSVC INCLUDE paths into compile_commands for clangd")
+    elseif(MSVC)
+        message(STATUS "MSVC INCLUDE unset; clangd may not find STL headers. Use cmake/with-msvc.cmd")
+    endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
     set(BUILD_TEST OFF CACHE BOOL "" FORCE)

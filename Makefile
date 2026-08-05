@@ -33,7 +33,7 @@ build/linux/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release  -B build/linux -S .
 
 # win32-debug: Ninja + MSVC cl；via cmake/with-msvc.cmd (vcvars) so STL headers resolve
-# Emits build/win32-debug/compile_commands.json for clangd
+# Emits build/win32-debug/compile_commands.json with MSVC INCLUDE paths for clangd
 WITH_MSVC = cmake\with-msvc.cmd
 
 build/win32-debug: build/win32-debug/build.ninja

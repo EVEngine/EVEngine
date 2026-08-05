@@ -48,11 +48,19 @@ CMD_REG(RunArgs);
 
 // create a new project
 int Cmdline::Run(std::string path, std::string root) {
-    ssq::VM vm(2048, ssq::Libs::ALL);
-    ModuleManager::expose(vm);
-    ssq::Script script = vm.compileSource(root.c_str());
-    vm.run(script);
-    return 0;
+    try {
+        ssq::VM vm(2048, ssq::Libs::ALL);
+        ModuleManager::expose(vm);
+        ssq::Script script = vm.compileSource(root.c_str());
+        vm.run(script);
+        return 0;
+    } catch (const std::exception& e) {
+        cerr << "Run failed: " << e.what() << endl;
+        return 3;
+    } catch (...) {
+        cerr << "Run failed: unknown exception" << endl;
+        return 3;
+    }
 }
 
 

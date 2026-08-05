@@ -1,98 +1,18 @@
-// This is the main entry point for the game
-// It is responsible for setting up the game and running the game loop
+// example game callbacks — overrides defaults from load.nut
 
+box <- { x = 100.0, y = 100.0, vx = 60.0 };
 
+eve_init = function() {
+    gfx.setBackgroundColor(0.12, 0.14, 0.22, 1.0);
+};
 
-class Position extends eve::Component {
-    x = eve::Number;
-    y = eve::Number;
-}
+eve_update = function(dt) {
+    box.x = box.x + box.vx * dt;
+    if (box.x < 0.0 || box.x + 100.0 > config.width)
+        box.vx = -box.vx;
+};
 
-class Velocity extends eve::Component {
-    x = eve::Number;
-    y = eve::Number;
-}
-
-class Collision extends eve::Component {
-    hit = eve::Boolean;
-}
-
-
-
-class PhysicsSystem extends eve::System {
-    update(dt) {
-        for (let entity of this.entities) {
-            let pos = entity.getComponent(Position)
-            let vel = entity.getComponent(Velocity)
-
-            pos.x += vel.x * dt
-            pos.y += vel.y * dt
-        }
-    }
-
-    computeNewPosition(pos, vel, dt) {
-        return {
-            x: pos.x + vel.x * dt,
-            y: pos.y + vel.y * dt
-        }
-    }
-    
-    computeCollision(pos1, pos2) {
-        return pos1.x == pos2.x && pos1.y == pos2.y
-    }
-
-    computeNewVelocity(vel) {
-        return {
-            x: vel.x,
-            y: vel.y
-        }
-    }
-}
-
-
-class Moveable extends eve::EntityContainer {
-    pos = new Position()
-    vel = new Velocity()
-}
-
-
-class Bullets extends eve::EntityContainer {
-    pos = new Position()
-    vel = new Velocity()
-
-}
-
-class Enemies extends eve::EntityContainer {
-    pos = new Position()
-    vel = new Velocity()
-    collision = new Collision()
-}
-
-
-class Player extends eve::GameObject {
-    update() {
-        
-    }
-}
-
-
-// You can define init, update and render functions and use the default main function
-function eve::init() {
-
-}
-
-function eve::update(dt) {
-    // Update the game state
-
-}
-
-function eve::render() {
-    // Render the game 
-
-}
-
-
-// OR, You can define a main function as the entry point for your game
-function eve::main() {
-    // Do anything you want   
-}
+eve_render = function() {
+    gfx.clear();
+    gfx.drawSolidRect(box.x, box.y, 100.0, 60.0, 0.2, 0.8, 0.4, 1.0);
+};

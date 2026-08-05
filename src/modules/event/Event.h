@@ -59,6 +59,8 @@ public:
 
     void         push(Message* msg);
     Message*     poll();
+    /** Script helper: pop one message; return name or empty if none. */
+    std::string  pollName();
     virtual void clear();
 
     virtual void     pump() = 0;

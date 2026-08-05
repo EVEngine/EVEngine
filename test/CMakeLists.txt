@@ -15,6 +15,8 @@ file(GLOB all_test_cpp
   sound.cpp
   audio.cpp
   window.cpp
+  event.cpp
+  timer.cpp
   main.cpp
 )
 
@@ -26,6 +28,7 @@ file(GLOB all_test_scripts
   mouse.nut
   simplesquirrel.nut
   window.nut
+  timer.nut
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   COMMAND ${CMAKE_COMMAND} -DOUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}" -P "${CMAKE_SOURCE_DIR}/cmake/integrate.cmake"
@@ -75,7 +78,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVImage EVDevTools EVCommon EVEvent EVNetwork EVData EVSound EVAudio)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio)
 
 target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 

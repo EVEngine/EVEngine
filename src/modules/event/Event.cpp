@@ -17,6 +17,8 @@ void Event::expose(ssq::Table& table) {
 
 void Event::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Event::getName);
+    cls.addFunc("pump", &Event::pump);
+    cls.addFunc("poll", &Event::pollName);
 }
 
 Event::~Event() {}
@@ -30,6 +32,14 @@ Message* Event::poll() {
     auto msg = queue.front();
     queue.pop();
     return msg;
+}
+
+std::string Event::pollName() {
+    Message* msg = poll();
+    if (!msg) return {};
+    std::string n = msg->name;
+    delete msg;
+    return n;
 }
 
 void Event::clear() {

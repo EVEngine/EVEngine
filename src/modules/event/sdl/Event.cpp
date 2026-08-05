@@ -93,10 +93,8 @@ void Event::pump()
 	{
 		Message *msg = convert(e);
 		if (msg)
-		{
 			push(msg);
-			delete msg;
-		}
+		// Ownership stays in the queue until poll()/clear() — do not delete here.
 	}
 
 	if (auto *audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio"))
@@ -142,9 +140,17 @@ void Event::exceptionIfInRenderPass(const char *name)
 
 Message *Event::convert(const SDL_Event &e)
 {
-	Message *msg = nullptr;
-	(void)e;
-	return msg;
+	switch (e.type) {
+	case SDL_QUIT:
+		return new Message("quit");
+	case SDL_WINDOWEVENT:
+		if (e.window.event == SDL_WINDOWEVENT_CLOSE)
+			return new Message("quit");
+		break;
+	default:
+		break;
+	}
+	return nullptr;
 }
 
 }

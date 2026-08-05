@@ -34,6 +34,6 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVWindow EVMouse EVEvent EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
+set(EVELIBS EVWindow EVMouse EVEvent EVTimer EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
 
 target_link_libraries(eve ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})

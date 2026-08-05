@@ -5,3 +5,4 @@ const char* window_content         = R"content(@window_content@)content";
 const char* mouse_content          = R"content(@mouse_content@)content";
 const char* model_content          = R"content(@model_content@)content";
 const char* model2_content         = R"content(@model2_content@)content";
+const char* timer_content          = R"content(@timer_content@)content";

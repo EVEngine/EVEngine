@@ -26,7 +26,12 @@ public:
 	 **/
 	void reset();
 
-	
+    /** Script-friendly wrappers (r,g,b[,a] floats — no Color type in Squirrel). */
+    void clearScreen();
+    void setBackgroundColorRGBA(float r, float g, float b, float a = 1.f);
+    void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b,
+                           float a = 1.f);
+
     virtual void present() = 0;
 
     /**
