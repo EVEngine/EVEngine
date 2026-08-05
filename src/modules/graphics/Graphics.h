@@ -106,6 +106,24 @@ public:
     void setScreenReadbackEnabled(bool enabled) { screenReadbackEnabled = enabled; }
     bool isScreenReadbackEnabled() const { return screenReadbackEnabled; }
 
+    /** Pause/resume presenting (Android background / foreground). */
+    void setActive(bool active) {
+        graphicsActive = active;
+        if (active)
+            markSwapchainDirty();
+    }
+    bool isActive() const { return graphicsActive; }
+
+    /** Request swapchain recreation on next present/begin3DFrame. */
+    virtual void markSwapchainDirty() {}
+
+    /**
+     * Request recreation of the platform render surface on the next frame
+     * (Android background/foreground destroys the native window). Safe to call
+     * from a non-render thread; the actual work happens on the render thread.
+     */
+    virtual void requestSurfaceRecreate() {}
+
 
 	// void setFont(Font *font);
 	// Font *getFont();
@@ -242,6 +260,7 @@ protected:
     Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
     bool frameHad3D = false;
     bool screenReadbackEnabled = false;
+    bool graphicsActive = true;
 };
 
 }  // namespace graphics

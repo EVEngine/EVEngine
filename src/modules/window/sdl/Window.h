@@ -72,6 +72,9 @@ public:
     int  showMessageBoxData(const MessageBoxData& data) override;
     void requestAttention(bool continuous) override;
 
+    /** Used by event backend on resize to refresh drawable size / viewport. */
+    void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);
+
 private:
     bool setFullscreenInternal(bool fullscreen, bool desktop_mode);
     graphics::Graphics *graphics = nullptr;
@@ -94,7 +97,6 @@ private:
     SDL_Window *window = nullptr;
 
     bool createWindowAndContext(int x, int y, int w, int h, Uint32 windowflags, int msaa, bool stencil, int depth);
-    void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);
     void close(bool allowExceptions);
 
 };  // Window

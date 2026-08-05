@@ -3,6 +3,17 @@
 #include <CLI11.hpp>
 #include <rang.hpp>
 #include <iostream>
+#include <string>
+#include <vector>
+
+#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_main.h>
+#endif
+
+#if defined(EVENGINE_IOS)
+#include "ios/ios.h"
+#endif
 
 using namespace eve;
 using namespace std;
@@ -31,5 +42,20 @@ public:
 
 int main(int argc, char **argv)
 {
+#if defined(EVENGINE_IOS)
+    // UIKit launches with no CLI args; inject `run <bundle game dir>` like Android Activity.
+    static std::string gamePath;
+    static std::vector<char *> injected;
+    if (argc <= 1) {
+        gamePath = ios::getGameDirectory();
+        if (gamePath.empty())
+            gamePath = ".";
+        static char runFlag[] = "run";
+        injected = {argv[0], runFlag, gamePath.data()};
+        argc = static_cast<int>(injected.size());
+        argv = injected.data();
+    }
+    ios::initAudioSessionInterruptionHandler();
+#endif
     return requireModInst(eve::cmd,Cmdline)->runArgs(argc, argv);
 }

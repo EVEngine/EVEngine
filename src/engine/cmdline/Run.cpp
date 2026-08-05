@@ -5,6 +5,17 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <CLI11.hpp>
 #include <string>
+#include <filesystem>
+
+#if defined(EVENGINE_ANDROID)
+#include <android/log.h>
+#define EVE_ANDROID_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "EVEngine", __VA_ARGS__)
+#elif defined(EVENGINE_IOS)
+#include <cstdio>
+#define EVE_ANDROID_LOGE(...) do { fprintf(stderr, "EVEngine: "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while (0)
+#else
+#define EVE_ANDROID_LOGE(...) ((void)0)
+#endif
 
 using namespace std;
 
@@ -49,6 +60,16 @@ CMD_REG(RunArgs);
 // create a new project
 int Cmdline::Run(std::string path, std::string root) {
     try {
+        // Switch to the game directory so load.nut can dofile("config.nut") / "main.nut".
+        if (!path.empty() && path != ".") {
+            std::error_code ec;
+            filesystem::current_path(path, ec);
+            if (ec) {
+                cerr << "Cannot chdir to game path '" << path << "': " << ec.message() << endl;
+                return 2;
+            }
+        }
+
         ssq::VM vm(2048, ssq::Libs::ALL);
         ModuleManager::expose(vm);
         ssq::Script script = vm.compileSource(root.c_str());
@@ -56,9 +77,11 @@ int Cmdline::Run(std::string path, std::string root) {
         return 0;
     } catch (const std::exception& e) {
         cerr << "Run failed: " << e.what() << endl;
+        EVE_ANDROID_LOGE("Run failed: %s", e.what());
         return 3;
     } catch (...) {
         cerr << "Run failed: unknown exception" << endl;
+        EVE_ANDROID_LOGE("Run failed: unknown exception");
         return 3;
     }
 }

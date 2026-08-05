@@ -42,15 +42,15 @@
 #endif
 
 #ifdef EVENGINE_IOS
-#include "common/ios.h"
+#include "ios/ios.h"
 #endif
 
 #include <string>
 
 #ifdef EVENGINE_ANDROID
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
-#include "common/android.h"
+#include "android/android.h"
 #endif
 
 using namespace std;

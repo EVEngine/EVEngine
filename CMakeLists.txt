@@ -37,6 +37,14 @@ function(main)
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(USE_MOLD OFF CACHE BOOL "" FORCE)
     set(COLORFUL_OUTPUT OFF CACHE STRING "" FORCE)
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+        message(STATUS "Android build: unit tests disabled")
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+        message(STATUS "iOS build: unit tests disabled")
+    endif()
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).
@@ -101,11 +109,64 @@ function(set_include)
     )
 
     # Prefer system Vulkan SDK; otherwise use third-party headers + local import lib.
-    # On Apple, MoltenVK from the LunarG Vulkan SDK is required (no Win32 .lib fallback).
+    # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
+    # On iOS, link/embed the SDK's MoltenVK.xcframework (iphoneos arm64 slice).
+    # On Android, link the NDK loader (libvulkan.so).
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
-    if(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        find_library(ANDROID_VULKAN_LIB vulkan)
+        if(NOT ANDROID_VULKAN_LIB)
+            message(FATAL_ERROR "Android NDK libvulkan not found (need ANDROID_PLATFORM >= 24)")
+        endif()
+        if(Vulkan_INCLUDE_DIRS)
+            include_directories(${Vulkan_INCLUDE_DIRS})
+        else()
+            include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
+        endif()
+        set(EVENGINE_VULKAN_LIB ${ANDROID_VULKAN_LIB} CACHE INTERNAL "Vulkan link target")
+        message(STATUS "Vulkan (Android): ${ANDROID_VULKAN_LIB}")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        # Resolve MoltenVK.xcframework from VULKAN_SDK / common install locations.
+        set(_eve_moltenvk_xcframework "")
+        if(DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
+            foreach(_cand
+                "$ENV{VULKAN_SDK}/../iOS/lib/MoltenVK.xcframework"
+                "$ENV{VULKAN_SDK}/iOS/lib/MoltenVK.xcframework"
+                "$ENV{VULKAN_SDK}/MoltenVK.xcframework")
+                get_filename_component(_abs "${_cand}" ABSOLUTE)
+                if(EXISTS "${_abs}")
+                    set(_eve_moltenvk_xcframework "${_abs}")
+                    break()
+                endif()
+            endforeach()
+        endif()
+        if(NOT _eve_moltenvk_xcframework)
+            file(GLOB _eve_vk_ios_glob "$ENV{HOME}/VulkanSDK/*/iOS/lib/MoltenVK.xcframework")
+            if(_eve_vk_ios_glob)
+                list(GET _eve_vk_ios_glob 0 _eve_moltenvk_xcframework)
+            endif()
+        endif()
+        if(NOT _eve_moltenvk_xcframework OR NOT EXISTS "${_eve_moltenvk_xcframework}")
+            message(FATAL_ERROR
+                "MoltenVK.xcframework not found for iOS.\n"
+                "  Install the LunarG Vulkan SDK and ensure iOS/lib/MoltenVK.xcframework exists,\n"
+                "  or set VULKAN_SDK to the SDK root (macOS or iOS tree).")
+        endif()
+        set(EVENGINE_MOLTENVK_XCFRAMEWORK "${_eve_moltenvk_xcframework}" CACHE INTERNAL "MoltenVK xcframework")
+        set(EVENGINE_MOLTENVK_FRAMEWORK_DIR
+            "${_eve_moltenvk_xcframework}/ios-arm64"
+            CACHE INTERNAL "MoltenVK framework search path for iphoneos")
+        if(Vulkan_INCLUDE_DIRS)
+            include_directories(${Vulkan_INCLUDE_DIRS})
+        else()
+            include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
+        endif()
+        # Placeholder; engine CMake links -F + -framework MoltenVK explicitly.
+        set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target")
+        message(STATUS "Vulkan (iOS MoltenVK): ${EVENGINE_MOLTENVK_XCFRAMEWORK}")
+    elseif(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
         message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
         include_directories(${Vulkan_INCLUDE_DIRS})
         set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
@@ -132,7 +193,16 @@ endfunction()
 macro(get_available_build)
     set(AVAILABLE_PLATFORM "")
 
-    if(UNIX)
+    # Cross-compiling for Android (NDK toolchain) must win over host Apple/Linux detection.
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        list(APPEND AVAILABLE_PLATFORM "android")
+        set(BUILD_PLATFORM "android" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
+        SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        list(APPEND AVAILABLE_PLATFORM "ios")
+        set(BUILD_PLATFORM "ios" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
+        SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
+    elseif(UNIX)
         if(APPLE)
             list(APPEND AVAILABLE_PLATFORM "macosx")
             list(APPEND AVAILABLE_PLATFORM "ios")
@@ -227,16 +297,71 @@ function(check_third_party_project name repo)
         set(GIT_HTTPS_LINK ${repo})
     endif()
 
-    ExternalProject_Add(${name}
-        GIT_REPOSITORY ${GIT_HTTPS_LINK}
-        GIT_TAG origin/main
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
-        BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
-        CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
-        BUILD_COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --parallel 32
-        BUILD_ALWAYS 0
-        EXCLUDE_FROM_ALL 1
+    set(_eve_tp_cmake_args
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
     )
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+        list(APPEND _eve_tp_cmake_args
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DANDROID_ABI=${ANDROID_ABI}
+            -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+            -DANDROID_STL=${ANDROID_STL}
+            -DANDROID_NDK=${ANDROID_NDK}
+            -DCMAKE_SYSTEM_NAME=Android
+        )
+        if(CMAKE_MAKE_PROGRAM)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM})
+        endif()
+        message(STATUS "third-party Android toolchain: ABI=${ANDROID_ABI} PLATFORM=${ANDROID_PLATFORM}")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        find_program(_eve_ninja ninja REQUIRED)
+        list(APPEND _eve_tp_cmake_args
+            -DCMAKE_SYSTEM_NAME=iOS
+            -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+            -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
+            -DIOS=TRUE
+            -DVIDEO_COCOA=OFF
+            -DCMAKE_MAKE_PROGRAM=${_eve_ninja}
+        )
+        if(CMAKE_C_COMPILER)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
+        endif()
+        if(CMAKE_CXX_COMPILER)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
+        endif()
+        # Force Ninja for deps: parent Xcode generator makes SDL try_compile unbearably slow.
+        set(_eve_tp_use_ninja TRUE)
+        message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET} GEN=Ninja")
+    endif()
+
+    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --parallel 8)
+
+    if(_eve_tp_use_ninja)
+        ExternalProject_Add(${name}
+            GIT_REPOSITORY ${GIT_HTTPS_LINK}
+            GIT_TAG origin/main
+            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
+            CMAKE_GENERATOR "Ninja"
+            CMAKE_ARGS ${_eve_tp_cmake_args}
+            BUILD_COMMAND ${_eve_tp_build_cmd}
+            BUILD_ALWAYS 0
+            EXCLUDE_FROM_ALL 1
+        )
+    else()
+        ExternalProject_Add(${name}
+            GIT_REPOSITORY ${GIT_HTTPS_LINK}
+            GIT_TAG origin/main
+            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
+            CMAKE_ARGS ${_eve_tp_cmake_args}
+            BUILD_COMMAND ${_eve_tp_build_cmd}
+            BUILD_ALWAYS 0
+            EXCLUDE_FROM_ALL 1
+        )
+    endif()
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     link_directories(${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
 endfunction()

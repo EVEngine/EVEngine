@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Math.h"
+
 #include <string>
 
 struct SDL_Window;
@@ -12,6 +14,11 @@ namespace ios {
  * searched first, and then the app's Documents folder.
  **/
 std::string getResources(bool &fused);
+
+/**
+ * Directory containing the bundled example/game assets (Resources/game).
+ **/
+std::string getGameDirectory();
 
 /**
  * Gets the directory path where files should be stored.
