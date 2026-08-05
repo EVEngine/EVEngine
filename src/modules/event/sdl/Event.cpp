@@ -4,12 +4,16 @@
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "window/Window.h"
+#include "window/sdl/Window.h"
 #include "audio/Audio.h"
+#include "touch/Touch.h"
+#include "touch/sdl/Touch.h"
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "common/config.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
 #include <cmath>
 
 namespace eve::event::sdl
@@ -44,6 +48,33 @@ static void normalizedToDPICoords(double *x, double *y)
 }
 #endif
 
+static void syncWindowPixelSize()
+{
+	auto *win = getModInst(window, Window);
+	auto *gfx = getModInst(graphics, Graphics);
+	if (!win || !gfx)
+		return;
+	auto *sdlWin = dynamic_cast<eve::window::sdl::Window *>(win);
+	if (!sdlWin)
+		return;
+	SDL_Window *native = static_cast<SDL_Window *>(sdlWin->getHandle());
+	if (!native)
+		return;
+
+	int lw = 0, lh = 0, pw = 0, ph = 0;
+	SDL_GetWindowSize(native, &lw, &lh);
+	SDL_Vulkan_GetDrawableSize(native, &pw, &ph);
+	if (pw <= 0 || ph <= 0) {
+		pw = lw;
+		ph = lh;
+	}
+	window::WindowSettings s = win->getWindowSettings();
+	s.width = static_cast<uint16_t>(std::max(lw, 1));
+	s.height = static_cast<uint16_t>(std::max(lh, 1));
+	// Keep settings + graphics viewport aligned after rotation / resume.
+	sdlWin->updateSettings(s, true);
+}
+
 // SDL's event watch callbacks trigger when the event is actually posted inside
 // SDL, unlike with SDL_PollEvents. This is useful for some events which require
 // handling inside the function which triggered them on some backends.
@@ -53,13 +84,20 @@ static int SDLCALL watchAppEvents(void * /*udata*/, SDL_Event *event)
 
 	switch (event->type)
 	{
-	// On iOS, calling any OpenGL ES function after the function which triggers
-	// SDL_APP_DIDENTERBACKGROUND is called will kill the app, so we handle it
-	// with an event watch callback, which will be called inside that function.
 	case SDL_APP_DIDENTERBACKGROUND:
+		// Stop presenting: the native surface is being torn down.
+		if (gfx)
+			gfx->setActive(false);
+		break;
 	case SDL_APP_WILLENTERFOREGROUND:
-		// if (gfx)
-		// 	gfx->setActive(event->type == SDL_APP_WILLENTERFOREGROUND);
+	case SDL_APP_DIDENTERFOREGROUND:
+		// The native window is recreated on resume; rebuild the render surface
+		// and swapchain, then resume presenting.
+		if (gfx) {
+			gfx->requestSurfaceRecreate();
+			gfx->setActive(true);
+			syncWindowPixelSize();
+		}
 		break;
 	default:
 		break;
@@ -144,9 +182,38 @@ Message *Event::convert(const SDL_Event &e)
 	case SDL_QUIT:
 		return new Message("quit");
 	case SDL_WINDOWEVENT:
-		if (e.window.event == SDL_WINDOWEVENT_CLOSE)
+		switch (e.window.event) {
+		case SDL_WINDOWEVENT_CLOSE:
 			return new Message("quit");
+		case SDL_WINDOWEVENT_SIZE_CHANGED:
+		case SDL_WINDOWEVENT_RESIZED:
+			syncWindowPixelSize();
+			break;
+		default:
+			break;
+		}
 		break;
+	case SDL_FINGERDOWN:
+	case SDL_FINGERUP:
+	case SDL_FINGERMOTION: {
+		auto *touchMod = dynamic_cast<eve::touch::sdl::Touch *>(
+			eve::ModuleManager::getInstance<eve::touch::Touch>("Touch"));
+		if (touchMod) {
+			eve::touch::Touch::TouchInfo info{};
+			info.id = static_cast<int64_t>(e.tfinger.fingerId);
+			info.x = e.tfinger.x;
+			info.y = e.tfinger.y;
+			info.dx = e.tfinger.dx;
+			info.dy = e.tfinger.dy;
+			info.pressure = e.tfinger.pressure;
+#ifndef EVENGINE_MACOSX
+			normalizedToDPICoords(&info.x, &info.y);
+			normalizedToDPICoords(&info.dx, &info.dy);
+#endif
+			touchMod->onEvent(e.type, info);
+		}
+		break;
+	}
 	default:
 		break;
 	}

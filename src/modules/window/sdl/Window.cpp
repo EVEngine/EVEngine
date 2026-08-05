@@ -12,7 +12,7 @@
 #include "graphics/Graphics.h"
 
 #ifdef EVENGINE_ANDROID
-#include "android.h"
+#include "android/android.h"
 #endif
 
 #ifdef EVENGINE_IOS

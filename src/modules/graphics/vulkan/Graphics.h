@@ -4,6 +4,7 @@
 #include "graphics/Texture.h"
 #include "graphics/Mesh.h"
 #include "vkbuilder.hpp"
+#include <atomic>
 #include <memory>
 #include <vector>
 #include <cstdint>
@@ -102,6 +103,7 @@ public:
 
     void initWithWindow(void *nativeWindow) override;
     void present() override;
+    void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba) override;
@@ -152,6 +154,21 @@ private:
     std::vector<uint8_t> lastFrameRgba;
     Canvas *activeCanvas = nullptr;
     bool swapchainDirty = false;
+    void markSwapchainDirty() override { swapchainDirty = true; }
+    // Set from the SDL event-watch thread on Android foreground; consumed on
+    // the render thread inside flushToSwapchain().
+    std::atomic<bool> surfaceNeedsRecreate{false};
+    void recreateSurfaceForResume();
+    // False while the native window is mid-(re)creation / rotation (Android),
+    // when touching the swapchain or presenting would crash the GPU driver.
+    bool isRenderSurfaceReady() const;
+    // Returns true only once the drawable size has been non-zero and identical
+    // across consecutive frames, i.e. the surface has settled after a
+    // rotation/resume and is safe to (re)build a swapchain against.
+    bool isRenderSurfaceStable();
+    int pendingSurfaceW = 0;
+    int pendingSurfaceH = 0;
+    int surfaceStableFrames = 0;
     void *sdlWindow = nullptr;
     vk::SurfaceKHR surface;
 

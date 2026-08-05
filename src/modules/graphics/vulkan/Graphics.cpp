@@ -125,6 +125,86 @@ void Graphics::destroySwapchainResources() {
     depthImage = vkb::DepthStencilImage{};
 }
 
+bool Graphics::isRenderSurfaceReady() const {
+#if defined(EVENGINE_ANDROID)
+    auto *window = static_cast<SDL_Window *>(sdlWindow);
+    if (!window) return false;
+    // During background/resume and orientation changes the ANativeWindow is
+    // torn down and rebuilt; SDL reports a zero drawable size until it settles.
+    int pw = 0, ph = 0;
+    SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
+    return pw > 0 && ph > 0;
+#else
+    return true;
+#endif
+}
+
+bool Graphics::isRenderSurfaceStable() {
+#if defined(EVENGINE_ANDROID)
+    auto *window = static_cast<SDL_Window *>(sdlWindow);
+    if (!window) return false;
+    int pw = 0, ph = 0;
+    SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
+    if (pw <= 0 || ph <= 0) {
+        surfaceStableFrames = 0;
+        return false;
+    }
+    if (pw != pendingSurfaceW || ph != pendingSurfaceH) {
+        // Size still changing (mid-rotation); wait for it to settle.
+        pendingSurfaceW = pw;
+        pendingSurfaceH = ph;
+        surfaceStableFrames = 1;
+        return false;
+    }
+    // Require a couple of consecutive identical polls before rebuilding, so we
+    // step over the transient portrait/"surface not ready" frames on resume.
+    if (surfaceStableFrames < 3) {
+        ++surfaceStableFrames;
+        return false;
+    }
+    return true;
+#else
+    return true;
+#endif
+}
+
+void Graphics::recreateSurfaceForResume() {
+    // Android destroys the ANativeWindow when the app is backgrounded, which
+    // invalidates the VkSurfaceKHR. On resume SDL creates a fresh native
+    // window, so we must rebuild the surface (and the swapchain that depends on
+    // it) before presenting again. Runs on the render thread.
+    if (!initialized) return;
+    auto *window = static_cast<SDL_Window *>(sdlWindow);
+    if (!window) return;
+
+    device->waitIdle();
+
+    // Tear down surface-dependent resources first.
+    destroySwapchainResources();
+    swapchain.destroy();
+    swapchain = vkb::Swapchain{};
+    if (surface) {
+        inst.instance.destroySurfaceKHR(surface);
+        surface = VK_NULL_HANDLE;
+    }
+
+    // Create a new surface from the freshly created native window.
+    VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
+    if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
+        throw Exception("resume: SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
+    surface = rawSurface;
+    device.surface = surface;
+
+    // Refresh drawable size (orientation may have changed while paused).
+    int pw = 0, ph = 0, lw = 0, lh = 0;
+    SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
+    SDL_GetWindowSize(window, &lw, &lh);
+    if (pw > 0 && ph > 0)
+        setViewportSize(lw, lh, pw, ph);
+
+    swapchainDirty = true;
+}
+
 void Graphics::createSwapchainAndPipeline() {
     vkb::SwapchainBuilder swapchainBuilder{device};
     if (pixelWidth > 0 && pixelHeight > 0)
@@ -855,9 +935,29 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
 }
 
 void Graphics::flushToSwapchain() {
-    if (swapchainDirty) {
-        device->waitIdle();
-        createSwapchainAndPipeline();
+    // Any of these mean the swapchain must be rebuilt before we can present.
+    // presentModel.needs_recreate is set by vkbuilder when acquire/present
+    // reported out-of-date/suboptimal (instead of rebuilding inline).
+    const bool wantRecreate =
+        surfaceNeedsRecreate.load() || swapchainDirty || presentModel.needs_recreate;
+    if (wantRecreate) {
+        // Only (re)build once the native surface has settled. On Android the
+        // window is briefly reported at a transient (portrait) size and marked
+        // "not ready" during resume/rotation; building a swapchain then crashes
+        // the GPU driver in vkCreateImageView. Skip the frame until it's stable.
+        if (!isRenderSurfaceStable())
+            return;
+
+        if (surfaceNeedsRecreate.exchange(false))
+            recreateSurfaceForResume();
+        if (presentModel.needs_recreate) {
+            presentModel.needs_recreate = false;
+            swapchainDirty = true;
+        }
+        if (swapchainDirty) {
+            device->waitIdle();
+            createSwapchainAndPipeline();
+        }
     }
 
     Batcher solid = solidBatch;
@@ -1064,7 +1164,16 @@ void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, co
 
 void Graphics::present() {
     if (!initialized) return;
+    if (!isActive()) return;
     if (isCanvasActive()) throw Exception("present: cannot present while a Canvas is active");
+    if (!isRenderSurfaceReady()) {
+        // Native window is mid-(re)creation / rotation; drop this frame's work
+        // instead of touching an invalid swapchain (which crashes the driver).
+        solidBatch.clear();
+        texturedBatches.clear();
+        hasPendingClear = false;
+        return;
+    }
     flushBatch();
 }
 
