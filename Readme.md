@@ -103,6 +103,58 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 
 `setup-env.sh` 会设置 `VULKAN_SDK`、`VK_ICD_FILENAMES`（MoltenVK ICD）等。CMake 在 Apple 宿主上**要求**能 `find_package(Vulkan)` 成功，不会回退到 Windows 的 `vulkan-1.lib`。
 
+### Android（arm64-v8a Debug APK）
+
+| 组件 | 推荐配置 |
+|------|----------|
+| 宿主 | macOS / Linux（本仓库 Makefile 默认路径面向 macOS Homebrew） |
+| JDK | **OpenJDK 17**（`brew install openjdk@17`） |
+| Android SDK | command-line tools + `platform-tools` + `platforms;android-34` + `build-tools;34.0.0` |
+| NDK | **26.1.10909125**（`sdkmanager "ndk;26.1.10909125"`） |
+| CMake（SDK） | `cmake;3.22.1`（Gradle 可用；引擎本体用宿主机 CMake/Ninja 交叉编译） |
+| ABI / minSdk | **arm64-v8a** / **24** |
+| 设备 | 支持 **Vulkan** 的真机（模拟器未作为首版验收目标） |
+
+环境变量示例（写入 `~/.zshrc` 或构建前 export）：
+
+```sh
+export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export ANDROID_NDK="$ANDROID_HOME/ndk/26.1.10909125"
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+```
+
+在 `platform/android/apk/local.properties` 写入（**勿提交**）：
+
+```
+sdk.dir=/Users/<you>/Library/Android/sdk
+```
+
+一键构建 Debug APK：
+
+```sh
+make build/android-debug
+# 产物：platform/android/apk/app/build/outputs/apk/debug/app-debug.apk
+```
+
+流程：NDK CMake 交叉编译第三方 + `libmain.so` → 同步到 `jniLibs/arm64-v8a` → Gradle `assembleDebug`。APK 启动时将 `assets/game` 复制到应用内部目录，并以 `run <内部路径>` 进入现有 CLI。
+
+真机安装 / 运行 / 日志：
+
+```sh
+adb devices
+make install/android-debug
+make run/android-debug
+make log/android
+```
+
+排错要点：
+
+1. 设备需有 Vulkan；冷启动后若黑屏，先看 `adb logcat` 中 `EVEngineActivity` / `SDL` / `vulkan`。
+2. `UnsatisfiedLinkError`：确认 `jniLibs` 含 `libSDL2.so`、`libc++_shared.so`、`libmain.so`（先 `make sync/android-libs`）。
+3. 第三方交叉编译失败常见原因：NDK 路径不对、或需清 `build/third-party/android-debug` 后重跑 `deps`。
+4. 首版不做 Play 签名、多 ABI、外部游戏包选择。
+
 ### WSL（同时开发 Windows / Linux）
 
 推荐在 **WSL2（Ubuntu）** 中开发 Linux 目标，在 Windows 主机侧用 Visual Studio 编译 Win32 目标。源码放在 Windows 文件系统（例如 `C:\Users\...\EVEngine`），通过 `/mnt/c/...` 挂载到 WSL。
@@ -147,6 +199,12 @@ make build/linux-debug
 # 仅 macOS Release / Debug（需已 source Vulkan SDK setup-env.sh）
 make build/macosx
 make build/macosx-debug
+
+# Android arm64 Debug APK（需 ANDROID_HOME / ANDROID_NDK / JAVA_HOME）
+make build/android-debug
+make install/android-debug
+make run/android-debug
+make log/android
 ```
 
 产物目录约定：
@@ -159,8 +217,9 @@ make build/macosx-debug
 | Linux Debug | `build/linux-debug` | Unix Makefiles |
 | macOS Release | `build/macosx` | Unix Makefiles + MoltenVK |
 | macOS Debug | `build/macosx-debug` | Unix Makefiles + MoltenVK |
+| Android Debug | `build/android-debug` + Gradle APK | NDK `libmain.so` → `app-debug.apk` |
 
-主程序可执行文件名一般为 `eve`（Windows 下为 `eve.exe`，路径随 VS 的 `Release` / `Debug` 配置子目录变化）。
+主程序可执行文件名一般为 `eve`（Windows 下为 `eve.exe`，路径随 VS 的 `Release` / `Debug` 配置子目录变化）。Android 为 SDLActivity 加载的 `libmain.so`（包名 `com.evengine.example`）。
 
 
 ## 分步编译说明
@@ -286,16 +345,19 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
 6. **macOS 窗口/渲染失败**  
    确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
 
+7. **Android APK / 真机**  
+   确认 NDK 版本与 Makefile 一致；`local.properties` 的 `sdk.dir` 正确；设备开启 USB 调试且 `adb devices` 可见。首版要求真机 Vulkan；无设备时至少验证 `make build/android-debug` 产出 APK。
+
 
 ## 项目结构（简要）
 
 ```
 EVEngine/
 ├── CMakeLists.txt      # 主 CMake：平台检测、第三方、子目录
-├── Makefile            # Windows / Linux / macOS Debug·Release 快捷入口
-├── platform/           # 平台相关代码与打包模板
+├── Makefile            # Windows / Linux / macOS / Android 快捷入口
+├── platform/           # 平台相关代码与打包模板（含 android/apk）
 ├── src/
-│   ├── engine/         # 引擎核心、DevTools、命令行
+│   ├── engine/         # 引擎核心、DevTools、命令行（Android 产出 libmain.so）
 │   ├── modules/        # 功能模块
 │   └── scripts/        # 脚本侧集成
 ├── test/               # 单元测试
