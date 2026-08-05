@@ -2,10 +2,12 @@
 #include "graphics/Graphics.h"
 #include "graphics/Batcher.h"
 #include "graphics/Texture.h"
+#include "graphics/Mesh.h"
 #include "vkbuilder.hpp"
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <glm/glm.hpp>
 
 namespace eve::graphics::vulkan {
 
@@ -88,6 +90,12 @@ struct GpuTexture {
     int height = 0;
 };
 
+struct GpuMesh {
+    vkb::HostVertexBuffer vertices;
+    vkb::GenericBuffer indices;
+    uint32_t indexCount = 0;
+};
+
 class Graphics final : public eve::graphics::Graphics {
 public:
     ~Graphics() override;
@@ -100,6 +108,11 @@ public:
     Texture *newTexture(image::ImageData *data) override;
     Texture *newTextureFromFile(const std::string &filename) override;
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
+    Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
+    void begin3DFrame() override;
+    void setMesh3DViewProj(const glm::mat4 &viewProj) override;
+    void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
+    void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
 
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
@@ -181,7 +194,12 @@ private:
 
     std::vector<std::unique_ptr<Texture>> ownedTextures;
     std::vector<std::unique_ptr<GpuTexture>> ownedGpuTextures;
+    std::vector<std::unique_ptr<Mesh>> ownedMeshes;
+    std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<eve::graphics::Canvas>> ownedCanvases;
+
+    bool swapchainPassOpen = false;
+    Mesh3DUBO mesh3dFrameUbo{};
 };
 
 }  // namespace eve::graphics::vulkan

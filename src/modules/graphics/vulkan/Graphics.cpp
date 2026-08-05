@@ -24,12 +24,17 @@
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/mesh3d_frag_spv.inc"
 
+#include <assimp/mesh.h>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace eve::graphics::vulkan {
 
 Graphics::~Graphics() {
     if (!initialized) return;
     device->waitIdle();
     ownedCanvases.clear();
+    ownedMeshes.clear();
+    ownedGpuMeshes.clear();
     ownedTextures.clear();
     for (auto &g : ownedGpuTextures) {
         if (g->sampler) device->destroySampler(g->sampler);
@@ -536,6 +541,8 @@ void Graphics::setViewportSize(int newW, int newH, int newPw, int newPh) {
 }
 
 void Graphics::clear(std::optional<Color> color, std::optional<int>, std::optional<double>) {
+    // Keep 3D framebuffer contents when composing 2D on top of an open 3D pass.
+    if (frameHad3D && activeCanvas == nullptr) return;
     clearColor = color.value_or(backgroundColor);
     hasPendingClear = true;
     solidBatch.clear();
@@ -724,12 +731,16 @@ void Graphics::flushToSwapchain() {
     solidBatch.clear();
     texturedBatches.clear();
 
-    presentModel.begin();
-    std::array<vk::ClearValue, 2> clears{};
-    clears[0].color =
-        vk::ClearColorValue(std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
-    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
+    const bool continue3D = swapchainPassOpen;
+    if (!continue3D) {
+        presentModel.begin();
+        std::array<vk::ClearValue, 2> clears{};
+        clears[0].color = vk::ClearColorValue(
+            std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
+        clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+        presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
+        swapchainPassOpen = true;
+    }
 
     auto &cb = presentModel.getCurrentCommandBuffer();
     vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
@@ -737,6 +748,7 @@ void Graphics::flushToSwapchain() {
     cb.setViewport(0, 1, &vp);
     cb.setScissor(0, 1, &scissor);
 
+    // Keep HostVertexBuffers alive until after GPU wait in drawFrame().
     vkb::HostVertexBuffer solidBuf;
     std::vector<vkb::HostVertexBuffer> texBufs;
     texBufs.reserve(textured.size());
@@ -781,6 +793,138 @@ void Graphics::flushToSwapchain() {
     presentModel.end();
     presentModel.drawFrame();
     hasPendingClear = false;
+    swapchainPassOpen = false;
+    frameHad3D = false;
+}
+
+void Graphics::begin3DFrame() {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
+    if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
+    if (swapchainPassOpen) throw Exception("begin3DFrame: swapchain pass already open");
+    if (swapchainDirty) {
+        device->waitIdle();
+        createSwapchainAndPipeline();
+    }
+
+    presentModel.begin();
+    std::array<vk::ClearValue, 2> clears{};
+    clears[0].color = vk::ClearColorValue(
+        std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
+    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
+
+    auto &cb = presentModel.getCurrentCommandBuffer();
+    vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
+    vk::Rect2D scissor{{0, 0}, swapchain.extent};
+    cb.setViewport(0, 1, &vp);
+    cb.setScissor(0, 1, &scissor);
+
+    swapchainPassOpen = true;
+    frameHad3D = true;
+    hasPendingClear = false;
+}
+
+void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
+    glm::vec3 d = glm::normalize(dir);
+    if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+    mesh3dFrameUbo.lightDir = glm::vec4(d, 0.f);
+    mesh3dFrameUbo.lightColor = glm::vec4(color, 1.f);
+}
+
+void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) {
+    mesh3dFrameUbo.mvp = viewProj;
+}
+
+Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newMeshFromAssimp: graphics not initialized");
+    if (mesh.mNumVertices == 0 || mesh.mNumFaces == 0)
+        throw Exception("newMeshFromAssimp: empty mesh");
+
+    std::vector<MeshVertex> verts;
+    verts.reserve(mesh.mNumVertices);
+    for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+        MeshVertex v{};
+        v.pos = {mesh.mVertices[i].x, mesh.mVertices[i].y, mesh.mVertices[i].z};
+        if (mesh.HasNormals())
+            v.normal = {mesh.mNormals[i].x, mesh.mNormals[i].y, mesh.mNormals[i].z};
+        else
+            v.normal = {0.f, 1.f, 0.f};
+        if (mesh.HasTextureCoords(0))
+            v.uv = {mesh.mTextureCoords[0][i].x, mesh.mTextureCoords[0][i].y};
+        else
+            v.uv = {0.f, 0.f};
+        verts.push_back(v);
+    }
+
+    std::vector<uint32_t> indices;
+    indices.reserve(mesh.mNumFaces * 3);
+    for (unsigned f = 0; f < mesh.mNumFaces; ++f) {
+        const aiFace &face = mesh.mFaces[f];
+        if (face.mNumIndices != 3) continue;
+        indices.push_back(face.mIndices[0]);
+        indices.push_back(face.mIndices[1]);
+        indices.push_back(face.mIndices[2]);
+    }
+    if (indices.empty()) throw Exception("newMeshFromAssimp: no triangle faces");
+
+    auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertices.allocate<MeshVertex>(device, verts);
+    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+                          indices.size() * sizeof(uint32_t),
+                          vk::MemoryPropertyFlagBits::eHostVisible |
+                              vk::MemoryPropertyFlagBits::eHostCoherent);
+    gpu->indices.updateLocal(indices.data(), indices.size() * sizeof(uint32_t));
+    gpu->indexCount = uint32_t(indices.size());
+
+    auto handle = std::make_unique<Mesh>();
+    handle->indexCount = int(gpu->indexCount);
+    handle->gpuHandle = gpu.get();
+    Mesh *raw = handle.get();
+    ownedGpuMeshes.push_back(std::move(gpu));
+    ownedMeshes.push_back(std::move(handle));
+    return raw;
+}
+
+void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) {
+    ASSERT(initialized);
+    ASSERT(mesh != nullptr);
+    if (!initialized) throw Exception("drawMesh: graphics not initialized");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMesh: null mesh");
+    if (!swapchainPassOpen) throw Exception("drawMesh: call begin3DFrame first");
+    if (!mesh3dPipeline) throw Exception("drawMesh: mesh3d pipeline missing");
+
+    auto *gpuMesh = static_cast<GpuMesh *>(mesh->gpuHandle);
+    Texture *tex = texture ? texture : whiteTexture;
+    if (!tex || !tex->gpuHandle) throw Exception("drawMesh: missing texture");
+    auto *gpuTex = static_cast<GpuTexture *>(tex->gpuHandle);
+
+    // Caller supplies view*proj via model? No — store viewProj in mesh3dFrameUbo.mvp temporarily.
+    // drawMesh receives model; mvp = viewProj * model where viewProj is in mesh3dFrameUbo.mvp
+    // before multiply. RenderSystem3D sets mesh3dFrameUbo.mvp = viewProj first via setMesh3DViewProj.
+    Mesh3DUBO ubo = mesh3dFrameUbo;
+    ubo.model = model;
+    ubo.mvp = mesh3dFrameUbo.mvp * model;
+    ubo.tint = glm::vec4(tint.r, tint.g, tint.b, tint.a);
+    mesh3dUbo.updateLocal(ubo);
+
+    vkb::DescriptorSetUpdater updater;
+    updater.beginDescriptorSet(mesh3dDescriptorSet)
+        .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
+        .buffer(mesh3dUbo.buffer, 0, sizeof(Mesh3DUBO))
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(gpuTex->sampler, gpuTex->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .update(device.instance);
+
+    auto &cb = presentModel.getCurrentCommandBuffer();
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1,
+                          &mesh3dDescriptorSet, 0, nullptr);
+    vk::DeviceSize offset = 0;
+    cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
+    cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
+    cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
 }
 
 void Graphics::present() {

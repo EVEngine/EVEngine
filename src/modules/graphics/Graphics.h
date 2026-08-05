@@ -5,15 +5,14 @@
 #include "graphics/Drawable.h"
 #include "graphics/Canvas.h"
 #include "graphics/Texture.h"
+#include "graphics/Mesh.h"
 #include <vector>
 #include <optional>
 #include <cstdint>
 #include <string>
 #include <glm/glm.hpp>
 
-namespace eve::image {
-class ImageData;
-}
+struct aiMesh;
 
 namespace eve::graphics {
 
@@ -66,6 +65,31 @@ public:
     /** Draw a textured quad (full UV 0..1). texture may be null → solid. */
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                                   const Color &color) = 0;
+
+    /** Upload triangulated mesh from Assimp (pos/normal/uv + indices). Owned by Graphics. */
+    virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
+
+    /**
+     * Begin a swapchain pass cleared for 3D (color+depth). Leaves the pass open for drawMesh
+     * and a following RenderSystem::render (2D). Does not present.
+     */
+    virtual void begin3DFrame() = 0;
+
+    /** viewProj used by subsequent drawMesh (mvp = viewProj * model). RH + ZO clip. */
+    virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
+
+    /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
+    virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
+
+    /** Directional light for subsequent drawMesh calls (world-space direction toward surface). */
+    virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
+
+    /** True after begin3DFrame until present completes. */
+    bool consumeFrameHad3D() {
+        bool v = frameHad3D;
+        return v;
+    }
+    bool had3DThisFrame() const { return frameHad3D; }
 
     Color getBackgroundColor() const { return backgroundColor; }
     void setBackgroundColor(const Color &c) { backgroundColor = c; }
@@ -204,6 +228,7 @@ protected:
     int pixelWidth = 0;
     int pixelHeight = 0;
     Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
+    bool frameHad3D = false;
 };
 
 }  // namespace graphics

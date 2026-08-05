@@ -10,6 +10,7 @@ file(GLOB all_test_cpp
   mouse.cpp
   network.cpp
   RenderSystem.cpp
+  RenderSystem3D.cpp
   simplesquirrel.cpp
   window.cpp
   main.cpp
