@@ -162,7 +162,9 @@ make log/android
 一键构建 Debug `.app`：
 
 ```sh
-# Team ID 可在钥匙串「我的证书」或 Apple Developer 账户中查看
+# 已登录 Apple ID 时会自动探测 Team ID；也可手动指定：
+#   security find-certificate -a -c "Apple Development" -p | openssl x509 -noout -subject
+# 取其中的 OU=<TeamID>（注意证书名括号里的是证书 ID，不是 Team ID）
 export IOS_DEVELOPMENT_TEAM=XXXXXXXXXX
 make build/ios-debug
 ```
@@ -182,7 +184,7 @@ make log/ios
 
 排错要点：
 
-1. **签名**：本机需在 Xcode → Settings → Accounts 登录 Apple ID，并有可用的 Apple Development 证书；`security find-identity -v -p codesigning` 应能看到证书。未设置 `IOS_DEVELOPMENT_TEAM` 时 `make build/ios-debug` 仍可产出未签名 `.app`，但无法安装到真机。
+1. **签名**：本机需在 Xcode → Settings → Accounts 登录 Apple ID，并有可用的 Apple Development 证书；`security find-identity -v -p codesigning` 应能看到证书。未设置 `IOS_DEVELOPMENT_TEAM` 时 `make build/ios-debug` 仍可产出未签名 `.app`，但无法安装到真机。若报 `No Account for Team "XXXX"`，说明用的是证书 ID 而非 Team ID（Team ID 是证书主题里的 `OU`）。
 2. **设备**：USB 连接 iPad，开启开发者模式并信任此电脑；`xcrun devicectl list devices` 应显示 `connected`。若提示 `no DDI`，先用 Xcode 打开一次设备窗口以安装 Developer Disk Image。
 3. **依赖**：第三方用 Ninja + `cmake/ios.toolchain.cmake` 交叉编译（SDL UIKit）；失败时可清 `build/third-party/ios-debug` 与 `build/third-party-binary/ios-debug` 后重跑。
 4. **MoltenVK**：当前 LunarG xcframework 可能按 iOS 14+ 构建；真机系统需满足该要求（本机 iPadOS 26 无妨）。

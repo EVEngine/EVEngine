@@ -34,7 +34,9 @@ BUILD_DIR ?= build/android-debug
 IOS_DEPLOYMENT_TARGET ?= 13.0
 IOS_ARCH ?= arm64
 IOS_SDK ?= iphoneos
-IOS_DEVELOPMENT_TEAM ?= $(shell security find-identity -v -p codesigning 2>/dev/null | sed -n 's/.*"Apple Development:.*(\([A-Z0-9]*\))".*/\1/p' | head -1)
+# Team ID is the certificate subject OU; the value in the identity name's
+# parentheses is the certificate ID and Xcode rejects it as a team.
+IOS_DEVELOPMENT_TEAM ?= $(shell security find-certificate -a -c "Apple Development" -p 2>/dev/null | openssl x509 -noout -subject 2>/dev/null | sed -n 's/.*OU *= *\([A-Z0-9]*\).*/\1/p' | head -1)
 IOS_BUNDLE_ID ?= com.evengine.example
 VULKAN_SDK ?= $(shell ls -d $(HOME)/VulkanSDK/*/ 2>/dev/null | sort -V | tail -1 | sed 's:/*$$::')
 IOS_APP ?= build/ios-debug/src/engine/Debug-iphoneos/eve.app

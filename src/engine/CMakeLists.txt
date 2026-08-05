@@ -172,13 +172,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     )
 
     # Embed MoltenVK.framework next to the executable so dlsym(RTLD_DEFAULT) / rpath resolve.
+    # The helper also signs the framework; nested frameworks need their own signature.
     set(_eve_mvk_fw "${EVENGINE_MOLTENVK_FRAMEWORK_DIR}/MoltenVK.framework")
     add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/Frameworks"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        COMMAND /bin/sh "${CMAKE_SOURCE_DIR}/cmake/ios_embed_moltenvk.sh"
             "${_eve_mvk_fw}"
-            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/Frameworks/MoltenVK.framework"
-        COMMENT "Embed MoltenVK.framework into EVEngine.app"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>"
+        COMMENT "Embed and sign MoltenVK.framework into EVEngine.app"
     )
 endif()
