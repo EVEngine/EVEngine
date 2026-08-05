@@ -16,7 +16,7 @@
 #endif
 
 #ifdef EVENGINE_IOS
-#include "ios.h"
+#include "ios/ios.h"
 #endif
 
 #if defined(EVENGINE_WINDOWS)

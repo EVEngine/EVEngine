@@ -79,9 +79,13 @@ void Graphics::initWithWindow(void *nativeWindow) {
         throw Exception("SDL_Vulkan_GetInstanceExtensions failed: %s", SDL_GetError());
 
     vkb::InstanceBuilder builder;
-    builder.require_api_version(1, 0).request_validation_layers().use_default_debug_messenger();
+    builder.require_api_version(1, 0).use_default_debug_messenger();
+#if !defined(EVENGINE_IOS)
+    // iOS bring-up skips validation layers (need embedded layer frameworks).
+    builder.request_validation_layers();
+#endif
     for (auto *name : extNames) builder.enable_extension(name);
-#if defined(EVENGINE_MACOSX)
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
     // SDL already supplies surface extensions; avoid duplicating them via
     // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
     builder.set_headless(true);
@@ -97,7 +101,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
 
     vkb::PhysicalDeviceSelector selector{inst};
     selector.set_surface(surface).set_minimum_version(1, 0);
-#if defined(EVENGINE_MACOSX)
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
     selector.add_required_extension("VK_KHR_portability_subset");
 #endif
     auto phys = selector.select();
@@ -126,10 +130,10 @@ void Graphics::destroySwapchainResources() {
 }
 
 bool Graphics::isRenderSurfaceReady() const {
-#if defined(EVENGINE_ANDROID)
+#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
     auto *window = static_cast<SDL_Window *>(sdlWindow);
     if (!window) return false;
-    // During background/resume and orientation changes the ANativeWindow is
+    // During background/resume and orientation changes the native window is
     // torn down and rebuilt; SDL reports a zero drawable size until it settles.
     int pw = 0, ph = 0;
     SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
@@ -140,7 +144,7 @@ bool Graphics::isRenderSurfaceReady() const {
 }
 
 bool Graphics::isRenderSurfaceStable() {
-#if defined(EVENGINE_ANDROID)
+#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
     auto *window = static_cast<SDL_Window *>(sdlWindow);
     if (!window) return false;
     int pw = 0, ph = 0;
@@ -150,14 +154,13 @@ bool Graphics::isRenderSurfaceStable() {
         return false;
     }
     if (pw != pendingSurfaceW || ph != pendingSurfaceH) {
-        // Size still changing (mid-rotation); wait for it to settle.
+        // Size still changing (mid-rotation / Split View); wait for it to settle.
         pendingSurfaceW = pw;
         pendingSurfaceH = ph;
         surfaceStableFrames = 1;
         return false;
     }
-    // Require a couple of consecutive identical polls before rebuilding, so we
-    // step over the transient portrait/"surface not ready" frames on resume.
+    // Require a couple of consecutive identical polls before rebuilding.
     if (surfaceStableFrames < 3) {
         ++surfaceStableFrames;
         return false;
@@ -169,7 +172,7 @@ bool Graphics::isRenderSurfaceStable() {
 }
 
 void Graphics::recreateSurfaceForResume() {
-    // Android destroys the ANativeWindow when the app is backgrounded, which
+    // Mobile platforms destroy the native window when backgrounded, which
     // invalidates the VkSurfaceKHR. On resume SDL creates a fresh native
     // window, so we must rebuild the surface (and the swapchain that depends on
     // it) before presenting again. Runs on the render thread.
@@ -195,7 +198,7 @@ void Graphics::recreateSurfaceForResume() {
     surface = rawSurface;
     device.surface = surface;
 
-    // Refresh drawable size (orientation may have changed while paused).
+    // Refresh drawable size (orientation / Split View may have changed).
     int pw = 0, ph = 0, lw = 0, lh = 0;
     SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
     SDL_GetWindowSize(window, &lw, &lh);

@@ -10,6 +10,9 @@
 #if defined(EVENGINE_ANDROID)
 #include <android/log.h>
 #define EVE_ANDROID_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "EVEngine", __VA_ARGS__)
+#elif defined(EVENGINE_IOS)
+#include <cstdio>
+#define EVE_ANDROID_LOGE(...) do { fprintf(stderr, "EVEngine: "); fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n"); } while (0)
 #else
 #define EVE_ANDROID_LOGE(...) ((void)0)
 #endif
