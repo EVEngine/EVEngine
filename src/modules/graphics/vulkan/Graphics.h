@@ -51,6 +51,35 @@ struct TexturedVertex {
     }
 };
 
+struct MeshVertex {
+    glm::vec3 pos;
+    glm::vec3 normal;
+    glm::vec2 uv;
+
+    static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
+        vk::VertexInputBindingDescription b{};
+        b.binding = binding;
+        b.stride = sizeof(MeshVertex);
+        b.inputRate = vk::VertexInputRate::eVertex;
+        return b;
+    }
+    static std::vector<vk::VertexInputAttributeDescription> getAttributeDescription(uint32_t binding) {
+        return {
+            {0, binding, vk::Format::eR32G32B32Sfloat, offsetof(MeshVertex, pos)},
+            {1, binding, vk::Format::eR32G32B32Sfloat, offsetof(MeshVertex, normal)},
+            {2, binding, vk::Format::eR32G32Sfloat, offsetof(MeshVertex, uv)},
+        };
+    }
+};
+
+struct Mesh3DUBO {
+    glm::mat4 mvp{1.f};
+    glm::mat4 model{1.f};
+    glm::vec4 lightDir{0.4f, 1.f, 0.3f, 0.f};
+    glm::vec4 lightColor{1.f, 1.f, 1.f, 1.f};
+    glm::vec4 tint{1.f, 1.f, 1.f, 1.f};
+};
+
 struct GpuTexture {
     vkb::TextureImage2D image;
     vk::Sampler sampler;
@@ -96,6 +125,7 @@ public:
 private:
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
+    void createMesh3DPipeline();
     void ensureOffscreenPipelines();
     void destroySwapchainResources();
     void flushBatch();
@@ -126,6 +156,14 @@ private:
     vk::RenderPass offscreenRenderPass;
     vk::Pipeline offscreenSolidPipeline;
     vk::Pipeline offscreenTexPipeline;
+
+    vk::DescriptorSetLayout mesh3dSetLayout;
+    vk::UniqueDescriptorSetLayout mesh3dSetLayoutUnique;
+    vk::PipelineLayout mesh3dPipelineLayout;
+    vk::Pipeline mesh3dPipeline;
+    vkb::GenericBuffer mesh3dUbo;
+    vk::DescriptorSet mesh3dDescriptorSet{};
+    Texture *whiteTexture = nullptr;
 
     vkb::Present presentModel;
     vkb::DepthStencilImage depthImage;

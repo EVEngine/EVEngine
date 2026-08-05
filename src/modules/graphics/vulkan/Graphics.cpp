@@ -21,6 +21,8 @@
 #include "graphics/shaders/color_frag_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
 #include "graphics/shaders/textured_frag_spv.inc"
+#include "graphics/shaders/mesh3d_vert_spv.inc"
+#include "graphics/shaders/mesh3d_frag_spv.inc"
 
 namespace eve::graphics::vulkan {
 
@@ -38,6 +40,10 @@ Graphics::~Graphics() {
     if (pipelineLayout) device->destroyPipelineLayout(pipelineLayout);
     if (texPipeline) device->destroyPipeline(texPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
+    if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
+    if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
+    mesh3dSetLayoutUnique.reset();
+    mesh3dUbo = vkb::GenericBuffer{};
     if (offscreenSolidPipeline) device->destroyPipeline(offscreenSolidPipeline);
     if (offscreenTexPipeline) device->destroyPipeline(offscreenTexPipeline);
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
@@ -88,7 +94,10 @@ void Graphics::initWithWindow(void *nativeWindow) {
 
     createSwapchainAndPipeline();
     createTexturedPipeline();
+    createMesh3DPipeline();
     initialized = true;
+    const uint8_t whitePixel[4] = {255, 255, 255, 255};
+    whiteTexture = newTexture(1, 1, whitePixel);
 }
 
 void Graphics::destroySwapchainResources() {
@@ -161,11 +170,14 @@ void Graphics::createTexturedPipeline() {
                              .createUnique(device.instance);
     texSetLayout = *texSetLayoutUnique;
 
-    vk::DescriptorPoolSize poolSize{vk::DescriptorType::eCombinedImageSampler, 64};
+    vk::DescriptorPoolSize poolSizes[] = {
+        {vk::DescriptorType::eCombinedImageSampler, 64},
+        {vk::DescriptorType::eUniformBuffer, 16},
+    };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.maxSets = 64;
-    poolInfo.poolSizeCount = 1;
-    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = 80;
+    poolInfo.poolSizeCount = 2;
+    poolInfo.pPoolSizes = poolSizes;
     descriptorPool = device->createDescriptorPool(poolInfo);
 
     vk::PipelineLayoutCreateInfo plInfo{};
@@ -255,6 +267,116 @@ void Graphics::createTexturedPipeline() {
     if (result.result != vk::Result::eSuccess)
         throw Exception("failed to create textured pipeline");
     texPipeline = result.value;
+
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
+}
+
+void Graphics::createMesh3DPipeline() {
+    if (mesh3dPipeline) return;
+
+    // Right-handed view, Y-up; Vulkan clip via glm::perspectiveRH_ZO. Front face CCW, cull back.
+    vkb::DescriptorSetLayoutBuilder layoutBuilder;
+    mesh3dSetLayoutUnique =
+        layoutBuilder
+            .buffer(0, vk::DescriptorType::eUniformBuffer,
+                    vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 1)
+            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .createUnique(device.instance);
+    mesh3dSetLayout = *mesh3dSetLayoutUnique;
+
+    vk::PipelineLayoutCreateInfo plInfo{};
+    plInfo.setLayoutCount = 1;
+    plInfo.pSetLayouts = &mesh3dSetLayout;
+    mesh3dPipelineLayout = device->createPipelineLayout(plInfo);
+
+    mesh3dUbo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DUBO),
+                       vk::MemoryPropertyFlagBits::eHostVisible |
+                           vk::MemoryPropertyFlagBits::eHostCoherent);
+    Mesh3DUBO initial{};
+    mesh3dUbo.updateLocal(initial);
+
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = descriptorPool;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &mesh3dSetLayout;
+    mesh3dDescriptorSet = device->allocateDescriptorSets(alloc).front();
+
+    std::vector<uint32_t> vert(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
+    std::vector<uint32_t> frag(mesh3d_frag_spv, mesh3d_frag_spv + mesh3d_frag_spv_count);
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+
+    vk::PipelineShaderStageCreateInfo stages[2]{};
+    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
+    stages[0].module = vertModule;
+    stages[0].pName = "main";
+    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
+    stages[1].module = fragModule;
+    stages[1].pName = "main";
+
+    auto binding = MeshVertex::getBindingDescription(0);
+    auto attrs = MeshVertex::getAttributeDescription(0);
+    vk::PipelineVertexInputStateCreateInfo vi{};
+    vi.vertexBindingDescriptionCount = 1;
+    vi.pVertexBindingDescriptions = &binding;
+    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
+    vi.pVertexAttributeDescriptions = attrs.data();
+
+    vk::PipelineInputAssemblyStateCreateInfo ia{};
+    ia.topology = vk::PrimitiveTopology::eTriangleList;
+
+    vk::PipelineViewportStateCreateInfo vp{};
+    vp.viewportCount = 1;
+    vp.scissorCount = 1;
+
+    vk::PipelineRasterizationStateCreateInfo rs{};
+    rs.polygonMode = vk::PolygonMode::eFill;
+    rs.cullMode = vk::CullModeFlagBits::eBack;
+    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.lineWidth = 1.0f;
+
+    vk::PipelineMultisampleStateCreateInfo ms{};
+    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
+
+    vk::PipelineDepthStencilStateCreateInfo ds{};
+    ds.depthTestEnable = true;
+    ds.depthWriteEnable = true;
+    ds.depthCompareOp = vk::CompareOp::eLess;
+
+    vk::PipelineColorBlendAttachmentState blendAtt{};
+    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+    blendAtt.blendEnable = false;
+
+    vk::PipelineColorBlendStateCreateInfo blend{};
+    blend.attachmentCount = 1;
+    blend.pAttachments = &blendAtt;
+
+    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
+    vk::PipelineDynamicStateCreateInfo dyn{};
+    dyn.dynamicStateCount = 2;
+    dyn.pDynamicStates = dynStates;
+
+    vk::GraphicsPipelineCreateInfo pci{};
+    pci.stageCount = 2;
+    pci.pStages = stages;
+    pci.pVertexInputState = &vi;
+    pci.pInputAssemblyState = &ia;
+    pci.pViewportState = &vp;
+    pci.pRasterizationState = &rs;
+    pci.pMultisampleState = &ms;
+    pci.pDepthStencilState = &ds;
+    pci.pColorBlendState = &blend;
+    pci.pDynamicState = &dyn;
+    pci.layout = mesh3dPipelineLayout;
+    pci.renderPass = renderpass;
+    pci.subpass = 0;
+
+    auto result = device->createGraphicsPipeline(nullptr, pci);
+    if (result.result != vk::Result::eSuccess)
+        throw Exception("failed to create mesh3d pipeline");
+    mesh3dPipeline = result.value;
 
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
