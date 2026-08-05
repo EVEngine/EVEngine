@@ -12,10 +12,15 @@ endif
 ifeq ($(OS),Windows_NT)
 	PLATFORM = win32
 else
-	PLATFORM = linux
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Darwin)
+		PLATFORM = macosx
+	else
+		PLATFORM = linux
+	endif
 endif
 
-.PHONY: all build/win32 build/linux build/win32-debug build/linux-debug debug release example
+.PHONY: all build/win32 build/linux build/macosx build/win32-debug build/linux-debug build/macosx-debug debug release example
 
 debug: build/$(PLATFORM)-debug
 release: build/$(PLATFORM)
@@ -30,7 +35,13 @@ build/linux: build/linux/Makefile
 	cmake --build $@ -j 32
 
 build/linux/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release  -B build/linux -S .
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -B build/linux -S .
+
+build/macosx: build/macosx/Makefile
+	cmake --build $@ -j 32
+
+build/macosx/Makefile:
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx -B build/macosx -S .
 
 # win32-debug: Ninja + MSVC cl；via cmake/with-msvc.cmd (vcvars) so STL headers resolve
 # Emits build/win32-debug/compile_commands.json with MSVC INCLUDE paths for clangd
@@ -46,7 +57,13 @@ build/linux-debug: build/linux-debug/Makefile
 	cmake --build $@ -j 32
 
 build/linux-debug/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug  -B build/linux-debug -S .
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux -B build/linux-debug -S .
+
+build/macosx-debug: build/macosx-debug/Makefile
+	cmake --build $@ -j 32
+
+build/macosx-debug/Makefile:
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B build/macosx-debug -S .
 
 # build/uwp:
 # 	cmake.exe -G "Visual Studio 17 2022" -B $@ -S . -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=10
@@ -68,8 +85,20 @@ test/linux:
 test/linux-debug: 
 	build/linux-debug/test/unit_test
 
+test/macosx:
+	build/macosx/test/unit_test
+
+test/macosx-debug:
+	build/macosx-debug/test/unit_test
+
 example:
-	cd example && ../build/win32-debug/src/engine/eve.exe run 
+ifeq ($(PLATFORM),win32)
+	cd example && ../build/win32-debug/src/engine/eve.exe run
+else ifeq ($(PLATFORM),macosx)
+	cd example && ../build/macosx-debug/src/engine/eve run
+else
+	cd example && ../build/linux-debug/src/engine/eve run
+endif
 # make: build/.build-docker
 # 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"
 

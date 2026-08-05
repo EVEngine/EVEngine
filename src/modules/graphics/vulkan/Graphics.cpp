@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "common/Exception.h"
+#include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
@@ -80,6 +81,13 @@ void Graphics::initWithWindow(void *nativeWindow) {
     vkb::InstanceBuilder builder;
     builder.require_api_version(1, 0).request_validation_layers().use_default_debug_messenger();
     for (auto *name : extNames) builder.enable_extension(name);
+#if defined(EVENGINE_MACOSX)
+    // SDL already supplies surface extensions; avoid duplicating them via
+    // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
+    builder.set_headless(true);
+    builder.enable_extension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
+#endif
     inst = builder.build();
 
     VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
@@ -88,7 +96,11 @@ void Graphics::initWithWindow(void *nativeWindow) {
     surface = rawSurface;
 
     vkb::PhysicalDeviceSelector selector{inst};
-    auto phys = selector.set_surface(surface).set_minimum_version(1, 0).select();
+    selector.set_surface(surface).set_minimum_version(1, 0);
+#if defined(EVENGINE_MACOSX)
+    selector.add_required_extension("VK_KHR_portability_subset");
+#endif
+    auto phys = selector.select();
     vkb::DeviceBuilder deviceBuilder{phys};
     device = deviceBuilder.build();
 

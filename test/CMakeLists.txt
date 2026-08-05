@@ -51,6 +51,26 @@ add_executable(
 
 if(WIN32)
     set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
+elseif(APPLE)
+    set(SystemLibraries ${SystemLibraries}
+        dl pthread iconv
+        "-framework Cocoa"
+        "-framework IOKit"
+        "-framework ForceFeedback"
+        "-framework Carbon"
+        "-framework CoreVideo"
+        "-framework Metal"
+        "-framework QuartzCore"
+        "-framework AudioToolbox"
+        "-framework CoreAudio"
+        "-framework GameController"
+        "-framework CoreHaptics"
+        "-framework AVFoundation"
+        "-framework CoreMedia"
+        "-framework CoreFoundation"
+        "-framework Foundation"
+        "-framework OpenGL"
+    )
 elseif(UNIX)
     set(SystemLibraries ${SystemLibraries} dl X11 pthread)
 endif()
@@ -64,8 +84,13 @@ if(WIN32)
         vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md)
   endif()
 else()
-  set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4
-      vorbis vorbisfile modplug mpg123 OpenAL)
+  if(APPLE)
+    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4
+        vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal)
+  else()
+    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4
+        vorbis vorbisfile modplug mpg123 OpenAL)
+  endif()
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
@@ -85,6 +110,10 @@ else()
 endif()
 
 set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio)
+
+if(EVENGINE_PLATFORM_LIB)
+    list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
+endif()
 
 target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 

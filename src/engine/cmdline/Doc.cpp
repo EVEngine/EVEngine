@@ -34,10 +34,10 @@ CMD_REG(DocArgs);
 
 #ifdef _WIN32
 #define OPEN_WEB_PAGE_CMD "start "
-#elif defined(__unix__)
-#define OPEN_WEB_PAGE_CMD "xdg-open "
 #elif defined(__APPLE__)
 #define OPEN_WEB_PAGE_CMD "open "
+#elif defined(__unix__)
+#define OPEN_WEB_PAGE_CMD "xdg-open "
 #endif
 
 static inline int openWebPage(string url) {

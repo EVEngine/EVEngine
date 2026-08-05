@@ -8,6 +8,26 @@ add_executable(eve main.cpp)
 
 if(WIN32)
     set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
+elseif(APPLE)
+    set(SystemLibraries ${SystemLibraries}
+        dl pthread iconv
+        "-framework Cocoa"
+        "-framework IOKit"
+        "-framework ForceFeedback"
+        "-framework Carbon"
+        "-framework CoreVideo"
+        "-framework Metal"
+        "-framework QuartzCore"
+        "-framework AudioToolbox"
+        "-framework CoreAudio"
+        "-framework GameController"
+        "-framework CoreHaptics"
+        "-framework AVFoundation"
+        "-framework CoreMedia"
+        "-framework CoreFoundation"
+        "-framework Foundation"
+        "-framework OpenGL"
+    )
 elseif(UNIX)
     set(SystemLibraries ${SystemLibraries} dl X11 pthread)
 endif()
@@ -26,14 +46,26 @@ else()
             PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
             ${SystemLibraries})
     else()
-        set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-            medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
-            vorbis vorbisfile modplug mpg123 OpenAL
-            PocoFoundation PocoNet PocoJSON PocoXML
-            ${SystemLibraries})
+        if(APPLE)
+            set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+                medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
+                vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
+                PocoFoundation PocoNet PocoJSON PocoXML
+                ${SystemLibraries})
+        else()
+            set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+                medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
+                vorbis vorbisfile modplug mpg123 OpenAL
+                PocoFoundation PocoNet PocoJSON PocoXML
+                ${SystemLibraries})
+        endif()
     endif()
 endif()
 
 set(EVELIBS EVWindow EVMouse EVEvent EVTimer EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
+
+if(EVENGINE_PLATFORM_LIB)
+    list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
+endif()
 
 target_link_libraries(eve ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})

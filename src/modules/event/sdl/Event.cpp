@@ -24,7 +24,7 @@ static void windowToDPICoords(double *x, double *y)
 	// 	window->windowToDPICoords(x, y);
 }
 
-#ifndef EVE_MACOSX
+#ifndef EVENGINE_MACOSX
 static void normalizedToDPICoords(double *x, double *y)
 {
 	double w = 1.0, h = 1.0;

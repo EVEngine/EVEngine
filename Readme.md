@@ -82,6 +82,27 @@ sudo apt install -y build-essential cmake git ninja-build \
 # Vulkan SDK：按 LunarG 官方文档安装，或使用发行版 vulkan 相关包
 ```
 
+### macOS
+
+| 组件 | 推荐配置 |
+|------|----------|
+| 操作系统 | macOS 12+（Apple Silicon / Intel） |
+| 工具链 | **Xcode Command Line Tools**（`xcode-select --install`） |
+| CMake | Homebrew：`brew install cmake`（≥ 3.21） |
+| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**） |
+
+配置环境（每次新开终端执行，或写入 `~/.zshrc`）：
+
+```sh
+# 将 <version> 换成本机 SDK 目录名，例如 1.4.357.0
+source ~/VulkanSDK/<version>/setup-env.sh
+# 确认：
+echo "$VULKAN_SDK"
+ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
+```
+
+`setup-env.sh` 会设置 `VULKAN_SDK`、`VK_ICD_FILENAMES`（MoltenVK ICD）等。CMake 在 Apple 宿主上**要求**能 `find_package(Vulkan)` 成功，不会回退到 Windows 的 `vulkan-1.lib`。
+
 ### WSL（同时开发 Windows / Linux）
 
 推荐在 **WSL2（Ubuntu）** 中开发 Linux 目标，在 Windows 主机侧用 Visual Studio 编译 Win32 目标。源码放在 Windows 文件系统（例如 `C:\Users\...\EVEngine`），通过 `/mnt/c/...` 挂载到 WSL。
@@ -108,13 +129,11 @@ cd EVEngine
 
 ## 快速开始（推荐：根目录 Makefile）
 
-仓库根目录的 `Makefile` 封装了 Windows / Linux 的 Debug / Release 配置与编译。在已安装 `make` 的环境中（Git Bash、WSL、Linux）于仓库根目录执行：
+仓库根目录的 `Makefile` 封装了 Windows / Linux / macOS 的 Debug / Release 配置与编译。在已安装 `make` 的环境中（Git Bash、WSL、Linux、macOS）于仓库根目录执行：
 
 ```sh
-# 同时编译 Windows + Linux 的 Debug
+# 当前宿主平台的 Debug / Release（Darwin → macosx，Linux → linux，Windows → win32）
 make debug
-
-# 同时编译 Windows + Linux 的 Release
 make release
 
 # 仅 Windows Release / Debug
@@ -124,6 +143,10 @@ make build/win32-debug
 # 仅 Linux Release / Debug
 make build/linux
 make build/linux-debug
+
+# 仅 macOS Release / Debug（需已 source Vulkan SDK setup-env.sh）
+make build/macosx
+make build/macosx-debug
 ```
 
 产物目录约定：
@@ -131,9 +154,11 @@ make build/linux-debug
 | 目标 | 构建目录 | 说明 |
 |------|----------|------|
 | Win32 Release | `build/win32` | VS 工程 + Release 二进制 |
-| Win32 Debug | `build/win32-debug` | VS 工程 + Debug 二进制 |
+| Win32 Debug | `build/win32-debug` | Ninja + MSVC Debug 二进制 |
 | Linux Release | `build/linux` | Unix Makefiles |
 | Linux Debug | `build/linux-debug` | Unix Makefiles |
+| macOS Release | `build/macosx` | Unix Makefiles + MoltenVK |
+| macOS Debug | `build/macosx-debug` | Unix Makefiles + MoltenVK |
 
 主程序可执行文件名一般为 `eve`（Windows 下为 `eve.exe`，路径随 VS 的 `Release` / `Debug` 配置子目录变化）。
 
@@ -160,6 +185,15 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -B build/linux -S .
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -B build/linux-debug -S .
 ```
 
+**macOS：**
+
+```sh
+source ~/VulkanSDK/<version>/setup-env.sh
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx -B build/macosx -S .
+# Debug：
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B build/macosx-debug -S .
+```
+
 可选 CMake 变量：
 
 | 变量 | 默认 | 说明 |
@@ -178,6 +212,9 @@ cmake.exe --build build/win32-debug --target deps -j 32
 
 # Linux
 cmake --build build/linux-debug --target deps -j 32
+
+# macOS
+cmake --build build/macosx-debug --target deps -j 32
 ```
 
 首次编译第三方耗时较长，产物位于 `build/third-party/<平台>[-debug]/` 与 `build/third-party-binary/<平台>[-debug]/`。之后增量构建会复用已安装结果。
@@ -192,9 +229,13 @@ cmake.exe --build build/win32-debug --config Debug -j 32
 # Linux
 cmake --build build/linux -j 32
 cmake --build build/linux-debug -j 32
+
+# macOS
+cmake --build build/macosx -j 32
+cmake --build build/macosx-debug -j 32
 ```
 
-也可直接用前文的 `make build/win32` 等目标一步完成配置 + 编译。
+也可直接用前文的 `make build/win32` / `make build/macosx-debug` 等目标一步完成配置 + 编译。
 
 
 ## 运行单元测试
@@ -206,6 +247,8 @@ make test/win32-debug    # 运行 build/win32-debug/test/Debug/unit_test.exe
 make test/win32          # 运行 Release 测试
 make test/linux-debug
 make test/linux
+make test/macosx-debug
+make test/macosx
 ```
 
 或直接执行对应路径下的 `unit_test` / `unit_test.exe`。
@@ -226,7 +269,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
 ## 常见问题
 
 1. **CMake 报找不到 Vulkan**  
-   确认已安装 Vulkan SDK，且 `VULKAN_SDK`（Windows）或 `VULKAN_SDK` / `PKG_CONFIG_PATH`（Linux）指向正确路径；重新打开终端后再配置。
+   确认已安装 Vulkan SDK，且 `VULKAN_SDK` 指向正确路径；macOS 请 `source ~/VulkanSDK/<version>/setup-env.sh` 后再配置。重新打开终端后再 cmake。
 
 2. **Windows 生成器名称不匹配**  
    `Makefile` 当前使用 `Visual Studio 18 2026`。若本机是 VS 2022，请改生成器字符串或升级 IDE。
@@ -238,7 +281,10 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
    Debug / Release 使用不同的第三方安装目录（带 `-debug` 后缀）。切换构建类型后需重新跑对应目录下的 `deps`。
 
 5. **并行度**  
-   Makefile 默认 `-j 32`。机器核心较少时可改为 `-j$(nproc)`（Linux）或较小数字，避免内存不足。
+   Makefile 默认 `-j 32`。机器核心较少时可改为 `-j$(nproc)`（Linux）/`-j$(sysctl -n hw.ncpu)`（macOS）或较小数字，避免内存不足。
+
+6. **macOS 窗口/渲染失败**  
+   确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
 
 
 ## 项目结构（简要）
@@ -246,7 +292,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
 ```
 EVEngine/
 ├── CMakeLists.txt      # 主 CMake：平台检测、第三方、子目录
-├── Makefile            # Windows / Linux Debug·Release 快捷入口
+├── Makefile            # Windows / Linux / macOS Debug·Release 快捷入口
 ├── platform/           # 平台相关代码与打包模板
 ├── src/
 │   ├── engine/         # 引擎核心、DevTools、命令行

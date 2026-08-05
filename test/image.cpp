@@ -142,6 +142,9 @@ TEST_CASE("image.cloneAndPaste") {
     CHECK(nearColor(dst->getPixel(2, 1), red));
     CHECK(eve::image::ImageData::canPaste("RGBA8", "RGBA8"));
     CHECK(!eve::image::ImageData::canPaste("R8", "RGBA8"));
-    CHECK(eve::image::ImageData::getPixelSetFunction("RGBA8") != nullptr);
-    CHECK(eve::image::ImageData::getPixelGetFunction("RGBA8") != nullptr);
+    // Avoid CHECK(fn != nullptr): zeroerr cannot pretty-print function pointers on AppleClang.
+    const bool hasSetFn = eve::image::ImageData::getPixelSetFunction("RGBA8") != nullptr;
+    const bool hasGetFn = eve::image::ImageData::getPixelGetFunction("RGBA8") != nullptr;
+    CHECK(hasSetFn);
+    CHECK(hasGetFn);
 }

@@ -23,10 +23,6 @@
 #include <windows.h>
 #endif
 
-#if defined(EVENGINE_MACOSX)
-#include "macosx.h"
-#endif
-
 namespace eve {
 
 namespace graphic{

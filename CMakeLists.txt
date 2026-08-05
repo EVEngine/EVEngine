@@ -42,6 +42,8 @@ function(main)
     # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).
     add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:ZEROERR_NO_ASSERT>)
 
+    # Platform CMake may set EVENGINE_PLATFORM_LIB; clear stale cache from other platforms.
+    unset(EVENGINE_PLATFORM_LIB CACHE)
     add_subdirectory(platform/${BUILD_PLATFORM})
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
@@ -99,6 +101,7 @@ function(set_include)
     )
 
     # Prefer system Vulkan SDK; otherwise use third-party headers + local import lib.
+    # On Apple, MoltenVK from the LunarG Vulkan SDK is required (no Win32 .lib fallback).
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
@@ -106,6 +109,13 @@ function(set_include)
         message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
         include_directories(${Vulkan_INCLUDE_DIRS})
         set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
+    elseif(APPLE)
+        message(FATAL_ERROR
+            "Vulkan SDK with MoltenVK is required on macOS.\n"
+            "  1. Install the LunarG Vulkan SDK for macOS from https://vulkan.lunarg.com/\n"
+            "  2. Source the SDK env:  source ~/VulkanSDK/<version>/setup-env.sh\n"
+            "  3. Re-run CMake (Vulkan_LIBRARY should resolve to libvulkan / MoltenVK).\n"
+            "Current hints: VULKAN_SDK='$ENV{VULKAN_SDK}'")
     else()
         unset(Vulkan_INCLUDE_DIR CACHE)
         unset(Vulkan_LIBRARY CACHE)
@@ -146,11 +156,21 @@ macro(get_available_build)
         endif()
     endif()
 
+    # Clear previous platform defines so configure_file / #cmakedefine stay accurate
+    # when switching BUILD_PLATFORM in the same build tree.
+    foreach(_eve_plat_var IN ITEMS
+            EVENGINE_WINDOWS EVENGINE_MACOSX EVENGINE_LINUX
+            EVENGINE_ANDROID EVENGINE_IOS EVENGINE_WINDOWS_UWP)
+        unset(${_eve_plat_var} CACHE)
+        unset(${_eve_plat_var})
+    endforeach()
+
     macro(set_platform_var name varname)
         string(COMPARE EQUAL "${BUILD_PLATFORM}" ${name} _cmp)
 
         if(_cmp)
-            set(${varname} 1)
+            # CACHE INTERNAL so values survive function(main) and reach configure_file.
+            set(${varname} 1 CACHE INTERNAL "EVEngine platform define")
         endif()
     endmacro()
 

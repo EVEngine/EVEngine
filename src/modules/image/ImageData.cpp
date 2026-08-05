@@ -475,7 +475,7 @@ void ImageData::setPixel(int x, int y, const Colorf &c) {
     size_t pixelsize = getPixelSize();
     Pixel *p         = (Pixel *)(data + ((y * width + x) * pixelsize));
 
-    if (pixelSetFunction == nullptr) throw eve::Exception("Unhandled pixel format %d in ImageData::setPixel", format);
+    if (pixelSetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::setPixel", format.c_str());
 
     pixelSetFunction(c, p);
 }
@@ -486,7 +486,7 @@ void ImageData::getPixel(int x, int y, Colorf &c) const {
     size_t       pixelsize = getPixelSize();
     const Pixel *p         = (const Pixel *)(data + ((y * width + x) * pixelsize));
 
-    if (pixelGetFunction == nullptr) throw eve::Exception("Unhandled pixel format %d in ImageData::setPixel", format);
+    if (pixelGetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::getPixel", format.c_str());
 
     pixelGetFunction(p, c);
 }
