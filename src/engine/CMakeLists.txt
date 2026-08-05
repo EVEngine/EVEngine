@@ -4,10 +4,16 @@ create_module(EVCmdLine cmdline)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 
+set(EVENGINE_IOS_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum iOS/iPadOS deployment target")
+
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     # SDLActivity loads libmain.so and calls SDL_main (via SDL_main.h macro on main).
     add_library(main SHARED main.cpp)
     set(EVENGINE_NATIVE_TARGET main)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
+    # UIKit SDL entry: MACOSX_BUNDLE .app with SDL_main.
+    add_executable(eve MACOSX_BUNDLE main.cpp)
+    set(EVENGINE_NATIVE_TARGET eve)
 else()
     add_executable(eve main.cpp)
     set(EVENGINE_NATIVE_TARGET eve)
@@ -26,6 +32,25 @@ elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         dl
         m
         c++_shared
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
+    set(SystemLibraries ${SystemLibraries}
+        "-framework UIKit"
+        "-framework Foundation"
+        "-framework CoreFoundation"
+        "-framework Metal"
+        "-framework QuartzCore"
+        "-framework CoreGraphics"
+        "-framework AudioToolbox"
+        "-framework CoreAudio"
+        "-framework AVFoundation"
+        "-framework CoreMedia"
+        "-framework GameController"
+        "-framework CoreHaptics"
+        "-framework CoreMotion"
+        "-framework OpenGLES"
+        "-framework CoreBluetooth"
+        iconv
     )
 elseif(APPLE)
     set(SystemLibraries ${SystemLibraries}
@@ -71,7 +96,7 @@ else()
             vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
             PocoFoundation PocoNet PocoJSON PocoXML
             ${SystemLibraries})
-    elseif(APPLE)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS OR APPLE)
         set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
             medialoader_image medialoader_model medialoader_sound assimp z physfs lz4
             vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
@@ -86,7 +111,7 @@ else()
     endif()
 endif()
 
-if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     set(EVELIBS EVWindow EVMouse EVEvent EVTimer EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
 else()
     set(EVELIBS EVWindow EVMouse EVEvent EVTimer EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio)
@@ -97,3 +122,63 @@ if(EVENGINE_PLATFORM_LIB)
 endif()
 
 target_link_libraries(${EVENGINE_NATIVE_TARGET} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
+    if(NOT EVENGINE_MOLTENVK_FRAMEWORK_DIR)
+        message(FATAL_ERROR "EVENGINE_MOLTENVK_FRAMEWORK_DIR is not set (MoltenVK xcframework)")
+    endif()
+    target_link_libraries(${EVENGINE_NATIVE_TARGET}
+        "-F${EVENGINE_MOLTENVK_FRAMEWORK_DIR}"
+        "-framework MoltenVK"
+    )
+    target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE
+        "LINKER:-rpath,@executable_path/Frameworks"
+    )
+
+    set(EVENGINE_IOS_BUNDLE_ID "com.evengine.example" CACHE STRING "iOS/iPadOS bundle identifier")
+    set(_eve_ios_team "$ENV{IOS_DEVELOPMENT_TEAM}")
+    if(NOT _eve_ios_team)
+        set(_eve_ios_team "")
+    endif()
+    set(IOS_DEVELOPMENT_TEAM "${_eve_ios_team}" CACHE STRING "Apple Development Team ID for code signing")
+
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_GUI_IDENTIFIER "${EVENGINE_IOS_BUNDLE_ID}"
+        MACOSX_BUNDLE_BUNDLE_NAME "EVEngine"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/platform/ios/Info.plist.in"
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${EVENGINE_IOS_BUNDLE_ID}"
+        XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
+        XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${EVENGINE_IOS_DEPLOYMENT_TARGET}"
+        XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH NO
+        XCODE_ATTRIBUTE_ENABLE_BITCODE NO
+        XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic"
+        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${IOS_DEVELOPMENT_TEAM}"
+        XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"
+        XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
+    )
+
+    # Bundle example game assets under Resources/game (iOS resourcePath == .app root).
+    set(_eve_game_src "${CMAKE_SOURCE_DIR}/example")
+    add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${_eve_game_src}" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
+        COMMENT "Bundle example game + LaunchScreen into EVEngine.app"
+    )
+
+    # Embed MoltenVK.framework next to the executable so dlsym(RTLD_DEFAULT) / rpath resolve.
+    set(_eve_mvk_fw "${EVENGINE_MOLTENVK_FRAMEWORK_DIR}/MoltenVK.framework")
+    add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/Frameworks"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${_eve_mvk_fw}"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/Frameworks/MoltenVK.framework"
+        COMMENT "Embed MoltenVK.framework into EVEngine.app"
+    )
+endif()
