@@ -26,12 +26,54 @@ public:
 
     void close() override;
 
-    bool setFullscreen(bool fullscreen, bool desktop_mode) override;
-    bool setFullscreen(bool fullscreen) override;
+    bool setFullscreenDesktop(bool fullscreen) override;
+    bool setFullscreenExclusive(bool fullscreen) override;
+
+    bool isOpen() const override;
+
+    void               setWindowTitle(const std::string& title) override;
+    const std::string& getWindowTitle() const override;
+    void               setPosition(int x, int y, int display) override;
+    void               getPosition(int& x, int& y, int& display) override;
+    void               minimize() override;
+    void               maximize() override;
+    void               restore() override;
+    bool               isMaximized() const override;
+    bool               isMinimized() const override;
+    bool               hasFocus() const override;
+    bool               hasMouseFocus() const override;
+    bool               isVisible() const override;
+    void               setVSync(int vsync) override;
+    int                getVSync() const override;
+
+    int    getPixelWidth() const override;
+    int    getPixelHeight() const override;
+    double getDPIScale() const override;
+    double getNativeDPIScale() const override;
+    void   windowToPixelCoords(double* x, double* y) const override;
+    void   pixelToWindowCoords(double* x, double* y) const override;
+    void   windowToDPICoords(double* x, double* y) const override;
+    void   DPIToWindowCoords(double* x, double* y) const override;
+    double toPixels(double x) const override;
+    double fromPixels(double x) const override;
+    void   toPixelsXY(double wx, double wy, double& px, double& py) const override;
+    void   fromPixelsXY(double px, double py, double& wx, double& wy) const override;
 
     void *getHandle() const override { return window; }
 
+    int                     getDisplayCount() const override;
+    std::string             getDisplayName(int display) const override;
+    std::string             getDisplayOrientation(int display) const override;
+    std::vector<WindowSize> getFullscreenSizes(int display) const override;
+    void getDesktopDimensions(int display, int& width, int& height) const override;
+
+    bool showMessageBox(const std::string& title, const std::string& message,
+                        const std::string& type, bool attachToWindow) override;
+    int  showMessageBoxData(const MessageBoxData& data) override;
+    void requestAttention(bool continuous) override;
+
 private:
+    bool setFullscreenInternal(bool fullscreen, bool desktop_mode);
     graphics::Graphics *graphics = nullptr;
 
     int width = 800, height = 600;

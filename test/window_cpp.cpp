@@ -1,4 +1,6 @@
-﻿#include "zeroerr/assert.h"
+﻿#include <cstdlib>
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "graphics/Graphics.h"
@@ -91,12 +93,12 @@ TEST_CASE("window.setFullscreenDesktopRoundTrip") {
 
     CHECK(!win->getWindowSettings().fullscreen);
 
-    REQUIRE(win->setFullscreen(true, true));
+    REQUIRE(win->setFullscreenDesktop(true));
     CHECK(win->getWindowSettings().fullscreen);
     CHECK(win->getWindowSettings().desktop_mode);
     CHECK(win->getHandle() != nullptr);
 
-    REQUIRE(win->setFullscreen(false, true));
+    REQUIRE(win->setFullscreenDesktop(false));
     CHECK(!win->getWindowSettings().fullscreen);
     CHECK_EQ(win->getWidth(), 320);
     CHECK_EQ(win->getHeight(), 240);
@@ -104,7 +106,7 @@ TEST_CASE("window.setFullscreenDesktopRoundTrip") {
     win->close();
 }
 
-TEST_CASE("window.setFullscreenSingleArgUsesDesktopMode") {
+TEST_CASE("window.setFullscreenDesktopRoundTripUsesSettings") {
     eve::window::Window* win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
     openWindow(win, gfx, 320, 240);
@@ -113,11 +115,11 @@ TEST_CASE("window.setFullscreenSingleArgUsesDesktopMode") {
     s.desktop_mode = true;
     REQUIRE(win->setWindowSettings(s));
 
-    REQUIRE(win->setFullscreen(true));
+    REQUIRE(win->setFullscreenDesktop(true));
     CHECK(win->getWindowSettings().fullscreen);
     CHECK(win->getWindowSettings().desktop_mode);
 
-    REQUIRE(win->setFullscreen(false));
+    REQUIRE(win->setFullscreenDesktop(false));
     CHECK(!win->getWindowSettings().fullscreen);
 
     win->close();
@@ -131,8 +133,8 @@ TEST_CASE("window.closeClearsHandleAndBlocksFullscreen") {
 
     win->close();
     CHECK(win->getHandle() == nullptr);
-    CHECK(!win->setFullscreen(true, true));
-    CHECK(!win->setFullscreen(false));
+    CHECK(!win->setFullscreenDesktop(true));
+    CHECK(!win->setFullscreenExclusive(false));
 }
 
 TEST_CASE("window.setWindowSettingsRecreatesAfterClose") {
@@ -169,5 +171,142 @@ TEST_CASE("window.zeroSizeUsesDesktopDimensions") {
     CHECK_GT(win->getWindowSettings().width, 0u);
     CHECK_GT(win->getWindowSettings().height, 0u);
 
+    win->close();
+}
+
+TEST_CASE("window.isOpenAfterCreateAndClose") {
+    eve::window::Window* win = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    openWindow(win, gfx, 320, 240);
+    CHECK(win->isOpen());
+    win->close();
+    CHECK(!win->isOpen());
+}
+
+TEST_CASE("window.titleAndPositionAndVSync") {
+    eve::window::Window* win = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    openWindow(win, gfx, 320, 240);
+
+    win->setWindowTitle("eve-window-test");
+    CHECK_EQ(win->getWindowTitle(), std::string("eve-window-test"));
+
+    win->setVSync(0);
+    CHECK_EQ(win->getVSync(), 0);
+    win->setVSync(1);
+    CHECK_EQ(win->getVSync(), 1);
+
+    int x = 0, y = 0, display = -1;
+    win->getPosition(x, y, display);
+    CHECK_GE(display, 0);
+
+    win->setPosition(40, 50, display);
+    int x2 = 0, y2 = 0, d2 = -1;
+    win->getPosition(x2, y2, d2);
+    CHECK_EQ(d2, display);
+    CHECK_LE(std::abs(x2 - 40), 32);
+    CHECK_LE(std::abs(y2 - 50), 32);
+
+    CHECK(win->isVisible());
+    win->close();
+}
+
+TEST_CASE("window.titleCachesBeforeOpen") {
+    auto* win = eve::window::Window::create();
+    REQUIRE(win != nullptr);
+    win->setWindowTitle("cached-title");
+    CHECK_EQ(win->getWindowTitle(), std::string("cached-title"));
+    CHECK(!win->isOpen());
+}
+
+TEST_CASE("window.displayQueries") {
+    auto* win = eve::window::Window::create();
+    REQUIRE(win != nullptr);
+
+    int n = win->getDisplayCount();
+    CHECK_GT(n, 0);
+
+    std::string name = win->getDisplayName(0);
+    CHECK(!name.empty());
+
+    std::string ori = win->getDisplayOrientation(0);
+    const bool validOrientation = ori == "unknown" || ori == "landscape" || ori == "landscapeFlipped"
+                                  || ori == "portrait" || ori == "portraitFlipped";
+    CHECK(validOrientation);
+
+    auto sizes = win->getFullscreenSizes(0);
+    CHECK_GT(sizes.size(), 0u);
+
+    int dw = 0, dh = 0;
+    win->getDesktopDimensions(0, dw, dh);
+    CHECK_GT(dw, 0);
+    CHECK_GT(dh, 0);
+
+    CHECK(win->getDisplayName(-1).empty());
+    CHECK_EQ(win->getDisplayOrientation(999), std::string("unknown"));
+    CHECK(win->getFullscreenSizes(999).empty());
+    int zw = 1, zh = 1;
+    win->getDesktopDimensions(999, zw, zh);
+    CHECK_EQ(zw, 0);
+    CHECK_EQ(zh, 0);
+}
+
+TEST_CASE("window.pixelSizeAndDpiRoundTrip") {
+    eve::window::Window* win = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    openWindow(win, gfx, 320, 240);
+
+    CHECK_GT(win->getPixelWidth(), 0);
+    CHECK_GT(win->getPixelHeight(), 0);
+    CHECK_GT(win->getNativeDPIScale(), 0.0);
+
+    double px = 0, py = 0;
+    win->toPixelsXY(10.0, 20.0, px, py);
+    double wx = 0, wy = 0;
+    win->fromPixelsXY(px, py, wx, wy);
+    CHECK_EQ(wx, 10.0);
+    CHECK_EQ(wy, 20.0);
+
+    double x = 5.0, y = 6.0;
+    win->windowToPixelCoords(&x, &y);
+    win->pixelToWindowCoords(&x, &y);
+    CHECK_EQ(x, 5.0);
+    CHECK_EQ(y, 6.0);
+
+    win->close();
+    CHECK_EQ(win->getPixelWidth(), 0);
+    CHECK_EQ(win->getPixelHeight(), 0);
+    CHECK_EQ(win->getDPIScale(), 1.0);
+}
+
+TEST_CASE("window.requestAttentionNoCrash") {
+    eve::window::Window* win = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    openWindow(win, gfx, 320, 240);
+    win->requestAttention(false);
+    win->requestAttention(true);
+    win->close();
+    win->requestAttention(false);
+}
+
+TEST_CASE("window.showMessageBoxOptional") {
+    const char* run = std::getenv("EVENGINE_TEST_MSGBOX");
+    if (!run || std::string(run) != "1") {
+        return;
+    }
+    eve::window::Window* win = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    openWindow(win, gfx, 320, 240);
+    CHECK(win->showMessageBox("t", "m", "info", true));
+    eve::window::Window::MessageBoxData data;
+    data.type = "warning";
+    data.title = "t";
+    data.message = "m";
+    data.buttons = {"OK", "Cancel"};
+    data.enterButtonIndex = 0;
+    data.escapeButtonIndex = 1;
+    data.attachToWindow = true;
+    int idx = win->showMessageBoxData(data);
+    CHECK_GE(idx, 0);
     win->close();
 }

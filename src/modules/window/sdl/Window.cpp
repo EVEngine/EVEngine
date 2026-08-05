@@ -23,6 +23,10 @@
 #include <windows.h>
 #endif
 
+#ifdef EVENGINE_MACOSX
+#include "macosx/macosx.h"
+#endif
+
 namespace eve {
 
 namespace graphic{
@@ -32,7 +36,17 @@ namespace graphic{
 namespace window {
 namespace sdl {
 
-Window::Window() {
+namespace {
+
+Uint32 messageBoxFlag(const std::string& type) {
+    if (type == "error") return SDL_MESSAGEBOX_ERROR;
+    if (type == "warning") return SDL_MESSAGEBOX_WARNING;
+    return SDL_MESSAGEBOX_INFORMATION;
+}
+
+}  // namespace
+
+Window::Window() : open(false) {
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
         throw Exception("Could not initialize SDL video subsystem (%s)", SDL_GetError());
 }
@@ -57,7 +71,8 @@ bool Window::setWindowSettings(WindowSettings f) {
     f.minwidth  = std::max(f.minwidth, (uint16_t)1);
     f.minheight = std::max(f.minheight, (uint16_t)1);
 
-    // f.display = std::min(std::max(f.display, 0), getDisplayCount() - 1);
+    if (getDisplayCount() > 0)
+        f.display = static_cast<uint8_t>(std::min(std::max(int(f.display), 0), getDisplayCount() - 1));
     if (f.width == 0 || f.height == 0) {
         SDL_DisplayMode mode = {};
         SDL_GetDesktopDisplayMode(f.display, &mode);
@@ -154,12 +169,21 @@ bool Window::setWindowSettings(WindowSettings f) {
         graphics->initWithWindow(window);
         graphics->setViewportSize(f.width, f.height, pw, ph);
     }
+    open = true;
     return true;
 }
 
 WindowSettings Window::getWindowSettings() { return settings; }
 
-bool Window::setFullscreen(bool fullscreen, bool desktop_mode) {
+bool Window::setFullscreenDesktop(bool fullscreen) {
+    return setFullscreenInternal(fullscreen, true);
+}
+
+bool Window::setFullscreenExclusive(bool fullscreen) {
+    return setFullscreenInternal(fullscreen, false);
+}
+
+bool Window::setFullscreenInternal(bool fullscreen, bool desktop_mode) {
     if (!window) return false;
 
     // if (graphics && graphics->isCanvasActive())
@@ -203,7 +227,221 @@ bool Window::setFullscreen(bool fullscreen, bool desktop_mode) {
     return false;
 }
 
-bool Window::setFullscreen(bool fullscreen) { return setFullscreen(fullscreen, settings.desktop_mode); }
+bool Window::isOpen() const { return open; }
+
+void Window::setWindowTitle(const std::string& t) {
+    title = t;
+    if (window) SDL_SetWindowTitle(window, title.c_str());
+}
+
+const std::string& Window::getWindowTitle() const { return title; }
+
+void Window::setPosition(int x, int y, int display) {
+    if (!window) return;
+    int count = SDL_GetNumVideoDisplays();
+    if (display < 0 || display >= count) display = 0;
+    SDL_Rect bounds = {};
+    SDL_GetDisplayBounds(display, &bounds);
+    SDL_SetWindowPosition(window, bounds.x + x, bounds.y + y);
+    settings.x            = x;
+    settings.y            = y;
+    settings.display      = static_cast<uint8_t>(display);
+    settings.use_position = true;
+}
+
+void Window::getPosition(int& x, int& y, int& display) {
+    if (!window) {
+        x       = settings.x;
+        y       = settings.y;
+        display = settings.display;
+        return;
+    }
+    int wx = 0, wy = 0;
+    SDL_GetWindowPosition(window, &wx, &wy);
+    display = SDL_GetWindowDisplayIndex(window);
+    if (display < 0) display = 0;
+    SDL_Rect bounds = {};
+    SDL_GetDisplayBounds(display, &bounds);
+    x = wx - bounds.x;
+    y = wy - bounds.y;
+}
+
+void Window::minimize() { if (window) SDL_MinimizeWindow(window); }
+void Window::maximize() { if (window) SDL_MaximizeWindow(window); }
+void Window::restore() { if (window) SDL_RestoreWindow(window); }
+
+bool Window::isMaximized() const {
+    return window && (SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED) != 0;
+}
+bool Window::isMinimized() const {
+    return window && (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) != 0;
+}
+bool Window::hasFocus() const {
+    return window && (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
+}
+bool Window::hasMouseFocus() const {
+    return window && (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS) != 0;
+}
+bool Window::isVisible() const {
+    return window && (SDL_GetWindowFlags(window) & SDL_WINDOW_SHOWN) != 0
+           && (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) == 0;
+}
+
+void Window::setVSync(int vsync) {
+    settings.vsync = static_cast<uint8_t>(vsync < 0 ? 0 : (vsync > 255 ? 255 : vsync));
+}
+
+int Window::getVSync() const { return settings.vsync; }
+
+int Window::getPixelWidth() const { return window ? pixelWidth : 0; }
+
+int Window::getPixelHeight() const { return window ? pixelHeight : 0; }
+
+double Window::getNativeDPIScale() const {
+    if (!window || windowWidth <= 0) return 1.0;
+    return double(pixelWidth) / double(windowWidth);
+}
+
+double Window::getDPIScale() const {
+    if (!window) return 1.0;
+    if (!settings.use_dpi_scale) return settings.dpi_scale > 0.f ? double(settings.dpi_scale) : 1.0;
+    return getNativeDPIScale();
+}
+
+void Window::windowToPixelCoords(double* x, double* y) const {
+    if (!x || !y) return;
+    double s = getNativeDPIScale();
+    *x *= s;
+    *y *= s;
+}
+
+void Window::pixelToWindowCoords(double* x, double* y) const {
+    if (!x || !y) return;
+    double s = getNativeDPIScale();
+    if (s == 0.0) return;
+    *x /= s;
+    *y /= s;
+}
+
+void Window::windowToDPICoords(double* x, double* y) const {
+    if (!x || !y) return;
+    double s = getDPIScale();
+    if (s == 0.0) return;
+    *x /= s;
+    *y /= s;
+}
+
+void Window::DPIToWindowCoords(double* x, double* y) const {
+    if (!x || !y) return;
+    double s = getDPIScale();
+    *x *= s;
+    *y *= s;
+}
+
+double Window::toPixels(double x) const { return x * getNativeDPIScale(); }
+
+double Window::fromPixels(double x) const {
+    double s = getNativeDPIScale();
+    return s == 0.0 ? x : x / s;
+}
+
+void Window::toPixelsXY(double wx, double wy, double& px, double& py) const {
+    px = toPixels(wx);
+    py = toPixels(wy);
+}
+
+void Window::fromPixelsXY(double px, double py, double& wx, double& wy) const {
+    wx = fromPixels(px);
+    wy = fromPixels(py);
+}
+
+int Window::getDisplayCount() const {
+    int n = SDL_GetNumVideoDisplays();
+    return n < 0 ? 0 : n;
+}
+
+std::string Window::getDisplayName(int display) const {
+    if (display < 0 || display >= getDisplayCount()) return {};
+    const char* n = SDL_GetDisplayName(display);
+    return n ? std::string(n) : std::string();
+}
+
+std::string Window::getDisplayOrientation(int display) const {
+    if (display < 0 || display >= getDisplayCount()) return "unknown";
+    switch (SDL_GetDisplayOrientation(display)) {
+        case SDL_ORIENTATION_LANDSCAPE: return "landscape";
+        case SDL_ORIENTATION_LANDSCAPE_FLIPPED: return "landscapeFlipped";
+        case SDL_ORIENTATION_PORTRAIT: return "portrait";
+        case SDL_ORIENTATION_PORTRAIT_FLIPPED: return "portraitFlipped";
+        default: return "unknown";
+    }
+}
+
+std::vector<Window::WindowSize> Window::getFullscreenSizes(int display) const {
+    std::vector<WindowSize> out;
+    if (display < 0 || display >= getDisplayCount()) return out;
+    int modes = SDL_GetNumDisplayModes(display);
+    for (int i = 0; i < modes; ++i) {
+        SDL_DisplayMode mode = {};
+        if (SDL_GetDisplayMode(display, i, &mode) == 0) {
+            WindowSize s;
+            s.width  = mode.w;
+            s.height = mode.h;
+            if (std::find(out.begin(), out.end(), s) == out.end()) out.push_back(s);
+        }
+    }
+    return out;
+}
+
+void Window::getDesktopDimensions(int display, int& width, int& height) const {
+    width = height = 0;
+    if (display < 0 || display >= getDisplayCount()) return;
+    SDL_DisplayMode mode = {};
+    if (SDL_GetDesktopDisplayMode(display, &mode) == 0) {
+        width  = mode.w;
+        height = mode.h;
+    }
+}
+
+bool Window::showMessageBox(const std::string& title, const std::string& message,
+                            const std::string& type, bool attachToWindow) {
+    SDL_Window* parent = (attachToWindow && window) ? window : nullptr;
+    return SDL_ShowSimpleMessageBox(messageBoxFlag(type), title.c_str(), message.c_str(), parent) == 0;
+}
+
+int Window::showMessageBoxData(const MessageBoxData& data) {
+    if (data.buttons.empty()) return -1;
+    std::vector<SDL_MessageBoxButtonData> buttons;
+    buttons.reserve(data.buttons.size());
+    for (size_t i = 0; i < data.buttons.size(); ++i) {
+        Uint32 flags = 0;
+        if (int(i) == data.enterButtonIndex) flags |= SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT;
+        if (int(i) == data.escapeButtonIndex) flags |= SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT;
+        buttons.push_back({flags, int(i), data.buttons[i].c_str()});
+    }
+    SDL_MessageBoxData sdl = {};
+    sdl.flags      = messageBoxFlag(data.type);
+    sdl.window     = (data.attachToWindow && window) ? window : nullptr;
+    sdl.title      = data.title.c_str();
+    sdl.message    = data.message.c_str();
+    sdl.numbuttons = int(buttons.size());
+    sdl.buttons    = buttons.data();
+    sdl.colorScheme = nullptr;
+    int buttonid = -1;
+    if (SDL_ShowMessageBox(&sdl, &buttonid) < 0) return -1;
+    return buttonid;
+}
+
+void Window::requestAttention(bool continuous) {
+#ifdef EVENGINE_MACOSX
+    eve::macosx::requestAttention(continuous);
+#else
+    if (!window) return;
+#if SDL_VERSION_ATLEAST(2, 0, 16)
+    SDL_FlashWindow(window, continuous ? SDL_FLASH_UNTIL_FOCUSED : SDL_FLASH_BRIEFLY);
+#endif
+#endif
+}
 
 bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowflags, int msaa, bool stencil, int depth) {
     window = SDL_CreateWindow(title.c_str(), x, y, w, h, windowflags);
@@ -235,6 +473,8 @@ void Window::close(bool allowExceptions) {
         SDL_FlushEvent(SDL_WINDOWEVENT);
     }
 
+    pixelWidth = pixelHeight = 0;
+    windowWidth = windowHeight = 0;
     open = false;
 }
 
