@@ -4,7 +4,9 @@
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "window/Window.h"
+#include "audio/Audio.h"
 #include "common/Exception.h"
+#include "common/Module.h"
 #include "common/config.h"
 
 #include <SDL2/SDL.h>
@@ -96,6 +98,9 @@ void Event::pump()
 			delete msg;
 		}
 	}
+
+	if (auto *audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio"))
+		audio->pump();
 }
 
 Message *Event::wait()
