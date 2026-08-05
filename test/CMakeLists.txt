@@ -2,8 +2,10 @@ enable_testing()
 
 file(GLOB all_test_cpp
   ECS.cpp
+  data.cpp
   filesystem.cpp
   graphic.cpp
+  medialoader_model_link.cpp
   model.cpp
   mouse.cpp
   network.cpp
@@ -43,26 +45,26 @@ endif()
 
 if(WIN32)
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd zlibstaticd lz4mdd)
+    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd assimpmdd zlibstaticd lz4mdd)
   else()
-    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd zlibstatic lz4md)
+    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd assimpmd zlibstatic lz4md)
   endif()
 else()
-  set(ThirdParty ${ThirdParty} physfs medialoader_image z lz4)
+  set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model assimp z lz4)
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d
-        PocoFoundationmdd PocoNetmdd
+        PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
         ${SystemLibraries})
 else()
     if(WIN32)
         set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
-            PocoFoundationmd PocoNetmd
+            PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
             ${SystemLibraries})
     else()
         set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
-            PocoFoundation PocoNet
+            PocoFoundation PocoNet PocoJSON PocoXML
             ${SystemLibraries})
     endif()
 endif()

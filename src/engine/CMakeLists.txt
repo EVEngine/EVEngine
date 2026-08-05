@@ -14,23 +14,23 @@ endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2d SDL2maind
-        medialoader_imagemdd zlibstaticd physfsmdd
-        PocoFoundationmdd PocoNetmdd
+        medialoader_imagemdd medialoader_modelmdd assimpmdd zlibstaticd physfsmdd lz4mdd
+        PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
         ${SystemLibraries})
 else()
     if(WIN32)
         set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-            medialoader_imagemd zlibstatic physfsmd
-            PocoFoundationmd PocoNetmd
+            medialoader_imagemd medialoader_modelmd assimpmd zlibstatic physfsmd lz4md
+            PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
             ${SystemLibraries})
     else()
         set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-            medialoader_image z physfs
-            PocoFoundation PocoNet
+            medialoader_image medialoader_model assimp z physfs lz4
+            PocoFoundation PocoNet PocoJSON PocoXML
             ${SystemLibraries})
     endif()
 endif()
 
-set(EVELIBS EVWindow EVMouse EVEvent EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork)
+set(EVELIBS EVWindow EVMouse EVEvent EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData)
 
 target_link_libraries(eve ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
