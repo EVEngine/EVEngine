@@ -315,42 +315,53 @@ function(check_third_party_project name repo)
         endif()
         message(STATUS "third-party Android toolchain: ABI=${ANDROID_ABI} PLATFORM=${ANDROID_PLATFORM}")
     elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        find_program(_eve_ninja ninja REQUIRED)
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_SYSTEM_NAME=iOS
             -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
             -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
             -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
-            -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO
             -DIOS=TRUE
             -DVIDEO_COCOA=OFF
+            -DCMAKE_MAKE_PROGRAM=${_eve_ninja}
         )
-        if(CMAKE_MAKE_PROGRAM)
-            list(APPEND _eve_tp_cmake_args -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM})
-        endif()
         if(CMAKE_C_COMPILER)
             list(APPEND _eve_tp_cmake_args -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER})
         endif()
         if(CMAKE_CXX_COMPILER)
             list(APPEND _eve_tp_cmake_args -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER})
         endif()
-        message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+        # Force Ninja for deps: parent Xcode generator makes SDL try_compile unbearably slow.
+        set(_eve_tp_use_ninja TRUE)
+        message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET} GEN=Ninja")
     endif()
 
-    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --parallel 32)
-    if(CMAKE_GENERATOR MATCHES "Xcode")
-        set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --config Release --target install --parallel 8)
-    endif()
+    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --parallel 8)
 
-    ExternalProject_Add(${name}
-        GIT_REPOSITORY ${GIT_HTTPS_LINK}
-        GIT_TAG origin/main
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
-        BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
-        CMAKE_ARGS ${_eve_tp_cmake_args}
-        BUILD_COMMAND ${_eve_tp_build_cmd}
-        BUILD_ALWAYS 0
-        EXCLUDE_FROM_ALL 1
-    )
+    if(_eve_tp_use_ninja)
+        ExternalProject_Add(${name}
+            GIT_REPOSITORY ${GIT_HTTPS_LINK}
+            GIT_TAG origin/main
+            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
+            CMAKE_GENERATOR "Ninja"
+            CMAKE_ARGS ${_eve_tp_cmake_args}
+            BUILD_COMMAND ${_eve_tp_build_cmd}
+            BUILD_ALWAYS 0
+            EXCLUDE_FROM_ALL 1
+        )
+    else()
+        ExternalProject_Add(${name}
+            GIT_REPOSITORY ${GIT_HTTPS_LINK}
+            GIT_TAG origin/main
+            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
+            CMAKE_ARGS ${_eve_tp_cmake_args}
+            BUILD_COMMAND ${_eve_tp_build_cmd}
+            BUILD_ALWAYS 0
+            EXCLUDE_FROM_ALL 1
+        )
+    endif()
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     link_directories(${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
 endfunction()
