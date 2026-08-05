@@ -259,8 +259,8 @@ install/ios-debug:
 	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-debug first"; exit 1); \
 	  echo "Installing $$APP"; \
 	  if xcrun --find devicectl >/dev/null 2>&1; then \
-	    DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$3; exit}'); \
-	    test -n "$$DEV" || DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$NF; exit}'); \
+	    DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -n 's/.*\([0-9A-Fa-f]\{8\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{12\}\).*connected.*/\1/p' | head -1); \
+	    test -n "$$DEV" || (echo "No connected iOS device found (devicectl)."; exit 1); \
 	    echo "Device $$DEV"; \
 	    xcrun devicectl device install app --device $$DEV "$$APP"; \
 	  elif command -v ios-deploy >/dev/null 2>&1; then \
@@ -271,8 +271,7 @@ install/ios-debug:
 
 run/ios-debug: install/ios-debug
 	@if xcrun --find devicectl >/dev/null 2>&1; then \
-	  DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$3; exit}'); \
-	  test -n "$$DEV" || DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$NF; exit}'); \
+	  DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -n 's/.*\([0-9A-Fa-f]\{8\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{12\}\).*connected.*/\1/p' | head -1); \
 	  xcrun devicectl device process launch --device $$DEV $(IOS_BUNDLE_ID); \
 	elif command -v ios-deploy >/dev/null 2>&1; then \
 	  ios-deploy --justlaunch --bundle "$$(find build/ios-debug -name 'eve.app' -type d | head -1)"; \
