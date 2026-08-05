@@ -4,6 +4,11 @@
 #include <rang.hpp>
 #include <iostream>
 
+#if defined(EVENGINE_ANDROID)
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_main.h>
+#endif
+
 using namespace eve;
 using namespace std;
 

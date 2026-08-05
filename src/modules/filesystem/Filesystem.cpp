@@ -13,6 +13,8 @@
 #include "macosx/macosx.h"
 #elif defined(EVENGINE_IOS)
 #include "ios/ios.h"
+#elif defined(EVENGINE_ANDROID)
+#include "android/android.h"
 #elif defined(EVENGINE_WINDOWS)
 #include <windows.h>
 
@@ -92,6 +94,8 @@ std::string Filesystem::getExecutablePath() const {
     return macosx::getExecutablePath();
 #elif defined(EVENGINE_IOS)
     return ios::getExecutablePath();
+#elif defined(EVENGINE_ANDROID)
+    return android::getExecutablePath();
 #elif defined(EVENGINE_WINDOWS)
     wchar_t buffer[MAX_PATH + 1] = {0};
     if (GetModuleFileNameW(nullptr, buffer, MAX_PATH) == 0) return "";
