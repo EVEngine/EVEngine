@@ -148,6 +148,37 @@ make run/android-debug
 make log/android
 ```
 
+### iOS / iPadOS（arm64 真机，最低 13.0）
+
+| 组件 | 推荐配置 |
+|------|----------|
+| 宿主 | macOS + **完整 Xcode**（不能只有 Command Line Tools；需 `iphoneos` SDK） |
+| 部署目标 | **iOS / iPadOS 13.0+** |
+| 架构 / 设备族 | **arm64**；`TARGETED_DEVICE_FAMILY=1,2`（iPhone + iPad） |
+| Vulkan | LunarG SDK 自带的 `iOS/lib/MoltenVK.xcframework` |
+| 签名 | Apple Development；设置 `IOS_DEVELOPMENT_TEAM=<TeamID>` |
+| 验收设备 | 物理 **iPad**（iPhone 兼容）；模拟器非首版目标 |
+
+一键构建 Debug `.app`：
+
+```sh
+# Team ID 可在钥匙串「我的证书」或 Apple Developer 账户中查看
+export IOS_DEVELOPMENT_TEAM=XXXXXXXXXX
+make build/ios-debug
+```
+
+流程：Xcode 生成器配置 iOS 工具链 → 交叉编译第三方（SDL UIKit 静态库等）→ 链接/嵌入 MoltenVK → 打包 `example/` 到 `Resources/game` → 产出 `eve.app`。启动时若无 CLI 参数，会注入 `run <Resources/game>`。
+
+真机安装 / 运行 / 日志：
+
+```sh
+# 用 USB 连接 iPad，开启开发者模式与信任此电脑
+make install/ios-debug
+make run/ios-debug
+make log/ios
+```
+
+可选变量：`IOS_DEPLOYMENT_TARGET`（默认 13.0）、`IOS_BUNDLE_ID`（默认 `com.evengine.example`）、`VULKAN_SDK`。
 排错要点：
 
 1. 设备需有 Vulkan；冷启动后若黑屏，先看 `adb logcat` 中 `EVEngineActivity` / `SDL` / `vulkan`。
@@ -218,6 +249,7 @@ make log/android
 | macOS Release | `build/macosx` | Unix Makefiles + MoltenVK |
 | macOS Debug | `build/macosx-debug` | Unix Makefiles + MoltenVK |
 | Android Debug | `build/android-debug` + Gradle APK | NDK `libmain.so` → `app-debug.apk` |
+| iOS Debug | `build/ios-debug`（Xcode） | `eve.app` + 嵌入 MoltenVK，可装 iPad/iPhone |
 
 主程序可执行文件名一般为 `eve`（Windows 下为 `eve.exe`，路径随 VS 的 `Release` / `Debug` 配置子目录变化）。Android 为 SDLActivity 加载的 `libmain.so`（包名 `com.evengine.example`）。
 
@@ -348,16 +380,18 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
 7. **Android APK / 真机**  
    确认 NDK 版本与 Makefile 一致；`local.properties` 的 `sdk.dir` 正确；设备开启 USB 调试且 `adb devices` 可见。首版要求真机 Vulkan；无设备时至少验证 `make build/android-debug` 产出 APK。
 
+8. **iOS / iPadOS 真机**  
+   必须安装完整 Xcode（`xcode-select -p` 应指向 `Xcode.app/Contents/Developer`，且 `xcrun --sdk iphoneos --show-sdk-path` 可用）。设置 `IOS_DEVELOPMENT_TEAM`，用 USB 连接已信任的 iPad/iPhone。MoltenVK 来自 LunarG SDK 的 `iOS/lib/MoltenVK.xcframework`。
 
 ## 项目结构（简要）
 
 ```
 EVEngine/
 ├── CMakeLists.txt      # 主 CMake：平台检测、第三方、子目录
-├── Makefile            # Windows / Linux / macOS / Android 快捷入口
-├── platform/           # 平台相关代码与打包模板（含 android/apk）
+├── Makefile            # Windows / Linux / macOS / Android / iOS 快捷入口
+├── platform/           # 平台相关代码与打包模板（含 android/apk、ios Info.plist）
 ├── src/
-│   ├── engine/         # 引擎核心、DevTools、命令行（Android 产出 libmain.so）
+│   ├── engine/         # 引擎核心、DevTools、命令行（Android libmain / iOS eve.app）
 │   ├── modules/        # 功能模块
 │   └── scripts/        # 脚本侧集成
 ├── test/               # 单元测试
