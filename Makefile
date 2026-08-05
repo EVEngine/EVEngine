@@ -250,6 +250,8 @@ log/android:
 
 # Install Debug .app to the first connected physical iOS/iPadOS device.
 install/ios-debug:
+	@test -n "$$(security find-identity -v -p codesigning 2>/dev/null | sed -n '/Apple Development/p')" \
+	  || (echo "No Apple Development signing identity. Open Xcode → Settings → Accounts, add Apple ID, then rebuild with IOS_DEVELOPMENT_TEAM=<TeamID>."; exit 1)
 	@APP="$(IOS_APP)"; \
 	  if [ ! -d "$$APP" ]; then \
 	    APP=$$(find build/ios-debug -name 'eve.app' -type d 2>/dev/null | head -1); \
@@ -257,7 +259,9 @@ install/ios-debug:
 	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-debug first"; exit 1); \
 	  echo "Installing $$APP"; \
 	  if xcrun --find devicectl >/dev/null 2>&1; then \
-	    DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected|available/{print $$NF; exit}'); \
+	    DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$3; exit}'); \
+	    test -n "$$DEV" || DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$NF; exit}'); \
+	    echo "Device $$DEV"; \
 	    xcrun devicectl device install app --device $$DEV "$$APP"; \
 	  elif command -v ios-deploy >/dev/null 2>&1; then \
 	    ios-deploy --bundle "$$APP"; \
@@ -267,7 +271,8 @@ install/ios-debug:
 
 run/ios-debug: install/ios-debug
 	@if xcrun --find devicectl >/dev/null 2>&1; then \
-	  DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected|available/{print $$NF; exit}'); \
+	  DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$3; exit}'); \
+	  test -n "$$DEV" || DEV=$$(xcrun devicectl list devices 2>/dev/null | awk '/connected/{print $$NF; exit}'); \
 	  xcrun devicectl device process launch --device $$DEV $(IOS_BUNDLE_ID); \
 	elif command -v ios-deploy >/dev/null 2>&1; then \
 	  ios-deploy --justlaunch --bundle "$$(find build/ios-debug -name 'eve.app' -type d | head -1)"; \
