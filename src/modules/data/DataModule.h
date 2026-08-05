@@ -5,8 +5,12 @@
 #include "HashFunction.h"
 #include "DataView.h"
 #include "ByteData.h"
+#include "JsonDocument.h"
+#include "XmlDocument.h"
 
 #include "common/Module.h"
+
+#include <string>
 
 namespace eve
 {
@@ -76,17 +80,28 @@ void hash(std::string function, const char *input, uint64_t size, HashFunction::
 class DataModule : public Module
 {
 public:
-
+	Module_REG(DataModule);
 	DataModule();
 	virtual ~DataModule();
-
-	// Implements Module.
-	std::string getName() const override { return "data"; }
 
 	DataView *newDataView(Data *data, size_t offset, size_t size);
 	ByteData *newByteData(size_t size);
 	ByteData *newByteData(const void *d, size_t size);
 	ByteData *newByteData(void *d, size_t size, bool own);
+
+	JsonDocument *newJsonDocument();
+	JsonDocument *decodeJson(const std::string &text);
+	JsonDocument *decodeJson(const std::string &text, std::string *error);
+	JsonDocument *decodeJson(Data *data, std::string *error = nullptr);
+	std::string   encodeJson(JsonDocument *doc, bool pretty = false);
+	ByteData *    encodeJsonData(JsonDocument *doc, bool pretty = false);
+
+	XmlDocument *newXmlDocument();
+	XmlDocument *decodeXml(const std::string &text);
+	XmlDocument *decodeXml(const std::string &text, std::string *error);
+	XmlDocument *decodeXml(Data *data, std::string *error = nullptr);
+	std::string  encodeXml(XmlDocument *doc, bool pretty = false);
+	ByteData *   encodeXmlData(XmlDocument *doc, bool pretty = false);
 
 }; // DataModule
 
