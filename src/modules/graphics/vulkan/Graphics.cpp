@@ -89,8 +89,13 @@ void Graphics::initWithWindow(void *nativeWindow) {
     // SDL already supplies surface extensions; avoid duplicating them via
     // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
     builder.set_headless(true);
-    builder.enable_extension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-    builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
+    // Portability enumeration comes from the Khronos loader. iOS links MoltenVK
+    // directly, so the extension is absent there and asking for it aborts
+    // instance creation.
+    if (vkb::SystemInfo::query().is_extension_available(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
+        builder.enable_extension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
+    }
 #endif
     inst = builder.build();
 

@@ -121,7 +121,18 @@ if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
 endif()
 
-target_link_libraries(${EVENGINE_NATIVE_TARGET} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+if(CMAKE_GENERATOR MATCHES "Xcode")
+    # create_module() emits STATIC libraries here, so the linker would drop the
+    # translation units whose only job is to self-register a module or a
+    # subcommand at static-init time. Pull the archives in whole.
+    set(_eve_whole_archive_libs "")
+    foreach(_eve_lib IN LISTS EVELIBS)
+        list(APPEND _eve_whole_archive_libs "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_eve_lib}>")
+    endforeach()
+    target_link_libraries(${EVENGINE_NATIVE_TARGET} ${_eve_whole_archive_libs} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+else()
+    target_link_libraries(${EVENGINE_NATIVE_TARGET} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     if(NOT EVENGINE_MOLTENVK_FRAMEWORK_DIR)
