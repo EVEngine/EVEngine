@@ -56,12 +56,15 @@ event <- eve.Event();
 timer <- eve.Timer();
 ui <- eve.UI();
 particles <- eve.Particles();
+map <- eve.Map();
+physics <- eve.Physics();
 keyboard <- eve.Keyboard();
 mouse <- eve.Mouse();
 touch <- eve.Touch();
 sound <- eve.Sound();
 audio <- eve.Audio();
 model3d <- eve.Model3D();
+font <- eve.Font();
 fs <- eve.Filesystem();
 hot <- eve.HotReload();
 

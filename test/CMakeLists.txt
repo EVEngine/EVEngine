@@ -22,12 +22,15 @@ file(GLOB all_test_cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
   particles.cpp
+  map.cpp
+  box2d.cpp
   hotreload.cpp
   shader.cpp
   simplesquirrel.cpp
   sound.cpp
   model3d.cpp
   audio.cpp
+  font.cpp
   window.cpp
   window_cpp.cpp
   image.cpp
@@ -92,19 +95,19 @@ endif()
 
 if(WIN32)
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd
-        vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd)
+    set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd Box2D
+        vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd freetype)
   else()
-    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic lz4md
-        vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md)
+    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic lz4md Box2D
+        vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md freetype)
   endif()
 else()
   if(APPLE)
-    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4
-        vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal)
+    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D
+        vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal freetype)
   else()
-    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4
-        vorbis vorbisfile modplug mpg123 OpenAL)
+    set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D
+        vorbis vorbisfile modplug mpg123 OpenAL freetype)
   endif()
 endif()
 
@@ -124,7 +127,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVModel3D)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVPhysics EVMap EVModel3D EVFont)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)

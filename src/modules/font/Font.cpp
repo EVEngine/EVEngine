@@ -1,0 +1,104 @@
+#include "font/Font.h"
+
+#include "common/Data.h"
+#include "common/Exception.h"
+#include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
+#include "image/ImageData.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include <cstdint>
+#include <functional>
+#include <vector>
+
+namespace eve {
+namespace font {
+
+Module_IMPL(Font, new Font());
+
+Font::Font() = default;
+Font::~Font() = default;
+
+FontData *Font::newFontData(Data *data, int size) {
+    if (data == nullptr || data->getData() == nullptr || data->getSize() == 0)
+        throw eve::Exception("Cannot decode empty font data");
+
+    const auto *ptr = static_cast<const uint8_t *>(data->getData());
+    std::vector<uint8_t> bytes(ptr, ptr + data->getSize());
+
+    std::string uri;
+    if (auto *fd = dynamic_cast<filesystem::FileData *>(data))
+        uri = "file://" + fd->getFilename();
+
+    return new FontData(std::move(bytes), size, std::move(uri));
+}
+
+FontData *Font::newFontDataFromFile(std::string path, int size) {
+    if (path.empty())
+        throw eve::Exception("Font::newFontDataFromFile: empty path");
+
+    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
+    if (!fs)
+        fs = filesystem::Filesystem::create();
+
+    filesystem::FileData *fd = fs->read(path);
+    if (fd == nullptr || fd->getData() == nullptr || fd->getSize() == 0) {
+        delete fd;
+        throw eve::Exception("Could not read font file: %s", path.c_str());
+    }
+
+    try {
+        FontData *font = newFontData(fd, size);
+        delete fd;
+        return font;
+    } catch (...) {
+        delete fd;
+        throw;
+    }
+}
+
+void Font::expose(ssq::Table &table) {
+    auto cls = table.addClass(name, Font::create, false);
+    expose(cls);
+
+    auto fd = table.addClass<FontData>(
+        "FontData", std::function<FontData *()>([]() -> FontData * { return nullptr; }), true);
+    fd.addFunc("getSize", &FontData::getSize);
+    fd.addFunc("getAscent", &FontData::getAscent);
+    fd.addFunc("getDescent", &FontData::getDescent);
+    fd.addFunc("getLineHeight", &FontData::getLineHeight);
+    fd.addFunc("getBaseline", &FontData::getBaseline);
+    fd.addFunc("getFamilyName", &FontData::getFamilyName);
+    fd.addFunc("getStyleName", &FontData::getStyleName);
+    fd.addFunc("getGlyphCount", &FontData::getGlyphCount);
+    fd.addFunc("hasGlyph", &FontData::hasGlyph);
+    fd.addFunc("hasGlyphs", &FontData::hasGlyphs);
+    fd.addFunc("getWidth", &FontData::getWidth);
+    fd.addFunc("getKerning", &FontData::getKerning);
+    fd.addFunc("getGlyphWidth", &FontData::getGlyphWidth);
+    fd.addFunc("getGlyphHeight", &FontData::getGlyphHeight);
+    fd.addFunc("getGlyphBearingX", &FontData::getGlyphBearingX);
+    fd.addFunc("getGlyphBearingY", &FontData::getGlyphBearingY);
+    fd.addFunc("getGlyphAdvance", &FontData::getGlyphAdvance);
+    fd.addFunc("newGlyphImageData", &FontData::newGlyphImageData);
+
+    // Minimal ImageData surface so newGlyphImageData is usable from scripts.
+    // Full image decode APIs remain on eve.Image.
+    auto img = table.addClass<image::ImageData>(
+        "ImageData", std::function<image::ImageData *()>([]() -> image::ImageData * { return nullptr; }),
+        true);
+    img.addFunc("getWidth", &image::ImageData::getWidth);
+    img.addFunc("getHeight", &image::ImageData::getHeight);
+    img.addFunc("getFormat", &image::ImageData::getFormat);
+    img.addFunc("getSize", &image::ImageData::getSize);
+}
+
+void Font::expose(ssq::Class &cls) {
+    cls.addFunc("getName", &Font::getName);
+    cls.addFunc("newFontData", &Font::newFontData);
+    cls.addFunc("newFontDataFromFile", &Font::newFontDataFromFile);
+}
+
+}  // namespace font
+}  // namespace eve

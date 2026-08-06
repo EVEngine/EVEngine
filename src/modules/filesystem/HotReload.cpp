@@ -3,6 +3,8 @@
 #include "common/Module.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
+#include "map/TileConfig.h"
+#include "map/TileLayer.h"
 #include "particles/ParticleConfig.h"
 #include "particles/ParticleEmitter.h"
 
@@ -80,6 +82,20 @@ bool HotReload::reloadParticles(const std::string &normPath) {
     return reloaded > 0;
 }
 
+bool HotReload::reloadTilemaps(const std::string &normPath) {
+    if (ecs::ComponentManager<map::TileLayer>::inst().registy == nullptr) return false;
+
+    int reloaded = 0;
+    auto view = ecs::View<map::TileLayer, map::TileLayer::Config, map::TileLayer::Resource>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [cfg, res] = *it;
+        if (!cfg->entity || res->path.empty()) continue;
+        if (normalizePath(res->path) != normPath) continue;
+        if (map::reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
+    }
+    return reloaded > 0;
+}
+
 bool HotReload::reloadTextures(const std::string &normPath) {
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) return false;
@@ -102,6 +118,23 @@ bool HotReload::reloadTextures(const std::string &normPath) {
             }
         }
     }
+
+    // Tile layers that reference this atlas path.
+    if (ecs::ComponentManager<map::TileLayer>::inst().registy != nullptr) {
+        auto view = ecs::View<map::TileLayer, map::TileLayer::Config, map::TileLayer::Resource,
+                              map::TileLayer::Tileset>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [cfg, res, ts] = *it;
+            if (!cfg->entity || res->texturePath.empty()) continue;
+            if (normalizePath(res->texturePath) != normPath) continue;
+            try {
+                graphics::Texture *tex = gfx->newTextureFromFile(normPath);
+                cfg->entity->setTileset(tex, ts->firstGid, ts->columns, ts->margin, ts->spacing);
+                ok = true;
+            } catch (...) {
+            }
+        }
+    }
     return ok;
 }
 
@@ -115,13 +148,16 @@ bool HotReload::tryReload(std::string path) {
 
     bool any = false;
     const bool wantParticle = (kind == "auto" || kind == "particle") && isJsonPath(norm);
+    const bool wantTilemap = (kind == "auto" || kind == "tilemap") && isJsonPath(norm);
     const bool wantTexture = (kind == "auto" || kind == "texture") && isImagePath(norm);
 
     if (wantParticle) any = reloadParticles(norm) || any;
+    if (wantTilemap) any = reloadTilemaps(norm) || any;
     if (wantTexture) any = reloadTextures(norm) || any;
 
-    // Bound but unknown extension: still try both when kind is explicit.
+    // Bound but unknown extension: still try when kind is explicit.
     if (kind == "particle" && !wantParticle) any = reloadParticles(norm) || any;
+    if (kind == "tilemap" && !wantTilemap) any = reloadTilemaps(norm) || any;
     if (kind == "texture" && !wantTexture) any = reloadTextures(norm) || any;
 
     return any;

@@ -81,6 +81,15 @@ public:
     virtual void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w,
                                         float h, const Color &color) = 0;
 
+    /** Draw a textured sub-rect (atlas / tile UVs). texture may be null → solid. */
+    virtual void drawTexturedRectUV(Texture *texture, float x, float y, float w, float h, float u0,
+                                    float v0, float u1, float v1, const Color &color) = 0;
+
+    /** UV draw with an explicit Shader (nullptr = default textured pipeline). */
+    virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y,
+                                          float w, float h, float u0, float v0, float u1, float v1,
+                                          const Color &color) = 0;
+
     /** Upload triangulated mesh from Assimp (pos/normal/uv + indices). Owned by Graphics. */
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
 

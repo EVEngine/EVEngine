@@ -45,9 +45,10 @@
 6. 管理系统 - system
     负责系统版本、时间、状态等的查询和设置
 
-7. 资源管理系统 - image sound video fonts 3dmodel(`model3d`/`Model3D`) animation
+7. 资源管理系统 - image sound video font(`font`/`Font`) 3dmodel(`model3d`/`Model3D`) animation
     负责加载图形、声音、视频、字体、3d模型、动画等不同格式数据
     3dmodel：`Model3D::newModelData` / `newModelDataFromFile` → `ModelData`（medialoader Assimp）
+    font：`Font::newFontData` / `newFontDataFromFile` → `FontData`（FreeType；glyph → ImageData）
 
 8. 网络系统 - network
     封装网络通讯的各种基础操作
@@ -61,8 +62,13 @@
     System：`ParticleConfigSystem`（filesystem watch + mtime 回退）/ `ParticleSimSystem` / `ParticleRenderSystem`
     Module：工厂、`newEmitterFromFile`、脚本绑定；`update` 含 poll+sim
 
-11. Box2d物理 - box2d
+11. Box2d物理 - box2d（脚本模块名 `Physics`）
     负责管理box2d物理引擎
+    Module：`Physics`（`setMeter` / `newWorld`）
+    类型：`World` / `Body` / `Fixture`；坐标为像素，内部按 meter 换算
+    帧循环：`world.update(dt)`；碰撞事件：`begincontact` / `endcontact` → `event`
+    可选：`world.drawDebug(gfx)`
+    代码：`src/modules/physics/`（避免与第三方 `Box2D/` 在大小写不敏感文件系统上冲突）
 
 12. 动画系统
     Skeleton Animations

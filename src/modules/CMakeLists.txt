@@ -49,7 +49,18 @@ target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
 
 create_module(EVParticles particles)
 target_compile_definitions(EVParticles PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+create_module(EVPhysics physics)
+# Box2D headers use <Box2D/Common/...>; prefer source tree over flattened install.
+target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
+create_module(EVMap map)
+target_compile_definitions(EVMap PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVModel3D model3d)
+create_module(EVFont font)
+# ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
+target_include_directories(EVFont PRIVATE
+  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/freetype2
+  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/freetype2
+)
 create_module(EVPlugins plugins)
 if(EVENGINE_BUILD_DEMO)
     create_module(EVDemo demo)

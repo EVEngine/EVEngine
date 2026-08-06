@@ -126,6 +126,11 @@ public:
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
     void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w, float h,
                                 const Color &color) override;
+    void drawTexturedRectUV(Texture *texture, float x, float y, float w, float h, float u0, float v0,
+                            float u1, float v1, const Color &color) override;
+    void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
+                                  float h, float u0, float v0, float u1, float v1,
+                                  const Color &color) override;
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                              const std::vector<uint32_t> &fragSpv) override;
     Shader *newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) override;

@@ -974,11 +974,22 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) {
-    drawTexturedRectShader(texture, currentShader, x, y, w, h, color);
+    drawTexturedRectUV(texture, x, y, w, h, 0.f, 0.f, 1.f, 1.f, color);
 }
 
 void Graphics::drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w,
                                       float h, const Color &color) {
+    drawTexturedRectShaderUV(texture, shader, x, y, w, h, 0.f, 0.f, 1.f, 1.f, color);
+}
+
+void Graphics::drawTexturedRectUV(Texture *texture, float x, float y, float w, float h, float u0,
+                                  float v0, float u1, float v1, const Color &color) {
+    drawTexturedRectShaderUV(texture, currentShader, x, y, w, h, u0, v0, u1, v1, color);
+}
+
+void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
+                                        float h, float u0, float v0, float u1, float v1,
+                                        const Color &color) {
     if (!texture) {
         drawSolidRect(x, y, w, h, color);
         return;
@@ -987,7 +998,7 @@ void Graphics::drawTexturedRectShader(Texture *texture, Shader *shader, float x,
         texturedBatches.back().shader != shader) {
         texturedBatches.push_back(TexturedBatch{texture, shader, Batcher{}});
     }
-    texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, 0, 0, 1, 1);
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
 }
 
 namespace {
