@@ -12,10 +12,6 @@
 #include <unordered_map>
 #include <vector>
 
-#if defined(EVENGINE_ANDROID)
-#include <android/log.h>
-#endif
-
 namespace eve::particles {
 
 namespace {
@@ -112,12 +108,7 @@ void ParticleSimSystem::update(float dt) {
 }
 
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
-    if (!gfx) {
-#if defined(EVENGINE_ANDROID)
-        __android_log_print(ANDROID_LOG_WARN, "EVEngine", "ParticleRender: gfx is null");
-#endif
-        return;
-    }
+    if (!gfx) return;
     if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return;
 
     struct Item {
@@ -138,16 +129,6 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
         // setCamera() explicitly when world/camera space is needed.
         items.push_back(Item{cfg, sim, draw, fromEntity(draw->camera)});
     }
-
-#if defined(EVENGINE_ANDROID)
-    if (!items.empty()) {
-        const auto &it0 = items.front();
-        __android_log_print(ANDROID_LOG_INFO, "EVEngine",
-                            "ParticleRender: emitters=%zu alive0=%d pos=(%.1f,%.1f) cam=%d",
-                            items.size(), it0.sim->alive, it0.cfg->x, it0.cfg->y,
-                            it0.cam.valid ? 1 : 0);
-    }
-#endif
 
     std::stable_sort(items.begin(), items.end(), [](const Item &a, const Item &b) {
         const bool aOff = a.draw->canvas != nullptr;
