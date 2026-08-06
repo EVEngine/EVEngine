@@ -22,6 +22,7 @@ file(GLOB all_test_cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
   particles.cpp
+  hotreload.cpp
   shader.cpp
   simplesquirrel.cpp
   sound.cpp

@@ -2,6 +2,7 @@
 #include "scripts.h"
 #include "common/Module.h"
 #include "common/config.h"
+#include "filesystem/Filesystem.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <CLI11.hpp>
@@ -64,11 +65,24 @@ int Cmdline::Run(std::string path, std::string root) {
         // Switch to the game directory so load.nut can dofile("config.nut") / "main.nut".
         if (!path.empty() && path != ".") {
             std::error_code ec;
-            filesystem::current_path(path, ec);
+            std::filesystem::current_path(path, ec);
             if (ec) {
                 cerr << "Cannot chdir to game path '" << path << "': " << ec.message() << endl;
                 EVE_ANDROID_LOGE("Cannot chdir to game path '%s': %s", path.c_str(), ec.message().c_str());
                 return 2;
+            }
+        }
+
+        // Mount game dir for PhysFS so relative watch/read resolve (hot reload).
+        {
+            auto *fs = eve::filesystem::Filesystem::create();
+            if (fs) {
+                std::error_code ec;
+                auto cwd = std::filesystem::current_path(ec);
+                if (!ec) {
+                    // setSource only succeeds once; ignore failure if already mounted.
+                    fs->setSource(cwd.string());
+                }
             }
         }
 

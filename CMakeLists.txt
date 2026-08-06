@@ -63,6 +63,9 @@ function(main)
         add_subdirectory(test)
     endif()
 
+    include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
+    eve_stage_timidity_share()
+
     include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
 endfunction()
 
@@ -145,6 +148,9 @@ function(set_include)
             foreach(_cand
                 "$ENV{VULKAN_SDK}/../iOS/lib/MoltenVK.xcframework"
                 "$ENV{VULKAN_SDK}/iOS/lib/MoltenVK.xcframework"
+                # jakoch/install-vulkan-sdk-action and some CI layouts ship the
+                # xcframework under macOS/lib (contains ios-arm64 + macos slices).
+                "$ENV{VULKAN_SDK}/lib/MoltenVK.xcframework"
                 "$ENV{VULKAN_SDK}/MoltenVK.xcframework")
                 get_filename_component(_abs "${_cand}" ABSOLUTE)
                 if(EXISTS "${_abs}")
@@ -295,6 +301,39 @@ function(check_ipo)
 endfunction()
 
 
+# Ensure third-party sources exist at configure time.
+# ExternalProject only downloads during the build of target `third-party`, but
+# modules (e.g. eve_imgui) list files under third-party/ at configure time.
+function(ensure_third_party_checkout)
+    set(_eve_tp_dir "${CMAKE_SOURCE_DIR}/third-party")
+    if(EXISTS "${_eve_tp_dir}/CMakeLists.txt")
+        message(STATUS "third-party: using existing ${_eve_tp_dir}")
+        return()
+    endif()
+
+    message(STATUS "third-party: cloning https://github.com/EVEngine/third-party ...")
+    find_package(Git REQUIRED)
+    file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} clone --depth 1 --branch main
+            https://github.com/EVEngine/third-party.git "${_eve_tp_dir}"
+        RESULT_VARIABLE _eve_tp_clone_result
+        OUTPUT_VARIABLE _eve_tp_clone_out
+        ERROR_VARIABLE _eve_tp_clone_err
+    )
+    if(NOT _eve_tp_clone_result EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to clone third-party (exit ${_eve_tp_clone_result}).\n"
+            "${_eve_tp_clone_out}${_eve_tp_clone_err}\n"
+            "Manually run: git clone https://github.com/EVEngine/third-party ${_eve_tp_dir}")
+    endif()
+    if(NOT EXISTS "${_eve_tp_dir}/imgui/imgui.cpp")
+        message(FATAL_ERROR
+            "third-party clone is incomplete (missing imgui/imgui.cpp).\n"
+            "Check ${_eve_tp_dir}")
+    endif()
+endfunction()
+
 # This function will check the third party project
 function(check_third_party_project name repo)
     include(ExternalProject)
@@ -387,6 +426,7 @@ function(load_third_party)
     set(TP_BUILD_PATH ${BUILD_PLATFORM}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
+    ensure_third_party_checkout()
     check_third_party_project(third-party "https://github.com/EVEngine/third-party")
 
     ADD_CUSTOM_TARGET(deps DEPENDS third-party)

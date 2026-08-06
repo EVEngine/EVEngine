@@ -154,17 +154,7 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
 int ParticleConfigSystem::poll() {
     if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return 0;
 
-    auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
-    if (!fs) fs = eve::filesystem::Filesystem::create();
-
-    std::vector<std::string> dirtyPaths;
-    for (;;) {
-        std::string kind = fs->pollWatch();
-        if (kind.empty()) break;
-        if (kind != "modified" && kind != "added" && kind != "movedTo") continue;
-        dirtyPaths.push_back(fs->getLastWatchPath());
-    }
-
+    // Watch events are drained by load.nut / HotReload; use modtime as fallback.
     int reloaded = 0;
     auto view =
         ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Resource>();
@@ -172,18 +162,8 @@ int ParticleConfigSystem::poll() {
         auto [cfg, res] = *it;
         if (!res->autoReload || res->path.empty() || !cfg->entity) continue;
 
-        bool dirty = false;
-        for (const auto &p : dirtyPaths) {
-            if (p == res->path) {
-                dirty = true;
-                break;
-            }
-        }
-        if (!dirty) {
-            const int64_t mt = fileModtime(res->path);
-            if (mt >= 0 && mt != res->modtime) dirty = true;
-        }
-        if (!dirty) continue;
+        const int64_t mt = fileModtime(res->path);
+        if (mt < 0 || mt == res->modtime) continue;
         if (reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
     }
     return reloaded;

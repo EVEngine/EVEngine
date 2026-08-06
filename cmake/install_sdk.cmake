@@ -174,3 +174,8 @@ install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/README.md"
     DESTINATION share/eve
     OPTIONAL
 )
+
+# Desktop FreePats / TiMidity bank (win32 / linux / macosx only).
+include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
+eve_install_timidity_share()
+

@@ -1,0 +1,270 @@
+# Build target-platform SDKs when a pre-release is published, then promote
+# that GitHub Release to a formal (non-prerelease) release with artifacts:
+#   win32 + android  (windows runner)
+#   macosx + ios     (macos runner)
+#   linux            (ubuntu runner)
+#
+# Usage: create/publish a Pre-release from the desired tag (e.g. v0.1.0).
+# After all jobs succeed, the same release is unmarked as prerelease and
+# receives eve-sdk-<plat>-<tag>.zip for each platform.
+
+name: SDK Release
+
+on:
+  release:
+    types: [prereleased]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build and upload SDKs for
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF
+  VULKAN_VERSION: "1.4.304.1"
+  ANDROID_NDK_VERSION: "26.1.10909125"
+  ANDROID_API: "34"
+
+jobs:
+  build-windows:
+    name: Windows + Android SDK
+    runs-on: windows-latest
+    timeout-minutes: 240
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build tools
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          # Prefer VS 2022 on GitHub-hosted runners (local Makefile default is VS 2026).
+          echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
+
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_runtime: true
+          cache: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: >-
+            platform-tools
+            platforms;android-${{ env.ANDROID_API }}
+            build-tools;${{ env.ANDROID_API }}.0.0
+            ndk;${{ env.ANDROID_NDK_VERSION }}
+
+      - name: Resolve Android SDK / NDK paths
+        run: bash .github/scripts/setup-android-sdk.sh
+
+      - name: Write Gradle local.properties
+        run: |
+          printf 'sdk.dir=%s\n' "$ANDROID_HOME" > platform/android/apk/local.properties
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_NDK=$ANDROID_NDK"
+          test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
+
+      - name: Build win32 SDK
+        run: make sdk/win32 VS_GENERATOR="$VS_GENERATOR" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Build android SDK
+        run: |
+          test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
+          make sdk/android \
+            ANDROID_SDK="$ANDROID_SDK" \
+            ANDROID_NDK="$ANDROID_NDK" \
+            JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" \
+            ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Package SDK zips
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          mkdir -p artifacts
+          for plat in win32 android; do
+            python .github/scripts/zip-sdk.py "$plat" "$TAG"
+          done
+          ls -lh artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-windows
+          path: artifacts/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  build-macos:
+    name: macOS + iOS SDK
+    runs-on: macos-latest
+    timeout-minutes: 240
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install tools
+        run: |
+          brew install ninja || true
+          # CMake on macos runners is usually recent enough; ensure ≥ 3.21.
+          cmake --version
+
+      - name: Install Vulkan SDK (MoltenVK + iOS)
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          # Keep full macOS tree so MoltenVK / iOS xcframework remain available.
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve VULKAN_SDK / MoltenVK for iOS
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Setup iOS signing (optional)
+        env:
+          IOS_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: bash .github/scripts/setup-ios-signing.sh
+
+      - name: Build macosx SDK
+        run: make sdk/macosx CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(sysctl -n hw.ncpu)"
+
+      - name: Build ios SDK
+        run: |
+          set -euo pipefail
+          JOBS="$(sysctl -n hw.ncpu)"
+          if [ "${IOS_SIGNING:-0}" = "1" ] && [ -n "${IOS_DEVELOPMENT_TEAM:-}" ]; then
+            echo "Building signed iOS SDK (team=$IOS_DEVELOPMENT_TEAM)"
+            make sdk/ios \
+              IOS_DEVELOPMENT_TEAM="$IOS_DEVELOPMENT_TEAM" \
+              CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" \
+              ANDROID_JOBS="$JOBS"
+          else
+            echo "Building unsigned iOS SDK (consumers re-sign locally)"
+            make sdk/ios \
+              IOS_DEVELOPMENT_TEAM= \
+              CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" \
+              ANDROID_JOBS="$JOBS"
+          fi
+
+      - name: Package SDK zips
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          mkdir -p artifacts
+          for plat in macosx ios; do
+            python3 .github/scripts/zip-sdk.py "$plat" "$TAG"
+          done
+          ls -lh artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-macos
+          path: artifacts/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  build-linux:
+    name: Linux SDK
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build zip \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libgl1-mesa-dev
+
+      - name: Install Vulkan SDK
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build linux SDK
+        run: make sdk/linux CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(nproc)"
+
+      - name: Package SDK zip
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          mkdir -p artifacts
+          python3 .github/scripts/zip-sdk.py linux "$TAG"
+          ls -lh artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-linux
+          path: artifacts/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Attach SDKs & promote release
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all SDK artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sdk-*
+          path: artifacts
+          merge-multiple: true
+
+      - name: List packages
+        run: ls -lh artifacts/
+
+      - name: Upload to GitHub Release and promote
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test -n "$TAG"
+          shopt -s nullglob
+          zips=(artifacts/eve-sdk-*.zip)
+          if [ ${#zips[@]} -lt 5 ]; then
+            echo "Expected 5 SDK zips (win32/android/macosx/ios/linux), found ${#zips[@]}:"
+            printf '  %s\n' "${zips[@]}"
+            exit 1
+          fi
+          gh release upload "$TAG" "${zips[@]}" --repo "$REPO" --clobber
+          # Promote the pre-release to a formal release once all SDKs are attached.
+          gh release edit "$TAG" --repo "$REPO" --prerelease=false
+          echo "Published formal release $TAG with:"
+          printf '  %s\n' "${zips[@]}"

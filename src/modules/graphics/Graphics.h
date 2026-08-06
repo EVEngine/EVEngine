@@ -65,8 +65,12 @@ public:
     /** Create texture from ImageData (RGBA8 required for now). */
     virtual Texture *newTexture(image::ImageData *data) = 0;
 
-    /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure. */
+    /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure.
+     *  Same path returns the same Texture* and reloads pixels in place on repeat calls. */
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
+
+    /** Reload a path-cached texture from disk in place (pointer stable). False if unbound. */
+    virtual bool reloadTextureFromFile(const std::string &filename) = 0;
 
     /** Draw a textured quad (full UV 0..1). texture may be null → solid.
      *  Uses currentShader when set (or per-call override via drawTexturedRectShader). */

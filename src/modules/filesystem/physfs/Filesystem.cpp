@@ -618,6 +618,14 @@ bool Filesystem::resolveWatchTarget(const std::string &path, std::string &realDi
     realDir.clear();
     if (path.empty()) return false;
 
+    // "." / "" are not reliable PhysFS paths — watch the real working directory.
+    if (path == "." || path == "./") {
+        reportPath = ".";
+        realDir = getWorkingDirectory();
+        filterName.clear();
+        return isRealDirectory(realDir);
+    }
+
     if (looksAbsolute(path)) {
         if (isRealDirectory(path)) {
             realDir = path;
@@ -661,6 +669,18 @@ bool Filesystem::resolveWatchTarget(const std::string &path, std::string &realDi
             realDir = joinPath(root, parent);
             filterName = baseName(path);
             return isRealDirectory(realDir);
+        }
+    }
+
+    // Virtual path not in VFS yet (e.g. new file): watch under cwd, not save dir.
+    {
+        std::string cwd = getWorkingDirectory();
+        if (!cwd.empty() && isRealDirectory(cwd)) {
+            if (parent.empty()) {
+                realDir = cwd;
+                filterName = baseName(path);
+                return true;
+            }
         }
     }
 

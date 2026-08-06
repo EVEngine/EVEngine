@@ -48,6 +48,7 @@ Graphics::~Graphics() {
         if (g->sampler) device->destroySampler(g->sampler);
     }
     ownedGpuTextures.clear();
+    texturesByPath.clear();
     for (auto &g : ownedGpuShaders) {
         if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);
         if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
@@ -861,17 +862,115 @@ Texture *Graphics::newTexture(image::ImageData *data) {
                       static_cast<const uint8_t *>(data->getData()));
 }
 
+namespace {
+
+std::string normalizeTexPath(std::string path) {
+    for (char &c : path) {
+        if (c == '\\') c = '/';
+    }
+    while (path.size() >= 2 && path[0] == '.' && path[1] == '/') path.erase(0, 2);
+    while (path.size() > 1 && path.back() == '/') path.pop_back();
+    return path;
+}
+
+}  // namespace
+
+bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
+    if (!tex || !data) return false;
+    if (data->getFormat() != "RGBA8") return false;
+    const int w = data->getWidth();
+    const int h = data->getHeight();
+    const auto *rgba = static_cast<const uint8_t *>(data->getData());
+    if (w <= 0 || h <= 0 || !rgba) return false;
+
+    auto gpu = std::make_unique<GpuTexture>();
+    gpu->width = w;
+    gpu->height = h;
+    gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h));
+    std::vector<uint8_t> bytes(rgba, rgba + size_t(w) * size_t(h) * 4);
+    gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
+
+    vkb::SamplerBuilder sb;
+    gpu->sampler = sb.magFilter(vk::Filter::eLinear)
+                       .minFilter(vk::Filter::eLinear)
+                       .addressModeU(vk::SamplerAddressMode::eClampToEdge)
+                       .addressModeV(vk::SamplerAddressMode::eClampToEdge)
+                       .build(device.instance);
+
+    auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
+    gpu->descriptorSet = sets[0];
+
+    vkb::DescriptorSetUpdater updater;
+    updater.beginDescriptorSet(gpu->descriptorSet)
+        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(gpu->sampler, gpu->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .update(device.instance);
+
+    void *oldHandle = tex->gpuHandle;
+    for (auto &owned : ownedGpuTextures) {
+        if (owned.get() != oldHandle) continue;
+        if (owned->sampler) device->destroySampler(owned->sampler);
+        owned = std::move(gpu);
+        tex->gpuHandle = owned.get();
+        tex->width = w;
+        tex->height = h;
+        tex->pixelWidth = w;
+        tex->pixelHeight = h;
+        return true;
+    }
+
+    // Texture not in owned list — attach as new ownership.
+    tex->gpuHandle = gpu.get();
+    tex->width = w;
+    tex->height = h;
+    tex->pixelWidth = w;
+    tex->pixelHeight = h;
+    ownedGpuTextures.push_back(std::move(gpu));
+    return true;
+}
+
 Texture *Graphics::newTextureFromFile(const std::string &filename) {
     ASSERT(!filename.empty());
     if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
 
+    const std::string key = normalizeTexPath(filename);
     auto *fs = filesystem::Filesystem::create();
     std::unique_ptr<filesystem::FileData> fileData(fs->read(filename));
     if (!fileData) throw Exception("newTextureFromFile: failed to read '%s'", filename.c_str());
 
     auto *imgMod = image::Image::create();
     std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
-    return newTexture(data.get());
+
+    auto it = texturesByPath.find(key);
+    if (it != texturesByPath.end() && it->second) {
+        if (!replaceTexturePixels(it->second, data.get()))
+            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
+        return it->second;
+    }
+
+    Texture *tex = newTexture(data.get());
+    texturesByPath[key] = tex;
+    return tex;
+}
+
+bool Graphics::reloadTextureFromFile(const std::string &filename) {
+    if (filename.empty()) return false;
+    const std::string key = normalizeTexPath(filename);
+    auto it = texturesByPath.find(key);
+    if (it == texturesByPath.end() || !it->second) return false;
+
+    auto *fs = filesystem::Filesystem::create();
+    std::unique_ptr<filesystem::FileData> fileData;
+    try {
+        fileData.reset(fs->read(filename));
+    } catch (...) {
+        return false;
+    }
+    if (!fileData) return false;
+
+    auto *imgMod = image::Image::create();
+    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
+    return replaceTexturePixels(it->second, data.get());
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) {
