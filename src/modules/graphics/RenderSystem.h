@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/ECS.h"
+#include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "zeroerr/assert.h"
 #include <cstdint>
@@ -60,6 +61,7 @@ public:
         int layer = 0;
         bool visible = true;
         Texture *texture = nullptr;
+        Shader *shader = nullptr;   // nullptr → default textured / solid pipeline
         Canvas *canvas = nullptr;   // nullptr → screen
         Camera2D *camera = nullptr; // nullptr → default active camera for canvas
     };

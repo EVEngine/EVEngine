@@ -22,8 +22,10 @@ file(GLOB all_test_cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
   particles.cpp
+  shader.cpp
   simplesquirrel.cpp
   sound.cpp
+  model3d.cpp
   audio.cpp
   window.cpp
   window_cpp.cpp
@@ -121,7 +123,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVModel3D)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)
@@ -132,6 +134,8 @@ if(EVENGINE_PLATFORM_LIB)
 endif()
 
 target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+target_compile_definitions(unit_test PRIVATE
+  EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
 
 include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 zeroerr_discover_tests(unit_test)

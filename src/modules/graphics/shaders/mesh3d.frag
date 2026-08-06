@@ -15,7 +15,9 @@ void main() {
     vec3 N = normalize(vNormal);
     vec3 L = normalize(vLightDir);
     float ndotl = max(dot(N, L), 0.0);
-    float ambient = 0.15;
-    vec3 lit = base.rgb * (ambient + ndotl * vLightColor);
+    // Soften just a little so silhouette isn't pure black, but keep contrast.
+    float diffuse = mix(ndotl, ndotl * 0.5 + 0.5, 0.25);
+    float ambient = 0.22;
+    vec3 lit = base.rgb * (ambient + diffuse * vLightColor);
     outColor = vec4(lit, base.a);
 }

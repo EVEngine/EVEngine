@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include "common/Export.h"
+
 #include <exception>
 #include <string>
 
@@ -8,7 +10,7 @@ namespace eve
 {
     
 
-class Exception : public std::exception
+class EVENGINE_API Exception : public std::exception
 {
 public:
     Exception(const char *fmt, ...);

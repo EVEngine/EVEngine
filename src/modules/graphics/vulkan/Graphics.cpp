@@ -8,9 +8,13 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <stdexcept>
 #include <vector>
+#if !defined(_WIN32)
+#include <unistd.h>
+#endif
 
 #include "common/Exception.h"
 #include "common/config.h"
@@ -44,13 +48,23 @@ Graphics::~Graphics() {
         if (g->sampler) device->destroySampler(g->sampler);
     }
     ownedGpuTextures.clear();
+    for (auto &g : ownedGpuShaders) {
+        if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);
+        if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
+        if (g->mesh3dPipeline) device->destroyPipeline(g->mesh3dPipeline);
+        // pipelineLayout is shared; do not destroy per-shader
+    }
+    ownedGpuShaders.clear();
+    ownedShaders.clear();
     destroySwapchainResources();
     if (pipeline) device->destroyPipeline(pipeline);
     if (pipelineLayout) device->destroyPipelineLayout(pipelineLayout);
     if (texPipeline) device->destroyPipeline(texPipeline);
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
+    if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
+    if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
     mesh3dSetLayoutUnique.reset();
     mesh3dUboSlots.clear();
     if (offscreenSolidPipeline) device->destroyPipeline(offscreenSolidPipeline);
@@ -342,8 +356,25 @@ void Graphics::createTexturedPipeline() {
     plInfo.pSetLayouts = &texSetLayout;
     texPipelineLayout = device->createPipelineLayout(plInfo);
 
+    vk::PushConstantRange pcr{};
+    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
+    pcr.offset = 0;
+    pcr.size = Shader::kPushConstantBytes;
+    vk::PipelineLayoutCreateInfo shaderPlInfo{};
+    shaderPlInfo.setLayoutCount = 1;
+    shaderPlInfo.pSetLayouts = &texSetLayout;
+    shaderPlInfo.pushConstantRangeCount = 1;
+    shaderPlInfo.pPushConstantRanges = &pcr;
+    shaderPipelineLayout = device->createPipelineLayout(shaderPlInfo);
+
     std::vector<uint32_t> vert(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);
     std::vector<uint32_t> frag(textured_frag_spv, textured_frag_spv + textured_frag_spv_count);
+    texPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout);
+}
+
+vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &vert,
+                                                   const std::vector<uint32_t> &frag,
+                                                   vk::RenderPass rp, vk::PipelineLayout layout) {
     vk::ShaderModule vertModule =
         vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule =
@@ -416,17 +447,16 @@ void Graphics::createTexturedPipeline() {
     pci.pDepthStencilState = &ds;
     pci.pColorBlendState = &blend;
     pci.pDynamicState = &dyn;
-    pci.layout = texPipelineLayout;
-    pci.renderPass = renderpass;
+    pci.layout = layout;
+    pci.renderPass = rp;
     pci.subpass = 0;
 
     auto result = device->createGraphicsPipeline(nullptr, pci);
-    if (result.result != vk::Result::eSuccess)
-        throw Exception("failed to create textured pipeline");
-    texPipeline = result.value;
-
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
+    if (result.result != vk::Result::eSuccess)
+        throw Exception("failed to create textured-style pipeline");
+    return result.value;
 }
 
 void Graphics::createMesh3DPipeline() {
@@ -447,12 +477,29 @@ void Graphics::createMesh3DPipeline() {
     plInfo.pSetLayouts = &mesh3dSetLayout;
     mesh3dPipelineLayout = device->createPipelineLayout(plInfo);
 
+    vk::PushConstantRange pcr{};
+    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
+    pcr.offset = 0;
+    pcr.size = Shader::kPushConstantBytes;
+    vk::PipelineLayoutCreateInfo shaderPl{};
+    shaderPl.setLayoutCount = 1;
+    shaderPl.pSetLayouts = &mesh3dSetLayout;
+    shaderPl.pushConstantRangeCount = 1;
+    shaderPl.pPushConstantRanges = &pcr;
+    mesh3dShaderPipelineLayout = device->createPipelineLayout(shaderPl);
+
     // UBO + descriptor sets are allocated lazily per draw (see mesh3dSetFor).
     mesh3dUboSlots.clear();
     mesh3dDrawIndex = 0;
 
     std::vector<uint32_t> vert(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
     std::vector<uint32_t> frag(mesh3d_frag_spv, mesh3d_frag_spv + mesh3d_frag_spv_count);
+    mesh3dPipeline = createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout);
+}
+
+vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
+                                                 const std::vector<uint32_t> &frag,
+                                                 vk::PipelineLayout layout) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
 
@@ -518,17 +565,16 @@ void Graphics::createMesh3DPipeline() {
     pci.pDepthStencilState = &ds;
     pci.pColorBlendState = &blend;
     pci.pDynamicState = &dyn;
-    pci.layout = mesh3dPipelineLayout;
+    pci.layout = layout;
     pci.renderPass = renderpass;
     pci.subpass = 0;
 
     auto result = device->createGraphicsPipeline(nullptr, pci);
-    if (result.result != vk::Result::eSuccess)
-        throw Exception("failed to create mesh3d pipeline");
-    mesh3dPipeline = result.value;
-
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
+    if (result.result != vk::Result::eSuccess)
+        throw Exception("failed to create mesh3d-style pipeline");
+    return result.value;
 }
 
 void Graphics::ensureOffscreenPipelines() {
@@ -566,74 +612,19 @@ void Graphics::ensureOffscreenPipelines() {
     // Textured offscreen pipeline mirrors createTexturedPipeline but with offscreen RP.
     std::vector<uint32_t> tvert(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);
     std::vector<uint32_t> tfrag(textured_frag_spv, textured_frag_spv + textured_frag_spv_count);
-    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, tvert);
-    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, tfrag);
+    offscreenTexPipeline =
+        createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout);
 
-    vk::PipelineShaderStageCreateInfo stages[2]{};
-    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    stages[0].module = vertModule;
-    stages[0].pName = "main";
-    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    stages[1].module = fragModule;
-    stages[1].pName = "main";
+    // Lazily create offscreen pipelines for any custom shaders already loaded.
+    for (auto &sh : ownedShaders) ensureShaderOffscreenPipeline(sh.get());
+}
 
-    auto binding = TexturedVertex::getBindingDescription(0);
-    auto attrs = TexturedVertex::getAttributeDescription(0);
-    vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 1;
-    vi.pVertexBindingDescriptions = &binding;
-    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
-    vi.pVertexAttributeDescriptions = attrs.data();
-
-    vk::PipelineInputAssemblyStateCreateInfo ia{};
-    ia.topology = vk::PrimitiveTopology::eTriangleList;
-    vk::PipelineViewportStateCreateInfo vp{};
-    vp.viewportCount = 1;
-    vp.scissorCount = 1;
-    vk::PipelineRasterizationStateCreateInfo rs{};
-    rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eNone;
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
-    rs.lineWidth = 1.0f;
-    vk::PipelineMultisampleStateCreateInfo ms{};
-    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
-    vk::PipelineColorBlendAttachmentState blendAtt{};
-    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-    blendAtt.blendEnable = true;
-    blendAtt.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
-    blendAtt.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    blendAtt.colorBlendOp = vk::BlendOp::eAdd;
-    blendAtt.srcAlphaBlendFactor = vk::BlendFactor::eOne;
-    blendAtt.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    blendAtt.alphaBlendOp = vk::BlendOp::eAdd;
-    vk::PipelineColorBlendStateCreateInfo blend{};
-    blend.attachmentCount = 1;
-    blend.pAttachments = &blendAtt;
-    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-    vk::PipelineDynamicStateCreateInfo dyn{};
-    dyn.dynamicStateCount = 2;
-    dyn.pDynamicStates = dynStates;
-
-    vk::GraphicsPipelineCreateInfo pci{};
-    pci.stageCount = 2;
-    pci.pStages = stages;
-    pci.pVertexInputState = &vi;
-    pci.pInputAssemblyState = &ia;
-    pci.pViewportState = &vp;
-    pci.pRasterizationState = &rs;
-    pci.pMultisampleState = &ms;
-    pci.pColorBlendState = &blend;
-    pci.pDynamicState = &dyn;
-    pci.layout = texPipelineLayout;
-    pci.renderPass = offscreenRenderPass;
-    pci.subpass = 0;
-    auto result = device->createGraphicsPipeline(nullptr, pci);
-    if (result.result != vk::Result::eSuccess)
-        throw Exception("failed to create offscreen textured pipeline");
-    offscreenTexPipeline = result.value;
-    device->destroyShaderModule(vertModule);
-    device->destroyShaderModule(fragModule);
+void Graphics::ensureShaderOffscreenPipeline(Shader *shader) {
+    if (!shader || !shader->gpuHandle || !offscreenRenderPass) return;
+    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
+    if (gpu->offscreenPipeline) return;
+    gpu->offscreenPipeline = createTexturedStylePipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
+                                                         offscreenRenderPass, shaderPipelineLayout);
 }
 
 Texture *Graphics::getTexture() { return nullptr; }
@@ -884,14 +875,185 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) {
+    drawTexturedRectShader(texture, currentShader, x, y, w, h, color);
+}
+
+void Graphics::drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w,
+                                      float h, const Color &color) {
     if (!texture) {
         drawSolidRect(x, y, w, h, color);
         return;
     }
-    if (texturedBatches.empty() || texturedBatches.back().texture != texture) {
-        texturedBatches.push_back(TexturedBatch{texture, Batcher{}});
+    if (texturedBatches.empty() || texturedBatches.back().texture != texture ||
+        texturedBatches.back().shader != shader) {
+        texturedBatches.push_back(TexturedBatch{texture, shader, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, 0, 0, 1, 1);
+}
+
+namespace {
+
+std::vector<uint32_t> loadSpirvBytes(const void *data, size_t size) {
+    if (!data || size < 4 || (size % 4) != 0)
+        throw Exception("SPIR-V: invalid size %zu", size);
+    const auto *words = static_cast<const uint32_t *>(data);
+    if (words[0] != 0x07230203)
+        throw Exception("SPIR-V: bad magic (expected 0x07230203)");
+    return std::vector<uint32_t>(words, words + size / 4);
+}
+
+std::vector<uint32_t> readSpirvFile(const std::string &path) {
+    auto *fs = filesystem::Filesystem::create();
+    std::unique_ptr<filesystem::FileData> fd(fs->read(path));
+    if (!fd) throw Exception("newShaderFromSpvFile: failed to read '%s'", path.c_str());
+    return loadSpirvBytes(fd->getData(), fd->getSize());
+}
+
+std::vector<uint32_t> compileGlslWithGlslc(const std::string &source, const char *stage) {
+    if (source.empty()) throw Exception("newShader: empty %s GLSL", stage);
+#if defined(_WIN32)
+    (void)source;
+    (void)stage;
+    throw Exception("newShader: GLSL compile via glslc is not supported on Windows; "
+                    "use newShaderFromSpv / newShaderFromSpvFile");
+#else
+    char inPath[] = "/tmp/eve_shader_XXXXXX";
+    int fd = mkstemp(inPath);
+    if (fd < 0) throw Exception("newShader: mkstemp failed");
+    std::string outPath = std::string(inPath) + ".spv";
+    {
+        ssize_t n = write(fd, source.data(), source.size());
+        close(fd);
+        if (n < 0 || size_t(n) != source.size()) {
+            unlink(inPath);
+            throw Exception("newShader: failed to write temp GLSL");
+        }
+    }
+
+    std::string cmd = std::string("glslc -fshader-stage=") + stage + " \"" + inPath + "\" -o \"" +
+                      outPath + "\" 2>&1";
+    FILE *pipe = popen(cmd.c_str(), "r");
+    std::string err;
+    if (pipe) {
+        char buf[256];
+        while (fgets(buf, sizeof(buf), pipe)) err += buf;
+        int status = pclose(pipe);
+        unlink(inPath);
+        if (status != 0) {
+            unlink(outPath.c_str());
+            throw Exception("newShader: glslc failed for %s:\n%s", stage, err.c_str());
+        }
+    } else {
+        unlink(inPath);
+        throw Exception("newShader: glslc not available (popen failed)");
+    }
+
+    FILE *f = fopen(outPath.c_str(), "rb");
+    if (!f) {
+        unlink(outPath.c_str());
+        throw Exception("newShader: failed to open compiled SPIR-V");
+    }
+    fseek(f, 0, SEEK_END);
+    long sz = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    std::vector<uint8_t> bytes(static_cast<size_t>(sz > 0 ? sz : 0));
+    if (sz > 0 && fread(bytes.data(), 1, static_cast<size_t>(sz), f) != static_cast<size_t>(sz)) {
+        fclose(f);
+        unlink(outPath.c_str());
+        throw Exception("newShader: failed to read compiled SPIR-V");
+    }
+    fclose(f);
+    unlink(outPath.c_str());
+    return loadSpirvBytes(bytes.data(), bytes.size());
+#endif
+}
+
+}  // namespace
+
+Shader *Graphics::newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                   const std::vector<uint32_t> &fragSpv) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newShaderFromSpv: graphics not initialized");
+    if (fragSpv.empty()) throw Exception("newShaderFromSpv: empty fragment SPIR-V");
+
+    std::vector<uint32_t> vert = vertSpv;
+    if (vert.empty())
+        vert.assign(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);
+    if (vert[0] != 0x07230203 || fragSpv[0] != 0x07230203)
+        throw Exception("newShaderFromSpv: SPIR-V magic mismatch");
+
+    auto gpu = std::make_unique<GpuShader>();
+    gpu->pipelineLayout = shaderPipelineLayout;
+    gpu->swapchainPipeline =
+        createTexturedStylePipeline(vert, fragSpv, renderpass, shaderPipelineLayout);
+    if (offscreenRenderPass) {
+        gpu->offscreenPipeline =
+            createTexturedStylePipeline(vert, fragSpv, offscreenRenderPass, shaderPipelineLayout);
+    }
+
+    auto sh = std::make_unique<Shader>();
+    sh->setSpirv(std::move(vert), fragSpv);
+    sh->gpuHandle = gpu.get();
+
+    Shader *raw = sh.get();
+    ownedShaders.push_back(std::move(sh));
+    ownedGpuShaders.push_back(std::move(gpu));
+    return raw;
+}
+
+Shader *Graphics::newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) {
+    if (fragPath.empty()) throw Exception("newShaderFromSpvFile: empty fragPath");
+    std::vector<uint32_t> vert;
+    if (!vertPath.empty()) vert = readSpirvFile(vertPath);
+    auto frag = readSpirvFile(fragPath);
+    return newShaderFromSpv(vert, frag);
+}
+
+Shader *Graphics::newShader(const std::string &vertGlsl, const std::string &fragGlsl) {
+    if (fragGlsl.empty()) throw Exception("newShader: empty fragment GLSL");
+    std::vector<uint32_t> vert;
+    if (!vertGlsl.empty()) vert = compileGlslWithGlslc(vertGlsl, "vert");
+    auto frag = compileGlslWithGlslc(fragGlsl, "frag");
+    return newShaderFromSpv(vert, frag);
+}
+
+Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                       const std::vector<uint32_t> &fragSpv) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newMeshShaderFromSpv: graphics not initialized");
+    if (fragSpv.empty()) throw Exception("newMeshShaderFromSpv: empty fragment SPIR-V");
+    if (!mesh3dShaderPipelineLayout)
+        throw Exception("newMeshShaderFromSpv: mesh3d pipeline layout missing");
+
+    std::vector<uint32_t> vert = vertSpv;
+    if (vert.empty())
+        vert.assign(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
+    if (vert[0] != 0x07230203 || fragSpv[0] != 0x07230203)
+        throw Exception("newMeshShaderFromSpv: SPIR-V magic mismatch");
+
+    auto gpu = std::make_unique<GpuShader>();
+    gpu->isMesh3D = true;
+    gpu->pipelineLayout = mesh3dShaderPipelineLayout;
+    gpu->mesh3dPipeline =
+        createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout);
+
+    auto sh = std::make_unique<Shader>();
+    sh->setKind(Shader::Kind::eMesh3D);
+    sh->setSpirv(std::move(vert), fragSpv);
+    sh->gpuHandle = gpu.get();
+
+    Shader *raw = sh.get();
+    ownedShaders.push_back(std::move(sh));
+    ownedGpuShaders.push_back(std::move(gpu));
+    return raw;
+}
+
+Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) {
+    if (fragGlsl.empty()) throw Exception("newMeshShader: empty fragment GLSL");
+    std::vector<uint32_t> vert;
+    if (!vertGlsl.empty()) vert = compileGlslWithGlslc(vertGlsl, "vert");
+    auto frag = compileGlslWithGlslc(fragGlsl, "frag");
+    return newMeshShaderFromSpv(vert, frag);
 }
 
 void Graphics::flushBatch() {
@@ -967,9 +1129,28 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                             gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
                                         texBufs.emplace_back();
                                         texBufs.back().allocate<TexturedVertex>(device, gpuVerts);
-                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, offscreenTexPipeline);
-                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
-                                                              &gpu->descriptorSet, 0, nullptr);
+
+                                        if (tb.shader && tb.shader->gpuHandle) {
+                                            ensureShaderOffscreenPipeline(tb.shader);
+                                            auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
+                                            if (!gs->offscreenPipeline) continue;
+                                            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                                            gs->offscreenPipeline);
+                                            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                                  shaderPipelineLayout, 0, 1,
+                                                                  &gpu->descriptorSet, 0, nullptr);
+                                            cb.pushConstants(shaderPipelineLayout,
+                                                             vk::ShaderStageFlagBits::eVertex |
+                                                                 vk::ShaderStageFlagBits::eFragment,
+                                                             0, Shader::kPushConstantBytes,
+                                                             tb.shader->pushConstantData());
+                                        } else {
+                                            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                                            offscreenTexPipeline);
+                                            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                                  texPipelineLayout, 0, 1,
+                                                                  &gpu->descriptorSet, 0, nullptr);
+                                        }
                                         vk::DeviceSize offset = 0;
                                         cb.bindVertexBuffers(0, 1, texBufs.back(), &offset);
                                         cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
@@ -1039,9 +1220,20 @@ void Graphics::flushToSwapchain() {
 
             texBufs.emplace_back();
             texBufs.back().allocate<TexturedVertex>(device, gpuVerts);
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, texPipeline);
-            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
-                                  &gpu->descriptorSet, 0, nullptr);
+
+            if (tb.shader && tb.shader->gpuHandle) {
+                auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
+                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
+                cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
+                                      &gpu->descriptorSet, 0, nullptr);
+                cb.pushConstants(shaderPipelineLayout,
+                                 vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
+                                 Shader::kPushConstantBytes, tb.shader->pushConstantData());
+            } else {
+                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, texPipeline);
+                cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
+                                      &gpu->descriptorSet, 0, nullptr);
+            }
             vk::DeviceSize offset = 0;
             cb.bindVertexBuffers(0, 1, texBufs.back(), &offset);
             cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
@@ -1098,6 +1290,10 @@ void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
     mesh3dFrameUbo.lightDir = glm::vec4(d, 0.f);
     mesh3dFrameUbo.lightColor = glm::vec4(color, 1.f);
+}
+
+void Graphics::setMesh3DCameraPos(const glm::vec3 &eye) {
+    mesh3dFrameUbo.cameraPos = glm::vec4(eye, 0.f);
 }
 
 vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, size_t uboSlot) {
@@ -1280,6 +1476,11 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
 }
 
 void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) {
+    drawMeshShader(mesh, model, texture, tint, nullptr);
+}
+
+void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
+                              Shader *shader) {
     ASSERT(initialized);
     ASSERT(mesh != nullptr);
     if (!initialized) throw Exception("drawMesh: graphics not initialized");
@@ -1287,14 +1488,17 @@ void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, co
     if (!swapchainPassOpen) throw Exception("drawMesh: call begin3DFrame first");
     if (!mesh3dPipeline) throw Exception("drawMesh: mesh3d pipeline missing");
 
+    if (shader) {
+        if (shader->getKind() != Shader::Kind::eMesh3D)
+            throw Exception("drawMesh: shader is not a Mesh3D shader (use newMeshShader*)");
+        if (!shader->gpuHandle) throw Exception("drawMesh: shader has no GPU pipeline");
+    }
+
     auto *gpuMesh = static_cast<GpuMesh *>(mesh->gpuHandle);
     Texture *tex = texture ? texture : whiteTexture;
     if (!tex || !tex->gpuHandle) throw Exception("drawMesh: missing texture");
     auto *gpuTex = static_cast<GpuTexture *>(tex->gpuHandle);
 
-    // Caller supplies view*proj via model? No — store viewProj in mesh3dFrameUbo.mvp temporarily.
-    // drawMesh receives model; mvp = viewProj * model where viewProj is in mesh3dFrameUbo.mvp
-    // before multiply. RenderSystem3D sets mesh3dFrameUbo.mvp = viewProj first via setMesh3DViewProj.
     Mesh3DUBO ubo = mesh3dFrameUbo;
     ubo.model = model;
     ubo.mvp = mesh3dFrameUbo.mvp * model;
@@ -1305,9 +1509,19 @@ void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, co
     mesh3dUboSlots[slot].ubo.updateLocal(ubo);
 
     auto &cb = presentModel.getCurrentCommandBuffer();
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dPipeline);
-    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 0,
-                          nullptr);
+    if (shader) {
+        auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->mesh3dPipeline);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
+                              0, nullptr);
+        cb.pushConstants(mesh3dShaderPipelineLayout,
+                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
+                         Shader::kPushConstantBytes, shader->pushConstantData());
+    } else {
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dPipeline);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 0,
+                              nullptr);
+    }
     vk::DeviceSize offset = 0;
     cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
     cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);

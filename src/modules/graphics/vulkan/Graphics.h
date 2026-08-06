@@ -3,6 +3,7 @@
 #include "graphics/Batcher.h"
 #include "graphics/Texture.h"
 #include "graphics/Mesh.h"
+#include "graphics/Shader.h"
 #include "vkbuilder.hpp"
 #include <atomic>
 #include <memory>
@@ -82,6 +83,7 @@ struct Mesh3DUBO {
     glm::vec4 lightDir{0.4f, 1.f, 0.3f, 0.f};
     glm::vec4 lightColor{1.f, 1.f, 1.f, 1.f};
     glm::vec4 tint{1.f, 1.f, 1.f, 1.f};
+    glm::vec4 cameraPos{0.f, 0.f, 3.f, 0.f};  // xyz = eye (for rim / custom shaders)
 };
 
 struct GpuTexture {
@@ -98,6 +100,14 @@ struct GpuMesh {
     uint32_t indexCount = 0;
 };
 
+struct GpuShader {
+    vk::Pipeline swapchainPipeline;
+    vk::Pipeline offscreenPipeline;
+    vk::Pipeline mesh3dPipeline;
+    vk::PipelineLayout pipelineLayout;
+    bool isMesh3D = false;
+};
+
 class Graphics final : public eve::graphics::Graphics {
 public:
     ~Graphics() override;
@@ -112,12 +122,24 @@ public:
     Texture *newTexture(image::ImageData *data) override;
     Texture *newTextureFromFile(const std::string &filename) override;
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
+    void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w, float h,
+                                const Color &color) override;
+    Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                             const std::vector<uint32_t> &fragSpv) override;
+    Shader *newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) override;
+    Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
+    Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                 const std::vector<uint32_t> &fragSpv) override;
+    Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     void begin3DFrame() override;
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
+    void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
+                        Shader *shader) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
+    void setMesh3DCameraPos(const glm::vec3 &eye) override;
 
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
@@ -150,6 +172,13 @@ private:
     void createTexturedPipeline();
     void createMesh3DPipeline();
     void ensureOffscreenPipelines();
+    void ensureShaderOffscreenPipeline(Shader *shader);
+    vk::Pipeline createTexturedStylePipeline(const std::vector<uint32_t> &vert,
+                                             const std::vector<uint32_t> &frag,
+                                             vk::RenderPass rp, vk::PipelineLayout layout);
+    vk::Pipeline createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
+                                           const std::vector<uint32_t> &frag,
+                                           vk::PipelineLayout layout);
     void destroySwapchainResources();
     void flushBatch();
     void flushToSwapchain();
@@ -198,6 +227,7 @@ private:
     vk::DescriptorPool descriptorPool;
     vk::Pipeline texPipeline;
     vk::PipelineLayout texPipelineLayout;
+    vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
 
     vk::RenderPass offscreenRenderPass;
@@ -207,6 +237,7 @@ private:
     vk::DescriptorSetLayout mesh3dSetLayout;
     vk::UniqueDescriptorSetLayout mesh3dSetLayoutUnique;
     vk::PipelineLayout mesh3dPipelineLayout;
+    vk::PipelineLayout mesh3dShaderPipelineLayout;  // + push constants for custom mesh shaders
     vk::Pipeline mesh3dPipeline;
     // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
     // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
@@ -226,6 +257,7 @@ private:
     Batcher solidBatch;
     struct TexturedBatch {
         Texture *texture = nullptr;
+        Shader *shader = nullptr;
         Batcher batch;
     };
     std::vector<TexturedBatch> texturedBatches;
@@ -237,6 +269,8 @@ private:
     std::vector<std::unique_ptr<GpuTexture>> ownedGpuTextures;
     std::vector<std::unique_ptr<Mesh>> ownedMeshes;
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
+    std::vector<std::unique_ptr<Shader>> ownedShaders;
+    std::vector<std::unique_ptr<GpuShader>> ownedGpuShaders;
     std::vector<std::unique_ptr<eve::graphics::Canvas>> ownedCanvases;
 
     bool swapchainPassOpen = false;

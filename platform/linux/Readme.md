@@ -1,3 +1,11 @@
-在linux下，我们构建一个全静态链接的库，对于发布则可以选择动态链接或裁剪后自己编译纯静态链接版本。
+# linux target SDK notes
 
+This directory is the packaging template shipped inside `dist/eve-sdk/linux[-debug]`.
 
+Publish a Linux game by shipping:
+
+1. `bin/eve` from the SDK
+2. Your game folder (`config.nut`, `main.nut`, assets)
+3. Optional native plugins (`.so`) loaded via `eve.Plugins().load(...)`
+
+Prefer a fully static host when possible; plugins remain shared objects.

@@ -88,6 +88,8 @@ void Renderable3D::setMesh(Mesh *mesh) { meshRenderer()->mesh = mesh; }
 
 void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = texture; }
 
+void Renderable3D::setShader(Shader *shader) { meshRenderer()->shader = shader; }
+
 void Renderable3D::setTint(float r, float g, float b, float a) {
     auto mr = meshRenderer();
     mr->r = r;
@@ -137,10 +139,11 @@ void RenderSystem3D::render(Graphics &gfx) {
         const float fovRad = cd->fovYDeg * 0.017453292519943295f;
         const glm::mat4 projM = glm::perspectiveRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
         gfx.setMesh3DViewProj(projM * viewM);
+        gfx.setMesh3DCameraPos(eye);
 
         const glm::mat4 model = modelFromTransform(*xf);
         const Color tint(mr->r, mr->g, mr->b, mr->a);
-        gfx.drawMesh(mr->mesh, model, mr->texture, tint);
+        gfx.drawMeshShader(mr->mesh, model, mr->texture, tint, mr->shader);
     }
 }
 

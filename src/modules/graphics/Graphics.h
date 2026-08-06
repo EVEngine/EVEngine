@@ -68,9 +68,14 @@ public:
     /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure. */
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
 
-    /** Draw a textured quad (full UV 0..1). texture may be null → solid. */
+    /** Draw a textured quad (full UV 0..1). texture may be null → solid.
+     *  Uses currentShader when set (or per-call override via drawTexturedRectShader). */
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                                   const Color &color) = 0;
+
+    /** Draw with an explicit Shader (nullptr = default textured pipeline). */
+    virtual void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w,
+                                        float h, const Color &color) = 0;
 
     /** Upload triangulated mesh from Assimp (pos/normal/uv + indices). Owned by Graphics. */
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
@@ -99,8 +104,15 @@ virtual void begin3DFrame() = 0;
     /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
 
+    /** Draw mesh with an explicit Mesh3D Shader (nullptr = default lit pipeline). */
+    virtual void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
+                                Shader *shader) = 0;
+
     /** Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
+
+    /** Camera eye used by mesh shaders that need view/rim (stored in Mesh3DUBO). */
+    virtual void setMesh3DCameraPos(const glm::vec3 &eye) = 0;
 
     /** True after begin3DFrame until present completes. */
     bool consumeFrameHad3D() {
@@ -155,7 +167,38 @@ virtual void begin3DFrame() = 0;
 	void setShader(Shader *shader);
 	void setShader();
 
-	Shader *getShader() const;
+	Shader *getShader() const { return currentShader; }
+
+    /**
+     * Create a custom 2D shader from SPIR-V words (vert + frag).
+     * Owned by Graphics. Vertex stage may be empty → uses the default textured vertex shader.
+     */
+    virtual Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                    const std::vector<uint32_t> &fragSpv) = 0;
+
+    /** Load SPIR-V from files via Filesystem (empty vertPath → default textured vert). */
+    virtual Shader *newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) = 0;
+    Shader *newShaderFromSpvFile(const std::string &fragPath) {
+        return newShaderFromSpvFile(std::string(), fragPath);
+    }
+
+    /**
+     * Compile GLSL source with glslc (must be on PATH). Empty vertGlsl → default textured vert.
+     * Throws if compilation fails.
+     */
+    virtual Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+    Shader *newShader(const std::string &fragGlsl) { return newShader(std::string(), fragGlsl); }
+
+    /**
+     * Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo).
+     * Empty vert → default mesh3d.vert. Owned by Graphics.
+     */
+    virtual Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                         const std::vector<uint32_t> &fragSpv) = 0;
+    virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
+    Shader *newMeshShader(const std::string &fragGlsl) {
+        return newMeshShader(std::string(), fragGlsl);
+    }
 
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
@@ -287,6 +330,7 @@ protected:
     bool graphicsActive = true;
     PresentOverlayFn presentOverlayFn_ = nullptr;
     void *presentOverlayUser_ = nullptr;
+    Shader *currentShader = nullptr;
 };
 
 }  // namespace eve::graphics

@@ -45,8 +45,9 @@
 6. 管理系统 - system
     负责系统版本、时间、状态等的查询和设置
 
-7. 资源管理系统 - image sound video fonts 3dmodel animation
+7. 资源管理系统 - image sound video fonts 3dmodel(`model3d`/`Model3D`) animation
     负责加载图形、声音、视频、字体、3d模型、动画等不同格式数据
+    3dmodel：`Model3D::newModelData` / `newModelDataFromFile` → `ModelData`（medialoader Assimp）
 
 8. 网络系统 - network
     封装网络通讯的各种基础操作

@@ -9,14 +9,14 @@ set(EVENGINE_IOS_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum iOS/iPadOS deplo
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     # SDLActivity loads libmain.so and calls SDL_main (via SDL_main.h macro on main).
     add_library(main SHARED main.cpp)
-    set(EVENGINE_NATIVE_TARGET main)
+    set(EVENGINE_NATIVE_TARGET main CACHE INTERNAL "Host target for SDK install")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     # UIKit SDL entry: MACOSX_BUNDLE .app with SDL_main.
     add_executable(eve MACOSX_BUNDLE main.cpp)
-    set(EVENGINE_NATIVE_TARGET eve)
+    set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 else()
     add_executable(eve main.cpp)
-    set(EVENGINE_NATIVE_TARGET eve)
+    set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 endif()
 
 if(WIN32)
@@ -112,9 +112,9 @@ else()
 endif()
 
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVModel3D EVPlugins)
 else()
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVModel3D EVPlugins)
 endif()
 
 if(EVENGINE_BUILD_DEMO)
@@ -207,5 +207,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
             "${_eve_mvk_fw}"
             "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>"
         COMMENT "Embed and sign MoltenVK.framework into EVEngine.app"
+    )
+endif()
+
+# Plugins resolve ModuleManager / ModuleRegister symbols from the host process.
+target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE EVENGINE_BUILDING_HOST=1)
+if(WIN32)
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        ENABLE_EXPORTS ON
+        WINDOWS_EXPORT_ALL_SYMBOLS ON
+    )
+elseif(APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS))
+    target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "LINKER:-export_dynamic")
+elseif(UNIX AND NOT ANDROID AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+    target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "LINKER:--export-dynamic")
+elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+    # libmain.so: keep default-visible EVENGINE_API symbols for dlopened plugins.
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        CXX_VISIBILITY_PRESET default
+        VISIBILITY_INLINES_HIDDEN OFF
     )
 endif()

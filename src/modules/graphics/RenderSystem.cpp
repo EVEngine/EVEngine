@@ -75,6 +75,7 @@ void RenderSystem::render(Graphics &gfx) {
         Color color;
         int layer;
         Texture *texture;
+        Shader *shader;
         Canvas *canvas;
         ViewCam cam;
     };
@@ -99,6 +100,7 @@ void RenderSystem::render(Graphics &gfx) {
         item.color = Color(sp->r, sp->g, sp->b, sp->a);
         item.layer = sp->layer;
         item.texture = sp->texture;
+        item.shader = sp->shader;
         item.canvas = sp->canvas;
         item.cam = fromEntity(camEnt);
         items.push_back(item);
@@ -110,6 +112,7 @@ void RenderSystem::render(Graphics &gfx) {
         if (aOff != bOff) return aOff && !bOff;
         if (a.canvas != b.canvas) return a.canvas < b.canvas;
         if (a.layer != b.layer) return a.layer < b.layer;
+        if (a.shader != b.shader) return a.shader < b.shader;
         return a.texture < b.texture;
     });
 
@@ -134,7 +137,7 @@ void RenderSystem::render(Graphics &gfx) {
         float sx, sy, sw, sh;
         applyCamera(it.x, it.y, it.w, it.h, it.cam, viewW, viewH, sx, sy, sw, sh);
         if (it.texture)
-            gfx.drawTexturedRect(it.texture, sx, sy, sw, sh, it.color);
+            gfx.drawTexturedRectShader(it.texture, it.shader, sx, sy, sw, sh, it.color);
         else
             gfx.drawSolidRect(sx, sy, sw, sh, it.color);
     }

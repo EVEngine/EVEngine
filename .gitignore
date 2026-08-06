@@ -1,9 +1,11 @@
 build*/
+dist/
 third-party/
 third-party-binary/
 .history/
 docs/superpowers/
 .worktrees/
+examples/native-plugin/build/
 platform/android/apk/local.properties
 platform/android/apk/.gradle/
 platform/android/apk/app/build/

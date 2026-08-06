@@ -104,6 +104,8 @@ GAME ?= example
 	run/win32-debug run/linux-debug run/macosx-debug \
 	sync/android-libs sync/android-assets install/android-debug run/android-debug log/android \
 	install/ios-debug run/ios-debug log/ios \
+	sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
+	sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug \
 	reinstall/third-party reinstall/third-party/win32 reinstall/third-party/win32-debug \
 	reinstall/third-party/linux reinstall/third-party/linux-debug \
 	reinstall/third-party/macosx reinstall/third-party/macosx-debug \
@@ -124,6 +126,7 @@ show-targets:
 	@echo "all -> $(ALL_DEBUG_TARGETS)"
 	@echo "debug -> build/$(PLATFORM)-debug"
 	@echo "release -> build/$(PLATFORM)"
+	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME))"
 
 # clangd: build/compile_commands.json -> host platform debug CDB
@@ -143,19 +146,25 @@ wsl/linux-debug:
 wsl/linux:
 	wsl --cd "$(CURDIR)" -- make build/linux
 
+# win32: Ninja/MSVC helpers（debug 用 Ninja+cl；Release VS 生成器也可借 vcvars）
+WITH_MSVC = cmake\with-msvc.cmd
+
 build/win32: build/win32/EVEngine.sln
+	cmake.exe --build $@ --config Release --target deps -j 32
 	cmake.exe --build $@ --config Release -j 32
 
 build/win32/EVEngine.sln:
 	cmake.exe -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=Release -A x64 -B build/win32 -S .
 
 build/linux: build/linux/Makefile
+	cmake --build $@ --target deps -j 32
 	cmake --build $@ -j 32
 
 build/linux/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -B build/linux -S .
 
 build/macosx: build/macosx/Makefile
+	cmake --build $@ --target deps -j 32
 	cmake --build $@ -j 32
 
 build/macosx/Makefile:
@@ -179,23 +188,22 @@ build/android/build.ninja:
 		-DBUILD_TESTING=OFF \
 		-B build/android -S .
 
-# win32-debug: Ninja + MSVC cl；via cmake/with-msvc.cmd (vcvars) so STL headers resolve
-# Emits build/win32-debug/compile_commands.json with MSVC INCLUDE paths for clangd
-WITH_MSVC = cmake\with-msvc.cmd
-
 build/win32-debug: build/win32-debug/build.ninja
+	$(WITH_MSVC) cmake.exe --build $@ --target deps -j 32
 	$(WITH_MSVC) cmake.exe --build $@ -j 32
 
 build/win32-debug/build.ninja:
 	$(WITH_MSVC) cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -B build/win32-debug -S .
 
 build/linux-debug: build/linux-debug/Makefile
+	cmake --build $@ --target deps -j 32
 	cmake --build $@ -j 32
 
 build/linux-debug/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux -B build/linux-debug -S .
 
 build/macosx-debug: build/macosx-debug/Makefile
+	cmake --build $@ --target deps -j 32
 	cmake --build $@ -j 32
 
 build/macosx-debug/Makefile:
@@ -220,6 +228,7 @@ build/android-debug/build.ninja:
 		-B build/android-debug -S .
 
 build/ios: build/ios/EVEngine.xcodeproj
+	cmake --build build/ios --target deps -j 8
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios && xcodebuild -scheme eve -configuration Release \
@@ -443,6 +452,26 @@ run/linux:
 
 run/macosx:
 	cd $(GAME) && ../build/macosx/src/engine/eve run
+
+# Target-platform SDK install (independent prefix per plat; for publishing games TO that plat).
+# Release: make sdk/macosx  → builds build/macosx then dist/eve-sdk/macosx
+# Debug:   make sdk/macosx-debug
+sdk/win32: build/win32
+sdk/linux: build/linux
+sdk/macosx: build/macosx
+sdk/android: build/android
+sdk/ios: build/ios
+sdk/win32-debug: build/win32-debug
+sdk/linux-debug: build/linux-debug
+sdk/macosx-debug: build/macosx-debug
+sdk/android-debug: build/android-debug
+sdk/ios-debug: build/ios-debug
+
+sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
+sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug:
+	@plat=$@; plat=$${plat#sdk/}; \
+	  cmake --install "build/$$plat" --prefix "dist/eve-sdk/$$plat"; \
+	  echo "Installed target SDK -> dist/eve-sdk/$$plat"
 
 example: run/$(PLATFORM)-debug
 # make: build/.build-docker

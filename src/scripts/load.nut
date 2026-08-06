@@ -44,6 +44,7 @@ mouse <- eve.Mouse();
 touch <- eve.Touch();
 sound <- eve.Sound();
 audio <- eve.Audio();
+model3d <- eve.Model3D();
 
 eve_init <- function() {};
 eve_update <- function(dt) {};

@@ -2,6 +2,7 @@
 
 #include "common/ECS.h"
 #include "graphics/Mesh.h"
+#include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "zeroerr/assert.h"
 
@@ -56,6 +57,7 @@ public:
     struct MeshRenderer {
         Mesh *mesh = nullptr;
         Texture *texture = nullptr;
+        Shader *shader = nullptr;  // nullptr → default mesh3d lit pipeline
         float r = 1, g = 1, b = 1, a = 1;
         bool visible = true;
         Camera3D *camera = nullptr;
@@ -71,6 +73,7 @@ public:
     void setScale(float sx, float sy, float sz);
     void setMesh(Mesh *mesh);
     void setTexture(Texture *texture);
+    void setShader(Shader *shader);
     void setTint(float r, float g, float b, float a = 1.f);
     void setVisible(bool visible);
     void setCamera(Camera3D *camera);

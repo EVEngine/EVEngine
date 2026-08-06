@@ -62,6 +62,8 @@ function(main)
     if(BUILD_TESTING)
         add_subdirectory(test)
     endif()
+
+    include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
 endfunction()
 
 

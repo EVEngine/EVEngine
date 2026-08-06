@@ -26,6 +26,20 @@ void Graphics::expose(ssq::Table &table) {
     table.addClass<Texture>("Texture", std::function<Texture *()>([]() -> Texture * { return nullptr; }),
                             true);
 
+    auto shader = table.addClass<Shader>(
+        "Shader", std::function<Shader *()>([]() -> Shader * { return nullptr; }), true);
+    shader.addFunc("declareFloat", &Shader::declareFloat);
+    shader.addFunc("declareVec2", &Shader::declareVec2);
+    shader.addFunc("declareVec3", &Shader::declareVec3);
+    shader.addFunc("declareVec4", &Shader::declareVec4);
+    shader.addFunc("declareMatrix", &Shader::declareMatrix);
+    shader.addFunc("sendFloat", &Shader::sendFloat);
+    shader.addFunc("sendVec2", &Shader::sendVec2);
+    shader.addFunc("sendVec3", &Shader::sendVec3);
+    shader.addFunc("sendVec4", &Shader::sendVec4);
+    shader.addFunc("hasUniform", &Shader::hasUniform);
+    shader.addFunc("getUniformIndex", &Shader::getUniformIndex);
+
     auto cam = table.addClass<Camera3D>(
         "Camera3D", std::function<Camera3D *()>([]() { return Camera3D::createCamera(); }), true);
     cam.addFunc("setEye", &Camera3D::setEye);
@@ -43,6 +57,7 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setScale", &Renderable3D::setScale);
     ent.addFunc("setMesh", &Renderable3D::setMesh);
     ent.addFunc("setTexture", &Renderable3D::setTexture);
+    ent.addFunc("setShader", &Renderable3D::setShader);
     ent.addFunc("setTint", &Renderable3D::setTint);
     ent.addFunc("setVisible", &Renderable3D::setVisible);
     ent.addFunc("setCamera", &Renderable3D::setCamera);
@@ -56,11 +71,23 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setBackgroundColor", &Graphics::setBackgroundColorRGBA);
     cls.addFunc("drawSolidRect", &Graphics::drawSolidRectRGBA);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
+    cls.addFunc("newShader",
+                static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShader));
+    cls.addFunc("newMeshShader",
+                static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newMeshShader));
+    cls.addFunc("newShaderFromSpvFile",
+                static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
+    cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
+    cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
 }
 
-void Graphics::reset() {}
+void Graphics::reset() { currentShader = nullptr; }
+
+void Graphics::setShader(Shader *shader) { currentShader = shader; }
+
+void Graphics::setShader() { currentShader = nullptr; }
 
 void Graphics::clearScreen() {
     clear(std::nullopt, std::nullopt, std::nullopt);

@@ -147,7 +147,7 @@ function eve::update(dt) {
 | 组件 | 字段（草案） | 说明 |
 |------|----------------|------|
 | `Transform2D` | `x,y,rot,sx,sy` | 2D 变换；可后续拆 Parent 链接 |
-| `Sprite` | texture、quad、color、layer、visible | 主 Renderable |
+| `Sprite` | texture、shader、quad、color、layer、visible | 主 Renderable；`shader=null` 用默认管线 |
 | `Camera2D`（P1） | 位置、zoom、清屏色 | 缺省一台绑定主窗口 |
 | `CanvasTarget`（P1） | 离屏目标 | 声明画到哪 |
 
@@ -164,7 +164,29 @@ function eve::update(dt) {
 | `present` / `setViewportSize` / `clear` | P0 | 帧与窗口；由 RenderSystem 或 boot 调用 |
 | Batcher + 纹理 upload | P0 | Sprite 绘制后端 |
 | 图元 tessellate | P2 | 调试形状、编辑器 gizmo |
-| 自定义 Shader | P1 | 先进内部，再考虑组件字段 |
+| 自定义 Shader | P1 | `Graphics::newShader` / `newShaderFromSpv*`；`Sprite.shader` |
+
+### 3.4 自定义 Shader 约定（2D）
+
+```cpp
+auto *sh = gfx->newShader(R"(#version 450
+layout(location=0) in vec4 fragColor;
+layout(location=1) in vec2 fragUV;
+layout(location=0) out vec4 outColor;
+layout(binding=0) uniform sampler2D MainTex;
+layout(push_constant) uniform Externals { float data[32]; } u;
+void main() { outColor = texture(MainTex, fragUV) * fragColor * u.data[0]; }
+)");
+sh->declareFloat("factor");
+sh->sendFloat("factor", 0.5f);
+entity->sprite()->shader = sh;   // 声明式
+// 或 gfx->setShader(sh);       // 即时模式逃生舱
+```
+
+- 顶点输入固定为 TexturedVertex（pos / color / uv）；省略 vert 时用内置 `textured.vert`
+- `MainTex`：`set=0, binding=0`
+- Uniform：先 `declare*` 再 `send*`，按声明顺序写入 push-constant `data[]`（最多 32 floats）
+- GLSL 编译依赖本机 `glslc`；无 glslc 时用预编译 SPIR-V（`newShaderFromSpv` / `newShaderFromSpvFile`）
 
 
 ## 4. VKBuilder 映射表

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -36,13 +38,13 @@ class Class;
 
 namespace eve {
 
-class Module {
+class EVENGINE_API Module {
 public:
     virtual ~Module() {}
     virtual std::string getName() const = 0;
 };
 
-class ModuleManager {
+class EVENGINE_API ModuleManager {
 public:
     typedef Module* (*creator_t)();
     typedef void    (*exposer_t)(ssq::Table&);
@@ -54,6 +56,10 @@ public:
 
     static void register_module(const char* name, creator_t c, exposer_t e);
     static void expose(ssq::VM& vm);
+    // Expose modules registered after the initial expose() (e.g. plugins).
+    static int  expose_pending();
+    static void set_vm(ssq::VM* vm);
+    static ssq::VM* vm();
 
     template <typename T>
     static T* getInstance(const char* name) {
@@ -72,12 +78,14 @@ protected:
         creator_t creator = nullptr;
         exposer_t exposer = nullptr;
         Module*   instance = nullptr;
+        bool      exposed  = false;
     };
 
     std::unordered_map<std::string, ModuleInfo> registered_modules;
+    ssq::VM* active_vm_ = nullptr;
 };
 
-struct ModuleRegister {
+struct EVENGINE_API ModuleRegister {
     ModuleRegister(const char* name, ModuleManager::creator_t c, ModuleManager::exposer_t e);
 };
 
