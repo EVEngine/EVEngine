@@ -67,22 +67,26 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Setup Android SDK / NDK
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # Install everything via the action so we don't rely on sdkmanager PATH
+          # (Windows bash often cannot see cmdline-tools after setup-android alone).
+          packages: >-
+            platform-tools
+            platforms;android-${{ env.ANDROID_API }}
+            build-tools;${{ env.ANDROID_API }}.0.0
+            ndk;${{ env.ANDROID_NDK_VERSION }}
 
-      - name: Install Android packages
+      - name: Resolve Android SDK / NDK paths
+        run: bash .github/scripts/setup-android-sdk.sh
+
+      - name: Write Gradle local.properties
         run: |
-          sdkmanager --install \
-            "platform-tools" \
-            "platforms;android-${ANDROID_API}" \
-            "build-tools;${ANDROID_API}.0.0" \
-            "ndk;${ANDROID_NDK_VERSION}"
-          yes | sdkmanager --licenses >/dev/null || true
-          ANDROID_HOME_UNIX="${ANDROID_HOME//\\//}"
-          echo "ANDROID_HOME=${ANDROID_HOME_UNIX}" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK=${ANDROID_HOME_UNIX}" >> "$GITHUB_ENV"
-          echo "ANDROID_NDK=${ANDROID_HOME_UNIX}/ndk/${ANDROID_NDK_VERSION}" >> "$GITHUB_ENV"
-          printf 'sdk.dir=%s\n' "${ANDROID_HOME_UNIX}" > platform/android/apk/local.properties
+          printf 'sdk.dir=%s\n' "$ANDROID_HOME" > platform/android/apk/local.properties
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_NDK=$ANDROID_NDK"
+          test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build win32 debug
         run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"

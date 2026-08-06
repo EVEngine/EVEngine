@@ -46,10 +46,24 @@ if [ -z "$XC" ]; then
   echo "WARNING: MoltenVK.xcframework not found; iOS configure may fail."
 else
   echo "Found MoltenVK.xcframework at $XC"
-  if [ ! -d "$RESOLVED/../iOS/lib/MoltenVK.xcframework" ]; then
-    mkdir -p "$RESOLVED/../iOS/lib"
-    ln -sfn "$XC" "$RESOLVED/../iOS/lib/MoltenVK.xcframework"
-    echo "Linked iOS MoltenVK -> $RESOLVED/../iOS/lib/MoltenVK.xcframework"
+  # CMake looks for $VULKAN_SDK/lib/MoltenVK.xcframework (CI layout) and
+  # $VULKAN_SDK/../iOS/lib/... (LunarG desktop layout). Prefer not writing into
+  # the installed SDK (often not writable on GHA). If the xcframework is not
+  # already under $VULKAN_SDK/lib, mirror it into a writable HOME shim that the
+  # CMake HOME/VulkanSDK/*/iOS glob can also see.
+  if [ -d "$RESOLVED/lib/MoltenVK.xcframework" ]; then
+    echo "MoltenVK.xcframework already at \$VULKAN_SDK/lib — nothing to link."
+  elif [ -d "$RESOLVED/../iOS/lib/MoltenVK.xcframework" ]; then
+    echo "MoltenVK.xcframework already at sibling iOS/lib — nothing to link."
+  else
+    SHIM_ROOT="${HOME}/VulkanSDK/ci-shim"
+    mkdir -p "$SHIM_ROOT/iOS/lib" "$SHIM_ROOT/macOS"
+    ln -sfn "$XC" "$SHIM_ROOT/iOS/lib/MoltenVK.xcframework"
+    # Keep a macOS pointer so desktop find_package still works if needed.
+    if [ ! -e "$SHIM_ROOT/macOS/lib" ]; then
+      ln -sfn "$RESOLVED/lib" "$SHIM_ROOT/macOS/lib" 2>/dev/null || true
+    fi
+    echo "Mirrored MoltenVK.xcframework -> $SHIM_ROOT/iOS/lib/MoltenVK.xcframework"
   fi
 fi
 
