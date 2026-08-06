@@ -33,18 +33,53 @@ if (!win.setWindowSettings(s)) {
 
 event <- eve.Event();
 timer <- eve.Timer();
+ui <- eve.UI();
 
 demo <- { x = 40.0, vx = 80.0 };
 
-eve_init <- function() {};
+eve_init <- function() {
+    // Named ECS hosts: hud + menu; select before props/clicks.
+    ui.beginBuild();
+    ui.beginWindow("HUD", "root");
+    ui.text("HP 100", "hp");
+    ui.button("Pause", "pause");
+    ui.end();
+    ui.mountBuildAs("hud");
+
+    ui.beginBuild();
+    ui.beginWindow("Menu", "root");
+    ui.button("Resume", "resume");
+    ui.end();
+    ui.mountBuildAs("menu");
+    ui.setHostVisible(false); // menu starts hidden (selected=menu)
+
+    ui.select("hud");
+};
 eve_update <- function(dt) {
     demo.x += demo.vx * dt;
     if (demo.x < 0.0 || demo.x + 120.0 > config.width)
         demo.vx = -demo.vx;
+
+    local id = ui.consumeClick();
+    while (id != "") {
+        if (id == "hud/pause") {
+            ui.select("hud");
+            ui.setHostVisible(false);
+            ui.select("menu");
+            ui.setHostVisible(true);
+        } else if (id == "menu/resume") {
+            ui.select("menu");
+            ui.setHostVisible(false);
+            ui.select("hud");
+            ui.setHostVisible(true);
+        }
+        id = ui.consumeClick();
+    }
 };
 eve_render <- function() {
     gfx.clear();
     gfx.drawSolidRect(demo.x, 40.0, 120.0, 80.0, 1.0, 0.4, 0.2, 1.0);
+    ui.beginFrameAndRender();
 };
 eve_quit <- function() {};
 
@@ -67,6 +102,7 @@ while (running) {
     eve_update(dt);
     eve_render();
     gfx.present();
+    ui.dispatchEvents();
 }
 
 eve_quit();

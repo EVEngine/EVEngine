@@ -119,6 +119,31 @@ static Texture *makeSolidGray(Graphics *gfx, uint8_t g) {
     return gfx->newTexture(1, 1, px);
 }
 
+// Graphics/ECS are process-wide singletons — hide leftovers from earlier cases.
+static void resetScene3D() {
+    if (ecs::ComponentManager<Renderable3D>::inst().registy != nullptr) {
+        auto view = ecs::View<Renderable3D, Renderable3D::MeshRenderer>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [mr] = *it;
+            mr->visible = false;
+        }
+    }
+    if (ecs::ComponentManager<Camera3D>::inst().registy != nullptr) {
+        auto camView = ecs::View<Camera3D, Camera3D::Data>();
+        for (auto it = camView.begin(); it != camView.end(); ++it) {
+            auto [data] = *it;
+            data->active = false;
+        }
+    }
+    if (ecs::ComponentManager<Renderable2D>::inst().registy != nullptr) {
+        auto view = ecs::View<Renderable2D, Renderable2D::Sprite>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [sp] = *it;
+            sp->visible = false;
+        }
+    }
+}
+
 // NOTE: Graphics is a process-wide singleton — one window lifetime per process.
 TEST_CASE("Mesh.newMeshFromAssimpCube") {
     eve::window::Window *win = nullptr;
@@ -155,6 +180,7 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
     openGfxWindow(win, gfx);
+    resetScene3D();
 
     Mesh *mesh = loadUvCube(gfx);
 
@@ -190,6 +216,7 @@ TEST_CASE("RenderSystem3D.textureCheckerPixels") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
     openGfxWindow(win, gfx);
+    resetScene3D();
 
     Mesh *mesh = loadUvCube(gfx);
     auto *cam = Camera3D::createCamera();
@@ -212,8 +239,11 @@ TEST_CASE("RenderSystem3D.textureCheckerPixels") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderSystem3D::setDirectionalLight(0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
-    RenderSystem3D::render(*gfx);
-    RenderSystem::render(*gfx);
+    // Warm up a couple of frames after possible surface/swapchain recreate.
+    for (int i = 0; i < 3; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
 
     const int cx = gfx->getWidth() / 2;
     const int cy = gfx->getHeight() / 2;
@@ -230,6 +260,7 @@ TEST_CASE("RenderSystem3D.lightingAffectsPixels") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;
     openGfxWindow(win, gfx);
+    resetScene3D();
 
     Mesh *mesh = loadUvCube(gfx);
     auto *cam = Camera3D::createCamera();
@@ -252,15 +283,19 @@ TEST_CASE("RenderSystem3D.lightingAffectsPixels") {
     const int cy = gfx->getHeight() / 2;
 
     gfx->setScreenReadbackEnabled(true);
-    // LightDir is dotted with normals as-is; for +Z-facing geometry, -Z lights the front.
+    // Empirically (and matching the mesh/view setup): -Z lights the visible face brighter.
     RenderSystem3D::setDirectionalLight(0.f, 0.f, -1.f, 1.f, 1.f, 1.f);
-    RenderSystem3D::render(*gfx);
-    RenderSystem::render(*gfx);
+    for (int i = 0; i < 3; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
     const float L_bright = luma(gfx->getPixel(cx, cy));
 
     RenderSystem3D::setDirectionalLight(0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
-    RenderSystem3D::render(*gfx);
-    RenderSystem::render(*gfx);
+    for (int i = 0; i < 3; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
     const float L_dark = luma(gfx->getPixel(cx, cy));
 
     REQUIRE(L_bright - L_dark > 0.1f);

@@ -6,9 +6,12 @@
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
 
+#include <chrono>
 #include <cstring>
+#include <fstream>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace {
@@ -216,4 +219,62 @@ TEST_CASE("filesystem.File.bufferAndFlush") {
     CHECK(file->flush());
     CHECK(file->close());
     f->remove(name);
+}
+
+TEST_CASE("filesystem.watch.fileModified") {
+    useIdentity("ev_ut_fs_watch");
+    auto* f = fs();
+    f->unwatchAll();
+
+    const char* name = "ut_watch.txt";
+    f->write(name, "v1", 2);
+    REQUIRE(f->watch(name));
+    CHECK_EQ(f->getWatchCount(), 1);
+
+    // Darwin DirectoryWatcher baselines via periodic scan; wait one interval.
+    std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+    while (!f->pollWatch().empty()) {
+    }
+
+    // Prefer OS write through the resolved save path so notifications fire reliably.
+    std::string real = f->getSaveDirectory() + "/" + name;
+    {
+        std::ofstream out(real, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v2-changed", 10);
+        out.flush();
+    }
+
+    bool saw = false;
+    for (int i = 0; i < 60 && !saw; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        for (;;) {
+            std::string kind = f->pollWatch();
+            if (kind.empty()) break;
+            if (kind == "modified" || kind == "added") {
+                CHECK_EQ(f->getLastWatchPath(), std::string(name));
+                saw = true;
+            }
+        }
+    }
+    CHECK(saw);
+
+    CHECK(f->unwatch(name));
+    CHECK_EQ(f->getWatchCount(), 0);
+    f->remove(name);
+}
+
+TEST_CASE("filesystem.watch.unwatchAll") {
+    useIdentity("ev_ut_fs_watch_all");
+    auto* f = fs();
+    f->unwatchAll();
+    f->write("a.txt", "a", 1);
+    f->write("b.txt", "b", 1);
+    CHECK(f->watch("a.txt"));
+    CHECK(f->watch("b.txt"));
+    CHECK_GE(f->getWatchCount(), 2);
+    f->unwatchAll();
+    CHECK_EQ(f->getWatchCount(), 0);
+    f->remove("a.txt");
+    f->remove("b.txt");
 }

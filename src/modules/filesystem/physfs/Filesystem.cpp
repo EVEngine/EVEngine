@@ -1,28 +1,10 @@
-/**
- * Copyright (c) 2006-2021 LOVE Development Team
- *
- * This software is provided 'as-is', without any express or implied
- * warranty.  In no event will the authors be held liable for any damages
- * arising from the use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- **/
-
 #include "filesystem/physfs/Filesystem.h"
 
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <sstream>
+#include <string>
 
 #include "filesystem/physfs/File.h"
 #include "common/b64.h"
@@ -94,6 +76,8 @@ Filesystem::Filesystem() : fused(false), fusedSet(false) {
 }
 
 Filesystem::~Filesystem() {
+    unwatchAll();
+
 #ifdef EVENGINE_ANDROID
     android::deinitializeVirtualArchive();
 #endif
@@ -587,6 +571,140 @@ void Filesystem::allowMountingForPath(const std::string &path) {
     if (std::find(allowedMountPaths.begin(), allowedMountPaths.end(), path) == allowedMountPaths.end())
         allowedMountPaths.push_back(path);
 }
+
+namespace {
+
+bool looksAbsolute(const std::string &path) {
+    if (path.empty()) return false;
+    if (path[0] == '/' || path[0] == '\\') return true;
+#ifdef EVENGINE_WINDOWS
+    if (path.size() >= 2 && path[1] == ':') return true;
+#endif
+    return false;
+}
+
+std::string joinPath(const std::string &a, const std::string &b) {
+    if (a.empty()) return b;
+    if (b.empty()) return a;
+    char last = a.back();
+    if (last == '/' || last == '\\') return a + b;
+    return a + "/" + b;
+}
+
+std::string parentDir(const std::string &path) {
+    auto pos = path.find_last_of("/\\");
+    if (pos == std::string::npos) return ".";
+    if (pos == 0) return "/";
+    return path.substr(0, pos);
+}
+
+std::string baseName(const std::string &path) {
+    auto pos = path.find_last_of("/\\");
+    if (pos == std::string::npos) return path;
+    return path.substr(pos + 1);
+}
+
+}  // namespace
+
+FileWatch &Filesystem::watchers() {
+    if (!fileWatch_) fileWatch_ = std::make_unique<FileWatch>();
+    return *fileWatch_;
+}
+
+bool Filesystem::resolveWatchTarget(const std::string &path, std::string &realDir,
+                                    std::string &filterName, std::string &reportPath) {
+    reportPath = path;
+    filterName.clear();
+    realDir.clear();
+    if (path.empty()) return false;
+
+    if (looksAbsolute(path)) {
+        if (isRealDirectory(path)) {
+            realDir = path;
+            return true;
+        }
+        realDir = parentDir(path);
+        filterName = baseName(path);
+        return isRealDirectory(realDir);
+    }
+
+    Info info{};
+    if (getInfo(path, info)) {
+        std::string root;
+        try {
+            root = getRealDirectory(path);
+        } catch (...) {
+            return false;
+        }
+        std::string full = joinPath(root, path);
+        if (info.type == "directory") {
+            realDir = full;
+            filterName.clear();
+            return isRealDirectory(realDir);
+        }
+        realDir = parentDir(full);
+        filterName = baseName(full);
+        return isRealDirectory(realDir);
+    }
+
+    std::string parent = parentDir(path);
+    if (parent == ".") parent.clear();
+    if (!parent.empty()) {
+        Info pinfo{};
+        if (getInfo(parent, pinfo) && pinfo.type == "directory") {
+            std::string root;
+            try {
+                root = getRealDirectory(parent);
+            } catch (...) {
+                return false;
+            }
+            realDir = joinPath(root, parent);
+            filterName = baseName(path);
+            return isRealDirectory(realDir);
+        }
+    }
+
+    std::string save = getSaveDirectory();
+    if (!save.empty() && isRealDirectory(save)) {
+        realDir = save;
+        filterName = baseName(path);
+        return true;
+    }
+    return false;
+}
+
+bool Filesystem::watch(std::string path) {
+    std::string realDir, filter, report;
+    if (!resolveWatchTarget(path, realDir, filter, report)) return false;
+    return watchers().add(realDir, filter, report, 1);
+}
+
+bool Filesystem::unwatch(std::string path) { return watchers().remove(path); }
+
+void Filesystem::unwatchAll() {
+    if (fileWatch_) fileWatch_->clear();
+}
+
+int Filesystem::getWatchCount() const {
+    if (!fileWatch_) return 0;
+    return fileWatch_->count();
+}
+
+std::string Filesystem::pollWatch() {
+    if (!fileWatch_) return "";
+    FileWatch::Event ev;
+    if (!fileWatch_->poll(ev)) {
+        lastWatchPath_.clear();
+        lastWatchRealPath_.clear();
+        return "";
+    }
+    lastWatchPath_ = ev.path;
+    lastWatchRealPath_ = ev.realPath;
+    return ev.kind;
+}
+
+std::string Filesystem::getLastWatchPath() const { return lastWatchPath_; }
+std::string Filesystem::getLastWatchRealPath() const { return lastWatchRealPath_; }
 
 }  // namespace physfs
 }  // namespace filesystem

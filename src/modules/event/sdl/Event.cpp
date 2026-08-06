@@ -11,6 +11,7 @@
 #include "keyboard/Keyboard.h"
 #include "joystick/Joystick.h"
 #include "joystick/Pad.h"
+#include "ui/UI.h"
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "common/config.h"
@@ -132,6 +133,8 @@ void Event::pump()
 
 	while (SDL_PollEvent(&e))
 	{
+		if (auto *ui = eve::ModuleManager::getInstance<eve::ui::UI>("UI"))
+			ui->processEvent(&e);
 		Message *msg = convert(e);
 		if (msg)
 			push(msg);

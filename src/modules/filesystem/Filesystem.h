@@ -219,9 +219,31 @@ public:
      **/
     virtual std::string getExecutablePath() const;
 
+    // --- File watch (backend-specific; main-thread poll) ---
+
+    /**
+     * Watch a virtual or absolute OS path (file or directory).
+     * File watches monitor the parent directory and filter by basename.
+     * Returns false if the path cannot be resolved to a real directory.
+     **/
+    virtual bool watch(std::string path) = 0;
+
+    /** Stop watching a path previously passed to watch(). */
+    virtual bool unwatch(std::string path) = 0;
+    virtual void unwatchAll() = 0;
+    virtual int getWatchCount() const = 0;
+
+    /**
+     * Pop next watch event kind: "added"|"removed"|"modified"|"movedFrom"|"movedTo".
+     * Empty string if queue empty. Path available via getLastWatchPath().
+     **/
+    virtual std::string pollWatch() = 0;
+    virtual std::string getLastWatchPath() const = 0;
+    virtual std::string getLastWatchRealPath() const = 0;
+
 private:
     // Should we save external or internal for Android
-    bool useExternal;
+    bool useExternal = false;
 };  // Filesystem
 
 }  // namespace eve::filesystem

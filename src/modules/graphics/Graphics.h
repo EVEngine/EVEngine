@@ -124,6 +124,17 @@ public:
      */
     virtual void requestSurfaceRecreate() {}
 
+    /**
+     * Optional overlay drawn inside the swapchain render pass (before end).
+     * Used by declarative UI (ImGui). `commandBuffer` is a VkCommandBuffer as void*.
+     */
+    using PresentOverlayFn = void (*)(void *userdata, void *commandBuffer);
+    void setPresentOverlay(PresentOverlayFn fn, void *userdata) {
+        presentOverlayFn_ = fn;
+        presentOverlayUser_ = userdata;
+    }
+    PresentOverlayFn getPresentOverlay() const { return presentOverlayFn_; }
+    void *getPresentOverlayUser() const { return presentOverlayUser_; }
 
 	// void setFont(Font *font);
 	// Font *getFont();
@@ -261,6 +272,8 @@ protected:
     bool frameHad3D = false;
     bool screenReadbackEnabled = false;
     bool graphicsActive = true;
+    PresentOverlayFn presentOverlayFn_ = nullptr;
+    void *presentOverlayUser_ = nullptr;
 };
 
-}  // namespace graphics
+}  // namespace eve::graphics

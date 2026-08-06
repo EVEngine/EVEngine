@@ -52,7 +52,7 @@ Graphics::~Graphics() {
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     mesh3dSetLayoutUnique.reset();
-    mesh3dUbo = vkb::GenericBuffer{};
+    mesh3dUboSlots.clear();
     if (offscreenSolidPipeline) device->destroyPipeline(offscreenSolidPipeline);
     if (offscreenTexPipeline) device->destroyPipeline(offscreenTexPipeline);
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
@@ -64,7 +64,15 @@ Graphics::~Graphics() {
 }
 
 void Graphics::initWithWindow(void *nativeWindow) {
-    if (initialized) return;
+    if (initialized) {
+        // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
+        // The Vulkan surface is tied to the native window — rebuild it when the
+        // handle changes, otherwise acquire/present use a destroyed surface.
+        if (sdlWindow == nativeWindow) return;
+        sdlWindow = nativeWindow;
+        recreateSurfaceForResume();
+        return;
+    }
     sdlWindow = nativeWindow;
     auto *window = static_cast<SDL_Window *>(nativeWindow);
     ASSERT(window != nullptr);
@@ -132,6 +140,41 @@ void Graphics::initWithWindow(void *nativeWindow) {
 void Graphics::destroySwapchainResources() {
     presentModel = vkb::Present{};
     depthImage = vkb::DepthStencilImage{};
+}
+
+bool Graphics::rebuildSwapchainIfNeeded() {
+    const bool wantRecreate =
+        surfaceNeedsRecreate.load() || swapchainDirty || presentModel.needs_recreate;
+    if (!wantRecreate) return true;
+    if (!isRenderSurfaceStable()) return false;
+
+    if (surfaceNeedsRecreate.exchange(false))
+        recreateSurfaceForResume();
+    if (presentModel.needs_recreate) {
+        presentModel.needs_recreate = false;
+        swapchainDirty = true;
+    }
+    if (swapchainDirty) {
+        device->waitIdle();
+        createSwapchainAndPipeline();
+    }
+    return true;
+}
+
+bool Graphics::beginPresentCommandBuffer() {
+    for (int attempt = 0; attempt < 3; ++attempt) {
+        if (!rebuildSwapchainIfNeeded()) return false;
+        presentModel.begin();
+        if (presentModel.has_acquired_image) return true;
+        // Acquire failed without beginning the CB (see Present::begin). Rebuild once.
+        if (presentModel.needs_recreate) {
+            presentModel.needs_recreate = false;
+            swapchainDirty = true;
+            continue;
+        }
+        return false;
+    }
+    return false;
 }
 
 bool Graphics::isRenderSurfaceReady() const {
@@ -285,11 +328,11 @@ void Graphics::createTexturedPipeline() {
     texSetLayout = *texSetLayoutUnique;
 
     vk::DescriptorPoolSize poolSizes[] = {
-        {vk::DescriptorType::eCombinedImageSampler, 64},
-        {vk::DescriptorType::eUniformBuffer, 16},
+        {vk::DescriptorType::eCombinedImageSampler, 128},
+        {vk::DescriptorType::eUniformBuffer, 64},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.maxSets = 80;
+    poolInfo.maxSets = 160;
     poolInfo.poolSizeCount = 2;
     poolInfo.pPoolSizes = poolSizes;
     descriptorPool = device->createDescriptorPool(poolInfo);
@@ -404,17 +447,9 @@ void Graphics::createMesh3DPipeline() {
     plInfo.pSetLayouts = &mesh3dSetLayout;
     mesh3dPipelineLayout = device->createPipelineLayout(plInfo);
 
-    mesh3dUbo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DUBO),
-                       vk::MemoryPropertyFlagBits::eHostVisible |
-                           vk::MemoryPropertyFlagBits::eHostCoherent);
-    Mesh3DUBO initial{};
-    mesh3dUbo.updateLocal(initial);
-
-    vk::DescriptorSetAllocateInfo alloc{};
-    alloc.descriptorPool = descriptorPool;
-    alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts = &mesh3dSetLayout;
-    mesh3dDescriptorSet = device->allocateDescriptorSets(alloc).front();
+    // UBO + descriptor sets are allocated lazily per draw (see mesh3dSetFor).
+    mesh3dUboSlots.clear();
+    mesh3dDrawIndex = 0;
 
     std::vector<uint32_t> vert(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
     std::vector<uint32_t> frag(mesh3d_frag_spv, mesh3d_frag_spv + mesh3d_frag_spv_count);
@@ -943,31 +978,6 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
 }
 
 void Graphics::flushToSwapchain() {
-    // Any of these mean the swapchain must be rebuilt before we can present.
-    // presentModel.needs_recreate is set by vkbuilder when acquire/present
-    // reported out-of-date/suboptimal (instead of rebuilding inline).
-    const bool wantRecreate =
-        surfaceNeedsRecreate.load() || swapchainDirty || presentModel.needs_recreate;
-    if (wantRecreate) {
-        // Only (re)build once the native surface has settled. On Android the
-        // window is briefly reported at a transient (portrait) size and marked
-        // "not ready" during resume/rotation; building a swapchain then crashes
-        // the GPU driver in vkCreateImageView. Skip the frame until it's stable.
-        if (!isRenderSurfaceStable())
-            return;
-
-        if (surfaceNeedsRecreate.exchange(false))
-            recreateSurfaceForResume();
-        if (presentModel.needs_recreate) {
-            presentModel.needs_recreate = false;
-            swapchainDirty = true;
-        }
-        if (swapchainDirty) {
-            device->waitIdle();
-            createSwapchainAndPipeline();
-        }
-    }
-
     Batcher solid = solidBatch;
     auto textured = std::move(texturedBatches);
     solidBatch.clear();
@@ -975,7 +985,10 @@ void Graphics::flushToSwapchain() {
 
     const bool continue3D = swapchainPassOpen;
     if (!continue3D) {
-        presentModel.begin();
+        if (!beginPresentCommandBuffer()) {
+            hasPendingClear = false;
+            return;
+        }
         std::array<vk::ClearValue, 2> clears{};
         clears[0].color = vk::ClearColorValue(
             std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
@@ -1031,6 +1044,14 @@ void Graphics::flushToSwapchain() {
         }
     }
 
+    // Invalidate prior readback so a failed present cannot reuse a stale frame.
+    if (screenReadbackEnabled) hasPresentedFrame = false;
+
+    if (presentOverlayFn_) {
+        VkCommandBuffer raw = static_cast<VkCommandBuffer>(cb);
+        presentOverlayFn_(presentOverlayUser_, raw);
+    }
+
     presentModel.endRenderPass();
     presentModel.end();
     presentModel.drawFrame();
@@ -1045,12 +1066,9 @@ void Graphics::begin3DFrame() {
     if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
     if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
     if (swapchainPassOpen) throw Exception("begin3DFrame: swapchain pass already open");
-    if (swapchainDirty) {
-        device->waitIdle();
-        createSwapchainAndPipeline();
-    }
+    if (!beginPresentCommandBuffer())
+        throw Exception("begin3DFrame: failed to acquire swapchain image");
 
-    presentModel.begin();
     std::array<vk::ClearValue, 2> clears{};
     clears[0].color = vk::ClearColorValue(
         std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
@@ -1063,6 +1081,7 @@ void Graphics::begin3DFrame() {
     cb.setViewport(0, 1, &vp);
     cb.setScissor(0, 1, &scissor);
 
+    mesh3dDrawIndex = 0;
     swapchainPassOpen = true;
     frameHad3D = true;
     hasPendingClear = false;
@@ -1073,6 +1092,38 @@ void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
     mesh3dFrameUbo.lightDir = glm::vec4(d, 0.f);
     mesh3dFrameUbo.lightColor = glm::vec4(color, 1.f);
+}
+
+vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, size_t uboSlot) {
+    ASSERT(gpuTex != nullptr);
+    while (mesh3dUboSlots.size() <= uboSlot) {
+        mesh3dUboSlots.emplace_back();
+        mesh3dUboSlots.back().ubo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer,
+                                           sizeof(Mesh3DUBO),
+                                           vk::MemoryPropertyFlagBits::eHostVisible |
+                                               vk::MemoryPropertyFlagBits::eHostCoherent);
+    }
+    auto &slot = mesh3dUboSlots[uboSlot];
+    auto it = slot.sets.find(gpuTex);
+    if (it != slot.sets.end()) return it->second;
+
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = descriptorPool;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &mesh3dSetLayout;
+    vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
+
+    // Fresh set — never bound to a command buffer yet, so Update is safe.
+    vkb::DescriptorSetUpdater updater;
+    updater.beginDescriptorSet(set)
+        .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
+        .buffer(slot.ubo.buffer, 0, sizeof(Mesh3DUBO))
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(gpuTex->sampler, gpuTex->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .update(device.instance);
+
+    slot.sets.emplace(gpuTex, set);
+    return set;
 }
 
 void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) {
@@ -1150,20 +1201,15 @@ void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, co
     ubo.model = model;
     ubo.mvp = mesh3dFrameUbo.mvp * model;
     ubo.tint = glm::vec4(tint.r, tint.g, tint.b, tint.a);
-    mesh3dUbo.updateLocal(ubo);
 
-    vkb::DescriptorSetUpdater updater;
-    updater.beginDescriptorSet(mesh3dDescriptorSet)
-        .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
-        .buffer(mesh3dUbo.buffer, 0, sizeof(Mesh3DUBO))
-        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpuTex->sampler, gpuTex->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
-        .update(device.instance);
+    const size_t slot = mesh3dDrawIndex++;
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, slot);
+    mesh3dUboSlots[slot].ubo.updateLocal(ubo);
 
     auto &cb = presentModel.getCurrentCommandBuffer();
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dPipeline);
-    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1,
-                          &mesh3dDescriptorSet, 0, nullptr);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 0,
+                          nullptr);
     vk::DeviceSize offset = 0;
     cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
     cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);

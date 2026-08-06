@@ -1,5 +1,6 @@
 
 create_module(EVFileSystem filesystem)
+target_compile_definitions(EVFileSystem PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVGraphics graphics)
 create_module(EVWindow window)
 create_module(EVEvent event)
@@ -22,3 +23,28 @@ target_include_directories(EVSound PRIVATE
 )
 create_module(EVAudio audio)
 target_compile_definitions(EVAudio PRIVATE AL_LIBTYPE_STATIC)
+
+# Dear ImGui (compiled from third-party sources; also installed by third-party ExternalProject)
+set(_eve_imgui_sources
+  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
+  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
+  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
+  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
+  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
+  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
+)
+add_library(eve_imgui STATIC ${_eve_imgui_sources})
+target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
+# imgui_impl_sdl includes <SDL.h>; vendored install puts headers under include/SDL2/.
+target_include_directories(eve_imgui PRIVATE
+  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
+  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
+)
+# Avoid pulling imgui_demo.cpp (ShowFontAtlas etc.) into every link.
+target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
+
+create_module(EVUI ui)
+target_link_libraries(EVUI PUBLIC eve_imgui)
+target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
+
+create_module(EVParticles particles)

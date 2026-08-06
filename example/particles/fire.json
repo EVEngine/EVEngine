@@ -1,0 +1,21 @@
+{
+  "buffer": 256,
+  "preset": "fire",
+  "x": 400,
+  "y": 500,
+  "emissionRate": 60,
+  "particleLifetime": [0.4, 1.0],
+  "emitterLife": -1,
+  "direction": -1.5708,
+  "spread": 0.5,
+  "speed": [20, 80],
+  "linearAcceleration": [-15, -80, 15, -20],
+  "particleSize": [10, 10],
+  "sizes": [1.2, 0.3],
+  "colorStart": [1.0, 0.7, 0.1, 1.0],
+  "colorEnd": [1.0, 0.1, 0.0, 0.0],
+  "layer": 2,
+  "visible": true,
+  "autoStart": true,
+  "autoReload": true
+}

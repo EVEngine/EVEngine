@@ -65,6 +65,13 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("getCRequirePath", &Filesystem::getCRequirePath);
     cls.addFunc("getRequirePath", &Filesystem::getRequirePath);
     cls.addFunc("isRealDirectory", &Filesystem::isRealDirectory);
+    cls.addFunc("watch", &Filesystem::watch);
+    cls.addFunc("unwatch", &Filesystem::unwatch);
+    cls.addFunc("unwatchAll", &Filesystem::unwatchAll);
+    cls.addFunc("getWatchCount", &Filesystem::getWatchCount);
+    cls.addFunc("pollWatch", &Filesystem::pollWatch);
+    cls.addFunc("getLastWatchPath", &Filesystem::getLastWatchPath);
+    cls.addFunc("getLastWatchRealPath", &Filesystem::getLastWatchRealPath);
 }
 
 FileData *Filesystem::newFileData(const void *data, std::string filename, size_t size) const {

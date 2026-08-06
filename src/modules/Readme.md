@@ -20,6 +20,9 @@
 
 1. 文件系统 - filesystem
     封装了核心的文件系统功能，提供如下功能：统一的文件系统访问、目录查看修改、监视文件变动、文件读取
+    主实现：physfs；cppfs::File 仅用于 OS 绝对路径特例
+    watch API（抽象虚函数）：`watch` / `unwatch` / `pollWatch` / `getLastWatchPath`
+    watch 实现：physfs 后端 + Poco DirectoryWatcher（FileWatch）
 
 2. 事件系统 - event
     主要处理多线程间的信号同步与各种回调事件，处理来自硬件的各种信号
@@ -52,7 +55,9 @@
     负责线程、线程池的管理，提交异步任务
 
 10. 粒子系统 - particles
-    负责创建、渲染、加载设置等关于粒子系统的设置
+    ECS：`ParticleEmitter`（Config/Sim/Draw/Resource）
+    System：`ParticleConfigSystem`（filesystem watch + mtime 回退）/ `ParticleSimSystem` / `ParticleRenderSystem`
+    Module：工厂、`newEmitterFromFile`、脚本绑定；`update` 含 poll+sim
 
 11. Box2d物理 - box2d
     负责管理box2d物理引擎

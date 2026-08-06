@@ -3,8 +3,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <map>
+#include <memory>
+#include <string>
 
 #include "filesystem/Filesystem.h"
+#include "filesystem/FileWatch.h"
 
 namespace eve {
 namespace filesystem {
@@ -13,7 +16,7 @@ namespace physfs {
 class Filesystem final : public eve::filesystem::Filesystem {
 public:
     Filesystem();
-    virtual ~Filesystem();
+    ~Filesystem() override;
 
     void init(const char* arg0) override;
 
@@ -65,7 +68,19 @@ public:
 
     void allowMountingForPath(const std::string &path) override;
 
+    bool watch(std::string path) override;
+    bool unwatch(std::string path) override;
+    void unwatchAll() override;
+    int getWatchCount() const override;
+    std::string pollWatch() override;
+    std::string getLastWatchPath() const override;
+    std::string getLastWatchRealPath() const override;
+
 private:
+    bool resolveWatchTarget(const std::string &path, std::string &realDir, std::string &filterName,
+                            std::string &reportPath);
+    FileWatch &watchers();
+
     // Contains the current working directory (UTF8).
     std::string cwd;
 
@@ -97,9 +112,12 @@ private:
 
     std::map<std::string, Data*> mountedData;
 
+    std::unique_ptr<FileWatch> fileWatch_;
+    std::string lastWatchPath_;
+    std::string lastWatchRealPath_;
+
 };  // Filesystem
 
 }  // namespace physfs
 }  // namespace filesystem
 }  // namespace eve
-

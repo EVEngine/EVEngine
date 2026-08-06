@@ -16,6 +16,12 @@ file(GLOB all_test_cpp
   network.cpp
   RenderSystem.cpp
   RenderSystem3D.cpp
+  UISystem.cpp
+  UIBuilder.cpp
+  UIPhaseB.cpp
+  UIPhaseAdv.cpp
+  UIOverlaySmoke.cpp
+  particles.cpp
   simplesquirrel.cpp
   sound.cpp
   audio.cpp
@@ -111,7 +117,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles)
 
 if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})

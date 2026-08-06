@@ -6,6 +6,7 @@
 #include "vkbuilder.hpp"
 #include <atomic>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 #include <cstdint>
 #include <glm/glm.hpp>
@@ -134,6 +135,11 @@ public:
     vk::DescriptorSetLayout getTexSetLayout() const { return texSetLayout; }
     vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
     vk::RenderPass getOffscreenRenderPass() const { return offscreenRenderPass; }
+    vk::RenderPass getSwapchainRenderPass() const { return renderpass; }
+    vkb::Instance &getInstance() { return inst; }
+    vkb::Swapchain &getSwapchain() { return swapchain; }
+    void *getSdlWindow() const { return sdlWindow; }
+    uint32_t getSwapchainImageCount() const { return swapchain.image_count; }
 
     friend class OffscreenCanvas;
 
@@ -148,6 +154,11 @@ private:
     void flushToOffscreen(OffscreenCanvas *canvas);
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
+    vk::DescriptorSet mesh3dSetFor(GpuTexture *gpuTex, size_t uboSlot);
+    /** Rebuild surface/swapchain when dirty. Returns false if surface not ready. */
+    bool rebuildSwapchainIfNeeded();
+    /** acquire + begin command buffer; recreates swapchain and retries on failure. */
+    bool beginPresentCommandBuffer();
 
     bool initialized = false;
     bool hasPresentedFrame = false;
@@ -195,8 +206,15 @@ private:
     vk::UniqueDescriptorSetLayout mesh3dSetLayoutUnique;
     vk::PipelineLayout mesh3dPipelineLayout;
     vk::Pipeline mesh3dPipeline;
-    vkb::GenericBuffer mesh3dUbo;
-    vk::DescriptorSet mesh3dDescriptorSet{};
+    // One UBO (+ per-texture descriptor sets) per draw in the current 3D frame.
+    // Avoids vkUpdateDescriptorSets on a set already bound in a recording /
+    // executable command buffer (which invalidates the CB).
+    struct Mesh3dUboSlot {
+        vkb::GenericBuffer ubo;
+        std::unordered_map<GpuTexture *, vk::DescriptorSet> sets;
+    };
+    std::vector<Mesh3dUboSlot> mesh3dUboSlots;
+    size_t mesh3dDrawIndex = 0;
     Texture *whiteTexture = nullptr;
 
     vkb::Present presentModel;
