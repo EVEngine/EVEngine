@@ -31,88 +31,75 @@ if (!win.setWindowSettings(s)) {
     return;
 }
 
+// Keep script layout in sync with the real window (mobile may ignore 800x600).
+config.width = win.getWidth();
+config.height = win.getHeight();
+
 event <- eve.Event();
 timer <- eve.Timer();
 ui <- eve.UI();
 particles <- eve.Particles();
+keyboard <- eve.Keyboard();
+mouse <- eve.Mouse();
+touch <- eve.Touch();
+sound <- eve.Sound();
+audio <- eve.Audio();
 
-demo <- { x = 40.0, vx = 80.0 };
-fx <- null;
-
-eve_init <- function() {
-    // Named ECS hosts: hud + menu; select before props/clicks.
-    ui.beginBuild();
-    ui.beginWindow("HUD", "root");
-    ui.text("HP 100", "hp");
-    ui.button("Pause", "pause");
-    ui.end();
-    ui.mountBuildAs("hud");
-
-    ui.beginBuild();
-    ui.beginWindow("Menu", "root");
-    ui.button("Resume", "resume");
-    ui.end();
-    ui.mountBuildAs("menu");
-    ui.setHostVisible(false); // menu starts hidden (selected=menu)
-
-    ui.select("hud");
-
-    fx = particles.newEmitter(200);
-    fx.applyPreset("spark");
-    fx.setPosition(config.width * 0.5, config.height * 0.5);
-    fx.start();
-};
-eve_update <- function(dt) {
-    demo.x += demo.vx * dt;
-    if (demo.x < 0.0 || demo.x + 120.0 > config.width)
-        demo.vx = -demo.vx;
-
-    particles.update(dt);
-
-    local id = ui.consumeClick();
-    while (id != "") {
-        if (id == "hud/pause") {
-            ui.select("hud");
-            ui.setHostVisible(false);
-            ui.select("menu");
-            ui.setHostVisible(true);
-        } else if (id == "menu/resume") {
-            ui.select("menu");
-            ui.setHostVisible(false);
-            ui.select("hud");
-            ui.setHostVisible(true);
-        }
-        id = ui.consumeClick();
-    }
-};
+eve_init <- function() {};
+eve_update <- function(dt) {};
 eve_render <- function() {
     gfx.clear();
-    gfx.drawSolidRect(demo.x, 40.0, 120.0, 80.0, 1.0, 0.4, 0.2, 1.0);
-    particles.render(gfx);
-    ui.beginFrameAndRender();
 };
 eve_quit <- function() {};
 
 if (file_exists("main.nut")) {
     dofile("main.nut");
+} else if ("demoScript" in eve && eve.demoScript != null && eve.demoScript != "") {
+    // Prefer try/catch over `in` — class slot checks differ across SSQ builds.
+    try {
+        compilestring(eve.demoScript)();
+    } catch (e) {
+        print("Embedded demo failed to load: " + e + "\n");
+    }
 }
 
-eve_init();
+try {
+    eve_init();
+} catch (e) {
+    print("eve_init failed: " + e + "\n");
+}
 
+// On Android, SDL may queue a spurious "quit" while setOrientation recreates
+// the surface. Ignore quit for a few frames so a slow eve_init (demo) does not
+// instantly exit. Real back-button quits still work after startup settles.
+local startupFrames = 45;
 local running = true;
 while (running) {
     event.pump();
     while (true) {
         local name = event.poll();
         if (name == "") break;
-        if (name == "quit") running = false;
+        if (name == "quit") {
+            if (startupFrames <= 0)
+                running = false;
+        }
     }
+    if (startupFrames > 0)
+        startupFrames -= 1;
+
+    // Rotation / foldable: keep gameplay bounds aligned with the graphics viewport.
+    config.width = win.getWidth();
+    config.height = win.getHeight();
 
     local dt = timer.step();
-    eve_update(dt);
-    eve_render();
-    gfx.present();
-    ui.dispatchEvents();
+    try {
+        eve_update(dt);
+        eve_render();
+        gfx.present();
+        ui.dispatchEvents();
+    } catch (e) {
+        print("frame error: " + e + "\n");
+    }
 }
 
 eve_quit();

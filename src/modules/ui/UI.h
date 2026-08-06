@@ -92,12 +92,16 @@ public:
     void setHostVisible(bool visible);
     void setHostLayer(int layer);
     void setHostModal(bool modal);
+    void setHostOverlay(bool overlay);
+    void setHostPos(float x, float y, float pivotX = 0.f, float pivotY = 0.f);
     std::string consumeClick();
     std::string consumeChange();
 
     void setThemeDark();
     void setThemeLight();
     void setNavKeyboard(bool enabled);
+    void setScale(float scale);
+    float getScale() const;
 
     void mountSimple(const std::string &title, const std::string &labelText,
                      const std::string &buttonText);

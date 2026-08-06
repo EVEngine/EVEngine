@@ -59,7 +59,8 @@ public:
     virtual void drawSolidRect(float x, float y, float w, float h, const Color &color) = 0;
 
     /** Create RGBA8 texture from CPU pixels (size = width*height*4). Caller owns Texture*. */
-    virtual Texture *newTexture(int width, int height, const uint8_t *rgba) = 0;
+    virtual Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
+                                bool repeatV = false) = 0;
 
     /** Create texture from ImageData (RGBA8 required for now). */
     virtual Texture *newTexture(image::ImageData *data) = 0;
@@ -75,10 +76,22 @@ public:
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
 
     /**
-     * Begin a swapchain pass cleared for 3D (color+depth). Leaves the pass open for drawMesh
-     * and a following RenderSystem::render (2D). Does not present.
+     * Procedural UV sphere (radius 1, Y-up). Owned by Graphics.
+     * slices = longitude divisions, stacks = latitude divisions.
      */
-    virtual void begin3DFrame() = 0;
+    virtual Mesh *newMeshSphere(int slices = 32, int stacks = 16) = 0;
+
+    /** Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
+    void render3D();
+    void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
+                             float b = 1.f);
+
+/**
+ * Begin a swapchain pass cleared for 3D (color+depth). Leaves the pass open for drawMesh
+ * and a following RenderSystem::render (2D). Does not present.
+ * Soft-fails (no throw) when the swapchain cannot be acquired yet — check had3DThisFrame().
+ */
+virtual void begin3DFrame() = 0;
 
     /** viewProj used by subsequent drawMesh (mvp = viewProj * model). RH + ZO clip. */
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;

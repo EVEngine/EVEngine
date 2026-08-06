@@ -28,7 +28,8 @@ public:
     const std::vector<BatchVertex> &vertices() const { return verts; }
     bool empty() const { return verts.empty(); }
 
-    /** Convert stored logical Y-down positions into NDC in-place. */
+    /** Convert stored logical Y-down positions into Vulkan NDC in-place
+     *  ((-1,-1)=top-left, (+1,+1)=bottom-right). */
     void toNDC(int logicalW, int logicalH);
 
 private:

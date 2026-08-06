@@ -702,9 +702,10 @@ void Graphics::captureSwapchainImage(uint32_t imageIndex) {
     void *mapped = device->mapMemory(staging.memory, 0, byteSize);
     const size_t rowBytes = size_t(pixelWidth) * 4;
     auto *src = static_cast<const uint8_t *>(mapped);
+    // FB row 0 is logical top (Batcher maps y=0 → Vulkan NDC -1). No Y flip.
     for (int y = 0; y < pixelHeight; ++y) {
         const uint8_t *srcRow = src + size_t(y) * rowBytes;
-        uint8_t *dstRow = lastFrameRgba.data() + size_t(pixelHeight - 1 - y) * rowBytes;
+        uint8_t *dstRow = lastFrameRgba.data() + size_t(y) * rowBytes;
         if (bgra) {
             for (int x = 0; x < pixelWidth; ++x) {
                 const uint8_t *s = srcRow + size_t(x) * 4;
@@ -813,7 +814,7 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
     solidBatch.addRect(x, y, w, h, color);
 }
 
-Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba) {
+Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, bool repeatU, bool repeatV) {
     ASSERT(initialized);
     ASSERT_GT(w, 0);
     ASSERT_GT(h, 0);
@@ -828,11 +829,14 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba) {
     std::vector<uint8_t> bytes(rgba, rgba + size_t(w) * size_t(h) * 4);
     gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
+    auto wrapMode = [](bool repeat) {
+        return repeat ? vk::SamplerAddressMode::eRepeat : vk::SamplerAddressMode::eClampToEdge;
+    };
     vkb::SamplerBuilder sb;
-    gpu->sampler = sb.magFilter(vk::Filter::eNearest)
-                       .minFilter(vk::Filter::eNearest)
-                       .addressModeU(vk::SamplerAddressMode::eClampToEdge)
-                       .addressModeV(vk::SamplerAddressMode::eClampToEdge)
+    gpu->sampler = sb.magFilter(vk::Filter::eLinear)
+                       .minFilter(vk::Filter::eLinear)
+                       .addressModeU(wrapMode(repeatU))
+                       .addressModeV(wrapMode(repeatV))
                        .build(device.instance);
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
@@ -1066,8 +1070,10 @@ void Graphics::begin3DFrame() {
     if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
     if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
     if (swapchainPassOpen) throw Exception("begin3DFrame: swapchain pass already open");
+    // Soft-fail like flushToSwapchain: on Android/iOS the surface may still be
+    // settling after orientation change; throwing would abort the whole script.
     if (!beginPresentCommandBuffer())
-        throw Exception("begin3DFrame: failed to acquire swapchain image");
+        return;
 
     std::array<vk::ClearValue, 2> clears{};
     clears[0].color = vk::ClearColorValue(
@@ -1162,6 +1168,98 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
         indices.push_back(face.mIndices[2]);
     }
     if (indices.empty()) throw Exception("newMeshFromAssimp: no triangle faces");
+
+    auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertices.allocate<MeshVertex>(device, verts);
+    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+                          indices.size() * sizeof(uint32_t),
+                          vk::MemoryPropertyFlagBits::eHostVisible |
+                              vk::MemoryPropertyFlagBits::eHostCoherent);
+    gpu->indices.updateLocal(indices.data(), indices.size() * sizeof(uint32_t));
+    gpu->indexCount = uint32_t(indices.size());
+
+    auto handle = std::make_unique<Mesh>();
+    handle->indexCount = int(gpu->indexCount);
+    handle->gpuHandle = gpu.get();
+    Mesh *raw = handle.get();
+    ownedGpuMeshes.push_back(std::move(gpu));
+    ownedMeshes.push_back(std::move(handle));
+    return raw;
+}
+
+Mesh *Graphics::newMeshSphere(int slices, int stacks) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newMeshSphere: graphics not initialized");
+    if (slices < 3) slices = 3;
+    if (stacks < 2) stacks = 2;
+    if (slices > 256) slices = 256;
+    if (stacks > 128) stacks = 128;
+
+    constexpr float kPi = 3.14159265358979323846f;
+    constexpr float kTwoPi = kPi * 2.f;
+
+    // Layout (stride = slices+1, seam column duplicated for continuous U):
+    //   row 0:          north pole verts (same pos, unique U)
+    //   row 1..stacks-1: latitude rings
+    //   row stacks:     south pole verts
+    // One pole vertex per longitude avoids a single-fan UV singularity and
+    // keeps every triangle non-degenerate.
+    const int stride = slices + 1;
+    const int rows = stacks + 1;  // includes both pole rows
+    std::vector<MeshVertex> verts;
+    verts.reserve(size_t(stride) * size_t(rows));
+
+    auto pushVert = [&](float px, float py, float pz, float u, float v) {
+        MeshVertex vert{};
+        vert.pos = {px, py, pz};
+        vert.normal = {px, py, pz};  // unit sphere
+        vert.uv = {u, v};
+        verts.push_back(vert);
+    };
+
+    for (int y = 0; y <= stacks; ++y) {
+        const float fv = float(y) / float(stacks);
+        const float phi = fv * kPi;
+        const float sinPhi = std::sin(phi);
+        const float cosPhi = std::cos(phi);
+        for (int x = 0; x <= slices; ++x) {
+            const float u = float(x) / float(slices);
+            const float theta = u * kTwoPi;
+            // Exact poles: collapse ring to a point but keep per-slice UVs.
+            if (y == 0)
+                pushVert(0.f, 1.f, 0.f, u, 0.f);
+            else if (y == stacks)
+                pushVert(0.f, -1.f, 0.f, u, 1.f);
+            else
+                pushVert(sinPhi * std::cos(theta), cosPhi, sinPhi * std::sin(theta), u, fv);
+        }
+    }
+
+    std::vector<uint32_t> indices;
+    indices.reserve(size_t(slices) * size_t(stacks) * 6u);
+
+    // Quads between consecutive rows. Winding must be consistent for outward
+    // faces (pipeline: frontFace CCW, cull back). Use the same winding that
+    // closed the south pole in-game: rowA[x], rowB[x], rowA[x+1] /
+    // rowA[x+1], rowB[x], rowB[x+1] — derived from ring→next with
+    // (i0,i2,i1)+(i1,i2,i3) which equals (lon,lat)->(lon,lat+1)->(lon+1,lat).
+    for (int y = 0; y < stacks; ++y) {
+        const uint32_t row0 = uint32_t(y * stride);
+        const uint32_t row1 = uint32_t((y + 1) * stride);
+        for (int x = 0; x < slices; ++x) {
+            const uint32_t i0 = row0 + uint32_t(x);
+            const uint32_t i1 = row0 + uint32_t(x + 1);
+            const uint32_t i2 = row1 + uint32_t(x);
+            const uint32_t i3 = row1 + uint32_t(x + 1);
+            // Outward for RH Y-up (verified against south-cap fix): i0,i2,i1 + i1,i2,i3
+            indices.push_back(i0);
+            indices.push_back(i2);
+            indices.push_back(i1);
+            indices.push_back(i1);
+            indices.push_back(i2);
+            indices.push_back(i3);
+        }
+    }
 
     auto gpu = std::make_unique<GpuMesh>();
     gpu->vertices.allocate<MeshVertex>(device, verts);

@@ -33,6 +33,12 @@ public:
         c->data()->active = true;
         return c;
     }
+
+    void setEye(float x, float y, float z);
+    void setTarget(float x, float y, float z);
+    void setUp(float x, float y, float z);
+    void setFov(float fovYDeg);
+    void setActive(bool active);
 };
 
 class Renderable3D : public ecs::Entity {
@@ -57,6 +63,17 @@ public:
 
     COMPONENT(Transform3D, transform)
     COMPONENT(MeshRenderer, meshRenderer)
+
+    void setPosition(float x, float y, float z);
+    void setRotation(float yaw, float pitch, float roll);
+    void setYaw(float yaw);
+    float getYaw();
+    void setScale(float sx, float sy, float sz);
+    void setMesh(Mesh *mesh);
+    void setTexture(Texture *texture);
+    void setTint(float r, float g, float b, float a = 1.f);
+    void setVisible(bool visible);
+    void setCamera(Camera3D *camera);
 };
 
 class RenderSystem3D {

@@ -1,6 +1,7 @@
 #include "ui/imgui/ImGuiBackend.h"
 
 #include "common/Exception.h"
+#include "common/config.h"
 #include "graphics/Graphics.h"
 #include "graphics/vulkan/Graphics.h"
 #include "vkbuilder.hpp"
@@ -9,6 +10,8 @@
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_vulkan.h>
 
+#include <algorithm>
+#include <cmath>
 #include <vulkan/vulkan.h>
 
 namespace eve::ui {
@@ -40,6 +43,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    baseStyle_ = ImGui::GetStyle();
 
     ImGui_ImplSDL2_InitForVulkan(window);
 
@@ -97,11 +101,27 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
 
     gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
     initialized_ = true;
+
+#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
+    // Default readable size on phone/tablet (mdpi = 160).
+    float ddpi = 160.f;
+    if (SDL_GetDisplayDPI(0, &ddpi, nullptr, nullptr) != 0 || ddpi < 1.f)
+        ddpi = 320.f;
+    float s = ddpi / 160.f;
+    s = std::clamp(s, 1.75f, 3.25f);
+    applyScale(s);
+#else
+    uiScale_ = 1.f;
+#endif
     return true;
 }
 
 void ImGuiBackend::shutdown() {
     if (!initialized_) return;
+    if (frameOpen_) {
+        ImGui::EndFrame();
+        frameOpen_ = false;
+    }
     if (gfx_) {
         if (gfx_->getPresentOverlayUser() == this) gfx_->setPresentOverlay(nullptr, nullptr);
     }
@@ -130,9 +150,30 @@ void ImGuiBackend::processEvent(const SDL_Event *event) {
 
 void ImGuiBackend::newFrame() {
     if (!initialized_ || !window_) return;
+    // present() may soft-skip on Android while the surface settles after
+    // orientation change; close the previous ImGui frame so NewFrame is safe.
+    if (frameOpen_) {
+        ImGui::EndFrame();
+        frameOpen_ = false;
+    }
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplSDL2_NewFrame(window_);
     ImGui::NewFrame();
+    frameOpen_ = true;
+}
+
+void ImGuiBackend::applyScale(float scale) {
+    if (!initialized_) return;
+    scale = std::clamp(scale, 0.5f, 5.f);
+    ImGui::GetStyle() = baseStyle_;
+    ImGui::GetStyle().ScaleAllSizes(scale);
+    ImGui::GetIO().FontGlobalScale = scale;
+    uiScale_ = scale;
+}
+
+void ImGuiBackend::setScale(float scale) {
+    if (!initialized_) return;
+    applyScale(scale);
 }
 
 bool ImGuiBackend::wantCaptureMouse() const {
@@ -148,6 +189,7 @@ bool ImGuiBackend::wantCaptureKeyboard() const {
 void ImGuiBackend::renderDrawData(void *vkCommandBuffer) {
     if (!initialized_ || !vkCommandBuffer) return;
     ImGui::Render();
+    frameOpen_ = false;
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
                                     static_cast<VkCommandBuffer>(vkCommandBuffer));
 }

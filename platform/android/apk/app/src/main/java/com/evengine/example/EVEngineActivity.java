@@ -12,10 +12,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * SDLActivity subclass that unpacks the embedded example game into internal
- * storage and launches the native CLI entry: eve run &lt;gameDir&gt;.
- */
+    /**
+     * Unpacks packaged game assets into internal storage and launches
+     * {@code eve run <gameDir>}. Assets are populated at APK build time by
+     * {@code make sync/android-assets} (demo shell or example/). Wipe first so
+     * files removed from the package do not linger across upgrades.
+     */
 public class EVEngineActivity extends SDLActivity {
     private static final String TAG = "EVEngineActivity";
     private String gameDir;
@@ -24,6 +26,9 @@ public class EVEngineActivity extends SDLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         gameDir = new File(getFilesDir(), "game").getAbsolutePath();
         try {
+            // Wipe first so removed assets (e.g. main.nut) do not linger and
+            // shadow the embedded demoScript in load.nut.
+            deleteRecursive(new File(gameDir));
             copyAssetDir("game", gameDir);
             Log.i(TAG, "Game assets ready at " + gameDir);
         } catch (IOException e) {
@@ -97,5 +102,15 @@ public class EVEngineActivity extends SDLActivity {
                 out.write(buf, 0, n);
             }
         }
+    }
+
+    private static void deleteRecursive(File f) {
+        if (f == null || !f.exists()) return;
+        File[] children = f.listFiles();
+        if (children != null) {
+            for (File c : children) deleteRecursive(c);
+        }
+        //noinspection ResultOfMethodCallIgnored
+        f.delete();
     }
 }

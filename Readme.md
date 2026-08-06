@@ -137,7 +137,17 @@ make build/android-debug
 # 产物：platform/android/apk/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-流程：NDK CMake 交叉编译第三方 + `libmain.so` → 同步到 `jniLibs/arm64-v8a` → Gradle `assembleDebug`。APK 启动时将 `assets/game` 复制到应用内部目录，并以 `run <内部路径>` 进入现有 CLI。
+流程：NDK CMake 交叉编译第三方 + `libmain.so` → `sync/android-libs` → `sync/android-assets` → Gradle `assembleDebug`。
+
+默认 `ANDROID_GAME=demo`：把 `platform/android/game-shell/`（无 `main.nut`）同步进 APK，启动后走嵌入的 `eve.demoScript`。打包 example 目录：
+
+```sh
+make build/android-debug ANDROID_GAME=example
+# 或仅刷新 assets：
+make sync/android-assets ANDROID_GAME=example
+```
+
+APK 启动时将 `assets/game` 复制到应用内部目录，并以 `run <内部路径>` 进入现有 CLI。
 
 真机安装 / 运行 / 日志：
 

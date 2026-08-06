@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "common/Exception.h"
+#include "common/config.h"
 #include "graphics/Graphics.h"
 
 #ifdef EVENGINE_ANDROID
@@ -92,7 +93,7 @@ bool Window::setWindowSettings(WindowSettings f) {
     bool fullscreen = f.fullscreen;
 
     f.fullscreen = false;
-    f.fstype     = FULLSCREEN_DESKTOP;
+    f.desktop_mode = true;
 #endif
 
     if (f.fullscreen) {
@@ -154,6 +155,19 @@ bool Window::setWindowSettings(WindowSettings f) {
     SDL_RaiseWindow(window);
 
     // setVSync(f.vsync);
+
+#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
+    // Fullscreen mobile: logical size must match the real window aspect, otherwise
+    // an 800x600 desktop config is stretched onto a portrait (or ultrawide) surface.
+    {
+        int lw = 0, lh = 0;
+        SDL_GetWindowSize(window, &lw, &lh);
+        if (lw > 0 && lh > 0) {
+            f.width = static_cast<uint16_t>(lw);
+            f.height = static_cast<uint16_t>(lh);
+        }
+    }
+#endif
 
     updateSettings(f, false);
 

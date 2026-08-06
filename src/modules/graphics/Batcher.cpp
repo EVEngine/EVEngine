@@ -30,8 +30,10 @@ void Batcher::toNDC(int logicalW, int logicalH) {
     const float sx = 2.0f / float(logicalW);
     const float sy = 2.0f / float(logicalH);
     for (auto &v : verts) {
+        // Vulkan NDC: (-1,-1) = top-left, (+1,+1) = bottom-right (Y down).
+        // Logical coords are also Y-down with origin at top-left.
         v.pos.x = v.pos.x * sx - 1.0f;
-        v.pos.y = 1.0f - v.pos.y * sy;
+        v.pos.y = v.pos.y * sy - 1.0f;
     }
 }
 

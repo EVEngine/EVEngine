@@ -107,11 +107,13 @@ public:
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
-    Texture *newTexture(int width, int height, const uint8_t *rgba) override;
+    Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
+                        bool repeatV = false) override;
     Texture *newTexture(image::ImageData *data) override;
     Texture *newTextureFromFile(const std::string &filename) override;
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
+    Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     void begin3DFrame() override;
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;

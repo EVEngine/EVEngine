@@ -42,14 +42,27 @@ void walk(UIHost *host, UIHost::Tree *tree, int index) {
         std::string title = n.text.empty() ? "Window" : n.text;
         if (host && !host->meta()->name.empty()) title = host->meta()->name + "/" + title;
         const bool modal = host && host->meta()->modal;
+        ImGuiWindowFlags flags = 0;
+        if (host && host->meta()->hasPos) {
+            ImGui::SetNextWindowPos(ImVec2(host->meta()->posX, host->meta()->posY), ImGuiCond_Always,
+                                    ImVec2(host->meta()->pivotX, host->meta()->pivotY));
+            flags |= ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize;
+        }
+        if (host && host->meta()->overlay) {
+            flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                     ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
+                     ImGuiWindowFlags_AlwaysAutoResize;
+            ImGui::SetNextWindowBgAlpha(0.4f);
+        }
         if (modal) {
             ImGui::OpenPopup(title.c_str());
-            if (ImGui::BeginPopupModal(title.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (ImGui::BeginPopupModal(title.c_str(), nullptr,
+                                       ImGuiWindowFlags_AlwaysAutoResize | flags)) {
                 if (n.firstChild >= 0) walk(host, tree, n.firstChild);
                 ImGui::EndPopup();
             }
         } else {
-            ImGui::Begin(title.c_str());
+            ImGui::Begin(title.c_str(), nullptr, flags);
             if (n.firstChild >= 0) walk(host, tree, n.firstChild);
             ImGui::End();
         }

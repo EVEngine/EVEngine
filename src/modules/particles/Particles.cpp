@@ -94,9 +94,14 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setEmissionRate", &ParticleEmitter::setEmissionRate);
     em.addFunc("getEmissionRate", &ParticleEmitter::getEmissionRate);
     em.addFunc("setParticleLifetime", &ParticleEmitter::setParticleLifetime);
+    // Alias — scripts often say "Life" for the same knob.
+    em.addFunc("setParticleLife", &ParticleEmitter::setParticleLifetime);
     em.addFunc("getParticleLifetimeMin", &ParticleEmitter::getParticleLifetimeMin);
     em.addFunc("getParticleLifetimeMax", &ParticleEmitter::getParticleLifetimeMax);
     em.addFunc("setEmitterLifetime", &ParticleEmitter::setEmitterLifetime);
+    // Aliases — scripts may say Life/Time for the same knob.
+    em.addFunc("setEmitterLife", &ParticleEmitter::setEmitterLifetime);
+    em.addFunc("setEmitterTime", &ParticleEmitter::setEmitterLifetime);
     em.addFunc("getEmitterLifetime", &ParticleEmitter::getEmitterLifetime);
     em.addFunc("setDirection", &ParticleEmitter::setDirection);
     em.addFunc("getDirection", &ParticleEmitter::getDirection);

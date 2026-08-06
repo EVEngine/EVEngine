@@ -34,6 +34,72 @@ Camera3D *findDefaultCamera3D() {
 
 } // namespace
 
+void Camera3D::setEye(float x, float y, float z) {
+    auto d = data();
+    d->eyeX = x;
+    d->eyeY = y;
+    d->eyeZ = z;
+}
+
+void Camera3D::setTarget(float x, float y, float z) {
+    auto d = data();
+    d->targetX = x;
+    d->targetY = y;
+    d->targetZ = z;
+}
+
+void Camera3D::setUp(float x, float y, float z) {
+    auto d = data();
+    d->upX = x;
+    d->upY = y;
+    d->upZ = z;
+}
+
+void Camera3D::setFov(float fovYDeg) { data()->fovYDeg = fovYDeg; }
+
+void Camera3D::setActive(bool active) { data()->active = active; }
+
+void Renderable3D::setPosition(float x, float y, float z) {
+    auto t = transform();
+    t->x = x;
+    t->y = y;
+    t->z = z;
+}
+
+void Renderable3D::setRotation(float yaw, float pitch, float roll) {
+    auto t = transform();
+    t->yaw = yaw;
+    t->pitch = pitch;
+    t->roll = roll;
+}
+
+void Renderable3D::setYaw(float yaw) { transform()->yaw = yaw; }
+
+float Renderable3D::getYaw() { return transform()->yaw; }
+
+void Renderable3D::setScale(float sx, float sy, float sz) {
+    auto t = transform();
+    t->sx = sx;
+    t->sy = sy;
+    t->sz = sz;
+}
+
+void Renderable3D::setMesh(Mesh *mesh) { meshRenderer()->mesh = mesh; }
+
+void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = texture; }
+
+void Renderable3D::setTint(float r, float g, float b, float a) {
+    auto mr = meshRenderer();
+    mr->r = r;
+    mr->g = g;
+    mr->b = b;
+    mr->a = a;
+}
+
+void Renderable3D::setVisible(bool visible) { meshRenderer()->visible = visible; }
+
+void Renderable3D::setCamera(Camera3D *camera) { meshRenderer()->camera = camera; }
+
 void RenderSystem3D::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
     glm::vec3 d(dx, dy, dz);
     if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
@@ -46,6 +112,8 @@ void RenderSystem3D::render(Graphics &gfx) {
 
     gfx.setMesh3DLight(gLightDir, gLightColor);
     gfx.begin3DFrame();
+    if (!gfx.had3DThisFrame())
+        return;
 
     if (ecs::ComponentManager<Renderable3D>::inst().registy == nullptr) return;
 

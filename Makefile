@@ -37,6 +37,11 @@ ANDROID_PLATFORM ?= android-24
 ANDROID_STL ?= c++_shared
 APK_DIR = platform/android/apk
 JNI_LIBS = $(APK_DIR)/app/src/main/jniLibs/$(ANDROID_ABI)
+# Packaged squirrel game directory inside the APK (filled by sync/android-assets).
+ANDROID_ASSETS_GAME = $(APK_DIR)/app/src/main/assets/game
+# demo  = platform/android/game-shell (no main.nut → embedded eve.demoScript)
+# example = copy from example/
+ANDROID_GAME ?= demo
 ifeq ($(PLATFORM),macosx)
 	JAVA_HOME ?= $(shell brew --prefix openjdk@17 2>/dev/null)/libexec/openjdk.jdk/Contents/Home
 endif
@@ -88,7 +93,7 @@ endif
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
 	wsl/linux wsl/linux-debug show-targets \
-	debug release example sync/android-libs install/android-debug run/android-debug log/android \
+	debug release example sync/android-libs sync/android-assets install/android-debug run/android-debug log/android \
 	install/ios-debug run/ios-debug log/ios \
 	reinstall/third-party reinstall/third-party/win32 reinstall/third-party/win32-debug \
 	reinstall/third-party/linux reinstall/third-party/linux-debug \
@@ -150,6 +155,7 @@ build/android: build/android/build.ninja
 	cmake --build $@ --target deps -j 8
 	cmake --build $@ -j 8
 	$(MAKE) sync/android-libs BUILD_DIR=build/android
+	$(MAKE) sync/android-assets
 	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleRelease
 
 build/android/build.ninja:
@@ -189,6 +195,7 @@ build/android-debug: build/android-debug/build.ninja
 	cmake --build $@ --target deps -j 8
 	cmake --build $@ -j 8
 	$(MAKE) sync/android-libs BUILD_DIR=build/android-debug
+	$(MAKE) sync/android-assets
 	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleDebug
 
 build/android-debug/build.ninja:
@@ -310,6 +317,27 @@ sync/android-libs:
 	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" $(JNI_LIBS)/
 	@echo "Synced native libs -> $(JNI_LIBS)"
 	ls -la $(JNI_LIBS)
+
+# Populate APK assets/game from a source tree (do not hand-edit assets/game).
+#   make sync/android-assets                 # default: demo shell
+#   make sync/android-assets ANDROID_GAME=example
+sync/android-assets:
+	@rm -rf "$(ANDROID_ASSETS_GAME)"
+	@mkdir -p "$(ANDROID_ASSETS_GAME)"
+	@if [ "$(ANDROID_GAME)" = "example" ]; then \
+	  src="example"; \
+	elif [ "$(ANDROID_GAME)" = "demo" ]; then \
+	  src="platform/android/game-shell"; \
+	elif [ -d "$(ANDROID_GAME)" ]; then \
+	  src="$(ANDROID_GAME)"; \
+	else \
+	  echo "ANDROID_GAME must be 'demo', 'example', or a directory (got: $(ANDROID_GAME))"; \
+	  exit 1; \
+	fi; \
+	cp -R "$$src"/. "$(ANDROID_ASSETS_GAME)/"; \
+	touch "$(ANDROID_ASSETS_GAME)/.gitkeep"; \
+	echo "Synced Android game assets ($$src) -> $(ANDROID_ASSETS_GAME)"; \
+	ls -la "$(ANDROID_ASSETS_GAME)"
 
 install/android-debug:
 	$(ANDROID_SDK)/platform-tools/adb install -r \

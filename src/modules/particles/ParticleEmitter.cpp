@@ -4,6 +4,10 @@
 #include <cmath>
 #include <random>
 
+#if defined(EVENGINE_ANDROID)
+#include <android/log.h>
+#endif
+
 namespace eve::particles {
 
 namespace {
@@ -130,6 +134,8 @@ ParticleEmitter *ParticleEmitter::createEmitter(int bufferSize) {
     e->sim()->particles.resize(size_t(n));
     std::random_device rd;
     e->sim()->rng.seed(rd());
+    // Touch Draw so render views see a fully initialized emitter.
+    (void)e->draw();
     return e;
 }
 
@@ -287,6 +293,14 @@ void ParticleEmitter::emit(int count) {
     auto c = config();
     auto s = sim();
     for (int i = 0; i < count; ++i) spawnParticle(*c, *s);
+#if defined(EVENGINE_ANDROID)
+    __android_log_print(ANDROID_LOG_INFO, "EVEngine",
+                        "ParticleEmitter::emit n=%d alive=%d pos=(%.1f,%.1f) size=%.1fx%.1f",
+                        count, s->alive, c->x, c->y, c->particleW, c->particleH);
+#else
+    (void)c;
+    (void)s;
+#endif
 }
 
 bool ParticleEmitter::isActive() {

@@ -63,6 +63,12 @@ public:
         bool visible = true;
         int layer = 0;
         bool modal = false;
+        bool overlay = false;  // no title bar / chrome (HUD-style)
+        bool hasPos = false;
+        float posX = 0.f;
+        float posY = 0.f;
+        float pivotX = 0.f;
+        float pivotY = 0.f;
         std::string name;
         uint32_t ownerId = 0;
         UIHost *entity = nullptr;

@@ -11,4 +11,9 @@ foreach(i IN LISTS shaders_src)
     file(READ ${i} ${script}_content)
 endforeach()
 
+# Without EVDemo, do not embed the default mini-game script.
+if(DEFINED EVENGINE_BUILD_DEMO AND NOT EVENGINE_BUILD_DEMO)
+    set(demo_content "")
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/template.cpp.in ${OUTPUT_DIR}/scripts_content.cpp)

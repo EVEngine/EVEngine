@@ -105,16 +105,9 @@ void OffscreenCanvas::readAllPixels(std::vector<uint8_t> &outRgba) {
 
     outRgba.resize(size_t(byteSize));
     void *mapped = device->mapMemory(staging.memory, 0, byteSize);
-    // Vulkan FB row 0 is NDC +Y (top). Batcher maps logical y=0 → NDC +Y, so logical
-    // top-left matches FB top-left — but copyImageToBuffer on this path yields a
-    // vertically mirrored buffer relative to draw coords. Flip rows so getPixel /
-    // newImageData match the Y-down logical space used by drawSolidRect.
-    const size_t rowBytes = size_t(width) * 4;
-    auto *src = static_cast<const uint8_t *>(mapped);
-    for (int y = 0; y < height; ++y) {
-        std::memcpy(outRgba.data() + size_t(height - 1 - y) * rowBytes, src + size_t(y) * rowBytes,
-                    rowBytes);
-    }
+    // Vulkan FB row 0 is NDC -Y (top). Batcher maps logical y=0 → NDC -1, so
+    // logical top-left matches FB top-left — copy as-is into Y-down buffer.
+    std::memcpy(outRgba.data(), mapped, size_t(byteSize));
     device->unmapMemory(staging.memory);
     staging.release();
 }

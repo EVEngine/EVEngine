@@ -384,6 +384,20 @@ void UI::setHostModal(bool modal) {
     if (selected_) selected_->setModal(modal);
 }
 
+void UI::setHostOverlay(bool overlay) {
+    if (selected_) selected_->meta()->overlay = overlay;
+}
+
+void UI::setHostPos(float x, float y, float pivotX, float pivotY) {
+    if (!selected_) return;
+    auto m = selected_->meta();
+    m->hasPos = true;
+    m->posX = x;
+    m->posY = y;
+    m->pivotX = pivotX;
+    m->pivotY = pivotY;
+}
+
 std::string UI::consumeClick() { return UISystem::consumeClick(); }
 
 std::string UI::consumeChange() { return UISystem::consumeChange(); }
@@ -410,6 +424,17 @@ void UI::setThemeLight() {
 
 void UI::setNavKeyboard(bool enabled) {
     globalTheme().navEnableKeyboard = enabled;
+}
+
+void UI::setScale(float scale) {
+    if (!isBackendReady()) {
+        if (!initBackend()) return;
+    }
+    if (backend_) backend_->setScale(scale);
+}
+
+float UI::getScale() const {
+    return backend_ ? backend_->getScale() : 1.f;
 }
 
 void UI::mountSimple(const std::string &title, const std::string &labelText,
@@ -466,12 +491,16 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostVisible", &UI::setHostVisible);
     cls.addFunc("setHostLayer", &UI::setHostLayer);
     cls.addFunc("setHostModal", &UI::setHostModal);
+    cls.addFunc("setHostOverlay", &UI::setHostOverlay);
+    cls.addFunc("setHostPos", &UI::setHostPos);
     cls.addFunc("consumeClick", &UI::consumeClick);
     cls.addFunc("consumeChange", &UI::consumeChange);
 
     cls.addFunc("setThemeDark", &UI::setThemeDark);
     cls.addFunc("setThemeLight", &UI::setThemeLight);
     cls.addFunc("setNavKeyboard", &UI::setNavKeyboard);
+    cls.addFunc("setScale", &UI::setScale);
+    cls.addFunc("getScale", &UI::getScale);
 
     cls.addFunc("mountSimple", &UI::mountSimple);
 }

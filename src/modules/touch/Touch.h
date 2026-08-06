@@ -34,6 +34,10 @@ public:
 	 **/
 	virtual const TouchInfo &getTouch(int64_t id) const = 0;
 
+	int getTouchCount() const { return int(getTouches().size()); }
+	double getTouchX(int index) const;
+	double getTouchY(int index) const;
+
 }; // Touch
 
 } // eve::touch

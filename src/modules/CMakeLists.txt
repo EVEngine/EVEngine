@@ -48,3 +48,6 @@ target_link_libraries(EVUI PUBLIC eve_imgui)
 target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
 
 create_module(EVParticles particles)
+if(EVENGINE_BUILD_DEMO)
+    create_module(EVDemo demo)
+endif()

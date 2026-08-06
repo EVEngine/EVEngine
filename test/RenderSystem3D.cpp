@@ -156,6 +156,20 @@ TEST_CASE("Mesh.newMeshFromAssimpCube") {
     win->close();
 }
 
+TEST_CASE("Mesh.newMeshSphere") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+
+    Mesh *m = gfx->newMeshSphere(24, 12);
+    REQUIRE(m != nullptr);
+    CHECK_GT(m->indexCount, 0);
+    // stacks bands * slices quads * 2 tris * 3 indices
+    CHECK_EQ(m->indexCount, 24 * 12 * 6);
+
+    win->close();
+}
+
 TEST_CASE("Graphics.screenGetPixelAfterPresent") {
     eve::window::Window *win = nullptr;
     Graphics *gfx = nullptr;

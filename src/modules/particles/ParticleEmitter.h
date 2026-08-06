@@ -88,7 +88,7 @@ public:
     struct Draw {
         graphics::Texture *texture = nullptr;
         graphics::Canvas *canvas = nullptr;     // nullptr → screen
-        graphics::Camera2D *camera = nullptr;   // nullptr → default active cam
+        graphics::Camera2D *camera = nullptr;   // nullptr → screen space (no camera)
         int layer = 0;
         bool visible = true;
     };

@@ -34,7 +34,8 @@ TEST_CASE("Batcher.toNDCMapsTopLeftOrigin") {
     b.addRect(0, 0, 100, 100, Color(1, 1, 1, 1));
     b.toNDC(100, 100);
     CHECK(std::abs(b.vertices()[0].pos.x - (-1.0f)) < 1e-5f);
-    CHECK(std::abs(b.vertices()[0].pos.y - 1.0f) < 1e-5f);
+    // Vulkan NDC (-1,-1) is top-left; logical (0,0) maps there.
+    CHECK(std::abs(b.vertices()[0].pos.y - (-1.0f)) < 1e-5f);
 }
 
 TEST_CASE("RenderSystem.drawsVisibleSpritesViaMocklessPath") {

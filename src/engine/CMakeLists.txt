@@ -117,6 +117,10 @@ else()
     set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles)
 endif()
 
+if(EVENGINE_BUILD_DEMO)
+    list(APPEND EVELIBS EVDemo)
+endif()
+
 if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
 endif()

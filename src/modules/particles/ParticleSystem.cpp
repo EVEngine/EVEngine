@@ -12,6 +12,10 @@
 #include <unordered_map>
 #include <vector>
 
+#if defined(EVENGINE_ANDROID)
+#include <android/log.h>
+#endif
+
 namespace eve::particles {
 
 namespace {
@@ -108,19 +112,13 @@ void ParticleSimSystem::update(float dt) {
 }
 
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
-    if (!gfx) return;
-    if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return;
-
-    std::unordered_map<graphics::Canvas *, graphics::Camera2D *> defaultCam;
-    if (ecs::ComponentManager<graphics::Camera2D>::inst().registy != nullptr) {
-        auto camView = ecs::View<graphics::Camera2D, graphics::Camera2D::Data>();
-        for (auto it = camView.begin(); it != camView.end(); ++it) {
-            auto [data] = *it;
-            if (!data->active || !data->entity) continue;
-            graphics::Canvas *key = data->canvas;
-            if (defaultCam.find(key) == defaultCam.end()) defaultCam[key] = data->entity;
-        }
+    if (!gfx) {
+#if defined(EVENGINE_ANDROID)
+        __android_log_print(ANDROID_LOG_WARN, "EVEngine", "ParticleRender: gfx is null");
+#endif
+        return;
     }
+    if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return;
 
     struct Item {
         ParticleEmitter::Config *cfg;
@@ -136,14 +134,20 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
         auto [cfg, sim, draw] = *it;
         if (!draw->visible || sim->alive <= 0) continue;
 
-        graphics::Camera2D *camEnt = draw->camera;
-        if (!camEnt) {
-            auto found = defaultCam.find(draw->canvas);
-            camEnt = (found != defaultCam.end()) ? found->second : nullptr;
-        }
-
-        items.push_back(Item{cfg, sim, draw, fromEntity(camEnt)});
+        // Screen-space by default (matches Graphics::drawSolidRect). Call
+        // setCamera() explicitly when world/camera space is needed.
+        items.push_back(Item{cfg, sim, draw, fromEntity(draw->camera)});
     }
+
+#if defined(EVENGINE_ANDROID)
+    if (!items.empty()) {
+        const auto &it0 = items.front();
+        __android_log_print(ANDROID_LOG_INFO, "EVEngine",
+                            "ParticleRender: emitters=%zu alive0=%d pos=(%.1f,%.1f) cam=%d",
+                            items.size(), it0.sim->alive, it0.cfg->x, it0.cfg->y,
+                            it0.cam.valid ? 1 : 0);
+    }
+#endif
 
     std::stable_sort(items.begin(), items.end(), [](const Item &a, const Item &b) {
         const bool aOff = a.draw->canvas != nullptr;

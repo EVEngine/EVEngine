@@ -1,6 +1,7 @@
 #include "cmdline.h"
 #include "scripts.h"
 #include "common/Module.h"
+#include "common/config.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <CLI11.hpp>
@@ -66,12 +67,18 @@ int Cmdline::Run(std::string path, std::string root) {
             filesystem::current_path(path, ec);
             if (ec) {
                 cerr << "Cannot chdir to game path '" << path << "': " << ec.message() << endl;
+                EVE_ANDROID_LOGE("Cannot chdir to game path '%s': %s", path.c_str(), ec.message().c_str());
                 return 2;
             }
         }
 
         ssq::VM vm(2048, ssq::Libs::ALL);
         ModuleManager::expose(vm);
+        // Embedded default demo (src/scripts/demo.nut); load.nut runs it when no main.nut.
+        {
+            ssq::Table eve(vm.find("eve"));
+            eve.set("demoScript", std::string(demo_content ? demo_content : ""));
+        }
         ssq::Script script = vm.compileSource(root.c_str());
         vm.run(script);
         return 0;

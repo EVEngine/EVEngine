@@ -34,6 +34,10 @@ file(GLOB all_test_cpp
   main.cpp
 )
 
+if(EVENGINE_BUILD_DEMO)
+  list(APPEND all_test_cpp demo.cpp)
+endif()
+
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
@@ -118,6 +122,10 @@ else()
 endif()
 
 set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles)
+
+if(EVENGINE_BUILD_DEMO)
+  list(APPEND EVELIBS EVDemo)
+endif()
 
 if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})

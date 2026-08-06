@@ -26,6 +26,10 @@ public:
 
     virtual bool wantCaptureMouse() const { return false; }
     virtual bool wantCaptureKeyboard() const { return false; }
+
+    /** Scale fonts + ImGui style metrics (1 = default desktop). */
+    virtual void setScale(float /*scale*/) {}
+    virtual float getScale() const { return 1.f; }
 };
 
 /** Default backend: Dear ImGui + SDL + Vulkan (see ui/imgui/). */
