@@ -10,6 +10,8 @@ file(GLOB all_test_cpp
   model.cpp
   mouse.cpp
   mouse_cpp.cpp
+  keyboard_cpp.cpp
+  joystick_cpp.cpp
   touch.cpp
   network.cpp
   RenderSystem.cpp
@@ -109,7 +111,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio)
 
 if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})

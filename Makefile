@@ -52,9 +52,16 @@ endif
 	reinstall/third-party/linux reinstall/third-party/linux-debug \
 	reinstall/third-party/macosx reinstall/third-party/macosx-debug \
 	reinstall/third-party/android reinstall/third-party/android-debug \
-	reinstall/third-party/ios reinstall/third-party/ios-debug
+	reinstall/third-party/ios reinstall/third-party/ios-debug \
+	link-compile-commands
+
+# clangd: build/compile_commands.json -> host platform debug CDB
+link-compile-commands:
+	@mkdir -p build
+	ln -sfn $(PLATFORM)-debug/compile_commands.json build/compile_commands.json
 
 debug: build/$(PLATFORM)-debug
+	@$(MAKE) link-compile-commands
 release: build/$(PLATFORM)
 
 build/win32: build/win32/EVEngine.sln

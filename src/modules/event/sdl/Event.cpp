@@ -8,6 +8,9 @@
 #include "audio/Audio.h"
 #include "touch/Touch.h"
 #include "touch/sdl/Touch.h"
+#include "keyboard/Keyboard.h"
+#include "joystick/Joystick.h"
+#include "joystick/Pad.h"
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "common/config.h"
@@ -193,6 +196,109 @@ Message *Event::convert(const SDL_Event &e)
 			break;
 		}
 		break;
+	case SDL_KEYDOWN: {
+		if (e.key.repeat) {
+			auto *kb = getModInst(keyboard, Keyboard);
+			if (kb && !kb->hasKeyRepeat())
+				break;
+		}
+		const char *keyName = SDL_GetKeyName(e.key.keysym.sym);
+		const char *scanName = SDL_GetScancodeName(e.key.keysym.scancode);
+		return new Message("keypressed",
+		                   {Variant::makeString(keyName ? keyName : ""),
+		                    Variant::makeString(scanName ? scanName : ""),
+		                    Variant::makeInt(e.key.repeat ? 1 : 0)});
+	}
+	case SDL_KEYUP: {
+		const char *keyName = SDL_GetKeyName(e.key.keysym.sym);
+		const char *scanName = SDL_GetScancodeName(e.key.keysym.scancode);
+		return new Message("keyreleased",
+		                   {Variant::makeString(keyName ? keyName : ""),
+		                    Variant::makeString(scanName ? scanName : "")});
+	}
+	case SDL_TEXTINPUT:
+		return new Message("textinput", {Variant::makeString(e.text.text)});
+	case SDL_TEXTEDITING:
+		return new Message("textedited",
+		                   {Variant::makeString(e.edit.text),
+		                    Variant::makeInt(e.edit.start),
+		                    Variant::makeInt(e.edit.length)});
+	case SDL_JOYDEVICEADDED: {
+		auto *joy = getModInst(joystick, Joystick);
+		if (!joy) break;
+		auto *pad = joy->addJoystick(e.jdevice.which);
+		if (!pad) break;
+		return new Message("joystickadded",
+		                   {Variant::makeInt(pad->getID()),
+		                    Variant::makeString(pad->getName()),
+		                    Variant::makeInt(pad->isGamepad() ? 1 : 0)});
+	}
+	case SDL_JOYDEVICEREMOVED: {
+		auto *joy = getModInst(joystick, Joystick);
+		if (!joy) break;
+		auto *pad = joy->getJoystickFromID(e.jdevice.which);
+		if (!pad) break;
+		int id = pad->getID();
+		std::string name = pad->getName();
+		joy->removeJoystick(pad);
+		return new Message("joystickremoved",
+		                   {Variant::makeInt(id), Variant::makeString(name)});
+	}
+	case SDL_JOYBUTTONDOWN:
+	case SDL_JOYBUTTONUP: {
+		auto *joy = getModInst(joystick, Joystick);
+		if (!joy) break;
+		auto *pad = joy->getJoystickFromID(e.jbutton.which);
+		if (!pad) break;
+		return new Message(e.type == SDL_JOYBUTTONDOWN ? "joystickpressed" : "joystickreleased",
+		                   {Variant::makeInt(pad->getID()), Variant::makeInt(e.jbutton.button)});
+	}
+	case SDL_JOYAXISMOTION: {
+		auto *joy = getModInst(joystick, Joystick);
+		if (!joy) break;
+		auto *pad = joy->getJoystickFromID(e.jaxis.which);
+		if (!pad) break;
+		float value = eve::joystick::clampAxis(e.jaxis.value / 32768.0f);
+		return new Message("joystickaxis",
+		                   {Variant::makeInt(pad->getID()), Variant::makeInt(e.jaxis.axis),
+		                    Variant::makeInt(static_cast<int64_t>(std::lround(value * 1000.0f)))});
+	}
+	case SDL_JOYHATMOTION: {
+		auto *joy = getModInst(joystick, Joystick);
+		if (!joy) break;
+		auto *pad = joy->getJoystickFromID(e.jhat.which);
+		if (!pad) break;
+		std::string hat = pad->getHat(e.jhat.hat);
+		// Prefer live hat from the event mask via re-query; getHat reads current state.
+		return new Message("joystickhat",
+		                   {Variant::makeInt(pad->getID()), Variant::makeInt(e.jhat.hat),
+		                    Variant::makeString(hat)});
+	}
+	case SDL_CONTROLLERBUTTONDOWN:
+	case SDL_CONTROLLERBUTTONUP: {
+		auto *joy = getModInst(joystick, Joystick);
+		if (!joy) break;
+		auto *pad = joy->getJoystickFromID(e.cbutton.which);
+		if (!pad) break;
+		const char *btn =
+			SDL_GameControllerGetStringForButton(static_cast<SDL_GameControllerButton>(e.cbutton.button));
+		return new Message(e.type == SDL_CONTROLLERBUTTONDOWN ? "gamepadpressed" : "gamepadreleased",
+		                   {Variant::makeInt(pad->getID()),
+		                    Variant::makeString(btn ? btn : "")});
+	}
+	case SDL_CONTROLLERAXISMOTION: {
+		auto *joy = getModInst(joystick, Joystick);
+		if (!joy) break;
+		auto *pad = joy->getJoystickFromID(e.caxis.which);
+		if (!pad) break;
+		const char *axis =
+			SDL_GameControllerGetStringForAxis(static_cast<SDL_GameControllerAxis>(e.caxis.axis));
+		float value = eve::joystick::clampAxis(e.caxis.value / 32768.0f);
+		return new Message("gamepadaxis",
+		                   {Variant::makeInt(pad->getID()),
+		                    Variant::makeString(axis ? axis : ""),
+		                    Variant::makeInt(static_cast<int64_t>(std::lround(value * 1000.0f)))});
+	}
 	case SDL_FINGERDOWN:
 	case SDL_FINGERUP:
 	case SDL_FINGERMOTION: {

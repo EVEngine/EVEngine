@@ -2,51 +2,33 @@
 
 #include "keyboard/Keyboard.h"
 
-// SDL
-#include <SDL2/SDL_keyboard.h>
+namespace eve::keyboard::sdl {
 
-namespace eve::keyboard::sdl
-{
-
-class Keyboard : public love::keyboard::Keyboard
-{
+class Keyboard : public eve::keyboard::Keyboard {
 public:
+    Keyboard();
+    ~Keyboard() override;
 
-	Keyboard();
+    void setKeyRepeat(bool enable) override;
+    bool hasKeyRepeat() const override;
 
-	// Implements Module.
-	const char *getName() const;
+    bool isDown(const std::string& key) const override;
+    bool isDown(const std::vector<std::string>& keys) const override;
 
-	void setKeyRepeat(bool enable);
-	bool hasKeyRepeat() const;
-	bool isDown(const std::vector<Key> &keylist) const;
-	bool isScancodeDown(const std::vector<Scancode> &scancodelist) const;
+    bool isScancodeDown(const std::string& scancode) const override;
+    bool isScancodeDown(const std::vector<std::string>& scancodes) const override;
 
-	Key getKeyFromScancode(Scancode scancode) const;
-	Scancode getScancodeFromKey(Key key) const;
+    std::string getKeyFromScancode(const std::string& scancode) const override;
+    std::string getScancodeFromKey(const std::string& key) const override;
 
-	void setTextInput(bool enable);
-	void setTextInput(bool enable, double x, double y, double w, double h);
-	bool hasTextInput() const;
-	bool hasScreenKeyboard() const;
-
-	static bool getConstant(Scancode in, SDL_Scancode &out);
-	static bool getConstant(SDL_Scancode in, Scancode &out);
+    void setTextInput(bool enable) override;
+    void setTextInput(bool enable, double x, double y, double w, double h) override;
+    bool hasTextInput() const override;
+    bool hasScreenKeyboard() const override;
 
 private:
+    // Consumed by event::sdl::Event when converting SDL_KEYDOWN repeats.
+    bool keyRepeat_ = false;
+};
 
-	// Whether holding down a key triggers repeated key press events.
-	// The real implementation is in love::event::sdl::Event::Convert.
-	bool key_repeat;
-
-	static const SDL_Keycode *createKeyMap();
-	static const SDL_Keycode *keymap;
-
-	static EnumMap<Scancode, SDL_Scancode, SDL_NUM_SCANCODES>::Entry scancodeEntries[];
-	static EnumMap<Scancode, SDL_Scancode, SDL_NUM_SCANCODES> scancodes;
-
-}; // Keyboard
-
-} // 
-
-
+}  // namespace eve::keyboard::sdl
