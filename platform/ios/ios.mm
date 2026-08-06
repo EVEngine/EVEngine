@@ -143,8 +143,8 @@ bool setAudioMixWithOthers(bool mixEnabled) {
         if (mixEnabled)
             options |= AVAudioSessionCategoryOptionMixWithOthers;
         BOOL ok = [session setCategory:AVAudioSessionCategoryAmbient
-                           withOptions:options
-                                 error:&error];
+                          withOptions:options
+                                error:&error];
         if (!ok)
             return false;
         return [session setActive:YES error:&error] == YES;

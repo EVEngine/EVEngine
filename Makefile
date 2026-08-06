@@ -55,6 +55,9 @@ IOS_SDK ?= iphoneos
 # parentheses is the certificate ID and Xcode rejects it as a team.
 IOS_DEVELOPMENT_TEAM ?= $(shell security find-certificate -a -c "Apple Development" -p 2>/dev/null | openssl x509 -noout -subject 2>/dev/null | sed -n 's/.*OU *= *\([A-Z0-9]*\).*/\1/p' | head -1)
 IOS_BUNDLE_ID ?= com.evengine.example
+# demo  = platform/ios/game-shell (no main.nut → embedded eve.demoScript + particles)
+# example = copy from example/ (box + fire emitter)
+IOS_GAME ?= demo
 VULKAN_SDK ?= $(shell ls -d $(HOME)/VulkanSDK/*/ 2>/dev/null | sort -V | tail -1 | sed 's:/*$$::')
 IOS_APP ?= build/ios-debug/src/engine/Debug-iphoneos/eve.app
 ifeq ($(wildcard $(IOS_APP)),)
@@ -90,10 +93,16 @@ ifeq ($(HAS_WSL),1)
 	ALL_DEBUG_TARGETS += wsl/linux-debug
 endif
 
+# Desktop game directory for run/xxx (default: example/).
+GAME ?= example
+
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
 	wsl/linux wsl/linux-debug show-targets \
-	debug release example sync/android-libs sync/android-assets install/android-debug run/android-debug log/android \
+	debug release example \
+	run run/win32 run/linux run/macosx \
+	run/win32-debug run/linux-debug run/macosx-debug \
+	sync/android-libs sync/android-assets install/android-debug run/android-debug log/android \
 	install/ios-debug run/ios-debug log/ios \
 	reinstall/third-party reinstall/third-party/win32 reinstall/third-party/win32-debug \
 	reinstall/third-party/linux reinstall/third-party/linux-debug \
@@ -115,6 +124,7 @@ show-targets:
 	@echo "all -> $(ALL_DEBUG_TARGETS)"
 	@echo "debug -> build/$(PLATFORM)-debug"
 	@echo "release -> build/$(PLATFORM)"
+	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME))"
 
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
@@ -237,6 +247,7 @@ build/ios/EVEngine.xcodeproj:
 		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
+		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
 		-B build/ios -S .
 
 build/ios-debug: build/ios-debug/EVEngine.xcodeproj
@@ -269,6 +280,7 @@ build/ios-debug/EVEngine.xcodeproj:
 		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
+		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
 		-B build/ios-debug -S .
 
 # Rebuild changed third-party sources and run install again without deleting
@@ -407,14 +419,32 @@ test/macosx:
 test/macosx-debug:
 	build/macosx-debug/test/unit_test
 
-example:
-ifeq ($(PLATFORM),win32)
-	cd example && ../build/win32-debug/src/engine/eve.exe run
-else ifeq ($(PLATFORM),macosx)
-	cd example && ../build/macosx-debug/src/engine/eve run
-else
-	cd example && ../build/linux-debug/src/engine/eve run
-endif
+# Host platform debug shortcut (same as run/$(PLATFORM)-debug).
+run: run/$(PLATFORM)-debug
+
+# Desktop: run built eve against GAME/ (default example/).
+#   make run/macosx-debug
+#   make run/linux-debug GAME=.
+#   make run              # current host platform, debug
+run/win32-debug:
+	cd $(GAME) && ../build/win32-debug/src/engine/eve.exe run
+
+run/linux-debug:
+	cd $(GAME) && ../build/linux-debug/src/engine/eve run
+
+run/macosx-debug:
+	cd $(GAME) && ../build/macosx-debug/src/engine/eve run
+
+run/win32:
+	cd $(GAME) && ../build/win32/src/engine/Release/eve.exe run
+
+run/linux:
+	cd $(GAME) && ../build/linux/src/engine/eve run
+
+run/macosx:
+	cd $(GAME) && ../build/macosx/src/engine/eve run
+
+example: run/$(PLATFORM)-debug
 # make: build/.build-docker
 # 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"
 

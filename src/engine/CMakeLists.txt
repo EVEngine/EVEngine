@@ -175,15 +175,28 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
     )
 
-    # Bundle example game assets under Resources/game (iOS resourcePath == .app root).
-    set(_eve_game_src "${CMAKE_SOURCE_DIR}/example")
+    # Bundle game assets under Resources/game (iOS resourcePath == .app root).
+    # Default "demo" = shell without main.nut → load.nut runs embedded eve.demoScript
+    # (meteor defense + particles). "example" copies example/ (box + fire.json).
+    set(EVENGINE_IOS_GAME "demo" CACHE STRING "iOS bundled game: demo | example | absolute path")
+    if(EVENGINE_IOS_GAME STREQUAL "example")
+        set(_eve_game_src "${CMAKE_SOURCE_DIR}/example")
+    elseif(EVENGINE_IOS_GAME STREQUAL "demo")
+        set(_eve_game_src "${CMAKE_SOURCE_DIR}/platform/ios/game-shell")
+    elseif(IS_DIRECTORY "${EVENGINE_IOS_GAME}")
+        set(_eve_game_src "${EVENGINE_IOS_GAME}")
+    else()
+        message(FATAL_ERROR "EVENGINE_IOS_GAME must be 'demo', 'example', or an existing directory (got: ${EVENGINE_IOS_GAME})")
+    endif()
     add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+        # Wipe first so a previous example/main.nut cannot shadow demoScript.
+        COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${_eve_game_src}" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
             "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
-        COMMENT "Bundle example game + LaunchScreen into EVEngine.app"
+        COMMENT "Bundle iOS game (${EVENGINE_IOS_GAME}) + LaunchScreen into EVEngine.app"
     )
 
     # Embed MoltenVK.framework next to the executable so dlsym(RTLD_DEFAULT) / rpath resolve.
