@@ -20,14 +20,26 @@ else
 	endif
 endif
 
-ANDROID_SDK ?= $(HOME)/Library/Android/sdk
+# Android SDK/NDK defaults differ by host; fall back to any installed NDK.
+ifeq ($(PLATFORM),macosx)
+	ANDROID_SDK ?= $(HOME)/Library/Android/sdk
+else ifeq ($(PLATFORM),win32)
+	ANDROID_SDK ?= $(LOCALAPPDATA)/Android/Sdk
+else
+	ANDROID_SDK ?= $(HOME)/Android/Sdk
+endif
 ANDROID_NDK ?= $(ANDROID_SDK)/ndk/26.1.10909125
+ifeq ($(wildcard $(ANDROID_NDK)/build/cmake/android.toolchain.cmake),)
+	ANDROID_NDK := $(shell ls -d "$(ANDROID_SDK)/ndk"/* 2>/dev/null | sort -V | tail -1)
+endif
 ANDROID_ABI ?= arm64-v8a
 ANDROID_PLATFORM ?= android-24
 ANDROID_STL ?= c++_shared
 APK_DIR = platform/android/apk
 JNI_LIBS = $(APK_DIR)/app/src/main/jniLibs/$(ANDROID_ABI)
-JAVA_HOME ?= $(shell brew --prefix openjdk@17 2>/dev/null)/libexec/openjdk.jdk/Contents/Home
+ifeq ($(PLATFORM),macosx)
+	JAVA_HOME ?= $(shell brew --prefix openjdk@17 2>/dev/null)/libexec/openjdk.jdk/Contents/Home
+endif
 BUILD_DIR ?= build/android-debug
 
 # iOS / iPadOS (iphoneos arm64, min 13.0). Requires full Xcode (not just CLT).
@@ -44,8 +56,38 @@ ifeq ($(wildcard $(IOS_APP)),)
 IOS_APP = build/ios-debug/src/engine/eve.app
 endif
 
+# ---- Capability detection for `make all` (host + optional cross targets) ----
+# debug/release remain host-only; all builds every available debug target.
+HAS_IOS := 0
+HAS_ANDROID := 0
+HAS_WSL := 0
+
+ifeq ($(PLATFORM),macosx)
+	HAS_IOS := $(shell xcrun --sdk iphoneos --show-sdk-path >/dev/null 2>&1 && echo 1 || echo 0)
+endif
+
+ifneq ($(wildcard $(ANDROID_NDK)/build/cmake/android.toolchain.cmake),)
+	HAS_ANDROID := $(shell command -v ninja >/dev/null 2>&1 && test -f "$(APK_DIR)/gradlew" && echo 1 || echo 0)
+endif
+
+ifeq ($(PLATFORM),win32)
+	HAS_WSL := $(shell wsl -e true >/dev/null 2>&1 && echo 1 || echo 0)
+endif
+
+ALL_DEBUG_TARGETS := build/$(PLATFORM)-debug
+ifeq ($(HAS_IOS),1)
+	ALL_DEBUG_TARGETS += build/ios-debug
+endif
+ifeq ($(HAS_ANDROID),1)
+	ALL_DEBUG_TARGETS += build/android-debug
+endif
+ifeq ($(HAS_WSL),1)
+	ALL_DEBUG_TARGETS += wsl/linux-debug
+endif
+
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
+	wsl/linux wsl/linux-debug show-targets \
 	debug release example sync/android-libs install/android-debug run/android-debug log/android \
 	install/ios-debug run/ios-debug log/ios \
 	reinstall/third-party reinstall/third-party/win32 reinstall/third-party/win32-debug \
@@ -55,14 +97,36 @@ endif
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands
 
+# Default: every debug target this machine can build (host + optional ios/android/wsl).
+all: $(ALL_DEBUG_TARGETS)
+	@$(MAKE) link-compile-commands
+	@echo "all done: $(ALL_DEBUG_TARGETS)"
+
+show-targets:
+	@echo "PLATFORM=$(PLATFORM)"
+	@echo "HAS_IOS=$(HAS_IOS) HAS_ANDROID=$(HAS_ANDROID) HAS_WSL=$(HAS_WSL)"
+	@echo "ANDROID_SDK=$(ANDROID_SDK)"
+	@echo "ANDROID_NDK=$(ANDROID_NDK)"
+	@echo "all -> $(ALL_DEBUG_TARGETS)"
+	@echo "debug -> build/$(PLATFORM)-debug"
+	@echo "release -> build/$(PLATFORM)"
+
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
 	@mkdir -p build
 	ln -sfn $(PLATFORM)-debug/compile_commands.json build/compile_commands.json
 
+# Host platform only.
 debug: build/$(PLATFORM)-debug
 	@$(MAKE) link-compile-commands
 release: build/$(PLATFORM)
+
+# Windows host: build Linux targets inside WSL2 (same tree).
+wsl/linux-debug:
+	wsl --cd "$(CURDIR)" -- make build/linux-debug
+
+wsl/linux:
+	wsl --cd "$(CURDIR)" -- make build/linux
 
 build/win32: build/win32/EVEngine.sln
 	cmake.exe --build $@ --config Release -j 32
