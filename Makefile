@@ -148,31 +148,37 @@ wsl/linux:
 
 # win32: Ninja/MSVC helpers（debug 用 Ninja+cl；Release VS 生成器也可借 vcvars）
 WITH_MSVC = cmake\with-msvc.cmd
+# Override in CI, e.g. VS_GENERATOR="Visual Studio 17 2022"
+VS_GENERATOR ?= Visual Studio 18 2026
+# Extra cmake -D... flags (CI: CMAKE_EXTRA_ARGS=-DBUILD_TESTING=OFF)
+CMAKE_EXTRA_ARGS ?=
+JOBS ?= 32
+ANDROID_JOBS ?= 8
 
 build/win32: build/win32/EVEngine.sln
-	cmake.exe --build $@ --config Release --target deps -j 32
-	cmake.exe --build $@ --config Release -j 32
+	cmake.exe --build $@ --config Release --target deps -j $(JOBS)
+	cmake.exe --build $@ --config Release -j $(JOBS)
 
 build/win32/EVEngine.sln:
-	cmake.exe -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=Release -A x64 -B build/win32 -S .
+	cmake.exe -G "$(VS_GENERATOR)" -DCMAKE_BUILD_TYPE=Release -A x64 $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
 
 build/linux: build/linux/Makefile
-	cmake --build $@ --target deps -j 32
-	cmake --build $@ -j 32
+	cmake --build $@ --target deps -j $(JOBS)
+	cmake --build $@ -j $(JOBS)
 
 build/linux/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -B build/linux -S .
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
 
 build/macosx: build/macosx/Makefile
-	cmake --build $@ --target deps -j 32
-	cmake --build $@ -j 32
+	cmake --build $@ --target deps -j $(JOBS)
+	cmake --build $@ -j $(JOBS)
 
 build/macosx/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx -B build/macosx -S .
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
 
 build/android: build/android/build.ninja
-	cmake --build $@ --target deps -j 8
-	cmake --build $@ -j 8
+	cmake --build $@ --target deps -j $(ANDROID_JOBS)
+	cmake --build $@ -j $(ANDROID_JOBS)
 	$(MAKE) sync/android-libs BUILD_DIR=build/android
 	$(MAKE) sync/android-assets
 	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleRelease
@@ -186,32 +192,33 @@ build/android/build.ninja:
 		-DCMAKE_BUILD_TYPE=Release \
 		-DBUILD_PLATFORM=android \
 		-DBUILD_TESTING=OFF \
+		$(CMAKE_EXTRA_ARGS) \
 		-B build/android -S .
 
 build/win32-debug: build/win32-debug/build.ninja
-	$(WITH_MSVC) cmake.exe --build $@ --target deps -j 32
-	$(WITH_MSVC) cmake.exe --build $@ -j 32
+	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
+	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32-debug/build.ninja:
-	$(WITH_MSVC) cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -B build/win32-debug -S .
+	$(WITH_MSVC) cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
 
 build/linux-debug: build/linux-debug/Makefile
-	cmake --build $@ --target deps -j 32
-	cmake --build $@ -j 32
+	cmake --build $@ --target deps -j $(JOBS)
+	cmake --build $@ -j $(JOBS)
 
 build/linux-debug/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux -B build/linux-debug -S .
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 
 build/macosx-debug: build/macosx-debug/Makefile
-	cmake --build $@ --target deps -j 32
-	cmake --build $@ -j 32
+	cmake --build $@ --target deps -j $(JOBS)
+	cmake --build $@ -j $(JOBS)
 
 build/macosx-debug/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B build/macosx-debug -S .
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
 
 build/android-debug: build/android-debug/build.ninja
-	cmake --build $@ --target deps -j 8
-	cmake --build $@ -j 8
+	cmake --build $@ --target deps -j $(ANDROID_JOBS)
+	cmake --build $@ -j $(ANDROID_JOBS)
 	$(MAKE) sync/android-libs BUILD_DIR=build/android-debug
 	$(MAKE) sync/android-assets
 	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleDebug
@@ -225,10 +232,11 @@ build/android-debug/build.ninja:
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DBUILD_PLATFORM=android \
 		-DBUILD_TESTING=OFF \
+		$(CMAKE_EXTRA_ARGS) \
 		-B build/android-debug -S .
 
 build/ios: build/ios/EVEngine.xcodeproj
-	cmake --build build/ios --target deps -j 8
+	cmake --build build/ios --target deps -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		cd build/ios && xcodebuild -scheme eve -configuration Release \
@@ -257,10 +265,11 @@ build/ios/EVEngine.xcodeproj:
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
 		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
+		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios -S .
 
 build/ios-debug: build/ios-debug/EVEngine.xcodeproj
-	cmake --build build/ios-debug --target deps -j 8
+	cmake --build build/ios-debug --target deps -j $(ANDROID_JOBS)
 	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
 		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
 		echo "  Xcode → Settings → Accounts → add Apple ID, then export IOS_DEVELOPMENT_TEAM=<TeamID>"; \
@@ -290,6 +299,7 @@ build/ios-debug/EVEngine.xcodeproj:
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
 		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
+		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug -S .
 
 # Rebuild changed third-party sources and run install again without deleting

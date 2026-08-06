@@ -1,5 +1,6 @@
 build*/
 dist/
+artifacts-local-test/
 third-party/
 third-party-binary/
 .history/

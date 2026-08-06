@@ -217,7 +217,8 @@ if(WIN32)
         ENABLE_EXPORTS ON
         WINDOWS_EXPORT_ALL_SYMBOLS ON
     )
-elseif(APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS))
+elseif(APPLE)
+    # macOS + iOS: Apple ld rejects GNU --export-dynamic.
     target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "LINKER:-export_dynamic")
 elseif(UNIX AND NOT ANDROID AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "LINKER:--export-dynamic")
