@@ -15,13 +15,16 @@ std::string basenameOf(const std::string &path) {
 }
 
 std::string normalizeDir(const std::string &dir) {
+    std::string s;
+#if !defined(_WIN32)
     // Resolve symlinks (/var → /private/var on macOS) so watch keys match event paths.
     char *resolved = realpath(dir.c_str(), nullptr);
-    std::string s;
     if (resolved) {
         s = resolved;
         free(resolved);
-    } else {
+    } else
+#endif
+    {
         Poco::Path p(dir);
         p.makeAbsolute();
         s = p.toString();

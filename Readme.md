@@ -67,19 +67,27 @@ Evolutionary Vision Engine
 
 | 组件 | 推荐配置 |
 |------|----------|
-| 发行版 | Ubuntu 20.04+ 或同等环境 |
+| 发行版 | Ubuntu 20.04+ 或同等环境（含 WSL2） |
 | 编译器 | GCC 10+ 或 Clang 12+ |
-| 基础包 | `build-essential`、`cmake`、`git`、`ninja-build`（可选） |
-| 系统库 | `libx11-dev`、`libxxf86vm-dev`、`libxi-dev`、`libxcursor-dev`、`libxrandr-dev`、`libxinerama-dev`（SDL2 / 窗口相关） |
-| Vulkan | `vulkan-sdk` 或发行版提供的 `libvulkan-dev` + validation layers；确保 `glslc` / SDK 路径可用 |
+| 基础包 | `build-essential`、`cmake`、`git`、`ninja-build`、`pkg-config` |
+| 系统库 | X11 / SDL2：`libx11-dev`、`libxext-dev`、`libxxf86vm-dev`、`libxrandr-dev`、`libxcursor-dev`、`libxi-dev`、`libxinerama-dev`、`libxss-dev`；可选 Wayland：`libxkbcommon-dev`、`libwayland-dev`；OpenAL/音频：`libasound2-dev`、`libpulse-dev`；图像压缩：`zlib1g-dev`、`libpng-dev`、`libbz2-dev` |
+| Vulkan | `libvulkan-dev` + `glslang-tools`（提供 `glslc`），或按 LunarG 安装完整 Vulkan SDK |
 
-Ubuntu 示例：
+Ubuntu / WSL 示例：
 
 ```sh
 sudo apt update
-sudo apt install -y build-essential cmake git ninja-build \
-    libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev
-# Vulkan SDK：按 LunarG 官方文档安装，或使用发行版 vulkan 相关包
+sudo apt install -y \
+    build-essential cmake git ninja-build pkg-config \
+    libx11-dev libxext-dev libxxf86vm-dev libxrandr-dev \
+    libxcursor-dev libxi-dev libxinerama-dev libxss-dev \
+    libxkbcommon-dev libwayland-dev \
+    libgl1-mesa-dev libegl1-mesa-dev \
+    libasound2-dev libpulse-dev \
+    zlib1g-dev libpng-dev libbz2-dev libbrotli-dev \
+    libvulkan-dev vulkan-tools glslang-tools \
+    python3
+# 也可按 LunarG 官方文档安装完整 Vulkan SDK（含 validation layers）
 ```
 
 ### macOS

@@ -48,6 +48,7 @@ target_link_libraries(EVUI PUBLIC eve_imgui)
 target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
 
 create_module(EVParticles particles)
+target_compile_definitions(EVParticles PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVModel3D model3d)
 create_module(EVPlugins plugins)
 if(EVENGINE_BUILD_DEMO)
