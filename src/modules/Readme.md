@@ -54,7 +54,8 @@
 9.  线程系统 - thread
     负责线程、线程池的管理，提交异步任务
 
-10. 粒子系统 - particles
+10. 粒子系统 - particles  
+   ECS `ParticleEmitter` + Sim/Render/Config System；JSON 热更；Camera2D/Canvas；发射区域与径向/切向力。
     ECS：`ParticleEmitter`（Config/Sim/Draw/Resource）
     System：`ParticleConfigSystem`（filesystem watch + mtime 回退）/ `ParticleSimSystem` / `ParticleRenderSystem`
     Module：工厂、`newEmitterFromFile`、脚本绑定；`update` 含 poll+sim

@@ -11,6 +11,8 @@
 
 namespace eve::graphics {
 class Graphics;
+class Camera2D;
+class Canvas;
 }
 
 namespace eve::particles {
@@ -23,9 +25,13 @@ struct Particle {
     float vy = 0.f;
     float ax = 0.f;
     float ay = 0.f;
+    float radial = 0.f;
+    float tangential = 0.f;
     float life = 0.f;
     float lifetime = 1.f;
     float size = 1.f;
+    float rot = 0.f;
+    float spin = 0.f;
 };
 
 /**
@@ -51,10 +57,19 @@ public:
         float speedMax = 0.f;
         float accelXMin = 0.f, accelYMin = 0.f;
         float accelXMax = 0.f, accelYMax = 0.f;
+        float radialMin = 0.f, radialMax = 0.f;
+        float tangentialMin = 0.f, tangentialMax = 0.f;
         float particleW = 8.f;
         float particleH = 8.f;
         float sizeStart = 1.f;
         float sizeEnd = 1.f;
+        float sizeVariation = 0.f;  // 0..1
+        float spinMin = 0.f;
+        float spinMax = 0.f;
+        /** "none" | "ellipse" | "rect" (≤15). */
+        std::string areaType = "none";
+        float areaX = 0.f;
+        float areaY = 0.f;
         Color colorStart{1.f, 1.f, 1.f, 1.f};
         Color colorEnd{1.f, 1.f, 1.f, 0.f};
         ParticleEmitter *entity = nullptr;
@@ -72,6 +87,8 @@ public:
 
     struct Draw {
         graphics::Texture *texture = nullptr;
+        graphics::Canvas *canvas = nullptr;     // nullptr → screen
+        graphics::Camera2D *camera = nullptr;   // nullptr → default active cam
         int layer = 0;
         bool visible = true;
     };
@@ -114,18 +131,32 @@ public:
 
     void setSpeed(float minSpeed, float maxSpeed);
     void setLinearAcceleration(float xmin, float ymin, float xmax, float ymax);
+    void setRadialAcceleration(float minA, float maxA);
+    void setTangentialAcceleration(float minA, float maxA);
+
+    void setEmissionArea(const std::string &type, float x, float y);
+    std::string getEmissionAreaType();
+    float getEmissionAreaX();
+    float getEmissionAreaY();
 
     void setParticleSize(float width, float height);
     float getParticleWidth();
     float getParticleHeight();
 
     void setSizes(float startScale, float endScale);
+    void setSizeVariation(float variation);
+    float getSizeVariation();
+
+    void setSpin(float minSpin, float maxSpin);
 
     void setColorStart(float r, float g, float b, float a = 1.f);
     void setColorEnd(float r, float g, float b, float a = 1.f);
 
     void setTexture(graphics::Texture *texture);
     graphics::Texture *getTexture();
+
+    void setCanvas(graphics::Canvas *canvas);
+    void setCamera(graphics::Camera2D *camera);
 
     void setLayer(int layer);
     int getLayer();
@@ -149,18 +180,14 @@ public:
     /** Named preset: "spark" / "smoke" / "fire". Unknown → no-op. */
     void applyPreset(const std::string &name);
 
-    /** Apply JSON text (object root). Returns false on parse/schema error. */
     bool applyConfig(const std::string &json);
-    /** Load & bind a config file (enables hot reload via ParticleConfigSystem). */
     bool loadConfig(const std::string &path);
-    /** Re-read bound config file. */
     bool reloadConfig();
     void setAutoReload(bool enable);
     bool getAutoReload();
     std::string getConfigPath();
 };
 
-/** Shared sim helpers (used by ParticleSimSystem / emit). */
 void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
 

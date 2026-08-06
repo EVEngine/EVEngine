@@ -1,0 +1,12 @@
+{
+  "buffer": 128,
+  "preset": "spark",
+  "x": 200,
+  "y": 300,
+  "emissionRate": 80,
+  "emissionArea": { "type": "rect", "x": 4, "y": 4 },
+  "sizeVariation": 0.3,
+  "spin": [-8, 8],
+  "autoStart": true,
+  "autoReload": true
+}

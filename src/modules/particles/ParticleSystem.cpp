@@ -2,16 +2,55 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleConfig.h"
 #include "graphics/Graphics.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/Canvas.h"
 #include "filesystem/Filesystem.h"
 #include "common/Module.h"
 
 #include <algorithm>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::particles {
 
 namespace {
+
+float clampZoom(float z) { return z <= 0.f ? 1e-4f : z; }
+
+struct ViewCam {
+    float x = 0.f;
+    float y = 0.f;
+    float zoom = 1.f;
+    bool valid = false;
+};
+
+ViewCam fromEntity(graphics::Camera2D *ent) {
+    ViewCam v;
+    if (!ent) return v;
+    auto d = ent->data();
+    v.valid = true;
+    v.x = d->x;
+    v.y = d->y;
+    v.zoom = d->zoom;
+    return v;
+}
+
+void applyCamera(float wx, float wy, float ww, float wh, const ViewCam &cam, int viewW, int viewH,
+                 float &sx, float &sy, float &sw, float &sh) {
+    if (!cam.valid) {
+        sx = wx;
+        sy = wy;
+        sw = ww;
+        sh = wh;
+        return;
+    }
+    const float z = clampZoom(cam.zoom);
+    sx = (wx - cam.x) * z + float(viewW) * 0.5f;
+    sy = (wy - cam.y) * z + float(viewH) * 0.5f;
+    sw = ww * z;
+    sh = wh * z;
+}
 
 void sampleColor(const ParticleEmitter::Config &cfg, float t, Color &out) {
     t = t < 0.f ? 0.f : (t > 1.f ? 1.f : t);
@@ -22,23 +61,29 @@ void sampleColor(const ParticleEmitter::Config &cfg, float t, Color &out) {
 }
 
 void drawOne(const ParticleEmitter::Config &cfg, const ParticleEmitter::Sim &sim,
-             const ParticleEmitter::Draw &draw, graphics::Graphics *gfx) {
+             const ParticleEmitter::Draw &draw, graphics::Graphics *gfx, const ViewCam &cam) {
     if (!gfx || !draw.visible || sim.alive <= 0) return;
+
+    const int viewW = draw.canvas ? draw.canvas->getWidth() : gfx->getWidth();
+    const int viewH = draw.canvas ? draw.canvas->getHeight() : gfx->getHeight();
 
     for (int i = 0; i < sim.alive; ++i) {
         const Particle &p = sim.particles[size_t(i)];
         const float t = 1.f - (p.life / p.lifetime);
         Color c;
         sampleColor(cfg, t, c);
-        const float scale = cfg.sizeStart + (cfg.sizeEnd - cfg.sizeStart) * t;
+        const float scale =
+            (cfg.sizeStart + (cfg.sizeEnd - cfg.sizeStart) * t) * (p.size > 0.f ? p.size : 1.f);
         const float w = cfg.particleW * scale;
         const float h = cfg.particleH * scale;
         const float hx = w * 0.5f;
         const float hy = h * 0.5f;
+        float sx, sy, sw, sh;
+        applyCamera(p.x - hx, p.y - hy, w, h, cam, viewW, viewH, sx, sy, sw, sh);
         if (draw.texture)
-            gfx->drawTexturedRect(draw.texture, p.x - hx, p.y - hy, w, h, c);
+            gfx->drawTexturedRect(draw.texture, sx, sy, sw, sh, c);
         else
-            gfx->drawSolidRect(p.x - hx, p.y - hy, w, h, c);
+            gfx->drawSolidRect(sx, sy, sw, sh, c);
     }
 }
 
@@ -66,10 +111,22 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     if (!gfx) return;
     if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return;
 
+    std::unordered_map<graphics::Canvas *, graphics::Camera2D *> defaultCam;
+    if (ecs::ComponentManager<graphics::Camera2D>::inst().registy != nullptr) {
+        auto camView = ecs::View<graphics::Camera2D, graphics::Camera2D::Data>();
+        for (auto it = camView.begin(); it != camView.end(); ++it) {
+            auto [data] = *it;
+            if (!data->active || !data->entity) continue;
+            graphics::Canvas *key = data->canvas;
+            if (defaultCam.find(key) == defaultCam.end()) defaultCam[key] = data->entity;
+        }
+    }
+
     struct Item {
         ParticleEmitter::Config *cfg;
         ParticleEmitter::Sim *sim;
         ParticleEmitter::Draw *draw;
+        ViewCam cam;
     };
     std::vector<Item> items;
 
@@ -78,14 +135,35 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, sim, draw] = *it;
         if (!draw->visible || sim->alive <= 0) continue;
-        items.push_back(Item{cfg, sim, draw});
+
+        graphics::Camera2D *camEnt = draw->camera;
+        if (!camEnt) {
+            auto found = defaultCam.find(draw->canvas);
+            camEnt = (found != defaultCam.end()) ? found->second : nullptr;
+        }
+
+        items.push_back(Item{cfg, sim, draw, fromEntity(camEnt)});
     }
 
     std::stable_sort(items.begin(), items.end(), [](const Item &a, const Item &b) {
+        const bool aOff = a.draw->canvas != nullptr;
+        const bool bOff = b.draw->canvas != nullptr;
+        if (aOff != bOff) return aOff && !bOff;
+        if (a.draw->canvas != b.draw->canvas) return a.draw->canvas < b.draw->canvas;
         return a.draw->layer < b.draw->layer;
     });
 
-    for (const Item &it : items) drawOne(*it.cfg, *it.sim, *it.draw, gfx);
+    // Draw into targets without clear/present — caller owns frame lifecycle.
+    graphics::Canvas *current = reinterpret_cast<graphics::Canvas *>(static_cast<uintptr_t>(1));
+    for (const Item &it : items) {
+        graphics::Canvas *next = it.draw->canvas;
+        if (next != current) {
+            gfx->setCanvas(next);
+            current = next;
+        }
+        drawOne(*it.cfg, *it.sim, *it.draw, gfx, it.cam);
+    }
+    if (current != nullptr) gfx->setCanvas();
 }
 
 int ParticleConfigSystem::poll() {
@@ -94,7 +172,6 @@ int ParticleConfigSystem::poll() {
     auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
     if (!fs) fs = eve::filesystem::Filesystem::create();
 
-    // Drain filesystem watch events → mark matching emitters for reload.
     std::vector<std::string> dirtyPaths;
     for (;;) {
         std::string kind = fs->pollWatch();
@@ -118,7 +195,6 @@ int ParticleConfigSystem::poll() {
             }
         }
         if (!dirty) {
-            // Fallback: mtime poll when watch missed the change.
             const int64_t mt = fileModtime(res->path);
             if (mt >= 0 && mt != res->modtime) dirty = true;
         }

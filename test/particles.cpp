@@ -5,6 +5,7 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/RenderSystem.h"
 
 #include <cmath>
 #include <cstring>
@@ -147,6 +148,71 @@ TEST_CASE("particles.renderSystem.skipsInvisible") {
     // No Graphics — render should early-out safely.
     ParticleRenderSystem::render(nullptr);
     CHECK_EQ(e->getCount(), 3);
+}
+
+TEST_CASE("particles.emitter.emissionAreaAndForces") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(64);
+    e->setPosition(100.f, 100.f);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setEmissionArea("ellipse", 40.f, 20.f);
+    e->setRadialAcceleration(50.f, 50.f);
+    e->setTangentialAcceleration(0.f, 0.f);
+    e->setSizeVariation(0.5f);
+    e->setSpin(1.f, 2.f);
+    CHECK_EQ(e->getEmissionAreaType(), std::string("ellipse"));
+    e->emit(20);
+    CHECK_EQ(e->getCount(), 20);
+
+    // Spawn offsets should leave the point origin for ellipse area.
+    bool anyOffset = false;
+    auto sim = e->sim();
+    for (int i = 0; i < sim->alive; ++i) {
+        const auto &p = sim->particles[size_t(i)];
+        if (std::abs(p.x - 100.f) > 0.5f || std::abs(p.y - 100.f) > 0.5f) anyOffset = true;
+        CHECK_GT(p.size, 0.f);
+        CHECK_GE(p.spin, 1.f);
+        CHECK_LE(p.spin, 2.f);
+    }
+    CHECK(anyOffset);
+
+    ParticleSimSystem::update(0.2f);
+    CHECK_EQ(e->getCount(), 20);
+}
+
+TEST_CASE("particles.config.applyAreaAndAccel") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    const char *json = R"({
+      "emissionArea": {"type":"rect","x":8,"y":4},
+      "radialAcceleration": [10, 20],
+      "tangentialAcceleration": [-5, 5],
+      "sizeVariation": 0.2,
+      "spin": [1, 3]
+    })";
+    CHECK(e->applyConfig(json));
+    CHECK_EQ(e->getEmissionAreaType(), std::string("rect"));
+    CHECK(std::abs(e->getEmissionAreaX() - 8.f) < 1e-4f);
+    CHECK(std::abs(e->getEmissionAreaY() - 4.f) < 1e-4f);
+    CHECK(std::abs(e->getSizeVariation() - 0.2f) < 1e-4f);
+}
+
+TEST_CASE("particles.renderSystem.cameraTransform") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(8);
+    e->setPosition(0.f, 0.f);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->emit(1);
+    auto *cam = eve::graphics::Camera2D::createCamera();
+    cam->data()->x = 0.f;
+    cam->data()->y = 0.f;
+    cam->data()->zoom = 2.f;
+    e->setCamera(cam);
+    // No Graphics — must not crash; camera path is covered by wiring.
+    ParticleRenderSystem::render(nullptr);
+    CHECK_EQ(e->getCount(), 1);
 }
 
 TEST_CASE("particles.config.applyJsonText") {

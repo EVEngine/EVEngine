@@ -144,6 +144,32 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
     if (readVec4(obj, "linearAcceleration", ax0, ay0, ax1, ay1))
         emitter->setLinearAcceleration(ax0, ay0, ax1, ay1);
 
+    float rad0 = 0, rad1 = 0;
+    if (readVec2(obj, "radialAcceleration", rad0, rad1))
+        emitter->setRadialAcceleration(rad0, rad1);
+
+    float tan0 = 0, tan1 = 0;
+    if (readVec2(obj, "tangentialAcceleration", tan0, tan1))
+        emitter->setTangentialAcceleration(tan0, tan1);
+
+    if (obj->has("emissionArea")) {
+        try {
+            auto area = obj->getObject("emissionArea");
+            if (area) {
+                std::string type = area->has("type") ? asString(area->get("type")) : "none";
+                float ax = area->has("x") ? asFloat(area->get("x"), 0.f) : 0.f;
+                float ay = area->has("y") ? asFloat(area->get("y"), 0.f) : 0.f;
+                emitter->setEmissionArea(type, ax, ay);
+            }
+        } catch (...) {
+        }
+    } else if (obj->has("areaType")) {
+        float ax = emitter->getEmissionAreaX();
+        float ay = emitter->getEmissionAreaY();
+        readVec2(obj, "areaSize", ax, ay);
+        emitter->setEmissionArea(asString(obj->get("areaType")), ax, ay);
+    }
+
     float pw = emitter->getParticleWidth(), ph = emitter->getParticleHeight();
     if (readVec2(obj, "particleSize", pw, ph))
         emitter->setParticleSize(pw, ph);
@@ -151,6 +177,13 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
     float ss = 1.f, se = 1.f;
     if (readVec2(obj, "sizes", ss, se))
         emitter->setSizes(ss, se);
+
+    if (obj->has("sizeVariation"))
+        emitter->setSizeVariation(
+            asFloat(obj->get("sizeVariation"), emitter->getSizeVariation()));
+
+    float spin0 = 0, spin1 = 0;
+    if (readVec2(obj, "spin", spin0, spin1)) emitter->setSpin(spin0, spin1);
 
     float r = 1, g = 1, b = 1, a = 1;
     if (readVec4(obj, "colorStart", r, g, b, a))

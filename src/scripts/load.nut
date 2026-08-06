@@ -34,8 +34,10 @@ if (!win.setWindowSettings(s)) {
 event <- eve.Event();
 timer <- eve.Timer();
 ui <- eve.UI();
+particles <- eve.Particles();
 
 demo <- { x = 40.0, vx = 80.0 };
+fx <- null;
 
 eve_init <- function() {
     // Named ECS hosts: hud + menu; select before props/clicks.
@@ -54,11 +56,18 @@ eve_init <- function() {
     ui.setHostVisible(false); // menu starts hidden (selected=menu)
 
     ui.select("hud");
+
+    fx = particles.newEmitter(200);
+    fx.applyPreset("spark");
+    fx.setPosition(config.width * 0.5, config.height * 0.5);
+    fx.start();
 };
 eve_update <- function(dt) {
     demo.x += demo.vx * dt;
     if (demo.x < 0.0 || demo.x + 120.0 > config.width)
         demo.vx = -demo.vx;
+
+    particles.update(dt);
 
     local id = ui.consumeClick();
     while (id != "") {
@@ -79,6 +88,7 @@ eve_update <- function(dt) {
 eve_render <- function() {
     gfx.clear();
     gfx.drawSolidRect(demo.x, 40.0, 120.0, 80.0, 1.0, 0.4, 0.2, 1.0);
+    particles.render(gfx);
     ui.beginFrameAndRender();
 };
 eve_quit <- function() {};
