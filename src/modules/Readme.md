@@ -44,6 +44,9 @@
 
 6. 管理系统 - system
     负责系统版本、时间、状态等的查询和设置
+    Module：`System`（`getOS` / `getProcessorCount` / `getSystemRAM` / `getProcessMemoryMB` /
+    `getWallTime` / `sleepMilliseconds` / 剪贴板 / 电量 / GPU 查询）
+    帧计时仍用 `Timer`；GPU 信息在 Graphics init 后可用
 
 7. 资源管理系统 - image sound video font(`font`/`Font`) 3dmodel(`model3d`/`Model3D`) animation
     负责加载图形、声音、视频、字体、3d模型、动画等不同格式数据
@@ -53,8 +56,10 @@
 8. 网络系统 - network
     封装网络通讯的各种基础操作
 
-9.  线程系统 - thread
-    负责线程、线程池的管理，提交异步任务
+9.  线程系统 - thread（`eve.Thread`）
+    负责线程池、异步 Task、跨线程 ThreadChannel（字符串消息）
+    `getPool` / `newThreadPool` / `getChannel` / `newChannel`
+    `ThreadPool::submitSleep` / `submitPush` / `waitAll`；worker 勿碰 Squirrel VM
 
 10. 粒子系统 - particles  
    ECS `ParticleEmitter` + Sim/Render/Config System；JSON 热更；Camera2D/Canvas；发射区域与径向/切向力。

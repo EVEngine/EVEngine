@@ -23,6 +23,7 @@ file(GLOB all_test_cpp
   UIOverlaySmoke.cpp
   particles.cpp
   map.cpp
+  gpgpu.cpp
   box2d.cpp
   hotreload.cpp
   shader.cpp
@@ -31,12 +32,14 @@ file(GLOB all_test_cpp
   model3d.cpp
   audio.cpp
   font.cpp
+  thread.cpp
   window.cpp
   window_cpp.cpp
   image.cpp
   event.cpp
   timer.cpp
   timer_cpp.cpp
+  system.cpp
   main.cpp
 )
 
@@ -127,7 +130,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVPhysics EVMap EVModel3D EVFont)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)

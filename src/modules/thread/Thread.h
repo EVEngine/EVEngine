@@ -1,34 +1,52 @@
 #pragma once
 
-#include "Task.h"
+#include "common/Module.h"
+#include "thread/Channel.h"
+#include "thread/Task.h"
+#include "thread/ThreadPool.h"
 
-namespace eve::thread
-{
+#include <map>
+#include <memory>
+#include <mutex>
+#include <string>
 
-class Thread
-{
+namespace eve {
+namespace thread {
+
+/**
+ * Thread module: default pool, named channels, pool factory.
+ * Script: eve.Thread() → getPool / newThreadPool / getChannel / newChannel.
+ */
+class Thread : public Module {
 public:
-    virtual ~Thread();
+    Module_REG(Thread);
 
-    virtual void addTask(Task *task);
-    virtual void removeTask(Task *task);
-    virtual void clearTasks();
-    
+    Thread();
+    ~Thread() override;
+
+    /** Hardware concurrency hint (at least 1). */
+    int getHardwareConcurrency() const;
+
+    /** Shared default pool (created lazily with hardwareConcurrency workers). */
+    ThreadPool *getPool();
+
+    /** Create an independent pool. Caller owns it (delete when done). */
+    ThreadPool *newThreadPool(int workerCount = 0);
+
+    /**
+     * Named shared channel (love2d-style). Same name → same Channel instance
+     * for the lifetime of the module.
+     */
+    Channel *getChannel(std::string name);
+
+    /** Anonymous channel (not registered in the name map). Caller owns it. */
+    Channel *newChannel();
+
+private:
+    std::mutex mu_;
+    std::unique_ptr<ThreadPool> defaultPool_;
+    std::map<std::string, std::unique_ptr<Channel>> namedChannels_;
 };
 
-
-class ThreadPool: public Thread
-{
-public:
-    virtual ~ThreadPool();
-
-    virtual void addTask(Task *task);
-    virtual void removeTask(Task *task);
-    virtual void clearTasks();
-
-protected:
-    // threadPools
-    std::vector<Thread*> threadPools;    
-};
-
-}
+}  // namespace thread
+}  // namespace eve

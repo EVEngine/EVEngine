@@ -1,0 +1,122 @@
+#include "thread/ThreadPool.h"
+
+#include "common/Exception.h"
+#include "thread/Channel.h"
+
+#include <algorithm>
+#include <chrono>
+#include <utility>
+
+namespace eve {
+namespace thread {
+
+ThreadPool::ThreadPool(int workerCount) {
+    if (workerCount <= 0) {
+        workerCount = static_cast<int>(std::thread::hardware_concurrency());
+        if (workerCount <= 0)
+            workerCount = 1;
+    }
+    workerCount_ = workerCount;
+    workers_.reserve(static_cast<size_t>(workerCount_));
+    for (int i = 0; i < workerCount_; ++i)
+        workers_.emplace_back([this] { workerMain(); });
+}
+
+ThreadPool::~ThreadPool() { stop(); }
+
+int ThreadPool::getWorkerCount() const { return workerCount_; }
+
+int ThreadPool::getPendingCount() const {
+    std::lock_guard<std::mutex> lock(mu_);
+    return static_cast<int>(queue_.size());
+}
+
+bool ThreadPool::isRunning() const {
+    std::lock_guard<std::mutex> lock(mu_);
+    return !stopping_;
+}
+
+Task *ThreadPool::submit(std::function<void()> fn) {
+    if (!fn)
+        throw eve::Exception("ThreadPool::submit: null function");
+
+    auto *task = new Task(std::move(fn));
+    {
+        std::lock_guard<std::mutex> lock(mu_);
+        if (stopping_) {
+            delete task;
+            throw eve::Exception("ThreadPool is stopped");
+        }
+        queue_.push(task);
+    }
+    cv_.notify_one();
+    return task;
+}
+
+Task *ThreadPool::submitSleep(int ms) {
+    if (ms < 0)
+        ms = 0;
+    return submit([ms] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+    });
+}
+
+Task *ThreadPool::submitPush(Channel *channel, std::string message, int delayMs) {
+    if (channel == nullptr)
+        throw eve::Exception("ThreadPool::submitPush: channel is null");
+    if (delayMs < 0)
+        delayMs = 0;
+    return submit([channel, msg = std::move(message), delayMs] {
+        if (delayMs > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+        channel->push(msg);
+    });
+}
+
+void ThreadPool::waitAll() {
+    std::unique_lock<std::mutex> lock(mu_);
+    idleCv_.wait(lock, [this] { return queue_.empty() && busy_ == 0; });
+}
+
+void ThreadPool::stop() {
+    {
+        std::lock_guard<std::mutex> lock(mu_);
+        if (stopping_)
+            return;
+        stopping_ = true;
+    }
+    cv_.notify_all();
+    for (auto &w : workers_) {
+        if (w.joinable())
+            w.join();
+    }
+    workers_.clear();
+}
+
+void ThreadPool::workerMain() {
+    for (;;) {
+        Task *task = nullptr;
+        {
+            std::unique_lock<std::mutex> lock(mu_);
+            cv_.wait(lock, [this] { return stopping_ || !queue_.empty(); });
+            if (stopping_ && queue_.empty())
+                return;
+            task = queue_.front();
+            queue_.pop();
+            ++busy_;
+        }
+
+        if (task)
+            task->run();
+
+        {
+            std::lock_guard<std::mutex> lock(mu_);
+            --busy_;
+            if (queue_.empty() && busy_ == 0)
+                idleCv_.notify_all();
+        }
+    }
+}
+
+}  // namespace thread
+}  // namespace eve

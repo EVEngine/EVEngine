@@ -5,6 +5,7 @@ create_module(EVGraphics graphics)
 create_module(EVWindow window)
 create_module(EVEvent event)
 create_module(EVTimer timer)
+create_module(EVSystem system)
 create_module(EVMouse mouse)
 create_module(EVKeyboard keyboard)
 create_module(EVJoystick joystick)
@@ -54,6 +55,7 @@ create_module(EVPhysics physics)
 target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
 create_module(EVMap map)
 target_compile_definitions(EVMap PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+create_module(EVGpgpu gpgpu)
 create_module(EVModel3D model3d)
 create_module(EVFont font)
 # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
@@ -61,6 +63,7 @@ target_include_directories(EVFont PRIVATE
   ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/freetype2
   ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/freetype2
 )
+create_module(EVThread thread)
 create_module(EVPlugins plugins)
 if(EVENGINE_BUILD_DEMO)
     create_module(EVDemo demo)

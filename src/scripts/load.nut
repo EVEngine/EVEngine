@@ -54,9 +54,11 @@ config.height = win.getHeight();
 
 event <- eve.Event();
 timer <- eve.Timer();
+system <- eve.System();
 ui <- eve.UI();
 particles <- eve.Particles();
 map <- eve.Map();
+gpgpu <- eve.Gpgpu();
 physics <- eve.Physics();
 keyboard <- eve.Keyboard();
 mouse <- eve.Mouse();
@@ -65,6 +67,7 @@ sound <- eve.Sound();
 audio <- eve.Audio();
 model3d <- eve.Model3D();
 font <- eve.Font();
+thread <- eve.Thread();
 fs <- eve.Filesystem();
 hot <- eve.HotReload();
 
