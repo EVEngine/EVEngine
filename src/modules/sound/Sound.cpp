@@ -3,7 +3,9 @@
 #include "SoundData.h"
 
 #include "common/Exception.h"
+#include "common/config.h"
 #include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 
 #include "medialoader/Exception.h"
 #include "medialoader/sound/WaveDecoder.h"
@@ -16,13 +18,97 @@
 
 #include <cctype>
 #include <cstring>
+#include <fstream>
+#include <string>
+
+#if defined(_WIN32)
+#include <stdlib.h>
+#else
+#include <cstdlib>
+#endif
 
 namespace eve {
 namespace sound {
 
 Module_IMPL(Sound, new Sound());
 
-Sound::Sound() = default;
+namespace {
+
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_LINUX) || defined(EVENGINE_WINDOWS)
+
+bool fileExists(const std::string &path) {
+    std::ifstream in(path, std::ios::binary);
+    return in.good();
+}
+
+std::string parentPath(std::string path) {
+    while (!path.empty() && (path.back() == '/' || path.back() == '\\'))
+        path.pop_back();
+    auto slash = path.find_last_of("/\\");
+    if (slash == std::string::npos)
+        return {};
+    if (slash == 0)
+        return path.substr(0, 1);
+    return path.substr(0, slash);
+}
+
+std::string joinPath(const std::string &a, const std::string &b) {
+    if (a.empty())
+        return b;
+    if (a.back() == '/' || a.back() == '\\')
+        return a + b;
+    return a + "/" + b;
+}
+
+// Prefer installed / staged share/eve/timidity next to the executable.
+// Does not override an existing MMPAT_PATH_TO_CFG (user trim / custom banks).
+void ensureDesktopTimidityShare() {
+    if (const char *existing = std::getenv("MMPAT_PATH_TO_CFG")) {
+        if (existing[0] != '\0')
+            return;
+    }
+
+    auto *fs = filesystem::Filesystem::create();
+    std::string exe = fs->getExecutablePath();
+    if (exe.empty())
+        return;
+
+    std::string dir = parentPath(exe);
+    const char *relatives[] = {
+        "share/eve/timidity",
+        "../share/eve/timidity",
+        "../../share/eve/timidity",
+        "../../../share/eve/timidity",
+    };
+
+    std::string found;
+    for (const char *rel : relatives) {
+        std::string cand = joinPath(dir, rel);
+        if (fileExists(joinPath(cand, "timidity.cfg"))) {
+            found = cand;
+            break;
+        }
+    }
+    if (found.empty())
+        return;
+
+#if defined(_WIN32)
+    _putenv_s("MMPAT_PATH_TO_CFG", found.c_str());
+#else
+    setenv("MMPAT_PATH_TO_CFG", found.c_str(), 0);
+#endif
+}
+
+#endif  // desktop
+
+}  // namespace
+
+Sound::Sound() {
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_LINUX) || defined(EVENGINE_WINDOWS)
+    ensureDesktopTimidityShare();
+#endif
+}
+
 Sound::~Sound() = default;
 
 namespace {

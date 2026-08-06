@@ -5,6 +5,7 @@
 #include "data/JsonDocument.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/FileData.h"
+#include "filesystem/HotReload.h"
 #include "graphics/Graphics.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -80,6 +81,8 @@ void tryLoadTexture(ParticleEmitter *emitter, const std::string &path) {
     try {
         graphics::Texture *tex = gfx->newTextureFromFile(path);
         emitter->setTexture(tex);
+        if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
+            hot->bind(path, "texture");
     } catch (...) {
         // Leave existing / null texture; config still applied.
     }
@@ -254,6 +257,8 @@ bool loadConfigFile(ParticleEmitter *emitter, const std::string &path, std::stri
     res->modtime = fileModtime(path);
     // Prefer OS watch; mtime remains a fallback in ParticleConfigSystem.
     fs->watch(path);
+    if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
+        hot->bind(path, "particle");
     return true;
 }
 

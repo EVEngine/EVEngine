@@ -7,16 +7,33 @@ function file_exists(path) {
     }
 }
 
+function path_endswith(str, suffix) {
+    if (str == null || suffix == null) return false;
+    if (str.len() < suffix.len()) return false;
+    return str.slice(str.len() - suffix.len()) == suffix;
+}
+
+function normalize_path(path) {
+    if (path == null) return "";
+    local s = path;
+    while (s.len() >= 2 && s.slice(0, 2) == "./")
+        s = s.slice(2);
+    return s;
+}
+
 config <- {
     width = 800
     height = 600
     title = "EVEngine"
     debug = false
+    hotReload = true
 };
 
 if (file_exists("config.nut")) {
     dofile("config.nut");
 }
+if (!("hotReload" in config))
+    config.hotReload <- true;
 
 win <- eve.Window();
 gfx <- eve.Graphics();
@@ -45,6 +62,8 @@ touch <- eve.Touch();
 sound <- eve.Sound();
 audio <- eve.Audio();
 model3d <- eve.Model3D();
+fs <- eve.Filesystem();
+hot <- eve.HotReload();
 
 eve_init <- function() {};
 eve_update <- function(dt) {};
@@ -53,14 +72,95 @@ eve_render <- function() {
 };
 eve_quit <- function() {};
 
+// Soft hot-reload bookkeeping (disk main.nut only; embedded demo is build-time).
+watched_scripts <- [];
+
+function track_script(path) {
+    local p = normalize_path(path);
+    if (p == "" || !path_endswith(p, ".nut")) return;
+    foreach (existing in watched_scripts) {
+        if (existing == p) return;
+    }
+    watched_scripts.append(p);
+}
+
+function soft_reload_scripts() {
+    foreach (p in watched_scripts) {
+        if (!file_exists(p)) continue;
+        try {
+            dofile(p);
+            print("hot-reload script: " + p + "\n");
+        } catch (e) {
+            print("hot-reload script failed: " + p + ": " + e + "\n");
+        }
+    }
+    if ("eve_reload" in getroottable()) {
+        try {
+            eve_reload();
+        } catch (e) {
+            print("eve_reload failed: " + e + "\n");
+        }
+    }
+}
+
+function poll_hot_reload() {
+    if (!config.hotReload) return;
+    local needScripts = false;
+    local assets = [];
+    while (true) {
+        local kind = fs.pollWatch();
+        if (kind == "") break;
+        if (kind != "modified" && kind != "added" && kind != "movedTo") continue;
+        local p = normalize_path(fs.getLastWatchPath());
+        if (p == "") continue;
+        if (path_endswith(p, ".nut")) {
+            track_script(p);
+            needScripts = true;
+        } else {
+            assets.append(p);
+        }
+    }
+    if (needScripts)
+        soft_reload_scripts();
+    foreach (p in assets) {
+        try {
+            hot.tryReload(p);
+        } catch (e) {
+            print("hot-reload asset failed: " + p + ": " + e + "\n");
+        }
+        if ("eve_asset_reload" in getroottable()) {
+            try {
+                eve_asset_reload(p);
+            } catch (e) {
+                print("eve_asset_reload failed: " + p + ": " + e + "\n");
+            }
+        }
+    }
+}
+
 if (file_exists("main.nut")) {
     dofile("main.nut");
+    track_script("main.nut");
 } else if ("demoScript" in eve && eve.demoScript != null && eve.demoScript != "") {
     // Prefer try/catch over `in` — class slot checks differ across SSQ builds.
     try {
         compilestring(eve.demoScript)();
     } catch (e) {
         print("Embedded demo failed to load: " + e + "\n");
+    }
+}
+
+if (config.hotReload) {
+    try {
+        // Ensure VFS source is set when Run did not mount (e.g. custom root).
+        try { fs.setSource("."); } catch (e) {}
+        local n = hot.watchTree(".");
+        // Explicit file watch as a second registration (same OS dir, basename filter).
+        if (file_exists("main.nut"))
+            fs.watch("main.nut");
+        print("hot-reload: watching " + n + " path(s)\n");
+    } catch (e) {
+        print("hot-reload watchTree failed: " + e + "\n");
     }
 }
 
@@ -91,6 +191,8 @@ while (running) {
     // Rotation / foldable: keep gameplay bounds aligned with the graphics viewport.
     config.width = win.getWidth();
     config.height = win.getHeight();
+
+    poll_hot_reload();
 
     local dt = timer.step();
     try {

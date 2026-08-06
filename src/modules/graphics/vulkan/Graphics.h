@@ -121,6 +121,8 @@ public:
                         bool repeatV = false) override;
     Texture *newTexture(image::ImageData *data) override;
     Texture *newTextureFromFile(const std::string &filename) override;
+    bool reloadTextureFromFile(const std::string &filename) override;
+    bool replaceTexturePixels(Texture *tex, image::ImageData *data);
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
     void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w, float h,
                                 const Color &color) override;
@@ -267,6 +269,8 @@ private:
 
     std::vector<std::unique_ptr<Texture>> ownedTextures;
     std::vector<std::unique_ptr<GpuTexture>> ownedGpuTextures;
+    /** Path-normalized → Texture* for hot reload (stable pointers). */
+    std::unordered_map<std::string, Texture *> texturesByPath;
     std::vector<std::unique_ptr<Mesh>> ownedMeshes;
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<Shader>> ownedShaders;

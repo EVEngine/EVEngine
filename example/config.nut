@@ -9,4 +9,6 @@ config = {
     title = "game"
     // The debug configuration
     debug = true
+    // Soft script/asset hot reload (directory watch)
+    hotReload = true
 };

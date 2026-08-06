@@ -63,6 +63,9 @@ function(main)
         add_subdirectory(test)
     endif()
 
+    include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
+    eve_stage_timidity_share()
+
     include(${CMAKE_SOURCE_DIR}/cmake/install_sdk.cmake)
 endfunction()
 

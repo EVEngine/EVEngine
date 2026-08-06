@@ -278,3 +278,55 @@ TEST_CASE("filesystem.watch.unwatchAll") {
     f->remove("a.txt");
     f->remove("b.txt");
 }
+
+TEST_CASE("filesystem.watch.dotResolvesToCwd") {
+    useIdentity("ev_ut_fs_watch_dot");
+    auto *f = fs();
+    f->unwatchAll();
+
+    std::string cwd = f->getWorkingDirectory();
+    REQUIRE(!cwd.empty());
+    (void)f->setSource(cwd);
+
+    REQUIRE(f->watch("."));
+    CHECK_GE(f->getWatchCount(), 1);
+
+    const char *name = "ut_watch_dot.txt";
+    {
+        std::ofstream out(cwd + "/" + name, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v1", 2);
+        out.flush();
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+    while (!f->pollWatch().empty()) {
+    }
+
+    {
+        std::ofstream out(cwd + "/" + name, std::ios::binary | std::ios::trunc);
+        REQUIRE(out.good());
+        out.write("v2-changed", 10);
+        out.flush();
+    }
+
+    bool saw = false;
+    for (int i = 0; i < 60 && !saw; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        for (;;) {
+            std::string kind = f->pollWatch();
+            if (kind.empty()) break;
+            if (kind == "modified" || kind == "added") {
+                std::string p = f->getLastWatchPath();
+                if (p == name || p == std::string("./") + name ||
+                    p.find(name) != std::string::npos)
+                    saw = true;
+            }
+        }
+    }
+    CHECK(saw);
+
+    f->unwatch(".");
+    std::remove((cwd + "/" + name).c_str());
+}
+
