@@ -3,6 +3,7 @@
 #include "common/ECS.h"
 #include "graphics/Canvas.h"
 #include "graphics/Texture.h"
+#include "map/TileOrientation.h"
 
 #include <cstdint>
 #include <string>
@@ -35,6 +36,10 @@ public:
         float tileH = 32.f;
         float originX = 0.f;
         float originY = 0.f;
+        MapOrientation orientation = MapOrientation::Orthogonal;
+        StaggerAxis staggerAxis = StaggerAxis::Y;
+        StaggerIndex staggerIndex = StaggerIndex::Odd;
+        float hexSideLength = 0.f;
         TileLayer *entity = nullptr;
     };
 
@@ -116,6 +121,16 @@ public:
     void setAutoReload(bool enable);
     bool getAutoReload();
     std::string getConfigPath();
+
+    void tileToWorld(int tx, int ty, float &wx, float &wy);
+    float depthY(int tx, int ty);
+    void worldToTile(float wx, float wy, int &tx, int &ty);
+
+    float tileToWorldX(int tx, int ty);
+    float tileToWorldY(int tx, int ty);
+    float depthYAt(int tx, int ty);
+    int worldToTileX(float wx, float wy);
+    int worldToTileY(float wx, float wy);
 };
 
 /** Strip Tiled flip / rotate flags; keep low 28 bits. */

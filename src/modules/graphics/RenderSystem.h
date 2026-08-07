@@ -1,11 +1,13 @@
 #pragma once
 
 #include "common/ECS.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Quad.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "zeroerr/assert.h"
 #include <cstdint>
+#include <vector>
 
 namespace eve::graphics {
 
@@ -82,7 +84,17 @@ class Graphics;
 /** Walks ECS Renderable2D views and draws via Graphics batch path. */
 class RenderSystem {
 public:
+    /** Full sprite pass + present (existing tests / sprite-only scenes). */
     static void render(Graphics &gfx);
+
+    /** Append visible Renderable2D sprites into a shared queue. */
+    static void collectSprites(std::vector<DrawItem2D> &out);
+
+    /**
+     * Sort and draw items. If present=true, calls gfx.present() at the end.
+     * Map::render uses present=false so the frame can continue drawing.
+     */
+    static void drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool present);
 };
 
 }  // namespace eve::graphics

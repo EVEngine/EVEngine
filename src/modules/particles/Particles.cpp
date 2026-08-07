@@ -73,7 +73,7 @@ void Particles::render(graphics::Graphics *gfx) { ParticleRenderSystem::render(g
 int Particles::pollConfigs() { return ParticleConfigSystem::poll(); }
 
 int Particles::getEmitterCount() const {
-    if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return 0;
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
     int n = 0;
     auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config>();
     for (auto it = view.begin(); it != view.end(); ++it) ++n;

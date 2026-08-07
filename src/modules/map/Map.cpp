@@ -2,6 +2,7 @@
 #include "map/TileSystem.h"
 #include "map/TileConfig.h"
 #include "graphics/Graphics.h"
+#include "graphics/RenderSystem.h"
 #include "common/Module.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -15,12 +16,16 @@ TileLayer *Map::newLayer(int mapW, int mapH, float tileW, float tileH) {
 }
 
 TileLayer *Map::newLayerFromFile(const std::string &path) {
-    auto layers = loadMapFile(path, nullptr);
+    std::vector<MapObject> objs;
+    auto layers = loadMapFile(path, &objs, nullptr);
+    setObjects(std::move(objs));
     return layers.empty() ? nullptr : layers.front();
 }
 
 int Map::loadFromFile(const std::string &path) {
-    auto layers = loadMapFile(path, nullptr);
+    std::vector<MapObject> objs;
+    auto layers = loadMapFile(path, &objs, nullptr);
+    setObjects(std::move(objs));
     return int(layers.size());
 }
 
@@ -29,16 +34,61 @@ void Map::update(float dt) {
     TileConfigSystem::poll();
 }
 
-void Map::render(graphics::Graphics *gfx) { TileRenderSystem::render(gfx); }
+void Map::render(graphics::Graphics *gfx) {
+    if (!gfx) return;
+    std::vector<graphics::DrawItem2D> items;
+    graphics::RenderSystem::collectSprites(items);
+    TileRenderSystem::collect(items);
+    graphics::RenderSystem::drawItems(*gfx, items, false);
+}
 
 int Map::pollConfigs() { return TileConfigSystem::poll(); }
 
 int Map::getLayerCount() const {
-    if (ecs::ComponentManager<TileLayer>::inst().registy == nullptr) return 0;
+    if (ecs::current()->getManager<TileLayer>() == nullptr) return 0;
     int n = 0;
     auto view = ecs::View<TileLayer, TileLayer::Config>();
     for (auto it = view.begin(); it != view.end(); ++it) ++n;
     return n;
+}
+
+void Map::setObjects(std::vector<MapObject> objects) { objects_ = std::move(objects); }
+
+int Map::getObjectCount() const { return int(objects_.size()); }
+
+std::string Map::getObjectName(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return {};
+    return objects_[size_t(i)].name;
+}
+
+std::string Map::getObjectType(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return {};
+    return objects_[size_t(i)].type;
+}
+
+float Map::getObjectX(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return 0.f;
+    return objects_[size_t(i)].x;
+}
+
+float Map::getObjectY(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return 0.f;
+    return objects_[size_t(i)].y;
+}
+
+float Map::getObjectWidth(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return 0.f;
+    return objects_[size_t(i)].width;
+}
+
+float Map::getObjectHeight(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return 0.f;
+    return objects_[size_t(i)].height;
+}
+
+int Map::getObjectGid(int i) const {
+    if (i < 0 || i >= int(objects_.size())) return 0;
+    return int(objects_[size_t(i)].gid);
 }
 
 void Map::expose(ssq::Table &table) {
@@ -78,6 +128,11 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("setAutoReload", &TileLayer::setAutoReload);
     layer.addFunc("getAutoReload", &TileLayer::getAutoReload);
     layer.addFunc("getConfigPath", &TileLayer::getConfigPath);
+    layer.addFunc("tileToWorldX", &TileLayer::tileToWorldX);
+    layer.addFunc("tileToWorldY", &TileLayer::tileToWorldY);
+    layer.addFunc("depthYAt", &TileLayer::depthYAt);
+    layer.addFunc("worldToTileX", &TileLayer::worldToTileX);
+    layer.addFunc("worldToTileY", &TileLayer::worldToTileY);
 }
 
 void Map::expose(ssq::Class &cls) {
@@ -89,6 +144,14 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("render", &Map::render);
     cls.addFunc("pollConfigs", &Map::pollConfigs);
     cls.addFunc("getLayerCount", &Map::getLayerCount);
+    cls.addFunc("getObjectCount", &Map::getObjectCount);
+    cls.addFunc("getObjectName", &Map::getObjectName);
+    cls.addFunc("getObjectType", &Map::getObjectType);
+    cls.addFunc("getObjectX", &Map::getObjectX);
+    cls.addFunc("getObjectY", &Map::getObjectY);
+    cls.addFunc("getObjectWidth", &Map::getObjectWidth);
+    cls.addFunc("getObjectHeight", &Map::getObjectHeight);
+    cls.addFunc("getObjectGid", &Map::getObjectGid);
 }
 
 }  // namespace eve::map

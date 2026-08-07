@@ -30,28 +30,28 @@ static void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320
 }
 
 static void resetScene3D() {
-    if (ecs::ComponentManager<Renderable3D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Renderable3D>() != nullptr) {
         auto view = ecs::View<Renderable3D, Renderable3D::MeshRenderer>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [mr] = *it;
             mr->visible = false;
         }
     }
-    if (ecs::ComponentManager<Camera3D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Camera3D>() != nullptr) {
         auto camView = ecs::View<Camera3D, Camera3D::Data>();
         for (auto it = camView.begin(); it != camView.end(); ++it) {
             auto [data] = *it;
             data->active = false;
         }
     }
-    if (ecs::ComponentManager<Light3D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Light3D>() != nullptr) {
         auto lightView = ecs::View<Light3D, Light3D::Data>();
         for (auto it = lightView.begin(); it != lightView.end(); ++it) {
             auto [d] = *it;
             d->enabled = false;
         }
     }
-    if (ecs::ComponentManager<Renderable2D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Renderable2D>() != nullptr) {
         auto view = ecs::View<Renderable2D, Renderable2D::Sprite>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [sp] = *it;

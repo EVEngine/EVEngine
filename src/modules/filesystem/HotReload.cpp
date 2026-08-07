@@ -68,7 +68,7 @@ bool HotReload::isJsonPath(const std::string &normPath) const {
 }
 
 bool HotReload::reloadParticles(const std::string &normPath) {
-    if (ecs::ComponentManager<particles::ParticleEmitter>::inst().registy == nullptr) return false;
+    if (ecs::current()->getManager<particles::ParticleEmitter>() == nullptr) return false;
 
     int reloaded = 0;
     auto view = ecs::View<particles::ParticleEmitter, particles::ParticleEmitter::Config,
@@ -83,7 +83,7 @@ bool HotReload::reloadParticles(const std::string &normPath) {
 }
 
 bool HotReload::reloadTilemaps(const std::string &normPath) {
-    if (ecs::ComponentManager<map::TileLayer>::inst().registy == nullptr) return false;
+    if (ecs::current()->getManager<map::TileLayer>() == nullptr) return false;
 
     int reloaded = 0;
     auto view = ecs::View<map::TileLayer, map::TileLayer::Config, map::TileLayer::Resource>();
@@ -103,7 +103,7 @@ bool HotReload::reloadTextures(const std::string &normPath) {
     bool ok = gfx->reloadTextureFromFile(normPath);
 
     // Emitters that reference this texture path: force re-bind via config reload or setTexture.
-    if (ecs::ComponentManager<particles::ParticleEmitter>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<particles::ParticleEmitter>() != nullptr) {
         auto view = ecs::View<particles::ParticleEmitter, particles::ParticleEmitter::Config,
                               particles::ParticleEmitter::Resource>();
         for (auto it = view.begin(); it != view.end(); ++it) {
@@ -120,7 +120,7 @@ bool HotReload::reloadTextures(const std::string &normPath) {
     }
 
     // Tile layers that reference this atlas path.
-    if (ecs::ComponentManager<map::TileLayer>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<map::TileLayer>() != nullptr) {
         auto view = ecs::View<map::TileLayer, map::TileLayer::Config, map::TileLayer::Resource,
                               map::TileLayer::Tileset>();
         for (auto it = view.begin(); it != view.end(); ++it) {

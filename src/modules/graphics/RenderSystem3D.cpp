@@ -27,7 +27,7 @@ glm::mat4 modelFromTransform(const Renderable3D::Transform3D &t) {
 }
 
 Camera3D *findDefaultCamera3D() {
-    if (ecs::ComponentManager<Camera3D>::inst().registy == nullptr) return nullptr;
+    if (ecs::current()->getManager<Camera3D>() == nullptr) return nullptr;
     auto camView = ecs::View<Camera3D, Camera3D::Data>();
     for (auto it = camView.begin(); it != camView.end(); ++it) {
         auto [data] = *it;
@@ -44,7 +44,7 @@ struct PackedLight3D {
 
 void collectLights3D(std::vector<PackedLight3D> &out, size_t maxCount) {
     out.clear();
-    if (ecs::ComponentManager<Light3D>::inst().registy == nullptr) return;
+    if (ecs::current()->getManager<Light3D>() == nullptr) return;
     auto view = ecs::View<Light3D, Light3D::Data>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
@@ -264,7 +264,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                                 glm::vec3(cd->upX, cd->upY, cd->upZ), fovRad, aspect, cd->nearZ,
                                 cd->farZ, shadowCaster->shadowBias, shadowCaster->shadowStrength);
 
-        if (ecs::ComponentManager<Renderable3D>::inst().registy != nullptr) {
+        if (ecs::current()->getManager<Renderable3D>() != nullptr) {
             auto casterView =
                 ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
             for (int c = 0; c < ShadowConfig::kCascades; ++c) {
@@ -294,7 +294,7 @@ void RenderSystem3D::render(Graphics &gfx) {
     if (!gfx.had3DThisFrame())
         return;
 
-    if (ecs::ComponentManager<Renderable3D>::inst().registy == nullptr) return;
+    if (ecs::current()->getManager<Renderable3D>() == nullptr) return;
 
     auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
     for (auto it = view.begin(); it != view.end(); ++it) {

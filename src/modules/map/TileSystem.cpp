@@ -1,19 +1,17 @@
 #include "map/TileSystem.h"
 #include "map/TileLayer.h"
 #include "map/TileConfig.h"
+#include "map/TileProjection.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/Canvas.h"
 #include "filesystem/Filesystem.h"
 #include "common/Module.h"
 
-#include <algorithm>
 #include <vector>
 
 namespace eve::map {
 namespace {
-
-float clampZoom(float z) { return z <= 0.f ? 1e-4f : z; }
 
 struct ViewCam {
     float x = 0.f;
@@ -31,22 +29,6 @@ ViewCam fromEntity(graphics::Camera2D *ent) {
     v.y = d->y;
     v.zoom = d->zoom;
     return v;
-}
-
-void applyCamera(float wx, float wy, float ww, float wh, const ViewCam &cam, int viewW, int viewH,
-                 float &sx, float &sy, float &sw, float &sh) {
-    if (!cam.valid) {
-        sx = wx;
-        sy = wy;
-        sw = ww;
-        sh = wh;
-        return;
-    }
-    const float z = clampZoom(cam.zoom);
-    sx = (wx - cam.x) * z + float(viewW) * 0.5f;
-    sy = (wy - cam.y) * z + float(viewH) * 0.5f;
-    sw = ww * z;
-    sh = wh * z;
 }
 
 /** Deterministic debug color when no tileset texture is bound. */
@@ -78,37 +60,6 @@ bool atlasUV(const TileLayer::Tileset &ts, uint32_t gid, float &u0, float &v0, f
     return true;
 }
 
-void drawLayer(const TileLayer::Config &cfg, const TileLayer::Tiles &tiles,
-               const TileLayer::Tileset &ts, const TileLayer::Draw &draw, graphics::Graphics *gfx,
-               const ViewCam &cam) {
-    if (!gfx || !draw.visible || cfg.mapW <= 0 || cfg.mapH <= 0) return;
-    if (tiles.gids.size() < size_t(cfg.mapW * cfg.mapH)) return;
-
-    const int viewW = draw.canvas ? draw.canvas->getWidth() : gfx->getWidth();
-    const int viewH = draw.canvas ? draw.canvas->getHeight() : gfx->getHeight();
-    const Color &tint = draw.tint;
-
-    for (int ty = 0; ty < cfg.mapH; ++ty) {
-        for (int tx = 0; tx < cfg.mapW; ++tx) {
-            const uint32_t raw = tiles.gids[size_t(ty * cfg.mapW + tx)];
-            const uint32_t gid = tileGid(raw);
-            if (gid == 0) continue;
-
-            const float wx = cfg.originX + float(tx) * cfg.tileW;
-            const float wy = cfg.originY + float(ty) * cfg.tileH;
-            float sx, sy, sw, sh;
-            applyCamera(wx, wy, cfg.tileW, cfg.tileH, cam, viewW, viewH, sx, sy, sw, sh);
-
-            float u0, v0, u1, v1;
-            if (atlasUV(ts, gid, u0, v0, u1, v1)) {
-                gfx->drawTexturedRectUV(ts.texture, sx, sy, sw, sh, u0, v0, u1, v1, tint);
-            } else {
-                gfx->drawSolidRect(sx, sy, sw, sh, solidForGid(gid, tint));
-            }
-        }
-    }
-}
-
 int64_t fileModtime(const std::string &path) {
     auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
     if (!fs) fs = eve::filesystem::Filesystem::create();
@@ -119,49 +70,68 @@ int64_t fileModtime(const std::string &path) {
 
 }  // namespace
 
-void TileRenderSystem::render(graphics::Graphics *gfx) {
-    if (!gfx) return;
-    if (ecs::ComponentManager<TileLayer>::inst().registy == nullptr) return;
-
-    struct Item {
-        TileLayer::Config *cfg;
-        TileLayer::Tiles *tiles;
-        TileLayer::Tileset *ts;
-        TileLayer::Draw *draw;
-        ViewCam cam;
-    };
-    std::vector<Item> items;
+void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out) {
+    if (ecs::current()->getManager<TileLayer>() == nullptr) return;
 
     auto view = ecs::View<TileLayer, TileLayer::Config, TileLayer::Tiles, TileLayer::Tileset,
                           TileLayer::Draw>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, tiles, ts, draw] = *it;
-        if (!draw->visible) continue;
-        items.push_back(Item{cfg, tiles, ts, draw, fromEntity(draw->camera)});
-    }
+        if (!draw->visible || cfg->mapW <= 0 || cfg->mapH <= 0) continue;
+        if (tiles->gids.size() < size_t(cfg->mapW * cfg->mapH)) continue;
 
-    std::stable_sort(items.begin(), items.end(), [](const Item &a, const Item &b) {
-        const bool aOff = a.draw->canvas != nullptr;
-        const bool bOff = b.draw->canvas != nullptr;
-        if (aOff != bOff) return aOff && !bOff;
-        if (a.draw->canvas != b.draw->canvas) return a.draw->canvas < b.draw->canvas;
-        return a.draw->layer < b.draw->layer;
-    });
+        const Color &tint = draw->tint;
+        const ViewCam cam = fromEntity(draw->camera);
 
-    graphics::Canvas *current = reinterpret_cast<graphics::Canvas *>(static_cast<uintptr_t>(1));
-    for (const Item &it : items) {
-        graphics::Canvas *next = it.draw->canvas;
-        if (next != current) {
-            gfx->setCanvas(next);
-            current = next;
+        for (int ty = 0; ty < cfg->mapH; ++ty) {
+            for (int tx = 0; tx < cfg->mapW; ++tx) {
+                const uint32_t raw = tiles->gids[size_t(ty * cfg->mapW + tx)];
+                const uint32_t gid = tileGid(raw);
+                if (gid == 0) continue;
+
+                graphics::DrawItem2D item;
+                tileToWorld(*cfg, tx, ty, item.x, item.y);
+                item.w = cfg->tileW;
+                item.h = cfg->tileH;
+                item.depthY = tileToDepthY(*cfg, tx, ty);
+                item.layer = draw->layer;
+                item.canvas = draw->canvas;
+                item.camera = draw->camera;
+                item.camValid = cam.valid;
+                item.camX = cam.x;
+                item.camY = cam.y;
+                item.camZoom = cam.zoom;
+                item.receiveLight = false;
+                item.litPath = false;
+
+                float u0, v0, u1, v1;
+                if (atlasUV(*ts, gid, u0, v0, u1, v1)) {
+                    item.texture = ts->texture;
+                    item.hasUV = true;
+                    item.u0 = u0;
+                    item.v0 = v0;
+                    item.u1 = u1;
+                    item.v1 = v1;
+                    item.color = tint;
+                } else {
+                    item.texture = nullptr;
+                    item.color = solidForGid(gid, tint);
+                }
+                out.push_back(item);
+            }
         }
-        drawLayer(*it.cfg, *it.tiles, *it.ts, *it.draw, gfx, it.cam);
     }
-    if (current != nullptr) gfx->setCanvas();
+}
+
+void TileRenderSystem::render(graphics::Graphics *gfx) {
+    if (!gfx) return;
+    std::vector<graphics::DrawItem2D> items;
+    collect(items);
+    graphics::RenderSystem::drawItems(*gfx, items, false);
 }
 
 int TileConfigSystem::poll() {
-    if (ecs::ComponentManager<TileLayer>::inst().registy == nullptr) return 0;
+    if (ecs::current()->getManager<TileLayer>() == nullptr) return 0;
 
     int reloaded = 0;
     auto view = ecs::View<TileLayer, TileLayer::Config, TileLayer::Resource>();

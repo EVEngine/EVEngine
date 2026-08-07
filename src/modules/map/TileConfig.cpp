@@ -1,4 +1,5 @@
 #include "map/TileConfig.h"
+#include "map/TileOrientation.h"
 
 #include "common/Module.h"
 #include "data/DataModule.h"
@@ -145,17 +146,85 @@ void applyTileset(TileLayer *layer, const TilesetInfo &info) {
     layer->setTileset(tex, info.firstGid, info.columns, info.margin, info.spacing);
 }
 
-bool readDataArray(Poco::JSON::Object::Ptr layerObj, std::vector<uint32_t> &out) {
-    if (!layerObj || !layerObj->has("data")) return false;
-    Poco::JSON::Array::Ptr arr;
-    try {
-        arr = layerObj->getArray("data");
-    } catch (...) {
+bool decodeLayerData(Poco::JSON::Object::Ptr layerObj, size_t expectedCount,
+                     std::vector<uint32_t> &out, std::string *error) {
+    if (!layerObj || !layerObj->has("data")) {
+        if (error) *error = "missing data";
         return false;
     }
-    if (!arr) return false;
-    out.resize(arr->size());
-    for (size_t i = 0; i < arr->size(); ++i) out[i] = uint32_t(asInt(arr->get(i), 0));
+
+    try {
+        if (layerObj->isArray("data")) {
+            auto arr = layerObj->getArray("data");
+            if (!arr) {
+                if (error) *error = "invalid data array";
+                return false;
+            }
+            out.resize(arr->size());
+            for (size_t i = 0; i < arr->size(); ++i) out[i] = uint32_t(asInt(arr->get(i), 0));
+            if (expectedCount > 0 && out.size() != expectedCount) {
+                if (error) *error = "gid count mismatch";
+                return false;
+            }
+            return true;
+        }
+    } catch (...) {
+    }
+
+    std::string encoding = layerObj->has("encoding") ? asString(layerObj->get("encoding")) : "";
+    std::string compression =
+        layerObj->has("compression") ? asString(layerObj->get("compression")) : "";
+    if (encoding != "base64") {
+        if (error) *error = "unsupported encoding";
+        return false;
+    }
+    if (compression == "zstd") {
+        if (error) *error = "zstd not supported; export as zlib";
+        return false;
+    }
+
+    const std::string b64 = asString(layerObj->get("data"));
+    size_t decodedLen = 0;
+    std::unique_ptr<char[]> decoded(eve::data::decode("base64", b64.data(), b64.size(), decodedLen));
+    if (!decoded) {
+        if (error) *error = "base64 decode failed";
+        return false;
+    }
+
+    const char *bytes = decoded.get();
+    size_t nbytes = decodedLen;
+    std::unique_ptr<char[]> inflated;
+    if (!compression.empty()) {
+        if (compression != "zlib" && compression != "gzip") {
+            if (error) *error = "unsupported compression";
+            return false;
+        }
+        size_t rawsize = expectedCount * 4;
+        try {
+            inflated.reset(eve::data::decompress(compression, bytes, nbytes, rawsize));
+        } catch (...) {
+            if (error) *error = "decompress failed";
+            return false;
+        }
+        if (!inflated) {
+            if (error) *error = "decompress failed";
+            return false;
+        }
+        bytes = inflated.get();
+        nbytes = rawsize;
+    }
+
+    if (expectedCount > 0 && nbytes != expectedCount * 4) {
+        if (error) *error = "gid byte length mismatch";
+        return false;
+    }
+    const size_t count = nbytes / 4;
+    out.resize(count);
+    for (size_t i = 0; i < count; ++i) {
+        const unsigned char *p = reinterpret_cast<const unsigned char *>(bytes) + i * 4;
+        out[i] = uint32_t(p[0]) | (uint32_t(p[1]) << 8) | (uint32_t(p[2]) << 16) |
+                 (uint32_t(p[3]) << 24);
+    }
     return true;
 }
 
@@ -163,7 +232,6 @@ void applyLayerDraw(TileLayer *layer, Poco::JSON::Object::Ptr layerObj) {
     if (!layer || !layerObj) return;
     if (layerObj->has("visible"))
         layer->setVisible(asBool(layerObj->get("visible"), true));
-    // Tiled uses "opacity"; EVEngine also accepts "layer" for render sort.
     if (layerObj->has("layer"))
         layer->setLayer(asInt(layerObj->get("layer"), layer->getLayer()));
     else if (layerObj->has("id"))
@@ -194,8 +262,43 @@ bool isTileLayerObject(Poco::JSON::Object::Ptr o) {
     return o->has("data");
 }
 
-void applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root) {
-    if (!layer || !root) return;
+bool isObjectGroup(Poco::JSON::Object::Ptr o) {
+    if (!o) return false;
+    if (!o->has("type")) return false;
+    return asString(o->get("type")) == "objectgroup";
+}
+
+bool parseOrientation(Poco::JSON::Object::Ptr root, TileLayer::Config *cfg, std::string *error) {
+    if (!root || !cfg) return false;
+    if (!root->has("orientation")) return true;
+    const std::string o = asString(root->get("orientation"));
+    if (o.empty() || o == "orthogonal")
+        cfg->orientation = MapOrientation::Orthogonal;
+    else if (o == "isometric")
+        cfg->orientation = MapOrientation::Isometric;
+    else if (o == "staggered")
+        cfg->orientation = MapOrientation::Staggered;
+    else if (o == "hexagonal")
+        cfg->orientation = MapOrientation::Hexagonal;
+    else {
+        if (error) *error = "unknown orientation: " + o;
+        return false;
+    }
+    if (root->has("staggeraxis")) {
+        const std::string a = asString(root->get("staggeraxis"));
+        cfg->staggerAxis = (a == "x") ? StaggerAxis::X : StaggerAxis::Y;
+    }
+    if (root->has("staggerindex")) {
+        const std::string i = asString(root->get("staggerindex"));
+        cfg->staggerIndex = (i == "even") ? StaggerIndex::Even : StaggerIndex::Odd;
+    }
+    if (root->has("hexsidelength"))
+        cfg->hexSideLength = asFloat(root->get("hexsidelength"), 0.f);
+    return true;
+}
+
+bool applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string *error) {
+    if (!layer || !root) return false;
 
     int mapW = layer->getMapWidth();
     int mapH = layer->getMapHeight();
@@ -211,6 +314,8 @@ void applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root) {
 
     if (mapW != layer->getMapWidth() || mapH != layer->getMapHeight()) layer->resize(mapW, mapH);
     layer->setTileSize(tileW, tileH);
+
+    if (!parseOrientation(root, &(*layer->config()), error)) return false;
 
     float ox = layer->getX(), oy = layer->getY();
     if (readVec2(root, "origin", ox, oy))
@@ -231,37 +336,44 @@ void applyMapGlobals(TileLayer *layer, Poco::JSON::Object::Ptr root) {
     float r = 1, g = 1, b = 1, a = 1;
     if (readVec4(root, "tint", r, g, b, a)) layer->setTint(r, g, b, a);
 
-    // Single tileset object / image shortcut.
     if (root->has("tileset") && !root->isArray("tileset")) {
         try {
-            applyTileset(layer, readTilesetObject(root->getObject("tileset")));
+            auto o = root->getObject("tileset");
+            if (o && !o->has("source")) applyTileset(layer, readTilesetObject(o));
         } catch (...) {
         }
     } else if (root->has("tilesets")) {
         try {
             auto arr = root->getArray("tilesets");
-            if (arr && arr->size() > 0) {
-                try {
-                    applyTileset(layer, readTilesetObject(arr->getObject(0)));
-                } catch (...) {
+            if (arr) {
+                for (size_t i = 0; i < arr->size(); ++i) {
+                    try {
+                        auto o = arr->getObject(i);
+                        if (o && o->has("source")) continue;
+                        applyTileset(layer, readTilesetObject(o));
+                        break;
+                    } catch (...) {
+                    }
                 }
             }
         } catch (...) {
         }
     } else if (root->has("image") || root->has("texture")) {
-        TilesetInfo info = readTilesetObject(root);
-        applyTileset(layer, info);
+        applyTileset(layer, readTilesetObject(root));
     }
+    return true;
 }
 
-bool applyFlatLayerData(TileLayer *layer, Poco::JSON::Object::Ptr root) {
-    // Flat single-layer: data at root.
-    std::vector<uint32_t> data;
-    if (!readDataArray(root, data)) return false;
+bool applyFlatLayerData(TileLayer *layer, Poco::JSON::Object::Ptr root, std::string *error) {
     const int mapW = layer->getMapWidth();
     const int mapH = layer->getMapHeight();
     const size_t need = size_t(std::max(0, mapW) * std::max(0, mapH));
-    if (need == 0) return false;
+    if (need == 0) {
+        if (error) *error = "empty map size";
+        return false;
+    }
+    std::vector<uint32_t> data;
+    if (!decodeLayerData(root, need, data, error)) return false;
     auto &gids = layer->tiles()->gids;
     gids.assign(need, 0u);
     const size_t n = std::min(need, data.size());
@@ -269,16 +381,18 @@ bool applyFlatLayerData(TileLayer *layer, Poco::JSON::Object::Ptr root) {
     return true;
 }
 
-bool applyOneLayerObject(TileLayer *layer, Poco::JSON::Object::Ptr layerObj, int mapW, int mapH) {
+bool applyOneLayerObject(TileLayer *layer, Poco::JSON::Object::Ptr layerObj, int mapW, int mapH,
+                         std::string *error) {
     if (!layer || !layerObj) return false;
     int w = mapW, h = mapH;
     if (layerObj->has("width")) w = asInt(layerObj->get("width"), w);
     if (layerObj->has("height")) h = asInt(layerObj->get("height"), h);
     if (w != layer->getMapWidth() || h != layer->getMapHeight()) layer->resize(w, h);
 
+    const size_t need =
+        size_t(std::max(0, layer->getMapWidth()) * std::max(0, layer->getMapHeight()));
     std::vector<uint32_t> data;
-    if (!readDataArray(layerObj, data)) return false;
-    const size_t need = size_t(std::max(0, layer->getMapWidth()) * std::max(0, layer->getMapHeight()));
+    if (!decodeLayerData(layerObj, need, data, error)) return false;
     auto &gids = layer->tiles()->gids;
     gids.assign(need, 0u);
     const size_t n = std::min(need, data.size());
@@ -288,6 +402,176 @@ bool applyOneLayerObject(TileLayer *layer, Poco::JSON::Object::Ptr layerObj, int
     return true;
 }
 
+void parseObjectGroup(Poco::JSON::Object::Ptr group, std::vector<MapObject> &out) {
+    if (!group || !group->has("objects")) return;
+    Poco::JSON::Array::Ptr arr;
+    try {
+        arr = group->getArray("objects");
+    } catch (...) {
+        return;
+    }
+    if (!arr) return;
+    for (size_t i = 0; i < arr->size(); ++i) {
+        Poco::JSON::Object::Ptr o;
+        try {
+            o = arr->getObject(i);
+        } catch (...) {
+            continue;
+        }
+        if (!o) continue;
+        MapObject mo;
+        if (o->has("name")) mo.name = asString(o->get("name"));
+        if (o->has("type")) mo.type = asString(o->get("type"));
+        else if (o->has("class")) mo.type = asString(o->get("class"));
+        mo.x = o->has("x") ? asFloat(o->get("x"), 0.f) : 0.f;
+        mo.y = o->has("y") ? asFloat(o->get("y"), 0.f) : 0.f;
+        mo.width = o->has("width") ? asFloat(o->get("width"), 0.f) : 0.f;
+        mo.height = o->has("height") ? asFloat(o->get("height"), 0.f) : 0.f;
+        if (o->has("gid")) mo.gid = uint32_t(asInt(o->get("gid"), 0));
+        out.push_back(std::move(mo));
+    }
+}
+
+void abandonLayers(std::vector<TileLayer *> &layers) {
+    for (TileLayer *layer : layers) {
+        if (!layer) continue;
+        layer->clear();
+        layer->setVisible(false);
+    }
+    layers.clear();
+}
+
+TilesetInfo readDefaultTileset(Poco::JSON::Object::Ptr root) {
+    TilesetInfo defaultTs;
+    if (root->has("tilesets")) {
+        try {
+            auto arr = root->getArray("tilesets");
+            if (arr) {
+                for (size_t i = 0; i < arr->size(); ++i) {
+                    try {
+                        auto o = arr->getObject(i);
+                        if (o && o->has("source")) continue;
+                        return readTilesetObject(o);
+                    } catch (...) {
+                    }
+                }
+            }
+        } catch (...) {
+        }
+    } else if (root->has("tileset") && !root->isArray("tileset")) {
+        try {
+            auto o = root->getObject("tileset");
+            if (o && !o->has("source")) return readTilesetObject(o);
+        } catch (...) {
+        }
+    } else if (root->has("image") || root->has("texture")) {
+        return readTilesetObject(root);
+    }
+    return defaultTs;
+}
+
+std::vector<TileLayer *> loadMapObject(Poco::JSON::Object::Ptr root, const std::string &path,
+                                       eve::filesystem::Filesystem *fs,
+                                       std::vector<MapObject> *objects, std::string *error) {
+    std::vector<TileLayer *> out;
+    if (!root) {
+        if (error) *error = "config root must be object";
+        return out;
+    }
+
+    int mapW = 10, mapH = 10;
+    float tileW = 32.f, tileH = 32.f;
+    if (root->has("width")) mapW = asInt(root->get("width"), mapW);
+    if (root->has("height")) mapH = asInt(root->get("height"), mapH);
+    if (root->has("tilewidth")) tileW = asFloat(root->get("tilewidth"), tileW);
+    else if (root->has("tileWidth")) tileW = asFloat(root->get("tileWidth"), tileW);
+    if (root->has("tileheight")) tileH = asFloat(root->get("tileheight"), tileH);
+    else if (root->has("tileHeight")) tileH = asFloat(root->get("tileHeight"), tileH);
+
+    // Validate orientation early on a temp config.
+    TileLayer::Config orientCheck;
+    if (!parseOrientation(root, &orientCheck, error)) return out;
+
+    TilesetInfo defaultTs = readDefaultTileset(root);
+    if (objects) objects->clear();
+
+    auto bindResource = [&](TileLayer *layer) {
+        auto res = layer->resource();
+        res->path = path;
+        if (!path.empty()) {
+            res->modtime = fileModtime(path);
+            if (fs) {
+                fs->watch(path);
+                if (auto *hot =
+                        eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
+                    hot->bind(path, "tilemap");
+            }
+        }
+        if (root->has("autoReload"))
+            res->autoReload = asBool(root->get("autoReload"), true);
+    };
+
+    if (root->has("layers")) {
+        try {
+            auto arr = root->getArray("layers");
+            if (arr) {
+                int sort = 0;
+                for (size_t i = 0; i < arr->size(); ++i) {
+                    Poco::JSON::Object::Ptr lo;
+                    try {
+                        lo = arr->getObject(i);
+                    } catch (...) {
+                        continue;
+                    }
+                    if (objects && isObjectGroup(lo)) {
+                        parseObjectGroup(lo, *objects);
+                        continue;
+                    }
+                    if (!isTileLayerObject(lo)) continue;
+                    TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
+                    if (!applyMapGlobals(layer, root, error)) {
+                        abandonLayers(out);
+                        layer->clear();
+                        layer->setVisible(false);
+                        return {};
+                    }
+                    applyTileset(layer, defaultTs);
+                    if (!applyOneLayerObject(layer, lo, mapW, mapH, error)) {
+                        abandonLayers(out);
+                        layer->clear();
+                        layer->setVisible(false);
+                        return {};
+                    }
+                    if (!lo->has("layer") && !lo->has("id")) layer->setLayer(sort);
+                    ++sort;
+                    bindResource(layer);
+                    out.push_back(layer);
+                }
+            }
+        } catch (...) {
+        }
+        if (!out.empty()) return out;
+    }
+
+    TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
+    if (!applyMapGlobals(layer, root, error)) {
+        layer->clear();
+        layer->setVisible(false);
+        return {};
+    }
+    applyTileset(layer, defaultTs);
+    if (root->has("data")) {
+        if (!applyFlatLayerData(layer, root, error)) {
+            layer->clear();
+            layer->setVisible(false);
+            return {};
+        }
+    }
+    bindResource(layer);
+    out.push_back(layer);
+    return out;
+}
+
 }  // namespace
 
 bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc) {
@@ -295,9 +579,9 @@ bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc) {
     auto root = doc->object();
     if (!root) return false;
 
-    applyMapGlobals(layer, root);
+    std::string err;
+    if (!applyMapGlobals(layer, root, &err)) return false;
 
-    // Prefer nested layers[0]; fall back to root.data.
     if (root->has("layers")) {
         try {
             auto arr = root->getArray("layers");
@@ -311,16 +595,14 @@ bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc) {
                     }
                     if (!isTileLayerObject(lo)) continue;
                     return applyOneLayerObject(layer, lo, layer->getMapWidth(),
-                                               layer->getMapHeight());
+                                               layer->getMapHeight(), nullptr);
                 }
             }
         } catch (...) {
         }
     }
 
-    if (root->has("data")) return applyFlatLayerData(layer, root);
-
-    // Globals-only config still succeeds (empty map).
+    if (root->has("data")) return applyFlatLayerData(layer, root, nullptr);
     return true;
 }
 
@@ -332,10 +614,36 @@ bool applyConfigText(TileLayer *layer, const std::string &json, std::string *err
         if (error) *error = err.empty() ? "invalid json" : err;
         return false;
     }
-    if (!applyConfigDocument(layer, doc.get())) {
+    if (!doc->isObject()) {
         if (error) *error = "config root must be object";
         return false;
     }
+    auto root = doc->object();
+    if (!root) {
+        if (error) *error = "config root must be object";
+        return false;
+    }
+    if (!applyMapGlobals(layer, root, error)) return false;
+    if (root->has("layers")) {
+        try {
+            auto arr = root->getArray("layers");
+            if (arr) {
+                for (size_t i = 0; i < arr->size(); ++i) {
+                    Poco::JSON::Object::Ptr lo;
+                    try {
+                        lo = arr->getObject(i);
+                    } catch (...) {
+                        continue;
+                    }
+                    if (!isTileLayerObject(lo)) continue;
+                    return applyOneLayerObject(layer, lo, layer->getMapWidth(),
+                                               layer->getMapHeight(), error);
+                }
+            }
+        } catch (...) {
+        }
+    }
+    if (root->has("data")) return applyFlatLayerData(layer, root, error);
     return true;
 }
 
@@ -381,11 +689,23 @@ bool reloadConfigFile(TileLayer *layer, std::string *error) {
     return loadConfigFile(layer, path, error);
 }
 
-std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error) {
-    std::vector<TileLayer *> out;
+std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
+                                     std::string *error) {
+    auto *dm = eve::data::DataModule::create();
+    std::string err;
+    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
+    if (!doc || !doc->isObject()) {
+        if (error) *error = err.empty() ? "invalid json" : err;
+        return {};
+    }
+    return loadMapObject(doc->object(), {}, nullptr, objects, error);
+}
+
+std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
+                                     std::string *error) {
     if (path.empty()) {
         if (error) *error = "empty path";
-        return out;
+        return {};
     }
 
     auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
@@ -396,11 +716,11 @@ std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error
         data.reset(fs->read(path));
     } catch (...) {
         if (error) *error = "read failed: " + path;
-        return out;
+        return {};
     }
     if (!data || data->getSize() == 0) {
         if (error) *error = "empty file: " + path;
-        return out;
+        return {};
     }
 
     std::string text(static_cast<const char *>(data->getData()), data->getSize());
@@ -409,87 +729,13 @@ std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error
     std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(text, &err));
     if (!doc || !doc->isObject()) {
         if (error) *error = err.empty() ? "invalid json" : err;
-        return out;
+        return {};
     }
-    auto root = doc->object();
-    if (!root) {
-        if (error) *error = "config root must be object";
-        return out;
-    }
+    return loadMapObject(doc->object(), path, fs, objects, error);
+}
 
-    int mapW = 10, mapH = 10;
-    float tileW = 32.f, tileH = 32.f;
-    if (root->has("width")) mapW = asInt(root->get("width"), mapW);
-    if (root->has("height")) mapH = asInt(root->get("height"), mapH);
-    if (root->has("tilewidth")) tileW = asFloat(root->get("tilewidth"), tileW);
-    else if (root->has("tileWidth")) tileW = asFloat(root->get("tileWidth"), tileW);
-    if (root->has("tileheight")) tileH = asFloat(root->get("tileheight"), tileH);
-    else if (root->has("tileHeight")) tileH = asFloat(root->get("tileHeight"), tileH);
-
-    TilesetInfo defaultTs;
-    if (root->has("tilesets")) {
-        try {
-            auto arr = root->getArray("tilesets");
-            if (arr && arr->size() > 0) defaultTs = readTilesetObject(arr->getObject(0));
-        } catch (...) {
-        }
-    } else if (root->has("tileset") && !root->isArray("tileset")) {
-        try {
-            defaultTs = readTilesetObject(root->getObject("tileset"));
-        } catch (...) {
-        }
-    } else if (root->has("image") || root->has("texture")) {
-        defaultTs = readTilesetObject(root);
-    }
-
-    auto bindResource = [&](TileLayer *layer) {
-        auto res = layer->resource();
-        res->path = path;
-        res->modtime = fileModtime(path);
-        if (root->has("autoReload"))
-            res->autoReload = asBool(root->get("autoReload"), true);
-        fs->watch(path);
-        if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
-            hot->bind(path, "tilemap");
-    };
-
-    // Multi-layer document.
-    if (root->has("layers")) {
-        try {
-            auto arr = root->getArray("layers");
-            if (arr) {
-                int sort = 0;
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    Poco::JSON::Object::Ptr lo;
-                    try {
-                        lo = arr->getObject(i);
-                    } catch (...) {
-                        continue;
-                    }
-                    if (!isTileLayerObject(lo)) continue;
-                    TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
-                    applyMapGlobals(layer, root);
-                    applyTileset(layer, defaultTs);
-                    applyOneLayerObject(layer, lo, mapW, mapH);
-                    if (!lo->has("layer") && !lo->has("id")) layer->setLayer(sort);
-                    ++sort;
-                    bindResource(layer);
-                    out.push_back(layer);
-                }
-            }
-        } catch (...) {
-        }
-        if (!out.empty()) return out;
-    }
-
-    // Flat single-layer (root.data) or empty map shell.
-    TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
-    applyMapGlobals(layer, root);
-    applyTileset(layer, defaultTs);
-    if (root->has("data")) applyFlatLayerData(layer, root);
-    bindResource(layer);
-    out.push_back(layer);
-    return out;
+std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error) {
+    return loadMapFile(path, nullptr, error);
 }
 
 }  // namespace eve::map

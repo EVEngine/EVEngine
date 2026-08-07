@@ -98,7 +98,7 @@ int64_t fileModtime(const std::string &path) {
 }  // namespace
 
 void ParticleSimSystem::update(float dt) {
-    if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return;
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
 
     auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim>();
     for (auto it = view.begin(); it != view.end(); ++it) {
@@ -109,7 +109,7 @@ void ParticleSimSystem::update(float dt) {
 
 void ParticleRenderSystem::render(graphics::Graphics *gfx) {
     if (!gfx) return;
-    if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return;
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
 
     struct Item {
         ParticleEmitter::Config *cfg;
@@ -152,7 +152,7 @@ void ParticleRenderSystem::render(graphics::Graphics *gfx) {
 }
 
 int ParticleConfigSystem::poll() {
-    if (ecs::ComponentManager<ParticleEmitter>::inst().registy == nullptr) return 0;
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
 
     // Watch events are drained by load.nut / HotReload; use modtime as fallback.
     int reloaded = 0;

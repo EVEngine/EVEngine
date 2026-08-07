@@ -70,21 +70,21 @@ void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 640, int h
 }
 
 void resetScene3D() {
-    if (ecs::ComponentManager<Renderable3D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Renderable3D>() != nullptr) {
         auto view = ecs::View<Renderable3D, Renderable3D::MeshRenderer>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [mr] = *it;
             mr->visible = false;
         }
     }
-    if (ecs::ComponentManager<Camera3D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Camera3D>() != nullptr) {
         auto camView = ecs::View<Camera3D, Camera3D::Data>();
         for (auto it = camView.begin(); it != camView.end(); ++it) {
             auto [data] = *it;
             data->active = false;
         }
     }
-    if (ecs::ComponentManager<Renderable2D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Renderable2D>() != nullptr) {
         auto view = ecs::View<Renderable2D, Renderable2D::Sprite>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [sp] = *it;
@@ -375,7 +375,7 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName,
     RenderSystem3D::setDirectionalLight(lx, ly + rad * 1.2f, lz, 1.8f, 1.8f, 1.8f);
 
     for (int i = 0; i < 10; ++i) {
-        if (ecs::ComponentManager<Renderable3D>::inst().registy != nullptr) {
+        if (ecs::current()->getManager<Renderable3D>() != nullptr) {
             auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
             for (auto it = view.begin(); it != view.end(); ++it) {
                 auto [xf, mr] = *it;

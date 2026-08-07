@@ -152,7 +152,7 @@ std::vector<UIChange> &UISystem::changeQueue() { return g_changes; }
 
 UIHost *UISystem::findHost(const std::string &name) {
     if (name.empty()) return nullptr;
-    if (ecs::ComponentManager<UIHost>::inst().registy == nullptr) return nullptr;
+    if (ecs::current()->getManager<UIHost>() == nullptr) return nullptr;
     auto view = ecs::View<UIHost, UIHost::Meta, UIHost::Tree>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [meta, tree] = *it;
@@ -164,7 +164,7 @@ UIHost *UISystem::findHost(const std::string &name) {
 
 UIHost *UISystem::findHostByOwner(uint32_t ownerId) {
     if (ownerId == 0) return nullptr;
-    if (ecs::ComponentManager<UIHost>::inst().registy == nullptr) return nullptr;
+    if (ecs::current()->getManager<UIHost>() == nullptr) return nullptr;
     auto view = ecs::View<UIHost, UIHost::Meta, UIHost::Tree>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [meta, tree] = *it;
@@ -175,7 +175,7 @@ UIHost *UISystem::findHostByOwner(uint32_t ownerId) {
 }
 
 void UISystem::render() {
-    if (ecs::ComponentManager<UIHost>::inst().registy == nullptr) return;
+    if (ecs::current()->getManager<UIHost>() == nullptr) return;
 
     applyThemeToImGui(globalTheme());
 

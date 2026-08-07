@@ -74,7 +74,7 @@ struct PackedLight {
 
 void collectLights(Canvas *canvasKey, std::vector<PackedLight> &out) {
     out.clear();
-    if (ecs::ComponentManager<Light2D>::inst().registy == nullptr) return;
+    if (ecs::current()->getManager<Light2D>() == nullptr) return;
     auto view = ecs::View<Light2D, Light2D::Data>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
@@ -153,9 +153,9 @@ Color modulateUnlit(Color base, float cx, float cy, bool receiveLight, const Lig
 
 }  // namespace
 
-void RenderSystem::render(Graphics &gfx) {
+void RenderSystem::collectSprites(std::vector<DrawItem2D> &out) {
     std::unordered_map<Canvas *, Camera2D *> defaultCam;
-    if (ecs::ComponentManager<Camera2D>::inst().registy != nullptr) {
+    if (ecs::current()->getManager<Camera2D>() != nullptr) {
         auto camView = ecs::View<Camera2D, Camera2D::Data>();
         for (auto it = camView.begin(); it != camView.end(); ++it) {
             auto [data] = *it;
@@ -166,21 +166,6 @@ void RenderSystem::render(Graphics &gfx) {
             if (defaultCam.find(key) == defaultCam.end()) defaultCam[key] = data->entity;
         }
     }
-
-    struct Item {
-        float x, y, w, h;
-        Color color;
-        int layer;
-        Texture *texture;
-        Texture *normal;
-        Quad *quad;
-        Shader *shader;
-        Canvas *canvas;
-        ViewCam cam;
-        bool receiveLight;
-        bool litPath;
-    };
-    std::vector<Item> items;
 
     auto view = ecs::View<Renderable2D, Renderable2D::Transform2D, Renderable2D::Sprite>();
     for (auto it = view.begin(); it != view.end(); ++it) {
@@ -193,11 +178,13 @@ void RenderSystem::render(Graphics &gfx) {
             camEnt = (found != defaultCam.end()) ? found->second : nullptr;
         }
 
-        Item item;
+        ViewCam cam = fromEntity(camEnt);
+        DrawItem2D item;
         item.x = xf->x;
         item.y = xf->y;
         item.w = sp->width * xf->sx;
         item.h = sp->height * xf->sy;
+        item.depthY = xf->y + sp->height * xf->sy;
         item.color = Color(sp->r, sp->g, sp->b, sp->a);
         item.layer = sp->layer;
         item.texture = sp->texture;
@@ -205,24 +192,41 @@ void RenderSystem::render(Graphics &gfx) {
         item.quad = sp->quad;
         item.shader = sp->shader;
         item.canvas = sp->canvas;
-        item.cam = fromEntity(camEnt);
+        item.camera = camEnt;
+        item.camValid = cam.valid;
+        item.camX = cam.x;
+        item.camY = cam.y;
+        item.camZoom = cam.zoom;
+        item.camClear = cam.clearColor;
+        item.camAmbientR = cam.ambientR;
+        item.camAmbientG = cam.ambientG;
+        item.camAmbientB = cam.ambientB;
         item.receiveLight = sp->receiveLight;
         item.litPath = sp->receiveLight && sp->normalTexture != nullptr && sp->texture != nullptr &&
                        sp->shader == nullptr;
-        items.push_back(item);
+        if (item.quad && item.texture) {
+            item.hasUV = true;
+            item.quad->getUV(item.texture->getWidth(), item.texture->getHeight(), item.u0, item.v0,
+                             item.u1, item.v1);
+        }
+        out.push_back(item);
     }
+}
 
-    std::stable_sort(items.begin(), items.end(), [](const Item &a, const Item &b) {
-        const bool aOff = a.canvas != nullptr;
-        const bool bOff = b.canvas != nullptr;
-        if (aOff != bOff) return aOff && !bOff;
-        if (a.canvas != b.canvas) return a.canvas < b.canvas;
-        if (a.layer != b.layer) return a.layer < b.layer;
-        if (a.litPath != b.litPath) return !a.litPath && b.litPath;  // unlit first
-        if (a.shader != b.shader) return a.shader < b.shader;
-        if (a.texture != b.texture) return a.texture < b.texture;
-        return a.normal < b.normal;
-    });
+void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool present) {
+    sortDrawItems2D(items);
+
+    std::unordered_map<Canvas *, Camera2D *> defaultCam;
+    if (ecs::current()->getManager<Camera2D>() != nullptr) {
+        auto camView = ecs::View<Camera2D, Camera2D::Data>();
+        for (auto it = camView.begin(); it != camView.end(); ++it) {
+            auto [data] = *it;
+            if (!data->active) continue;
+            if (!data->entity) continue;
+            Canvas *key = data->canvas;
+            if (defaultCam.find(key) == defaultCam.end()) defaultCam[key] = data->entity;
+        }
+    }
 
     Canvas *current = reinterpret_cast<Canvas *>(static_cast<uintptr_t>(1));
     Lighting2DUBO currentLights{};
@@ -235,10 +239,21 @@ void RenderSystem::render(Graphics &gfx) {
             if (defIt != defaultCam.end()) {
                 groupCam = fromEntity(defIt->second);
                 clearCol = groupCam.clearColor;
+            } else if (items[i].camValid) {
+                groupCam.valid = true;
+                groupCam.x = items[i].camX;
+                groupCam.y = items[i].camY;
+                groupCam.zoom = items[i].camZoom;
+                groupCam.clearColor = items[i].camClear;
+                groupCam.ambientR = items[i].camAmbientR;
+                groupCam.ambientG = items[i].camAmbientG;
+                groupCam.ambientB = items[i].camAmbientB;
+                clearCol = groupCam.clearColor;
             }
 
             gfx.setCanvas(next);
-            gfx.clear(clearCol, std::nullopt, std::nullopt);
+            // Only clear when presenting a full sprite pass; map-unified draws must not wipe.
+            if (present) gfx.clear(clearCol, std::nullopt, std::nullopt);
             current = next;
 
             int viewW = next ? next->getWidth() : gfx.getWidth();
@@ -250,13 +265,25 @@ void RenderSystem::render(Graphics &gfx) {
         }
 
         const auto &it = items[i];
+        ViewCam cam{};
+        if (it.camValid) {
+            cam.valid = true;
+            cam.x = it.camX;
+            cam.y = it.camY;
+            cam.zoom = it.camZoom;
+        } else if (it.camera) {
+            cam = fromEntity(it.camera);
+        }
         int viewW = it.canvas ? it.canvas->getWidth() : gfx.getWidth();
         int viewH = it.canvas ? it.canvas->getHeight() : gfx.getHeight();
         float sx, sy, sw, sh;
-        applyCamera(it.x, it.y, it.w, it.h, it.cam, viewW, viewH, sx, sy, sw, sh);
+        applyCamera(it.x, it.y, it.w, it.h, cam, viewW, viewH, sx, sy, sw, sh);
 
-        float u0 = 0.f, v0 = 0.f, u1 = 1.f, v1 = 1.f;
-        if (it.quad && it.texture)
+        float u0 = it.hasUV ? it.u0 : 0.f;
+        float v0 = it.hasUV ? it.v0 : 0.f;
+        float u1 = it.hasUV ? it.u1 : 1.f;
+        float v1 = it.hasUV ? it.v1 : 1.f;
+        if (!it.hasUV && it.quad && it.texture)
             it.quad->getUV(it.texture->getWidth(), it.texture->getHeight(), u0, v0, u1, v1);
 
         if (it.litPath) {
@@ -275,8 +302,16 @@ void RenderSystem::render(Graphics &gfx) {
         }
     }
 
-    gfx.setCanvas();
-    gfx.present();
+    if (present) {
+        gfx.setCanvas();
+        gfx.present();
+    }
+}
+
+void RenderSystem::render(Graphics &gfx) {
+    std::vector<DrawItem2D> items;
+    collectSprites(items);
+    drawItems(gfx, items, true);
 }
 
 }  // namespace eve::graphics

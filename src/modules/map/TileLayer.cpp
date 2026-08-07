@@ -1,5 +1,6 @@
 #include "map/TileLayer.h"
 #include "map/TileConfig.h"
+#include "map/TileProjection.h"
 
 #include <algorithm>
 
@@ -111,5 +112,41 @@ bool TileLayer::reloadConfig() { return reloadConfigFile(this, nullptr); }
 void TileLayer::setAutoReload(bool enable) { resource()->autoReload = enable; }
 bool TileLayer::getAutoReload() { return resource()->autoReload; }
 std::string TileLayer::getConfigPath() { return resource()->path; }
+
+void TileLayer::tileToWorld(int tx, int ty, float &wx, float &wy) {
+    eve::map::tileToWorld(*config(), tx, ty, wx, wy);
+}
+
+float TileLayer::depthY(int tx, int ty) { return tileToDepthY(*config(), tx, ty); }
+
+void TileLayer::worldToTile(float wx, float wy, int &tx, int &ty) {
+    eve::map::worldToTile(*config(), wx, wy, tx, ty);
+}
+
+float TileLayer::tileToWorldX(int tx, int ty) {
+    float wx = 0.f, wy = 0.f;
+    tileToWorld(tx, ty, wx, wy);
+    return wx;
+}
+
+float TileLayer::tileToWorldY(int tx, int ty) {
+    float wx = 0.f, wy = 0.f;
+    tileToWorld(tx, ty, wx, wy);
+    return wy;
+}
+
+float TileLayer::depthYAt(int tx, int ty) { return depthY(tx, ty); }
+
+int TileLayer::worldToTileX(float wx, float wy) {
+    int tx = 0, ty = 0;
+    worldToTile(wx, wy, tx, ty);
+    return tx;
+}
+
+int TileLayer::worldToTileY(float wx, float wy) {
+    int tx = 0, ty = 0;
+    worldToTile(wx, wy, tx, ty);
+    return ty;
+}
 
 }  // namespace eve::map

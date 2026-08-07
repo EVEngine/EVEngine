@@ -1,6 +1,7 @@
 #pragma once
 
 #include "map/TileLayer.h"
+#include "map/MapObject.h"
 
 #include <string>
 #include <vector>
@@ -13,7 +14,7 @@ namespace eve::map {
 
 /**
  * Apply map/layer JSON onto an existing TileLayer (Config + Tiles + Tileset + Draw).
- * Multi-layer documents only apply the first orthogonal tile layer when called on one entity.
+ * Multi-layer documents only apply the first tile layer when called on one entity.
  */
 bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc);
 
@@ -30,8 +31,15 @@ bool reloadConfigFile(TileLayer *layer, std::string *error = nullptr);
 
 /**
  * Load a (possibly multi-layer) map JSON. Creates one TileLayer per tile layer.
+ * Optionally fills `objects` from objectgroup layers.
  * Returns created layers (empty on failure). All share the same Resource.path for reload.
  */
 std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error = nullptr);
+std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
+                                     std::string *error = nullptr);
+
+/** Parse map JSON text (no filesystem). Same semantics as loadMapFile. */
+std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
+                                     std::string *error = nullptr);
 
 }  // namespace eve::map

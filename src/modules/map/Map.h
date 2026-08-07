@@ -2,6 +2,7 @@
 
 #include "common/Module.h"
 #include "map/TileLayer.h"
+#include "map/MapObject.h"
 
 #include <string>
 #include <vector>
@@ -14,7 +15,7 @@ namespace eve::map {
 
 /**
  * Map module — factory + script binding for 2D tilemaps.
- * Per-frame: TileConfigSystem (hot reload) → TileRenderSystem.
+ * Per-frame: TileConfigSystem (hot reload) → unified sprite+tile render.
  */
 class Map : public Module {
 public:
@@ -25,8 +26,9 @@ public:
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);
 
     /**
-     * Load map JSON (Tiled-compatible orthogonal subset or EVEngine simplified format).
+     * Load map JSON (Tiled-compatible subset or EVEngine simplified format).
      * Creates one TileLayer per tile layer; returns the first (nullptr on failure).
+     * Refreshes the module object cache from objectgroup layers.
      */
     TileLayer *newLayerFromFile(const std::string &path);
 
@@ -38,6 +40,21 @@ public:
     int pollConfigs();
 
     int getLayerCount() const;
+
+    int getObjectCount() const;
+    std::string getObjectName(int i) const;
+    std::string getObjectType(int i) const;
+    float getObjectX(int i) const;
+    float getObjectY(int i) const;
+    float getObjectWidth(int i) const;
+    float getObjectHeight(int i) const;
+    int getObjectGid(int i) const;
+
+    /** Replace object cache (used by load / hot reload). */
+    void setObjects(std::vector<MapObject> objects);
+
+private:
+    std::vector<MapObject> objects_;
 };
 
 }  // namespace eve::map

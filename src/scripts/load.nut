@@ -26,7 +26,7 @@ config <- {
     height = 600
     title = "EVEngine"
     debug = false
-    hotReload = true
+    hotReload = false
 };
 
 if (file_exists("config.nut")) {
