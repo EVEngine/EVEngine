@@ -1,5 +1,7 @@
 build*/
 dist/
+.vscode/
+.superpowers/
 artifacts-local-test/
 third-party/
 third-party-binary/
