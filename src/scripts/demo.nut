@@ -17,6 +17,7 @@ game <- {
     spawnCd = 0.0
     mouseWasDown = false
     touchWasDown = false
+    hotReload = false
 };
 
 plane <- {

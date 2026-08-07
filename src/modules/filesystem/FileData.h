@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-
+#include <cstdint>
 #include "common/Data.h"
 #include "common/Exception.h"
 

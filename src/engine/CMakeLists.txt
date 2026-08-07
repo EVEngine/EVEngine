@@ -73,7 +73,13 @@ elseif(APPLE)
         "-framework OpenGL"
     )
 elseif(UNIX)
-    set(SystemLibraries ${SystemLibraries} dl X11 pthread)
+    # Static SDL2 pulls Wayland/X11 extras; FreeType needs bz2/png.
+    set(SystemLibraries ${SystemLibraries}
+        dl pthread m rt bz2 png
+        X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
+        wayland-client wayland-cursor wayland-egl xkbcommon
+        asound
+    )
 endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
@@ -92,25 +98,27 @@ elseif(WIN32)
         ${SystemLibraries})
 elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     # SDL2 is shared (loaded by Java); other deps are static where possible.
+    # GNU ld needs dependents before providers: vorbisfile -> vorbis -> ogg;
+    # PocoNet/XML/JSON -> PocoFoundation.
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
         medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
-        vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
+        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
-        PocoFoundation PocoNet PocoJSON PocoXML
+        PocoNet PocoXML PocoJSON PocoFoundation
         ${SystemLibraries})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS OR APPLE)
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
         medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
-        vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal
+        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
-        PocoFoundation PocoNet PocoJSON PocoXML
+        PocoNet PocoXML PocoJSON PocoFoundation
         ${SystemLibraries})
 else()
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
         medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
-        vorbis vorbisfile modplug mpg123 OpenAL
+        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
-        PocoFoundation PocoNet PocoJSON PocoXML
+        PocoNet PocoXML PocoJSON PocoFoundation
         ${SystemLibraries})
 endif()
 

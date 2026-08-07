@@ -21,6 +21,7 @@
 #pragma once
 
 #include "common/Data.h"
+#include <cstdint>
 #include <string>
 
 namespace eve

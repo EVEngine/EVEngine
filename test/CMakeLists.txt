@@ -101,7 +101,12 @@ elseif(APPLE)
         "-framework OpenGL"
     )
 elseif(UNIX)
-    set(SystemLibraries ${SystemLibraries} dl X11 pthread)
+    set(SystemLibraries ${SystemLibraries}
+        dl pthread m rt bz2 png
+        X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
+        wayland-client wayland-cursor wayland-egl xkbcommon
+        asound
+    )
 endif()
 
 if(WIN32)
@@ -115,10 +120,10 @@ if(WIN32)
 else()
   if(APPLE)
     set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D
-        vorbis-static vorbisfile-static ogg-static modplug-static mpg123 openal freetype)
+        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal freetype)
   else()
     set(ThirdParty ${ThirdParty} physfs medialoader_image medialoader_model medialoader_sound assimp z lz4 Box2D
-        vorbis vorbisfile modplug mpg123 OpenAL freetype)
+        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal freetype)
   endif()
 endif()
 
@@ -133,7 +138,7 @@ else()
             ${SystemLibraries})
     else()
         set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
-            PocoFoundation PocoNet PocoJSON PocoXML
+            PocoNet PocoXML PocoJSON PocoFoundation
             ${SystemLibraries})
     endif()
 endif()

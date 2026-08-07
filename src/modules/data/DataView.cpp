@@ -2,6 +2,7 @@
 
 #include "DataView.h"
 #include "common/Exception.h"
+#include <cstdint>
 
 namespace eve
 {
