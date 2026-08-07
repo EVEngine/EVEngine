@@ -33,7 +33,7 @@ function(eve_stage_timidity_share)
     file(COPY "${_eve_timidity_src}/instruments" DESTINATION "${_dst}")
     message(STATUS "TiMidity share staged → ${_dst} (with instruments)")
   else()
-    message(STATUS "TiMidity share staged → ${_dst} (cfg only; run third-party/timidity-freepats/setup.sh for patches)")
+    message(STATUS "TiMidity share staged → ${_dst} (cfg only; instruments/ missing from third-party/timidity-freepats)")
   endif()
 endfunction()
 
