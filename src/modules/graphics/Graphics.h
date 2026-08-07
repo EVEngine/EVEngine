@@ -6,6 +6,10 @@
 #include "graphics/Canvas.h"
 #include "graphics/Texture.h"
 #include "graphics/Mesh.h"
+#include "graphics/Quad.h"
+#include "graphics/Light.h"
+#include "graphics/ClusteredLight.h"
+#include "graphics/Shadow.h"
 #include <vector>
 #include <optional>
 #include <cstdint>
@@ -62,6 +66,12 @@ public:
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                                 bool repeatV = false) = 0;
 
+    /**
+     * Create an RGBA8 cubemap from 6 faces packed as +X,-X,+Y,-Y,+Z,-Z
+     * (each faceSize×faceSize, total bytes = faceSize²×4×6). Owned by Graphics.
+     */
+    virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) = 0;
+
     /** Create texture from ImageData (RGBA8 required for now). */
     virtual Texture *newTexture(image::ImageData *data) = 0;
 
@@ -90,6 +100,20 @@ public:
                                           float w, float h, float u0, float v0, float u1, float v1,
                                           const Color &color) = 0;
 
+    /**
+     * Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
+     * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
+     */
+    virtual void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
+                                       float h, float u0, float v0, float u1, float v1,
+                                       const Color &color) = 0;
+
+    /** Upload per-frame / per-canvas 2D lighting constants for subsequent lit draws. */
+    virtual void setLighting2D(const Lighting2DUBO &ubo) = 0;
+
+    /** Pixel-space atlas rect. Squirrel owns the Quad*. */
+    Quad *newQuad(int x, int y, int w, int h);
+
     /** Upload triangulated mesh from Assimp (pos/normal/uv + indices). Owned by Graphics. */
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
 
@@ -117,15 +141,51 @@ virtual void begin3DFrame() = 0;
     /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
 
-    /** Draw mesh with an explicit Mesh3D Shader (nullptr = default lit pipeline). */
+    /** Draw mesh with an explicit Mesh3D Shader (nullptr = default PBR pipeline). */
     virtual void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                                 Shader *shader) = 0;
+
+    /** Optional normal map for the next drawMesh / drawMeshShader (nullptr = flat). */
+    virtual void setMesh3DNormalTexture(Texture *normal) = 0;
+
+    /** Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
+    virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
+
+    /** Per-frame ambient + up to 8 lights packed into Mesh3DUBO. */
+    virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;
+
+    /**
+     * Enable clustered forward path for subsequent default mesh draws (SSBO light lists).
+     * Pass upload.active=false (or empty) to disable and return to the ≤8 UBO path.
+     */
+    virtual void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) = 0;
 
     /** Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
 
     /** Camera eye used by mesh shaders that need view/rim (stored in Mesh3DUBO). */
     virtual void setMesh3DCameraPos(const glm::vec3 &eye) = 0;
+
+    /**
+     * Specular IBL environment for subsequent default mesh draws.
+     * cube must be from newCubemap (or nullptr → black / intensity 0).
+     * intensity is packed into Mesh3DUBO lightColor.w.
+     */
+    virtual void setMesh3DEnv(Texture *cube, float intensity) = 0;
+
+    /** Upload CSM constants for subsequent default mesh draws (active=false disables). */
+    virtual void setMesh3DShadows(const ShadowUpload &upload) = 0;
+
+    /** Per-draw: when false, shadow sampling is forced off for the next mesh draw. */
+    virtual void setMesh3DShadowReceive(bool receive) = 0;
+
+    /**
+     * Depth-only shadow pass for one cascade layer (0..2). Uses a one-shot submit;
+     * call before begin3DFrame.
+     */
+    virtual void beginShadowPass(int cascadeIndex) = 0;
+    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
+    virtual void endShadowPass() = 0;
 
     /** True after begin3DFrame until present completes. */
     bool consumeFrameHad3D() {

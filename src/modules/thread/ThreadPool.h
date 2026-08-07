@@ -41,6 +41,12 @@ public:
     /** Sleep, then push a message onto a channel (cross-thread signalling). */
     Task *submitPush(Channel *channel, std::string message, int delayMs = 0);
 
+    /**
+     * Sleep, then post an Event on the main queue (thread-safe).
+     * Scripts poll via event.poll / event.pollData, or async helpers.
+     */
+    Task *submitPost(std::string name, std::string data = "", int delayMs = 0);
+
     /** Block until the queue is empty and no worker is busy. */
     void waitAll();
 

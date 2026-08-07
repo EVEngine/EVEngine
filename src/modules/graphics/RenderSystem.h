@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/ECS.h"
+#include "graphics/Quad.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "zeroerr/assert.h"
@@ -22,6 +23,7 @@ public:
         float y = 0.f;
         float zoom = 1.f;
         float r = 0.1f, g = 0.1f, b = 0.12f, a = 1.f;
+        float ambientR = 0.15f, ambientG = 0.15f, ambientB = 0.18f;
         bool active = false; // true only after createCamera() / explicit enable
         Canvas *canvas = nullptr;
         Camera2D *entity = nullptr;  // self; set by createCamera()
@@ -37,6 +39,8 @@ public:
         ASSERT(c->data()->entity == c);
         return c;
     }
+
+    void setAmbient(float r, float g, float b);
 };
 
 /** Default renderable entity for declarative 2D sprites / solid quads. */
@@ -61,9 +65,12 @@ public:
         int layer = 0;
         bool visible = true;
         Texture *texture = nullptr;
-        Shader *shader = nullptr;   // nullptr → default textured / solid pipeline
-        Canvas *canvas = nullptr;   // nullptr → screen
-        Camera2D *camera = nullptr; // nullptr → default active camera for canvas
+        Texture *normalTexture = nullptr;  // non-null → GPU lit2d path
+        Quad *quad = nullptr;              // nullptr → full UV 0..1
+        Shader *shader = nullptr;          // nullptr → default textured / solid pipeline
+        Canvas *canvas = nullptr;          // nullptr → screen
+        Camera2D *camera = nullptr;        // nullptr → default active camera for canvas
+        bool receiveLight = true;          // false → force unlit (ignore lights)
     };
 
     COMPONENT(Transform2D, transform)

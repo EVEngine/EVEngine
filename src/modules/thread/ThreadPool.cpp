@@ -1,6 +1,8 @@
 #include "thread/ThreadPool.h"
 
 #include "common/Exception.h"
+#include "common/Module.h"
+#include "event/Event.h"
 #include "thread/Channel.h"
 
 #include <algorithm>
@@ -70,6 +72,21 @@ Task *ThreadPool::submitPush(Channel *channel, std::string message, int delayMs)
         if (delayMs > 0)
             std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
         channel->push(msg);
+    });
+}
+
+Task *ThreadPool::submitPost(std::string name, std::string data, int delayMs) {
+    if (name.empty())
+        throw eve::Exception("ThreadPool::submitPost: name must not be empty");
+    if (delayMs < 0)
+        delayMs = 0;
+    return submit([name = std::move(name), data = std::move(data), delayMs] {
+        if (delayMs > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+        auto *ev = ModuleManager::getInstance<event::Event>("Event");
+        if (!ev)
+            ev = event::Event::create();
+        ev->pushData(name, data);
     });
 }
 

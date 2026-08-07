@@ -92,6 +92,7 @@ int Cmdline::Run(std::string path, std::string root) {
         {
             ssq::Table eve(vm.find("eve"));
             eve.set("demoScript", std::string(demo_content ? demo_content : ""));
+            eve.set("asyncScript", std::string(async_content ? async_content : ""));
         }
         ssq::Script script = vm.compileSource(root.c_str());
         vm.run(script);

@@ -1,6 +1,7 @@
 #include "thread/Thread.h"
 
 #include "common/Exception.h"
+#include "event/Event.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -52,6 +53,15 @@ Channel *Thread::getChannel(std::string name) {
 
 Channel *Thread::newChannel() { return new Channel(); }
 
+void Thread::postMain(std::string name, std::string data) {
+    if (name.empty())
+        throw eve::Exception("Thread::postMain: name must not be empty");
+    auto *ev = ModuleManager::getInstance<event::Event>("Event");
+    if (!ev)
+        ev = event::Event::create();
+    ev->pushData(std::move(name), std::move(data));
+}
+
 void Thread::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Thread::create, false);
     expose(cls);
@@ -83,6 +93,7 @@ void Thread::expose(ssq::Table &table) {
     pool.addFunc("isRunning", &ThreadPool::isRunning);
     pool.addFunc("submitSleep", &ThreadPool::submitSleep);
     pool.addFunc("submitPush", &ThreadPool::submitPush);
+    pool.addFunc("submitPost", &ThreadPool::submitPost);
     pool.addFunc("waitAll", &ThreadPool::waitAll);
     pool.addFunc("stop", &ThreadPool::stop);
 }
@@ -94,6 +105,7 @@ void Thread::expose(ssq::Class &cls) {
     cls.addFunc("newThreadPool", &Thread::newThreadPool);
     cls.addFunc("getChannel", &Thread::getChannel);
     cls.addFunc("newChannel", &Thread::newChannel);
+    cls.addFunc("postMain", &Thread::postMain);
 }
 
 }  // namespace thread

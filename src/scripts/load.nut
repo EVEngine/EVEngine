@@ -55,6 +55,8 @@ config.height = win.getHeight();
 event <- eve.Event();
 timer <- eve.Timer();
 system <- eve.System();
+math <- eve.Math();
+tf <- eve.TF();
 ui <- eve.UI();
 particles <- eve.Particles();
 map <- eve.Map();
@@ -70,6 +72,21 @@ font <- eve.Font();
 thread <- eve.Thread();
 fs <- eve.Filesystem();
 hot <- eve.HotReload();
+
+// Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
+if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
+    try {
+        compilestring(eve.asyncScript)();
+    } catch (e) {
+        print("async runtime failed to load: " + e + "\n");
+    }
+} else if (file_exists("async.nut")) {
+    try {
+        dofile("async.nut");
+    } catch (e) {
+        print("async.nut failed to load: " + e + "\n");
+    }
+}
 
 eve_init <- function() {};
 eve_update <- function(dt) {};
@@ -186,6 +203,9 @@ while (running) {
     while (true) {
         local name = event.poll();
         if (name == "") break;
+        local data = event.getLastData();
+        if ("async_dispatch_event" in getroottable())
+            async_dispatch_event(name, data);
         if (name == "quit") {
             if (startupFrames <= 0)
                 running = false;
@@ -202,7 +222,13 @@ while (running) {
 
     local dt = timer.step();
     try {
+        // Timers + Promise microtasks before game logic (Node-like macrotask boundary).
+        if ("async_pump" in getroottable())
+            async_pump();
         eve_update(dt);
+        // Flush reactions scheduled during eve_update.
+        if ("async_pump" in getroottable())
+            async_pump();
         eve_render();
         gfx.present();
         ui.dispatchEvents();

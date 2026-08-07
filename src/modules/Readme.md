@@ -48,6 +48,15 @@
     `getWallTime` / `sleepMilliseconds` / 剪贴板 / 电量 / GPU 查询）
     帧计时仍用 `Timer`；GPU 信息在 Graphics init 后可用
 
+6b. 数学库 - math（`eve.Math`）
+    Vec2 / Vec3 / Mat4（glm）；标量与几何工具；noise1/2/3；贝塞尔；可种子随机数
+    代码：`src/modules/math/`
+
+6c. 张量计算 - tensor（`eve.TF` / 类型 `Tensor`）
+    TF2 风格：默认 eager；`tf.func()` 建图 → `compile` / `run*`（对应 `tf.function`）
+    模块级 `add`/`multiply`/`matmul`/`relu`/`reduceSum`/`where`；`getDevice()` → `"cpu"`
+    代码：`src/modules/tensor/`
+
 7. 资源管理系统 - image sound video font(`font`/`Font`) 3dmodel(`model3d`/`Model3D`) animation
     负责加载图形、声音、视频、字体、3d模型、动画等不同格式数据
     3dmodel：`Model3D::newModelData` / `newModelDataFromFile` → `ModelData`（medialoader Assimp）
@@ -58,8 +67,10 @@
 
 9.  线程系统 - thread（`eve.Thread`）
     负责线程池、异步 Task、跨线程 ThreadChannel（字符串消息）
-    `getPool` / `newThreadPool` / `getChannel` / `newChannel`
-    `ThreadPool::submitSleep` / `submitPush` / `waitAll`；worker 勿碰 Squirrel VM
+    `getPool` / `newThreadPool` / `getChannel` / `newChannel` / `postMain`
+    `ThreadPool::submitSleep` / `submitPush` / `submitPost` / `waitAll`；worker 勿碰 Squirrel VM
+    脚本异步：`src/scripts/async.nut`（Promise / nextTick / setTimeout / asyncSleep / asyncDelay）
+    帧循环 `async_pump()`；`.fail` 代替 JS 的 `.catch`（Squirrel 关键字）
 
 10. 粒子系统 - particles  
    ECS `ParticleEmitter` + Sim/Render/Config System；JSON 热更；Camera2D/Canvas；发射区域与径向/切向力。

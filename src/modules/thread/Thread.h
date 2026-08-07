@@ -42,6 +42,12 @@ public:
     /** Anonymous channel (not registered in the name map). Caller owns it. */
     Channel *newChannel();
 
+    /**
+     * Thread-safe post onto the Event module queue (any thread).
+     * Main loop: event.pump is unrelated; just event.poll / pollData.
+     */
+    void postMain(std::string name, std::string data = "");
+
 private:
     std::mutex mu_;
     std::unique_ptr<ThreadPool> defaultPool_;

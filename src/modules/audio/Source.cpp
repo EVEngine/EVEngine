@@ -62,9 +62,17 @@ Source::~Source() {
         alDeleteBuffers(streamBufferCount, streamBuffers);
         streamBufferCount = 0;
     }
-    if (ownsDecoder) {
-        delete decoder;
-        decoder = nullptr;
+    {
+        // audio->unregisterSource() above (under Audio::mutex) guarantees no *new*
+        // call to fillPendingFromDecoder() will be dispatched for this Source, but
+        // one may already be in flight on the worker thread using a snapshot taken
+        // before the unregister. Taking decoderMutex here blocks until that call
+        // (which also holds decoderMutex) has finished before we free the decoder.
+        std::lock_guard<std::mutex> lock(decoderMutex);
+        if (ownsDecoder) {
+            delete decoder;
+            decoder = nullptr;
+        }
     }
 }
 
@@ -73,15 +81,23 @@ ALenum Source::alFormat() const {
     if (staticData) {
         ch = staticData->getChannelCount();
         bits = staticData->getBitDepth();
-    } else if (decoder) {
-        ch = decoder->getChannelCount();
-        bits = decoder->getBitDepth();
+    } else {
+        std::lock_guard<std::mutex> lock(decoderMutex);
+        if (decoder) {
+            ch = decoder->getChannelCount();
+            bits = decoder->getBitDepth();
+        }
     }
     if (ch == 1 && bits == 8) return AL_FORMAT_MONO8;
     if (ch == 1 && bits == 16) return AL_FORMAT_MONO16;
     if (ch == 2 && bits == 8) return AL_FORMAT_STEREO8;
     if (ch == 2 && bits == 16) return AL_FORMAT_STEREO16;
     throw eve::Exception("Unsupported PCM format for OpenAL");
+}
+
+int Source::decoderSampleRateOr(int fallback) const {
+    std::lock_guard<std::mutex> lock(decoderMutex);
+    return decoder ? decoder->getSampleRate() : fallback;
 }
 
 void Source::ensureStaticBuffer() {
@@ -138,11 +154,16 @@ void Source::stop() {
             ALuint b = 0;
             alSourceUnqueueBuffers(alSource, 1, &b);
         }
-        std::lock_guard<std::mutex> lock(pendingMutex);
-        while (!pending.empty())
-            pending.pop();
-        if (decoder)
-            decoder->rewind();
+        {
+            std::lock_guard<std::mutex> lock(pendingMutex);
+            while (!pending.empty())
+                pending.pop();
+        }
+        {
+            std::lock_guard<std::mutex> lock(decoderMutex);
+            if (decoder)
+                decoder->rewind();
+        }
         wantsData = true;
     } else {
         alSourceRewind(alSource);
@@ -176,11 +197,18 @@ bool Source::isLooping() const { return looping; }
 
 bool Source::seek(double seconds) {
     if (streaming) {
-        if (!decoder || !decoder->isSeekable())
-            return false;
+        {
+            std::lock_guard<std::mutex> lock(decoderMutex);
+            if (!decoder || !decoder->isSeekable())
+                return false;
+        }
+        // stop() takes decoderMutex itself (for rewind), so it must not be held here.
         stop();
-        if (!decoder->seek(seconds))
-            return false;
+        {
+            std::lock_guard<std::mutex> lock(decoderMutex);
+            if (!decoder || !decoder->seek(seconds))
+                return false;
+        }
         wantsData = true;
         if (audio)
             audio->notifyWorker();
@@ -199,6 +227,7 @@ double Source::tell() const {
 double Source::getDuration() const {
     if (staticData)
         return staticData->getDuration();
+    std::lock_guard<std::mutex> lock(decoderMutex);
     if (decoder)
         return decoder->getDuration();
     return -1.0;
@@ -217,27 +246,37 @@ void Source::setAttenuationDistances(float ref, float max) {
 }
 
 void Source::fillPendingFromDecoder() {
-    if (!streaming || !decoder || !wantsData.load())
+    if (!streaming || !wantsData.load())
         return;
     {
         std::lock_guard<std::mutex> lock(pendingMutex);
         if (pending.size() >= kMaxPendingChunks)
             return;
     }
-    int n = decoder->decode();
-    if (n <= 0) {
-        if (looping && decoder->rewind()) {
-            n = decoder->decode();
-        } else {
-            wantsData = false;
-            return;
-        }
-    }
-    if (n <= 0)
-        return;
+
+    // Guard the whole decode step: `decoder` may be deleted concurrently by
+    // Source::~Source() running on another thread (e.g. main/script thread
+    // destroying this Source while the Audio worker is mid-decode here).
     PcmChunk chunk;
-    auto *buf = static_cast<const uint8_t *>(decoder->getBuffer());
-    chunk.bytes.assign(buf, buf + n);
+    {
+        std::lock_guard<std::mutex> decoderLock(decoderMutex);
+        if (!decoder)
+            return;
+        int n = decoder->decode();
+        if (n <= 0) {
+            if (looping && decoder->rewind()) {
+                n = decoder->decode();
+            } else {
+                wantsData = false;
+                return;
+            }
+        }
+        if (n <= 0)
+            return;
+        auto *buf = static_cast<const uint8_t *>(decoder->getBuffer());
+        chunk.bytes.assign(buf, buf + n);
+    }
+
     std::lock_guard<std::mutex> lock(pendingMutex);
     pending.push(std::move(chunk));
 }
@@ -263,7 +302,7 @@ void Source::pump() {
                 // buffer; we must not lose buffer id. Queue a tiny silence.
                 std::vector<uint8_t> silence(256, 0);
                 alBufferData(b, alFormat(), silence.data(), static_cast<ALsizei>(silence.size()),
-                             decoder ? decoder->getSampleRate() : 44100);
+                             decoderSampleRateOr(44100));
                 alSourceQueueBuffers(alSource, 1, &b);
                 continue;
             }
@@ -271,7 +310,7 @@ void Source::pump() {
             pending.pop();
         }
         alBufferData(b, alFormat(), chunk.bytes.data(), static_cast<ALsizei>(chunk.bytes.size()),
-                     decoder->getSampleRate());
+                     decoderSampleRateOr(44100));
         alSourceQueueBuffers(alSource, 1, &b);
     }
 
@@ -292,7 +331,7 @@ void Source::pump() {
         // Use streamBuffers[queued] style
         ALuint buf = streamBuffers[queued];
         alBufferData(buf, alFormat(), chunk.bytes.data(), static_cast<ALsizei>(chunk.bytes.size()),
-                     decoder->getSampleRate());
+                     decoderSampleRateOr(44100));
         alSourceQueueBuffers(alSource, 1, &buf);
         alGetSourcei(alSource, AL_BUFFERS_QUEUED, &queued);
     }

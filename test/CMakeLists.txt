@@ -16,6 +16,11 @@ file(GLOB all_test_cpp
   network.cpp
   RenderSystem.cpp
   RenderSystem3D.cpp
+  Quad.cpp
+  Lighting2D.cpp
+  ClusteredLighting.cpp
+  IBL.cpp
+  Shadow3D.cpp
   UISystem.cpp
   UIBuilder.cpp
   UIPhaseB.cpp
@@ -33,6 +38,7 @@ file(GLOB all_test_cpp
   audio.cpp
   font.cpp
   thread.cpp
+  async.cpp
   window.cpp
   window_cpp.cpp
   image.cpp
@@ -40,6 +46,8 @@ file(GLOB all_test_cpp
   timer.cpp
   timer_cpp.cpp
   system.cpp
+  math.cpp
+  tensor.cpp
   main.cpp
 )
 
@@ -130,7 +138,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVTensor EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)

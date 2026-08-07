@@ -51,7 +51,9 @@ public:
     bool isStreaming() const { return streaming; }
     void pump(); // main thread: queue/unqueue AL buffers for stream
 
-    // Called by Audio worker under Audio mutex.
+    // Called by the Audio worker thread. Internally synchronized against
+    // concurrent decoder teardown (see decoderMutex) — safe to call even if
+    // another thread is stopping/seeking/destroying this Source.
     void fillPendingFromDecoder();
 
 private:
@@ -60,6 +62,7 @@ private:
     void applyGainPitch();
     ALenum alFormat() const;
     void ensureStaticBuffer();
+    int decoderSampleRateOr(int fallback) const;
 
     Audio *audio = nullptr;
     sound::SoundData *staticData = nullptr;
@@ -75,6 +78,11 @@ private:
     float volume = 1.f;
     float pitch = 1.f;
     bool looping = false;
+
+    // Guards all access to `decoder` (including its lifetime): the Audio worker
+    // thread reads/decodes via fillPendingFromDecoder() while other threads may
+    // seek/stop/destroy the Source (and delete its Decoder) concurrently.
+    mutable std::mutex decoderMutex;
 
     std::mutex pendingMutex;
     std::queue<PcmChunk> pending;

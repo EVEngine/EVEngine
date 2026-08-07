@@ -1,14 +1,24 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/Graphics.h"
 #include "graphics/Canvas.h"
+#include "graphics/Light.h"
+#include "graphics/Quad.h"
 #include "zeroerr/assert.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
+
+void Camera2D::setAmbient(float r, float g, float b) {
+    auto d = data();
+    d->ambientR = r;
+    d->ambientG = g;
+    d->ambientB = b;
+}
 
 namespace {
 
@@ -20,6 +30,7 @@ struct ViewCam {
     float zoom = 1.f;
     bool valid = false;
     Color clearColor{0.1f, 0.1f, 0.12f, 1.f};
+    float ambientR = 0.15f, ambientG = 0.15f, ambientB = 0.18f;
 };
 
 ViewCam fromEntity(Camera2D *ent) {
@@ -31,6 +42,9 @@ ViewCam fromEntity(Camera2D *ent) {
     v.y = d->y;
     v.zoom = d->zoom;
     v.clearColor = Color(d->r, d->g, d->b, d->a);
+    v.ambientR = d->ambientR;
+    v.ambientG = d->ambientG;
+    v.ambientB = d->ambientB;
     return v;
 }
 
@@ -53,11 +67,94 @@ void applyCamera(float wx, float wy, float ww, float wh, const ViewCam &cam, int
     sh = wh * z;
 }
 
+struct PackedLight {
+    Light2D::Data *data = nullptr;
+    bool isPoint = true;
+};
+
+void collectLights(Canvas *canvasKey, std::vector<PackedLight> &out) {
+    out.clear();
+    if (ecs::ComponentManager<Light2D>::inst().registy == nullptr) return;
+    auto view = ecs::View<Light2D, Light2D::Data>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [d] = *it;
+        if (!d->enabled) continue;
+        if (d->canvas != canvasKey) continue;
+        PackedLight pl;
+        pl.data = d;
+        pl.isPoint = (d->type != "dir");
+        out.push_back(pl);
+    }
+    std::stable_sort(out.begin(), out.end(), [](const PackedLight &a, const PackedLight &b) {
+        if (a.isPoint != b.isPoint) return a.isPoint && !b.isPoint;
+        return a.data->intensity > b.data->intensity;
+    });
+    if (out.size() > size_t(Lighting2DUBO::kMaxLights))
+        out.resize(size_t(Lighting2DUBO::kMaxLights));
+}
+
+Lighting2DUBO packLights(const std::vector<PackedLight> &lights, const ViewCam &cam, int viewW,
+                         int viewH) {
+    Lighting2DUBO ubo{};
+    ubo.ambient = glm::vec4(cam.ambientR, cam.ambientG, cam.ambientB, 0.f);
+    ubo.meta = glm::vec4(float(lights.size()), float(viewW), float(viewH), 0.f);
+    for (size_t i = 0; i < lights.size(); ++i) {
+        const auto *d = lights[i].data;
+        Light2DGpu &g = ubo.lights[i];
+        g.color = glm::vec4(d->r * d->intensity, d->g * d->intensity, d->b * d->intensity, 1.f);
+        if (lights[i].isPoint) {
+            float lx = d->x, ly = d->y;
+            float lr = d->radius;
+            if (cam.valid) {
+                const float z = clampZoom(cam.zoom);
+                lx = (d->x - cam.x) * z + float(viewW) * 0.5f;
+                ly = (d->y - cam.y) * z + float(viewH) * 0.5f;
+                lr = d->radius * z;
+            }
+            g.posRadius = glm::vec4(lx, ly, 0.f, lr);
+        } else {
+            float dx = d->dx, dy = d->dy;
+            const float len = std::sqrt(dx * dx + dy * dy);
+            if (len > 1e-6f) {
+                dx /= len;
+                dy /= len;
+            } else {
+                dx = 0.f;
+                dy = -1.f;
+            }
+            g.posRadius = glm::vec4(dx, dy, 0.f, 0.f);
+        }
+    }
+    return ubo;
+}
+
+Color modulateUnlit(Color base, float cx, float cy, bool receiveLight, const Lighting2DUBO &ubo) {
+    if (!receiveLight) return base;
+    glm::vec3 lit(ubo.ambient.r, ubo.ambient.g, ubo.ambient.b);
+    const int count = int(ubo.meta.x + 0.5f);
+    for (int i = 0; i < count; ++i) {
+        const auto &L = ubo.lights[i];
+        glm::vec3 col(L.color.r, L.color.g, L.color.b);
+        if (L.posRadius.w <= 0.f) {
+            // Directional: approximate as constant contribution for unlit sprites.
+            lit += col * 0.65f;
+        } else {
+            const float dx = L.posRadius.x - cx;
+            const float dy = L.posRadius.y - cy;
+            const float dist = std::sqrt(dx * dx + dy * dy);
+            float atten = 1.f - dist / std::max(L.posRadius.w, 1.f);
+            if (atten < 0.f) atten = 0.f;
+            atten *= atten;
+            lit += col * atten;
+        }
+    }
+    return Color(base.r * lit.r, base.g * lit.g, base.b * lit.b, base.a);
+}
+
 }  // namespace
 
 void RenderSystem::render(Graphics &gfx) {
     std::unordered_map<Canvas *, Camera2D *> defaultCam;
-    // View() calls ensure_space(registy) and crashes if no Camera2D was ever created.
     if (ecs::ComponentManager<Camera2D>::inst().registy != nullptr) {
         auto camView = ecs::View<Camera2D, Camera2D::Data>();
         for (auto it = camView.begin(); it != camView.end(); ++it) {
@@ -75,9 +172,13 @@ void RenderSystem::render(Graphics &gfx) {
         Color color;
         int layer;
         Texture *texture;
+        Texture *normal;
+        Quad *quad;
         Shader *shader;
         Canvas *canvas;
         ViewCam cam;
+        bool receiveLight;
+        bool litPath;
     };
     std::vector<Item> items;
 
@@ -100,9 +201,14 @@ void RenderSystem::render(Graphics &gfx) {
         item.color = Color(sp->r, sp->g, sp->b, sp->a);
         item.layer = sp->layer;
         item.texture = sp->texture;
+        item.normal = sp->normalTexture;
+        item.quad = sp->quad;
         item.shader = sp->shader;
         item.canvas = sp->canvas;
         item.cam = fromEntity(camEnt);
+        item.receiveLight = sp->receiveLight;
+        item.litPath = sp->receiveLight && sp->normalTexture != nullptr && sp->texture != nullptr &&
+                       sp->shader == nullptr;
         items.push_back(item);
     }
 
@@ -112,23 +218,35 @@ void RenderSystem::render(Graphics &gfx) {
         if (aOff != bOff) return aOff && !bOff;
         if (a.canvas != b.canvas) return a.canvas < b.canvas;
         if (a.layer != b.layer) return a.layer < b.layer;
+        if (a.litPath != b.litPath) return !a.litPath && b.litPath;  // unlit first
         if (a.shader != b.shader) return a.shader < b.shader;
-        return a.texture < b.texture;
+        if (a.texture != b.texture) return a.texture < b.texture;
+        return a.normal < b.normal;
     });
 
-    // Per canvas group: setCanvas → clear → draw. No trailing empty screen group
-    // when the frame only touched offscreen targets.
     Canvas *current = reinterpret_cast<Canvas *>(static_cast<uintptr_t>(1));
+    Lighting2DUBO currentLights{};
     for (size_t i = 0; i < items.size(); ++i) {
         Canvas *next = items[i].canvas;
         if (i == 0 || next != current) {
             Color clearCol = gfx.getBackgroundColor();
+            ViewCam groupCam{};
             auto defIt = defaultCam.find(next);
-            if (defIt != defaultCam.end()) clearCol = fromEntity(defIt->second).clearColor;
+            if (defIt != defaultCam.end()) {
+                groupCam = fromEntity(defIt->second);
+                clearCol = groupCam.clearColor;
+            }
 
             gfx.setCanvas(next);
             gfx.clear(clearCol, std::nullopt, std::nullopt);
             current = next;
+
+            int viewW = next ? next->getWidth() : gfx.getWidth();
+            int viewH = next ? next->getHeight() : gfx.getHeight();
+            std::vector<PackedLight> packed;
+            collectLights(next, packed);
+            currentLights = packLights(packed, groupCam, viewW, viewH);
+            gfx.setLighting2D(currentLights);
         }
 
         const auto &it = items[i];
@@ -136,10 +254,25 @@ void RenderSystem::render(Graphics &gfx) {
         int viewH = it.canvas ? it.canvas->getHeight() : gfx.getHeight();
         float sx, sy, sw, sh;
         applyCamera(it.x, it.y, it.w, it.h, it.cam, viewW, viewH, sx, sy, sw, sh);
-        if (it.texture)
-            gfx.drawTexturedRectShader(it.texture, it.shader, sx, sy, sw, sh, it.color);
-        else
-            gfx.drawSolidRect(sx, sy, sw, sh, it.color);
+
+        float u0 = 0.f, v0 = 0.f, u1 = 1.f, v1 = 1.f;
+        if (it.quad && it.texture)
+            it.quad->getUV(it.texture->getWidth(), it.texture->getHeight(), u0, v0, u1, v1);
+
+        if (it.litPath) {
+            gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1,
+                                      it.color);
+        } else if (it.texture) {
+            Color c = it.color;
+            if (it.receiveLight && !it.normal)
+                c = modulateUnlit(c, sx + sw * 0.5f, sy + sh * 0.5f, true, currentLights);
+            gfx.drawTexturedRectShaderUV(it.texture, it.shader, sx, sy, sw, sh, u0, v0, u1, v1, c);
+        } else {
+            Color c = it.color;
+            if (it.receiveLight)
+                c = modulateUnlit(c, sx + sw * 0.5f, sy + sh * 0.5f, true, currentLights);
+            gfx.drawSolidRect(sx, sy, sw, sh, c);
+        }
     }
 
     gfx.setCanvas();

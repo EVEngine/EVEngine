@@ -5,6 +5,8 @@ const char* boot_content = R"(@boot_content@)";
 
 const char* load_content = R"(@load_content@)";
 
+const char* async_content = R"(@async_content@)";
+
 const char* demo_content = R"(@demo_content@)";
 
 const char* vertex_content = R"(@vertex_content@)";

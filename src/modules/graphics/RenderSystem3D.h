@@ -21,6 +21,9 @@ public:
         float targetX = 0.f, targetY = 0.f, targetZ = 0.f;
         float upX = 0.f, upY = 1.f, upZ = 0.f;
         float fovYDeg = 60.f, nearZ = 0.1f, farZ = 100.f;
+        float ambientR = 0.12f, ambientG = 0.12f, ambientB = 0.14f;
+        Texture *envMap = nullptr;   // cubemap; nullptr → no IBL
+        float envIntensity = 1.f;
         bool active = false;
         Camera3D *entity = nullptr;
     };
@@ -40,6 +43,10 @@ public:
     void setUp(float x, float y, float z);
     void setFov(float fovYDeg);
     void setActive(bool active);
+    void setAmbient(float r, float g, float b);
+    /** Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */
+    void setEnvMap(Texture *cube);
+    void setEnvIntensity(float intensity);
 };
 
 class Renderable3D : public ecs::Entity {
@@ -57,9 +64,15 @@ public:
     struct MeshRenderer {
         Mesh *mesh = nullptr;
         Texture *texture = nullptr;
-        Shader *shader = nullptr;  // nullptr → default mesh3d lit pipeline
+        Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
+        Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
         float r = 1, g = 1, b = 1, a = 1;
+        float metallic = 0.f;
+        float roughness = 0.45f;
         bool visible = true;
+        bool receiveLight = true;
+        bool castShadow = true;
+        bool receiveShadow = true;
         Camera3D *camera = nullptr;
     };
 
@@ -73,15 +86,22 @@ public:
     void setScale(float sx, float sy, float sz);
     void setMesh(Mesh *mesh);
     void setTexture(Texture *texture);
+    void setNormalTexture(Texture *texture);
     void setShader(Shader *shader);
     void setTint(float r, float g, float b, float a = 1.f);
+    void setMetallic(float metallic);
+    void setRoughness(float roughness);
     void setVisible(bool visible);
+    void setReceiveLight(bool receive);
+    void setCastShadow(bool cast);
+    void setReceiveShadow(bool receive);
     void setCamera(Camera3D *camera);
 };
 
 class RenderSystem3D {
 public:
     static void render(Graphics &gfx);
+    /** Legacy single directional light used when no enabled Light3D exists. */
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);
 };
 
