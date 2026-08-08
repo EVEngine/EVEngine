@@ -29,23 +29,23 @@ bool isEngineName(const std::string& name) {
         "eve_asset_reload", "watched_scripts", "track_script", "soft_reload_scripts",
         "poll_hot_reload", "file_exists", "path_endswith", "normalize_path",
         "async_pump", "async_dispatch_event", "Promise", "setTimeout", "clearTimeout",
-        "nextTick",  "setImmediate",
+        "nextTick",  "setImmediate", "has_dev", "dev_poll", "dev_should_update",
+        "dev_notify_frame_done", "handle_dev_key",
     };
     return kSkip.count(name) > 0;
 }
 
-using SeenMap = std::unordered_map<const void*, int>;
+using SeenSet = std::unordered_set<const void*>;
 
 const void* objectId(HSQUIRRELVM vm, SQInteger idx) {
-    // Squirrel HSQOBJECT pointer identity via stack object.
     HSQOBJECT obj;
     sq_resetobject(&obj);
     sq_getstackobj(vm, idx, &obj);
-    return reinterpret_cast<const void*>(obj._unVal.pUserPointer);
+    return reinterpret_cast<const void*>(obj._unVal.pRefCounted);
 }
 
-Poco::Dynamic::Var sqToVar(HSQUIRRELVM vm, SQInteger idx, SeenMap& seen, int depth) {
-    if (depth > 32) return Poco::Dynamic::Var("/*max-depth*/");
+Poco::Dynamic::Var sqToVar(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int depth) {
+    if (depth > 32) return Poco::Dynamic::Var();
     if (idx < 0) idx = sq_gettop(vm) + idx + 1;
 
     const SQObjectType t = sq_gettype(vm, idx);
@@ -74,15 +74,9 @@ Poco::Dynamic::Var sqToVar(HSQUIRRELVM vm, SQInteger idx, SeenMap& seen, int dep
         }
         case OT_ARRAY: {
             const void* id = objectId(vm, idx);
-            if (id && seen.count(id)) {
-                auto o = new Poco::JSON::Object();
-                o->set("$ref", seen[id]);
-                return Poco::Dynamic::Var(o);
-            }
-            const int refId = static_cast<int>(seen.size()) + 1;
-            if (id) seen[id] = refId;
-            auto arr = new Poco::JSON::Array();
-            const SQInteger top = sq_gettop(vm);
+            if (id && !seen.insert(id).second) return Poco::Dynamic::Var();  // cycle → null
+            Poco::JSON::Array::Ptr arr(new Poco::JSON::Array());
+            const SQInteger top  = sq_gettop(vm);
             const SQInteger size = sq_getsize(vm, idx);
             for (SQInteger i = 0; i < size; ++i) {
                 sq_pushinteger(vm, i);
@@ -94,27 +88,16 @@ Poco::Dynamic::Var sqToVar(HSQUIRRELVM vm, SQInteger idx, SeenMap& seen, int dep
                 }
             }
             sq_settop(vm, top);
-            auto wrap = new Poco::JSON::Object();
-            wrap->set("$type", "array");
-            wrap->set("$id", refId);
-            wrap->set("value", arr);
-            return Poco::Dynamic::Var(wrap);
+            return Poco::Dynamic::Var(arr);
         }
         case OT_TABLE:
         case OT_INSTANCE: {
             const void* id = objectId(vm, idx);
-            if (id && seen.count(id)) {
-                auto o = new Poco::JSON::Object();
-                o->set("$ref", seen[id]);
-                return Poco::Dynamic::Var(o);
-            }
-            const int refId = static_cast<int>(seen.size()) + 1;
-            if (id) seen[id] = refId;
-            auto obj = new Poco::JSON::Object();
+            if (id && !seen.insert(id).second) return Poco::Dynamic::Var();
+            Poco::JSON::Object::Ptr obj(new Poco::JSON::Object());
             const SQInteger top = sq_gettop(vm);
             sq_pushnull(vm);
             while (SQ_SUCCEEDED(sq_next(vm, idx))) {
-                // stack: … null key val
                 if (sq_gettype(vm, -2) == OT_STRING) {
                     const SQChar* key = nullptr;
                     sq_getstring(vm, -2, &key);
@@ -129,19 +112,14 @@ Poco::Dynamic::Var sqToVar(HSQUIRRELVM vm, SQInteger idx, SeenMap& seen, int dep
                 sq_pop(vm, 2);
             }
             sq_settop(vm, top);
-            auto wrap = new Poco::JSON::Object();
-            wrap->set("$type", t == OT_INSTANCE ? "instance" : "table");
-            wrap->set("$id", refId);
-            wrap->set("value", obj);
-            return Poco::Dynamic::Var(wrap);
+            return Poco::Dynamic::Var(obj);
         }
         default:
-            return Poco::Dynamic::Var("/*skipped*/");
+            return Poco::Dynamic::Var();
     }
 }
 
-bool pushVar(HSQUIRRELVM vm, const Poco::Dynamic::Var& var,
-             std::unordered_map<int, SQInteger>& idToAbsIndex, int depth) {
+bool pushVar(HSQUIRRELVM vm, const Poco::Dynamic::Var& var, int depth) {
     if (depth > 32) {
         sq_pushnull(vm);
         return true;
@@ -164,67 +142,46 @@ bool pushVar(HSQUIRRELVM vm, const Poco::Dynamic::Var& var,
     }
     if (var.isString()) {
         const std::string s = var.convert<std::string>();
-        sq_pushstring(vm, s.c_str(), -1);
+        sq_pushstring(vm, s.c_str(), static_cast<SQInteger>(s.size()));
         return true;
     }
-    if (var.type() == typeid(Poco::JSON::Object::Ptr)) {
-        Poco::JSON::Object::Ptr o = var.extract<Poco::JSON::Object::Ptr>();
-        if (!o) {
-            sq_pushnull(vm);
-            return true;
-        }
-        if (o->has("$ref")) {
-            const int ref = o->getValue<int>("$ref");
-            auto it = idToAbsIndex.find(ref);
-            if (it == idToAbsIndex.end()) {
-                sq_pushnull(vm);
-                return true;
-            }
-            sq_push(vm, it->second);
-            return true;
-        }
-        const std::string typ = o->has("$type") ? o->getValue<std::string>("$type") : "table";
-        const int id = o->has("$id") ? o->getValue<int>("$id") : 0;
-        if (typ == "array") {
+
+    // Prefer structural checks over typeid (Poco Dynamic::Var holds Ptr types).
+    try {
+        if (var.type() == typeid(Poco::JSON::Array::Ptr) ||
+            var.type() == typeid(Poco::JSON::Array)) {
+            Poco::JSON::Array::Ptr arr = var.extract<Poco::JSON::Array::Ptr>();
             sq_newarray(vm, 0);
-            if (id) idToAbsIndex[id] = sq_gettop(vm);
-            Poco::JSON::Array::Ptr arr = o->getArray("value");
             if (arr) {
                 for (size_t i = 0; i < arr->size(); ++i) {
-                    if (!pushVar(vm, arr->get(i), idToAbsIndex, depth + 1)) return false;
+                    if (!pushVar(vm, arr->get(i), depth + 1)) return false;
                     sq_arrayappend(vm, -2);
                 }
             }
             return true;
         }
-        // table / instance → plain table on restore
+    } catch (const Poco::BadCastException&) {
+        // fall through
+    }
+
+    try {
+        Poco::JSON::Object::Ptr o = var.extract<Poco::JSON::Object::Ptr>();
+        if (!o) {
+            sq_pushnull(vm);
+            return true;
+        }
         sq_newtable(vm);
-        if (id) idToAbsIndex[id] = sq_gettop(vm);
-        Poco::JSON::Object::Ptr body = o->getObject("value");
-        if (!body && !o->has("$type")) body = o;
-        if (body) {
-            for (const auto& key : body->getNames()) {
-                if (!key.empty() && key[0] == '$') continue;
-                sq_pushstring(vm, key.c_str(), -1);
-                if (!pushVar(vm, body->get(key), idToAbsIndex, depth + 1)) return false;
-                sq_newslot(vm, -3, SQFalse);
-            }
+        std::vector<std::string> names = o->getNames();
+        for (const auto& key : names) {
+            sq_pushstring(vm, key.c_str(), static_cast<SQInteger>(key.size()));
+            if (!pushVar(vm, o->get(key), depth + 1)) return false;
+            sq_newslot(vm, -3, SQFalse);
         }
         return true;
-    }
-    if (var.type() == typeid(Poco::JSON::Array::Ptr)) {
-        Poco::JSON::Array::Ptr arr = var.extract<Poco::JSON::Array::Ptr>();
-        sq_newarray(vm, 0);
-        if (arr) {
-            for (size_t i = 0; i < arr->size(); ++i) {
-                if (!pushVar(vm, arr->get(i), idToAbsIndex, depth + 1)) return false;
-                sq_arrayappend(vm, -2);
-            }
-        }
+    } catch (const Poco::BadCastException&) {
+        sq_pushnull(vm);
         return true;
     }
-    sq_pushnull(vm);
-    return true;
 }
 
 }  // namespace
@@ -257,7 +214,6 @@ std::vector<std::string> Snapshot::resolveRoots(HSQUIRRELVM vm) const {
     std::vector<std::string> out;
     if (!vm) return out;
 
-    // Prefer conventional state tables when present.
     for (const char* pref : {"eve_state", "gameState", "state"}) {
         const SQInteger top = sq_gettop(vm);
         sq_pushroottable(vm);
@@ -270,7 +226,6 @@ std::vector<std::string> Snapshot::resolveRoots(HSQUIRRELVM vm) const {
     }
     if (!out.empty()) return out;
 
-    // Heuristic: all serializable non-engine root slots.
     const SQInteger top = sq_gettop(vm);
     sq_pushroottable(vm);
     const SQInteger rootIdx = sq_gettop(vm);
@@ -298,24 +253,32 @@ std::string Snapshot::capture(HSQUIRRELVM vm, std::string* error) const {
         if (error) *error = "no vm";
         return {};
     }
-    auto rootNames = resolveRoots(vm);
-    auto rootsObj  = new Poco::JSON::Object();
-    SeenMap seen;
-    for (const auto& name : rootNames) {
-        const SQInteger top = sq_gettop(vm);
-        sq_pushroottable(vm);
-        sq_pushstring(vm, name.c_str(), -1);
-        if (SQ_SUCCEEDED(sq_get(vm, -2))) {
-            rootsObj->set(name, sqToVar(vm, -1, seen, 0));
+    try {
+        auto rootNames = resolveRoots(vm);
+        Poco::JSON::Object::Ptr rootsObj(new Poco::JSON::Object());
+        for (const auto& name : rootNames) {
+            SeenSet seen;
+            const SQInteger top = sq_gettop(vm);
+            sq_pushroottable(vm);
+            sq_pushstring(vm, name.c_str(), -1);
+            if (SQ_SUCCEEDED(sq_get(vm, -2))) {
+                rootsObj->set(name, sqToVar(vm, -1, seen, 0));
+            }
+            sq_settop(vm, top);
         }
-        sq_settop(vm, top);
+        Poco::JSON::Object::Ptr doc(new Poco::JSON::Object());
+        doc->set("version", 1);
+        doc->set("roots", rootsObj);
+        std::ostringstream oss;
+        doc->stringify(oss);
+        return oss.str();
+    } catch (const Poco::Exception& e) {
+        if (error) *error = e.displayText();
+        return {};
+    } catch (const std::exception& e) {
+        if (error) *error = e.what();
+        return {};
     }
-    auto doc = new Poco::JSON::Object();
-    doc->set("version", 1);
-    doc->set("roots", rootsObj);
-    std::ostringstream oss;
-    Poco::JSON::Stringifier::stringify(Poco::Dynamic::Var(doc), oss);
-    return oss.str();
 }
 
 bool Snapshot::restore(HSQUIRRELVM vm, const std::string& json, std::string* error) const {
@@ -336,13 +299,11 @@ bool Snapshot::restore(HSQUIRRELVM vm, const std::string& json, std::string* err
             if (error) *error = "invalid snapshot: roots not object";
             return false;
         }
-        std::unordered_map<int, SQInteger> idMap;
         for (const auto& name : roots->getNames()) {
             const SQInteger top = sq_gettop(vm);
-            idMap.clear();
             sq_pushroottable(vm);
-            sq_pushstring(vm, name.c_str(), -1);
-            if (!pushVar(vm, roots->get(name), idMap, 0)) {
+            sq_pushstring(vm, name.c_str(), static_cast<SQInteger>(name.size()));
+            if (!pushVar(vm, roots->get(name), 0)) {
                 sq_settop(vm, top);
                 if (error) *error = "failed to restore " + name;
                 return false;

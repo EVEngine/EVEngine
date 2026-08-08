@@ -22,13 +22,13 @@ TEST_CASE("devtools.debugger.pauseResumeStepFrame") {
     d.pause(PauseReason::PauseKey);
     CHECK(d.isPaused());
     CHECK(!d.shouldRunUpdate());
-    CHECK(d.lastPauseReason() == PauseReason::PauseKey);
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::PauseKey));
 
     d.stepFrame();
     CHECK(d.shouldRunUpdate());
     d.notifyFrameDone();
     CHECK(d.isPaused());
-    CHECK(d.lastPauseReason() == PauseReason::Step);
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
 
     d.resume();
     CHECK(!d.isPaused());
@@ -63,14 +63,14 @@ TEST_CASE("devtools.debugger.onScriptLineBreakpointAndStep") {
     loc.line = 10;
     CHECK(d.onScriptLine(loc));
     CHECK(d.isPaused());
-    CHECK(d.lastPauseReason() == PauseReason::Breakpoint);
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Breakpoint));
 
     d.stepLine();
-    CHECK(d.mode() == RunMode::StepLine);
+    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepLine));
     loc.line = 11;
     CHECK(d.onScriptLine(loc));
     CHECK(d.isPaused());
-    CHECK(d.lastPauseReason() == PauseReason::Step);
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
     d.resume();
 }
 
@@ -141,6 +141,7 @@ TEST_CASE("devtools.snapshot.roundTripRoots") {
     // Prefer conventional gameState without markRoot.
     std::string err;
     const std::string json = snap.capture(v, &err);
+    CHECK(err.empty());
     CHECK(!json.empty());
     CHECK(json.find("gameState") != std::string::npos);
     CHECK(json.find("hero") != std::string::npos);
@@ -157,7 +158,9 @@ TEST_CASE("devtools.snapshot.roundTripRoots") {
         sq_newslot(v, -3, SQFalse);
         sq_settop(v, top);
     }
+    err.clear();
     CHECK(snap.restore(v, json, &err));
+    CHECK(err.empty());
 
     {
         const SQInteger top = sq_gettop(v);

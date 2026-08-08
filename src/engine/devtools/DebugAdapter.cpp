@@ -6,11 +6,11 @@
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/JSON/Stringifier.h>
+#include <Poco/Exception.h>
 #include <Poco/Net/NetException.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/StreamSocket.h>
-#include <Poco/TimeoutException.h>
 #include <Poco/Timespan.h>
 
 #include <cstdlib>
