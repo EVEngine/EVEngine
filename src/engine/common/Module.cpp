@@ -1,4 +1,5 @@
 #include "common/Module.h"
+#include "common/ECS.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -39,6 +40,8 @@ void ModuleManager::expose(ssq::VM& vm) {
         D.second.exposer(table);
         D.second.exposed = true;
     }
+    // After modules: script ECS owns eve.Component / Entity / System / view.
+    exposeECS(table);
 }
 
 void ModuleManager::set_vm(ssq::VM* vm) { inst().active_vm_ = vm; }
