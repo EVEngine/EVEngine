@@ -93,8 +93,12 @@
     场景即函数（props / children 插槽），非 Prefab
     代码：`src/modules/scene/`
 
-12. 动画系统
-    Skeleton Animations
+12. 动画系统 - animation（`eve.Animation`）
+    属性补间 Tween：`newTween(duration)` → `setFrom` / `setTo` / `setDelta`（相对差值）
+    缓动 kind 与 Math.ease 一致；`setDelay` / `setRepeat` / `setYoyo`；角度 `set*Angle`
+    帧循环：`anim.update(dt)`（或 `tween.update(dt)`）
+    后期：帧动画 / Skeleton
+    代码：`src/modules/animation/`
 
 13. GPU计算系统 - compute
     并行化和异构计算，封装compute shader的相关操作
