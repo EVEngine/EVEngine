@@ -391,16 +391,21 @@ function(check_third_party_project name repo)
         set(GIT_HTTPS_LINK ${repo})
     endif()
 
-    # Match the engine config so MSVC CRT (/MD vs /MDd) and lib postfixes
-    # (md vs mdd) stay consistent. Hardcoding Release made win32-debug install
-    # *md.lib while the engine linked *mdd.lib (LNK1104 on CI).
+    # macOS/Linux/iOS: keep third-party as Release (stable). A Debug deps build
+    # would inherit Poco's CMAKE_DEBUG_POSTFIX=d and rename physfs → physfsd,
+    # while the engine still links -lphysfs.
+    # Windows: Debug engine must get Debug deps (*mdd.lib), otherwise CI links
+    # *mdd against Release *md installs (LNK1104).
+    set(_eve_tp_build_type "Release")
+    if(WIN32)
+        set(_eve_tp_build_type "${CMAKE_BUILD_TYPE}")
+    endif()
     set(_eve_tp_cmake_args
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_BUILD_TYPE=${_eve_tp_build_type}
         -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
     )
-    # Force Poco-style postfixes up front so targets added before Poco
-    # (squirrel/simplesquirrel/OpenAL) get the same md/mdd names the engine
-    # already links. SDL2 still overrides its own DEBUG_POSTFIX to "d".
+    # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
+    # match the names the engine already links. Do not set these on Apple/Linux.
     if(WIN32)
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_DEBUG_POSTFIX=mdd
@@ -441,7 +446,7 @@ function(check_third_party_project name repo)
     endif()
 
     # --config is required for multi-config generators (VS); ignored by Ninja.
-    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${CMAKE_BUILD_TYPE} --parallel 8)
+    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${_eve_tp_build_type} --parallel 8)
 
     if(_eve_tp_use_ninja)
         ExternalProject_Add(${name}
