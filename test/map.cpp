@@ -8,6 +8,7 @@
 #include "map/TileProjection.h"
 #include "map/MapObject.h"
 #include "graphics/DrawItem2D.h"
+#include "data/DataModule.h"
 
 #include <string>
 #include <vector>
@@ -240,4 +241,176 @@ TEST_CASE("map.drawItem.sortByDepthY") {
     eve::graphics::sortDrawItems2D(items);
     CHECK_EQ(items[0].depthY, 50.f);
     CHECK_EQ(items[1].depthY, 100.f);
+}
+
+TEST_CASE("map.projection.isometric.worldToTile") {
+    TileLayer::Config cfg;
+    cfg.tileW = 64.f;
+    cfg.tileH = 32.f;
+    cfg.originX = 0.f;
+    cfg.originY = 0.f;
+    cfg.orientation = MapOrientation::Isometric;
+    float wx = 0, wy = 0;
+    tileToWorld(cfg, 1, 0, wx, wy);
+    int tx = -1, ty = -1;
+    worldToTile(cfg, wx, wy, tx, ty);
+    CHECK_EQ(tx, 1);
+    CHECK_EQ(ty, 0);
+    tileToWorld(cfg, 0, 1, wx, wy);
+    worldToTile(cfg, wx, wy, tx, ty);
+    CHECK_EQ(tx, 0);
+    CHECK_EQ(ty, 1);
+}
+
+TEST_CASE("map.projection.staggeredYOdd.worldToTileAndDepth") {
+    TileLayer::Config cfg;
+    cfg.mapW = 4;
+    cfg.mapH = 4;
+    cfg.tileW = 64.f;
+    cfg.tileH = 32.f;
+    cfg.originX = 0.f;
+    cfg.originY = 0.f;
+    cfg.orientation = MapOrientation::Staggered;
+    cfg.staggerAxis = StaggerAxis::Y;
+    cfg.staggerIndex = StaggerIndex::Odd;
+    float wx = 0, wy = 0;
+    tileToWorld(cfg, 0, 1, wx, wy);
+    CHECK_EQ(wx, 32.f);
+    CHECK_EQ(wy, 16.f);
+    CHECK_EQ(tileToDepthY(cfg, 0, 1), 16.f + 32.f);
+    // Nearest tile center
+    int tx = -1, ty = -1;
+    worldToTile(cfg, wx + 32.f, wy + 16.f, tx, ty);
+    CHECK_EQ(tx, 0);
+    CHECK_EQ(ty, 1);
+}
+
+TEST_CASE("map.projection.staggeredXEven") {
+    TileLayer::Config cfg;
+    cfg.mapW = 3;
+    cfg.mapH = 3;
+    cfg.tileW = 64.f;
+    cfg.tileH = 32.f;
+    cfg.orientation = MapOrientation::Staggered;
+    cfg.staggerAxis = StaggerAxis::X;
+    cfg.staggerIndex = StaggerIndex::Even;
+    float wx = 0, wy = 0;
+    tileToWorld(cfg, 0, 0, wx, wy);
+    // major=tx=0 even → staggerIndex Even → shift (since !odd)
+    CHECK_EQ(wx, 0.f);
+    CHECK_EQ(wy, 16.f);
+    tileToWorld(cfg, 1, 0, wx, wy);
+    CHECK_EQ(wx, 32.f);
+    CHECK_EQ(wy, 0.f);
+}
+
+TEST_CASE("map.projection.hexagonalYOdd") {
+    TileLayer::Config cfg;
+    cfg.mapW = 3;
+    cfg.mapH = 3;
+    cfg.tileW = 64.f;
+    cfg.tileH = 32.f;
+    cfg.hexSideLength = 16.f;
+    cfg.orientation = MapOrientation::Hexagonal;
+    cfg.staggerAxis = StaggerAxis::Y;
+    cfg.staggerIndex = StaggerIndex::Odd;
+    float wx = 0, wy = 0;
+    tileToWorld(cfg, 0, 0, wx, wy);
+    CHECK_EQ(wx, 0.f);
+    CHECK_EQ(wy, 0.f);
+    // pitchY = (32+16)/2 = 24; row 1 odd → +tw/2
+    tileToWorld(cfg, 0, 1, wx, wy);
+    CHECK_EQ(wx, 32.f);
+    CHECK_EQ(wy, 24.f);
+    CHECK_EQ(tileToDepthY(cfg, 0, 1), 24.f + 32.f);
+    int tx = -1, ty = -1;
+    worldToTile(cfg, wx + 32.f, wy + 16.f, tx, ty);
+    CHECK_EQ(tx, 0);
+    CHECK_EQ(ty, 1);
+}
+
+TEST_CASE("map.decode.base64ZlibRoundTrip") {
+    // 2x2 little-endian GIDs: 1,2,3,4
+    const unsigned char raw[16] = {1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0};
+    eve::data::CompressedData *cdata =
+        eve::data::compress("zlib", reinterpret_cast<const char *>(raw), 16, -1);
+    REQUIRE(cdata != nullptr);
+    const char *compressed = reinterpret_cast<const char *>(cdata->getData());
+    const size_t compressedSize = cdata->getSize();
+    size_t b64len = 0;
+    char *b64raw = eve::data::encode("base64", compressed, compressedSize, b64len);
+    REQUIRE(b64raw != nullptr);
+    REQUIRE(b64len > 0);
+    std::string b64(b64raw, b64len);
+    delete[] b64raw;
+
+    std::string json = std::string(R"({
+      "width": 2, "height": 2, "tilewidth": 16, "tileheight": 16,
+      "layers": [{
+        "type": "tilelayer", "width": 2, "height": 2,
+        "encoding": "base64", "compression": "zlib",
+        "data": ")") +
+                       b64 + R"("}]})";
+
+    std::string err;
+    auto layers = loadMapText(json, nullptr, &err);
+    CHECK(err.empty());
+    REQUIRE(layers.size() == 1);
+    CHECK_EQ(layers[0]->getTile(0, 0), 1);
+    CHECK_EQ(layers[0]->getTile(1, 0), 2);
+    CHECK_EQ(layers[0]->getTile(0, 1), 3);
+    CHECK_EQ(layers[0]->getTile(1, 1), 4);
+    delete cdata;
+}
+
+TEST_CASE("map.decode.base64Uncompressed") {
+    const unsigned char raw[16] = {1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 4, 0, 0, 0};
+    size_t b64len = 0;
+    char *b64raw =
+        eve::data::encode("base64", reinterpret_cast<const char *>(raw), 16, b64len);
+    REQUIRE(b64raw != nullptr);
+    std::string b64(b64raw, b64len);
+    delete[] b64raw;
+
+    std::string json = std::string(R"({
+      "width": 2, "height": 2, "tilewidth": 16, "tileheight": 16,
+      "encoding": "base64", "compression": "",
+      "data": ")") +
+                       b64 + R"("})";
+
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(2, 2, 16.f, 16.f);
+    CHECK(layer->applyConfig(json));
+    CHECK_EQ(layer->getTile(0, 0), 1);
+    CHECK_EQ(layer->getTile(1, 1), 4);
+}
+
+TEST_CASE("map.load.tiledLikeIsometricWithObjects") {
+    const char *json = R"({
+      "width": 2, "height": 2, "tilewidth": 64, "tileheight": 32,
+      "orientation": "isometric",
+      "layers": [
+        { "type": "tilelayer", "width": 2, "height": 2, "data": [1, 0, 0, 2] },
+        { "type": "objectgroup", "objects": [
+            { "name": "npc", "type": "talker", "x": 10, "y": 20, "width": 8, "height": 8, "gid": 3 }
+        ]}
+      ]
+    })";
+    std::vector<MapObject> objs;
+    std::string err;
+    auto layers = loadMapText(json, &objs, &err);
+    CHECK(err.empty());
+    REQUIRE(layers.size() == 1);
+    CHECK_EQ(static_cast<int>(layers[0]->config()->orientation),
+             static_cast<int>(MapOrientation::Isometric));
+    CHECK_EQ(layers[0]->getTile(0, 0), 1);
+    CHECK_EQ(layers[0]->getTile(1, 1), 2);
+    float wx = 0, wy = 0;
+    layers[0]->tileToWorld(1, 0, wx, wy);
+    CHECK_EQ(wx, 32.f);
+    CHECK_EQ(wy, 16.f);
+    REQUIRE(objs.size() == 1);
+    CHECK_EQ(objs[0].name, "npc");
+    CHECK_EQ(objs[0].type, "talker");
+    CHECK_EQ(objs[0].gid, 3);
 }

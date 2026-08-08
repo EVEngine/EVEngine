@@ -256,7 +256,6 @@ macro(get_available_build)
     else()
         if(WIN32)
             list(APPEND AVAILABLE_PLATFORM "win32")
-            list(APPEND AVAILABLE_PLATFORM "win_uwp")
             list(APPEND AVAILABLE_PLATFORM "android")
             set(BUILD_PLATFORM "win32" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
             MESSAGE("Build Platform:  ${BUILD_PLATFORM}")
@@ -268,7 +267,7 @@ macro(get_available_build)
     # when switching BUILD_PLATFORM in the same build tree.
     foreach(_eve_plat_var IN ITEMS
             EVENGINE_WINDOWS EVENGINE_MACOSX EVENGINE_LINUX
-            EVENGINE_ANDROID EVENGINE_IOS EVENGINE_WINDOWS_UWP)
+            EVENGINE_ANDROID EVENGINE_IOS)
         unset(${_eve_plat_var} CACHE)
         unset(${_eve_plat_var})
     endforeach()
@@ -287,7 +286,6 @@ macro(get_available_build)
     set_platform_var(linux EVENGINE_LINUX)
     set_platform_var(android EVENGINE_ANDROID)
     set_platform_var(ios EVENGINE_IOS)
-    set_platform_var(win_uwp EVENGINE_WINDOWS_UWP)
 
     message("Availabe: ${AVAILABLE_PLATFORM}")
 
