@@ -3,8 +3,15 @@
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"
+#include "procgen/texture/TextureRecipe.h"
+
+#include "graphics/Graphics.h"
+#include "graphics/Texture.h"
+#include "image/ImageData.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+
+#include <vector>
 
 namespace eve::procgen {
 
@@ -12,6 +19,7 @@ Module_IMPL(Procgen, new Procgen());
 
 Procgen::Procgen() {
     GeneratorRegistry::instance().registerBuiltins();
+    TextureRecipeRegistry::instance().registerBuiltins();
     // Sensible pixel-RPG default palette (games override GIDs to match tileset).
     setPaletteGid("default", "empty", 0);
     setPaletteGid("default", "wall", 1);
@@ -130,6 +138,74 @@ std::string Procgen::gridToJson(Grid2D *grid) const {
     return eve::procgen::gridToJson(*grid);
 }
 
+image::ImageData *Procgen::generateImage(const std::string &recipeId, Params *params) {
+    lastError_.clear();
+    if (!params) {
+        lastError_ = "generateImage: null params";
+        return nullptr;
+    }
+    TextureRecipeRegistry::instance().registerBuiltins();
+    image::ImageData *img =
+        TextureRecipeRegistry::instance().generate(recipeId, *params, lastError_);
+    if (!img && lastError_.empty()) lastError_ = "generateImage failed";
+    return img;
+}
+
+image::ImageData *Procgen::generateNormalImage(const std::string &recipeId, Params *params) {
+    image::ImageData *albedo = generateImage(recipeId, params);
+    if (!albedo) return nullptr;
+    const int w = albedo->getWidth();
+    const int h = albedo->getHeight();
+    auto *px    = static_cast<const uint8_t *>(albedo->getData());
+    std::vector<float> height(size_t(w * h));
+    for (int i = 0; i < w * h; ++i) {
+        const size_t o = size_t(i) * 4u;
+        height[size_t(i)] =
+            (float(px[o]) * 0.299f + float(px[o + 1]) * 0.587f + float(px[o + 2]) * 0.114f) /
+            255.f;
+    }
+    const bool seamless = params->getInt("seamless", 1) != 0;
+    const float strength = params->getFloat("normalStrength", 4.f);
+    image::ImageData *nrm = heightToNormalImage(height, w, h, strength, seamless);
+    delete albedo;
+    return nrm;
+}
+
+graphics::Texture *Procgen::generateTexture(const std::string &recipeId, Params *params,
+                                            graphics::Graphics *gfx) {
+    if (!gfx) {
+        lastError_ = "generateTexture: null Graphics";
+        return nullptr;
+    }
+    image::ImageData *img = generateImage(recipeId, params);
+    if (!img) return nullptr;
+    const bool seamless = !params || params->getInt("seamless", 1) != 0;
+    auto *tex = gfx->newTexture(img->getWidth(), img->getHeight(),
+                                static_cast<const uint8_t *>(img->getData()), seamless, seamless);
+    delete img;
+    return tex;
+}
+
+int Procgen::getTextureRecipeCount() const {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    textureRecipeIdsCache_ = TextureRecipeRegistry::instance().list();
+    return int(textureRecipeIdsCache_.size());
+}
+
+std::string Procgen::getTextureRecipeId(int index) const {
+    if (textureRecipeIdsCache_.empty()) {
+        TextureRecipeRegistry::instance().registerBuiltins();
+        textureRecipeIdsCache_ = TextureRecipeRegistry::instance().list();
+    }
+    if (index < 0 || index >= int(textureRecipeIdsCache_.size())) return {};
+    return textureRecipeIdsCache_[size_t(index)];
+}
+
+bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    return TextureRecipeRegistry::instance().has(recipeId);
+}
+
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
@@ -199,6 +275,12 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
     cls.addFunc("lastError", &Procgen::lastError);
     cls.addFunc("gridToJson", &Procgen::gridToJson);
+    cls.addFunc("generateImage", &Procgen::generateImage);
+    cls.addFunc("generateNormalImage", &Procgen::generateNormalImage);
+    cls.addFunc("generateTexture", &Procgen::generateTexture);
+    cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
+    cls.addFunc("getTextureRecipeId", &Procgen::getTextureRecipeId);
+    cls.addFunc("hasTextureRecipe", &Procgen::hasTextureRecipe);
 }
 
 }  // namespace eve::procgen

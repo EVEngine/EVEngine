@@ -5,8 +5,13 @@
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
 #include "procgen/JsonExport.h"
+#include "procgen/texture/TextureRecipe.h"
+#include "procgen/texture/NoiseField.h"
+#include "procgen/texture/ColorRamp.h"
 #include "map/TileLayer.h"
+#include "image/ImageData.h"
 
+#include <cstring>
 #include <set>
 #include <string>
 #include <vector>
@@ -208,4 +213,65 @@ TEST_CASE("procgen.json.export") {
     CHECK(json.find("\"width\":12") != std::string::npos);
     CHECK(json.find("\"cells\":") != std::string::npos);
     CHECK(json.find("spawn") != std::string::npos);
+}
+
+TEST_CASE("procgen.texture.noiseField.seamlessReproducible") {
+    NoiseField a{42, 8, 8};
+    NoiseField b{42, 8, 8};
+    CHECK_EQ(a.fbm(1.25f, 3.5f, 4), b.fbm(1.25f, 3.5f, 4));
+    // Period wrap: x and x+period should match on lattice contribution.
+    CHECK_EQ(a.hash01(0, 0), a.hash01(8, 0));
+    CHECK_EQ(a.hash01(0, 0), a.hash01(0, 8));
+}
+
+TEST_CASE("procgen.texture.colorRamp.banded") {
+    ColorRamp ramp;
+    ramp.add(0.f, 0, 0, 0);
+    ramp.add(1.f, 255, 255, 255);
+    const Rgba8 c0 = ramp.sampleBanded(0.1f, 3);
+    const Rgba8 c1 = ramp.sampleBanded(0.9f, 3);
+    CHECK(c0.r < c1.r);
+}
+
+TEST_CASE("procgen.texture.recipes.reproducible") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const char *ids[] = {"tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"};
+    for (const char *id : ids) {
+        Params p;
+        p.setSeed(11);
+        p.setSize(32, 32);
+        p.setInt("colors", 5);
+        p.setInt("pixelSize", 2);
+        p.setInt("seamless", 1);
+        std::string err;
+        image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
+        image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(a != nullptr);
+        REQUIRE(b != nullptr);
+        CHECK_EQ(a->getWidth(), 32);
+        CHECK_EQ(a->getHeight(), 32);
+        CHECK_EQ(a->getFormat(), std::string("RGBA8"));
+        CHECK_EQ(a->getSize(), b->getSize());
+        CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
+        delete a;
+        delete b;
+    }
+}
+
+TEST_CASE("procgen.texture.generateImage.andNormal") {
+    Procgen *mod = Procgen::create();
+    Params p;
+    p.setSeed(3);
+    p.setSize(48, 48);
+    p.setInt("colors", 6);
+    image::ImageData *img = mod->generateImage("tex.marble", &p);
+    REQUIRE(img != nullptr);
+    image::ImageData *nrm = mod->generateNormalImage("tex.marble", &p);
+    REQUIRE(nrm != nullptr);
+    CHECK_EQ(nrm->getWidth(), 48);
+    CHECK_EQ(nrm->getHeight(), 48);
+    delete img;
+    delete nrm;
+    CHECK(mod->hasTextureRecipe("tex.soil"));
+    CHECK(mod->getTextureRecipeCount() >= 5);
 }

@@ -1,0 +1,109 @@
+#include "procgen/texture/TextureRecipe.h"
+
+#include <algorithm>
+#include <cmath>
+
+namespace eve::procgen {
+
+TextureRecipeRegistry &TextureRecipeRegistry::instance() {
+    static TextureRecipeRegistry reg;
+    return reg;
+}
+
+void TextureRecipeRegistry::registerRecipe(const std::string &id, TextureRecipeFn fn) {
+    recipes_[id] = std::move(fn);
+}
+
+bool TextureRecipeRegistry::has(const std::string &id) const {
+    return recipes_.find(id) != recipes_.end();
+}
+
+image::ImageData *TextureRecipeRegistry::generate(const std::string &id, const Params &params,
+                                                  std::string &error) const {
+    auto it = recipes_.find(id);
+    if (it == recipes_.end()) {
+        error = "unknown texture recipe: " + id;
+        return nullptr;
+    }
+    return it->second(params, error);
+}
+
+std::vector<std::string> TextureRecipeRegistry::list() const {
+    std::vector<std::string> ids;
+    ids.reserve(recipes_.size());
+    for (const auto &kv : recipes_) ids.push_back(kv.first);
+    std::sort(ids.begin(), ids.end());
+    return ids;
+}
+
+TextureGenContext TextureGenContext::fromParams(const Params &params) {
+    TextureGenContext ctx;
+    ctx.width     = std::max(1, params.getWidth());
+    ctx.height    = std::max(1, params.getHeight());
+    ctx.seed      = params.getSeed();
+    ctx.scale     = std::max(0.05f, params.getFloat("scale", 4.f));
+    ctx.octaves   = std::max(1, params.getInt("octaves", 4));
+    ctx.colors    = std::max(2, params.getInt("colors", 6));
+    ctx.pixelSize = std::max(1, params.getInt("pixelSize", 1));
+    ctx.seamless  = params.getInt("seamless", 1) != 0;
+    ctx.warpAmp   = params.getFloat("warp", 1.f);
+    return ctx;
+}
+
+void paintHeightToImage(image::ImageData &img, const std::vector<float> &height, int w, int h,
+                        const ColorRamp &ramp, int bands, int pixelSize) {
+    auto *pixels = static_cast<uint8_t *>(img.getData());
+    if (!pixels || int(height.size()) < w * h) return;
+    pixelSize = std::max(1, pixelSize);
+    for (int y = 0; y < h; ++y) {
+        const int by = (y / pixelSize) * pixelSize;
+        for (int x = 0; x < w; ++x) {
+            const int   bx = (x / pixelSize) * pixelSize;
+            const float t  = height[size_t(by * w + bx)];
+            const Rgba8 c  = ramp.sampleBanded(t, bands);
+            const size_t i = (size_t(y) * size_t(w) + size_t(x)) * 4u;
+            pixels[i + 0]  = c.r;
+            pixels[i + 1]  = c.g;
+            pixels[i + 2]  = c.b;
+            pixels[i + 3]  = c.a;
+        }
+    }
+}
+
+image::ImageData *heightToNormalImage(const std::vector<float> &height, int w, int h,
+                                      float strength, bool seamless) {
+    auto *img    = new image::ImageData(w, h, "RGBA8");
+    auto *pixels = static_cast<uint8_t *>(img->getData());
+    auto  sample = [&](int x, int y) -> float {
+        if (seamless) {
+            x = (x % w + w) % w;
+            y = (y % h + h) % h;
+        } else {
+            x = std::clamp(x, 0, w - 1);
+            y = std::clamp(y, 0, h - 1);
+        }
+        return height[size_t(y * w + x)];
+    };
+    strength = std::max(0.01f, strength);
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            const float dx = (sample(x + 1, y) - sample(x - 1, y)) * strength;
+            const float dy = (sample(x, y + 1) - sample(x, y - 1)) * strength;
+            float       nx = -dx, ny = -dy, nz = 1.f;
+            const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+            if (len > 1e-6f) {
+                nx /= len;
+                ny /= len;
+                nz /= len;
+            }
+            const size_t i = (size_t(y) * size_t(w) + size_t(x)) * 4u;
+            pixels[i + 0]  = uint8_t(std::lround((nx * 0.5f + 0.5f) * 255.f));
+            pixels[i + 1]  = uint8_t(std::lround((ny * 0.5f + 0.5f) * 255.f));
+            pixels[i + 2]  = uint8_t(std::lround((nz * 0.5f + 0.5f) * 255.f));
+            pixels[i + 3]  = 255;
+        }
+    }
+    return img;
+}
+
+}  // namespace eve::procgen

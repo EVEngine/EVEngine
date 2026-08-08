@@ -1,5 +1,6 @@
-// Runtime procedural dungeon demo (Phase A).
-// Keys: R regenerate (new seed), 1 BSP, 2 cellular cave, 3 drunkard, 4 maze, 5 terrain
+// Runtime procedural dungeon + texture demo (Phase A/B).
+// Maps:  R regenerate, 1 BSP, 2 cellular, 3 drunkard, 4 maze, 5 terrain
+// Textures: T cycle recipe, N toggle normal preview, -/= change tex seed
 // Run: make run/linux-debug GAME=examples/procgen
 
 if (!("layer" in getroottable())) layer <- null;
@@ -7,6 +8,12 @@ if (!("seed" in getroottable())) seed <- 42;
 if (!("algo" in getroottable())) algo <- "dungeon.bsp";
 if (!("status" in getroottable())) status <- "";
 if (!("prevKeys" in getroottable())) prevKeys <- {};
+if (!("texRecipe" in getroottable())) texRecipe <- "tex.soil";
+if (!("texSeed" in getroottable())) texSeed <- 1;
+if (!("tex" in getroottable())) tex <- null;
+if (!("showNormal" in getroottable())) showNormal <- false;
+if (!("texRecipes" in getroottable())) texRecipes <- ["tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"];
+if (!("texIndex" in getroottable())) texIndex <- 0;
 
 TILE = 12;
 
@@ -29,8 +36,6 @@ function ensureLayer(w, h) {
 }
 
 function bindPalette() {
-    // Solid-color debug tileset is fine: GIDs just tint via missing texture path.
-    // Semantic → GID mapping for pixel RPG style.
     procgen.setPaletteGid("demo", "wall", 1);
     procgen.setPaletteGid("demo", "floor", 2);
     procgen.setPaletteGid("demo", "corridor", 3);
@@ -43,7 +48,7 @@ function bindPalette() {
     procgen.setPaletteGid("demo", "door", 10);
 }
 
-function regenerate() {
+function regenerateMap() {
     bindPalette();
     local w = 64;
     local h = 40;
@@ -68,11 +73,10 @@ function regenerate() {
     out.setPalette("demo");
 
     if (!procgen.generateTo(algo, p, out)) {
-        status = "FAIL: " + procgen.lastError();
+        status = "MAP FAIL: " + procgen.lastError();
         return;
     }
 
-    // Pull objects from a grid generate for HUD (spawn/stairs).
     local grid = procgen.generate(algo, p);
     local objInfo = "";
     if (grid != null) {
@@ -85,27 +89,70 @@ function regenerate() {
             i += 1;
         }
     }
-    status = algo + " seed=" + seed + "  " + objInfo;
+    status = algo + " seed=" + seed + " | " + texRecipe + " tseed=" + texSeed + "  " + objInfo;
 }
 
-function drawHud() {
-    // Minimal overlay via print each regenerate; map renders tiles.
+function regenerateTexture() {
+    local p = procgen.newParams();
+    p.setSeed(texSeed);
+    p.setSize(128, 128);
+    p.setFloat("scale", 4.0);
+    p.setInt("octaves", 4);
+    p.setInt("colors", 6);
+    p.setInt("pixelSize", 2);
+    p.setInt("seamless", 1);
+    if (showNormal) {
+        local img = procgen.generateNormalImage(texRecipe, p);
+        if (img == null) {
+            status = "TEX FAIL: " + procgen.lastError();
+            return;
+        }
+        tex = gfx.newTexture(img, true, true);
+    } else {
+        tex = procgen.generateTexture(texRecipe, p, gfx);
+        if (tex == null) {
+            status = "TEX FAIL: " + procgen.lastError();
+            return;
+        }
+    }
+    status = algo + " seed=" + seed + " | " + texRecipe + (showNormal ? " [normal]" : "") +
+             " tseed=" + texSeed;
 }
 
 if (layer == null) {
-    regenerate();
+    regenerateMap();
+    regenerateTexture();
 }
 
 function update(dt) {
     if (keyPressed("r") || keyPressed("R")) {
         seed = seed + 1;
-        regenerate();
+        regenerateMap();
     }
-    if (keyPressed("1")) { algo = "dungeon.bsp"; regenerate(); }
-    if (keyPressed("2")) { algo = "cave.cellular"; regenerate(); }
-    if (keyPressed("3")) { algo = "cave.drunkard"; regenerate(); }
-    if (keyPressed("4")) { algo = "maze.backtrack"; regenerate(); }
-    if (keyPressed("5")) { algo = "noise.terrain"; regenerate(); }
+    if (keyPressed("1")) { algo = "dungeon.bsp"; regenerateMap(); }
+    if (keyPressed("2")) { algo = "cave.cellular"; regenerateMap(); }
+    if (keyPressed("3")) { algo = "cave.drunkard"; regenerateMap(); }
+    if (keyPressed("4")) { algo = "maze.backtrack"; regenerateMap(); }
+    if (keyPressed("5")) { algo = "noise.terrain"; regenerateMap(); }
+
+    if (keyPressed("t") || keyPressed("T")) {
+        texIndex = (texIndex + 1) % texRecipes.len();
+        texRecipe = texRecipes[texIndex];
+        regenerateTexture();
+    }
+    if (keyPressed("n") || keyPressed("N")) {
+        showNormal = !showNormal;
+        regenerateTexture();
+    }
+    if (keyPressed("minus") || keyPressed("-")) {
+        texSeed = texSeed - 1;
+        if (texSeed < 0) texSeed = 0;
+        regenerateTexture();
+    }
+    if (keyPressed("equals") || keyPressed("=") || keyPressed("plus")) {
+        texSeed = texSeed + 1;
+        regenerateTexture();
+    }
 
     map.update(dt);
 }
@@ -113,4 +160,8 @@ function update(dt) {
 function draw() {
     gfx.clear(0.08, 0.09, 0.12, 1.0);
     map.render(gfx);
+    if (tex != null) {
+        // Preview panel on the right
+        gfx.drawTexturedRect(tex, 800, 48, 144, 144, 1, 1, 1, 1);
+    }
 }
