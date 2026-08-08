@@ -3,6 +3,7 @@
 #include "common/ECS.h"
 
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -88,7 +89,42 @@ public:
 
     SceneNode *findById(const std::string &id);
     SceneNode *findByKey(const std::string &key);
+    /** First node whose name equals `name` (DFS from root). */
+    SceneNode *findByName(const std::string &name);
+    /** Path of ids joined by '/', e.g. "root/player/weapon". Relative to host root. */
+    SceneNode *findByPath(const std::string &path);
     int findIndexById(const std::string &id);
+    int findIndexByKey(const std::string &key);
+    int findIndexByName(const std::string &name);
+    int findIndexByPath(const std::string &path);
+
+    bool hasNode(const std::string &id);
+    int getNodeCount();
+    int getRootIndex();
+    SceneNode *getRoot();
+    SceneNode *getNode(int index);
+
+    int getParentIndex(int nodeIndex);
+    SceneNode *getParent(int nodeIndex);
+    SceneNode *getParentById(const std::string &id);
+    int getChildCount(int nodeIndex);
+    int getChildCountById(const std::string &id);
+    /** Child ordinal 0..count-1; -1 if out of range. */
+    int getChildIndexAt(int parentIndex, int childOrdinal);
+    SceneNode *getChildAt(int parentIndex, int childOrdinal);
+    SceneNode *getChildAtById(const std::string &parentId, int childOrdinal);
+    std::vector<int> getChildIndices(int nodeIndex);
+    std::vector<SceneNode *> getChildren(int nodeIndex);
+    std::vector<std::string> getChildIds(const std::string &parentId);
+
+    /** Id path "a/b/c" from root to node; empty if invalid. */
+    std::string getPath(int nodeIndex);
+    std::string getPathById(const std::string &id);
+
+    bool isAncestorOf(int ancestorIndex, int nodeIndex);
+    bool isAncestorOfById(const std::string &ancestorId, const std::string &nodeId);
+    bool isDescendantOf(int nodeIndex, int ancestorIndex);
+    bool isDescendantOfById(const std::string &nodeId, const std::string &ancestorId);
 
     void markDirty() { tree()->dirty = true; }
     void markTransformDirty() { tree()->transformDirty = true; }
@@ -104,8 +140,42 @@ public:
     bool addChild(int parentIndex, int childIndex);
     bool removeChild(int parentIndex, int childIndex);
 
-    /** Depth-first visit of arena indices under root (inclusive). */
+    /** Depth-first visit of arena indices under `nodeIndex` (inclusive). C callback. */
     void forEachDepthFirst(int nodeIndex, void (*fn)(SceneHost *, int, void *), void *user);
+
+    using NodeVisitFn = std::function<void(SceneHost *host, int index, SceneNode &node)>;
+    using NodePredFn = std::function<bool(SceneHost *host, int index, const SceneNode &node)>;
+
+    /** DFS from root (or from `nodeIndex`), inclusive. */
+    void walkDepthFirst(NodeVisitFn fn);
+    void walkDepthFirstFrom(int nodeIndex, NodeVisitFn fn);
+    /** BFS from root (or from `nodeIndex`), inclusive. */
+    void walkBreadthFirst(NodeVisitFn fn);
+    void walkBreadthFirstFrom(int nodeIndex, NodeVisitFn fn);
+    /** Direct children only. */
+    void walkChildren(int parentIndex, NodeVisitFn fn);
+    /** Parent chain upward, excluding self. */
+    void walkAncestors(int nodeIndex, NodeVisitFn fn);
+
+    /** First DFS match; nullptr if none. */
+    SceneNode *findIf(NodePredFn pred);
+    SceneNode *findIfFrom(int nodeIndex, NodePredFn pred);
+    std::vector<SceneNode *> filter(NodePredFn pred);
+    std::vector<SceneNode *> filterFrom(int nodeIndex, NodePredFn pred);
+    std::vector<int> filterIndices(NodePredFn pred);
+    std::vector<int> filterIndicesFrom(int nodeIndex, NodePredFn pred);
+
+    std::vector<SceneNode *> findAllByName(const std::string &name);
+    std::vector<SceneNode *> findAllByKey(const std::string &key);
+    std::vector<SceneNode *> findAllVisible(bool visible = true);
+    std::vector<SceneNode *> findAllBySpace(const std::string &space);
+    std::vector<SceneNode *> findAllLinked();
+
+    std::vector<std::string> collectIds();
+    std::vector<std::string> collectIdsFrom(int nodeIndex);
+    std::vector<std::string> collectIdsWhere(NodePredFn pred);
+    std::vector<std::string> collectIdsByName(const std::string &name);
+    std::vector<std::string> collectIdsVisible(bool visible = true);
 
     /**
      * Link a graphics renderable to a node id. Survives reconcile/rebuild by id.

@@ -203,3 +203,87 @@ TEST_CASE("Scene.link.syncRenderable2DWorld") {
     CHECK(approxEq(r->transform()->x, 6.f));
     CHECK(approxEq(r->transform()->y, 8.f));
 }
+
+TEST_CASE("Scene.query.pathParentChildren") {
+    SceneHost *h = SceneHost::createHost("query");
+    h->setTree(node("root",
+                    {
+                        node("player", {node("weapon").withName("gun")}),
+                        node("enemy").withName("goblin"),
+                    }));
+
+    CHECK(h->hasNode("weapon"));
+    CHECK_EQ(h->getNodeCount(), 4);
+    CHECK(h->getRoot()->id == "root");
+    CHECK(h->getParentById("weapon")->id == "player");
+    CHECK_EQ(h->getChildCountById("root"), 2);
+    CHECK(h->getChildAtById("root", 0)->id == "player");
+    CHECK(h->getPathById("weapon") == "root/player/weapon");
+    CHECK(h->findByPath("root/player/weapon")->id == "weapon");
+    CHECK(h->findByPath("player/weapon")->id == "weapon");
+    CHECK(h->findByName("gun")->id == "weapon");
+    CHECK(h->isAncestorOfById("root", "weapon"));
+    CHECK(h->isDescendantOfById("weapon", "player"));
+    CHECK(!h->isAncestorOfById("enemy", "weapon"));
+}
+
+TEST_CASE("Scene.query.walkFilterCollect") {
+    SceneHost *h = SceneHost::createHost("walk");
+    h->setTree(node("root",
+                    {
+                        node("a", {node("a1")}),
+                        node("b").withVisible(false),
+                    }));
+
+    std::vector<std::string> dfs;
+    h->walkDepthFirst([&](SceneHost *, int, SceneNode &n) { dfs.push_back(n.id); });
+    REQUIRE_EQ(dfs.size(), 4u);
+    CHECK(dfs[0] == "root");
+    CHECK(dfs[1] == "a");
+    CHECK(dfs[2] == "a1");
+    CHECK(dfs[3] == "b");
+
+    std::vector<std::string> bfs;
+    h->walkBreadthFirst([&](SceneHost *, int, SceneNode &n) { bfs.push_back(n.id); });
+    REQUIRE_EQ(bfs.size(), 4u);
+    CHECK(bfs[0] == "root");
+    CHECK(bfs[1] == "a");
+    CHECK(bfs[2] == "b");
+    CHECK(bfs[3] == "a1");
+
+    auto hidden = h->findAllVisible(false);
+    REQUIRE_EQ(hidden.size(), 1u);
+    CHECK(hidden[0]->id == "b");
+
+    auto underA = h->collectIdsFrom(h->findIndexById("a"));
+    REQUIRE_EQ(underA.size(), 2u);
+    CHECK(underA[0] == "a");
+    CHECK(underA[1] == "a1");
+
+    SceneNode *found = h->findIf([&](SceneHost *, int, const SceneNode &n) { return n.id == "a1"; });
+    REQUIRE(found != nullptr);
+    CHECK(found->id == "a1");
+}
+
+TEST_CASE("Scene.module.queryWrappers") {
+    Scene *mod = Scene::create();
+    mod->mountAs("q", node("root", {node("p", {node("c").withName("child")})}));
+    CHECK(mod->select("q"));
+    CHECK(mod->hasNode("c"));
+    CHECK(mod->getRootId() == "root");
+    CHECK(mod->getParentId("c") == "p");
+    CHECK_EQ(mod->getChildCount("root"), 1);
+    CHECK(mod->getChildIdAt("p", 0) == "c");
+    CHECK(mod->findIdByName("child") == "c");
+    CHECK(mod->findIdByPath("root/p/c") == "c");
+    CHECK(mod->getNodePath("c") == "root/p/c");
+    CHECK(mod->isAncestor("root", "c"));
+    CHECK(mod->isDescendant("c", "p"));
+    auto ids = mod->collectIds();
+    CHECK_EQ(ids.size(), 3u);
+    auto bfs = mod->walkBreadthFirstIds();
+    CHECK_EQ(bfs.size(), 3u);
+    CHECK(bfs[0] == "root");
+    CHECK(bfs[1] == "p");
+    CHECK(bfs[2] == "c");
+}

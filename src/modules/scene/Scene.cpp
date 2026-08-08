@@ -260,6 +260,107 @@ bool Scene::unlinkNode(const std::string &nodeId) {
     return h->unlink(nodeId);
 }
 
+bool Scene::hasNode(const std::string &id) {
+    SceneHost *h = selected_;
+    return h ? h->hasNode(id) : false;
+}
+
+int Scene::getNodeCount() {
+    SceneHost *h = selected_;
+    return h ? h->getNodeCount() : 0;
+}
+
+std::string Scene::getRootId() {
+    SceneHost *h = selected_;
+    if (!h) return {};
+    SceneNode *r = h->getRoot();
+    return r ? r->id : std::string{};
+}
+
+std::string Scene::getParentId(const std::string &id) {
+    SceneHost *h = selected_;
+    if (!h) return {};
+    SceneNode *p = h->getParentById(id);
+    return p ? p->id : std::string{};
+}
+
+int Scene::getChildCount(const std::string &id) {
+    SceneHost *h = selected_;
+    return h ? h->getChildCountById(id) : 0;
+}
+
+std::string Scene::getChildIdAt(const std::string &parentId, int childOrdinal) {
+    SceneHost *h = selected_;
+    if (!h) return {};
+    SceneNode *c = h->getChildAtById(parentId, childOrdinal);
+    return c ? c->id : std::string{};
+}
+
+std::string Scene::findIdByName(const std::string &name) {
+    SceneHost *h = selected_;
+    if (!h) return {};
+    SceneNode *n = h->findByName(name);
+    return n ? n->id : std::string{};
+}
+
+std::string Scene::findIdByPath(const std::string &path) {
+    SceneHost *h = selected_;
+    if (!h) return {};
+    SceneNode *n = h->findByPath(path);
+    return n ? n->id : std::string{};
+}
+
+std::string Scene::getNodePath(const std::string &id) {
+    SceneHost *h = selected_;
+    return h ? h->getPathById(id) : std::string{};
+}
+
+bool Scene::isAncestor(const std::string &ancestorId, const std::string &nodeId) {
+    SceneHost *h = selected_;
+    return h ? h->isAncestorOfById(ancestorId, nodeId) : false;
+}
+
+bool Scene::isDescendant(const std::string &nodeId, const std::string &ancestorId) {
+    SceneHost *h = selected_;
+    return h ? h->isDescendantOfById(nodeId, ancestorId) : false;
+}
+
+std::vector<std::string> Scene::collectIds() {
+    SceneHost *h = selected_;
+    return h ? h->collectIds() : std::vector<std::string>{};
+}
+
+std::vector<std::string> Scene::collectIdsFrom(const std::string &id) {
+    SceneHost *h = selected_;
+    if (!h) return {};
+    return h->collectIdsFrom(h->findIndexById(id));
+}
+
+std::vector<std::string> Scene::collectIdsByName(const std::string &name) {
+    SceneHost *h = selected_;
+    return h ? h->collectIdsByName(name) : std::vector<std::string>{};
+}
+
+std::vector<std::string> Scene::collectIdsVisible(bool visible) {
+    SceneHost *h = selected_;
+    return h ? h->collectIdsVisible(visible) : std::vector<std::string>{};
+}
+
+std::vector<std::string> Scene::collectChildIds(const std::string &parentId) {
+    SceneHost *h = selected_;
+    return h ? h->getChildIds(parentId) : std::vector<std::string>{};
+}
+
+std::vector<std::string> Scene::walkDepthFirstIds() { return collectIds(); }
+
+std::vector<std::string> Scene::walkBreadthFirstIds() {
+    SceneHost *h = selected_;
+    if (!h) return {};
+    std::vector<std::string> out;
+    h->walkBreadthFirst([&](SceneHost *, int, SceneNode &n) { out.push_back(n.id); });
+    return out;
+}
+
 void Scene::beginBuild() {
     openStack_.clear();
     hasBuiltRoot_ = false;
@@ -375,6 +476,25 @@ void Scene::expose(ssq::Class &cls) {
     cls.addFunc("linkRenderable2D", &Scene::linkRenderable2D);
     cls.addFunc("linkRenderable3D", &Scene::linkRenderable3D);
     cls.addFunc("unlinkNode", &Scene::unlinkNode);
+
+    cls.addFunc("hasNode", &Scene::hasNode);
+    cls.addFunc("getNodeCount", &Scene::getNodeCount);
+    cls.addFunc("getRootId", &Scene::getRootId);
+    cls.addFunc("getParentId", &Scene::getParentId);
+    cls.addFunc("getChildCount", &Scene::getChildCount);
+    cls.addFunc("getChildIdAt", &Scene::getChildIdAt);
+    cls.addFunc("findIdByName", &Scene::findIdByName);
+    cls.addFunc("findIdByPath", &Scene::findIdByPath);
+    cls.addFunc("getNodePath", &Scene::getNodePath);
+    cls.addFunc("isAncestor", &Scene::isAncestor);
+    cls.addFunc("isDescendant", &Scene::isDescendant);
+    cls.addFunc("collectIds", &Scene::collectIds);
+    cls.addFunc("collectIdsFrom", &Scene::collectIdsFrom);
+    cls.addFunc("collectIdsByName", &Scene::collectIdsByName);
+    cls.addFunc("collectIdsVisible", &Scene::collectIdsVisible);
+    cls.addFunc("collectChildIds", &Scene::collectChildIds);
+    cls.addFunc("walkDepthFirstIds", &Scene::walkDepthFirstIds);
+    cls.addFunc("walkBreadthFirstIds", &Scene::walkBreadthFirstIds);
 
     cls.addFunc("beginBuild", &Scene::beginBuild);
     cls.addFunc("beginNode", &Scene::beginNode);

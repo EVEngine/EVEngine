@@ -57,6 +57,27 @@ public:
     bool linkRenderable3D(const std::string &nodeId, graphics::Renderable3D *r);
     bool unlinkNode(const std::string &nodeId);
 
+    // --- Query / traverse (current host; script-friendly, id-based) ---
+    bool hasNode(const std::string &id);
+    int getNodeCount();
+    std::string getRootId();
+    std::string getParentId(const std::string &id);
+    int getChildCount(const std::string &id);
+    std::string getChildIdAt(const std::string &parentId, int childOrdinal);
+    std::string findIdByName(const std::string &name);
+    std::string findIdByPath(const std::string &path);
+    std::string getNodePath(const std::string &id);
+    bool isAncestor(const std::string &ancestorId, const std::string &nodeId);
+    bool isDescendant(const std::string &nodeId, const std::string &ancestorId);
+    std::vector<std::string> collectIds();
+    std::vector<std::string> collectIdsFrom(const std::string &id);
+    std::vector<std::string> collectIdsByName(const std::string &name);
+    std::vector<std::string> collectIdsVisible(bool visible);
+    std::vector<std::string> collectChildIds(const std::string &parentId);
+    /** DFS order of ids under root (same as collectIds). Kept for script naming clarity. */
+    std::vector<std::string> walkDepthFirstIds();
+    std::vector<std::string> walkBreadthFirstIds();
+
     // --- Imperative builder (script / isomorphic to UI) ---
     void beginBuild();
     void beginNode(const std::string &id, const std::string &name = "");
