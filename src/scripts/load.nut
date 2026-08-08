@@ -194,6 +194,52 @@ try {
     print("eve_init failed: " + e + "\n");
 }
 
+// DevTools helpers (only present when `eve run --debug`).
+function has_dev() {
+    return ("dev" in eve);
+}
+
+function dev_poll() {
+    if (has_dev())
+        eve.dev.poll();
+}
+
+function dev_should_update() {
+    if (!has_dev()) return true;
+    return eve.dev.shouldRunUpdate();
+}
+
+function dev_notify_frame_done() {
+    if (has_dev())
+        eve.dev.notifyFrameDone();
+}
+
+function handle_dev_key(key, scancode) {
+    if (!has_dev()) return;
+    // Pause key (keyboard Pause/Break) toggles frame-level pause.
+    if (key == "Pause" || scancode == "Pause") {
+        eve.dev.togglePause();
+        print(eve.dev.isPaused() ? "dev: paused\n" : "dev: resumed\n");
+        return;
+    }
+    // F5 = save snapshot, F9 = load snapshot (script state only).
+    if (key == "F5") {
+        local r = eve.dev.saveSnapshot("eve_snapshot.json");
+        print("dev: saveSnapshot -> " + r + "\n");
+        return;
+    }
+    if (key == "F9") {
+        local r = eve.dev.loadSnapshot("eve_snapshot.json");
+        print("dev: loadSnapshot -> " + r + "\n");
+        return;
+    }
+    // F10 = step one frame while paused.
+    if (key == "F10" && eve.dev.isPaused()) {
+        eve.dev.stepFrame();
+        print("dev: step frame\n");
+    }
+}
+
 // On Android, SDL may queue a spurious "quit" while setOrientation recreates
 // the surface. Ignore quit for a few frames so a slow eve_init (demo) does not
 // instantly exit. Real back-button quits still work after startup settles.
@@ -207,6 +253,10 @@ while (running) {
         local data = event.getLastData();
         if ("async_dispatch_event" in getroottable())
             async_dispatch_event(name, data);
+        if (name == "keypressed") {
+            // getLastData() is the key name (first string arg of the Message).
+            handle_dev_key(data, data);
+        }
         if (name == "quit") {
             if (startupFrames <= 0)
                 running = false;
@@ -220,16 +270,20 @@ while (running) {
     config.height = win.getHeight();
 
     poll_hot_reload();
+    dev_poll();
 
     local dt = timer.step();
     try {
         // Timers + Promise microtasks before game logic (Node-like macrotask boundary).
         if ("async_pump" in getroottable())
             async_pump();
-        eve_update(dt);
-        // Flush reactions scheduled during eve_update.
-        if ("async_pump" in getroottable())
-            async_pump();
+        if (dev_should_update()) {
+            eve_update(dt);
+            // Flush reactions scheduled during eve_update.
+            if ("async_pump" in getroottable())
+                async_pump();
+            dev_notify_frame_done();
+        }
         eve_render();
         gfx.present();
         ui.dispatchEvents();

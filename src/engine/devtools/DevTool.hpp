@@ -2,7 +2,10 @@
 
 #include "common/Export.h"
 #include "devtools/CallGraph.hpp"
+#include "devtools/DebugAdapter.hpp"
+#include "devtools/Debugger.hpp"
 #include "devtools/RenderFlow.hpp"
+#include "devtools/Snapshot.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -22,6 +25,9 @@ namespace eve::dev {
  *
  * When attached (typically via `eve run --debug`):
  *  - Squirrel: debug hook → CallGraph (call stack + Def/Use data-flow)
+ *  - Breakpoints / watches / pause-step via Debugger
+ *  - Optional DAP TCP server for the VS Code eve-debug extension
+ *  - Script-state Snapshot (engine treated as stateless)
  *  - Render: installs RenderFlow as eve::debug::IRenderTracer
  *  - on errors: Weiser-style backward slice for script and/or render pipeline
  *
@@ -41,6 +47,14 @@ public:
     void enableRenderTrace(bool on = true);
     void detach();
 
+    /** Expose `eve.dev` script API (pause/breakpoint/watch/snapshot). */
+    void exposeScriptApi(ssq::VM& vm);
+
+    /** Start DAP server; returns bound port (0 on failure). */
+    int  startDap(uint16_t port);
+    void stopDap();
+    void poll();
+
     bool isAttached() const { return vm_ != nullptr; }
     bool renderTraceEnabled() const { return renderTraceEnabled_; }
     bool sampleLocals() const { return sampleLocals_; }
@@ -50,6 +64,9 @@ public:
     const CallGraph&  graph() const { return graph_; }
     RenderFlow&       renderFlow() { return renderFlow_; }
     const RenderFlow& renderFlow() const { return renderFlow_; }
+    Debugger&         debugger() { return Debugger::instance(); }
+    Snapshot&         snapshot() { return Snapshot::instance(); }
+    DebugAdapter&     dap() { return DebugAdapter::instance(); }
 
     SliceResult analyzeError(const std::string& errorMessage,
                              const std::vector<std::string>& hintVars = {}) const;
