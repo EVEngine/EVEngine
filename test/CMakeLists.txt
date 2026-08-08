@@ -118,13 +118,14 @@ elseif(UNIX)
 endif()
 
 # Windows lib names must match local + CI third-party install (md/mdd postfixes).
+# FreeType uses its own Debug postfix "d" (freetyped) and Release "md" (freetypemd).
 if(WIN32)
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd Box2Dmdd
-        vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd freetype)
+        vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd freetyped)
   else()
     set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic lz4md Box2Dmd
-        vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md freetype)
+        vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md freetypemd)
   endif()
 else()
   if(APPLE)

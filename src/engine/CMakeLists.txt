@@ -50,6 +50,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         "-framework CoreMotion"
         "-framework OpenGLES"
         "-framework CoreBluetooth"
+        # Static MoltenVK references IOSurface APIs.
+        "-framework IOSurface"
         iconv
     )
 elseif(APPLE)
@@ -85,18 +87,20 @@ endif()
 # Windows MSVC static-lib names match third-party install postfixes (md/mdd).
 # Postfixes are forced early via ExternalProject CMAKE_ARGS so squirrel/OpenAL
 # match Poco-style names even on a fresh CI configure.
+# FreeType forces CMAKE_DEBUG_POSTFIX=d (freetyped.lib) and ignores our mdd;
+# Release still picks up CMAKE_RELEASE_POSTFIX=md → freetypemd.lib.
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     set(ThirdParty ${ThirdParty} simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d SDL2maind
         medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd physfsmdd lz4mdd Box2Dmdd
         vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd
-        freetype
+        freetyped
         PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
         ${SystemLibraries})
 elseif(WIN32)
     set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2 SDL2main
         medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic physfsmd lz4md Box2Dmd
         vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md
-        freetype
+        freetypemd
         PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
         ${SystemLibraries})
 elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))

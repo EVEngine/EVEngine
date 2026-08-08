@@ -58,8 +58,14 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
+          # Headless Windows runners have no GPU ICD; SwiftShader provides
+          # VK_KHR_surface so SDL_WINDOW_VULKAN / unit tests can run.
+          install_swiftshader: true
           cache: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (SwiftShader)
+        run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -92,6 +98,9 @@ jobs:
         run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
       - name: Run win32 unit tests
+        # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
+        env:
+          ALSOFT_DRIVERS: "null"
         run: make test/win32-debug
 
       - name: Build android debug
@@ -173,7 +182,11 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
-            libxrandr-dev libxinerama-dev libxext-dev libgl1-mesa-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
             xvfb
 
       - name: Install Vulkan SDK
@@ -183,10 +196,17 @@ jobs:
           cache: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup software Vulkan ICD (Lavapipe)
+        run: bash .github/scripts/setup-software-vulkan.sh
+
       - name: Build linux debug
         run: make build/linux-debug JOBS="$(nproc)"
 
       - name: Run linux unit tests
+        # No ALSA card on runners; force OpenAL Soft null backend so audio tests still run.
+        env:
+          ALSOFT_DRIVERS: "null"
         run: |
           # Some graphics/window tests may need a display; xvfb covers headless runners.
+          # VK_ICD_FILENAMES (Lavapipe) comes from setup-software-vulkan.sh.
           xvfb-run -a make test/linux-debug
