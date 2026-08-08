@@ -2,11 +2,13 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Exception.h"
+#include "data/ByteData.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
 
 #include <chrono>
+#include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <memory>
@@ -25,6 +27,88 @@ void useIdentity(const char* id) {
     auto* f = fs();
     REQUIRE(f->setIdentity(id, true));
     REQUIRE(f->setupWriteDirectory());
+}
+
+// Bit-by-bit CRC-32 (zip polynomial); payloads in these tests are tiny so
+// this is fine without pulling in a zlib dependency for the test binary.
+uint32_t crc32Of(const void* data, size_t size) {
+    const auto* bytes = static_cast<const unsigned char*>(data);
+    uint32_t    crc    = 0xFFFFFFFFu;
+    for (size_t i = 0; i < size; ++i) {
+        crc ^= bytes[i];
+        for (int bit = 0; bit < 8; ++bit)
+            crc = (crc & 1u) ? (crc >> 1) ^ 0xEDB88320u : (crc >> 1);
+    }
+    return ~crc;
+}
+
+void put16(std::vector<unsigned char>& out, uint16_t v) {
+    out.push_back(static_cast<unsigned char>(v & 0xFF));
+    out.push_back(static_cast<unsigned char>((v >> 8) & 0xFF));
+}
+
+void put32(std::vector<unsigned char>& out, uint32_t v) {
+    for (int i = 0; i < 4; ++i) out.push_back(static_cast<unsigned char>((v >> (8 * i)) & 0xFF));
+}
+
+// Hand-rolled minimal single-entry, uncompressed (stored) ZIP archive, so
+// filesystem.mount(Data*, ...) can be exercised without a real archive file
+// or an extra zip-writer dependency in the test binary.
+std::vector<unsigned char> buildMinimalZip(const std::string& entryName, const std::string& content) {
+    std::vector<unsigned char> out;
+    const uint32_t              crc          = crc32Of(content.data(), content.size());
+    const uint32_t               localOffset = 0;
+
+    // Local file header.
+    put32(out, 0x04034b50u);
+    put16(out, 20);  // version needed
+    put16(out, 0);   // flags
+    put16(out, 0);   // compression: stored
+    put16(out, 0);   // mod time
+    put16(out, 0);   // mod date
+    put32(out, crc);
+    put32(out, static_cast<uint32_t>(content.size()));  // compressed size
+    put32(out, static_cast<uint32_t>(content.size()));  // uncompressed size
+    put16(out, static_cast<uint16_t>(entryName.size()));
+    put16(out, 0);  // extra field length
+    out.insert(out.end(), entryName.begin(), entryName.end());
+    out.insert(out.end(), content.begin(), content.end());
+
+    const size_t centralDirOffset = out.size();
+
+    // Central directory file header.
+    put32(out, 0x02014b50u);
+    put16(out, 20);  // version made by
+    put16(out, 20);  // version needed
+    put16(out, 0);   // flags
+    put16(out, 0);   // compression: stored
+    put16(out, 0);   // mod time
+    put16(out, 0);   // mod date
+    put32(out, crc);
+    put32(out, static_cast<uint32_t>(content.size()));
+    put32(out, static_cast<uint32_t>(content.size()));
+    put16(out, static_cast<uint16_t>(entryName.size()));
+    put16(out, 0);  // extra field length
+    put16(out, 0);  // comment length
+    put16(out, 0);  // disk number start
+    put16(out, 0);  // internal attributes
+    put32(out, 0);  // external attributes
+    put32(out, localOffset);
+    out.insert(out.end(), entryName.begin(), entryName.end());
+
+    const size_t centralDirSize = out.size() - centralDirOffset;
+
+    // End of central directory record.
+    put32(out, 0x06054b50u);
+    put16(out, 0);  // disk number
+    put16(out, 0);  // disk with central dir
+    put16(out, 1);  // entries on this disk
+    put16(out, 1);  // total entries
+    put32(out, static_cast<uint32_t>(centralDirSize));
+    put32(out, static_cast<uint32_t>(centralDirOffset));
+    put16(out, 0);  // comment length
+
+    return out;
 }
 
 }  // namespace
@@ -106,8 +190,22 @@ TEST_CASE("filesystem.writeReadAppendRemove") {
 
 TEST_CASE("filesystem.setSourceSecondCallFails") {
     auto* f = fs();
-    // First call may succeed or already be set by earlier process use.
-    (void)f->setSource(".");
+    // `game_source` is a sticky, process-wide singleton field: only the very
+    // first call across the whole test binary can succeed. We are the only
+    // TEST_CASE that calls setSource(), so this exercises the happy path.
+    std::string cwd      = f->getWorkingDirectory();
+    bool        firstOk  = f->setSource(cwd);
+    if (firstOk) {
+        CHECK_EQ(f->getSource(), cwd);
+        // getSourceBaseDirectory() strips the last path component of the source.
+        std::string base = f->getSourceBaseDirectory();
+        CHECK(!base.empty());
+        CHECK(cwd.rfind(base, 0) == 0);
+    } else {
+        // Defensive fallback in case some earlier test already set the source.
+        CHECK(!f->getSource().empty());
+    }
+    // Second call (regardless of which path above ran) must always fail.
     CHECK(!f->setSource("somewhere_else"));
 }
 
@@ -203,6 +301,77 @@ TEST_CASE("filesystem.mount.realDirRoundTrip") {
     REQUIRE(f->mount(realSave, "/mnt", false));
     CHECK(f->unmount(realSave));
     f->remove("mounted_marker.txt");
+}
+
+TEST_CASE("filesystem.mount.memoryDataRoundTrip") {
+    useIdentity("ev_ut_fs_mount_mem");
+    auto* f = fs();
+
+    const std::string content = "hi-from-memory-zip";
+    auto               zipBytes = buildMinimalZip("hello.txt", content);
+    eve::data::ByteData zipData(zipBytes.data(), zipBytes.size());
+
+    REQUIRE(f->mount(&zipData, "ut_mem.zip", "/memzip", false));
+
+    eve::filesystem::Filesystem::Info zipEntryInfo{};
+    REQUIRE(f->getInfo("/memzip/hello.txt", zipEntryInfo));
+    CHECK_EQ(zipEntryInfo.type, std::string("file"));
+
+    std::unique_ptr<eve::filesystem::FileData> read(f->read("/memzip/hello.txt"));
+    REQUIRE(read.get() != nullptr);
+    CHECK_EQ(read->getSize(), content.size());
+    CHECK(std::memcmp(read->getData(), content.data(), content.size()) == 0);
+
+    CHECK(f->unmount(&zipData));
+    // Once unmounted, the mounted content should no longer resolve.
+    CHECK(!f->getInfo("/memzip/hello.txt", zipEntryInfo));
+}
+
+TEST_CASE("filesystem.getRealDirectory") {
+    useIdentity("ev_ut_fs_realdir");
+    auto* f = fs();
+    f->write("ut_realdir_marker.txt", "x", 1);
+
+    std::string real = f->getRealDirectory("ut_realdir_marker.txt");
+    CHECK(!real.empty());
+    CHECK_EQ(real, f->getSaveDirectory());
+
+    bool threw = false;
+    try {
+        f->getRealDirectory("ut_realdir_definitely_missing_zzz.dat");
+    } catch (const eve::Exception&) {
+        threw = true;
+    }
+    CHECK(threw);
+
+    f->remove("ut_realdir_marker.txt");
+}
+
+TEST_CASE("filesystem.File.extensionAndEof") {
+    useIdentity("ev_ut_fs_ext_eof");
+    auto* f = fs();
+
+    std::unique_ptr<eve::filesystem::File> withExt(f->newFile("dir/archive.tar.gz"));
+    CHECK_EQ(withExt->getExtension(), std::string("gz"));
+
+    std::unique_ptr<eve::filesystem::File> noExt(f->newFile("dir/README"));
+    CHECK_EQ(noExt->getExtension(), std::string());
+
+    const char* name = "ut_eof.bin";
+    f->write(name, "ab", 2);
+    std::unique_ptr<eve::filesystem::File> file(f->newFile(name));
+    // Not yet open: contract treats an unopened file as EOF.
+    CHECK(file->isEOF());
+
+    REQUIRE(file->open("rb"));
+    CHECK(!file->isEOF());
+
+    char buf[2] = {};
+    CHECK_EQ(file->read(buf, 2), 2);
+    CHECK(file->isEOF());
+
+    CHECK(file->close());
+    f->remove(name);
 }
 
 TEST_CASE("filesystem.File.bufferAndFlush") {

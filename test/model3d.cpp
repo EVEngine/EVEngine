@@ -456,6 +456,11 @@ TEST_CASE("model3d.newModelData.objFromMemory") {
     CHECK(md->getFaceCount(0) > 0);
     CHECK(md->getMesh(0) != nullptr);
     CHECK(md->getScene() != nullptr);
+    CHECK(md->getMaterialCount() >= 0);
+    // Assimp's OBJ importer always computes per-face normals even without
+    // `vn` lines, but never synthesizes UVs without `vt` lines.
+    CHECK(md->hasNormals(0));
+    CHECK(!md->hasTexCoords(0));
     delete md;
 }
 
@@ -475,13 +480,21 @@ TEST_CASE("model3d.newModelData.invalidMeshIndexThrows") {
     eve::data::ByteData data(kCubeObj, sizeof(kCubeObj) - 1);
     auto *md = mod->newModelData(&data, ".obj");
     REQUIRE(md != nullptr);
-    bool threw = false;
-    try {
-        md->getVertexCount(999);
-    } catch (const eve::Exception &) {
-        threw = true;
-    }
-    CHECK(threw);
+
+    auto expectThrows = [](const std::function<void()> &fn) {
+        try {
+            fn();
+        } catch (const eve::Exception &) {
+            return true;
+        }
+        return false;
+    };
+
+    CHECK(expectThrows([&] { md->getVertexCount(999); }));
+    CHECK(expectThrows([&] { md->getFaceCount(999); }));
+    CHECK(expectThrows([&] { md->hasNormals(999); }));
+    CHECK(expectThrows([&] { md->hasTexCoords(999); }));
+    CHECK(md->getMesh(999) == nullptr);
     delete md;
 }
 

@@ -88,7 +88,9 @@ public:
 
     T* get()  { checkDirty(); return ptr; }
 protected:
-    void checkDirty() { if (ptr->isDirty()) ptr = ptr->getUpdate(); }
+    // getUpdate() returns the base Object*; the update contract guarantees
+    // the replacement is actually a T*, so a downcast here is safe.
+    void checkDirty() { if (ptr->isDirty()) ptr = static_cast<T*>(ptr->getUpdate()); }
 
     T* ptr;
 };

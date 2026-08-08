@@ -179,6 +179,22 @@ TEST_CASE("sound.invalidData") {
     } catch (const eve::Exception &) {
         CHECK(true);
     }
+
+    try {
+        sound->newSoundData(nullptr);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+
+    try {
+        const char garbage[] = "not a sound file either";
+        eve::data::ByteData bad(garbage, sizeof(garbage) - 1);
+        sound->newSoundData(&bad);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
 }
 
 TEST_CASE("sound.modplug.midi.decode") {

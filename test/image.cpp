@@ -3,8 +3,10 @@
 
 #include "common/Exception.h"
 #include "data/ByteData.h"
+#include "filesystem/FileData.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
+#include "medialoader/image/FormatHandler.h"
 
 #include <cmath>
 #include <cstring>
@@ -147,4 +149,61 @@ TEST_CASE("image.cloneAndPaste") {
     const bool hasGetFn = eve::image::ImageData::getPixelGetFunction("RGBA8") != nullptr;
     CHECK(hasSetFn);
     CHECK(hasGetFn);
+}
+
+TEST_CASE("image.encode.pngRoundTrip") {
+    auto* module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
+    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
+    src->setPixel(1, 1, red);
+
+    std::unique_ptr<eve::filesystem::FileData> encoded(
+        src->encode(medialoader::FormatHandler::ENCODED_PNG, "ut_roundtrip.png", false));
+    REQUIRE(encoded.get() != nullptr);
+    CHECK(encoded->getSize() > 0u);
+
+    std::unique_ptr<eve::image::ImageData> decoded(module->newImageData(encoded.get()));
+    REQUIRE(decoded.get() != nullptr);
+    CHECK_EQ(decoded->getWidth(), 2);
+    CHECK_EQ(decoded->getHeight(), 2);
+    CHECK(nearColor(decoded->getPixel(1, 1), red));
+}
+
+TEST_CASE("image.encode.unsupportedFormatThrows") {
+    auto* module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2, "RGBA32F"));
+    // No encoder currently supports encoding float pixel data into PNG.
+    CHECK(expectException([&] {
+        src->encode(medialoader::FormatHandler::ENCODED_PNG, "ut_bad.png", false);
+    }));
+}
+
+TEST_CASE("image.newCubeFaces.crossLayout") {
+    auto* module = img();
+    // 3x4 "+" cross layout, one texel per face; see Image::newCubeFaces mapping.
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(3, 4));
+    struct Face { int x, y; Colorf color; };
+    const Face faces[] = {
+        {1, 1, {1.0f, 0.0f, 0.0f, 1.0f}},  // +x
+        {1, 3, {0.0f, 1.0f, 0.0f, 1.0f}},  // -x
+        {1, 0, {0.0f, 0.0f, 1.0f, 1.0f}},  // +y
+        {1, 2, {1.0f, 1.0f, 0.0f, 1.0f}},  // -y
+        {0, 1, {1.0f, 0.0f, 1.0f, 1.0f}},  // +z
+        {2, 1, {0.0f, 1.0f, 1.0f, 1.0f}},  // -z
+    };
+    for (const auto& f : faces) src->setPixel(f.x, f.y, f.color);
+
+    auto result = module->newCubeFaces(src.get());
+    REQUIRE(result.size() == 6u);
+    for (size_t i = 0; i < 6; ++i) {
+        CHECK_EQ(result[i]->getWidth(), 1);
+        CHECK_EQ(result[i]->getHeight(), 1);
+        CHECK(nearColor(result[i]->getPixel(0, 0), faces[i].color));
+    }
+}
+
+TEST_CASE("image.newCubeFaces.invalidDimensionsThrows") {
+    auto* module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(5, 7));
+    CHECK(expectException([&] { module->newCubeFaces(src.get()); }));
 }

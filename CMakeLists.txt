@@ -315,7 +315,7 @@ function(ensure_third_party_checkout)
     find_package(Git REQUIRED)
     file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}")
     execute_process(
-        COMMAND ${GIT_EXECUTABLE} clone --depth 1 --branch main
+        COMMAND ${GIT_EXECUTABLE} clone --depth 1 --branch main --recurse-submodules
             https://github.com/EVEngine/third-party.git "${_eve_tp_dir}"
         RESULT_VARIABLE _eve_tp_clone_result
         OUTPUT_VARIABLE _eve_tp_clone_out
@@ -325,7 +325,7 @@ function(ensure_third_party_checkout)
         message(FATAL_ERROR
             "Failed to clone third-party (exit ${_eve_tp_clone_result}).\n"
             "${_eve_tp_clone_out}${_eve_tp_clone_err}\n"
-            "Manually run: git clone https://github.com/EVEngine/third-party ${_eve_tp_dir}")
+            "Manually run: git clone --recurse-submodules https://github.com/EVEngine/third-party ${_eve_tp_dir}")
     endif()
     if(NOT EXISTS "${_eve_tp_dir}/imgui/imgui.cpp")
         message(FATAL_ERROR
