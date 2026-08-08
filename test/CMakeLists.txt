@@ -6,6 +6,7 @@ file(GLOB all_test_cpp
   filesystem.cpp
   filesystem_cpp.cpp
   graphic.cpp
+  graphics_font.cpp
   medialoader_model_link.cpp
   model.cpp
   mouse.cpp

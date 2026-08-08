@@ -6,9 +6,13 @@
 #include "graphics/Mesh.h"
 #include "graphics/Texture.h"
 #include "graphics/Quad.h"
+#include "graphics/Font.h"
+#include "font/FontData.h"
+#include "common/Exception.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <cstdint>
 #include <functional>
 
 namespace eve::graphics {
@@ -149,7 +153,10 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newQuad", &Graphics::newQuad);
 }
 
-void Graphics::reset() { currentShader = nullptr; }
+void Graphics::reset() {
+    currentShader = nullptr;
+    currentFont   = nullptr;
+}
 
 void Graphics::setShader(Shader *shader) { currentShader = shader; }
 
@@ -169,5 +176,42 @@ void Graphics::drawSolidRectRGBA(float x, float y, float w, float h, float r, fl
 }
 
 Quad *Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
+
+Font *Graphics::newFont(font::FontData *data, std::string charset) {
+    return new Font(this, data, std::move(charset));
+}
+
+void Graphics::print(const std::string &text, float x, float y, const Color &color, float scale) {
+    if (currentFont == nullptr) throw eve::Exception("Graphics::print: no font set (call setFont first)");
+
+    font::FontData *data     = currentFont->getData();
+    float            penX     = x;
+    float            baseline = y + currentFont->getBaseline() * scale;
+    int              prevCodepoint = -1;
+
+    size_t i = 0;
+    while (i < text.size()) {
+        uint32_t cp = nextCodepointUtf8(text, i);
+        if (cp == 0) continue;
+        int code = static_cast<int>(cp);
+
+        if (prevCodepoint >= 0) penX += data->getKerning(prevCodepoint, code) * scale;
+
+        if (const Font::Glyph *g = currentFont->findGlyph(code)) {
+            if (g->width > 0 && g->height > 0) {
+                float gx = penX + static_cast<float>(g->bearingX) * scale;
+                float gy = baseline - static_cast<float>(g->bearingY) * scale;
+                drawTexturedRectUV(currentFont->getTexture(), gx, gy, static_cast<float>(g->width) * scale,
+                                   static_cast<float>(g->height) * scale, g->u0, g->v0, g->u1, g->v1, color);
+            }
+            penX += static_cast<float>(g->advance) * scale;
+        } else {
+            // Not pre-rasterized into this Font's atlas — still advance the pen.
+            penX += static_cast<float>(data->getGlyphAdvance(code)) * scale;
+        }
+
+        prevCodepoint = code;
+    }
+}
 
 }  // namespace eve::graphics

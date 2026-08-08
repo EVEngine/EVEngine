@@ -420,23 +420,24 @@ log/ios:
 
 test: test/$(PLATFORM)-debug
 
-test/win32: 
-	build/win32/test/Release/unit_test.exe
+# Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
+test/win32:
+	ctest --test-dir build/win32 -C Release --output-on-failure -j $(JOBS)
 
 test/win32-debug:
-	build/win32-debug/test/unit_test.exe
+	ctest --test-dir build/win32-debug --output-on-failure -j $(JOBS)
 
-test/linux: 
-	build/linux/test/unit_test
+test/linux:
+	ctest --test-dir build/linux -C Release --output-on-failure -j $(JOBS)
 
-test/linux-debug: 
-	build/linux-debug/test/unit_test
+test/linux-debug:
+	ctest --test-dir build/linux-debug --output-on-failure -j $(JOBS)
 
 test/macosx:
-	build/macosx/test/unit_test
+	ctest --test-dir build/macosx -C Release --output-on-failure -j $(JOBS)
 
 test/macosx-debug:
-	build/macosx-debug/test/unit_test
+	ctest --test-dir build/macosx-debug --output-on-failure -j $(JOBS)
 
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).
 run: run/$(PLATFORM)-debug

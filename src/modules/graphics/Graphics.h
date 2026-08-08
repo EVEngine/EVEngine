@@ -7,6 +7,7 @@
 #include "graphics/Texture.h"
 #include "graphics/Mesh.h"
 #include "graphics/Quad.h"
+#include "graphics/Font.h"
 #include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
@@ -234,8 +235,24 @@ virtual void begin3DFrame() = 0;
     PresentOverlayFn getPresentOverlay() const { return presentOverlayFn_; }
     void *getPresentOverlayUser() const { return presentOverlayUser_; }
 
-	// void setFont(Font *font);
-	// Font *getFont();
+    /**
+     * Build a GPU font (glyph atlas texture) from decoded font data.
+     * Rasterizes `charset` (UTF-8, default: printable ASCII) up front;
+     * codepoints outside it still advance in print() but aren't drawn.
+     * Owned by the caller (same convention as newTexture, newMesh, newShader).
+     */
+    Font *newFont(font::FontData *data, std::string charset = Font::defaultCharset());
+
+    /** Font used by subsequent print() calls; nullptr = none set. */
+    void setFont(Font *font) { currentFont = font; }
+    Font *getFont() const { return currentFont; }
+
+    /**
+     * Draws UTF-8 `text` with the current font (see setFont), baseline-aligned
+     * so that (x,y) is the top-left of the line. Throws if no font is set.
+     */
+    void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
+               float scale = 1.f);
 
 	void setShader(Shader *shader);
 	void setShader();
@@ -404,6 +421,7 @@ protected:
     PresentOverlayFn presentOverlayFn_ = nullptr;
     void *presentOverlayUser_ = nullptr;
     Shader *currentShader = nullptr;
+    Font *currentFont = nullptr;
 };
 
 }  // namespace eve::graphics
