@@ -33,6 +33,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   shader.cpp
   simplesquirrel.cpp
+  ScriptECS.cpp
   sound.cpp
   model3d.cpp
   audio.cpp
