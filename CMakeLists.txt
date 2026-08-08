@@ -121,6 +121,8 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
+        # Dungeon Template Library (header-only)
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/DungeonTemplateLibrary/include
     )
 
     # Prefer system Vulkan SDK; otherwise use third-party headers + local import lib.

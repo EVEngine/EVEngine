@@ -31,6 +31,7 @@ file(GLOB all_test_cpp
   particles.cpp
   map.cpp
   rpg.cpp
+  procgen.cpp
   gpgpu.cpp
   box2d.cpp
   hotreload.cpp
