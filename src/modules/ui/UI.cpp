@@ -79,7 +79,7 @@ eve.UIComponent <- class {
         return updateIfDirty()
     }
 }
-eve.Component <- eve.UIComponent
+// Note: eve.Component is reserved for script ECS (see exposeECS). Use eve.UIComponent.
 )SQ";
 
 void injectUIComponentClass(ssq::Table &eveTable) {

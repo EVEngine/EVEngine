@@ -41,7 +41,7 @@ install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
 )
 
 set(_eve_module_dirs
-    audio data event filesystem graphics image joystick keyboard mouse
+    animation audio data event filesystem graphics image ik joystick keyboard mouse
     model3d network particles plugins sound timer touch ui window
 )
 foreach(_eve_mod IN LISTS _eve_module_dirs)

@@ -278,7 +278,7 @@ panel.setState()
 panel.updateIfDirty()  // remountBuildAs + key reconcile
 ```
 
-`eve.Component` 是 `eve.UIComponent` 的别名。
+UI 基类为 `eve.UIComponent`（`eve.Component` 留给脚本 ECS 数据组件）。
 
 
 
@@ -342,7 +342,7 @@ sequenceDiagram
 - [x] 按 key 局部 dirty（`setTreeReconcile` / `applyTreeReconcile`）
 - [x] 主题 `Theme` + `setThemeDark` / `setThemeLight`；键盘导航开关
 - [x] 原语扩展：`Separator` / `Checkbox`
-- [x] 脚本侧 `class X extends eve.UIComponent { build() }`（`eve.Component` 别名）
+- [x] 脚本侧 `class X extends eve.UIComponent { build() }`
 - [x] 高级原语：`Slider` / `Progress` / `InputText` / `CollapsingHeader` / `Child`
 - [x] `consumeChange` / `setValue` / `WantCapture*` / `setHostModal`
 

@@ -52,6 +52,11 @@
     Vec2 / Vec3 / Mat4（glm）；标量与几何工具；noise1/2/3；贝塞尔；可种子随机数
     代码：`src/modules/math/`
 
+6b2. 逆运动学 - ik（`eve.IK`）
+    封装 [ik.hpp](https://github.com/sunxfancy/ik.hpp)（`external/ik.hpp`）：Skeleton2D/3D、Solver2D/3D（FABRIK）
+    `newSkeleton2D` / `newSolver2D` / `createBone` / `addTarget` / `solve` / `step`
+    代码：`src/modules/ik/`
+
 6c. 张量计算 - tensor（`eve.TF` / 类型 `Tensor`）
     TF2 风格：默认 eager；`tf.func()` 建图 → `compile` / `run*`（对应 `tf.function`）
     模块级 `add`/`multiply`/`matmul`/`relu`/`reduceSum`/`where`；`getDevice()` → `"cpu"`
@@ -93,8 +98,12 @@
     场景即函数（props / children 插槽），非 Prefab
     代码：`src/modules/scene/`
 
-12. 动画系统
-    Skeleton Animations
+12. 动画系统 - animation（`eve.Animation`）
+    属性补间 Tween：`newTween(duration)` → `setFrom` / `setTo` / `setDelta`（相对差值）
+    缓动 kind 与 Math.ease 一致；`setDelay` / `setRepeat` / `setYoyo`；角度 `set*Angle`
+    帧循环：`anim.update(dt)`（或 `tween.update(dt)`）
+    后期：帧动画 / Skeleton
+    代码：`src/modules/animation/`
 
 13. GPU计算系统 - compute
     并行化和异构计算，封装compute shader的相关操作

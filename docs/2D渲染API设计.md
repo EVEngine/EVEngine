@@ -242,7 +242,7 @@ sequenceDiagram
 1. 实体类型最终应对齐 ECS.hpp 的「类 + 组件」模型（示例里的 `EntityContainer` 需迁到此模型）。
 2. 不重载；模块单例 C++ 持有。
 3. **禁止**把成百上千次 `graphics.draw` 绑成脚本热路径。
-4. 第一期可先 C++ API + 测试；`exposeECS` 预留 `component` / 实体工厂注册。
+4. `exposeECS` 已提供脚本侧 `eve.Component` / `eve.Entity`（`EntityContainer`）/ `eve.System` / `eve.view`；引擎渲染组件仍走 C++ ECS.hpp 类型。
 
 
 ## 8. 高级能力（B）边界

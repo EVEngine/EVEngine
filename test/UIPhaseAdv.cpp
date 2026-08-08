@@ -110,7 +110,7 @@ function testScriptComponent() {
     panel.gold = 3
     panel.setState()
     if (!panel.updateIfDirty()) return false
-    if (eve.Component != eve.UIComponent) return false
+    if (eve.UIComponent == null) return false
     return true
 }
 )SQ";
