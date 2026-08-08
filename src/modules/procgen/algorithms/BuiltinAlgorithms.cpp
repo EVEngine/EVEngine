@@ -2,8 +2,6 @@
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/DtlHelpers.h"
 
-#include <DTL.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>

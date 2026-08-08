@@ -4,7 +4,15 @@
 #include "procgen/Params.h"
 #include "procgen/Semantic.h"
 
-#include <DTL.hpp>
+// Prefer specific DTL headers over the umbrella <DTL.hpp>. The umbrella pulls in
+// RandomVoronoi / SimpleVoronoiIsland, which call missing drawOperator* members and
+// fail under Apple Clang. Compat shims for DrawJagged* are on the include path.
+#include <DTL/Base/RogueLike.hpp>
+#include <DTL/Random/RandomEngine.hpp>
+#include <DTL/Shape/CellularAutomatonIsland.hpp>
+#include <DTL/Shape/MazeDig.hpp>
+#include <DTL/Shape/PerlinIsland.hpp>
+#include <DTL/Shape/SimpleRogueLike.hpp>
 
 #include <cstdint>
 #include <functional>

@@ -75,7 +75,9 @@ create_module(EVPlugins plugins)
 create_module(EVRPG rpg)
 target_compile_definitions(EVRPG PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVProcgen procgen)
-# Dungeon Template Library (header-only submodule)
+# Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL), then DTL.
+# BEFORE must precede the visibility keyword so -I dtl_compat wins over the submodule.
+target_include_directories(EVProcgen BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
 target_include_directories(EVProcgen PUBLIC ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
 if(EVENGINE_BUILD_DEMO)
     create_module(EVDemo demo)
