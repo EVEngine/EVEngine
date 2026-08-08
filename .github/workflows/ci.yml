@@ -173,7 +173,10 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
-            libxrandr-dev libxinerama-dev libxext-dev libgl1-mesa-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
             xvfb
 
       - name: Install Vulkan SDK
