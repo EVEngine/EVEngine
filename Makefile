@@ -504,6 +504,8 @@ basic:
 rpg:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/rpg
 
+ecs:
+	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/ecs
 
 # make: build/.build-docker
 # 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"
