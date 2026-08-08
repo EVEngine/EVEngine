@@ -3,6 +3,7 @@
 #include "common/Export.h"
 
 #include <cstdint>
+#include <deque>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -54,17 +55,17 @@ struct EVENGINE_API DataFlowEdge {
 
 /** Criterion for a Weiser-style dynamic backward slice. */
 struct EVENGINE_API SliceCriterion {
-    SourceLoc               loc;            // error site (source+line preferred)
-    std::vector<std::string> variables;     // empty ⇒ all vars live at site
-    uint32_t                eventId = 0;    // optional exact seed event
+    SourceLoc                loc;         // error site (source+line preferred)
+    std::vector<std::string> variables;   // empty ⇒ all vars live at site
+    uint32_t                 eventId = 0; // optional exact seed event
 };
 
 struct EVENGINE_API SliceResult {
-    std::vector<uint32_t>   eventIds;       // chronological subset of the slice
-    std::vector<SourceLoc>  locations;      // unique source locations in slice
-    std::vector<CallFrame>  callStack;      // stack at criterion
-    std::vector<DataFlowEdge> dataFlow;     // edges contributing to the error
-    std::string             summary;
+    std::vector<uint32_t>     eventIds;   // chronological subset of the slice
+    std::vector<SourceLoc>    locations;  // unique source locations in slice
+    std::vector<CallFrame>    callStack;  // stack at criterion
+    std::vector<DataFlowEdge> dataFlow;   // edges contributing to the error
+    std::string               summary;
 };
 
 /**
@@ -73,6 +74,9 @@ struct EVENGINE_API SliceResult {
  * Feed events from a Squirrel debug hook (see DevTool) or manually in tests.
  * On script failure, use sliceBackward() to recover the statements and
  * definitions that influenced the error site — analogous to a dynamic slicer.
+ *
+ * Event storage is a ring buffer: when full, each new append drops exactly one
+ * oldest event (monotonic ids; lookups ignore ids that have slid out).
  */
 class EVENGINE_API CallGraph {
 public:
@@ -98,7 +102,7 @@ public:
     uint32_t enter(const SourceLoc& loc, const std::string& funcName);
 
     // --- queries -----------------------------------------------------------
-    const std::vector<TraceEvent>& events() const { return events_; }
+    const std::deque<TraceEvent>& events() const { return events_; }
     const TraceEvent* event(uint32_t id) const;
 
     std::vector<CallFrame> currentStack() const;
@@ -121,16 +125,18 @@ public:
 private:
     uint32_t append(TraceKind kind, const SourceLoc& loc, const std::string& name);
     void     linkData(uint32_t useEventId, const std::string& var);
-    void     trimIfNeeded();
+    void     dropOldest();
+    void     ensureCapacity();
     uint32_t findSeedEvent(const SliceCriterion& c) const;
     void     collectSeeds(const SliceCriterion& c, std::vector<uint32_t>& out) const;
 
     size_t maxEvents_ = 100000;
 
-    std::vector<TraceEvent> events_;
-    std::vector<uint32_t>   frameStack_;  // active frame ids (bottom→top)
-    uint32_t                nextFrameId_ = 1;
-    uint32_t                lastEventId_ = 0;
+    std::deque<TraceEvent> events_;  // ring buffer window (oldest at front)
+    std::vector<uint32_t>  frameStack_;  // active frame ids (bottom→top)
+    uint32_t               nextFrameId_ = 1;
+    uint32_t               nextEventId_ = 1;
+    uint32_t               lastEventId_ = 0;
 
     // last Def event id per (frameId, var)
     std::unordered_map<uint32_t, std::unordered_map<std::string, uint32_t>> lastDef_;
@@ -138,7 +144,7 @@ private:
     // Use/Call event → Def/Call events that feed it
     std::unordered_map<uint32_t, std::vector<uint32_t>> dataDeps_;
 
-    // callEventId → list of Def events that happened in that activation (for returns)
+    // frameId → Call event that opened the activation
     std::unordered_map<uint32_t, uint32_t> frameToCallEvent_;
 };
 

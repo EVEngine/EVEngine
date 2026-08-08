@@ -17,6 +17,7 @@
 1. **调用栈**：通过 Squirrel `sq_setnativedebughook` + `sq_stackinfos` 记录 Call/Return/Line
 2. **数据流**：采样局部变量变更，建立 Def→Use 到达定值边；出错点再对相关变量记 Use
 3. **后向切片**：从错误点（及可疑变量）沿数据依赖与控制前驱回溯，得到相关源码位置
+4. **环形缓冲**：默认最多保留 10 万条事件；满员后每新增 1 条就丢掉最旧 1 条（可用 `setMaxEvents`）
 
 ### C++ API
 

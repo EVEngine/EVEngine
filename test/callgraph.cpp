@@ -95,6 +95,25 @@ TEST_CASE("devtools.callgraph.interProceduralSlice") {
     CHECK(report.find("game.nut:21") != std::string::npos);
 }
 
+TEST_CASE("devtools.callgraph.ringBufferDropsOne") {
+    CallGraph g;
+    g.setMaxEvents(16);
+    g.onCall(loc("r.nut", 1, "main"), "main");
+    // Fill well past the cap; each overflow should drop exactly one oldest event.
+    for (int i = 0; i < 40; ++i) g.onLine(loc("r.nut", 2 + i, "main"));
+
+    CHECK_EQ(g.eventCount(), 16u);
+    CHECK_EQ(g.maxEvents(), 16u);
+    REQUIRE(!g.events().empty());
+    // Window is the newest 16 events; oldest retained id == newest id - 15.
+    const uint32_t newest = g.events().back().id;
+    const uint32_t oldest = g.events().front().id;
+    CHECK_EQ(newest - oldest, 15u);
+    CHECK(g.event(oldest) != nullptr);
+    CHECK(g.event(oldest - 1) == nullptr);  // slid out of the ring
+    CHECK(g.event(newest) != nullptr);
+}
+
 TEST_CASE("devtools.callgraph.ignoresUnrelatedCode") {
     CallGraph g;
     g.onCall(loc("s.nut", 1, "main"), "main");

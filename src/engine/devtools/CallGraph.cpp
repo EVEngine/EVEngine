@@ -31,40 +31,57 @@ void CallGraph::clear() {
     events_.clear();
     frameStack_.clear();
     nextFrameId_ = 1;
+    nextEventId_ = 1;
     lastEventId_ = 0;
     lastDef_.clear();
     dataDeps_.clear();
     frameToCallEvent_.clear();
 }
 
-void CallGraph::setMaxEvents(size_t n) { maxEvents_ = n < 16 ? 16 : n; }
+void CallGraph::setMaxEvents(size_t n) {
+    maxEvents_ = n < 16 ? 16 : n;
+    while (events_.size() > maxEvents_) dropOldest();
+}
 
-void CallGraph::trimIfNeeded() {
-    if (events_.size() <= maxEvents_) return;
-    // Drop oldest half; remap is intentionally approximate for long sessions.
-    const size_t drop = events_.size() / 2;
-    events_.erase(events_.begin(), events_.begin() + static_cast<std::ptrdiff_t>(drop));
-    // Rebuild lightweight indexes from remaining events.
-    lastDef_.clear();
-    dataDeps_.clear();
-    frameToCallEvent_.clear();
-    frameStack_.clear();
-    for (auto& e : events_) {
-        if (e.kind == TraceKind::Call) {
-            frameStack_.push_back(e.frameId);
-            frameToCallEvent_[e.frameId] = e.id;
-        } else if (e.kind == TraceKind::Return) {
-            if (!frameStack_.empty()) frameStack_.pop_back();
-        } else if (e.kind == TraceKind::Def) {
-            lastDef_[e.frameId][e.name] = e.id;
+void CallGraph::dropOldest() {
+    if (events_.empty()) return;
+    const TraceEvent old = events_.front();
+    events_.pop_front();
+
+    dataDeps_.erase(old.id);
+
+    for (auto fit = lastDef_.begin(); fit != lastDef_.end();) {
+        for (auto vit = fit->second.begin(); vit != fit->second.end();) {
+            if (vit->second == old.id)
+                vit = fit->second.erase(vit);
+            else
+                ++vit;
         }
+        if (fit->second.empty())
+            fit = lastDef_.erase(fit);
+        else
+            ++fit;
     }
+
+    for (auto it = frameToCallEvent_.begin(); it != frameToCallEvent_.end();) {
+        if (it->second == old.id)
+            it = frameToCallEvent_.erase(it);
+        else
+            ++it;
+    }
+    // Live frameStack_ is not rebuilt: it reflects the current activation, not
+    // the retained window. Dangling parentEventId / data-dep ids are ignored
+    // via event() == nullptr during queries.
+}
+
+void CallGraph::ensureCapacity() {
+    while (events_.size() >= maxEvents_) dropOldest();
 }
 
 uint32_t CallGraph::append(TraceKind kind, const SourceLoc& loc, const std::string& name) {
-    trimIfNeeded();
+    ensureCapacity();
     TraceEvent e;
-    e.id            = static_cast<uint32_t>(events_.size()) + 1;
+    e.id            = nextEventId_++;
     e.kind          = kind;
     e.loc           = loc;
     e.name          = name;
@@ -86,14 +103,12 @@ uint32_t CallGraph::onCall(const SourceLoc& loc, const std::string& funcName) {
     events_.back().frameId = frame;
     frameStack_.push_back(frame);
     frameToCallEvent_[frame] = id;
-    // Control edge to the prior event (call site in the caller) is already
-    // recorded via parentEventId inside append().
     return id;
 }
 
 uint32_t CallGraph::onReturn(const SourceLoc& loc, const std::string& funcName) {
     const std::string fn = !funcName.empty() ? funcName : loc.function;
-    const uint32_t id = append(TraceKind::Return, loc, fn);
+    const uint32_t id    = append(TraceKind::Return, loc, fn);
     if (!frameStack_.empty()) {
         events_.back().frameId = frameStack_.back();
         frameStack_.pop_back();
@@ -107,9 +122,9 @@ uint32_t CallGraph::onLine(const SourceLoc& loc) {
 
 uint32_t CallGraph::onDef(const SourceLoc& loc, const std::string& var) {
     if (var.empty()) return 0;
-    const uint32_t id       = append(TraceKind::Def, loc, var);
-    const uint32_t frameId  = events_.back().frameId;
-    lastDef_[frameId][var]  = id;
+    const uint32_t id      = append(TraceKind::Def, loc, var);
+    const uint32_t frameId = events_.back().frameId;
+    lastDef_[frameId][var] = id;
     // Free / outer locals: if an enclosing activation already tracks this name,
     // update its reaching definition (Squirrel closures mutate outer bindings).
     for (uint32_t fid : frameStack_) {
@@ -128,14 +143,14 @@ uint32_t CallGraph::onUse(const SourceLoc& loc, const std::string& var) {
 }
 
 void CallGraph::linkData(uint32_t useEventId, const std::string& var) {
-    if (useEventId == 0 || var.empty() || useEventId > events_.size()) return;
-    const TraceEvent& use = events_[useEventId - 1];
+    const TraceEvent* use = event(useEventId);
+    if (!use || var.empty()) return;
 
     // 1) Same-frame reaching definition
-    auto fit = lastDef_.find(use.frameId);
+    auto fit = lastDef_.find(use->frameId);
     if (fit != lastDef_.end()) {
         auto vit = fit->second.find(var);
-        if (vit != fit->second.end() && vit->second < useEventId) {
+        if (vit != fit->second.end() && vit->second < useEventId && event(vit->second)) {
             dataDeps_[useEventId].push_back(vit->second);
             return;
         }
@@ -143,21 +158,21 @@ void CallGraph::linkData(uint32_t useEventId, const std::string& var) {
 
     // 2) Walk caller frames for outer-scope / captured defs (best-effort)
     for (auto it = frameStack_.rbegin(); it != frameStack_.rend(); ++it) {
-        if (*it == use.frameId) continue;
+        if (*it == use->frameId) continue;
         auto fit2 = lastDef_.find(*it);
         if (fit2 == lastDef_.end()) continue;
         auto vit2 = fit2->second.find(var);
-        if (vit2 != fit2->second.end() && vit2->second < useEventId) {
+        if (vit2 != fit2->second.end() && vit2->second < useEventId && event(vit2->second)) {
             dataDeps_[useEventId].push_back(vit2->second);
             return;
         }
     }
 
-    // 3) Historical scan: most recent Def of var before this use (any frame)
-    for (uint32_t i = useEventId; i-- > 1;) {
-        const TraceEvent& e = events_[i - 1];
-        if (e.kind == TraceKind::Def && e.name == var) {
-            dataDeps_[useEventId].push_back(e.id);
+    // 3) Historical scan inside the retained window
+    for (auto it = events_.rbegin(); it != events_.rend(); ++it) {
+        if (it->id >= useEventId) continue;
+        if (it->kind == TraceKind::Def && it->name == var) {
+            dataDeps_[useEventId].push_back(it->id);
             return;
         }
     }
@@ -169,8 +184,12 @@ uint32_t CallGraph::enter(const SourceLoc& loc, const std::string& funcName) {
 }
 
 const TraceEvent* CallGraph::event(uint32_t id) const {
-    if (id == 0 || id > events_.size()) return nullptr;
-    return &events_[id - 1];
+    if (id == 0 || events_.empty()) return nullptr;
+    const uint32_t first = events_.front().id;
+    const uint32_t last  = events_.back().id;
+    if (id < first || id > last) return nullptr;
+    // Ids in the window are contiguous.
+    return &events_[static_cast<size_t>(id - first)];
 }
 
 std::vector<CallFrame> CallGraph::currentStack() const {
@@ -191,9 +210,9 @@ std::vector<CallFrame> CallGraph::currentStack() const {
 
 std::vector<CallFrame> CallGraph::stackAt(uint32_t eventId) const {
     std::vector<CallFrame> stack;
-    if (eventId == 0 || eventId > events_.size()) return stack;
-    for (uint32_t i = 1; i <= eventId; ++i) {
-        const TraceEvent& e = events_[i - 1];
+    if (!event(eventId)) return stack;
+    for (const auto& e : events_) {
+        if (e.id > eventId) break;
         if (e.kind == TraceKind::Call) {
             CallFrame f;
             f.frameId     = e.frameId;
@@ -222,10 +241,9 @@ std::vector<std::pair<SourceLoc, SourceLoc>> CallGraph::callEdges() const {
 }
 
 uint32_t CallGraph::findSeedEvent(const SliceCriterion& c) const {
-    if (c.eventId != 0 && c.eventId <= events_.size()) return c.eventId;
+    if (c.eventId != 0 && event(c.eventId)) return c.eventId;
     if (c.loc.empty()) return events_.empty() ? 0 : events_.back().id;
 
-    // Prefer last event that matches the location.
     for (auto it = events_.rbegin(); it != events_.rend(); ++it) {
         if (c.loc.matches(it->loc)) return it->id;
     }
@@ -240,7 +258,6 @@ void CallGraph::collectSeeds(const SliceCriterion& c, std::vector<uint32_t>& out
     const TraceEvent* se = event(seed);
     if (!se) return;
 
-    // All Def/Use at the same site
     for (const auto& e : events_) {
         if (e.id > seed) break;
         if (!c.loc.empty() && !c.loc.matches(e.loc)) continue;
@@ -249,23 +266,21 @@ void CallGraph::collectSeeds(const SliceCriterion& c, std::vector<uint32_t>& out
         }
     }
 
-    // Variable-focused seeds: last Def of each named var before seed
     if (!c.variables.empty()) {
         for (const auto& var : c.variables) {
-            for (uint32_t i = seed; i-- > 1;) {
-                const TraceEvent& e = events_[i - 1];
-                if (e.kind == TraceKind::Def && e.name == var) {
-                    out.push_back(e.id);
+            for (auto it = events_.rbegin(); it != events_.rend(); ++it) {
+                if (it->id >= seed) continue;
+                if (it->kind == TraceKind::Def && it->name == var) {
+                    out.push_back(it->id);
                     break;
                 }
-                if (e.kind == TraceKind::Use && e.name == var) {
-                    out.push_back(e.id);
+                if (it->kind == TraceKind::Use && it->name == var) {
+                    out.push_back(it->id);
                     break;
                 }
             }
         }
     } else {
-        // Implicit: every Use at the seed location / frame
         for (const auto& e : events_) {
             if (e.id > seed) break;
             if (e.frameId == se->frameId && e.kind == TraceKind::Use &&
@@ -295,7 +310,7 @@ SliceResult CallGraph::sliceBackward(const SliceCriterion& criterion) const {
     }
 
     auto enqueue = [&](uint32_t id) {
-        if (id == 0 || id > events_.size()) return;
+        if (!event(id)) return;
         if (visited.insert(id).second) q.push(id);
     };
 
@@ -305,10 +320,10 @@ SliceResult CallGraph::sliceBackward(const SliceCriterion& criterion) const {
         const TraceEvent* e = event(id);
         if (!e) continue;
 
-        // Data dependencies
         auto dit = dataDeps_.find(id);
         if (dit != dataDeps_.end()) {
             for (uint32_t dep : dit->second) {
+                if (!event(dep)) continue;
                 DataFlowEdge edge;
                 edge.fromEventId = dep;
                 edge.toEventId   = id;
@@ -318,13 +333,10 @@ SliceResult CallGraph::sliceBackward(const SliceCriterion& criterion) const {
             }
         }
 
-        // Control predecessor
         enqueue(e->parentEventId);
 
-        // For a Use/Def/Line, also pull in the Call that opened the frame
         if (e->frameId != 0) {
             auto cit = frameToCallEvent_.find(e->frameId);
-            // frameToCallEvent_ is mutated during recording; rebuild from events if missing
             if (cit != frameToCallEvent_.end()) {
                 enqueue(cit->second);
             } else {
@@ -337,7 +349,6 @@ SliceResult CallGraph::sliceBackward(const SliceCriterion& criterion) const {
             }
         }
 
-        // Returning into a Call: if this is Call, include matching prior control
         if (e->kind == TraceKind::Return && e->parentEventId != 0) enqueue(e->parentEventId);
     }
 
@@ -388,7 +399,6 @@ std::string CallGraph::formatErrorReport(const std::string& errorMessage,
     if (slice.dataFlow.empty()) {
         os << "  (none recorded; feed onDef/onUse or enable local sampling)\n";
     } else {
-        // Show unique edges in reverse chronological order
         std::vector<DataFlowEdge> edges = slice.dataFlow;
         std::sort(edges.begin(), edges.end(),
                   [](const DataFlowEdge& a, const DataFlowEdge& b) {
