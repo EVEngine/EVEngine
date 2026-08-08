@@ -1,5 +1,7 @@
 #include "devtools/DevTool.hpp"
 
+#include "common/RenderTrace.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -90,6 +92,24 @@ DevTool& DevTool::instance() {
 
 void DevTool::attach(ssq::VM& vm, bool sampleLocals) { attach(vm.getHandle(), sampleLocals); }
 
+void DevTool::installRenderTracer() {
+    renderFlow_.clear();
+    eve::debug::setRenderTracer(&renderFlow_);
+    renderTraceEnabled_ = true;
+}
+
+void DevTool::uninstallRenderTracer() {
+    if (eve::debug::renderTracer() == &renderFlow_) eve::debug::setRenderTracer(nullptr);
+    renderTraceEnabled_ = false;
+}
+
+void DevTool::enableRenderTrace(bool on) {
+    if (on)
+        installRenderTracer();
+    else
+        uninstallRenderTracer();
+}
+
 void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     if (!vm) return;
     detach();
@@ -102,6 +122,7 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     sq_enabledebuginfo(vm_, SQTrue);
     sq_setnativedebughook(vm_, nativeDebugHook);
     g_active = this;
+    installRenderTracer();
 }
 
 void DevTool::detach() {
@@ -112,6 +133,7 @@ void DevTool::detach() {
     if (g_active == this) g_active = nullptr;
     vm_ = nullptr;
     localSnap_.clear();
+    uninstallRenderTracer();
 }
 
 void DevTool::handleDebugEvent(HSQUIRRELVM vm, int type, const char* source, int line,
@@ -277,7 +299,18 @@ std::string DevTool::notifyError(const std::string& errorMessage,
         }
     }
     markErrorUses(site, hintVars);
-    lastReport_ = formatError(errorMessage, hintVars);
+    // Ensure the error is marked on the render flow even if Exception ctor
+    // already did (idempotent append of another Error node is fine).
+    if (renderTraceEnabled_) renderFlow_.error(errorMessage.c_str());
+
+    std::string report;
+    if (vm_ || !graph_.events().empty()) report += formatError(errorMessage, hintVars);
+    if (renderTraceEnabled_ && !renderFlow_.events().empty()) {
+        if (!report.empty()) report += "\n";
+        report += renderFlow_.formatErrorReport(errorMessage);
+    }
+    if (report.empty()) report = std::string("Error: ") + errorMessage + "\n";
+    lastReport_ = report;
     return lastReport_;
 }
 

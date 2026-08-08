@@ -1,4 +1,5 @@
 #include "graphics/RenderSystem3D.h"
+#include "common/RenderTrace.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
@@ -240,6 +241,7 @@ void prioritizeShadowCaster(std::vector<PackedLight3D> &packed, Light3D::Data *c
 }  // namespace
 
 void RenderSystem3D::render(Graphics &gfx) {
+    eve::debug::RenderPassScope pass3d("RenderSystem3D");
     Camera3D *defaultCam = findDefaultCamera3D();
 
     std::vector<PackedLight3D> packed;
@@ -268,14 +270,18 @@ void RenderSystem3D::render(Graphics &gfx) {
             auto casterView =
                 ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
             for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+                eve::debug::rtPassBegin("ShadowPass");
                 gfx.beginShadowPass(c);
                 for (auto it = casterView.begin(); it != casterView.end(); ++it) {
                     auto [xf, mr] = *it;
                     if (!mr->visible || !mr->mesh || !mr->castShadow) continue;
                     const glm::mat4 model = modelFromTransform(*xf);
+                    eve::debug::rtBind("mesh", "shadowCaster");
+                    eve::debug::rtDraw("drawMeshShadow", "cascade");
                     gfx.drawMeshShadow(mr->mesh, shadowUpload.ubo.lightVP[c] * model);
                 }
                 gfx.endShadowPass();
+                eve::debug::rtPassEnd("ShadowPass");
             }
         }
     }
@@ -361,6 +367,10 @@ void RenderSystem3D::render(Graphics &gfx) {
 
         const glm::mat4 model = modelFromTransform(*xf);
         const Color tint(mr->r, mr->g, mr->b, mr->a);
+        if (mr->texture) eve::debug::rtBind("texture", "albedo");
+        if (mr->shader) eve::debug::rtBind("shader", "mesh");
+        eve::debug::rtBind("mesh", "renderable3d");
+        eve::debug::rtDraw("drawMeshShader", mr->shader ? "custom" : "default");
         gfx.drawMeshShader(mr->mesh, model, mr->texture, tint, mr->shader);
     }
 }

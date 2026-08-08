@@ -9,6 +9,7 @@
 #include "graphics/Font.h"
 #include "font/FontData.h"
 #include "common/Exception.h"
+#include "common/RenderTrace.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -19,7 +20,11 @@ namespace eve::graphics {
 
 Module_IMPL(Graphics, new vulkan::Graphics());
 
-void Graphics::render3D() { RenderSystem3D::render(*this); }
+void Graphics::render3D() {
+    eve::debug::rtFrameBegin();
+    RenderSystem3D::render(*this);
+    eve::debug::rtFrameEnd();
+}
 
 void Graphics::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
     RenderSystem3D::setDirectionalLight(dx, dy, dz, r, g, b);
@@ -182,7 +187,12 @@ Font *Graphics::newFont(font::FontData *data, std::string charset) {
 }
 
 void Graphics::print(const std::string &text, float x, float y, const Color &color, float scale) {
-    if (currentFont == nullptr) throw eve::Exception("Graphics::print: no font set (call setFont first)");
+    if (currentFont == nullptr) {
+        eve::debug::rtDraw("print", "no-font");
+        throw eve::Exception("Graphics::print: no font set (call setFont first)");
+    }
+    eve::debug::rtBind("font", "current");
+    eve::debug::rtDraw("print", text.empty() ? "" : "text");
 
     font::FontData *data     = currentFont->getData();
     float            penX     = x;
