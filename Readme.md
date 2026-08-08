@@ -229,7 +229,7 @@ cd EVEngine
 # git submodule update --init --recursive
 ```
 
-首次 CMake 配置时会自动拉取 `third-party`；若目录已存在且含 `CMakeLists.txt`，则直接使用本地副本。ECS 使用子模块 [`external/ECS.hpp`](https://github.com/sunxfancy/ECS.hpp)。
+首次 CMake 配置时会自动拉取 `third-party`；若目录已存在且含 `CMakeLists.txt`，则直接使用本地副本。ECS 使用子模块 [`external/ECS.hpp`](https://github.com/sunxfancy/ECS.hpp)；IK 使用子模块 [`external/ik.hpp`](https://github.com/sunxfancy/ik.hpp)。
 
 
 ## 快速开始（推荐：根目录 Makefile）
