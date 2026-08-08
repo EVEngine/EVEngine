@@ -98,6 +98,9 @@ jobs:
         run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
       - name: Run win32 unit tests
+        # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
+        env:
+          ALSOFT_DRIVERS: "null"
         run: make test/win32-debug
 
       - name: Build android debug
@@ -200,6 +203,9 @@ jobs:
         run: make build/linux-debug JOBS="$(nproc)"
 
       - name: Run linux unit tests
+        # No ALSA card on runners; force OpenAL Soft null backend so audio tests still run.
+        env:
+          ALSOFT_DRIVERS: "null"
         run: |
           # Some graphics/window tests may need a display; xvfb covers headless runners.
           # VK_ICD_FILENAMES (Lavapipe) comes from setup-software-vulkan.sh.
