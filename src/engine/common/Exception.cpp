@@ -19,6 +19,7 @@
  **/
 
 #include "Exception.h"
+#include "common/RenderTrace.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -60,6 +61,8 @@ Exception::Exception(const char *fmt, ...)
 	}
 	message = std::string(buffer);
 	delete[] buffer;
+	// When DevTool/render tracer is active, mark the failure site for slicing.
+	eve::debug::rtError(message.c_str());
 }
 
 Exception::~Exception() throw()

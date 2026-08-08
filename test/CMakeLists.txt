@@ -54,6 +54,8 @@ file(GLOB all_test_cpp
   ik.cpp
   animation.cpp
   tensor.cpp
+  callgraph.cpp
+  renderflow.cpp
   main.cpp
 )
 

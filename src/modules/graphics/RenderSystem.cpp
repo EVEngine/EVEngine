@@ -3,6 +3,7 @@
 #include "graphics/Canvas.h"
 #include "graphics/Light.h"
 #include "graphics/Quad.h"
+#include "common/RenderTrace.h"
 #include "zeroerr/assert.h"
 
 #include <algorithm>
@@ -214,6 +215,7 @@ void RenderSystem::collectSprites(std::vector<DrawItem2D> &out) {
 }
 
 void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool present) {
+    eve::debug::RenderPassScope pass("RenderSystem2D");
     sortDrawItems2D(items);
 
     std::unordered_map<Canvas *, Camera2D *> defaultCam;
@@ -252,6 +254,7 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
             }
 
             gfx.setCanvas(next);
+            eve::debug::rtTarget(next ? "canvas" : "screen");
             // Only clear when presenting a full sprite pass; map-unified draws must not wipe.
             if (present) gfx.clear(clearCol, std::nullopt, std::nullopt);
             current = next;
@@ -287,31 +290,42 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
             it.quad->getUV(it.texture->getWidth(), it.texture->getHeight(), u0, v0, u1, v1);
 
         if (it.litPath) {
+            eve::debug::rtBind("texture", "albedo");
+            eve::debug::rtBind("texture", "normal");
+            eve::debug::rtDraw("drawTexturedRectLitUV", "lit2d");
             gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1,
                                       it.color);
         } else if (it.texture) {
             Color c = it.color;
             if (it.receiveLight && !it.normal)
                 c = modulateUnlit(c, sx + sw * 0.5f, sy + sh * 0.5f, true, currentLights);
+            eve::debug::rtBind("texture", "sprite");
+            if (it.shader) eve::debug::rtBind("shader", "custom");
+            eve::debug::rtDraw("drawTexturedRectShaderUV", it.shader ? "shader" : "textured");
             gfx.drawTexturedRectShaderUV(it.texture, it.shader, sx, sy, sw, sh, u0, v0, u1, v1, c);
         } else {
             Color c = it.color;
             if (it.receiveLight)
                 c = modulateUnlit(c, sx + sw * 0.5f, sy + sh * 0.5f, true, currentLights);
+            eve::debug::rtDraw("drawSolidRect", "solid");
             gfx.drawSolidRect(sx, sy, sw, sh, c);
         }
     }
 
     if (present) {
         gfx.setCanvas();
+        eve::debug::rtPassBegin("Present");
         gfx.present();
+        eve::debug::rtPassEnd("Present");
     }
 }
 
 void RenderSystem::render(Graphics &gfx) {
+    eve::debug::rtFrameBegin();
     std::vector<DrawItem2D> items;
     collectSprites(items);
     drawItems(gfx, items, true);
+    eve::debug::rtFrameEnd();
 }
 
 }  // namespace eve::graphics
