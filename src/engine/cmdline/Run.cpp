@@ -3,6 +3,9 @@
 #include "common/Module.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+#include "devtools/DevTool.hpp"
+#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <CLI11.hpp>
@@ -48,9 +51,9 @@ struct RunArgs : Handler {
                     return -1;
                 }
                 std::string load_root((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
-                return cmd.Run(current_path, load_root);
+                return cmd.Run(current_path, load_root, debug);
             } else
-                return cmd.Run(current_path, load_content);
+                return cmd.Run(current_path, load_content, debug);
         }
         return -1; // not handle
     }
@@ -60,7 +63,7 @@ CMD_REG(RunArgs);
 
 
 // create a new project
-int Cmdline::Run(std::string path, std::string root) {
+int Cmdline::Run(std::string path, std::string root, bool debug) {
     try {
         // Switch to the game directory so load.nut can dofile("config.nut") / "main.nut".
         if (!path.empty() && path != ".") {
@@ -88,6 +91,13 @@ int Cmdline::Run(std::string path, std::string root) {
 
         ssq::VM vm(2048, ssq::Libs::ALL);
         ModuleManager::expose(vm);
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+        if (debug) {
+            eve::dev::DevTool::instance().attach(vm, /*sampleLocals=*/true);
+        }
+#else
+        (void)debug;
+#endif
         // Embedded default demo (src/scripts/demo.nut); load.nut runs it when no main.nut.
         {
             ssq::Table eve(vm.find("eve"));
@@ -96,13 +106,38 @@ int Cmdline::Run(std::string path, std::string root) {
         }
         ssq::Script script = vm.compileSource(root.c_str());
         vm.run(script);
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+        if (debug) eve::dev::DevTool::instance().detach();
+#endif
         return 0;
     } catch (const std::exception& e) {
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+        if (debug) {
+            const std::string report =
+                eve::dev::DevTool::instance().notifyError(e.what());
+            cerr << report << endl;
+            eve::dev::DevTool::instance().detach();
+        } else {
+            cerr << "Run failed: " << e.what() << endl;
+        }
+#else
         cerr << "Run failed: " << e.what() << endl;
+#endif
         EVE_ANDROID_LOGE("Run failed: %s", e.what());
         return 3;
     } catch (...) {
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+        if (debug) {
+            const std::string report =
+                eve::dev::DevTool::instance().notifyError("unknown exception");
+            cerr << report << endl;
+            eve::dev::DevTool::instance().detach();
+        } else {
+            cerr << "Run failed: unknown exception" << endl;
+        }
+#else
         cerr << "Run failed: unknown exception" << endl;
+#endif
         EVE_ANDROID_LOGE("Run failed: unknown exception");
         return 3;
     }
