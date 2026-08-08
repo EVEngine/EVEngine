@@ -4,3 +4,6 @@
 [submodule "external/zeroerr"]
 	path = external/zeroerr
 	url = https://github.com/sunxfancy/zeroerr.git
+[submodule "external/ik.hpp"]
+	path = external/ik.hpp
+	url = https://github.com/sunxfancy/ik.hpp.git

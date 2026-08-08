@@ -52,6 +52,11 @@
     Vec2 / Vec3 / Mat4（glm）；标量与几何工具；noise1/2/3；贝塞尔；可种子随机数
     代码：`src/modules/math/`
 
+6b2. 逆运动学 - ik（`eve.IK`）
+    封装 [ik.hpp](https://github.com/sunxfancy/ik.hpp)（`external/ik.hpp`）：Skeleton2D/3D、Solver2D/3D（FABRIK）
+    `newSkeleton2D` / `newSolver2D` / `createBone` / `addTarget` / `solve` / `step`
+    代码：`src/modules/ik/`
+
 6c. 张量计算 - tensor（`eve.TF` / 类型 `Tensor`）
     TF2 风格：默认 eager；`tf.func()` 建图 → `compile` / `run*`（对应 `tf.function`）
     模块级 `add`/`multiply`/`matmul`/`relu`/`reduceSum`/`where`；`getDevice()` → `"cpu"`

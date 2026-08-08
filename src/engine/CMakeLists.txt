@@ -126,9 +126,9 @@ else()
 endif()
 
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVAnimation EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVAnimation EVIK EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
 else()
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVAnimation EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVAnimation EVIK EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
 endif()
 
 if(EVENGINE_BUILD_DEMO)
