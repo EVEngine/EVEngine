@@ -327,10 +327,33 @@ function(ensure_third_party_checkout)
             "${_eve_tp_clone_out}${_eve_tp_clone_err}\n"
             "Manually run: git clone --recurse-submodules https://github.com/EVEngine/third-party ${_eve_tp_dir}")
     endif()
+    # Shallow + recurse can leave nested submodules empty on some runners; force-init.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        WORKING_DIRECTORY "${_eve_tp_dir}"
+        RESULT_VARIABLE _eve_tp_sub_result
+        OUTPUT_VARIABLE _eve_tp_sub_out
+        ERROR_VARIABLE _eve_tp_sub_err
+    )
+    if(NOT _eve_tp_sub_result EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to init third-party submodules (exit ${_eve_tp_sub_result}).\n"
+            "${_eve_tp_sub_out}${_eve_tp_sub_err}")
+    endif()
     if(NOT EXISTS "${_eve_tp_dir}/imgui/imgui.cpp")
         message(FATAL_ERROR
             "third-party clone is incomplete (missing imgui/imgui.cpp).\n"
             "Check ${_eve_tp_dir}")
+    endif()
+    if(NOT EXISTS "${_eve_tp_dir}/medialoader/CMakeLists.txt")
+        message(FATAL_ERROR
+            "third-party clone is incomplete (missing medialoader submodule).\n"
+            "Check ${_eve_tp_dir}/medialoader")
+    endif()
+    if(NOT EXISTS "${_eve_tp_dir}/medialoader/model-libs/assimp/CMakeLists.txt")
+        message(FATAL_ERROR
+            "third-party clone is incomplete (missing medialoader/assimp submodule).\n"
+            "Check ${_eve_tp_dir}/medialoader/model-libs/assimp")
     endif()
 endfunction()
 
