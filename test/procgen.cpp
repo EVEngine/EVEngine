@@ -244,8 +244,10 @@ TEST_CASE("procgen.texture.recipes.reproducible") {
         p.setInt("pixelSize", 2);
         p.setInt("seamless", 1);
         std::string err;
-        image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
-        image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
+        // Fully qualify: `using namespace eve::procgen` would make bare `image::`
+        // look outside `eve::image`.
+        eve::image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
+        eve::image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
         REQUIRE(a != nullptr);
         REQUIRE(b != nullptr);
         CHECK_EQ(a->getWidth(), 32);
@@ -264,9 +266,9 @@ TEST_CASE("procgen.texture.generateImage.andNormal") {
     p.setSeed(3);
     p.setSize(48, 48);
     p.setInt("colors", 6);
-    image::ImageData *img = mod->generateImage("tex.marble", &p);
+    eve::image::ImageData *img = mod->generateImage("tex.marble", &p);
     REQUIRE(img != nullptr);
-    image::ImageData *nrm = mod->generateNormalImage("tex.marble", &p);
+    eve::image::ImageData *nrm = mod->generateNormalImage("tex.marble", &p);
     REQUIRE(nrm != nullptr);
     CHECK_EQ(nrm->getWidth(), 48);
     CHECK_EQ(nrm->getHeight(), 48);
