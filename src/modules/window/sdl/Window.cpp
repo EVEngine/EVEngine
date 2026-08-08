@@ -228,7 +228,20 @@ bool Window::setFullscreenInternal(bool fullscreen, bool desktop_mode) {
     android::setImmersive(fullscreen);
 #endif
 
-    if (SDL_SetWindowFullscreen(window, sdlflags) == 0) {
+    // Freshly-created windows (and CI macOS runners) can refuse FULLSCREEN_* until
+    // the window is shown and the event queue has been pumped.
+    SDL_ShowWindow(window);
+    SDL_RaiseWindow(window);
+    SDL_PumpEvents();
+
+    int rc = SDL_SetWindowFullscreen(window, sdlflags);
+    if (rc != 0) {
+        SDL_Delay(16);
+        SDL_PumpEvents();
+        rc = SDL_SetWindowFullscreen(window, sdlflags);
+    }
+
+    if (rc == 0) {
         // SDL_GL_MakeCurrent(window, context);
         updateSettings(newsettings, true);
 

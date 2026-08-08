@@ -93,8 +93,10 @@ ifeq ($(HAS_WSL),1)
 	ALL_DEBUG_TARGETS += wsl/linux-debug
 endif
 
-# Desktop game directory for run/xxx (default: example/).
-GAME ?= example
+# Desktop game directory for run/xxx. Empty (default) = run eve with no args,
+# no cd, so the current directory has no main.nut and eve falls back to the
+# embedded release demo. Set GAME=example (or any path) to run that game instead.
+GAME ?=
 
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
@@ -127,7 +129,7 @@ show-targets:
 	@echo "debug -> build/$(PLATFORM)-debug"
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
-	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME))"
+	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
 
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
@@ -442,27 +444,39 @@ test/macosx-debug:
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).
 run: run/$(PLATFORM)-debug
 
-# Desktop: run built eve against GAME/ (default example/).
+# Desktop: run built eve. With GAME unset, run with no args from the repo
+# root so eve finds no main.nut and falls back to the embedded release demo.
+# With GAME set, cd into it and run the "run" subcommand against it instead.
+# Uses $(CURDIR) (make's invocation dir, absolute) rather than a relative
+# "../build" so this works no matter how deeply GAME is nested
+# (e.g. GAME=examples/rpg, not just single-level GAME=example).
 #   make run/macosx-debug
-#   make run/linux-debug GAME=.
-#   make run              # current host platform, debug
+#   make run/linux-debug GAME=example
+#   make run/macosx-debug GAME=examples/rpg
+#   make run              # current host platform, debug, embedded demo
 run/win32-debug:
-	cd $(GAME) && ../build/win32-debug/src/engine/eve.exe run
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run; \
+	else build/win32-debug/src/engine/eve.exe; fi
 
 run/linux-debug:
-	cd $(GAME) && ../build/linux-debug/src/engine/eve run
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run; \
+	else build/linux-debug/src/engine/eve; fi
 
 run/macosx-debug:
-	cd $(GAME) && ../build/macosx-debug/src/engine/eve run
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run; \
+	else build/macosx-debug/src/engine/eve; fi
 
 run/win32:
-	cd $(GAME) && ../build/win32/src/engine/Release/eve.exe run
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/Release/eve.exe" run; \
+	else build/win32/src/engine/Release/eve.exe; fi
 
 run/linux:
-	cd $(GAME) && ../build/linux/src/engine/eve run
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run; \
+	else build/linux/src/engine/eve; fi
 
 run/macosx:
-	cd $(GAME) && ../build/macosx/src/engine/eve run
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run; \
+	else build/macosx/src/engine/eve; fi
 
 # Target-platform SDK install (independent prefix per plat; for publishing games TO that plat).
 # Release: make sdk/macosx  → builds build/macosx then dist/eve-sdk/macosx
@@ -484,7 +498,13 @@ sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug
 	  cmake --install "build/$$plat" --prefix "dist/eve-sdk/$$plat"; \
 	  echo "Installed target SDK -> dist/eve-sdk/$$plat"
 
-example: run/$(PLATFORM)-debug
+basic:
+	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/basic
+
+rpg:
+	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/rpg
+
+
 # make: build/.build-docker
 # 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"
 

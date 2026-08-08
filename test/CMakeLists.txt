@@ -30,6 +30,7 @@ file(GLOB all_test_cpp
   scene.cpp
   particles.cpp
   map.cpp
+  rpg.cpp
   gpgpu.cpp
   box2d.cpp
   hotreload.cpp
@@ -146,7 +147,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVTensor EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVTensor EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread EVRPG)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)

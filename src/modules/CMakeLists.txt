@@ -69,6 +69,8 @@ target_include_directories(EVFont PRIVATE
 )
 create_module(EVThread thread)
 create_module(EVPlugins plugins)
+create_module(EVRPG rpg)
+target_compile_definitions(EVRPG PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 if(EVENGINE_BUILD_DEMO)
     create_module(EVDemo demo)
 endif()
