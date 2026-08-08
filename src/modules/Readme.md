@@ -86,6 +86,13 @@
     可选：`world.drawDebug(gfx)`
     代码：`src/modules/physics/`（避免与第三方 `Box2D/` 在大小写不敏感文件系统上冲突）
 
+11b. 声明式场景树 - scene（`eve.Scene`）
+    与 ui 同构：`SceneComponent.build` → `NodeDesc` → `SceneHost`；`mount` / `remountReconcile` / `beginBuild`
+    `SceneNode`（GameObject）+ `TransformSystem`（local → world Mat4）；`space` 为 `"2d"`/`"3d"`
+    可选 `linkRenderable2D/3D`：world TRS 同步到渲染实体
+    场景即函数（props / children 插槽），非 Prefab
+    代码：`src/modules/scene/`
+
 12. 动画系统
     Skeleton Animations
 

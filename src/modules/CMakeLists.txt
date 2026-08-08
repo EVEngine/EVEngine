@@ -50,6 +50,8 @@ create_module(EVUI ui)
 target_link_libraries(EVUI PUBLIC eve_imgui)
 target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
 
+create_module(EVScene scene)
+
 create_module(EVParticles particles)
 target_compile_definitions(EVParticles PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVPhysics physics)

@@ -142,47 +142,68 @@ function(set_include)
         set(EVENGINE_VULKAN_LIB ${ANDROID_VULKAN_LIB} CACHE INTERNAL "Vulkan link target")
         message(STATUS "Vulkan (Android): ${ANDROID_VULKAN_LIB}")
     elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-        # Resolve MoltenVK.xcframework from VULKAN_SDK / common install locations.
-        set(_eve_moltenvk_xcframework "")
+        # Resolve MoltenVK for iphoneos arm64.
+        # LunarG ships two different xcframeworks:
+        #   iOS/lib/.../ios-arm64/MoltenVK.framework  (dynamic; preferred, embeddable)
+        #   macOS/lib/.../ios-arm64/libMoltenVK.a      (static; CI zip often only has this)
+        # Prefer the framework; fall back to the static archive.
+        set(_eve_mvk_candidates "")
         if(DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
-            foreach(_cand
+            list(APPEND _eve_mvk_candidates
                 "$ENV{VULKAN_SDK}/../iOS/lib/MoltenVK.xcframework"
                 "$ENV{VULKAN_SDK}/iOS/lib/MoltenVK.xcframework"
-                # jakoch/install-vulkan-sdk-action and some CI layouts ship the
-                # xcframework under macOS/lib (contains ios-arm64 + macos slices).
                 "$ENV{VULKAN_SDK}/lib/MoltenVK.xcframework"
                 "$ENV{VULKAN_SDK}/MoltenVK.xcframework")
-                get_filename_component(_abs "${_cand}" ABSOLUTE)
-                if(EXISTS "${_abs}")
-                    set(_eve_moltenvk_xcframework "${_abs}")
-                    break()
-                endif()
-            endforeach()
         endif()
-        if(NOT _eve_moltenvk_xcframework)
-            file(GLOB _eve_vk_ios_glob "$ENV{HOME}/VulkanSDK/*/iOS/lib/MoltenVK.xcframework")
-            if(_eve_vk_ios_glob)
-                list(GET _eve_vk_ios_glob 0 _eve_moltenvk_xcframework)
+        file(GLOB _eve_vk_ios_glob
+            "$ENV{HOME}/VulkanSDK/*/iOS/lib/MoltenVK.xcframework"
+            "$ENV{HOME}/VulkanSDK/*/macOS/lib/MoltenVK.xcframework")
+        list(APPEND _eve_mvk_candidates ${_eve_vk_ios_glob})
+
+        set(_eve_moltenvk_xcframework "")
+        set(_eve_moltenvk_link_mode "")
+        set(_eve_moltenvk_framework_dir "")
+        set(_eve_moltenvk_static_lib "")
+        foreach(_cand IN LISTS _eve_mvk_candidates)
+            get_filename_component(_abs "${_cand}" ABSOLUTE)
+            if(NOT EXISTS "${_abs}")
+                continue()
             endif()
-        endif()
-        if(NOT _eve_moltenvk_xcframework OR NOT EXISTS "${_eve_moltenvk_xcframework}")
+            set(_slice "${_abs}/ios-arm64")
+            if(EXISTS "${_slice}/MoltenVK.framework")
+                set(_eve_moltenvk_xcframework "${_abs}")
+                set(_eve_moltenvk_link_mode "framework")
+                set(_eve_moltenvk_framework_dir "${_slice}")
+                break()
+            endif()
+            if(NOT _eve_moltenvk_xcframework AND EXISTS "${_slice}/libMoltenVK.a")
+                set(_eve_moltenvk_xcframework "${_abs}")
+                set(_eve_moltenvk_link_mode "static")
+                set(_eve_moltenvk_static_lib "${_slice}/libMoltenVK.a")
+                # Keep scanning: a later candidate may still provide the framework.
+            endif()
+        endforeach()
+
+        if(NOT _eve_moltenvk_link_mode)
             message(FATAL_ERROR
-                "MoltenVK.xcframework not found for iOS.\n"
-                "  Install the LunarG Vulkan SDK and ensure iOS/lib/MoltenVK.xcframework exists,\n"
-                "  or set VULKAN_SDK to the SDK root (macOS or iOS tree).")
+                "MoltenVK ios-arm64 not found (need MoltenVK.framework or libMoltenVK.a).\n"
+                "  Install the LunarG Vulkan SDK (full tree with iOS/lib preferred),\n"
+                "  or set VULKAN_SDK to the SDK macOS/ or iOS/ root.\n"
+                "  Current VULKAN_SDK='$ENV{VULKAN_SDK}'")
         endif()
+
         set(EVENGINE_MOLTENVK_XCFRAMEWORK "${_eve_moltenvk_xcframework}" CACHE INTERNAL "MoltenVK xcframework")
-        set(EVENGINE_MOLTENVK_FRAMEWORK_DIR
-            "${_eve_moltenvk_xcframework}/ios-arm64"
-            CACHE INTERNAL "MoltenVK framework search path for iphoneos")
+        set(EVENGINE_MOLTENVK_LINK_MODE "${_eve_moltenvk_link_mode}" CACHE INTERNAL "MoltenVK link mode: framework|static")
+        set(EVENGINE_MOLTENVK_FRAMEWORK_DIR "${_eve_moltenvk_framework_dir}" CACHE INTERNAL "MoltenVK framework search path")
+        set(EVENGINE_MOLTENVK_STATIC_LIB "${_eve_moltenvk_static_lib}" CACHE INTERNAL "MoltenVK static archive")
         if(Vulkan_INCLUDE_DIRS)
             include_directories(${Vulkan_INCLUDE_DIRS})
         else()
             include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
         endif()
-        # Placeholder; engine CMake links -F + -framework MoltenVK explicitly.
+        # Placeholder when using -framework; static mode sets the .a below in engine CMake.
         set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target")
-        message(STATUS "Vulkan (iOS MoltenVK): ${EVENGINE_MOLTENVK_XCFRAMEWORK}")
+        message(STATUS "Vulkan (iOS MoltenVK ${_eve_moltenvk_link_mode}): ${EVENGINE_MOLTENVK_XCFRAMEWORK}")
     elseif(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
         message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
         include_directories(${Vulkan_INCLUDE_DIRS})
@@ -370,10 +391,24 @@ function(check_third_party_project name repo)
         set(GIT_HTTPS_LINK ${repo})
     endif()
 
+    # Match the engine config so MSVC CRT (/MD vs /MDd) and lib postfixes
+    # (md vs mdd) stay consistent. Hardcoding Release made win32-debug install
+    # *md.lib while the engine linked *mdd.lib (LNK1104 on CI).
     set(_eve_tp_cmake_args
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}
     )
+    # Force Poco-style postfixes up front so targets added before Poco
+    # (squirrel/simplesquirrel/OpenAL) get the same md/mdd names the engine
+    # already links. SDL2 still overrides its own DEBUG_POSTFIX to "d".
+    if(WIN32)
+        list(APPEND _eve_tp_cmake_args
+            -DCMAKE_DEBUG_POSTFIX=mdd
+            -DCMAKE_RELEASE_POSTFIX=md
+            -DCMAKE_MINSIZEREL_POSTFIX=md
+            -DCMAKE_RELWITHDEBINFO_POSTFIX=md
+        )
+    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -405,7 +440,8 @@ function(check_third_party_project name repo)
         message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET} GEN=Ninja FILE=${_eve_ios_tp_toolchain}")
     endif()
 
-    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --parallel 8)
+    # --config is required for multi-config generators (VS); ignored by Ninja.
+    set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${CMAKE_BUILD_TYPE} --parallel 8)
 
     if(_eve_tp_use_ninja)
         ExternalProject_Add(${name}

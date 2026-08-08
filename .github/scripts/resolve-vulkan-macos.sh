@@ -41,30 +41,53 @@ if [ -n "${GITHUB_ENV:-}" ]; then
 fi
 export VULKAN_SDK="$RESOLVED"
 
-XC=$(find "$SDK_ROOT" "$RESOLVED" "$RESOLVED/.." -path '*/MoltenVK.xcframework' -type d 2>/dev/null | head -1 || true)
-if [ -z "$XC" ]; then
-  echo "WARNING: MoltenVK.xcframework not found; iOS configure may fail."
-else
-  echo "Found MoltenVK.xcframework at $XC"
-  # CMake looks for $VULKAN_SDK/lib/MoltenVK.xcframework (CI layout) and
-  # $VULKAN_SDK/../iOS/lib/... (LunarG desktop layout). Prefer not writing into
-  # the installed SDK (often not writable on GHA). If the xcframework is not
-  # already under $VULKAN_SDK/lib, mirror it into a writable HOME shim that the
-  # CMake HOME/VulkanSDK/*/iOS glob can also see.
-  if [ -d "$RESOLVED/lib/MoltenVK.xcframework" ]; then
-    echo "MoltenVK.xcframework already at \$VULKAN_SDK/lib — nothing to link."
-  elif [ -d "$RESOLVED/../iOS/lib/MoltenVK.xcframework" ]; then
-    echo "MoltenVK.xcframework already at sibling iOS/lib — nothing to link."
+# Prefer the dynamic MoltenVK.framework xcframework (iOS/lib). The macOS/lib
+# xcframework only ships ios-arm64 as static libMoltenVK.a — usable as a
+# fallback, but -framework MoltenVK will fail against it.
+IOS_FW_XC=""
+for c in \
+  "$RESOLVED/../iOS/lib/MoltenVK.xcframework" \
+  "$SDK_ROOT"/*/iOS/lib/MoltenVK.xcframework \
+  "$RESOLVED/iOS/lib/MoltenVK.xcframework"
+do
+  if [ -d "$c/ios-arm64/MoltenVK.framework" ]; then
+    IOS_FW_XC="$c"
+    break
+  fi
+done
+
+STATIC_XC=""
+for c in \
+  "$RESOLVED/lib/MoltenVK.xcframework" \
+  "$SDK_ROOT"/*/macOS/lib/MoltenVK.xcframework
+do
+  if [ -f "$c/ios-arm64/libMoltenVK.a" ]; then
+    STATIC_XC="$c"
+    break
+  fi
+done
+
+if [ -n "$IOS_FW_XC" ]; then
+  echo "Found MoltenVK.framework xcframework at $IOS_FW_XC"
+  # Prefer not writing into the installed SDK (often not writable on GHA).
+  # Mirror into a HOME shim so CMake's ~/VulkanSDK/*/iOS glob can see it when
+  # the sibling iOS/ tree is missing from a partial extract.
+  if [ -d "$RESOLVED/../iOS/lib/MoltenVK.xcframework/ios-arm64/MoltenVK.framework" ]; then
+    echo "MoltenVK.framework already at sibling iOS/lib — nothing to link."
   else
     SHIM_ROOT="${HOME}/VulkanSDK/ci-shim"
     mkdir -p "$SHIM_ROOT/iOS/lib" "$SHIM_ROOT/macOS"
-    ln -sfn "$XC" "$SHIM_ROOT/iOS/lib/MoltenVK.xcframework"
-    # Keep a macOS pointer so desktop find_package still works if needed.
+    ln -sfn "$IOS_FW_XC" "$SHIM_ROOT/iOS/lib/MoltenVK.xcframework"
     if [ ! -e "$SHIM_ROOT/macOS/lib" ]; then
       ln -sfn "$RESOLVED/lib" "$SHIM_ROOT/macOS/lib" 2>/dev/null || true
     fi
-    echo "Mirrored MoltenVK.xcframework -> $SHIM_ROOT/iOS/lib/MoltenVK.xcframework"
+    echo "Mirrored MoltenVK.framework xcframework -> $SHIM_ROOT/iOS/lib/MoltenVK.xcframework"
   fi
+elif [ -n "$STATIC_XC" ]; then
+  echo "WARNING: MoltenVK.framework (iOS/lib) not found; CMake will link static libMoltenVK.a from $STATIC_XC"
+else
+  echo "WARNING: MoltenVK.xcframework not found; iOS configure may fail."
+  find "$SDK_ROOT" -maxdepth 5 -name 'MoltenVK.xcframework' -type d 2>/dev/null | head -20 || true
 fi
 
 if [ -f "$RESOLVED/setup-env.sh" ]; then

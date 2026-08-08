@@ -1,0 +1,90 @@
+#pragma once
+
+#include <string>
+#include <utility>
+#include <vector>
+
+namespace eve::scene {
+
+class SceneHost;
+
+/**
+ * Declarative scene-node description (build once / on dirty → flatten into SceneHost::Tree).
+ * Isomorphic to eve::ui::WidgetDesc.
+ */
+struct NodeDesc {
+    std::string id;
+    /** Reconciliation key; defaults to id when empty. */
+    std::string key;
+    std::string name;
+    /** "2d" or "3d" (string enum per module convention). */
+    std::string space = "3d";
+    bool visible = true;
+
+    float x = 0.f, y = 0.f, z = 0.f;
+    float yaw = 0.f, pitch = 0.f, roll = 0.f;
+    float sx = 1.f, sy = 1.f, sz = 1.f;
+
+    std::vector<NodeDesc> children;
+
+    NodeDesc &withId(std::string v) {
+        id = std::move(v);
+        return *this;
+    }
+    NodeDesc &withKey(std::string v) {
+        key = std::move(v);
+        return *this;
+    }
+    NodeDesc &withName(std::string v) {
+        name = std::move(v);
+        return *this;
+    }
+    NodeDesc &withSpace(std::string v) {
+        space = std::move(v);
+        return *this;
+    }
+    NodeDesc &withVisible(bool v) {
+        visible = v;
+        return *this;
+    }
+    NodeDesc &withPosition(float px, float py, float pz = 0.f) {
+        x = px;
+        y = py;
+        z = pz;
+        return *this;
+    }
+    NodeDesc &withRotation(float y_, float p = 0.f, float r = 0.f) {
+        yaw = y_;
+        pitch = p;
+        roll = r;
+        return *this;
+    }
+    NodeDesc &withScale(float s) {
+        sx = sy = sz = s;
+        return *this;
+    }
+    NodeDesc &withScaleXYZ(float sx_, float sy_, float sz_) {
+        sx = sx_;
+        sy = sy_;
+        sz = sz_;
+        return *this;
+    }
+    NodeDesc &child(NodeDesc c) {
+        children.push_back(std::move(c));
+        return *this;
+    }
+
+    const std::string &reconcileKey() const { return key.empty() ? id : key; }
+};
+
+NodeDesc node(std::string id, std::vector<NodeDesc> children = {}, std::string name = "");
+NodeDesc group(std::vector<NodeDesc> children = {}, std::string id = "");
+/** Conditional: include `child` only when `cond` is true (empty group otherwise). */
+NodeDesc when(bool cond, NodeDesc child);
+NodeDesc whenElse(bool cond, NodeDesc ifTrue, NodeDesc ifFalse);
+
+void applyTree(SceneHost *host, NodeDesc root);
+/** Key-aware patch when structure matches; else full replace. Returns true if full rebuild. */
+bool applyTreeReconcile(SceneHost *host, NodeDesc root);
+
+}  // namespace eve::scene

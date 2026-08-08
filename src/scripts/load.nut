@@ -58,6 +58,7 @@ system <- eve.System();
 math <- eve.Math();
 tf <- eve.TF();
 ui <- eve.UI();
+scene <- eve.Scene();
 particles <- eve.Particles();
 map <- eve.Map();
 gpgpu <- eve.Gpgpu();

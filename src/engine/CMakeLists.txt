@@ -82,6 +82,9 @@ elseif(UNIX)
     )
 endif()
 
+# Windows MSVC static-lib names match third-party install postfixes (md/mdd).
+# Postfixes are forced early via ExternalProject CMAKE_ARGS so squirrel/OpenAL
+# match Poco-style names even on a fresh CI configure.
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     set(ThirdParty ${ThirdParty} simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d SDL2maind
         medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd physfsmdd lz4mdd Box2Dmdd
@@ -123,9 +126,9 @@ else()
 endif()
 
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
 else()
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics)
 endif()
 
 if(EVENGINE_BUILD_DEMO)
@@ -150,16 +153,26 @@ else()
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    if(NOT EVENGINE_MOLTENVK_FRAMEWORK_DIR)
-        message(FATAL_ERROR "EVENGINE_MOLTENVK_FRAMEWORK_DIR is not set (MoltenVK xcframework)")
+    if(EVENGINE_MOLTENVK_LINK_MODE STREQUAL "framework")
+        if(NOT EVENGINE_MOLTENVK_FRAMEWORK_DIR)
+            message(FATAL_ERROR "EVENGINE_MOLTENVK_FRAMEWORK_DIR is not set (MoltenVK xcframework)")
+        endif()
+        target_link_libraries(${EVENGINE_NATIVE_TARGET}
+            "-F${EVENGINE_MOLTENVK_FRAMEWORK_DIR}"
+            "-framework MoltenVK"
+        )
+        target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE
+            "LINKER:-rpath,@executable_path/Frameworks"
+        )
+    elseif(EVENGINE_MOLTENVK_LINK_MODE STREQUAL "static")
+        if(NOT EVENGINE_MOLTENVK_STATIC_LIB OR NOT EXISTS "${EVENGINE_MOLTENVK_STATIC_LIB}")
+            message(FATAL_ERROR "EVENGINE_MOLTENVK_STATIC_LIB missing: ${EVENGINE_MOLTENVK_STATIC_LIB}")
+        endif()
+        # macOS/lib MoltenVK.xcframework ships ios-arm64 as libMoltenVK.a (CI layout).
+        target_link_libraries(${EVENGINE_NATIVE_TARGET} "${EVENGINE_MOLTENVK_STATIC_LIB}")
+    else()
+        message(FATAL_ERROR "EVENGINE_MOLTENVK_LINK_MODE unset/unknown (got: '${EVENGINE_MOLTENVK_LINK_MODE}')")
     endif()
-    target_link_libraries(${EVENGINE_NATIVE_TARGET}
-        "-F${EVENGINE_MOLTENVK_FRAMEWORK_DIR}"
-        "-framework MoltenVK"
-    )
-    target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE
-        "LINKER:-rpath,@executable_path/Frameworks"
-    )
 
     set(EVENGINE_IOS_BUNDLE_ID "com.evengine.example" CACHE STRING "iOS/iPadOS bundle identifier")
     set(_eve_ios_team "$ENV{IOS_DEVELOPMENT_TEAM}")
@@ -168,6 +181,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     endif()
     set(IOS_DEVELOPMENT_TEAM "${_eve_ios_team}" CACHE STRING "Apple Development Team ID for code signing")
 
+    set(_eve_ios_rpath "")
+    if(EVENGINE_MOLTENVK_LINK_MODE STREQUAL "framework")
+        set(_eve_ios_rpath "@executable_path/Frameworks")
+    endif()
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_GUI_IDENTIFIER "${EVENGINE_IOS_BUNDLE_ID}"
@@ -182,7 +199,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         XCODE_ATTRIBUTE_ENABLE_BITCODE NO
         XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic"
         XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${IOS_DEVELOPMENT_TEAM}"
-        XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"
+        XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "${_eve_ios_rpath}"
         XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
     )
 
@@ -210,15 +227,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         COMMENT "Bundle iOS game (${EVENGINE_IOS_GAME}) + LaunchScreen into EVEngine.app"
     )
 
-    # Embed MoltenVK.framework next to the executable so dlsym(RTLD_DEFAULT) / rpath resolve.
-    # The helper also signs the framework; nested frameworks need their own signature.
-    set(_eve_mvk_fw "${EVENGINE_MOLTENVK_FRAMEWORK_DIR}/MoltenVK.framework")
-    add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
-        COMMAND /bin/sh "${CMAKE_SOURCE_DIR}/cmake/ios_embed_moltenvk.sh"
-            "${_eve_mvk_fw}"
-            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>"
-        COMMENT "Embed and sign MoltenVK.framework into EVEngine.app"
-    )
+    if(EVENGINE_MOLTENVK_LINK_MODE STREQUAL "framework")
+        # Embed MoltenVK.framework so dlsym(RTLD_DEFAULT) / rpath resolve at runtime.
+        # The helper also signs the framework; nested frameworks need their own signature.
+        set(_eve_mvk_fw "${EVENGINE_MOLTENVK_FRAMEWORK_DIR}/MoltenVK.framework")
+        add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+            COMMAND /bin/sh "${CMAKE_SOURCE_DIR}/cmake/ios_embed_moltenvk.sh"
+                "${_eve_mvk_fw}"
+                "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>"
+            COMMENT "Embed and sign MoltenVK.framework into EVEngine.app"
+        )
+    endif()
 endif()
 
 # Plugins resolve ModuleManager / ModuleRegister symbols from the host process.

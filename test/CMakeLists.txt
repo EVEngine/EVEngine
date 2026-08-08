@@ -27,6 +27,7 @@ file(GLOB all_test_cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
+  scene.cpp
   particles.cpp
   map.cpp
   gpgpu.cpp
@@ -110,6 +111,7 @@ elseif(UNIX)
     )
 endif()
 
+# Windows lib names must match local + CI third-party install (md/mdd postfixes).
 if(WIN32)
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd Box2Dmdd
@@ -144,7 +146,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVTensor EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVTensor EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)
