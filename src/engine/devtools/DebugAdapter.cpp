@@ -60,6 +60,8 @@ DebugAdapter& DebugAdapter::instance() {
     return inst;
 }
 
+DebugAdapter::DebugAdapter() = default;
+
 DebugAdapter::~DebugAdapter() { stop(); }
 
 int DebugAdapter::listen(uint16_t port) {

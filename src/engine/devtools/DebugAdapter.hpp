@@ -8,7 +8,6 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <thread>
 #include <vector>
 
 namespace Poco::Net {
@@ -51,7 +50,8 @@ public:
     void notifyTerminated();
 
 private:
-    DebugAdapter() = default;
+    // Defined in .cpp so unique_ptr<incomplete Poco sockets> is legal on MSVC.
+    DebugAdapter();
     ~DebugAdapter();
 
     void acceptNonBlocking();
