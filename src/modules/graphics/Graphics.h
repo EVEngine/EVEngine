@@ -136,6 +136,13 @@ public:
      */
     virtual Mesh *newMeshSphere(int slices = 32, int stacks = 16) = 0;
 
+    /**
+     * Procedural Y-up cylinder (radius 1, height 2 centered at origin).
+     * slices = longitude divisions; stacks = height bands; caps = include end discs.
+     * Owned by Graphics.
+     */
+    virtual Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) = 0;
+
     /** Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     void render3D();
     void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,

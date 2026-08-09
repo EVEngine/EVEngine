@@ -13,8 +13,21 @@
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Timespan.h>
 
+#include <algorithm>
+#include <chrono>
 #include <cstdlib>
+#include <filesystem>
 #include <sstream>
+#include <thread>
+
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace eve::dev {
 namespace {
@@ -64,6 +77,90 @@ DebugAdapter::DebugAdapter() = default;
 
 DebugAdapter::~DebugAdapter() { stop(); }
 
+void DebugAdapter::setSourceRoot(std::string root) {
+    for (char& c : root) {
+        if (c == '\\') c = '/';
+    }
+    while (!root.empty() && (root.back() == '/' || root.back() == '\\')) root.pop_back();
+    sourceRoot_ = std::move(root);
+    discoverEngineScriptAliases();
+}
+
+void DebugAdapter::discoverEngineScriptAliases() {
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    fs::path cur;
+    if (!sourceRoot_.empty())
+        cur = fs::path(sourceRoot_);
+    else
+        cur = fs::current_path(ec);
+    if (ec) return;
+    for (int i = 0; i < 8; ++i) {
+        const fs::path cand = cur / "src" / "scripts" / "load.nut";
+        if (fs::exists(cand, ec) && !ec) {
+            rememberSourcePath(cand.string());
+            // Embedded root compiles as "load.nut" — force the alias even if
+            // rememberSourcePath also keyed by basename.
+            sourceAliases_["load.nut"] = Debugger::normalizeSource(cand.string());
+            sourceAliases_["buffer"]   = sourceAliases_["load.nut"];
+            return;
+        }
+        if (!cur.has_parent_path()) break;
+        const fs::path parent = cur.parent_path();
+        if (parent == cur) break;
+        cur = parent;
+    }
+}
+
+void DebugAdapter::rememberSourcePath(const std::string& path) {
+    const std::string norm = Debugger::normalizeSource(path);
+    if (norm.empty()) return;
+    sourceAliases_[norm] = norm;
+    const std::string base = Debugger::sourceBasename(norm);
+    if (!base.empty()) sourceAliases_[base] = norm;
+    if (!sourceRoot_.empty() && Debugger::sourcesMatch(norm, sourceRoot_ + "/" + base)) {
+        // Prefer keeping a stable relative key under the game root.
+        std::string rel = norm;
+        if (rel.rfind(sourceRoot_, 0) == 0) {
+            rel = rel.substr(sourceRoot_.size());
+            while (!rel.empty() && rel[0] == '/') rel.erase(rel.begin());
+            if (!rel.empty()) sourceAliases_[rel] = norm;
+        }
+    }
+}
+
+std::string DebugAdapter::resolveSourcePath(std::string source) const {
+    source = Debugger::normalizeSource(std::move(source));
+    if (source.empty()) return source;
+
+    // Prefer paths VS Code already told us about (setBreakpoints).
+    {
+        auto it = sourceAliases_.find(source);
+        if (it != sourceAliases_.end()) return it->second;
+        const std::string base = Debugger::sourceBasename(source);
+        if (!base.empty()) {
+            it = sourceAliases_.find(base);
+            if (it != sourceAliases_.end()) return it->second;
+        }
+    }
+
+    // Absolute already (POSIX or Windows drive).
+    if (source[0] == '/' || (source.size() >= 2 && source[1] == ':')) return source;
+    if (sourceRoot_.empty()) return source;
+    try {
+        const auto joined = std::filesystem::path(sourceRoot_) / source;
+        std::error_code ec;
+        auto canon      = std::filesystem::weakly_canonical(joined, ec);
+        std::string out = ec ? joined.string() : canon.string();
+        for (char& c : out) {
+            if (c == '\\') c = '/';
+        }
+        return out;
+    } catch (...) {
+        return sourceRoot_ + "/" + source;
+    }
+}
+
 int DebugAdapter::listen(uint16_t port) {
     stop();
     try {
@@ -73,6 +170,12 @@ int DebugAdapter::listen(uint16_t port) {
         const int bound = static_cast<int>(server_->address().port());
         port_.store(bound);
         listening_.store(true);
+        // Default source root = process cwd (extension chdirs into the game folder).
+        try {
+            setSourceRoot(std::filesystem::current_path().string());
+        } catch (...) {
+            discoverEngineScriptAliases();
+        }
         return bound;
     } catch (...) {
         server_.reset();
@@ -102,7 +205,9 @@ void DebugAdapter::stop() {
     listening_.store(false);
     hasClient_.store(false);
     port_.store(0);
-    configured_ = false;
+    configured_  = false;
+    stopOnEntry_ = false;
+    sourceAliases_.clear();
 }
 
 void DebugAdapter::acceptNonBlocking() {
@@ -110,7 +215,9 @@ void DebugAdapter::acceptNonBlocking() {
     try {
         Poco::Net::SocketAddress clientAddr;
         Poco::Net::StreamSocket  ss = server_->acceptConnection(clientAddr);
-        ss.setBlocking(false);
+        // Keep the DAP client socket blocking so small response writes are complete.
+        ss.setBlocking(true);
+        ss.setReceiveTimeout(Poco::Timespan(0, 1000));  // 1ms poll-friendly
         client_ = std::make_unique<Poco::Net::StreamSocket>(ss);
         hasClient_.store(true);
         recvBuf_.clear();
@@ -174,22 +281,25 @@ std::string DebugAdapter::reasonString(PauseReason r) {
 }
 
 void DebugAdapter::notifyStopped(PauseReason reason, const SourceLoc& loc) {
-    auto body = new Poco::JSON::Object();
+    Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
     body->set("reason", reasonString(reason));
     body->set("threadId", 1);
     body->set("allThreadsStopped", true);
-    if (!loc.source.empty()) {
-        auto src = new Poco::JSON::Object();
-        src->set("name", loc.source);
-        src->set("path", loc.source);
-        // description only — VS Code resolves via stackTrace sources
-        (void)src;
+    if (!loc.source.empty() && loc.line > 0) {
+        // Hint the IDE; stackTrace still provides the authoritative source.
+        Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
+        const std::string resolved = resolveSourcePath(loc.source);
+        src->set("name", Debugger::sourceBasename(resolved));
+        src->set("path", resolved);
+        body->set("source", src);
+        body->set("line", loc.line);
+        body->set("column", 1);
     }
     sendMessage(makeEvent("stopped", stringify(Poco::Dynamic::Var(body))));
 }
 
 void DebugAdapter::notifyContinued() {
-    auto body = new Poco::JSON::Object();
+    Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
     body->set("threadId", 1);
     body->set("allThreadsContinued", true);
     sendMessage(makeEvent("continued", stringify(Poco::Dynamic::Var(body))));
@@ -215,6 +325,7 @@ void DebugAdapter::readAndDispatch() {
     } catch (const Poco::TimeoutException&) {
         return;
     } catch (const Poco::Net::NetException&) {
+        // Non-blocking: nothing to read yet.
         return;
     } catch (...) {
         client_.reset();
@@ -263,22 +374,52 @@ void DebugAdapter::handleRequest(const std::string& json) {
         auto& dbg = Debugger::instance();
 
         if (command == "initialize") {
-            auto body = new Poco::JSON::Object();
+            // Capabilities VS Code uses to enable Continue / Step Over / Pause UI + keys.
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("supportsConfigurationDoneRequest", true);
             body->set("supportsEvaluateForHovers", true);
+            body->set("supportsTerminateRequest", true);
+            body->set("supportsSingleThreadExecutionRequests", true);
             body->set("supportsSetVariable", false);
             body->set("supportsStepInTargetsRequest", false);
+            body->set("supportsStepBack", false);
+            body->set("supportTerminateDebuggee", true);
+            body->set("supportsCancelRequest", false);
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             sendMessage(makeEvent("initialized", "{}"));
             return;
         }
         if (command == "launch" || command == "attach") {
+            if (args) {
+                // Prefer explicit cwd / program from the VS Code launch config.
+                std::string root = args->optValue<std::string>("cwd", "");
+                if (root.empty()) root = args->optValue<std::string>("program", "");
+                if (!root.empty()) setSourceRoot(std::move(root));
+                stopOnEntry_ = args->optValue<bool>("stopOnEntry", false);
+            }
             sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
+            // Announce the debuggee process so the CALL STACK / debug toolbar light up.
+            {
+                Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+                body->set("name", "eve");
+#if defined(_WIN32)
+                body->set("systemProcessId", static_cast<int>(::GetCurrentProcessId()));
+#else
+                body->set("systemProcessId", static_cast<int>(::getpid()));
+#endif
+                body->set("isLocalProcess", true);
+                body->set("startMethod", command == "launch" ? "launch" : "attach");
+                sendMessage(makeEvent("process", stringify(Poco::Dynamic::Var(body))));
+            }
             return;
         }
         if (command == "configurationDone") {
             configured_ = true;
             sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
+            if (stopOnEntry_) {
+                // Break on the next script line so the IDE gets a real source location.
+                dbg.stepInto();
+            }
             return;
         }
         if (command == "setBreakpoints") {
@@ -290,8 +431,9 @@ void DebugAdapter::handleRequest(const std::string& json) {
                     if (sourcePath.empty()) sourcePath = src->optValue<std::string>("name", "");
                 }
             }
+            if (!sourcePath.empty()) rememberSourcePath(sourcePath);
             dbg.clearBreakpoints(sourcePath);
-            auto outBps = new Poco::JSON::Array();
+            Poco::JSON::Array::Ptr outBps = new Poco::JSON::Array();
             if (args && args->has("breakpoints")) {
                 auto arr = args->getArray("breakpoints");
                 if (arr) {
@@ -300,26 +442,33 @@ void DebugAdapter::handleRequest(const std::string& json) {
                         if (!bp) continue;
                         const int line = bp->optValue<int>("line", 0);
                         const int id   = dbg.setBreakpoint(sourcePath, line, true);
-                        auto ob = new Poco::JSON::Object();
+                        Poco::JSON::Object::Ptr ob = new Poco::JSON::Object();
                         ob->set("id", id);
                         ob->set("verified", id > 0);
                         ob->set("line", line);
+                        if (id > 0 && !sourcePath.empty()) {
+                            Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
+                            const std::string resolved = resolveSourcePath(sourcePath);
+                            src->set("name", Debugger::sourceBasename(resolved));
+                            src->set("path", resolved);
+                            ob->set("source", src);
+                        }
                         outBps->add(ob);
                     }
                 }
             }
-            auto body = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("breakpoints", outBps);
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
         }
         if (command == "threads") {
-            auto th = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr th = new Poco::JSON::Object();
             th->set("id", 1);
             th->set("name", "main");
-            auto arr = new Poco::JSON::Array();
+            Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
             arr->add(th);
-            auto body = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("threads", arr);
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
@@ -334,48 +483,50 @@ void DebugAdapter::handleRequest(const std::string& json) {
                 f.name = f.loc.function.empty() ? "frame" : f.loc.function;
                 frames.push_back(f);
             }
-            auto arr = new Poco::JSON::Array();
+            Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
             for (const auto& f : frames) {
-                auto fo = new Poco::JSON::Object();
+                Poco::JSON::Object::Ptr fo = new Poco::JSON::Object();
                 fo->set("id", f.id);
                 fo->set("name", f.name);
                 fo->set("line", f.loc.line);
-                fo->set("column", 0);
-                auto src = new Poco::JSON::Object();
-                src->set("name", f.loc.source);
-                src->set("path", f.loc.source);
+                fo->set("column", 1);
+                Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
+                const std::string resolved = resolveSourcePath(f.loc.source);
+                const auto slash = resolved.find_last_of('/');
+                src->set("name", slash == std::string::npos ? resolved : resolved.substr(slash + 1));
+                src->set("path", resolved);
                 fo->set("source", src);
                 arr->add(fo);
             }
-            auto body = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("stackFrames", arr);
             body->set("totalFrames", static_cast<int>(frames.size()));
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
         }
         if (command == "scopes") {
-            auto locals = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr locals = new Poco::JSON::Object();
             locals->set("name", "Locals");
             locals->set("variablesReference", varRefLocals_);
             locals->set("expensive", false);
-            auto watches = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr watches = new Poco::JSON::Object();
             watches->set("name", "Watches");
             watches->set("variablesReference", varRefWatches_);
             watches->set("expensive", false);
-            auto arr = new Poco::JSON::Array();
+            Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
             arr->add(locals);
             arr->add(watches);
-            auto body = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("scopes", arr);
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
         }
         if (command == "variables") {
             const int ref = args ? args->optValue<int>("variablesReference", 0) : 0;
-            auto      arr = new Poco::JSON::Array();
+            Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
             if (ref == varRefLocals_) {
                 for (const auto& v : dbg.locals(1)) {
-                    auto o = new Poco::JSON::Object();
+                    Poco::JSON::Object::Ptr o = new Poco::JSON::Object();
                     o->set("name", v.name);
                     o->set("value", v.value);
                     o->set("type", v.type);
@@ -385,7 +536,7 @@ void DebugAdapter::handleRequest(const std::string& json) {
             } else if (ref == varRefWatches_) {
                 dbg.refreshWatches();
                 for (const auto& w : dbg.watches()) {
-                    auto o = new Poco::JSON::Object();
+                    Poco::JSON::Object::Ptr o = new Poco::JSON::Object();
                     o->set("name", w.expression);
                     o->set("value", w.value);
                     o->set("type", w.ok ? "watch" : "error");
@@ -393,7 +544,7 @@ void DebugAdapter::handleRequest(const std::string& json) {
                     arr->add(o);
                 }
             }
-            auto body = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("variables", arr);
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
@@ -401,25 +552,51 @@ void DebugAdapter::handleRequest(const std::string& json) {
         if (command == "continue") {
             dbg.resume();
             notifyContinued();
-            auto body = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("allThreadsContinued", true);
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
         }
-        if (command == "next" || command == "stepIn" || command == "stepOut") {
-            // Script step when mid-hook; otherwise step one game frame.
-            if (!dbg.pauseLocation().empty() && dbg.lastPauseReason() == PauseReason::Breakpoint)
-                dbg.stepLine();
-            else if (dbg.lastPauseReason() == PauseReason::Step && !dbg.pauseLocation().empty())
-                dbg.stepLine();
-            else
-                dbg.stepFrame();
-            sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
+        if (command == "next") {
+            // F10 — step over (skip call bodies).
+            dbg.stepOver();
+            notifyContinued();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            body->set("threadId", 1);
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
+            return;
+        }
+        if (command == "stepIn") {
+            // F11 — step into calls.
+            dbg.stepInto();
+            notifyContinued();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            body->set("threadId", 1);
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
+            return;
+        }
+        if (command == "stepOut") {
+            // Shift+F11 — run until return to caller.
+            dbg.stepOut();
+            notifyContinued();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            body->set("threadId", 1);
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
+            return;
+        }
+        if (command == "stepFrame") {
+            // Custom: advance one game frame then pause (secondary to statement step).
+            dbg.stepFrame();
+            notifyContinued();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            body->set("threadId", 1);
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
         }
         if (command == "pause") {
-            dbg.pause(PauseReason::PauseKey);
-            notifyStopped(PauseReason::PauseKey, dbg.pauseLocation());
+            // DAP pause = break at next script statement (not frame-level pause with
+            // an empty source). stopped event is emitted from the line hook.
+            if (!dbg.isPaused()) dbg.stepInto();
             sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
             return;
         }
@@ -428,7 +605,7 @@ void DebugAdapter::handleRequest(const std::string& json) {
             // Treat evaluate as an implicit watch registration for the Watches scope.
             if (!expr.empty()) dbg.addWatch(expr);
             auto info = dbg.evaluate(expr);
-            auto body = new Poco::JSON::Object();
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("result", info.value);
             body->set("type", info.type);
             body->set("variablesReference", 0);
@@ -449,7 +626,10 @@ void DebugAdapter::handleRequest(const std::string& json) {
         // acknowledge unknown with failure.
         sendMessage(makeResponse(0, reqSeq, command, false, "{}", "unsupported: " + command));
     } catch (const std::exception& e) {
-        (void)e;
+        // Never leave the IDE hanging on a BadCast / JSON error.
+        sendMessage(makeResponse(0, 0, "error", false, "{}", e.what()));
+    } catch (...) {
+        sendMessage(makeResponse(0, 0, "error", false, "{}", "unknown DAP handler error"));
     }
 }
 
@@ -458,6 +638,33 @@ void DebugAdapter::poll() {
     std::lock_guard<std::mutex> lock(ioMu_);
     acceptNonBlocking();
     readAndDispatch();
+}
+
+bool DebugAdapter::waitUntilConfigured(int timeoutMs) {
+    if (!listening_.load()) return false;
+    if (timeoutMs < 0) timeoutMs = 0;
+    using clock = std::chrono::steady_clock;
+    const auto deadline = clock::now() + std::chrono::milliseconds(timeoutMs);
+    // Fast path for `eve --dap-port` without an IDE: don't block the whole timeout.
+    const auto clientDeadline = clock::now() + std::chrono::milliseconds(
+                                    std::min(timeoutMs, 2500));
+    while (clock::now() < clientDeadline) {
+        poll();
+        if (configured_) return true;
+        if (hasClient_.load()) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    if (!hasClient_.load()) {
+        poll();
+        return configured_;
+    }
+    while (clock::now() < deadline) {
+        poll();
+        if (configured_) return true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    poll();
+    return configured_;
 }
 
 }  // namespace eve::dev

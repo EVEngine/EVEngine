@@ -28,7 +28,9 @@ enum class RunMode : uint8_t {
     Running = 0,
     Paused,      // frame-level or script-level pause
     StepFrame,   // run one game frame then pause
-    StepLine,    // run to next script line then pause
+    StepInto,    // next script line (any call depth) — DAP stepIn
+    StepOver,    // next script line at ≤ start depth — DAP next
+    StepOut,     // next script line at < start depth — DAP stepOut
 };
 
 struct EVENGINE_API Breakpoint {
@@ -62,6 +64,11 @@ struct EVENGINE_API VariableInfo {
  *
  * Frame pause: game loop skips eve_update (see load.nut + shouldRunUpdate).
  * Script pause: Squirrel line hook blocks until resume/step (waitWhilePaused).
+ *
+ * Stepping (script, when stopped on a line):
+ *  - stepInto  — stop on the next line event (enter calls)
+ *  - stepOver  — stop on the next line at the same / outer stack depth
+ *  - stepOut   — stop after returning to the caller
  */
 class EVENGINE_API Debugger {
 public:
@@ -79,11 +86,25 @@ public:
     void     pause(PauseReason reason = PauseReason::PauseKey);
     void     resume();
     void     stepFrame();
-    void     stepLine();
+    /** Enter calls: stop on the next script line at any depth. */
+    void     stepInto();
+    /** Skip calls: stop on the next line at ≤ current stack depth. */
+    void     stepOver();
+    /** Finish current function: stop when stack depth drops. */
+    void     stepOut();
+    /** Alias for stepInto (historical name). */
+    void     stepLine() { stepInto(); }
+    /**
+     * Convenience: script stepOver when mid-hook; otherwise one game frame.
+     * Prefer stepInto/stepOver/stepOut from DAP / UI.
+     */
+    void     step();
     bool     isPaused() const { return mode_.load() == RunMode::Paused; }
     RunMode  mode() const { return mode_.load(); }
     PauseReason lastPauseReason() const { return reason_.load(); }
     const SourceLoc& pauseLocation() const { return pauseLoc_; }
+    /** Current Squirrel call depth (1 = topmost script frame). 0 if none. */
+    int      scriptStackDepth() const;
 
     /** Frame loop: true ⇒ call eve_update this frame. Consumes StepFrame. */
     bool shouldRunUpdate();
@@ -92,7 +113,7 @@ public:
 
     /**
      * Called from Squirrel line debug hook.
-     * Returns true if execution should block (breakpoint / step-line).
+     * Returns true if execution should block (breakpoint / step).
      */
     bool onScriptLine(const SourceLoc& loc);
     /** Block until resume/step/detach (processes external poll callbacks). */
@@ -122,6 +143,13 @@ public:
 
     /** Normalize source paths for breakpoint matching (basename fallback). */
     static std::string normalizeSource(std::string source);
+    /** Basename of a normalized path (empty-safe). */
+    static std::string sourceBasename(const std::string& source);
+    /**
+     * True when two source paths refer to the same script file.
+     * Matches exact path, basename, or one path as a suffix of the other.
+     */
+    static bool sourcesMatch(const std::string& a, const std::string& b);
 
 private:
     Debugger() = default;
@@ -129,6 +157,7 @@ private:
     bool matchBreakpoint(const std::string& source, int line) const;
     VariableInfo readLocal(HSQUIRRELVM vm, unsigned level, const std::string& name) const;
     VariableInfo readRoot(HSQUIRRELVM vm, const std::string& name) const;
+    void beginScriptStep(RunMode mode);
 
     HSQUIRRELVM           vm_ = nullptr;
     std::atomic<RunMode>  mode_{RunMode::Running};
@@ -141,6 +170,9 @@ private:
     int                   nextBpId_ = 1;
     PumpFn                pump_;
     bool                  stepFrameArmed_ = false;
+    int                   stepStartDepth_ = 0;
+    /** While set, step filters ignore this exact source+line (multi-_OP_LINE). */
+    SourceLoc             stepSkipLoc_;
 };
 
 }  // namespace eve::dev

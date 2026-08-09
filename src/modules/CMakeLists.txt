@@ -81,6 +81,7 @@ create_module(EVProcgen procgen)
 # BEFORE must precede the visibility keyword so -I dtl_compat wins over the submodule.
 target_include_directories(EVProcgen BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
 target_include_directories(EVProcgen PUBLIC ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
+create_module(EVStylize stylize)
 if(EVENGINE_BUILD_DEMO)
     create_module(EVDemo demo)
 endif()

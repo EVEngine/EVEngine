@@ -1,7 +1,6 @@
 #version 450
-// Stylized cel / toon fragment for Mesh3D (Rock demo).
-// Uses same Frame UBO + albedo sampler as mesh3d.frag.
-// Push constants (optional): data[0]=bands, data[1]=rimPower,
+// Stylized cel / toon fragment for Mesh3D (UTS-like three-tone ramp).
+// Push constants: data[0]=bands, data[1]=rimPower,
 //   data[2]=rimStrength, data[3]=posterizeSteps
 
 layout(location = 0) in vec3 vNormal;
@@ -31,25 +30,27 @@ void main() {
   float rimStrength = u.data[2];
   float posterize = max(u.data[3], 2.0);
 
-  // Soft cel bands
-  float cel = floor(ndotl * bands) / max(bands - 1.0, 1.0);
-  // Warm shadow / cool mid / warm highlight ramp
-  vec3 shadowCol = vec3(0.18, 0.14, 0.28);
-  vec3 midCol = vec3(0.85, 0.72, 0.55);
-  vec3 hiCol = vec3(1.15, 1.05, 0.90);
-  vec3 ramp = mix(shadowCol, midCol, clamp(cel * 1.4, 0.0, 1.0));
+  // Hard cel steps with a small soft fence between bands (UTS-like).
+  float celRaw = ndotl * bands;
+  float cel = floor(celRaw + 1e-4) / max(bands - 1.0, 1.0);
+  float fence = smoothstep(0.0, 0.12, fract(celRaw));
+  cel = mix(cel, min(cel + 1.0 / max(bands - 1.0, 1.0), 1.0), fence * 0.15);
+
+  vec3 shadowCol = vec3(0.42, 0.38, 0.58);
+  vec3 midCol = vec3(0.9, 0.86, 0.8);
+  vec3 hiCol = vec3(1.02, 0.96, 0.88);
+  vec3 ramp = mix(shadowCol, midCol, smoothstep(0.0, 0.5, cel));
   ramp = mix(ramp, hiCol, smoothstep(0.65, 1.0, cel));
 
-  // Posterize albedo toward painted look
-  vec3 alb = base.rgb;
-  alb = floor(alb * posterize + 0.5) / posterize;
+  vec3 alb = floor(base.rgb * posterize + 0.5) / posterize;
 
-  // Rim light (view-facing edges)
   vec3 V = normalize(vCameraPos - vWorldPos);
   float rim = pow(clamp(1.0 - max(dot(N, V), 0.0), 0.0, 1.0), rimPower);
-  vec3 rimCol = vec3(0.55, 0.85, 1.15) * rim * rimStrength;
+  vec3 rimCol = vec3(0.35, 0.65, 0.95) * rim * rimStrength;
 
-  float ambient = 0.18;
-  vec3 lit = alb * (ambient + ramp * vLightColor) + rimCol * alb;
-  outColor = vec4(lit, base.a);
+  // Clamp radiance so gallery/key lights can't blow cel paint to white.
+  vec3 Lc = min(vLightColor, vec3(1.0));
+  float ambient = 0.3;
+  vec3 lit = alb * (ambient + ramp * Lc * 0.55) + rimCol * alb * 0.22;
+  outColor = vec4(clamp(lit, 0.0, 0.96), base.a);
 }

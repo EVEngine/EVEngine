@@ -2369,6 +2369,124 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     return raw;
 }
 
+Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newMeshCylinder: graphics not initialized");
+    if (slices < 3) slices = 3;
+    if (stacks < 1) stacks = 1;
+    if (slices > 256) slices = 256;
+    if (stacks > 128) stacks = 128;
+
+    constexpr float kPi = 3.14159265358979323846f;
+    constexpr float kTwoPi = kPi * 2.f;
+    constexpr float kRadius = 1.f;
+    constexpr float kHalfH = 1.f;  // height 2, Y from -1..1
+
+    const int stride = slices + 1;  // duplicated seam for continuous U
+    const int sideRows = stacks + 1;
+    std::vector<MeshVertex> verts;
+    verts.reserve(size_t(stride) * size_t(sideRows) + size_t(caps ? 2 * (slices + 2) : 0));
+
+    auto pushVert = [&](float px, float py, float pz, float nx, float ny, float nz, float u,
+                        float v) {
+        MeshVertex vert{};
+        vert.pos = {px, py, pz};
+        vert.normal = {nx, ny, nz};
+        vert.uv = {u, v};
+        verts.push_back(vert);
+    };
+
+    // Side wall: outward normals in XZ.
+    for (int y = 0; y <= stacks; ++y) {
+        const float fv = float(y) / float(stacks);
+        const float py = kHalfH - fv * (2.f * kHalfH);
+        for (int x = 0; x <= slices; ++x) {
+            const float u = float(x) / float(slices);
+            const float theta = u * kTwoPi;
+            const float cx = std::cos(theta);
+            const float sz = std::sin(theta);
+            pushVert(kRadius * cx, py, kRadius * sz, cx, 0.f, sz, u, fv);
+        }
+    }
+
+    std::vector<uint32_t> indices;
+    indices.reserve(size_t(slices) * size_t(stacks) * 6u +
+                    size_t(caps ? slices * 2 * 3 : 0));
+
+    for (int y = 0; y < stacks; ++y) {
+        const uint32_t row0 = uint32_t(y * stride);
+        const uint32_t row1 = uint32_t((y + 1) * stride);
+        for (int x = 0; x < slices; ++x) {
+            const uint32_t i0 = row0 + uint32_t(x);
+            const uint32_t i1 = row0 + uint32_t(x + 1);
+            const uint32_t i2 = row1 + uint32_t(x);
+            const uint32_t i3 = row1 + uint32_t(x + 1);
+            indices.push_back(i0);
+            indices.push_back(i2);
+            indices.push_back(i1);
+            indices.push_back(i1);
+            indices.push_back(i2);
+            indices.push_back(i3);
+        }
+    }
+
+    if (caps) {
+        // Top cap (y = +1, normal +Y) — fan from center.
+        const uint32_t topCenter = uint32_t(verts.size());
+        pushVert(0.f, kHalfH, 0.f, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+        const uint32_t topRing = uint32_t(verts.size());
+        for (int x = 0; x <= slices; ++x) {
+            const float u = float(x) / float(slices);
+            const float theta = u * kTwoPi;
+            const float cx = std::cos(theta);
+            const float sz = std::sin(theta);
+            pushVert(kRadius * cx, kHalfH, kRadius * sz, 0.f, 1.f, 0.f, 0.5f + 0.5f * cx,
+                     0.5f + 0.5f * sz);
+        }
+        for (int x = 0; x < slices; ++x) {
+            indices.push_back(topCenter);
+            indices.push_back(topRing + uint32_t(x));
+            indices.push_back(topRing + uint32_t(x + 1));
+        }
+
+        // Bottom cap (y = -1, normal -Y).
+        const uint32_t botCenter = uint32_t(verts.size());
+        pushVert(0.f, -kHalfH, 0.f, 0.f, -1.f, 0.f, 0.5f, 0.5f);
+        const uint32_t botRing = uint32_t(verts.size());
+        for (int x = 0; x <= slices; ++x) {
+            const float u = float(x) / float(slices);
+            const float theta = u * kTwoPi;
+            const float cx = std::cos(theta);
+            const float sz = std::sin(theta);
+            pushVert(kRadius * cx, -kHalfH, kRadius * sz, 0.f, -1.f, 0.f, 0.5f + 0.5f * cx,
+                     0.5f + 0.5f * sz);
+        }
+        for (int x = 0; x < slices; ++x) {
+            // CW when viewed from below so outward (-Y) faces are CCW from outside.
+            indices.push_back(botCenter);
+            indices.push_back(botRing + uint32_t(x + 1));
+            indices.push_back(botRing + uint32_t(x));
+        }
+    }
+
+    auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertices.allocate<MeshVertex>(device, verts);
+    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+                          indices.size() * sizeof(uint32_t),
+                          vk::MemoryPropertyFlagBits::eHostVisible |
+                              vk::MemoryPropertyFlagBits::eHostCoherent);
+    gpu->indices.updateLocal(indices.data(), indices.size() * sizeof(uint32_t));
+    gpu->indexCount = uint32_t(indices.size());
+
+    auto handle = std::make_unique<Mesh>();
+    handle->indexCount = int(gpu->indexCount);
+    handle->gpuHandle = gpu.get();
+    Mesh *raw = handle.get();
+    ownedGpuMeshes.push_back(std::move(gpu));
+    ownedMeshes.push_back(std::move(handle));
+    return raw;
+}
+
 void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) {
     drawMeshShader(mesh, model, texture, tint, nullptr);
 }
