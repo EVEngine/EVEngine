@@ -40,6 +40,17 @@ void Physics::expose(ssq::Table &table) {
     world.addFunc("destroyBody", &World::destroyBody);
     world.addFunc("destroy", &World::destroy);
     world.addFunc("drawDebug", &World::drawDebug);
+    world.addFunc("rayCast", &World::rayCast);
+    world.addFunc("hasRayHit", &World::hasRayHit);
+    world.addFunc("getRayHitBodyId", &World::getRayHitBodyId);
+    world.addFunc("getRayHitX", &World::getRayHitX);
+    world.addFunc("getRayHitY", &World::getRayHitY);
+    world.addFunc("getRayHitNormalX", &World::getRayHitNormalX);
+    world.addFunc("getRayHitNormalY", &World::getRayHitNormalY);
+    world.addFunc("getRayHitFraction", &World::getRayHitFraction);
+    world.addFunc("queryAABB", &World::queryAABB);
+    world.addFunc("getQueryCount", &World::getQueryCount);
+    world.addFunc("getQueryBodyId", &World::getQueryBodyId);
 
     auto body = table.addClass<Body>(
         "Body", std::function<Body *()>([]() -> Body * { return nullptr; }), true);
@@ -83,6 +94,7 @@ void Physics::expose(ssq::Table &table) {
     fixture.addFunc("setDensity", &Fixture::setDensity);
     fixture.addFunc("getDensity", &Fixture::getDensity);
     fixture.addFunc("getBody", &Fixture::getBody);
+    fixture.addFunc("testPoint", &Fixture::testPoint);
     fixture.addFunc("destroy", &Fixture::destroy);
 }
 

@@ -74,6 +74,15 @@ void Graphics::expose(ssq::Table &table) {
     auto cam2d = table.addClass<Camera2D>(
         "Camera2D", std::function<Camera2D *()>([]() { return Camera2D::createCamera(); }), true);
     cam2d.addFunc("setAmbient", &Camera2D::setAmbient);
+    cam2d.addFunc("setPosition", &Camera2D::setPosition);
+    cam2d.addFunc("getX", &Camera2D::getX);
+    cam2d.addFunc("getY", &Camera2D::getY);
+    cam2d.addFunc("setZoom", &Camera2D::setZoom);
+    cam2d.addFunc("getZoom", &Camera2D::getZoom);
+    cam2d.addFunc("screenToWorldX", &Camera2D::screenToWorldX);
+    cam2d.addFunc("screenToWorldY", &Camera2D::screenToWorldY);
+    cam2d.addFunc("worldToScreenX", &Camera2D::worldToScreenX);
+    cam2d.addFunc("worldToScreenY", &Camera2D::worldToScreenY);
 
     auto light = table.addClass<Light2D>(
         "Light2D", std::function<Light2D *()>([]() { return Light2D::createLight("point"); }), true);
@@ -102,6 +111,13 @@ void Graphics::expose(ssq::Table &table) {
     cam.addFunc("setAmbient", &Camera3D::setAmbient);
     cam.addFunc("setEnvMap", &Camera3D::setEnvMap);
     cam.addFunc("setEnvIntensity", &Camera3D::setEnvIntensity);
+    cam.addFunc("screenToRay", &Camera3D::screenToRay);
+    cam.addFunc("getScreenRayOriginX", &Camera3D::getScreenRayOriginX);
+    cam.addFunc("getScreenRayOriginY", &Camera3D::getScreenRayOriginY);
+    cam.addFunc("getScreenRayOriginZ", &Camera3D::getScreenRayOriginZ);
+    cam.addFunc("getScreenRayDirX", &Camera3D::getScreenRayDirX);
+    cam.addFunc("getScreenRayDirY", &Camera3D::getScreenRayDirY);
+    cam.addFunc("getScreenRayDirZ", &Camera3D::getScreenRayDirZ);
 
     auto light3d = table.addClass<Light3D>(
         "Light3D", std::function<Light3D *()>([]() { return Light3D::createLight("point"); }), true);

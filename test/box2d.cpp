@@ -97,6 +97,32 @@ TEST_CASE("box2d.body.destroy") {
     delete b;
 }
 
+TEST_CASE("box2d.query.rayCastAndAABB") {
+    auto *mod = Physics::create();
+    std::unique_ptr<World> world(mod->newWorld(0.f, 0.f, true));
+    Body *a = world->newBody("static", 100.f, 100.f);
+    Fixture *fa = a->newRectangleFixture(40.f, 40.f);
+    Body *b = world->newBody("static", 300.f, 100.f);
+    b->newCircleFixture(20.f);
+
+    CHECK(fa->testPoint(100.f, 100.f));
+    CHECK(!fa->testPoint(0.f, 0.f));
+
+    int hit = world->rayCast(0.f, 100.f, 400.f, 100.f);
+    CHECK_EQ(hit, a->getId());
+    CHECK(world->hasRayHit());
+    CHECK(std::fabs(world->getRayHitY() - 100.f) < 1.f);
+    CHECK(world->getRayHitFraction() > 0.f);
+    CHECK(world->getRayHitFraction() < 1.f);
+
+    int n = world->queryAABB(80.f, 80.f, 40.f, 40.f);
+    CHECK_EQ(n, 1);
+    CHECK_EQ(world->getQueryBodyId(0), a->getId());
+
+    n = world->queryAABB(0.f, 0.f, 400.f, 200.f);
+    CHECK_EQ(n, 2);
+}
+
 TEST_CASE("box2d.world.destroyInvalidates") {
     auto *mod = Physics::create();
     World *world = mod->newWorld(0.f, 100.f, true);

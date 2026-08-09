@@ -37,16 +37,16 @@
 | Thread | `src/modules/thread/Thread.cpp`、`ThreadPool.cpp` | `test/thread.cpp` | 明确 worker 禁止访问 VM/GPU/UI，主线程消费 Channel |
 | Plugins | `src/modules/plugins/Plugins.cpp` | `examples/native-plugin/` | 补充 ABI、平台扩展名与依赖库排错 |
 | Entity | `src/modules/entity/EntityModule.cpp` | `examples/ecs/main.nut`、`test/ECS.cpp` | 说明 Component/Entity/System 分工和系统顺序 |
-| Physics | `src/modules/physics/Physics.cpp`、`World.cpp` | `examples/basic/main.nut`、`test/box2d.cpp` | 确认像素/米、Body 中心、Fixture sensor 与每帧 update |
+| Physics | `src/modules/physics/Physics.cpp`、`World.cpp` | `examples/basic/main.nut`、`test/box2d.cpp` | 确认像素/米、Body 中心、Fixture sensor、每帧 update，以及 rayCast/queryAABB/testPoint |
 | Map | `src/modules/map/Map.cpp` | `examples/basic/maps/`、`test/map.cpp` | 补充 GID、投影坐标、运行时修改和 JSON 热更 |
 | Particles | `src/modules/particles/Particles.cpp` | `examples/basic/particles/`、`test/particles.cpp` | 补充容量、生命周期、模块统一 update/render |
 | Animation | `src/modules/animation/Animation.cpp`、`Tween.cpp` | `test/animation.cpp` | 说明 Tween 只算值，游戏负责写回属性 |
 | RPG | `src/modules/rpg/RPG.cpp` | `examples/rpg/`、`test/rpg.cpp` | 串联 definition、actor、update、事件和 settlement |
 | Procgen | `src/modules/procgen/Procgen.cpp` | `examples/procgen/`、`test/procgen.cpp` | 补充 seed 可复现、Params/Grid/Output 与缓存策略 |
-| Graphics | `src/modules/graphics/Graphics.cpp` | `examples/basic/main.nut`、渲染测试 | 明确资源创建与逐帧提交边界，以及 2D/3D/UI 顺序 |
+| Graphics | `src/modules/graphics/Graphics.cpp` | `examples/basic/main.nut`、渲染测试 | 明确资源创建与逐帧提交边界、2D/3D/UI 顺序，以及 Camera2D/3D 拾取换算 |
 | UI | `src/modules/ui/UI.cpp` | `examples/basic/ui_demo.nut`、UI 测试 | 补充 Host、稳定 ID、事件消费和局部更新 |
 | Scene | `src/modules/scene/Scene.cpp` | `test/scene.cpp` | 补充 Host/Node、local/world TRS、link 和 build 配对 |
-| Math | `src/modules/math/Math.cpp` | `test/math.cpp` | 补充随机确定性、角度单位与临时对象风险 |
+| Math | `src/modules/math/Math.cpp` | `test/math.cpp` | 补充随机确定性、角度单位、临时对象风险，以及 2D/3D 拾取/重叠/射线几何 |
 | IK | `src/modules/ik/IK.cpp` | `test/ik.cpp` | 补充 Skeleton/Solver 生命周期、目标和迭代成本 |
 | GPGPU | `src/modules/gpgpu/Gpgpu.cpp` | `examples/basic/compute/`、`test/gpgpu.cpp` | 补充 binding、group 数、readback 同步与可用性检查 |
 | Tensor | `src/modules/tensor/TF.cpp` | `test/tensor.cpp` | 区分 eager/symbolic/compiled，确认 run0–run4 |

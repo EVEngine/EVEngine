@@ -287,11 +287,217 @@ float Math::cartesianRadius(float x, float y) const { return length2(x, y); }
 float Math::cartesianAngle(float x, float y) const { return angle2(x, y); }
 
 bool Math::pointInCircle(float px, float py, float cx, float cy, float radius) const {
+    if (radius < 0.f) return false;
     return distance2(px, py, cx, cy) <= radius;
 }
 
 bool Math::pointInRect(float px, float py, float rx, float ry, float rw, float rh) const {
     return px >= rx && py >= ry && px <= rx + rw && py <= ry + rh;
+}
+
+bool Math::circlesOverlap(float x1, float y1, float r1, float x2, float y2, float r2) const {
+    if (r1 < 0.f || r2 < 0.f) return false;
+    float rr = r1 + r2;
+    float dx = x2 - x1, dy = y2 - y1;
+    return dx * dx + dy * dy <= rr * rr;
+}
+
+bool Math::rectsOverlap(float x1, float y1, float w1, float h1, float x2, float y2, float w2,
+                        float h2) const {
+    return x1 <= x2 + w2 && x1 + w1 >= x2 && y1 <= y2 + h2 && y1 + h1 >= y2;
+}
+
+bool Math::circleRectOverlap(float cx, float cy, float radius, float rx, float ry, float rw,
+                             float rh) const {
+    if (radius < 0.f) return false;
+    float nearestX = std::clamp(cx, rx, rx + rw);
+    float nearestY = std::clamp(cy, ry, ry + rh);
+    float dx = cx - nearestX, dy = cy - nearestY;
+    return dx * dx + dy * dy <= radius * radius;
+}
+
+bool Math::segmentsIntersect(float ax, float ay, float bx, float by, float cx, float cy, float dx,
+                             float dy) const {
+    auto orient = [](float px, float py, float qx, float qy, float rx, float ry) {
+        return (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
+    };
+    auto onSeg = [](float px, float py, float qx, float qy, float rx, float ry) {
+        return std::min(px, rx) <= qx && qx <= std::max(px, rx) && std::min(py, ry) <= qy &&
+               qy <= std::max(py, ry);
+    };
+    float o1 = orient(ax, ay, bx, by, cx, cy);
+    float o2 = orient(ax, ay, bx, by, dx, dy);
+    float o3 = orient(cx, cy, dx, dy, ax, ay);
+    float o4 = orient(cx, cy, dx, dy, bx, by);
+    if (o1 * o2 < 0.f && o3 * o4 < 0.f) return true;
+    constexpr float eps = 1e-6f;
+    if (std::fabs(o1) <= eps && onSeg(ax, ay, cx, cy, bx, by)) return true;
+    if (std::fabs(o2) <= eps && onSeg(ax, ay, dx, dy, bx, by)) return true;
+    if (std::fabs(o3) <= eps && onSeg(cx, cy, ax, ay, dx, dy)) return true;
+    if (std::fabs(o4) <= eps && onSeg(cx, cy, bx, by, dx, dy)) return true;
+    return false;
+}
+
+float Math::raycastCircle2(float ox, float oy, float dx, float dy, float cx, float cy,
+                           float radius) const {
+    if (radius < 0.f) return -1.f;
+    float fx = ox - cx, fy = oy - cy;
+    float a = dx * dx + dy * dy;
+    if (a <= 1e-12f) return -1.f;
+    float b = 2.f * (fx * dx + fy * dy);
+    float c = fx * fx + fy * fy - radius * radius;
+    float disc = b * b - 4.f * a * c;
+    if (disc < 0.f) return -1.f;
+    float s = std::sqrt(disc);
+    float t0 = (-b - s) / (2.f * a);
+    float t1 = (-b + s) / (2.f * a);
+    if (t0 >= 0.f) return t0;
+    if (t1 >= 0.f) return t1;
+    return -1.f;
+}
+
+float Math::raycastRect2(float ox, float oy, float dx, float dy, float rx, float ry, float rw,
+                         float rh) const {
+    constexpr float inf = 1e30f;
+    float tMin = 0.f;
+    float tMax = inf;
+    auto slab = [&](float o, float d, float minV, float maxV) -> bool {
+        if (std::fabs(d) < 1e-12f) {
+            return o >= minV && o <= maxV;
+        }
+        float inv = 1.f / d;
+        float t1 = (minV - o) * inv;
+        float t2 = (maxV - o) * inv;
+        if (t1 > t2) std::swap(t1, t2);
+        tMin = std::max(tMin, t1);
+        tMax = std::min(tMax, t2);
+        return tMin <= tMax;
+    };
+    if (!slab(ox, dx, rx, rx + rw)) return -1.f;
+    if (!slab(oy, dy, ry, ry + rh)) return -1.f;
+    if (tMax < 0.f) return -1.f;
+    return tMin >= 0.f ? tMin : 0.f;
+}
+
+namespace {
+float closestSegmentT(float px, float py, float ax, float ay, float bx, float by) {
+    float abx = bx - ax, aby = by - ay;
+    float denom = abx * abx + aby * aby;
+    if (denom <= 1e-12f) return 0.f;
+    float t = ((px - ax) * abx + (py - ay) * aby) / denom;
+    return std::clamp(t, 0.f, 1.f);
+}
+float closestSegmentT3(float px, float py, float pz, float ax, float ay, float az, float bx,
+                       float by, float bz) {
+    float abx = bx - ax, aby = by - ay, abz = bz - az;
+    float denom = abx * abx + aby * aby + abz * abz;
+    if (denom <= 1e-12f) return 0.f;
+    float t = ((px - ax) * abx + (py - ay) * aby + (pz - az) * abz) / denom;
+    return std::clamp(t, 0.f, 1.f);
+}
+}  // namespace
+
+float Math::closestPointOnSegment2X(float px, float py, float ax, float ay, float bx,
+                                    float by) const {
+    float t = closestSegmentT(px, py, ax, ay, bx, by);
+    return ax + (bx - ax) * t;
+}
+float Math::closestPointOnSegment2Y(float px, float py, float ax, float ay, float bx,
+                                    float by) const {
+    float t = closestSegmentT(px, py, ax, ay, bx, by);
+    return ay + (by - ay) * t;
+}
+
+bool Math::pointInSphere(float px, float py, float pz, float cx, float cy, float cz,
+                         float radius) const {
+    if (radius < 0.f) return false;
+    return distance3(px, py, pz, cx, cy, cz) <= radius;
+}
+
+bool Math::pointInBox(float px, float py, float pz, float minX, float minY, float minZ, float maxX,
+                      float maxY, float maxZ) const {
+    return px >= minX && px <= maxX && py >= minY && py <= maxY && pz >= minZ && pz <= maxZ;
+}
+
+bool Math::spheresOverlap(float x1, float y1, float z1, float r1, float x2, float y2, float z2,
+                          float r2) const {
+    if (r1 < 0.f || r2 < 0.f) return false;
+    float rr = r1 + r2;
+    float dx = x2 - x1, dy = y2 - y1, dz = z2 - z1;
+    return dx * dx + dy * dy + dz * dz <= rr * rr;
+}
+
+bool Math::boxesOverlap(float minAx, float minAy, float minAz, float maxAx, float maxAy,
+                        float maxAz, float minBx, float minBy, float minBz, float maxBx,
+                        float maxBy, float maxBz) const {
+    return minAx <= maxBx && maxAx >= minBx && minAy <= maxBy && maxAy >= minBy &&
+           minAz <= maxBz && maxAz >= minBz;
+}
+
+float Math::raycastSphere(float ox, float oy, float oz, float dx, float dy, float dz, float cx,
+                          float cy, float cz, float radius) const {
+    if (radius < 0.f) return -1.f;
+    float fx = ox - cx, fy = oy - cy, fz = oz - cz;
+    float a = dx * dx + dy * dy + dz * dz;
+    if (a <= 1e-12f) return -1.f;
+    float b = 2.f * (fx * dx + fy * dy + fz * dz);
+    float c = fx * fx + fy * fy + fz * fz - radius * radius;
+    float disc = b * b - 4.f * a * c;
+    if (disc < 0.f) return -1.f;
+    float s = std::sqrt(disc);
+    float t0 = (-b - s) / (2.f * a);
+    float t1 = (-b + s) / (2.f * a);
+    if (t0 >= 0.f) return t0;
+    if (t1 >= 0.f) return t1;
+    return -1.f;
+}
+
+float Math::raycastBox(float ox, float oy, float oz, float dx, float dy, float dz, float minX,
+                       float minY, float minZ, float maxX, float maxY, float maxZ) const {
+    constexpr float inf = 1e30f;
+    float tMin = 0.f;
+    float tMax = inf;
+    auto slab = [&](float o, float d, float minV, float maxV) -> bool {
+        if (std::fabs(d) < 1e-12f) {
+            return o >= minV && o <= maxV;
+        }
+        float inv = 1.f / d;
+        float t1 = (minV - o) * inv;
+        float t2 = (maxV - o) * inv;
+        if (t1 > t2) std::swap(t1, t2);
+        tMin = std::max(tMin, t1);
+        tMax = std::min(tMax, t2);
+        return tMin <= tMax;
+    };
+    if (!slab(ox, dx, minX, maxX)) return -1.f;
+    if (!slab(oy, dy, minY, maxY)) return -1.f;
+    if (!slab(oz, dz, minZ, maxZ)) return -1.f;
+    if (tMax < 0.f) return -1.f;
+    return tMin >= 0.f ? tMin : 0.f;
+}
+
+float Math::raycastPlane(float ox, float oy, float oz, float dx, float dy, float dz, float px,
+                         float py, float pz, float nx, float ny, float nz) const {
+    float denom = nx * dx + ny * dy + nz * dz;
+    if (std::fabs(denom) < 1e-12f) return -1.f;
+    float t = (nx * (px - ox) + ny * (py - oy) + nz * (pz - oz)) / denom;
+    return t >= 0.f ? t : -1.f;
+}
+
+float Math::closestPointOnSegment3X(float px, float py, float pz, float ax, float ay, float az,
+                                    float bx, float by, float bz) const {
+    float t = closestSegmentT3(px, py, pz, ax, ay, az, bx, by, bz);
+    return ax + (bx - ax) * t;
+}
+float Math::closestPointOnSegment3Y(float px, float py, float pz, float ax, float ay, float az,
+                                    float bx, float by, float bz) const {
+    float t = closestSegmentT3(px, py, pz, ax, ay, az, bx, by, bz);
+    return ay + (by - ay) * t;
+}
+float Math::closestPointOnSegment3Z(float px, float py, float pz, float ax, float ay, float az,
+                                    float bx, float by, float bz) const {
+    float t = closestSegmentT3(px, py, pz, ax, ay, az, bx, by, bz);
+    return az + (bz - az) * t;
 }
 
 float Math::bilinear(float v00, float v10, float v01, float v11, float u, float v) const {
@@ -590,6 +796,24 @@ void Math::expose(ssq::Class &cls) {
     cls.addFunc("cartesianAngle", &Math::cartesianAngle);
     cls.addFunc("pointInCircle", &Math::pointInCircle);
     cls.addFunc("pointInRect", &Math::pointInRect);
+    cls.addFunc("circlesOverlap", &Math::circlesOverlap);
+    cls.addFunc("rectsOverlap", &Math::rectsOverlap);
+    cls.addFunc("circleRectOverlap", &Math::circleRectOverlap);
+    cls.addFunc("segmentsIntersect", &Math::segmentsIntersect);
+    cls.addFunc("raycastCircle2", &Math::raycastCircle2);
+    cls.addFunc("raycastRect2", &Math::raycastRect2);
+    cls.addFunc("closestPointOnSegment2X", &Math::closestPointOnSegment2X);
+    cls.addFunc("closestPointOnSegment2Y", &Math::closestPointOnSegment2Y);
+    cls.addFunc("pointInSphere", &Math::pointInSphere);
+    cls.addFunc("pointInBox", &Math::pointInBox);
+    cls.addFunc("spheresOverlap", &Math::spheresOverlap);
+    cls.addFunc("boxesOverlap", &Math::boxesOverlap);
+    cls.addFunc("raycastSphere", &Math::raycastSphere);
+    cls.addFunc("raycastBox", &Math::raycastBox);
+    cls.addFunc("raycastPlane", &Math::raycastPlane);
+    cls.addFunc("closestPointOnSegment3X", &Math::closestPointOnSegment3X);
+    cls.addFunc("closestPointOnSegment3Y", &Math::closestPointOnSegment3Y);
+    cls.addFunc("closestPointOnSegment3Z", &Math::closestPointOnSegment3Z);
     cls.addFunc("bilinear", &Math::bilinear);
 
     cls.addFunc("setRandomSeed", &Math::setRandomSeed);

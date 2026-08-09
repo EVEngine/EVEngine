@@ -69,4 +69,9 @@ void Fixture::setDensity(float density) {
 
 float Fixture::getDensity() const { return fixture_ ? fixture_->GetDensity() : 0.f; }
 
+bool Fixture::testPoint(float x, float y) const {
+    if (!fixture_ || !world_) return false;
+    return fixture_->TestPoint(b2Vec2(world_->toMeters(x), world_->toMeters(y)));
+}
+
 }  // namespace eve::physics
