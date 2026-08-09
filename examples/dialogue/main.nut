@@ -43,15 +43,20 @@ function makePortrait(kind, bodyR, bodyG, bodyB) {
     av.addLayer("body", null, 0);
     av.addLayer("face", null, 1);
     av.addLayer("blush", null, 2);
+    av.addLayer("mouthOpen", null, 3);  // lip-sync alpha driven by dialogue
     av.setLayerSize("body", 140.0, 280.0);
     av.setLayerSize("face", 90.0, 90.0);
     av.setLayerSize("blush", 70.0, 40.0);
+    av.setLayerSize("mouthOpen", 36.0, 16.0);
     av.setLayerOffset("face", 25.0, 30.0);
     av.setLayerOffset("blush", 35.0, 70.0);
+    av.setLayerOffset("mouthOpen", 52.0, 95.0);
     av.setLayerColor("body", bodyR, bodyG, bodyB, 1.0);
     av.setLayerColor("face", 0.96, 0.86, 0.78, 1.0);
     av.setLayerColor("blush", 0.95, 0.45, 0.55, 0.75);
+    av.setLayerColor("mouthOpen", 0.45, 0.12, 0.15, 0.0);
     av.setLayerVisible("blush", false);
+    av.setLayerVisible("mouthOpen", false);
     av.defineExpression("neutral", "blush=0");
     av.defineExpression("happy", "blush=0");
     av.defineExpression("shy", "blush=1");
@@ -128,6 +133,9 @@ function startScene() {
     dlg.bindAvatar("alice", aliceAv);
     dlg.bindAvatar("bob", bobAv);
     dlg.setTypeSpeed(48.0);
+    dlg.setLipSyncEnabled(true);
+    dlg.setLipSyncParameter("mouthOpen");
+    dlg.setLipSyncAmplitude(0.9);
     dlg.setSlotX("left", 0.22);
     dlg.setSlotX("right", 0.78);
     bobAv.setPosition(0.0, config.height - 320.0);
@@ -213,6 +221,8 @@ function eve_reload() {
 }
 
 function eve_update(dt) {
+    if ("anim" in getroottable())
+        anim.update(dt);
     dlg.update(dt);
     avatar.update(dt);
     dlg.syncStage(config.width.tofloat(), config.height.tofloat());

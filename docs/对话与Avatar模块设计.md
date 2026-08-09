@@ -141,16 +141,41 @@ function scene_intro() {
 
 `examples/dialogue/` 内有 runner：在 WaitingAdvance / WaitingChoice 解除后 `resume` generator。也可不用 generator，改成显式状态机调用同一套 C++ API。
 
+## 补充：Morph / Live2D 插件 / 口型 / Tween
+
+### Mesh morph
+
+- `Mesh::initMorphBase` / `addMorphTarget` / `addMorphTargetAbsolute` / `setMorphWeight`
+- `Graphics::newMeshFromAssimp` 自动收录 Assimp `aiAnimMesh`
+- `Graphics::bakeMeshMorph` 将权重混合后的顶点写回 host-visible VBO
+- Vroid Avatar：`setMesh` / `setParameter` / `sync` → `bakeMorphs()`
+
+### Live2D 后端
+
+- 内置 `NullLive2DBackend`（`"null"`），保证无 Cubism 也能跑脚本
+- `Avatar::registerLive2DBackend(factory)` 供插件替换（见 `examples/live2d-backend-plugin`）
+
+### Dialogue 口型
+
+- `setLipSyncEnabled` / `setLipSyncParameter` / `setLipSyncAmplitude`
+- 打字阶段用正弦包络驱动 speaker avatar 参数；Image 层同名图层改 alpha
+
+### Tween
+
+- `AvatarInstance::bindTween(tween)`：每帧读取 `x`/`y`/`sx`/`sy`（及 3D/`参数` 同名轨）
+
 ## 文件布局
 
 ```text
 src/modules/avatar/
-  Avatar.h / Avatar.cpp           // Module + Live2D backend registry
-  AvatarInstance.h / .cpp         // 公共实例 + Image / Live2D / Vroid
+  Avatar.h / Avatar.cpp
+  AvatarInstance.h / .cpp
+  Live2DNullBackend.h
 src/modules/dialogue/
-  Dialogue.h / Dialogue.cpp       // Module + 舞台 / 打字机 / 选项
-docs/对话与Avatar模块设计.md
+  Dialogue.h / Dialogue.cpp
+src/modules/graphics/Mesh.h / Mesh.cpp   // morph CPU 数据
 examples/dialogue/
+examples/live2d-backend-plugin/
 test/avatar.cpp
 test/dialogue.cpp
 ```
@@ -158,10 +183,14 @@ test/dialogue.cpp
 ## 验收清单
 
 - [x] ImageAvatar 多层叠加、表情 spec、Renderable2D 同步
-- [x] Live2D / VRoid 工厂与参数 API；Live2D 默认可探测为无后端
+- [x] Live2D / VRoid 工厂与参数 API；内置 `NullLive2DBackend`（`"null"`）
 - [x] Dialogue 打字机、advance、选项、槽位、bindAvatar
 - [x] 脚本仍为 Squirrel（示例用 generator）
 - [x] C++ 单测（不依赖 GPU 窗口）
-- [ ] 正式接入 Cubism Core（插件后端）
-- [ ] VRM 表情 morph 真写入 Mesh（依赖 graphics 形态键）
-- [ ] 与 `animation` Tween / 口型驱动联动
+- [x] Live2D 插件后端接入路径（`Avatar::registerLive2DBackend` + `examples/live2d-backend-plugin`）
+- [x] Mesh morph 目标（Assimp `aiAnimMesh` → CPU bake → `Graphics::bakeMeshMorph`）
+- [x] VRoid / Avatar 表情权重写入 Mesh morph 并在 `sync` 时 bake
+- [x] Avatar `bindTween`（x/y/sx/sy + 同名参数）
+- [x] Dialogue 口型：`setLipSync*` 在打字阶段驱动 speaker 参数 / Image 图层 alpha
+- [ ] 正式 Cubism Core 渲染实现（需自带 SDK，放在用户插件中）
+- [ ] 音频波形口型（当前为打字机正弦包络，不依赖 audio）

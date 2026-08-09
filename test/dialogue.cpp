@@ -121,3 +121,33 @@ TEST_CASE("dialogue.expressionForward") {
     av->release();
     delete av;
 }
+
+TEST_CASE("dialogue.lipSyncWhileTyping") {
+    Dialogue *dlg = Dialogue::create();
+    Avatar *avmod = Avatar::create();
+    dlg->registerCharacter("hero", "Hero");
+    AvatarInstance *av = avmod->newImageAvatar();
+    av->addLayer("mouthOpen", nullptr, 1);
+    av->setLayerSize("mouthOpen", 40.f, 20.f);
+    av->setLayerColor("mouthOpen", 0.8f, 0.2f, 0.2f, 0.f);
+    dlg->bindAvatar("hero", av);
+    dlg->show("hero", "center");
+
+    dlg->setLipSyncEnabled(true);
+    dlg->setLipSyncParameter("mouthOpen");
+    dlg->setLipSyncAmplitude(0.9f);
+    dlg->setTypeSpeed(20.f);
+    dlg->say("hero", "Hello there");
+
+    CHECK(dlg->isTyping());
+    dlg->update(0.05f);
+    CHECK(dlg->getLipSyncValue() > 0.1f);
+    CHECK(av->getParameter("mouthOpen") > 0.1f);
+
+    dlg->skipTyping();
+    dlg->update(0.5f);  // ease shut
+    CHECK(dlg->getLipSyncValue() < 0.2f);
+
+    av->release();
+    delete av;
+}

@@ -60,6 +60,15 @@ public:
     std::string getVisibleText() const;
     std::string getPhase() const;
 
+    // ---- lip sync (drives speaker avatar parameter while typing) ----
+    void setLipSyncEnabled(bool enabled);
+    bool isLipSyncEnabled() const { return lipSyncEnabled_; }
+    void setLipSyncParameter(const std::string &name);
+    std::string getLipSyncParameter() const { return lipSyncParameter_; }
+    void setLipSyncAmplitude(float amplitude);
+    float getLipSyncAmplitude() const { return lipSyncAmplitude_; }
+    float getLipSyncValue() const { return lipSyncValue_; }
+
     // ---- choices ----
     void clearChoices();
     bool addChoice(const std::string &id, const std::string &label);
@@ -105,6 +114,15 @@ private:
 
     std::vector<Choice> choices_;
     std::string selectedChoiceId_;
+
+    bool lipSyncEnabled_ = true;
+    std::string lipSyncParameter_ = "mouthOpen";
+    float lipSyncAmplitude_ = 0.85f;
+    float lipSyncValue_ = 0.f;
+    float lipSyncTime_ = 0.f;
+
+    void updateLipSync(float dt);
+    void applyLipSyncToSpeaker();
 };
 
 }  // namespace eve::dialogue

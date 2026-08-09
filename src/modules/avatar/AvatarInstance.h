@@ -1,5 +1,6 @@
 #pragma once
 
+#include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
@@ -10,6 +11,10 @@
 
 namespace eve::model3d {
 class ModelData;
+}
+
+namespace eve::animation {
+class Tween;
 }
 
 namespace eve::avatar {
@@ -101,13 +106,24 @@ public:
     // ---- vroid kind ----
     bool loadVroidModelPath(const std::string &path);
     bool bindVroidModelData(model3d::ModelData *data);
+    /** Register morph target names from ModelData as parameters (weights default 0). */
+    int loadMorphNamesFromModel(int meshIndex = 0);
     void setMesh(graphics::Mesh *mesh);
     void setTexture(graphics::Texture *texture);
     void setPosition3D(float x, float y, float z);
     void setRotation3D(float yaw, float pitch, float roll);
     void setScale3D(float sx, float sy, float sz);
     graphics::Renderable3D *getRenderable3D() const { return renderable3d_; }
+    graphics::Mesh *getBoundMesh() const;
     std::string getVroidModelPath() const { return vroidPath_; }
+    /** Push parameter weights onto Mesh morphs and bake GPU verts when possible. */
+    bool bakeMorphs();
+
+    // ---- animation tween binding ----
+    /** Drive x/y/sx/sy and matching parameters from a Tween each update(). */
+    void bindTween(animation::Tween *tween);
+    void unbindTween();
+    animation::Tween *getBoundTween() const { return tween_; }
 
 private:
     struct Layer {
@@ -150,9 +166,16 @@ private:
     std::string vroidPath_;
     model3d::ModelData *vroidData_ = nullptr;
     graphics::Renderable3D *renderable3d_ = nullptr;
+    graphics::Mesh *boundMesh_ = nullptr;
     float x3_ = 0.f, y3_ = 0.f, z3_ = 0.f;
     float yaw_ = 0.f, pitch_ = 0.f, roll_ = 0.f;
     float sx3_ = 1.f, sy3_ = 1.f, sz3_ = 1.f;
+
+    animation::Tween *tween_ = nullptr;
+
+    void ensureParameter(const std::string &name, float value = 0.f);
+    void applyTweenTracks();
+    void syncMorphWeightsToMesh();
 
     bool released_ = false;
 };

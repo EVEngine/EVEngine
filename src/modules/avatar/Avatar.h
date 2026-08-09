@@ -40,10 +40,16 @@ public:
     void render(graphics::Graphics *gfx);
     int getAvatarCount() const;
 
-    /** C++ / plugin: replace Live2D backend factory (nullptr clears). */
+    /**
+     * C++ / plugin: replace Live2D backend factory.
+     * Pass nullptr to restore the built-in NullLive2DBackend ("null").
+     */
     static void registerLive2DBackend(Live2DBackendFactory factory);
     static Live2DBackendFactory live2DBackendFactory();
+    /** Always returns a backend: custom factory, else NullLive2DBackend. */
     static ILive2DBackend *createLive2DBackend();
+    /** Backend name currently in effect ("null" when using the built-in stub). */
+    static std::string getLive2DBackendName();
 
 private:
     friend class AvatarInstance;

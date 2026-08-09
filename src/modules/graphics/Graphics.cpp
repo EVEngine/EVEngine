@@ -35,7 +35,17 @@ void Graphics::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
 
-    table.addClass<Mesh>("Mesh", std::function<Mesh *()>([]() -> Mesh * { return nullptr; }), true);
+    auto meshCls =
+        table.addClass<Mesh>("Mesh", std::function<Mesh *()>([]() -> Mesh * { return nullptr; }), true);
+    meshCls.addFunc("getVertexCount", &Mesh::getVertexCount);
+    meshCls.addFunc("getMorphCount", &Mesh::getMorphCount);
+    meshCls.addFunc("getMorphName", &Mesh::getMorphName);
+    meshCls.addFunc("hasMorph", &Mesh::hasMorph);
+    meshCls.addFunc("setMorphWeight", &Mesh::setMorphWeight);
+    meshCls.addFunc("getMorphWeight", &Mesh::getMorphWeight);
+    meshCls.addFunc("clearMorphWeights", &Mesh::clearMorphWeights);
+    meshCls.addFunc("hasMorphData", &Mesh::hasMorphData);
+    meshCls.addFunc("isMorphDirty", &Mesh::isMorphDirty);
     table.addClass<Texture>("Texture", std::function<Texture *()>([]() -> Texture * { return nullptr; }),
                             true);
 
@@ -148,6 +158,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
     cls.addFunc("newTexture", &Graphics::newTextureFromImageData);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
+    cls.addFunc("bakeMeshMorph", &Graphics::bakeMeshMorph);
     cls.addFunc("newShader",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShader));
     cls.addFunc("newMeshShader",

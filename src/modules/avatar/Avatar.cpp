@@ -1,4 +1,5 @@
 #include "avatar/Avatar.h"
+#include "avatar/Live2DNullBackend.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 
@@ -7,7 +8,7 @@
 
 namespace eve::avatar {
 
-Live2DBackendFactory Avatar::live2dFactory_ = nullptr;
+Live2DBackendFactory Avatar::live2dFactory_ = &createNullLive2DBackend;
 
 Module_IMPL(Avatar, new Avatar());
 
@@ -61,13 +62,23 @@ void Avatar::render(graphics::Graphics *gfx) {
 
 int Avatar::getAvatarCount() const { return int(avatars_.size()); }
 
-void Avatar::registerLive2DBackend(Live2DBackendFactory factory) { live2dFactory_ = factory; }
+void Avatar::registerLive2DBackend(Live2DBackendFactory factory) {
+    live2dFactory_ = factory ? factory : &createNullLive2DBackend;
+}
 
 Live2DBackendFactory Avatar::live2DBackendFactory() { return live2dFactory_; }
 
 ILive2DBackend *Avatar::createLive2DBackend() {
-    if (!live2dFactory_) return nullptr;
-    return live2dFactory_();
+    Live2DBackendFactory f = live2dFactory_ ? live2dFactory_ : &createNullLive2DBackend;
+    return f();
+}
+
+std::string Avatar::getLive2DBackendName() {
+    ILive2DBackend *tmp = createLive2DBackend();
+    if (!tmp) return "none";
+    std::string n = tmp->getName();
+    delete tmp;
+    return n;
 }
 
 void Avatar::expose(ssq::Table &table) {
@@ -121,13 +132,19 @@ void Avatar::expose(ssq::Table &table) {
 
     av.addFunc("loadVroidModelPath", &AvatarInstance::loadVroidModelPath);
     av.addFunc("bindVroidModelData", &AvatarInstance::bindVroidModelData);
+    av.addFunc("loadMorphNamesFromModel", &AvatarInstance::loadMorphNamesFromModel);
     av.addFunc("setMesh", &AvatarInstance::setMesh);
     av.addFunc("setTexture", &AvatarInstance::setTexture);
     av.addFunc("setPosition3D", &AvatarInstance::setPosition3D);
     av.addFunc("setRotation3D", &AvatarInstance::setRotation3D);
     av.addFunc("setScale3D", &AvatarInstance::setScale3D);
     av.addFunc("getRenderable3D", &AvatarInstance::getRenderable3D);
+    av.addFunc("getBoundMesh", &AvatarInstance::getBoundMesh);
     av.addFunc("getVroidModelPath", &AvatarInstance::getVroidModelPath);
+    av.addFunc("bakeMorphs", &AvatarInstance::bakeMorphs);
+    av.addFunc("bindTween", &AvatarInstance::bindTween);
+    av.addFunc("unbindTween", &AvatarInstance::unbindTween);
+    av.addFunc("getBoundTween", &AvatarInstance::getBoundTween);
 }
 
 void Avatar::expose(ssq::Class &cls) {
@@ -139,6 +156,7 @@ void Avatar::expose(ssq::Class &cls) {
     cls.addFunc("sync", &Avatar::sync);
     cls.addFunc("render", &Avatar::render);
     cls.addFunc("getAvatarCount", &Avatar::getAvatarCount);
+    cls.addFunc("getLive2DBackendName", &Avatar::getLive2DBackendName);
 }
 
 }  // namespace eve::avatar

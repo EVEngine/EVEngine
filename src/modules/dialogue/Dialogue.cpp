@@ -181,9 +181,11 @@ void Dialogue::beginLine(const std::string &speakerId, const std::string &text) 
     fullText_ = text;
     typed_ = 0.f;
     selectedChoiceId_.clear();
+    lipSyncTime_ = 0.f;
     if (typeSpeed_ <= 0.f) {
         typed_ = float(utf8CodepointCount(fullText_));
         phase_ = Phase::WaitingAdvance;
+        lipSyncValue_ = 0.f;
     } else {
         phase_ = Phase::Typing;
     }
@@ -294,15 +296,51 @@ bool Dialogue::selectChoice(int index) {
     return true;
 }
 
-void Dialogue::update(float dt) {
-    if (phase_ != Phase::Typing) return;
+void Dialogue::setLipSyncEnabled(bool enabled) { lipSyncEnabled_ = enabled; }
+
+void Dialogue::setLipSyncParameter(const std::string &name) {
+    if (!name.empty()) lipSyncParameter_ = name;
+}
+
+void Dialogue::setLipSyncAmplitude(float amplitude) {
+    if (amplitude < 0.f) amplitude = 0.f;
+    if (amplitude > 2.f) amplitude = 2.f;
+    lipSyncAmplitude_ = amplitude;
+}
+
+void Dialogue::updateLipSync(float dt) {
     if (dt < 0.f) dt = 0.f;
-    const float total = float(utf8CodepointCount(fullText_));
-    typed_ += typeSpeed_ * dt;
-    if (typed_ >= total) {
-        typed_ = total;
-        phase_ = Phase::WaitingAdvance;
+    if (lipSyncEnabled_ && phase_ == Phase::Typing && !speakerId_.empty()) {
+        lipSyncTime_ += dt;
+        // Simple mouth envelope while characters appear (no audio dependency).
+        const float wave = std::fabs(std::sin(lipSyncTime_ * 14.f));
+        lipSyncValue_ = lipSyncAmplitude_ * (0.25f + 0.75f * wave);
+    } else {
+        // Ease shut when not typing.
+        lipSyncValue_ *= std::max(0.f, 1.f - dt * 8.f);
+        if (lipSyncValue_ < 0.01f) lipSyncValue_ = 0.f;
     }
+    applyLipSyncToSpeaker();
+}
+
+void Dialogue::applyLipSyncToSpeaker() {
+    if (!lipSyncEnabled_ || speakerId_.empty() || lipSyncParameter_.empty()) return;
+    Character *c = findCharacter(speakerId_);
+    if (!c || !c->avatar) return;
+    c->avatar->setParameter(lipSyncParameter_, lipSyncValue_);
+}
+
+void Dialogue::update(float dt) {
+    if (dt < 0.f) dt = 0.f;
+    if (phase_ == Phase::Typing) {
+        const float total = float(utf8CodepointCount(fullText_));
+        typed_ += typeSpeed_ * dt;
+        if (typed_ >= total) {
+            typed_ = total;
+            phase_ = Phase::WaitingAdvance;
+        }
+    }
+    updateLipSync(dt);
 }
 
 void Dialogue::reset() {
@@ -312,6 +350,8 @@ void Dialogue::reset() {
     typed_ = 0.f;
     choices_.clear();
     selectedChoiceId_.clear();
+    lipSyncValue_ = 0.f;
+    lipSyncTime_ = 0.f;
     for (Character &c : characters_) {
         c.shown = false;
         if (c.avatar) c.avatar->setVisible(false);
@@ -357,6 +397,14 @@ void Dialogue::expose(ssq::Class &cls) {
     cls.addFunc("getFullText", &Dialogue::getFullText);
     cls.addFunc("getVisibleText", &Dialogue::getVisibleText);
     cls.addFunc("getPhase", &Dialogue::getPhase);
+
+    cls.addFunc("setLipSyncEnabled", &Dialogue::setLipSyncEnabled);
+    cls.addFunc("isLipSyncEnabled", &Dialogue::isLipSyncEnabled);
+    cls.addFunc("setLipSyncParameter", &Dialogue::setLipSyncParameter);
+    cls.addFunc("getLipSyncParameter", &Dialogue::getLipSyncParameter);
+    cls.addFunc("setLipSyncAmplitude", &Dialogue::setLipSyncAmplitude);
+    cls.addFunc("getLipSyncAmplitude", &Dialogue::getLipSyncAmplitude);
+    cls.addFunc("getLipSyncValue", &Dialogue::getLipSyncValue);
 
     cls.addFunc("clearChoices", &Dialogue::clearChoices);
     cls.addFunc("addChoice", &Dialogue::addChoice);

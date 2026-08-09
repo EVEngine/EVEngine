@@ -1,6 +1,9 @@
 #include "avatar/AvatarInstance.h"
 #include "avatar/Avatar.h"
+#include "animation/Tween.h"
 #include "common/ECS.h"
+#include "common/Module.h"
+#include "graphics/Graphics.h"
 #include "model3d/ModelData.h"
 
 #include <algorithm>
@@ -47,6 +50,7 @@ AvatarInstance::~AvatarInstance() { release(); }
 void AvatarInstance::release() {
     if (released_) return;
     released_ = true;
+    tween_ = nullptr;
     if (auto *mod = ModuleManager::getInstance<Avatar>("Avatar"))
         mod->unregisterInstance(this);
     destroyLayers();
@@ -69,30 +73,63 @@ void AvatarInstance::setVisible(bool visible) { visible_ = visible; }
 
 void AvatarInstance::setLayer(int layer) { layer_ = layer; }
 
+void AvatarInstance::ensureParameter(const std::string &name, float value) {
+    if (name.empty()) return;
+    if (parameters_.find(name) == parameters_.end()) parameterOrder_.push_back(name);
+    parameters_[name] = value;
+}
+
 void AvatarInstance::setExpression(const std::string &name) {
     expression_ = name;
     if (kind_ == "image") {
         applyExpression(name);
-    } else if (kind_ == "live2d" && live2d_) {
-        live2d_->setExpression(name);
+    } else if (kind_ == "live2d") {
+        if (!live2d_) live2d_ = Avatar::createLive2DBackend();
+        if (live2d_) live2d_->setExpression(name);
     } else if (kind_ == "vroid") {
-        // Morph weight convention: expression name → 1.0, others left as-is.
-        setParameter(name, 1.f);
+        if (expressionDefs_.count(name)) {
+            applyExpression(name);
+        } else if (!name.empty()) {
+            // Solo morph: zero known morph params then set named weight to 1.
+            if (boundMesh_ && boundMesh_->hasMorphData()) {
+                for (int i = 0; i < boundMesh_->getMorphCount(); ++i) {
+                    const std::string mn = boundMesh_->getMorphName(i);
+                    ensureParameter(mn, 0.f);
+                }
+            }
+            ensureParameter(name, 1.f);
+            syncMorphWeightsToMesh();
+        }
     }
 }
 
 void AvatarInstance::setMotion(const std::string &name) {
     motion_ = name;
-    if (kind_ == "live2d" && live2d_) live2d_->setMotion(name);
+    if (kind_ == "live2d") {
+        if (!live2d_) live2d_ = Avatar::createLive2DBackend();
+        if (live2d_) live2d_->setMotion(name);
+    }
     if (kind_ == "vroid") setParameter("motion:" + name, 1.f);
 }
 
 void AvatarInstance::setParameter(const std::string &name, float value) {
     if (name.empty()) return;
-    auto it = parameters_.find(name);
-    if (it == parameters_.end()) parameterOrder_.push_back(name);
-    parameters_[name] = value;
-    if (kind_ == "live2d" && live2d_) live2d_->setParameter(name, value);
+    ensureParameter(name, value);
+    if (kind_ == "live2d") {
+        if (!live2d_) live2d_ = Avatar::createLive2DBackend();
+        if (live2d_) live2d_->setParameter(name, value);
+    } else if (kind_ == "vroid") {
+        if (boundMesh_ && boundMesh_->hasMorph(name)) boundMesh_->setMorphWeight(name, value);
+    } else if (kind_ == "image") {
+        // Parameter name matching a layer drives that layer's alpha (lip-sync etc.).
+        if (Layer *L = findLayer(name)) {
+            float a = value;
+            if (a < 0.f) a = 0.f;
+            if (a > 1.f) a = 1.f;
+            L->a = a;
+            L->visible = a > 0.001f;
+        }
+    }
 }
 
 float AvatarInstance::getParameter(const std::string &name) const {
@@ -116,7 +153,11 @@ std::string AvatarInstance::getParameterName(int index) const {
 }
 
 void AvatarInstance::update(float dt) {
-    if (kind_ == "live2d" && live2d_) live2d_->update(dt);
+    applyTweenTracks();
+    if (kind_ == "live2d") {
+        if (!live2d_) live2d_ = Avatar::createLive2DBackend();
+        if (live2d_) live2d_->update(dt);
+    }
     (void)dt;
 }
 
@@ -125,6 +166,32 @@ void AvatarInstance::sync() {
         syncImageLayers();
     else if (kind_ == "vroid")
         syncVroid();
+}
+
+void AvatarInstance::bindTween(animation::Tween *tween) { tween_ = tween; }
+
+void AvatarInstance::unbindTween() { tween_ = nullptr; }
+
+void AvatarInstance::applyTweenTracks() {
+    if (!tween_ || !tween_->isActive()) return;
+    if (tween_->has("x")) x_ = tween_->get("x");
+    if (tween_->has("y")) y_ = tween_->get("y");
+    if (tween_->has("sx")) sx_ = tween_->get("sx");
+    if (tween_->has("sy")) sy_ = tween_->get("sy");
+    if (kind_ == "vroid") {
+        if (tween_->has("x3")) x3_ = tween_->get("x3");
+        if (tween_->has("y3")) y3_ = tween_->get("y3");
+        if (tween_->has("z3")) z3_ = tween_->get("z3");
+        if (tween_->has("yaw")) yaw_ = tween_->get("yaw");
+    }
+    const int n = tween_->getPropertyCount();
+    for (int i = 0; i < n; ++i) {
+        const std::string name = tween_->getPropertyName(i);
+        if (name == "x" || name == "y" || name == "sx" || name == "sy" || name == "x3" ||
+            name == "y3" || name == "z3" || name == "yaw")
+            continue;
+        setParameter(name, tween_->get(name));
+    }
 }
 
 // ---- image ----
@@ -216,7 +283,7 @@ std::string AvatarInstance::getLayerName(int index) const {
 bool AvatarInstance::hasLayer(const std::string &name) const { return findLayer(name) != nullptr; }
 
 bool AvatarInstance::defineExpression(const std::string &name, const std::string &spec) {
-    if (kind_ != "image" || name.empty()) return false;
+    if ((kind_ != "image" && kind_ != "vroid") || name.empty()) return false;
     expressionDefs_[name] = spec;
     return true;
 }
@@ -233,6 +300,22 @@ bool AvatarInstance::applyExpressionSpec(const std::string &spec) {
         const std::string key = trimCopy(part.substr(0, eq));
         const std::string val = trimCopy(part.substr(eq + 1));
         if (key.empty()) continue;
+
+        if (kind_ == "vroid") {
+            bool flag = false;
+            if (parseBoolish(val, flag)) {
+                setParameter(key, flag ? 1.f : 0.f);
+            } else {
+                char *end = nullptr;
+                const float f = std::strtof(val.c_str(), &end);
+                if (end && end != val.c_str())
+                    setParameter(key, f);
+                else
+                    setParameter(key, 1.f);
+            }
+            continue;
+        }
+
         Layer *L = findLayer(key);
         if (!L) {
             // Unknown layer name still recorded as parameter for tooling.
@@ -256,7 +339,9 @@ bool AvatarInstance::applyExpression(const std::string &name) {
     auto it = expressionDefs_.find(name);
     if (it == expressionDefs_.end()) return false;
     expression_ = name;
-    return applyExpressionSpec(it->second);
+    const bool ok = applyExpressionSpec(it->second);
+    if (kind_ == "vroid") syncMorphWeightsToMesh();
+    return ok;
 }
 
 void AvatarInstance::syncImageLayers() {
@@ -314,12 +399,10 @@ bool AvatarInstance::loadLive2DModel(const std::string &path) {
 
 std::string AvatarInstance::getLive2DBackendName() const {
     if (live2d_) return live2d_->getName();
-    return "none";
+    return Avatar::getLive2DBackendName();
 }
 
-bool AvatarInstance::hasLive2DBackend() const {
-    return live2d_ != nullptr || Avatar::live2DBackendFactory() != nullptr;
-}
+bool AvatarInstance::hasLive2DBackend() const { return Avatar::live2DBackendFactory() != nullptr; }
 
 // ---- vroid ----
 
@@ -332,13 +415,36 @@ bool AvatarInstance::loadVroidModelPath(const std::string &path) {
 bool AvatarInstance::bindVroidModelData(model3d::ModelData *data) {
     if (kind_ != "vroid") return false;
     vroidData_ = data;
+    if (data) loadMorphNamesFromModel(0);
     return data != nullptr;
+}
+
+int AvatarInstance::loadMorphNamesFromModel(int meshIndex) {
+    if (kind_ != "vroid" || !vroidData_) return 0;
+    const int n = vroidData_->getMorphTargetCount(meshIndex);
+    int added = 0;
+    for (int i = 0; i < n; ++i) {
+        const std::string name = vroidData_->getMorphTargetName(meshIndex, i);
+        if (name.empty()) continue;
+        if (!hasParameter(name)) {
+            ensureParameter(name, 0.f);
+            ++added;
+        }
+    }
+    return added;
 }
 
 void AvatarInstance::setMesh(graphics::Mesh *mesh) {
     if (kind_ != "vroid") return;
+    boundMesh_ = mesh;
     if (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();
     renderable3d_->setMesh(mesh);
+    if (mesh && mesh->hasMorphData()) {
+        for (int i = 0; i < mesh->getMorphCount(); ++i) {
+            const std::string name = mesh->getMorphName(i);
+            ensureParameter(name, mesh->getMorphWeight(name));
+        }
+    }
 }
 
 void AvatarInstance::setTexture(graphics::Texture *texture) {
@@ -365,12 +471,31 @@ void AvatarInstance::setScale3D(float sx, float sy, float sz) {
     sz3_ = sz;
 }
 
+graphics::Mesh *AvatarInstance::getBoundMesh() const { return boundMesh_; }
+
+void AvatarInstance::syncMorphWeightsToMesh() {
+    if (!boundMesh_ || !boundMesh_->hasMorphData()) return;
+    for (int i = 0; i < boundMesh_->getMorphCount(); ++i) {
+        const std::string name = boundMesh_->getMorphName(i);
+        boundMesh_->setMorphWeight(name, getParameter(name));
+    }
+}
+
+bool AvatarInstance::bakeMorphs() {
+    syncMorphWeightsToMesh();
+    if (!boundMesh_ || !boundMesh_->isMorphDirty()) return false;
+    auto *gfx = ModuleManager::getInstance<graphics::Graphics>("Graphics");
+    if (!gfx) return false;
+    return gfx->bakeMeshMorph(boundMesh_);
+}
+
 void AvatarInstance::syncVroid() {
     if (!renderable3d_) renderable3d_ = graphics::Renderable3D::create();
     renderable3d_->setPosition(x3_, y3_, z3_);
     renderable3d_->setRotation(yaw_, pitch_, roll_);
     renderable3d_->setScale(sx3_ * sx_, sy3_ * sy_, sz3_);
     renderable3d_->setVisible(visible_);
+    bakeMorphs();
 }
 
 void AvatarInstance::destroyVroid() {
@@ -378,6 +503,7 @@ void AvatarInstance::destroyVroid() {
         ecs::DestroyEntity(renderable3d_);
         renderable3d_ = nullptr;
     }
+    boundMesh_ = nullptr;
     vroidData_ = nullptr;
     vroidPath_.clear();
 }

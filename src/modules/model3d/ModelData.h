@@ -29,6 +29,10 @@ public:
     bool hasNormals(int meshIndex) const;
     bool hasTexCoords(int meshIndex) const;
 
+    /** Assimp morph / blend-shape targets on a mesh (aiAnimMesh). */
+    int getMorphTargetCount(int meshIndex) const;
+    std::string getMorphTargetName(int meshIndex, int morphIndex) const;
+
     const aiScene *getScene() const;
     const aiMesh *getMesh(int meshIndex) const;
 

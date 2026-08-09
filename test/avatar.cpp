@@ -1,15 +1,22 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "animation/Animation.h"
+#include "animation/Tween.h"
 #include "avatar/Avatar.h"
 #include "avatar/AvatarInstance.h"
+#include "avatar/Live2DNullBackend.h"
 #include "common/ECS.h"
+#include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 
+#include <cmath>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 using namespace eve::avatar;
+using eve::graphics::Mesh;
 using eve::graphics::Renderable2D;
 
 namespace {
@@ -75,7 +82,6 @@ TEST_CASE("avatar.image.layersAndExpression") {
     av->setLayer(50);
     av->sync();
 
-    // body / face / blush entities exist after sync
     int visible = 0;
     if (ecs::current()->getManager<Renderable2D>() != nullptr) {
         auto view = ecs::View<Renderable2D, Renderable2D::Transform2D, Renderable2D::Sprite>();
@@ -85,23 +91,32 @@ TEST_CASE("avatar.image.layersAndExpression") {
             (void)xf;
         }
     }
-    CHECK(visible >= 2);  // blush may be hidden
+    CHECK(visible >= 2);
 
     av->release();
     delete av;
     CHECK_EQ(mod->getAvatarCount(), 0);
 }
 
-TEST_CASE("avatar.live2d.backendPlugIn") {
-    Avatar::registerLive2DBackend(nullptr);
+TEST_CASE("avatar.live2d.nullBackendDefault") {
+    Avatar::registerLive2DBackend(nullptr);  // restore NullLive2DBackend
     Avatar *mod = Avatar::create();
     AvatarInstance *av = mod->newLive2DAvatar();
     CHECK_EQ(av->getKind(), std::string("live2d"));
-    CHECK(!av->hasLive2DBackend());
-    CHECK_EQ(av->getLive2DBackendName(), std::string("none"));
-    CHECK(!av->loadLive2DModel("models/hiyori"));
+    CHECK(av->hasLive2DBackend());
+    CHECK_EQ(Avatar::getLive2DBackendName(), std::string("null"));
+    CHECK(av->loadLive2DModel("models/hiyori"));
+    CHECK_EQ(av->getLive2DBackendName(), std::string("null"));
+    av->setParameter("ParamMouthOpenY", 0.4f);
+    CHECK_EQ(av->getParameter("ParamMouthOpenY"), 0.4f);
+    av->release();
+    delete av;
+}
 
+TEST_CASE("avatar.live2d.backendPlugIn") {
     Avatar::registerLive2DBackend(&makeFakeLive2D);
+    Avatar *mod = Avatar::create();
+    AvatarInstance *av = mod->newLive2DAvatar();
     CHECK(av->hasLive2DBackend());
     CHECK(av->loadLive2DModel("models/hiyori"));
     CHECK_EQ(av->getLive2DBackendName(), std::string("fake"));
@@ -136,6 +151,61 @@ TEST_CASE("avatar.vroid.pathAndTransform") {
     delete av;
 }
 
+TEST_CASE("avatar.vroid.meshMorphWeights") {
+    Avatar *mod = Avatar::create();
+    AvatarInstance *av = mod->newVroidAvatar();
+
+    Mesh mesh;
+    const float base[] = {0.f, 0.f, 0.f, 1.f, 0.f, 0.f};
+    const float joyAbs[] = {0.f, 1.f, 0.f, 1.f, 1.f, 0.f};  // lift Y by 1
+    mesh.initMorphBase(2, base, nullptr, nullptr);
+    CHECK(mesh.addMorphTargetAbsolute("Joy", joyAbs));
+    CHECK(mesh.hasMorph("Joy"));
+
+    av->setMesh(&mesh);
+    CHECK(av->hasParameter("Joy"));
+    av->defineExpression("happy", "Joy=1");
+    CHECK(av->applyExpression("happy"));
+    CHECK_EQ(mesh.getMorphWeight("Joy"), 1.f);
+
+    std::vector<float> pos, nrm;
+    mesh.computeMorphedPositions(pos, nrm);
+    REQUIRE(pos.size() >= 6u);
+    CHECK(std::fabs(pos[1] - 1.f) < 1e-5f);
+    CHECK(std::fabs(pos[4] - 1.f) < 1e-5f);
+
+    av->setParameter("Joy", 0.5f);
+    CHECK_EQ(mesh.getMorphWeight("Joy"), 0.5f);
+
+    av->release();
+    delete av;
+}
+
+TEST_CASE("avatar.tween.bindDrivesPosition") {
+    Avatar *mod = Avatar::create();
+    auto *anim = eve::animation::Animation::create();
+    AvatarInstance *av = mod->newImageAvatar();
+    av->setPosition(0.f, 0.f);
+
+    eve::animation::Tween *tw = anim->newTween(1.f);
+    tw->setFrom("x", 0.f);
+    tw->setTo("x", 100.f);
+    tw->setFrom("y", 10.f);
+    tw->setTo("y", 10.f);
+    tw->setEase("linear");
+    tw->start();
+    av->bindTween(tw);
+
+    anim->update(0.5f);
+    av->update(0.f);
+    CHECK(std::fabs(av->getX() - 50.f) < 1e-3f);
+    CHECK(std::fabs(av->getY() - 10.f) < 1e-3f);
+
+    av->unbindTween();
+    av->release();
+    delete av;
+}
+
 TEST_CASE("avatar.module.updateSyncCounts") {
     Avatar *mod = Avatar::create();
     const int before = mod->getAvatarCount();
@@ -149,4 +219,19 @@ TEST_CASE("avatar.module.updateSyncCounts") {
     b->release();
     delete b;
     CHECK_EQ(mod->getAvatarCount(), before);
+}
+
+TEST_CASE("graphics.mesh.morphCpuBake") {
+    Mesh mesh;
+    const float base[] = {0.f, 0.f, 0.f, 2.f, 0.f, 0.f, 0.f, 2.f, 0.f};
+    const float delta[] = {0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f};
+    mesh.initMorphBase(3, base, nullptr, nullptr);
+    CHECK(mesh.addMorphTarget("open", delta));
+    CHECK_EQ(mesh.getMorphCount(), 1);
+    CHECK(mesh.setMorphWeight("open", 1.f));
+    std::vector<float> pos, nrm;
+    mesh.computeMorphedPositions(pos, nrm);
+    CHECK(std::fabs(pos[1] - 1.f) < 1e-5f);
+    CHECK(std::fabs(pos[4] - 1.f) < 1e-5f);
+    CHECK(std::fabs(pos[7] - 3.f) < 1e-5f);
 }
