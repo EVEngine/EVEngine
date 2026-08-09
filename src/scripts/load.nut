@@ -223,21 +223,41 @@ function handle_dev_key(key, scancode) {
         print(eve.dev.isPaused() ? "dev: paused\n" : "dev: resumed\n");
         return;
     }
-    // F5 = save snapshot, F9 = load snapshot (script state only).
+    // F5 = continue to next breakpoint (continueRun; `resume` is a Squirrel keyword).
     if (key == "F5") {
+        if (eve.dev.isPaused()) {
+            eve.dev.continueRun();
+            print("dev: continue\n");
+        }
+        return;
+    }
+    // F10 = step over (next statement, skip call bodies).
+    if (key == "F10" && eve.dev.isPaused()) {
+        eve.dev.stepOver();
+        print("dev: step over\n");
+        return;
+    }
+    // F11 = step into (next statement, enter calls).
+    if (key == "F11" && eve.dev.isPaused()) {
+        eve.dev.stepInto();
+        print("dev: step into\n");
+        return;
+    }
+    // F8 = step one game frame (secondary; statement stepping is primary).
+    if (key == "F8" && eve.dev.isPaused()) {
+        eve.dev.stepFrame();
+        print("dev: step frame\n");
+        return;
+    }
+    // F6 / F7 = save / load script-state snapshot.
+    if (key == "F6") {
         local r = eve.dev.saveSnapshot("eve_snapshot.json");
         print("dev: saveSnapshot -> " + r + "\n");
         return;
     }
-    if (key == "F9") {
+    if (key == "F7") {
         local r = eve.dev.loadSnapshot("eve_snapshot.json");
         print("dev: loadSnapshot -> " + r + "\n");
-        return;
-    }
-    // F10 = step one frame while paused.
-    if (key == "F10" && eve.dev.isPaused()) {
-        eve.dev.stepFrame();
-        print("dev: step frame\n");
     }
 }
 

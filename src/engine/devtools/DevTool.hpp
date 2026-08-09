@@ -90,6 +90,9 @@ private:
     void markErrorUses(const SourceLoc& loc, const std::vector<std::string>& hintVars);
     void installRenderTracer();
     void uninstallRenderTracer();
+    /** DAP poll + in-engine F5/F8/F10/F11 while blocked in a script pause. */
+    void pumpWhilePaused();
+    void handleDebugHotkey(const std::string& key);
 
     HSQUIRRELVM vm_               = nullptr;
     bool        sampleLocals_     = true;

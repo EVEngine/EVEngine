@@ -8,6 +8,7 @@
 #include <squirrel.h>
 
 #include <cstdio>
+#include <cstring>
 #include <fstream>
 #include <string>
 
@@ -65,13 +66,177 @@ TEST_CASE("devtools.debugger.onScriptLineBreakpointAndStep") {
     CHECK(d.isPaused());
     CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Breakpoint));
 
-    d.stepLine();
-    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepLine));
+    // No VM stack → stepInto/Over open as StepInto and stop on next line.
+    d.stepInto();
+    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepInto));
     loc.line = 11;
     CHECK(d.onScriptLine(loc));
     CHECK(d.isPaused());
     CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
+
+    // Smart step from a script stop → stepOver (depth 0 ⇒ StepInto).
+    d.step();
+    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepInto));
+    loc.line = 12;
+    CHECK(d.onScriptLine(loc));
+    CHECK(d.isPaused());
     d.resume();
+
+    // Frame-level pause → smart step is stepFrame.
+    d.pause(PauseReason::PauseKey);
+    d.step();
+    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepFrame));
+    d.notifyFrameDone();
+    CHECK(d.isPaused());
+    d.resume();
+}
+
+namespace {
+
+struct HookState {
+    Debugger* dbg = nullptr;
+    int       stops = 0;
+    int       lastLine = -1;
+    std::string lastFunc;
+};
+
+void testDebugHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQInteger line,
+                   const SQChar* funcname) {
+    auto* st = static_cast<HookState*>(sq_getforeignptr(v));
+    if (!st || !st->dbg) return;
+    if (type != 'l') return;
+    SourceLoc loc;
+    loc.source   = sourcename ? sourcename : "";
+    loc.line     = static_cast<int>(line);
+    loc.function = funcname ? funcname : "";
+    if (st->dbg->onScriptLine(loc)) {
+        ++st->stops;
+        st->lastLine = loc.line;
+        st->lastFunc = loc.function;
+        // Drive step from the hook without waitWhilePaused.
+        // First stop: stepOver; second stop ends the test script.
+        if (st->stops == 1) {
+            st->dbg->stepOver();
+        } else {
+            st->dbg->resume();
+        }
+    }
+}
+
+}  // namespace
+
+TEST_CASE("devtools.debugger.stepOverSkipsCalleeLines") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.attach(v);
+
+    // Lines roughly:
+    // 1 function callee() { local x = 1 }
+    // 2 function caller() { callee(); local y = 2 }
+    // 3 caller()
+    const char* src =
+        "function callee() {\n"
+        "    local x = 1\n"
+        "}\n"
+        "function caller() {\n"
+        "    callee()\n"
+        "    local y = 2\n"
+        "}\n"
+        "caller()\n";
+
+    HookState st;
+    st.dbg = &d;
+    sq_setforeignptr(v, &st);
+    sq_enabledebuginfo(v, SQTrue);
+    sq_setnativedebughook(v, testDebugHook);
+
+    d.setBreakpoint("buffer", 5);  // callee() call site inside caller
+    // Normalize: compile as named buffer
+    SQRESULT rc = sq_compilebuffer(v, src, static_cast<SQInteger>(std::strlen(src)), _SC("buffer"),
+                                   SQTrue);
+    REQUIRE(SQ_SUCCEEDED(rc));
+    sq_pushroottable(v);
+    REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+    sq_poptop(v);
+
+    // Hit bp on call line, stepOver, then stop on `local y = 2` (not inside callee).
+    CHECK(st.stops >= 2);
+    CHECK_EQ(st.lastLine, 6);
+    CHECK(st.lastFunc.find("caller") != std::string::npos);
+
+    sq_setnativedebughook(v, nullptr);
+    sq_setforeignptr(v, nullptr);
+    d.detach();
+}
+
+TEST_CASE("devtools.debugger.stepIntoEntersCallee") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.attach(v);
+
+    const char* src =
+        "function callee() {\n"
+        "    local x = 1\n"
+        "}\n"
+        "function caller() {\n"
+        "    callee()\n"
+        "    local y = 2\n"
+        "}\n"
+        "caller()\n";
+
+    struct IntoState {
+        Debugger* dbg = nullptr;
+        int       stops = 0;
+        int       lastLine = -1;
+        std::string lastFunc;
+    } st;
+    st.dbg = &d;
+
+    auto hook = [](HSQUIRRELVM vmh, SQInteger type, const SQChar* sourcename, SQInteger line,
+                   const SQChar* funcname) {
+        auto* s = static_cast<IntoState*>(sq_getforeignptr(vmh));
+        if (!s || !s->dbg || type != 'l') return;
+        SourceLoc loc;
+        loc.source   = sourcename ? sourcename : "";
+        loc.line     = static_cast<int>(line);
+        loc.function = funcname ? funcname : "";
+        if (s->dbg->onScriptLine(loc)) {
+            ++s->stops;
+            s->lastLine = loc.line;
+            s->lastFunc = loc.function;
+            if (s->stops == 1)
+                s->dbg->stepInto();
+            else
+                s->dbg->resume();
+        }
+    };
+
+    sq_setforeignptr(v, &st);
+    sq_enabledebuginfo(v, SQTrue);
+    sq_setnativedebughook(v, +hook);
+    d.setBreakpoint("buffer", 5);
+
+    REQUIRE(SQ_SUCCEEDED(
+        sq_compilebuffer(v, src, static_cast<SQInteger>(std::strlen(src)), _SC("buffer"), SQTrue)));
+    sq_pushroottable(v);
+    REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+    sq_poptop(v);
+
+    CHECK(st.stops >= 2);
+    CHECK_EQ(st.lastLine, 2);  // first line body of callee
+    CHECK(st.lastFunc.find("callee") != std::string::npos);
+
+    sq_setnativedebughook(v, nullptr);
+    sq_setforeignptr(v, nullptr);
+    d.detach();
 }
 
 TEST_CASE("devtools.debugger.watchesAndEvaluate") {
@@ -198,5 +363,50 @@ TEST_CASE("devtools.snapshot.markRootAndSkipEngine") {
 
 TEST_CASE("devtools.debugger.normalizeSource") {
     CHECK_EQ(Debugger::normalizeSource("file://./a/b.nut"), std::string("a/b.nut"));
+    CHECK_EQ(Debugger::normalizeSource("file://localhost/Users/x/main.nut"),
+             std::string("/Users/x/main.nut"));
     CHECK_EQ(Debugger::normalizeSource("C:\\x\\y.nut"), std::string("C:/x/y.nut"));
+    CHECK(Debugger::sourcesMatch("/abs/game/main.nut", "main.nut"));
+    CHECK(Debugger::sourcesMatch("/abs/game/scripts/a.nut", "scripts/a.nut"));
+    CHECK(!Debugger::sourcesMatch("foo.nut", "barfoo.nut"));
+}
+
+TEST_CASE("devtools.debugger.clearBreakpointsMatchesAlias") {
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.setBreakpoint("/abs/game/main.nut", 10);
+    // VS Code may clear using the same absolute path, or a relative form.
+    d.clearBreakpoints("main.nut");
+    CHECK(!d.hasBreakpoint("/abs/game/main.nut", 10));
+}
+
+TEST_CASE("devtools.debugger.stepOverSkipsSameLine") {
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+
+    SourceLoc loc;
+    loc.source = "t.nut";
+    loc.line   = 10;
+    d.setBreakpoint("t.nut", 10);
+    CHECK(d.onScriptLine(loc));
+    CHECK(d.isPaused());
+
+    d.stepOver();
+    // Extra _OP_LINE on the same source line must not stop again.
+    CHECK(!d.onScriptLine(loc));
+    CHECK(!d.isPaused());
+    {
+        const int m = static_cast<int>(d.mode());
+        const bool stepping = m == static_cast<int>(RunMode::StepInto) ||
+                              m == static_cast<int>(RunMode::StepOver);
+        CHECK(stepping);
+    }
+
+    loc.line = 11;
+    CHECK(d.onScriptLine(loc));
+    CHECK(d.isPaused());
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
+    d.resume();
 }

@@ -58,6 +58,7 @@ file(GLOB all_test_cpp
   callgraph.cpp
   renderflow.cpp
   debugger.cpp
+  dap.cpp
   main.cpp
 )
 

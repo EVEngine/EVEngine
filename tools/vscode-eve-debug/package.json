@@ -1,9 +1,10 @@
 {
   "name": "eve-debug",
   "displayName": "EVEngine Squirrel Debug",
-  "description": "Debug Adapter for EVEngine Squirrel scripts (breakpoints, watches, pause, snapshots)",
-  "version": "0.1.0",
+  "description": "Debug Adapter for EVEngine Squirrel scripts (breakpoints, continue, step, watches, snapshots)",
+  "version": "0.2.0",
   "publisher": "evengine",
+  "repository": "https://github.com/EVEngine/EVEngine",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -12,14 +13,116 @@
   ],
   "activationEvents": [
     "onDebugResolve:eve",
-    "onCommand:eve-debug.start"
+    "onDebugDynamicConfigurations:eve",
+    "onCommand:eve-debug.start",
+    "onCommand:eve-debug.debugEditorContents"
   ],
   "main": "./extension.js",
+  "scripts": {
+    "test": "node test/extension.test.js"
+  },
   "contributes": {
     "commands": [
       {
         "command": "eve-debug.start",
-        "title": "EVEngine: Start Debug Session"
+        "title": "EVEngine: Start Debug Session",
+        "category": "EVEngine",
+        "enablement": "!inDebugMode"
+      },
+      {
+        "command": "eve-debug.debugEditorContents",
+        "title": "Debug Game Folder",
+        "category": "EVEngine",
+        "enablement": "!inDebugMode",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "eve-debug.continue",
+        "title": "Continue",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.stepOver",
+        "title": "Step Over",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.stepInto",
+        "title": "Step Into",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.stepOut",
+        "title": "Step Out",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.stepFrame",
+        "title": "Step Frame",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.pause",
+        "title": "Pause",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve' && debugState == 'running'"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "eve-debug.debugEditorContents",
+          "when": "resourceLangId == nut || resourceExtname == .nut",
+          "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "eve-debug.debugEditorContents",
+          "when": "resourceLangId == nut || resourceExtname == .nut"
+        },
+        {
+          "command": "eve-debug.continue",
+          "when": "debugType == 'eve'"
+        },
+        {
+          "command": "eve-debug.stepOver",
+          "when": "debugType == 'eve'"
+        },
+        {
+          "command": "eve-debug.stepInto",
+          "when": "debugType == 'eve'"
+        },
+        {
+          "command": "eve-debug.stepOut",
+          "when": "debugType == 'eve'"
+        },
+        {
+          "command": "eve-debug.stepFrame",
+          "when": "debugType == 'eve'"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "eve-debug.continue",
+        "key": "f5",
+        "when": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.stepFrame",
+        "key": "f8",
+        "when": "debugType == 'eve' && debugState == 'stopped'"
+      },
+      {
+        "command": "eve-debug.pause",
+        "key": "f6",
+        "when": "debugType == 'eve' && debugState == 'running'"
       }
     ],
     "breakpoints": [
@@ -52,32 +155,59 @@
         ],
         "configurationAttributes": {
           "launch": {
-            "required": [],
+            "required": [
+              "program"
+            ],
             "properties": {
               "program": {
                 "type": "string",
-                "description": "Game directory passed to `eve run`",
+                "description": "Game directory passed to `eve run` (cwd + mount root).",
                 "default": "${workspaceFolder}"
               },
               "evePath": {
                 "type": "string",
-                "description": "Path to the eve executable",
+                "description": "Path to the eve executable. Empty/`eve` auto-detects common build/ trees.",
                 "default": "eve"
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory for the eve process (defaults to program).",
+                "default": "${workspaceFolder}"
               },
               "port": {
                 "type": "number",
-                "description": "DAP TCP port",
-                "default": 4711
+                "description": "DAP TCP port. 0 = pick a free port.",
+                "default": 0
+              },
+              "host": {
+                "type": "string",
+                "description": "DAP host",
+                "default": "127.0.0.1"
               },
               "args": {
                 "type": "array",
-                "description": "Extra arguments after `eve run`",
-                "default": []
+                "description": "Extra arguments after `eve run --debug --dap-port .`",
+                "default": [],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "trace": {
+                "type": "boolean",
+                "description": "Log DAP messages to the EVEngine Debug output channel.",
+                "default": false
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "description": "Pause before the first eve_update (engine Pause).",
+                "default": false
               }
             }
           },
           "attach": {
-            "required": [],
+            "required": [
+              "port"
+            ],
             "properties": {
               "port": {
                 "type": "number",
@@ -87,6 +217,11 @@
               "host": {
                 "type": "string",
                 "default": "127.0.0.1"
+              },
+              "trace": {
+                "type": "boolean",
+                "description": "Log DAP messages to the EVEngine Debug output channel.",
+                "default": false
               }
             }
           }
@@ -97,19 +232,21 @@
             "request": "launch",
             "name": "EVEngine: Debug game",
             "program": "${workspaceFolder}",
-            "port": 4711
+            "evePath": "eve",
+            "port": 0
           }
         ],
         "configurationSnippets": [
           {
             "label": "EVEngine: Launch",
-            "description": "Launch eve with DAP debugging",
+            "description": "Launch eve with DAP debugging (F5 continue, F10/F11 step)",
             "body": {
               "type": "eve",
               "request": "launch",
               "name": "EVEngine: Debug game",
               "program": "^\"\\${workspaceFolder}\"",
-              "port": 4711
+              "evePath": "eve",
+              "port": 0
             }
           },
           {
@@ -119,6 +256,7 @@
               "type": "eve",
               "request": "attach",
               "name": "EVEngine: Attach",
+              "host": "127.0.0.1",
               "port": 4711
             }
           }

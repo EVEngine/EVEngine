@@ -1,12 +1,15 @@
 #include "devtools/DevTool.hpp"
 
+#include "common/Module.h"
 #include "common/RenderTrace.h"
+#include "event/Event.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
 #include <cstring>
 #include <string>
+#include <vector>
 
 namespace eve::dev {
 namespace {
@@ -120,7 +123,7 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     lastReport_.clear();
 
     Debugger::instance().attach(vm);
-    Debugger::instance().setPump([this]() { poll(); });
+    Debugger::instance().setPump([this]() { pumpWhilePaused(); });
 
     sq_enabledebuginfo(vm_, SQTrue);
     sq_setnativedebughook(vm_, nativeDebugHook);
@@ -156,7 +159,9 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             debugger().pause(PauseReason::PauseKey);
             dap().notifyStopped(PauseReason::PauseKey, debugger().pauseLocation());
         });
-        dev.addFunc("resume", [this]() {
+        // Note: Squirrel reserves `resume` (generators) and `continue` (loops),
+        // so the script binding cannot be named either of those.
+        dev.addFunc("continueRun", [this]() {
             debugger().resume();
             dap().notifyContinued();
         });
@@ -170,8 +175,33 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             }
         });
         dev.addFunc("isPaused", [this]() { return debugger().isPaused(); });
-        dev.addFunc("stepFrame", [this]() { debugger().stepFrame(); });
-        dev.addFunc("stepLine", [this]() { debugger().stepLine(); });
+        dev.addFunc("stepFrame", [this]() {
+            debugger().stepFrame();
+            dap().notifyContinued();
+        });
+        // stepInto / stepOver / stepOut — primary script stepping (DAP F11 / F10 / Shift+F11).
+        dev.addFunc("stepInto", [this]() {
+            debugger().stepInto();
+            dap().notifyContinued();
+        });
+        dev.addFunc("stepOver", [this]() {
+            debugger().stepOver();
+            dap().notifyContinued();
+        });
+        dev.addFunc("stepOut", [this]() {
+            debugger().stepOut();
+            dap().notifyContinued();
+        });
+        // Historical alias for stepInto.
+        dev.addFunc("stepLine", [this]() {
+            debugger().stepLine();
+            dap().notifyContinued();
+        });
+        // Convenience: stepOver when mid-script, else one frame.
+        dev.addFunc("step", [this]() {
+            debugger().step();
+            dap().notifyContinued();
+        });
         dev.addFunc("shouldRunUpdate", [this]() { return debugger().shouldRunUpdate(); });
         dev.addFunc("notifyFrameDone", [this]() {
             const bool wasStep = debugger().mode() == RunMode::StepFrame;
@@ -252,12 +282,75 @@ void DevTool::handleDebugEvent(HSQUIRRELVM vm, int type, const char* source, int
             if (Debugger::instance().onScriptLine(loc)) {
                 dap().notifyStopped(Debugger::instance().lastPauseReason(), loc);
                 Debugger::instance().refreshWatches();
-                Debugger::instance().waitWhilePaused([this]() { poll(); });
+                Debugger::instance().waitWhilePaused([this]() { pumpWhilePaused(); });
             }
             break;
         default:
             break;
     }
+}
+
+void DevTool::handleDebugHotkey(const std::string& key) {
+    if (key.empty()) return;
+    Debugger& dbg = debugger();
+    if (key == "F5") {
+        if (!dbg.isPaused()) return;
+        dbg.resume();
+        dap().notifyContinued();
+        return;
+    }
+    if (key == "F10") {
+        if (!dbg.isPaused()) return;
+        dbg.stepOver();
+        dap().notifyContinued();
+        return;
+    }
+    if (key == "F11") {
+        if (!dbg.isPaused()) return;
+        dbg.stepInto();
+        dap().notifyContinued();
+        return;
+    }
+    if (key == "F8") {
+        if (!dbg.isPaused()) return;
+        dbg.stepFrame();
+        dap().notifyContinued();
+        return;
+    }
+    if (key == "Pause") {
+        // Already inside a script pause — Pause resumes (toggle).
+        if (!dbg.isPaused()) return;
+        dbg.resume();
+        dap().notifyContinued();
+    }
+}
+
+void DevTool::pumpWhilePaused() {
+    poll();  // DAP continue / next / pause
+
+    auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    if (!ev) return;
+    ev->pump();
+
+    // Consume debug hotkeys so F5/F8/F10/F11 work while blocked in the line hook;
+    // re-queue everything else for the main loop after resume.
+    std::vector<eve::event::Message*> keep;
+    while (eve::event::Message* msg = ev->poll()) {
+        bool handled = false;
+        if (msg->name == "keypressed" && !msg->args.empty() &&
+            msg->args[0].type == eve::event::Variant::Type::String) {
+            const std::string& key = msg->args[0].s;
+            if (key == "F5" || key == "F8" || key == "F10" || key == "F11" || key == "Pause") {
+                handleDebugHotkey(key);
+                handled = true;
+            }
+        }
+        if (handled)
+            delete msg;
+        else
+            keep.push_back(msg);
+    }
+    for (eve::event::Message* msg : keep) ev->push(msg);
 }
 
 void DevTool::sampleFrameLocals(HSQUIRRELVM vm, const SourceLoc& loc) {
@@ -310,10 +403,11 @@ SliceResult DevTool::analyzeError(const std::string& errorMessage,
 
     // Prefer last recorded line if stackinfos unavailable.
     if (c.loc.empty() && !graph_.events().empty()) {
-        for (auto it = graph_.events().rbegin(); it != graph_.events().rend(); ++it) {
-            if (it->kind == TraceKind::Line || it->kind == TraceKind::Use ||
-                it->kind == TraceKind::Def) {
-                c.loc = it->loc;
+        const auto ev = graph_.events();
+        for (size_t i = ev.size(); i-- > 0;) {
+            if (ev[i].kind == TraceKind::Line || ev[i].kind == TraceKind::Use ||
+                ev[i].kind == TraceKind::Def) {
+                c.loc = ev[i].loc;
                 break;
             }
         }
@@ -336,9 +430,10 @@ std::string DevTool::formatError(const std::string& errorMessage,
         }
     }
     if (c.loc.empty() && !graph_.events().empty()) {
-        for (auto it = graph_.events().rbegin(); it != graph_.events().rend(); ++it) {
-            if (!it->loc.empty()) {
-                c.loc = it->loc;
+        const auto ev = graph_.events();
+        for (size_t i = ev.size(); i-- > 0;) {
+            if (!ev[i].loc.empty()) {
+                c.loc = ev[i].loc;
                 break;
             }
         }

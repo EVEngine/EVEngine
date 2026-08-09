@@ -3,7 +3,7 @@
 #include "common/Export.h"
 
 #include <cstdint>
-#include <deque>
+#include <iterator>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -75,8 +75,8 @@ struct EVENGINE_API SliceResult {
  * On script failure, use sliceBackward() to recover the statements and
  * definitions that influenced the error site — analogous to a dynamic slicer.
  *
- * Event storage is a ring buffer: when full, each new append drops exactly one
- * oldest event (monotonic ids; lookups ignore ids that have slid out).
+ * Event storage is a fixed ring buffer: when full, the write cursor advances and
+ * overwrites the oldest slot in place (O(1); monotonic ids).
  */
 class EVENGINE_API CallGraph {
 public:
@@ -89,7 +89,7 @@ public:
     void clear();
     void setMaxEvents(size_t n);
     size_t maxEvents() const { return maxEvents_; }
-    size_t eventCount() const { return events_.size(); }
+    size_t eventCount() const { return count_; }
 
     // --- recording ---------------------------------------------------------
     uint32_t onCall(const SourceLoc& loc, const std::string& funcName = {});
@@ -102,7 +102,56 @@ public:
     uint32_t enter(const SourceLoc& loc, const std::string& funcName);
 
     // --- queries -----------------------------------------------------------
-    const std::deque<TraceEvent>& events() const { return events_; }
+    /** Chronological view over the live ring window (oldest → newest). */
+    class EVENGINE_API EventsView {
+    public:
+        class EVENGINE_API const_iterator {
+        public:
+            using iterator_category = std::forward_iterator_tag;
+            using value_type        = TraceEvent;
+            using difference_type   = std::ptrdiff_t;
+            using pointer           = const TraceEvent*;
+            using reference         = const TraceEvent&;
+
+            const_iterator() = default;
+            reference operator*() const { return (*g_)[idx_]; }
+            pointer   operator->() const { return &(*g_)[idx_]; }
+            const_iterator& operator++() {
+                ++idx_;
+                return *this;
+            }
+            const_iterator operator++(int) {
+                const_iterator t = *this;
+                ++(*this);
+                return t;
+            }
+            bool operator==(const const_iterator& o) const {
+                return g_ == o.g_ && idx_ == o.idx_;
+            }
+            bool operator!=(const const_iterator& o) const { return !(*this == o); }
+
+        private:
+            friend class EventsView;
+            const_iterator(const CallGraph* g, size_t idx) : g_(g), idx_(idx) {}
+            const CallGraph* g_   = nullptr;
+            size_t           idx_ = 0;
+        };
+
+        explicit EventsView(const CallGraph* g) : g_(g) {}
+
+        const_iterator begin() const { return const_iterator(g_, 0); }
+        const_iterator end() const { return const_iterator(g_, g_ ? g_->count_ : 0); }
+        bool   empty() const { return !g_ || g_->count_ == 0; }
+        size_t size() const { return g_ ? g_->count_ : 0; }
+        const TraceEvent& operator[](size_t i) const { return (*g_)[i]; }
+        const TraceEvent& front() const { return (*g_)[0]; }
+        const TraceEvent& back() const { return (*g_)[g_->count_ - 1]; }
+
+    private:
+        const CallGraph* g_ = nullptr;
+    };
+
+    EventsView events() const { return EventsView(this); }
     const TraceEvent* event(uint32_t id) const;
 
     std::vector<CallFrame> currentStack() const;
@@ -123,20 +172,35 @@ public:
                                   const SliceCriterion& criterion) const;
 
 private:
+    friend class EventsView;
+    friend class EventsView::const_iterator;
+
     uint32_t append(TraceKind kind, const SourceLoc& loc, const std::string& name);
     void     linkData(uint32_t useEventId, const std::string& var);
-    void     dropOldest();
-    void     ensureCapacity();
+    void     retireSlot(size_t physical);
+    void     ensureRing();
     uint32_t findSeedEvent(const SliceCriterion& c) const;
     void     collectSeeds(const SliceCriterion& c, std::vector<uint32_t>& out) const;
 
+    size_t physicalIndex(size_t chrono) const {
+        return (head_ + chrono) % maxEvents_;
+    }
+    const TraceEvent& operator[](size_t chrono) const {
+        return slots_[physicalIndex(chrono)];
+    }
+    TraceEvent& operator[](size_t chrono) { return slots_[physicalIndex(chrono)]; }
+    TraceEvent& newest() { return (*this)[count_ - 1]; }
+
     size_t maxEvents_ = 100000;
 
-    std::deque<TraceEvent> events_;  // ring buffer window (oldest at front)
-    std::vector<uint32_t>  frameStack_;  // active frame ids (bottom→top)
-    uint32_t               nextFrameId_ = 1;
-    uint32_t               nextEventId_ = 1;
-    uint32_t               lastEventId_ = 0;
+    std::vector<TraceEvent> slots_;  // fixed capacity ring
+    size_t                  head_  = 0;  // chronological oldest
+    size_t                  count_ = 0;
+
+    std::vector<uint32_t> frameStack_;  // active frame ids (bottom→top)
+    uint32_t              nextFrameId_ = 1;
+    uint32_t              nextEventId_ = 1;
+    uint32_t              lastEventId_ = 0;
 
     // last Def event id per (frameId, var)
     std::unordered_map<uint32_t, std::unordered_map<std::string, uint32_t>> lastDef_;
