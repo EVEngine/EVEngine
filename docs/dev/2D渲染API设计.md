@@ -1,12 +1,12 @@
 # 2D 渲染 API 设计
 
-> 状态：第一期实现进行中（Vulkan 清屏/批绘路径 + ECS Renderable2D + RenderSystem 已合入；纹理 Sprite / 脚本绑定仍待做）。  
-> 对外模型：**声明式** Entity + Renderable 组件（非每帧脚本命令式 draw）。  
-> ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（本仓库 `external/ECS.hpp` 子模块）。  
+> 状态：第一期实现进行中（Vulkan 清屏/批绘路径 + ECS Renderable2D + RenderSystem 已合入；纹理 Sprite / 脚本绑定仍待做）。
+> 对外模型：**声明式** Entity + Renderable 组件（非每帧脚本命令式 draw）。
+> ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（本仓库 `external/ECS.hpp` 子模块）。
 > 提交路径：C++ `RenderSystem` 遍历组件 → 内部 Batcher → VKBuilder。
 
-关联文档：[模块设计.md](./模块设计.md)、[依赖项.md](./依赖项.md)、[整体架构.md](./整体架构.md)、[游戏模型设计.md](./游戏模型设计.md)  
-现有骨架：[`src/modules/graphics/`](../src/modules/graphics/)、[`src/engine/common/ECS.h`](../src/engine/common/ECS.h)
+关联文档：[模块设计.md](./模块设计.md)、[依赖项.md](./依赖项.md)、[整体架构.md](./整体架构.md)、[游戏模型设计.md](./游戏模型设计.md)
+现有骨架：[`src/modules/graphics/`](../../src/modules/graphics/)、[`src/engine/common/ECS.h`](../../src/engine/common/ECS.h)
 
 
 ## 1. 目标与非目标
@@ -70,7 +70,7 @@ flowchart TB
 | 组件 | 职责 | 不负责 |
 |------|------|--------|
 | [ECS.hpp](https://github.com/sunxfancy/ECS.hpp) | Entity 继承、Component 存储、`View` 遍历（含子类） | 渲染、Vulkan |
-| `eve` 集成层 [`ECS.h`](../src/engine/common/ECS.h) | include 上游、脚本注册桥、引擎约定 | 另造一套 Component 容器 |
+| `eve` 集成层 [`ECS.h`](../../src/engine/common/ECS.h) | include 上游、脚本注册桥、引擎约定 | 另造一套 Component 容器 |
 | `RenderSystem` | 每帧收集 Renderable，写入 Batcher，调用 present | 游戏玩法逻辑 |
 | `vulkan::Graphics` | 设备 / swapchain / 管线 / present | 实体生命周期 |
 | 内部 Batcher | 按纹理/管线攒批 | 暴露给脚本 |
@@ -111,7 +111,7 @@ for (auto it = view.begin(); it != view.end(); ++it) {
 
 ### 2.3 与旧自研 ECS 的关系
 
-| 旧 [`ECS.h`](../src/engine/common/ECS.h) | 新方案 |
+| 旧 [`ECS.h`](../../src/engine/common/ECS.h) | 新方案 |
 |------------------------------------------|--------|
 | 手写 `Component`/`ComponentRegister` 半成品 | **删除实现，改由 ECS.hpp 提供** |
 | `ComponentManager::expose` 脚本钩子 | 保留为 `eve::exposeECS`，后续对接脚本侧 Entity 声明 |
@@ -153,7 +153,7 @@ function eve::update(dt) {
 
 ### 3.3 内部逃生舱（非脚本热路径）
 
-现有 [`Graphics.h`](../src/modules/graphics/Graphics.h) 中 `rectangle`/`circle`/`draw`/`push` 等：
+现有 [`Graphics.h`](../../src/modules/graphics/Graphics.h) 中 `rectangle`/`circle`/`draw`/`push` 等：
 
 - **保留给 C++**：实现 RenderSystem、DevTools 叠加层、调试用
 - **不作为**游戏脚本每帧主 API
@@ -270,19 +270,19 @@ sequenceDiagram
 
 ## 10. 实现分期（确认设计后再做渲染编码）
 
-1. **ECS 整合（进行中）**：子模块、CMake include、替换旧 ECS、测试用例  
-2. Vulkan 清屏 + Window surface  
-3. Texture upload + Batcher + `RenderSystem` + Sprite/Transform2D  
-4. Camera2D / 清屏色组件化  
-5. Squirrel 实体/组件绑定  
-6. （之后）B 期 TileLayer / 光照等  
+1. **ECS 整合（进行中）**：子模块、CMake include、替换旧 ECS、测试用例
+2. Vulkan 清屏 + Window surface
+3. Texture upload + Batcher + `RenderSystem` + Sprite/Transform2D
+4. Camera2D / 清屏色组件化
+5. Squirrel 实体/组件绑定
+6. （之后）B 期 TileLayer / 光照等
 
 ---
 
 ## 讨论检查清单
 
-1. 第一期 Renderable 是否就用 `Transform2D` + `Sprite` 两个组件（是/否）  
-2. 旧 `Graphics.h` 即时模式是否同意降为内部逃生舱  
-3. 脚本绑定是否可放到 A 期末（先 C++ 跑通）  
+1. 第一期 Renderable 是否就用 `Transform2D` + `Sprite` 两个组件（是/否）
+2. 旧 `Graphics.h` 即时模式是否同意降为内部逃生舱
+3. 脚本绑定是否可放到 A 期末（先 C++ 跑通）
 
 确认后回复「可以开始实现」再继续 Vulkan/Batcher/RenderSystem 编码（ECS 子模块整合可先合入）。

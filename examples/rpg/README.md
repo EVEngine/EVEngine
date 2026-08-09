@@ -2,7 +2,7 @@
 
 用 `eve.RPG()` 模块搭的一个最小可玩 demo：玩家 vs 一波波强度递增的敌人，
 用来演示属性 / 效果 / 状态 / 技能 / 结算五套系统怎么协同工作。完整设计说明见
-[`docs/2026-08-08-rpg-module-design.md`](../../docs/2026-08-08-rpg-module-design.md)。
+[RPG 系统设计](../../docs/dev/RPG系统设计.md)。
 
 ## 运行
 
