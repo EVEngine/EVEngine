@@ -105,6 +105,12 @@
     后期：帧动画 / Skeleton
     代码：`src/modules/animation/`
 
+12b. 风格化渲染 - stylize（`eve.Stylize`）
+    NPR 后处理与网格着色：cartoon / watercolor / ink / pixel
+    `newPass` → `StylePass.apply` / `applyCanvas`；`newMeshShader`（cartoon/ink）
+    CPU：`processImage`（RGBA8）；SPIR-V：`scripts/compile_stylize_shaders.py`
+    代码：`src/modules/stylize/`；设计：`docs/风格化渲染模块设计.md`
+
 13. GPU计算系统 - compute
     并行化和异构计算，封装compute shader的相关操作
 

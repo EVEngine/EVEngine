@@ -4,7 +4,7 @@
 #include "common/RenderTrace.h"
 
 #include <cstdint>
-#include <deque>
+#include <iterator>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -49,6 +49,9 @@ struct EVENGINE_API RenderSliceResult {
  *
  * Models pass nesting + bind→draw resource data-flow so a Graphics exception
  * can be attributed to the active pass and the resources that fed the draw.
+ *
+ * Event storage is a fixed ring buffer: when full, new events overwrite the
+ * oldest slot in place (O(1)).
  */
 class EVENGINE_API RenderFlow : public eve::debug::IRenderTracer {
 public:
@@ -58,9 +61,58 @@ public:
     void clear();
     void setMaxEvents(size_t n);
     size_t maxEvents() const { return maxEvents_; }
-    size_t eventCount() const { return events_.size(); }
+    size_t eventCount() const { return count_; }
 
-    const std::deque<RenderEvent>& events() const { return events_; }
+    /** Chronological view over the live ring window (oldest → newest). */
+    class EVENGINE_API EventsView {
+    public:
+        class EVENGINE_API const_iterator {
+        public:
+            using iterator_category = std::forward_iterator_tag;
+            using value_type        = RenderEvent;
+            using difference_type   = std::ptrdiff_t;
+            using pointer           = const RenderEvent*;
+            using reference         = const RenderEvent&;
+
+            const_iterator() = default;
+            reference operator*() const { return (*g_)[idx_]; }
+            pointer   operator->() const { return &(*g_)[idx_]; }
+            const_iterator& operator++() {
+                ++idx_;
+                return *this;
+            }
+            const_iterator operator++(int) {
+                const_iterator t = *this;
+                ++(*this);
+                return t;
+            }
+            bool operator==(const const_iterator& o) const {
+                return g_ == o.g_ && idx_ == o.idx_;
+            }
+            bool operator!=(const const_iterator& o) const { return !(*this == o); }
+
+        private:
+            friend class EventsView;
+            const_iterator(const RenderFlow* g, size_t idx) : g_(g), idx_(idx) {}
+            const RenderFlow* g_   = nullptr;
+            size_t            idx_ = 0;
+        };
+
+        explicit EventsView(const RenderFlow* g) : g_(g) {}
+
+        const_iterator begin() const { return const_iterator(g_, 0); }
+        const_iterator end() const { return const_iterator(g_, g_ ? g_->count_ : 0); }
+        bool   empty() const { return !g_ || g_->count_ == 0; }
+        size_t size() const { return g_ ? g_->count_ : 0; }
+        const RenderEvent& operator[](size_t i) const { return (*g_)[i]; }
+        const RenderEvent& front() const { return (*g_)[0]; }
+        const RenderEvent& back() const { return (*g_)[g_->count_ - 1]; }
+
+    private:
+        const RenderFlow* g_ = nullptr;
+    };
+
+    EventsView events() const { return EventsView(this); }
     const RenderEvent* event(uint32_t id) const;
 
     // IRenderTracer
@@ -78,16 +130,32 @@ public:
                                   const RenderSliceCriterion& c = {}) const;
 
 private:
+    friend class EventsView;
+    friend class EventsView::const_iterator;
+
     uint32_t append(RenderEventKind kind, const std::string& name, const std::string& detail);
-    void     dropOldest();
-    void     ensureCapacity();
+    void     retireSlot(size_t physical);
+    void     ensureRing();
     uint32_t findSeed(const RenderSliceCriterion& c) const;
 
-    size_t                 maxEvents_   = 50000;
-    uint32_t               nextEventId_ = 1;
-    uint32_t               lastEventId_ = 0;
-    std::deque<RenderEvent> events_;
-    std::vector<uint32_t>  passStack_;  // PassBegin event ids
+    size_t physicalIndex(size_t chrono) const {
+        return (head_ + chrono) % maxEvents_;
+    }
+    const RenderEvent& operator[](size_t chrono) const {
+        return slots_[physicalIndex(chrono)];
+    }
+    RenderEvent& operator[](size_t chrono) { return slots_[physicalIndex(chrono)]; }
+    RenderEvent& newest() { return (*this)[count_ - 1]; }
+
+    size_t maxEvents_   = 50000;
+    uint32_t nextEventId_ = 1;
+    uint32_t lastEventId_ = 0;
+
+    std::vector<RenderEvent> slots_;
+    size_t                   head_  = 0;
+    size_t                   count_ = 0;
+
+    std::vector<uint32_t> passStack_;  // PassBegin event ids
 
     // last Bind event id for (kind, name) — resource reaching-def for draws
     std::unordered_map<std::string, uint32_t> lastBind_;

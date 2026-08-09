@@ -7,10 +7,12 @@
 namespace eve::dev {
 
 RenderFlow::RenderFlow() = default;
+
 RenderFlow::~RenderFlow() = default;
 
 void RenderFlow::clear() {
-    events_.clear();
+    head_  = 0;
+    count_ = 0;
     passStack_.clear();
     nextEventId_ = 1;
     lastEventId_ = 0;
@@ -18,50 +20,77 @@ void RenderFlow::clear() {
     dataDeps_.clear();
 }
 
+void RenderFlow::ensureRing() {
+    if (slots_.size() != maxEvents_) slots_.resize(maxEvents_);
+}
+
 void RenderFlow::setMaxEvents(size_t n) {
-    maxEvents_ = n < 16 ? 16 : n;
-    while (events_.size() > maxEvents_) dropOldest();
+    n = n < 16 ? 16 : n;
+    if (n == maxEvents_ && slots_.size() == n) return;
+
+    const size_t keep = count_ < n ? count_ : n;
+    const size_t drop = count_ - keep;
+    std::vector<RenderEvent> neu(n);
+    for (size_t i = 0; i < drop; ++i) retireSlot(physicalIndex(i));
+    for (size_t i = 0; i < keep; ++i) neu[i] = (*this)[drop + i];
+
+    slots_     = std::move(neu);
+    head_      = 0;
+    count_     = keep;
+    maxEvents_ = n;
 }
 
-void RenderFlow::dropOldest() {
-    if (events_.empty()) return;
-    const RenderEvent old = events_.front();
-    events_.pop_front();
+void RenderFlow::retireSlot(size_t physical) {
+    RenderEvent& old = slots_[physical];
+    if (old.id == 0) return;
+
     dataDeps_.erase(old.id);
-    for (auto it = lastBind_.begin(); it != lastBind_.end();) {
-        if (it->second == old.id)
-            it = lastBind_.erase(it);
-        else
-            ++it;
-    }
-    // passStack_ is live nesting; leave it. Dangling ids ignored via event().
-}
 
-void RenderFlow::ensureCapacity() {
-    while (events_.size() >= maxEvents_) dropOldest();
+    if (old.kind == RenderEventKind::Bind) {
+        const std::string k = old.name + "|" + old.detail;
+        auto it = lastBind_.find(k);
+        if (it != lastBind_.end() && it->second == old.id) lastBind_.erase(it);
+        if (!old.detail.empty()) {
+            const std::string star = std::string("*|") + old.detail;
+            auto sit = lastBind_.find(star);
+            if (sit != lastBind_.end() && sit->second == old.id) lastBind_.erase(sit);
+        }
+    }
+
+    old = RenderEvent{};
 }
 
 uint32_t RenderFlow::append(RenderEventKind kind, const std::string& name,
                             const std::string& detail) {
-    ensureCapacity();
-    RenderEvent e;
-    e.id       = nextEventId_++;
-    e.kind     = kind;
-    e.name     = name;
-    e.detail   = detail;
-    e.parentId = lastEventId_;
-    e.passId   = passStack_.empty() ? 0 : passStack_.back();
-    events_.push_back(e);
-    lastEventId_ = e.id;
+    ensureRing();
+
+    size_t phys;
+    if (count_ < maxEvents_) {
+        phys = physicalIndex(count_);
+        ++count_;
+    } else {
+        phys = head_;
+        retireSlot(phys);
+        head_ = (head_ + 1) % maxEvents_;
+    }
+
+    RenderEvent& e = slots_[phys];
+    e.id           = nextEventId_++;
+    e.kind         = kind;
+    e.name         = name;
+    e.detail       = detail;
+    e.parentId     = lastEventId_;
+    e.passId       = passStack_.empty() ? 0 : passStack_.back();
+    lastEventId_   = e.id;
     return e.id;
 }
 
 const RenderEvent* RenderFlow::event(uint32_t id) const {
-    if (id == 0 || events_.empty()) return nullptr;
-    const uint32_t first = events_.front().id;
-    const uint32_t last  = events_.back().id;
+    if (id == 0 || count_ == 0) return nullptr;
+    const uint32_t first = (*this)[0].id;
+    const uint32_t last  = (*this)[count_ - 1].id;
     if (id < first || id > last) return nullptr;
-    return &events_[static_cast<size_t>(id - first)];
+    return &(*this)[static_cast<size_t>(id - first)];
 }
 
 void RenderFlow::frameBegin() { append(RenderEventKind::FrameBegin, "frame", ""); }
@@ -71,7 +100,7 @@ void RenderFlow::frameEnd() { append(RenderEventKind::FrameEnd, "frame", ""); }
 void RenderFlow::passBegin(const char* name) {
     const uint32_t id = append(RenderEventKind::PassBegin, name ? name : "", "");
     passStack_.push_back(id);
-    events_.back().passId = id;
+    newest().passId = id;
 }
 
 void RenderFlow::passEnd(const char* name) {
@@ -95,13 +124,13 @@ void RenderFlow::draw(const char* api, const char* detail) {
     const uint32_t id = append(RenderEventKind::Draw, api ? api : "draw", detail ? detail : "");
     // Data-flow: draw depends on enclosing pass + any binds whose name appears in detail,
     // and the most recent binds of common kinds (texture/shader/mesh/font).
-    if (events_.back().passId) dataDeps_[id].push_back(events_.back().passId);
+    if (newest().passId) dataDeps_[id].push_back(newest().passId);
 
     auto linkRecent = [&](const char* kind) {
-        // Find most recent bind of this kind still in the window / lastBind_
         uint32_t best = 0;
+        const std::string prefix = std::string(kind) + "|";
         for (const auto& kv : lastBind_) {
-            if (kv.first.rfind(std::string(kind) + "|", 0) == 0) {
+            if (kv.first.rfind(prefix, 0) == 0) {
                 if (kv.second > best && event(kv.second)) best = kv.second;
             }
         }
@@ -121,25 +150,26 @@ void RenderFlow::draw(const char* api, const char* detail) {
 
 void RenderFlow::error(const char* message) {
     const uint32_t id = append(RenderEventKind::Error, "error", message ? message : "");
-    if (events_.back().passId) dataDeps_[id].push_back(events_.back().passId);
+    if (newest().passId) dataDeps_[id].push_back(newest().passId);
     // Error depends on the immediately preceding draw/bind in the same pass.
-    for (auto it = events_.rbegin(); it != events_.rend(); ++it) {
-        if (it->id == id) continue;
-        if (it->kind == RenderEventKind::Draw || it->kind == RenderEventKind::Bind ||
-            it->kind == RenderEventKind::Target) {
-            dataDeps_[id].push_back(it->id);
+    for (size_t i = count_; i-- > 0;) {
+        const RenderEvent& e = (*this)[i];
+        if (e.id == id) continue;
+        if (e.kind == RenderEventKind::Draw || e.kind == RenderEventKind::Bind ||
+            e.kind == RenderEventKind::Target) {
+            dataDeps_[id].push_back(e.id);
             break;
         }
-        if (it->kind == RenderEventKind::PassBegin) break;
+        if (e.kind == RenderEventKind::PassBegin) break;
     }
 }
 
 uint32_t RenderFlow::findSeed(const RenderSliceCriterion& c) const {
     if (c.eventId && event(c.eventId)) return c.eventId;
-    for (auto it = events_.rbegin(); it != events_.rend(); ++it) {
-        if (it->kind == RenderEventKind::Error) return it->id;
+    for (size_t i = count_; i-- > 0;) {
+        if ((*this)[i].kind == RenderEventKind::Error) return (*this)[i].id;
     }
-    return events_.empty() ? 0 : events_.back().id;
+    return count_ == 0 ? 0 : (*this)[count_ - 1].id;
 }
 
 RenderSliceResult RenderFlow::sliceBackward(const RenderSliceCriterion& c) const {
@@ -183,7 +213,8 @@ RenderSliceResult RenderFlow::sliceBackward(const RenderSliceCriterion& c) const
     }
 
     // Reconstruct pass nesting at seed from retained window.
-    for (const auto& e : events_) {
+    for (size_t i = 0; i < count_; ++i) {
+        const RenderEvent& e = (*this)[i];
         if (e.id > seed) break;
         if (e.kind == RenderEventKind::PassBegin) result.passes.push_back(e.name);
         else if (e.kind == RenderEventKind::PassEnd && !result.passes.empty())

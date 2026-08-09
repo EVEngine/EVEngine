@@ -27,8 +27,11 @@
 | 能力 | 说明 |
 |------|------|
 | Pause 键 | 帧级暂停：跳过 `eve_update`，仍渲染 / 泵事件（`load.nut`） |
-| F10 | 暂停时单步一帧 |
-| F5 / F9 | 保存 / 加载脚本状态快照 `eve_snapshot.json` |
+| F5 | 暂停时继续执行到下一断点（`continueRun`） |
+| F10 | 单步跳过：下一条语句，不进入函数（`stepOver`） |
+| F11 | 单步进入：下一条语句，进入函数（`stepInto`） |
+| F8 | 单步一帧（`stepFrame`，次要） |
+| F6 / F7 | 保存 / 加载脚本状态快照 `eve_snapshot.json` |
 | 断点 | `Debugger::setBreakpoint` 或 VS Code；命中时在 line hook 内阻塞 |
 | Watch | `addWatch` / DAP `evaluate`；读 local 或 roottable（含 `a.b`） |
 | Snapshot | JSON 序列化标记根（或 `gameState` / `eve_state` / 启发式非引擎槽） |
@@ -47,6 +50,12 @@
 
 ```squirrel
 eve.dev.togglePause();
+eve.dev.continueRun();     // F5 — continue to next breakpoint (`resume`/`continue` are Squirrel keywords)
+eve.dev.stepOver();        // F10 — next statement, skip calls
+eve.dev.stepInto();        // F11 — next statement, enter calls
+eve.dev.stepOut();         // run until caller (DAP Shift+F11)
+eve.dev.stepFrame();       // F8 — one game frame
+eve.dev.step();            // convenience: stepOver mid-script, else one frame
 eve.dev.setBreakpoint("main.nut", 42);
 eve.dev.addWatch("score");
 eve.dev.markStateRoot("gameState");

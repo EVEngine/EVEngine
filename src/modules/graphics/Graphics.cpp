@@ -148,6 +148,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
     cls.addFunc("newTexture", &Graphics::newTextureFromImageData);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
+    cls.addFunc("newMeshCylinder", &Graphics::newMeshCylinder);
     cls.addFunc("newShader",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShader));
     cls.addFunc("newMeshShader",

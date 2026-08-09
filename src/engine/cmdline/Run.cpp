@@ -103,10 +103,16 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort) {
             dt.exposeScriptApi(vm);
             if (dapPort > 0) {
                 const int bound = dt.startDap(static_cast<uint16_t>(dapPort));
-                if (bound > 0)
+                if (bound > 0) {
                     cerr << "DAP listening on 127.0.0.1:" << bound << endl;
-                else
+                    // Wait for the IDE to finish setBreakpoints / configurationDone
+                    // before loading scripts, otherwise early breakpoints are missed
+                    // and stack paths are not registered yet.
+                    if (!dt.dap().waitUntilConfigured(15000))
+                        cerr << "DAP: timed out waiting for client; starting anyway" << endl;
+                } else {
                     cerr << "Failed to start DAP server on port " << dapPort << endl;
+                }
             }
         }
 #else
@@ -119,7 +125,8 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort) {
             eve.set("demoScript", std::string(demo_content ? demo_content : ""));
             eve.set("asyncScript", std::string(async_content ? async_content : ""));
         }
-        ssq::Script script = vm.compileSource(root.c_str());
+        // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
+        ssq::Script script = vm.compileSource(root.c_str(), "load.nut");
         vm.run(script);
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
         if (debug) eve::dev::DevTool::instance().detach();

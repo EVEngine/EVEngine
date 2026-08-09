@@ -478,6 +478,10 @@ run/macosx:
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run; \
 	else build/macosx/src/engine/eve; fi
 
+tools/debug:
+	cd tools/vscode-eve-debug && npx @vscode/vsce package 
+	cursor --install-extension ./tools/vscode-eve-debug/*.vsix
+
 # Target-platform SDK install (independent prefix per plat; for publishing games TO that plat).
 # Release: make sdk/macosx  → builds build/macosx then dist/eve-sdk/macosx
 # Debug:   make sdk/macosx-debug
