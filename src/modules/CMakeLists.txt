@@ -74,6 +74,8 @@ create_module(EVThread thread)
 create_module(EVPlugins plugins)
 create_module(EVRPG rpg)
 target_compile_definitions(EVRPG PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+create_module(EVAvatar avatar)
+create_module(EVDialogue dialogue)
 create_module(EVProcgen procgen)
 # Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL), then DTL.
 # BEFORE must precede the visibility keyword so -I dtl_compat wins over the submodule.

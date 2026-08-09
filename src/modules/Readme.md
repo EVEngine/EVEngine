@@ -98,6 +98,18 @@
     场景即函数（props / children 插槽），非 Prefab
     代码：`src/modules/scene/`
 
+11c. Avatar 分层渲染 - avatar（`eve.Avatar`）
+    Image 图层叠加 / Live2D 可插拔后端 / VRoid（Model3D + Renderable3D）
+    `newImageAvatar` / `newLive2DAvatar` / `newVroidAvatar`；`update` / `sync` / `render`
+    设计：`docs/对话与Avatar模块设计.md`
+    代码：`src/modules/avatar/`
+
+11d. 对话框及脚本 - dialogue（`eve.Dialogue`）
+    VN 舞台：角色、打字机、选项、槽位；剧情仍用 Squirrel（推荐 generator）
+    `say` / `narrate` / `presentChoices` / `syncStage` / `bindAvatar`
+    设计：`docs/对话与Avatar模块设计.md`；示例：`examples/dialogue/`
+    代码：`src/modules/dialogue/`
+
 12. 动画系统 - animation（`eve.Animation`）
     属性补间 Tween：`newTween(duration)` → `setFrom` / `setTo` / `setDelta`（相对差值）
     缓动 kind 与 Math.ease 一致；`setDelay` / `setRepeat` / `setYoyo`；角度 `set*Angle`
