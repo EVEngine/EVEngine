@@ -15,6 +15,7 @@ file(GLOB all_test_cpp
   joystick_cpp.cpp
   touch.cpp
   network.cpp
+  database.cpp
   RenderSystem.cpp
   RenderSystem3D.cpp
   Quad.cpp
@@ -145,21 +146,21 @@ endif()
 
 if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     set(ThirdParty ${ThirdParty} simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d
-        PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
+        PocoDataSQLitemdd PocoDatamdd PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
         ${SystemLibraries})
 else()
     if(WIN32)
         set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2
-            PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
+            PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
             ${SystemLibraries})
     else()
         set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
-            PocoNet PocoXML PocoJSON PocoFoundation
+            PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
             ${SystemLibraries})
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVIK EVAnimation EVTensor EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread EVRPG EVAvatar EVDialogue EVProcgen EVStylize)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVIK EVAnimation EVTensor EVNetwork EVDatabase EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread EVRPG EVAvatar EVDialogue EVProcgen EVStylize)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)
