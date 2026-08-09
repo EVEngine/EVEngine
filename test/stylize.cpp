@@ -15,7 +15,6 @@
 #include "window/Window.h"
 
 using eve::graphics::Canvas;
-using eve::graphics::Color;
 using eve::graphics::Graphics;
 using eve::graphics::Shader;
 using eve::image::ImageData;
@@ -72,7 +71,7 @@ TEST_CASE("stylize.processImage.cpuAllStyles") {
 
     for (const char *style : {"cartoon", "watercolor", "ink", "pixel"}) {
         std::unique_ptr<ImageData> out(mod->processImage(src.get(), style));
-        REQUIRE(out != nullptr);
+        REQUIRE(out.get() != nullptr);
         CHECK_EQ(out->getWidth(), 32);
         CHECK_EQ(out->getHeight(), 24);
         CHECK_EQ(out->getFormat(), std::string("RGBA8"));
@@ -104,7 +103,7 @@ TEST_CASE("stylize.processImage.inkIsDesaturated") {
     auto *mod = Stylize::create();
     std::unique_ptr<ImageData> src(makeGradient(48, 32));
     std::unique_ptr<ImageData> ink(mod->processImage(src.get(), "ink"));
-    REQUIRE(ink != nullptr);
+    REQUIRE(ink.get() != nullptr);
     // Ink wash should collapse toward gray/sepia paper — chroma reduced.
     int nearGray = 0;
     for (int y = 0; y < 32; ++y) {
@@ -122,7 +121,7 @@ TEST_CASE("stylize.processImage.pixelQuantizes") {
     auto *mod = Stylize::create();
     std::unique_ptr<ImageData> src(makeGradient(64, 32));
     std::unique_ptr<ImageData> pix(mod->processImage(src.get(), "pixel"));
-    REQUIRE(pix != nullptr);
+    REQUIRE(pix.get() != nullptr);
     // Neighboring pixels inside a 4x4 block should match (UV snap).
     Colorf a = pix->getPixel(0, 0);
     Colorf b = pix->getPixel(1, 1);
@@ -161,11 +160,11 @@ TEST_CASE("stylize.gpu.postPassAndMeshShader") {
         Canvas *rt = gfx->newCanvas(128, 96);
         REQUIRE(rt != nullptr);
         gfx->setCanvas(rt);
-        gfx->clear(Color(0.1f, 0.1f, 0.1f, 1.f), std::nullopt, std::nullopt);
+        gfx->clear(::Color(0.1f, 0.1f, 0.1f, 1.f), std::nullopt, std::nullopt);
         pass->apply(gfx, tex);
         gfx->setCanvas();
 
-        Color p = rt->getPixel(64, 48);
+        ::Color p = rt->getPixel(64, 48);
         CHECK_GT(p.a, 0.5f);
         delete pass;
     }
