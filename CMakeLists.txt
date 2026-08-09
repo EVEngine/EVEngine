@@ -492,6 +492,16 @@ function(load_third_party)
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
     ensure_third_party_checkout()
+    # EVEngine's database module uses POCO Data and its bundled SQLite connector.
+    # The third-party aggregate disables these by default to reduce its footprint;
+    # enable the two targets in the checked-out aggregate before configuring it.
+    set(_eve_tp_cmake "${CMAKE_CURRENT_SOURCE_DIR}/third-party/CMakeLists.txt")
+    file(READ "${_eve_tp_cmake}" _eve_tp_contents)
+    string(REPLACE "set(ENABLE_DATA OFF CACHE BOOL \"\" FORCE)"
+                   "set(ENABLE_DATA ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
+    string(REPLACE "set(ENABLE_DATA_SQLITE OFF CACHE BOOL \"\" FORCE)"
+                   "set(ENABLE_DATA_SQLITE ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
+    file(WRITE "${_eve_tp_cmake}" "${_eve_tp_contents}")
     check_third_party_project(third-party "https://github.com/EVEngine/third-party")
 
     ADD_CUSTOM_TARGET(deps DEPENDS third-party)
