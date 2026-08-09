@@ -97,14 +97,14 @@ if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
         medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd physfsmdd lz4mdd Box2Dmdd
         vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd
         freetyped
-        PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
+        PocoDataSQLitemdd PocoDatamdd PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
         ${SystemLibraries})
 elseif(WIN32)
     set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2 SDL2main
         medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic physfsmd lz4md Box2Dmd
         vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md
         freetypemd
-        PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
+        PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
         ${SystemLibraries})
 elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     # SDL2 is shared (loaded by Java); other deps are static where possible.
@@ -114,28 +114,28 @@ elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
         vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
-        PocoNet PocoXML PocoJSON PocoFoundation
+        PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
         ${SystemLibraries})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS OR APPLE)
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
         medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
         vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
-        PocoNet PocoXML PocoJSON PocoFoundation
+        PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
         ${SystemLibraries})
 else()
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
         medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
         vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
-        PocoNet PocoXML PocoJSON PocoFoundation
+        PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
         ${SystemLibraries})
 endif()
 
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVProcgen EVStylize)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVProcgen EVStylize)
 else()
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVProcgen EVStylize)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVProcgen EVStylize)
 endif()
 
 if(EVENGINE_BUILD_DEMO)

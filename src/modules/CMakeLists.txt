@@ -20,6 +20,8 @@ target_compile_definitions(EVData PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVImage image)
 create_module(EVNetwork network)
 target_compile_definitions(EVNetwork PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+create_module(EVDatabase database)
+target_compile_definitions(EVDatabase PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVSound sound)
 target_include_directories(EVSound PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/sound/include_shim
