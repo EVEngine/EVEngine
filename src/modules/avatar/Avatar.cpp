@@ -156,7 +156,10 @@ void Avatar::expose(ssq::Class &cls) {
     cls.addFunc("sync", &Avatar::sync);
     cls.addFunc("render", &Avatar::render);
     cls.addFunc("getAvatarCount", &Avatar::getAvatarCount);
-    cls.addFunc("getLive2DBackendName", &Avatar::getLive2DBackendName);
+    // Static method: wrap so SSQ gets an instance-method signature (raw static
+    // function pointers make Class::addFunc recurse until stack overflow).
+    cls.addFunc("getLive2DBackendName",
+                [](Avatar *) -> std::string { return Avatar::getLive2DBackendName(); });
 }
 
 }  // namespace eve::avatar
