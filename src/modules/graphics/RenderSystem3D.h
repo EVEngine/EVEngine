@@ -26,6 +26,9 @@ public:
         float envIntensity = 1.f;
         bool active = false;
         Camera3D *entity = nullptr;
+        // Last screenToRay() result (origin = eye, dir normalized).
+        float screenRayOx = 0.f, screenRayOy = 0.f, screenRayOz = 0.f;
+        float screenRayDx = 0.f, screenRayDy = 0.f, screenRayDz = -1.f;
     };
 
     COMPONENT(Data, data)
@@ -47,6 +50,19 @@ public:
     /** Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */
     void setEnvMap(Texture *cube);
     void setEnvIntensity(float intensity);
+
+    /**
+     * Build a world-space picking ray from a screen pixel.
+     * Stores origin (camera eye) and normalized direction; read via getScreenRay*.
+     * viewW/viewH must match the drawable used for rendering.
+     */
+    void  screenToRay(float screenX, float screenY, float viewW, float viewH);
+    float getScreenRayOriginX();
+    float getScreenRayOriginY();
+    float getScreenRayOriginZ();
+    float getScreenRayDirX();
+    float getScreenRayDirY();
+    float getScreenRayDirZ();
 };
 
 class Renderable3D : public ecs::Entity {

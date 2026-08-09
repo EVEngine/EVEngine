@@ -251,4 +251,86 @@ void World::drawDebug(graphics::Graphics *gfx) {
     draw_->end();
 }
 
+int World::rayCast(float x1, float y1, float x2, float y2) {
+    rayHitBodyId_   = -1;
+    rayHitX_        = 0.f;
+    rayHitY_        = 0.f;
+    rayHitNormalX_  = 0.f;
+    rayHitNormalY_  = 0.f;
+    rayHitFraction_ = 0.f;
+    if (!world_ || destroyed_) return -1;
+
+    struct Closest : public b2RayCastCallback {
+        World *world = nullptr;
+        float  best  = 1.f;
+        Body  *hit   = nullptr;
+        b2Vec2 point{};
+        b2Vec2 normal{};
+
+        float32 ReportFixture(b2Fixture *fixture, const b2Vec2 &pointIn, const b2Vec2 &normalIn,
+                              float32 fraction) override {
+            Body *b = bodyFromFixture(fixture);
+            if (!b) return -1.f;
+            if (fraction < best) {
+                best   = fraction;
+                hit    = b;
+                point  = pointIn;
+                normal = normalIn;
+            }
+            return fraction;
+        }
+    } cb;
+    cb.world = this;
+
+    b2Vec2 p1(toMeters(x1), toMeters(y1));
+    b2Vec2 p2(toMeters(x2), toMeters(y2));
+    world_->RayCast(&cb, p1, p2);
+
+    if (!cb.hit) return -1;
+    rayHitBodyId_   = cb.hit->getId();
+    rayHitX_        = toPixels(cb.point.x);
+    rayHitY_        = toPixels(cb.point.y);
+    rayHitNormalX_  = cb.normal.x;
+    rayHitNormalY_  = cb.normal.y;
+    rayHitFraction_ = cb.best;
+    return rayHitBodyId_;
+}
+
+int World::queryAABB(float x, float y, float w, float h) {
+    queryBodyIds_.clear();
+    if (!world_ || destroyed_) return 0;
+
+    struct Collector : public b2QueryCallback {
+        World             *world = nullptr;
+        std::vector<int>  *ids   = nullptr;
+        std::unordered_set<int> seen;
+
+        bool ReportFixture(b2Fixture *fixture) override {
+            Body *b = bodyFromFixture(fixture);
+            if (!b) return true;
+            int id = b->getId();
+            if (seen.insert(id).second) ids->push_back(id);
+            return true;
+        }
+    } cb;
+    cb.world = this;
+    cb.ids   = &queryBodyIds_;
+
+    b2AABB aabb;
+    float x0 = toMeters(x);
+    float y0 = toMeters(y);
+    float x1 = toMeters(x + w);
+    float y1 = toMeters(y + h);
+    aabb.lowerBound = b2Vec2(std::min(x0, x1), std::min(y0, y1));
+    aabb.upperBound = b2Vec2(std::max(x0, x1), std::max(y0, y1));
+    world_->QueryAABB(&cb, aabb);
+    return static_cast<int>(queryBodyIds_.size());
+}
+
+int World::getQueryBodyId(int index) const {
+    if (index < 0 || index >= static_cast<int>(queryBodyIds_.size()))
+        throw eve::Exception("World.getQueryBodyId: index out of range");
+    return queryBodyIds_[static_cast<size_t>(index)];
+}
+
 }  // namespace eve::physics

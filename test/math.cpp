@@ -40,6 +40,46 @@ TEST_CASE("math.geometry.vec2ops") {
     CHECK(!m->pointInRect(5.f, 5.f, 0.f, 0.f, 2.f, 2.f));
 }
 
+TEST_CASE("math.geometry.pickAndOverlap2d") {
+    auto *m = Math::create();
+    CHECK(m->circlesOverlap(0.f, 0.f, 1.f, 1.5f, 0.f, 1.f));
+    CHECK(!m->circlesOverlap(0.f, 0.f, 1.f, 3.f, 0.f, 1.f));
+    CHECK(m->rectsOverlap(0.f, 0.f, 2.f, 2.f, 1.f, 1.f, 2.f, 2.f));
+    CHECK(!m->rectsOverlap(0.f, 0.f, 1.f, 1.f, 2.f, 2.f, 1.f, 1.f));
+    CHECK(m->circleRectOverlap(0.f, 0.f, 1.f, 0.5f, -0.5f, 2.f, 1.f));
+    CHECK(m->segmentsIntersect(0.f, 0.f, 2.f, 2.f, 0.f, 2.f, 2.f, 0.f));
+    CHECK(!m->segmentsIntersect(0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f));
+
+    float t = m->raycastCircle2(0.f, 0.f, 1.f, 0.f, 5.f, 0.f, 1.f);
+    CHECK(std::fabs(t - 4.f) < 1e-4f);
+    CHECK(m->raycastCircle2(0.f, 0.f, -1.f, 0.f, 5.f, 0.f, 1.f) < 0.f);
+
+    t = m->raycastRect2(0.f, 0.f, 1.f, 0.f, 2.f, -1.f, 2.f, 2.f);
+    CHECK(std::fabs(t - 2.f) < 1e-4f);
+    CHECK(std::fabs(m->closestPointOnSegment2X(1.f, 1.f, 0.f, 0.f, 2.f, 0.f) - 1.f) < 1e-5f);
+    CHECK(std::fabs(m->closestPointOnSegment2Y(1.f, 1.f, 0.f, 0.f, 2.f, 0.f)) < 1e-5f);
+}
+
+TEST_CASE("math.geometry.pickAndOverlap3d") {
+    auto *m = Math::create();
+    CHECK(m->pointInSphere(0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f));
+    CHECK(!m->pointInSphere(2.f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f));
+    CHECK(m->pointInBox(0.f, 0.f, 0.f, -1.f, -1.f, -1.f, 1.f, 1.f, 1.f));
+    CHECK(m->spheresOverlap(0.f, 0.f, 0.f, 1.f, 1.5f, 0.f, 0.f, 1.f));
+    CHECK(m->boxesOverlap(0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 0.5f, 0.5f, 0.5f, 2.f, 2.f, 2.f));
+    CHECK(!m->boxesOverlap(0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 2.f, 2.f, 2.f, 3.f, 3.f, 3.f));
+
+    float t = m->raycastSphere(0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 5.f, 0.f, 0.f, 1.f);
+    CHECK(std::fabs(t - 4.f) < 1e-4f);
+    t = m->raycastBox(0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 2.f, -1.f, -1.f, 4.f, 1.f, 1.f);
+    CHECK(std::fabs(t - 2.f) < 1e-4f);
+    t = m->raycastPlane(0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 5.f, 0.f, 0.f, 1.f);
+    CHECK(std::fabs(t - 5.f) < 1e-4f);
+    CHECK(m->raycastPlane(0.f, 0.f, 0.f, 0.f, 0.f, -1.f, 0.f, 0.f, 5.f, 0.f, 0.f, 1.f) < 0.f);
+    CHECK(std::fabs(m->closestPointOnSegment3Z(0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 2.f) - 1.f) <
+          1e-5f);
+}
+
 TEST_CASE("math.vec2.vec3.classes") {
     auto *m = Math::create();
     std::unique_ptr<Vec2> a(m->newVec2(3.f, 4.f));

@@ -369,3 +369,24 @@ TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
     cam->data()->active = false;
     win->close();
 }
+
+TEST_CASE("Camera2D.screenWorldPick") {
+    auto *cam = Camera2D::createCamera();
+    cam->setPosition(100.f, 50.f);
+    cam->setZoom(2.f);
+    CHECK(std::fabs(cam->getX() - 100.f) < 1e-5f);
+    CHECK(std::fabs(cam->getZoom() - 2.f) < 1e-5f);
+
+    const float viewW = 200.f, viewH = 100.f;
+    // Screen center maps to camera look-at.
+    CHECK(std::fabs(cam->screenToWorldX(100.f, 50.f, viewW, viewH) - 100.f) < 1e-4f);
+    CHECK(std::fabs(cam->screenToWorldY(100.f, 50.f, viewW, viewH) - 50.f) < 1e-4f);
+
+    float sx = cam->worldToScreenX(100.f, 50.f, viewW, viewH);
+    float sy = cam->worldToScreenY(100.f, 50.f, viewW, viewH);
+    CHECK(std::fabs(sx - 100.f) < 1e-4f);
+    CHECK(std::fabs(sy - 50.f) < 1e-4f);
+
+    float wx = cam->screenToWorldX(120.f, 50.f, viewW, viewH);
+    CHECK(std::fabs(wx - 110.f) < 1e-4f);  // (120-100)/2 + 100
+}

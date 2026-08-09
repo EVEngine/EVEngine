@@ -43,6 +43,22 @@ public:
     }
 
     void setAmbient(float r, float g, float b);
+
+    /** World-space look-at center and zoom (1 = identity). */
+    void  setPosition(float x, float y);
+    float getX();
+    float getY();
+    void  setZoom(float zoom);
+    float getZoom();
+
+    /**
+     * Convert screen pixel (origin top-left of viewport) to world coordinates.
+     * viewW/viewH are the current drawable size (e.g. gfx.getWidth/Height).
+     */
+    float screenToWorldX(float screenX, float screenY, float viewW, float viewH);
+    float screenToWorldY(float screenX, float screenY, float viewW, float viewH);
+    float worldToScreenX(float worldX, float worldY, float viewW, float viewH);
+    float worldToScreenY(float worldX, float worldY, float viewW, float viewH);
 };
 
 /** Default renderable entity for declarative 2D sprites / solid quads. */

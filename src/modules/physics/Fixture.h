@@ -29,6 +29,9 @@ public:
 
     Body *getBody() { return body_; }
 
+    /** Pixel-space point-in-fixture test (uses World meter). */
+    bool testPoint(float x, float y) const;
+
     void destroy();
 
     b2Fixture *raw() { return fixture_; }
