@@ -120,14 +120,28 @@ public:
     /** Pixel-space atlas rect. Squirrel owns the Quad*. */
     Quad *newQuad(int x, int y, int w, int h);
 
-    /** Upload triangulated mesh from Assimp (pos/normal/uv + indices). Owned by Graphics. */
+    /** Upload triangulated mesh from Assimp (pos/normal/uv + indices). Owned by Graphics.
+     *  Also captures Assimp morph targets (aiAnimMesh) into Mesh CPU morph data when present. */
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
+
+    /**
+     * If mesh morph weights are dirty, bake blended positions and upload to the GPU VBO.
+     * Returns true when an upload happened. No-op when no morph data / not dirty / null.
+     */
+    virtual bool bakeMeshMorph(Mesh *mesh) = 0;
 
     /**
      * Procedural UV sphere (radius 1, Y-up). Owned by Graphics.
      * slices = longitude divisions, stacks = latitude divisions.
      */
     virtual Mesh *newMeshSphere(int slices = 32, int stacks = 16) = 0;
+
+    /**
+     * Procedural Y-up cylinder (radius 1, height 2 centered at origin).
+     * slices = longitude divisions; stacks = height bands; caps = include end discs.
+     * Owned by Graphics.
+     */
+    virtual Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) = 0;
 
     /** Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     void render3D();

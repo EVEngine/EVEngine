@@ -98,9 +98,12 @@ Debugger& Debugger::instance() {
 
 std::string Debugger::normalizeSource(std::string source) {
     if (source.empty()) return source;
-    // Strip file:// prefix.
-    const std::string pref = "file://";
-    if (source.rfind(pref, 0) == 0) source = source.substr(pref.size());
+    // Strip common URI prefixes VS Code may send.
+    if (source.rfind("file://", 0) == 0) {
+        source = source.substr(7);
+        // file://localhost/Users/... → /Users/...
+        if (source.rfind("localhost/", 0) == 0) source = source.substr(9);
+    }
     // Unify separators.
     for (char& c : source) {
         if (c == '\\') c = '/';
@@ -108,6 +111,31 @@ std::string Debugger::normalizeSource(std::string source) {
     // Drop leading ./
     while (source.size() >= 2 && source[0] == '.' && source[1] == '/') source = source.substr(2);
     return source;
+}
+
+std::string Debugger::sourceBasename(const std::string& source) {
+    const std::string norm = normalizeSource(source);
+    const auto slash       = norm.find_last_of('/');
+    return (slash == std::string::npos) ? norm : norm.substr(slash + 1);
+}
+
+bool Debugger::sourcesMatch(const std::string& a, const std::string& b) {
+    const std::string na = normalizeSource(a);
+    const std::string nb = normalizeSource(b);
+    if (na.empty() || nb.empty()) return false;
+    if (na == nb) return true;
+    const std::string ba = sourceBasename(na);
+    const std::string bb = sourceBasename(nb);
+    if (!ba.empty() && ba == bb) return true;
+    // Suffix match: ".../scripts/main.nut" vs "scripts/main.nut"
+    const std::string& longer  = na.size() >= nb.size() ? na : nb;
+    const std::string& shorter = na.size() >= nb.size() ? nb : na;
+    if (longer.size() > shorter.size() &&
+        longer.compare(longer.size() - shorter.size(), shorter.size(), shorter) == 0) {
+        const auto idx = longer.size() - shorter.size();
+        return idx == 0 || longer[idx - 1] == '/';
+    }
+    return false;
 }
 
 void Debugger::attach(HSQUIRRELVM vm) {
@@ -130,12 +158,18 @@ void Debugger::detach() {
 void Debugger::pause(PauseReason reason) {
     reason_.store(reason);
     mode_.store(RunMode::Paused);
+    // Frame-level Pause has no script site; drop a stale hook location so
+    // smart step() does not treat this as mid-script.
+    if (reason == PauseReason::PauseKey) pauseLoc_ = {};
 }
 
 void Debugger::resume() {
     reason_.store(PauseReason::None);
     mode_.store(RunMode::Running);
-    stepFrameArmed_ = false;
+    stepFrameArmed_  = false;
+    stepStartDepth_  = 0;
+    stepSkipLoc_     = {};
+    pauseLoc_        = {};
 }
 
 void Debugger::stepFrame() {
@@ -144,16 +178,66 @@ void Debugger::stepFrame() {
     stepFrameArmed_ = true;
 }
 
-void Debugger::stepLine() {
+int Debugger::scriptStackDepth() const {
+    HSQUIRRELVM vm = vm_;
+    if (!vm) return 0;
+    int depth = 0;
+    for (int level = 1;; ++level) {
+        SQStackInfos si;
+        if (SQ_FAILED(sq_stackinfos(vm, level, &si))) break;
+        ++depth;
+    }
+    return depth;
+}
+
+void Debugger::beginScriptStep(RunMode stepMode) {
     reason_.store(PauseReason::Step);
-    mode_.store(RunMode::StepLine);
+    stepStartDepth_ = scriptStackDepth();
+    // Squirrel can emit several _OP_LINE for one source line; skip the line we
+    // are currently paused on until the location changes.
+    stepSkipLoc_ = pauseLoc_;
+    // Not currently inside a script frame (frame-level pause): stop on the
+    // first line we see — treat like stepInto with an open depth gate.
+    if (stepStartDepth_ <= 0) {
+        mode_.store(RunMode::StepInto);
+        stepStartDepth_ = 0;
+        return;
+    }
+    mode_.store(stepMode);
+}
+
+void Debugger::stepInto() { beginScriptStep(RunMode::StepInto); }
+
+void Debugger::stepOver() { beginScriptStep(RunMode::StepOver); }
+
+void Debugger::stepOut() {
+    // No caller to return to → just step over the current line.
+    if (scriptStackDepth() <= 1) {
+        beginScriptStep(RunMode::StepOver);
+        return;
+    }
+    beginScriptStep(RunMode::StepOut);
+}
+
+void Debugger::step() {
+    // Prefer script step-over when we have a script pause site; else one frame.
+    const PauseReason r = reason_.load();
+    if (!pauseLoc_.empty() &&
+        (r == PauseReason::Breakpoint || r == PauseReason::Step || r == PauseReason::Exception)) {
+        stepOver();
+        return;
+    }
+    stepFrame();
 }
 
 bool Debugger::shouldRunUpdate() {
     const RunMode m = mode_.load();
     if (m == RunMode::Running) return true;
     if (m == RunMode::StepFrame) return true;
-    return false;  // Paused / StepLine (script-level)
+    // Allow the game loop to enter eve_update so script steps can begin after
+    // a frame-level pause.
+    if (m == RunMode::StepInto || m == RunMode::StepOver || m == RunMode::StepOut) return true;
+    return false;  // Paused
 }
 
 void Debugger::notifyFrameDone() {
@@ -161,50 +245,69 @@ void Debugger::notifyFrameDone() {
         stepFrameArmed_ = false;
         reason_.store(PauseReason::Step);
         mode_.store(RunMode::Paused);
+        // Frame step finished outside the line hook — next smart step is frame.
+        pauseLoc_ = {};
     }
 }
 
 bool Debugger::matchBreakpoint(const std::string& source, int line) const {
-    const std::string norm = normalizeSource(source);
-    const auto slash = norm.find_last_of('/');
-    const std::string base = (slash == std::string::npos) ? norm : norm.substr(slash + 1);
-
     for (const auto& bp : bps_) {
         if (!bp.enabled || bp.line != line) continue;
-        const std::string bn = normalizeSource(bp.source);
-        if (bn == norm) return true;
-        const auto bs = bn.find_last_of('/');
-        const std::string bbase = (bs == std::string::npos) ? bn : bn.substr(bs + 1);
-        if (!base.empty() && base == bbase) return true;
-        if (!bn.empty() && (norm.size() >= bn.size()) &&
-            norm.compare(norm.size() - bn.size(), bn.size(), bn) == 0)
-            return true;
+        if (sourcesMatch(source, bp.source)) return true;
     }
     return false;
 }
 
 bool Debugger::onScriptLine(const SourceLoc& loc) {
     const RunMode m = mode_.load();
-    if (m == RunMode::StepLine) {
-        pauseLoc_ = loc;
-        reason_.store(PauseReason::Step);
-        mode_.store(RunMode::Paused);
-        return true;
-    }
     if (m == RunMode::Paused) {
         // Already paused mid-script (nested?) — keep blocking.
         return true;
     }
+
+    const bool stepping =
+        m == RunMode::StepInto || m == RunMode::StepOver || m == RunMode::StepOut;
+
+    // While leaving the paused line, ignore further events for that exact
+    // source+line (extra _OP_LINE and re-armed breakpoints on the same site).
+    if (stepping && !stepSkipLoc_.empty() && stepSkipLoc_.line == loc.line &&
+        sourcesMatch(stepSkipLoc_.source, loc.source)) {
+        return false;
+    }
+
+    // Breakpoints win over step filters (hit inside a skipped call).
     bool hit = false;
     {
         std::lock_guard<std::mutex> lock(mu_);
         hit = matchBreakpoint(loc.source, loc.line);
     }
     if (hit) {
-        pauseLoc_ = loc;
+        stepSkipLoc_ = {};
+        pauseLoc_    = loc;
         reason_.store(PauseReason::Breakpoint);
         mode_.store(RunMode::Paused);
         return true;
+    }
+
+    if (stepping) {
+        const int depth = scriptStackDepth();
+        bool stop       = false;
+        if (m == RunMode::StepInto) {
+            stop = true;
+        } else if (m == RunMode::StepOver) {
+            // Same frame or outer: stop. Deeper (inside a call): keep going.
+            stop = depth <= stepStartDepth_;
+        } else {  // StepOut
+            stop = depth < stepStartDepth_;
+        }
+        if (stop) {
+            stepSkipLoc_ = {};
+            pauseLoc_    = loc;
+            reason_.store(PauseReason::Step);
+            mode_.store(RunMode::Paused);
+            return true;
+        }
+        return false;
     }
     return false;
 }
@@ -238,12 +341,11 @@ int Debugger::setBreakpoint(std::string source, int line, bool enabled) {
 }
 
 bool Debugger::clearBreakpoint(std::string source, int line) {
-    source = normalizeSource(std::move(source));
     std::lock_guard<std::mutex> lock(mu_);
     const auto before = bps_.size();
     bps_.erase(std::remove_if(bps_.begin(), bps_.end(),
                               [&](const Breakpoint& bp) {
-                                  return bp.line == line && normalizeSource(bp.source) == source;
+                                  return bp.line == line && sourcesMatch(source, bp.source);
                               }),
                bps_.end());
     return bps_.size() != before;
@@ -255,11 +357,8 @@ void Debugger::clearBreakpoints(const std::string& source) {
         bps_.clear();
         return;
     }
-    const std::string norm = normalizeSource(source);
     bps_.erase(std::remove_if(bps_.begin(), bps_.end(),
-                              [&](const Breakpoint& bp) {
-                                  return normalizeSource(bp.source) == norm;
-                              }),
+                              [&](const Breakpoint& bp) { return sourcesMatch(source, bp.source); }),
                bps_.end());
 }
 

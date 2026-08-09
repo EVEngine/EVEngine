@@ -5,6 +5,8 @@
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 
+#include <string>
+
 namespace eve {
 namespace model3d {
 
@@ -66,6 +68,23 @@ bool ModelData::hasTexCoords(int meshIndex) const {
     if (!m)
         throw eve::Exception("ModelData::hasTexCoords: invalid mesh index");
     return m->HasTextureCoords(0);
+}
+
+int ModelData::getMorphTargetCount(int meshIndex) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m) return 0;
+    return static_cast<int>(m->mNumAnimMeshes);
+}
+
+std::string ModelData::getMorphTargetName(int meshIndex, int morphIndex) const {
+    const aiMesh *m = meshAt(meshIndex);
+    if (!m || morphIndex < 0 || static_cast<unsigned>(morphIndex) >= m->mNumAnimMeshes)
+        return {};
+    const aiAnimMesh *am = m->mAnimMeshes[morphIndex];
+    if (!am) return {};
+    if (am->mName.length)
+        return am->mName.C_Str();
+    return "morph" + std::to_string(morphIndex);
 }
 
 }  // namespace model3d

@@ -20,6 +20,8 @@ target_compile_definitions(EVData PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVImage image)
 create_module(EVNetwork network)
 target_compile_definitions(EVNetwork PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+create_module(EVDatabase database)
+target_compile_definitions(EVDatabase PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVSound sound)
 target_include_directories(EVSound PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/sound/include_shim
@@ -74,11 +76,14 @@ create_module(EVThread thread)
 create_module(EVPlugins plugins)
 create_module(EVRPG rpg)
 target_compile_definitions(EVRPG PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+create_module(EVAvatar avatar)
+create_module(EVDialogue dialogue)
 create_module(EVProcgen procgen)
 # Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL), then DTL.
 # BEFORE must precede the visibility keyword so -I dtl_compat wins over the submodule.
 target_include_directories(EVProcgen BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
 target_include_directories(EVProcgen PUBLIC ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
+create_module(EVStylize stylize)
 if(EVENGINE_BUILD_DEMO)
     create_module(EVDemo demo)
 endif()
