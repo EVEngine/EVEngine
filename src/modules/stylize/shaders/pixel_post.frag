@@ -57,18 +57,19 @@ void main() {
   vec3 col = src.rgb;
 
   // Optional luminance banding before palette quantize.
+  // Keep a shadow floor so the darkest band is not crushed to pure black.
   if (toonBands > 1.5) {
-    float Y = luma(col);
-    float cel = floor(Y * toonBands) / max(toonBands - 1.0, 1.0);
-    float scale = (Y > 1e-4) ? (cel / Y) : 1.0;
-    col *= scale;
+    float Y = max(luma(col), 1e-4);
+    float cel = (floor(Y * toonBands) + 0.5) / toonBands;
+    cel = max(cel, 1.0 / toonBands);
+    col *= (cel / Y);
   }
 
   // Screen-space Bayer dither then quantize (ordered dither).
   ivec2 sp = ivec2(floor(fragUV * vec2(screenW, screenH)));
   float d = bayer4(sp) * ditherStrength / max(paletteSteps, 1.0);
   col = clamp(col + vec3(d), 0.0, 1.0);
-  col = floor(col * paletteSteps + 1e-4) / max(paletteSteps - 1.0, 1.0);
+  col = floor(col * paletteSteps + 1e-4) / paletteSteps;
 
   outColor = vec4(col, src.a);
 }

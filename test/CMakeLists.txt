@@ -168,7 +168,8 @@ endif()
 
 target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 target_compile_definitions(unit_test PRIVATE
-  EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+  EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+  EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 zeroerr_discover_tests(unit_test)
