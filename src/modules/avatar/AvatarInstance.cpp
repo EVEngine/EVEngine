@@ -262,8 +262,8 @@ bool AvatarInstance::applyExpression(const std::string &name) {
 void AvatarInstance::syncImageLayers() {
     for (Layer &L : layers_) {
         if (!L.entity) L.entity = graphics::Renderable2D::create();
-        auto *tf = L.entity->transform();
-        auto *sp = L.entity->sprite();
+        auto tf = L.entity->transform();
+        auto sp = L.entity->sprite();
         tf->x = x_ + L.ox * sx_;
         tf->y = y_ + L.oy * sy_;
         tf->rot = 0.f;
