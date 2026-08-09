@@ -50,14 +50,18 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
         shader->declareFloat("texelH");
         shader->declareFloat("time");
         shader->declareFloat("softEdge");
-        shader->sendFloat("bands", 4.f);
-        shader->sendFloat("outlineStrength", 1.0f);
-        shader->sendFloat("outlineThreshold", 0.35f);
-        shader->sendFloat("posterize", 6.f);
+        shader->declareFloat("outlineWidth");
+        shader->declareFloat("shadowLift");
+        shader->sendFloat("bands", 3.f);
+        shader->sendFloat("outlineStrength", 1.15f);
+        shader->sendFloat("outlineThreshold", 0.12f);
+        shader->sendFloat("posterize", 5.f);
         shader->sendFloat("texelW", 1.f / 256.f);
         shader->sendFloat("texelH", 1.f / 256.f);
         shader->sendFloat("time", 0.f);
         shader->sendFloat("softEdge", 0.08f);
+        shader->sendFloat("outlineWidth", 1.5f);
+        shader->sendFloat("shadowLift", 0.12f);
         return;
     }
     if (style == "watercolor") {
@@ -71,16 +75,16 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
         shader->declareFloat("texelH");
         shader->declareFloat("time");
         shader->declareFloat("granulation");
-        shader->sendFloat("blurAmount", 1.8f);
-        shader->sendFloat("edgeDarken", 1.4f);
-        shader->sendFloat("paperStrength", 0.55f);
-        shader->sendFloat("distortion", 1.2f);
-        shader->sendFloat("bleed", 0.65f);
-        shader->sendFloat("saturation", 0.85f);
+        shader->sendFloat("blurAmount", 2.4f);
+        shader->sendFloat("edgeDarken", 2.0f);
+        shader->sendFloat("paperStrength", 0.65f);
+        shader->sendFloat("distortion", 0.85f);
+        shader->sendFloat("bleed", 0.62f);
+        shader->sendFloat("saturation", 0.9f);
         shader->sendFloat("texelW", 1.f / 256.f);
         shader->sendFloat("texelH", 1.f / 256.f);
         shader->sendFloat("time", 0.f);
-        shader->sendFloat("granulation", 0.45f);
+        shader->sendFloat("granulation", 0.65f);
         return;
     }
     if (style == "ink") {
@@ -98,12 +102,12 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
         shader->declareFloat("edgeStrength");
         shader->sendFloat("inkContrast", 1.35f);
         shader->sendFloat("washLevels", 5.f);
-        shader->sendFloat("edgeThreshold", 0.28f);
-        shader->sendFloat("diffusion", 2.5f);
-        shader->sendFloat("paperR", 0.93f);
-        shader->sendFloat("paperG", 0.90f);
-        shader->sendFloat("paperB", 0.82f);
-        shader->sendFloat("inkDensity", 0.85f);
+        shader->sendFloat("edgeThreshold", 0.18f);
+        shader->sendFloat("diffusion", 3.5f);
+        shader->sendFloat("paperR", 0.96f);
+        shader->sendFloat("paperG", 0.93f);
+        shader->sendFloat("paperB", 0.86f);
+        shader->sendFloat("inkDensity", 0.75f);
         shader->sendFloat("texelW", 1.f / 256.f);
         shader->sendFloat("texelH", 1.f / 256.f);
         shader->sendFloat("time", 0.f);
@@ -121,16 +125,18 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
         shader->declareFloat("time");
         shader->declareFloat("screenW");
         shader->declareFloat("screenH");
-        shader->sendFloat("pixelSize", 4.f);
-        shader->sendFloat("paletteSteps", 8.f);
-        shader->sendFloat("ditherStrength", 0.35f);
-        shader->sendFloat("toonBands", 4.f);
+        shader->declareFloat("outline");
+        shader->sendFloat("pixelSize", 5.f);
+        shader->sendFloat("paletteSteps", 6.f);
+        shader->sendFloat("ditherStrength", 0.18f);
+        shader->sendFloat("toonBands", 3.f);
         shader->sendFloat("sharpness", 1.f);
         shader->sendFloat("texelW", 1.f / 256.f);
         shader->sendFloat("texelH", 1.f / 256.f);
         shader->sendFloat("time", 0.f);
         shader->sendFloat("screenW", 256.f);
         shader->sendFloat("screenH", 256.f);
+        shader->sendFloat("outline", 0.9f);
         return;
     }
     throw eve::Exception("bindPostUniforms: unknown style '%s'", style.c_str());

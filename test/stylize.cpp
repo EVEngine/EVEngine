@@ -59,20 +59,23 @@ ImageData *makeGradient(int w, int h) {
     return img;
 }
 
-Texture *makeCylinderAlbedo(Graphics *gfx, int size = 128) {
+Texture *makeCylinderAlbedo(Graphics *gfx, int size = 256) {
+    // Bold horizontal stripes only (no vertical seams — seams become false ink/toon outlines).
+    // Avoid near-white bands so PBR/toon highlights keep readable form.
     std::vector<uint8_t> px(size_t(size) * size_t(size) * 4);
-    const int cell = size / 8;
+    const int bandH = size / 5;
+    const uint8_t palette[3][3] = {
+        {210, 92, 58},   // terracotta
+        {232, 186, 110}, // warm sand
+        {48, 148, 158},  // teal
+    };
     for (int y = 0; y < size; ++y) {
+        const int band = (y / std::max(bandH, 1)) % 3;
         for (int x = 0; x < size; ++x) {
-            const bool dark = ((x / cell) ^ (y / cell)) & 1;
-            // Warm terracotta / cream checker so NPR styles stay readable.
-            const uint8_t r = dark ? 196 : 238;
-            const uint8_t g = dark ? 92 : 214;
-            const uint8_t b = dark ? 64 : 180;
             const size_t i = size_t(y * size + x) * 4;
-            px[i + 0] = r;
-            px[i + 1] = g;
-            px[i + 2] = b;
+            px[i + 0] = palette[band][0];
+            px[i + 1] = palette[band][1];
+            px[i + 2] = palette[band][2];
             px[i + 3] = 255;
         }
     }
@@ -157,9 +160,10 @@ ImageData *renderCylinderFrame(Graphics *gfx, Mesh *mesh, Texture *albedo, Shade
     cam->setEye(2.4f, 1.5f, 3.2f);
     cam->data()->nearZ = 0.1f;
     cam->data()->farZ = 50.f;
-    cam->data()->ambientR = 0.22f;
-    cam->data()->ambientG = 0.23f;
-    cam->data()->ambientB = 0.28f;
+    // Balanced fill so form reads without crushing shadows to black.
+    cam->data()->ambientR = 0.28f;
+    cam->data()->ambientG = 0.30f;
+    cam->data()->ambientB = 0.34f;
 
     // Tiny 2D sprite keeps RenderSystem happy / present path consistent with model3d tests.
     auto *hud = Renderable2D::create();
@@ -174,8 +178,11 @@ ImageData *renderCylinderFrame(Graphics *gfx, Mesh *mesh, Texture *albedo, Shade
     hud->sprite()->visible = true;
 
     gfx->setScreenReadbackEnabled(true);
+    // Lifted slate so object silhouettes separate cleanly for outline/ink.
     gfx->setBackgroundColor(::Color(0.14f, 0.16f, 0.20f, 1.f));
-    RenderSystem3D::setDirectionalLight(-0.45f, -0.85f, -0.35f, 1.7f, 1.65f, 1.55f);
+    // Empirically +Z / camera-side lights the visible face (see RenderSystem3D.lightingAffectsPixels).
+    // Keep intensity near 1 so highlights don't blow cel/watercolor pigment to pure white.
+    RenderSystem3D::setDirectionalLight(0.55f, 0.95f, 1.15f, 1.05f, 1.0f, 0.95f);
 
     for (int i = 0; i < 8; ++i) {
         ent->transform()->yaw = 0.45f + float(i) * 0.04f;
@@ -184,7 +191,8 @@ ImageData *renderCylinderFrame(Graphics *gfx, Mesh *mesh, Texture *albedo, Shade
     }
 
     ::Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.04f);
+    CHECK(luma(mid) > 0.12f);
+    CHECK(luma(mid) < 0.92f);
 
     eve::image::Image::create();
     ImageData *frame = gfx->newImageData();
@@ -202,9 +210,7 @@ ImageData *applyPostToFrame(Graphics *gfx, ImageData *frame, StylePass *pass) {
     REQUIRE(rt != nullptr);
     gfx->setCanvas(rt);
     gfx->clear(::Color(0.14f, 0.16f, 0.20f, 1.f), std::nullopt, std::nullopt);
-    if (pass->hasParam("time")) pass->setTime(0.35f);
-    if (pass->hasParam("pixelSize")) pass->setFloat("pixelSize", 3.f);
-    if (pass->hasParam("paletteSteps")) pass->setFloat("paletteSteps", 10.f);
+    if (pass->hasParam("time") && pass->getFloat("time") <= 0.f) pass->setTime(0.35f);
     pass->apply(gfx, tex);
     gfx->setCanvas();
 
@@ -372,7 +378,7 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
 
-    Mesh *cylinder = gfx->newMeshCylinder(48, 8, true);
+    Mesh *cylinder = gfx->newMeshCylinder(64, 1, true);
     REQUIRE(cylinder != nullptr);
     CHECK_GT(cylinder->indexCount, 0);
 
@@ -383,64 +389,67 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
     const std::string docsDir = docsStylizeDir();
     const std::string outDir = testOutDir();
 
-    // cartoon: object-space cel mesh shader.
-    // ink / watercolor / pixel: image-space post on the same lit base frame
-    // (ink post reads better as xuan-paper wash than the dark mesh variant).
-    struct StyleJob {
-        const char *id;
-        bool useMesh;
-    };
-    const StyleJob jobs[] = {
-        {"cartoon", true},
-        {"ink", false},
-        {"watercolor", false},
-        {"pixel", false},
-    };
+    std::unique_ptr<ImageData> baseFrame(renderCylinderFrame(gfx, cylinder, albedo, nullptr));
+    REQUIRE(baseFrame.get() != nullptr);
+    saveImageDataPng(baseFrame.get(), outDir + "/cylinder_base.png");
+    saveImageDataPng(baseFrame.get(), docsDir + "/cylinder_base.png");
 
-    for (const StyleJob &job : jobs) {
-        Shader *meshSh = nullptr;
-        if (job.useMesh) {
-            meshSh = mod->newMeshShader(gfx, job.id);
-            REQUIRE(meshSh != nullptr);
+    // Cartoon uses object-space cel mesh first, then outline post (UTS-like).
+    Shader *toonMesh = mod->newMeshShader(gfx, "cartoon");
+    REQUIRE(toonMesh != nullptr);
+    toonMesh->sendFloat("bands", 3.f);
+    toonMesh->sendFloat("rimPower", 2.6f);
+    toonMesh->sendFloat("rimStrength", 0.45f);
+    toonMesh->sendFloat("posterize", 5.f);
+    std::unique_ptr<ImageData> cartoonBase(renderCylinderFrame(gfx, cylinder, albedo, toonMesh));
+
+    const char *styles[] = {"cartoon", "ink", "watercolor", "pixel"};
+    for (const char *id : styles) {
+        StylePass *pass = mod->newPass(gfx, id);
+        REQUIRE(pass != nullptr);
+        ImageData *srcFrame = baseFrame.get();
+        if (std::string(id) == "cartoon") {
+            srcFrame = cartoonBase.get();
+            // Mesh already did cel; post lightly reinforces bands + silhouette ink.
+            pass->setFloat("bands", 3.f);
+            pass->setFloat("outlineStrength", 1.35f);
+            pass->setFloat("outlineThreshold", 0.08f);
+            pass->setFloat("posterize", 5.f);
+            pass->setFloat("outlineWidth", 2.0f);
+            pass->setFloat("shadowLift", 0.18f);
+            pass->setFloat("softEdge", 0.12f);
+        } else if (std::string(id) == "watercolor") {
+            pass->setFloat("blurAmount", 2.2f);
+            pass->setFloat("edgeDarken", 1.2f);
+            pass->setFloat("paperStrength", 0.6f);
+            pass->setFloat("distortion", 0.55f);
+            pass->setFloat("bleed", 0.58f);
+            pass->setFloat("saturation", 0.95f);
+            pass->setFloat("granulation", 0.45f);
+        } else if (std::string(id) == "ink") {
+            pass->setFloat("inkContrast", 1.35f);
+            pass->setFloat("washLevels", 5.f);
+            pass->setFloat("edgeThreshold", 0.18f);
+            pass->setFloat("diffusion", 3.5f);
+            pass->setFloat("inkDensity", 0.75f);
+            pass->setFloat("edgeStrength", 1.1f);
+            pass->setFloat("paperR", 0.96f);
+            pass->setFloat("paperG", 0.93f);
+            pass->setFloat("paperB", 0.86f);
+        } else if (std::string(id) == "pixel") {
+            pass->setFloat("pixelSize", 6.f);
+            pass->setFloat("paletteSteps", 5.f);
+            pass->setFloat("ditherStrength", 0.12f);
+            pass->setFloat("toonBands", 3.f);
+            pass->setFloat("sharpness", 1.f);
+            pass->setFloat("outline", 0.95f);
         }
 
-        std::unique_ptr<ImageData> frame(renderCylinderFrame(gfx, cylinder, albedo, meshSh));
-        REQUIRE(frame.get() != nullptr);
-
-        std::unique_ptr<ImageData> styled;
-        if (!job.useMesh) {
-            StylePass *pass = mod->newPass(gfx, job.id);
-            REQUIRE(pass != nullptr);
-            if (std::string(job.id) == "watercolor") {
-                pass->setFloat("blurAmount", 1.2f);
-                pass->setFloat("edgeDarken", 1.1f);
-                pass->setFloat("paperStrength", 0.4f);
-                pass->setFloat("distortion", 0.55f);
-                pass->setFloat("bleed", 0.45f);
-                pass->setFloat("saturation", 0.9f);
-                pass->setFloat("granulation", 0.35f);
-            } else if (std::string(job.id) == "ink") {
-                pass->setFloat("inkContrast", 1.15f);
-                pass->setFloat("washLevels", 6.f);
-                pass->setFloat("edgeThreshold", 0.22f);
-                pass->setFloat("diffusion", 2.0f);
-                pass->setFloat("inkDensity", 0.7f);
-                pass->setFloat("edgeStrength", 1.0f);
-            } else if (std::string(job.id) == "pixel") {
-                pass->setFloat("pixelSize", 4.f);
-                pass->setFloat("paletteSteps", 12.f);
-                pass->setFloat("ditherStrength", 0.22f);
-                pass->setFloat("toonBands", 3.f);
-                pass->setFloat("sharpness", 1.f);
-            }
-            styled.reset(applyPostToFrame(gfx, frame.get(), pass));
-            delete pass;
-        } else {
-            styled.reset(frame.release());
-        }
+        std::unique_ptr<ImageData> styled(applyPostToFrame(gfx, srcFrame, pass));
+        delete pass;
         REQUIRE(styled.get() != nullptr);
 
-        const std::string name = std::string("cylinder_") + job.id + ".png";
+        const std::string name = std::string("cylinder_") + id + ".png";
         saveImageDataPng(styled.get(), outDir + "/" + name);
         saveImageDataPng(styled.get(), docsDir + "/" + name);
 
@@ -455,13 +464,6 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
             }
         }
         CHECK_GT(warm, 20);
-    }
-
-    // Also keep an unstyled baseline next to the gallery for comparison.
-    {
-        std::unique_ptr<ImageData> base(renderCylinderFrame(gfx, cylinder, albedo, nullptr));
-        saveImageDataPng(base.get(), outDir + "/cylinder_base.png");
-        saveImageDataPng(base.get(), docsDir + "/cylinder_base.png");
     }
 
     win->close();
