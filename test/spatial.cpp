@@ -123,12 +123,13 @@ TEST_CASE("spatial.factories") {
     std::unique_ptr<SpatialHash3D> h3(mod->newSpatialHash3D(8.f));
     std::unique_ptr<BSPTree2D> b2(mod->newBSPTree2D(0, 0, 10, 10));
     std::unique_ptr<BSPTree3D> b3(mod->newBSPTree3D(0, 0, 0, 10, 10, 10));
-    CHECK(qt);
-    CHECK(ot);
-    CHECK(h2);
-    CHECK(h3);
-    CHECK(b2);
-    CHECK(b3);
+    // zeroerr CHECK() pretty-prints the expression value; unique_ptr is not copyable.
+    CHECK(qt.get() != nullptr);
+    CHECK(ot.get() != nullptr);
+    CHECK(h2.get() != nullptr);
+    CHECK(h3.get() != nullptr);
+    CHECK(b2.get() != nullptr);
+    CHECK(b3.get() != nullptr);
     CHECK(qt->insert(1, 1, 1, 2, 2));
     CHECK_EQ(qt->queryPoint(1.5f, 1.5f), 1);
 }
