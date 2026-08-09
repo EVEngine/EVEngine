@@ -7,3 +7,6 @@
 [submodule "external/ik.hpp"]
 	path = external/ik.hpp
 	url = https://github.com/sunxfancy/ik.hpp.git
+[submodule "external/DungeonTemplateLibrary"]
+	path = external/DungeonTemplateLibrary
+	url = https://github.com/AsPJT/DungeonTemplateLibrary.git

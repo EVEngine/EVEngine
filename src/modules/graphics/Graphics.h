@@ -36,6 +36,11 @@ public:
     void setBackgroundColorRGBA(float r, float g, float b, float a = 1.f);
     void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b,
                            float a = 1.f);
+    void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r,
+                              float g, float b, float a = 1.f);
+    /** Upload RGBA8 ImageData; optional seamless repeat on U/V. Caller owns Texture*. */
+    Texture *newTextureFromImageData(image::ImageData *data, bool repeatU = false,
+                                     bool repeatV = false);
 
     virtual void present() = 0;
 

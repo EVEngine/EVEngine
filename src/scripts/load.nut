@@ -61,6 +61,7 @@ ui <- eve.UI();
 scene <- eve.Scene();
 particles <- eve.Particles();
 map <- eve.Map();
+procgen <- eve.Procgen();
 gpgpu <- eve.Gpgpu();
 physics <- eve.Physics();
 keyboard <- eve.Keyboard();

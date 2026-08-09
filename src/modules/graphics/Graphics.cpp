@@ -8,6 +8,7 @@
 #include "graphics/Quad.h"
 #include "graphics/Font.h"
 #include "font/FontData.h"
+#include "image/ImageData.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
 
@@ -144,6 +145,8 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("clear", &Graphics::clearScreen);
     cls.addFunc("setBackgroundColor", &Graphics::setBackgroundColorRGBA);
     cls.addFunc("drawSolidRect", &Graphics::drawSolidRectRGBA);
+    cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
+    cls.addFunc("newTexture", &Graphics::newTextureFromImageData);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
     cls.addFunc("newShader",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShader));
@@ -178,6 +181,19 @@ void Graphics::setBackgroundColorRGBA(float r, float g, float b, float a) {
 void Graphics::drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b,
                                  float a) {
     drawSolidRect(x, y, w, h, Color(r, g, b, a));
+}
+
+void Graphics::drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r,
+                                    float g, float b, float a) {
+    drawTexturedRect(texture, x, y, w, h, Color(r, g, b, a));
+}
+
+Texture *Graphics::newTextureFromImageData(image::ImageData *data, bool repeatU, bool repeatV) {
+    if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
+    if (data->getFormat() != "RGBA8")
+        throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
+    return newTexture(data->getWidth(), data->getHeight(),
+                      static_cast<const uint8_t *>(data->getData()), repeatU, repeatV);
 }
 
 Quad *Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
