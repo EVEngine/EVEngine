@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "stylize/StyleChain.h"
 #include "stylize/StylePass.h"
 
 #include <string>
@@ -17,20 +18,23 @@ class ImageData;
 namespace eve::stylize {
 
 /**
- * Stylized / NPR rendering module.
+ * Stylized / NPR rendering module — stable public surface for future expansion.
  *
- * Styles (string ids):
- *   - "cartoon"    — cel bands + posterize + Sobel outline (post + mesh)
- *   - "watercolor" — paper warp, bleed, edge darken, granulation (post)
- *   - "ink"        — ink-wash tones + silhouette (post + mesh)
- *   - "pixel"      — low-res snap + palette quantize + Bayer dither (post)
+ * Built-in style ids (string, no enums):
+ *   - "cartoon"    — cel post (+ mesh)
+ *   - "watercolor" — paper / bleed post
+ *   - "ink"        — ink-wash post (+ mesh)
+ *   - "pixel"      — pixel-art post
+ *
+ * Extension points (keep these stable):
+ *   - newPass / newPassFromShader — wrap built-in or custom SPIR-V post shaders
+ *   - newMeshShader — object-space variants (cartoon/ink today)
+ *   - StyleChain — multi-pass ping-pong (separable blur, outline+shade, …)
+ *   - supports(style, feature) — "post" | "mesh" | "cpu" | "gbuffer"
+ *     ("gbuffer" reserved: depth/normal-aware outline; currently always false)
+ *   - getStyleParam* — introspect push-constant knobs for tooling / UI
  *
  * Script: `stylize <- eve.Stylize();`
- *
- * Typical flow:
- *   1. Render scene into a Canvas
- *   2. `pass <- stylize.newPass("watercolor")`
- *   3. Bind screen / another canvas, then `pass.applyCanvas(gfx, src)`
  */
 class Stylize : public Module {
 public:
@@ -43,8 +47,31 @@ public:
     bool        hasStyle(const std::string &style) const;
     bool        hasMeshStyle(const std::string &style) const;
 
+    /**
+     * Feature query. Known features:
+     *   "post"    — StylePass / newPostShader
+     *   "mesh"    — newMeshShader
+     *   "cpu"     — processImage
+     *   "gbuffer" — reserved for depth/normal inputs (always false for now)
+     */
+    bool supports(const std::string &style, const std::string &feature) const;
+
+    /** Introspect built-in post param names (empty for unknown / custom-only ids). */
+    int         getStyleParamCount(const std::string &style) const;
+    std::string getStyleParamName(const std::string &style, int index) const;
+
     /** Post-process StylePass (shader owned by Graphics). */
     StylePass *newPass(graphics::Graphics *gfx, const std::string &style);
+
+    /**
+     * Wrap an already-created post Shader (custom SPIR-V / future registered styles).
+     * `styleId` is a label only; capability tables are not updated.
+     * Shader must already declare its float uniforms.
+     */
+    StylePass *newPassFromShader(const std::string &styleId, graphics::Shader *shader);
+
+    /** Empty multi-pass chain (caller adds StylePass*). */
+    StyleChain *newChain();
 
     /** Raw post Shader with defaults (owned by Graphics). */
     graphics::Shader *newPostShader(graphics::Graphics *gfx, const std::string &style);
@@ -54,9 +81,6 @@ public:
 
     /**
      * CPU fallback stylization for ImageData (RGBA8).
-     * Useful for tests / tooling without a full GPU pass.
-     * Supports: cartoon (posterize+edges), ink (tones), pixel (quantize+dither).
-     * Watercolor CPU path approximates blur + paper grain.
      * Caller owns returned ImageData*.
      */
     image::ImageData *processImage(image::ImageData *src, const std::string &style);

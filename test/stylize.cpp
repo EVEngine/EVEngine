@@ -34,6 +34,7 @@ using eve::graphics::RenderSystem3D;
 using eve::graphics::Shader;
 using eve::graphics::Texture;
 using eve::image::ImageData;
+using eve::stylize::StyleChain;
 using eve::stylize::StylePass;
 using eve::stylize::Stylize;
 using Colorf = ImageData::Colorf;
@@ -236,6 +237,17 @@ TEST_CASE("stylize.styles.registry") {
     CHECK(!mod->hasMeshStyle("watercolor"));
     CHECK(!mod->hasMeshStyle("pixel"));
 
+    CHECK(mod->supports("cartoon", "post"));
+    CHECK(mod->supports("cartoon", "mesh"));
+    CHECK(mod->supports("watercolor", "cpu"));
+    CHECK(!mod->supports("watercolor", "mesh"));
+    CHECK(!mod->supports("ink", "gbuffer"));  // reserved extension point
+    CHECK(!mod->supports("oil", "post"));
+
+    CHECK_GT(mod->getStyleParamCount("pixel"), 0);
+    CHECK_EQ(mod->getStyleParamName("pixel", 0), std::string("pixelSize"));
+    CHECK(mod->getStyleParamName("pixel", 999).empty());
+
     bool sawCartoon = false;
     for (int i = 0; i < mod->getStyleCount(); ++i) {
         if (mod->getStyleId(i) == "cartoon") sawCartoon = true;
@@ -306,6 +318,59 @@ TEST_CASE("stylize.processImage.pixelQuantizes") {
     CHECK(near(a.r, b.r, 0.001f));
     CHECK(near(a.g, b.g, 0.001f));
     CHECK(near(a.b, b.b, 0.001f));
+}
+
+TEST_CASE("stylize.api.passFromShaderAndChain") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 128;
+    s.height = 96;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    auto *mod = Stylize::create();
+    Shader *raw = mod->newPostShader(gfx, "pixel");
+    REQUIRE(raw != nullptr);
+    StylePass *custom = mod->newPassFromShader("custom_pixel", raw);
+    REQUIRE(custom != nullptr);
+    CHECK_EQ(custom->getStyle(), std::string("custom_pixel"));
+
+    StylePass *a = mod->newPass(gfx, "cartoon");
+    StylePass *b = mod->newPass(gfx, "pixel");
+    REQUIRE(a != nullptr);
+    REQUIRE(b != nullptr);
+    StyleChain *chain = mod->newChain();
+    REQUIRE(chain != nullptr);
+    chain->add(a);
+    chain->add(b);
+    CHECK_EQ(chain->getPassCount(), 2);
+    CHECK(chain->getPass(0) == a);
+
+    std::unique_ptr<ImageData> img(makeGradient(64, 48));
+    Texture *tex = gfx->newTexture(img.get());
+    Canvas *dest = gfx->newCanvas(64, 48);
+    Canvas *temp = gfx->newCanvas(64, 48);
+    REQUIRE(tex != nullptr);
+    REQUIRE(dest != nullptr);
+    REQUIRE(temp != nullptr);
+
+    custom->applyTo(gfx, tex, dest);
+    ::Color p0 = dest->getPixel(32, 24);
+    CHECK_GT(p0.a, 0.5f);
+
+    chain->apply(gfx, tex, dest, temp);
+    ::Color p1 = dest->getPixel(32, 24);
+    CHECK_GT(p1.a, 0.5f);
+
+    delete chain;
+    delete custom;
+    delete a;
+    delete b;
+    win->close();
 }
 
 TEST_CASE("stylize.gpu.postPassAndMeshShader") {

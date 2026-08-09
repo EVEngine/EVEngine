@@ -16,6 +16,13 @@ bool isKnownStyle(const std::string &style);
 int styleCount();
 std::string styleIdAt(int index);
 
+/** Feature flags: "post" | "mesh" | "cpu" | "gbuffer" (gbuffer reserved). */
+bool styleSupports(const std::string &style, const std::string &feature);
+
+/** Built-in post param name table (for tooling / UI introspection). */
+int styleParamCount(const std::string &style);
+std::string styleParamName(const std::string &style, int index);
+
 /** Declare + seed default push-constant uniforms for a post style shader. */
 void bindPostUniforms(graphics::Shader *shader, const std::string &style);
 

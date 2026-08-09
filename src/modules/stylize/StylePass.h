@@ -12,11 +12,12 @@ class Texture;
 namespace eve::stylize {
 
 /**
- * One stylized post-process pass bound to a style id (cartoon/watercolor/ink/pixel).
+ * One stylized post-process pass bound to a style id (built-in or custom label).
  * Draws a full-quad of the source texture through a style fragment shader.
  *
- * Script: created via `stylize.newPass("watercolor")`.
- * Parameter knobs use string names (engine convention — no enums).
+ * Parameters use string names (engine convention — no enums).
+ * Future GBuffer-aware styles may read extra textures via Graphics bindings;
+ * this class stays the single entry for "run one NPR post step".
  */
 class StylePass {
 public:
@@ -38,12 +39,18 @@ public:
     float getTime() const;
 
     /**
-     * Apply style: sample `source` (Texture or Canvas color buffer) and draw a
-     * fullscreen quad into the currently bound canvas / screen.
+     * Apply style into the currently bound canvas / screen.
      * Automatically uploads texel size + screen size uniforms.
      */
     void apply(graphics::Graphics *gfx, graphics::Texture *source);
     void applyCanvas(graphics::Graphics *gfx, graphics::Canvas *source);
+
+    /**
+     * Apply into an explicit destination canvas (restores previous canvas bind).
+     * Preferred hook for chains / tooling that manage ping-pong targets.
+     */
+    void applyTo(graphics::Graphics *gfx, graphics::Texture *source, graphics::Canvas *dest);
+    void applyCanvasTo(graphics::Graphics *gfx, graphics::Canvas *source, graphics::Canvas *dest);
 
 private:
     void uploadScreenUniforms(int width, int height);

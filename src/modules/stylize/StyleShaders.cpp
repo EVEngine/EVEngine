@@ -38,6 +38,46 @@ std::string styleIdAt(int index) {
     return kStyles[size_t(index)];
 }
 
+bool styleSupports(const std::string &style, const std::string &feature) {
+    if (!isKnownStyle(style)) return false;
+    if (feature == "post" || feature == "cpu") return true;
+    if (feature == "mesh") return style == "cartoon" || style == "ink";
+    if (feature == "gbuffer") return false;  // reserved: depth/normal outline, etc.
+    return false;
+}
+
+namespace {
+const char *kCartoonParams[] = {"bands",    "outlineStrength", "outlineThreshold", "posterize",
+                                "texelW",   "texelH",          "time",             "softEdge",
+                                "outlineWidth", "shadowLift"};
+const char *kWatercolorParams[] = {"blurAmount", "edgeDarken", "paperStrength", "distortion",
+                                   "bleed",      "saturation", "texelW",        "texelH",
+                                   "time",       "granulation"};
+const char *kInkParams[] = {"inkContrast", "washLevels", "edgeThreshold", "diffusion",
+                            "paperR",      "paperG",     "paperB",        "inkDensity",
+                            "texelW",      "texelH",     "time",          "edgeStrength"};
+const char *kPixelParams[] = {"pixelSize", "paletteSteps", "ditherStrength", "toonBands",
+                              "sharpness", "texelW",       "texelH",         "time",
+                              "screenW",   "screenH",      "outline"};
+}  // namespace
+
+int styleParamCount(const std::string &style) {
+    if (style == "cartoon") return int(sizeof(kCartoonParams) / sizeof(kCartoonParams[0]));
+    if (style == "watercolor") return int(sizeof(kWatercolorParams) / sizeof(kWatercolorParams[0]));
+    if (style == "ink") return int(sizeof(kInkParams) / sizeof(kInkParams[0]));
+    if (style == "pixel") return int(sizeof(kPixelParams) / sizeof(kPixelParams[0]));
+    return 0;
+}
+
+std::string styleParamName(const std::string &style, int index) {
+    if (index < 0 || index >= styleParamCount(style)) return {};
+    if (style == "cartoon") return kCartoonParams[index];
+    if (style == "watercolor") return kWatercolorParams[index];
+    if (style == "ink") return kInkParams[index];
+    if (style == "pixel") return kPixelParams[index];
+    return {};
+}
+
 void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindPostUniforms: null shader");
 

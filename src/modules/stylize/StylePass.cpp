@@ -82,4 +82,22 @@ void StylePass::applyCanvas(graphics::Graphics *gfx, graphics::Canvas *source) {
     apply(gfx, tex);
 }
 
+void StylePass::applyTo(graphics::Graphics *gfx, graphics::Texture *source,
+                        graphics::Canvas *dest) {
+    if (!gfx) throw eve::Exception("StylePass.applyTo: null graphics");
+    if (!dest) throw eve::Exception("StylePass.applyTo: null dest");
+    graphics::Canvas *prev = gfx->getCanvas();
+    gfx->setCanvas(dest);
+    apply(gfx, source);
+    gfx->setCanvas(prev);
+}
+
+void StylePass::applyCanvasTo(graphics::Graphics *gfx, graphics::Canvas *source,
+                              graphics::Canvas *dest) {
+    if (!source) throw eve::Exception("StylePass.applyCanvasTo: null source");
+    graphics::Texture *tex = source->getTexture();
+    if (!tex) throw eve::Exception("StylePass.applyCanvasTo: source has no sampleable texture");
+    applyTo(gfx, tex, dest);
+}
+
 }  // namespace eve::stylize
