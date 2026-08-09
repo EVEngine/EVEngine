@@ -133,9 +133,9 @@ else()
 endif()
 
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVProcgen EVStylize)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVAvatar EVDialogue EVProcgen EVStylize)
 else()
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVProcgen EVStylize)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVAvatar EVDialogue EVProcgen EVStylize)
 endif()
 
 if(EVENGINE_BUILD_DEMO)

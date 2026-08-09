@@ -113,6 +113,8 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
+    md.addFunc("getMorphTargetCount", &ModelData::getMorphTargetCount);
+    md.addFunc("getMorphTargetName", &ModelData::getMorphTargetName);
 }
 
 void Model3D::expose(ssq::Class &cls) {

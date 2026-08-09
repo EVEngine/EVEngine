@@ -13,6 +13,7 @@
 #include <cstring>
 #include <functional>
 #include <stdexcept>
+#include <string>
 #include <vector>
 #if !defined(_WIN32)
 #include <unistd.h>
@@ -2173,6 +2174,12 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
 
     std::vector<MeshVertex> verts;
     verts.reserve(mesh.mNumVertices);
+    std::vector<float> basePos;
+    std::vector<float> baseNrm;
+    std::vector<float> baseUv;
+    basePos.reserve(mesh.mNumVertices * 3);
+    baseNrm.reserve(mesh.mNumVertices * 3);
+    baseUv.reserve(mesh.mNumVertices * 2);
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
         MeshVertex v{};
         v.pos = {mesh.mVertices[i].x, mesh.mVertices[i].y, mesh.mVertices[i].z};
@@ -2185,6 +2192,14 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
         else
             v.uv = {0.f, 0.f};
         verts.push_back(v);
+        basePos.push_back(v.pos.x);
+        basePos.push_back(v.pos.y);
+        basePos.push_back(v.pos.z);
+        baseNrm.push_back(v.normal.x);
+        baseNrm.push_back(v.normal.y);
+        baseNrm.push_back(v.normal.z);
+        baseUv.push_back(v.uv.x);
+        baseUv.push_back(v.uv.y);
     }
 
     std::vector<uint32_t> indices;
@@ -2210,10 +2225,56 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     auto handle = std::make_unique<Mesh>();
     handle->indexCount = int(gpu->indexCount);
     handle->gpuHandle = gpu.get();
+    handle->initMorphBase(int(mesh.mNumVertices), basePos.data(), baseNrm.data(), baseUv.data());
+    // Assimp morph targets (VRM / glTF blend shapes often land here).
+    for (unsigned m = 0; m < mesh.mNumAnimMeshes; ++m) {
+        const aiAnimMesh *am = mesh.mAnimMeshes[m];
+        if (!am || !am->mVertices || am->mNumVertices != mesh.mNumVertices) continue;
+        std::string name = am->mName.length ? am->mName.C_Str() : ("morph" + std::to_string(m));
+        std::vector<float> absPos(size_t(am->mNumVertices) * 3u);
+        for (unsigned i = 0; i < am->mNumVertices; ++i) {
+            absPos[size_t(i) * 3u + 0] = am->mVertices[i].x;
+            absPos[size_t(i) * 3u + 1] = am->mVertices[i].y;
+            absPos[size_t(i) * 3u + 2] = am->mVertices[i].z;
+        }
+        handle->addMorphTargetAbsolute(name, absPos.data());
+    }
+    handle->markMorphClean();
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
+}
+
+bool Graphics::bakeMeshMorph(Mesh *mesh) {
+    if (!mesh || !mesh->gpuHandle || !mesh->hasMorphData() || !mesh->isMorphDirty()) return false;
+    if (!initialized) return false;
+
+    std::vector<float> pos;
+    std::vector<float> nrm;
+    mesh->computeMorphedPositions(pos, nrm);
+    const int vc = mesh->getVertexCount();
+    if (vc <= 0 || int(pos.size()) < vc * 3) return false;
+
+    std::vector<MeshVertex> verts(static_cast<size_t>(vc));
+    const auto &uv = mesh->baseUv();
+    for (int i = 0; i < vc; ++i) {
+        MeshVertex &v = verts[static_cast<size_t>(i)];
+        v.pos = {pos[size_t(i) * 3u + 0], pos[size_t(i) * 3u + 1], pos[size_t(i) * 3u + 2]};
+        if (int(nrm.size()) >= (i + 1) * 3)
+            v.normal = {nrm[size_t(i) * 3u + 0], nrm[size_t(i) * 3u + 1], nrm[size_t(i) * 3u + 2]};
+        else
+            v.normal = {0.f, 1.f, 0.f};
+        if (int(uv.size()) >= (i + 1) * 2)
+            v.uv = {uv[size_t(i) * 2u + 0], uv[size_t(i) * 2u + 1]};
+        else
+            v.uv = {0.f, 0.f};
+    }
+
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    gpu->vertices.updateLocal(verts);
+    mesh->markMorphClean();
+    return true;
 }
 
 Mesh *Graphics::newMeshSphere(int slices, int stacks) {
