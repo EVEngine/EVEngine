@@ -8,7 +8,7 @@
 
 **Tech Stack:** C++20, PhysFS (`EVFileSystem`), medialoader PNG (`EVImage`), Vulkan/`VKBuilder` (`EVGraphics`), GoogleTest.
 
-**Spec:** [docs/superpowers/specs/2026-08-04-png-texture-from-file-design.md](../specs/2026-08-04-png-texture-from-file-design.md)
+**Spec:** [docs/dev/superpowers/specs/2026-08-04-png-texture-from-file-design.md](../specs/2026-08-04-png-texture-from-file-design.md)
 
 ## Global Constraints
 
@@ -301,8 +301,8 @@ Expected: all PASS.
 ### Task 4: Spec checkbox sync (docs only)
 
 **Files:**
-- Modify: `docs/superpowers/specs/2026-08-04-png-texture-from-file-design.md` (section 6 checkboxes → done)
-- Optional: one-line note in `docs/2D渲染API设计.md` §6 that `newTextureFromFile` exists
+- Modify: `docs/dev/superpowers/specs/2026-08-04-png-texture-from-file-design.md` (section 6 checkboxes → done)
+- Optional: one-line note in `docs/dev/2D渲染API设计.md` §6 that `newTextureFromFile` exists
 
 - [ ] **Step 1: Mark acceptance criteria checked** in the spec file after Task 3 passes.
 - [ ] **Step 2: Stop** — do not start Quad UV / Camera2D.

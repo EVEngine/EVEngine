@@ -53,7 +53,7 @@ RPGActor : ecs::Entity
   Skills     { unordered_map<string, SkillRuntime> known; CastingState casting }
 ```
 
-游戏可以直接用 `RPGActor`，也可以仿照 `docs/游戏模型设计.md` 的示例从它派生出
+游戏可以直接用 `RPGActor`，也可以仿照 `docs/dev/游戏模型设计.md` 的示例从它派生出
 `Player`/`Monster` 等子类，追加自己的组件——三大组件与配套 System 天然复用。
 
 `RPGActor::createActor()` 是推荐的工厂方法：除了创建实体外，还会把它加入

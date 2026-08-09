@@ -1,6 +1,6 @@
 # GoogleTest → zeroerr 测试框架迁移设计
 
-> 状态：已讨论确认；实现计划见 `docs/superpowers/plans/2026-08-04-zeroerr-test-framework.md`。  
+> 状态：已讨论确认；实现计划见 `docs/dev/superpowers/plans/2026-08-04-zeroerr-test-framework.md`。
 > 范围：用 [zeroerr](https://github.com/sunxfancy/zeroerr) 完全替换 GoogleTest；CTest 支持按用例单独运行；同步清理 third-party。
 
 ## 1. 目标
@@ -65,7 +65,7 @@ zeroerr 的 `TEST_CASE_FIXTURE` 只做「构造实例 → 调用测试方法」�
 - `test/ECS.cpp`、`test/RenderSystem.cpp`、`test/filesystem.cpp`、`test/graphic.cpp`、`test/model.cpp`、`test/mouse.cpp`、`test/simplesquirrel.cpp`、`test/window.cpp`
 - `test/CMakeLists.txt`
 - `cmake/ZeroErrDiscoverTests.cmake`（新增）
-- `docs/依赖项.md`、`docs/整体架构.md`
+- `docs/dev/依赖项.md`、`docs/dev/整体架构.md`
 
 ## 5. CMake / CTest
 

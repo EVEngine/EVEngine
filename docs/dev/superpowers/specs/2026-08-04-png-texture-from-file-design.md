@@ -1,8 +1,8 @@
 # PNG 文件加载 → GPU Texture 设计
 
-> 状态：已讨论确认；实现计划见 `docs/superpowers/plans/2026-08-04-png-texture-from-file.md`。  
-> 范围：**本轮只做 A**（文件 PNG → Texture）。Quad UV（B）、Camera2D（C）不在本 spec。  
-> 关联：[docs/2D渲染API设计.md](../../2D渲染API设计.md)
+> 状态：已讨论确认；实现计划见 `docs/dev/superpowers/plans/2026-08-04-png-texture-from-file.md`。
+> 范围：**本轮只做 A**（文件 PNG → Texture）。Quad UV（B）、Camera2D（C）不在本 spec。
+> 关联：[docs/dev/2D渲染API设计.md](../../2D渲染API设计.md)
 
 ## 1. 目标
 
