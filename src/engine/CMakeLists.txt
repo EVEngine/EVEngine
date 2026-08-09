@@ -1,5 +1,8 @@
 create_module(EVCommon common)
 create_module(EVDevTools devtools)
+# Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
+# (would request PocoFoundationd.lib instead of our *mdd postfix).
+target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVCmdLine cmdline)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
