@@ -119,6 +119,9 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     localSnap_.clear();
     lastReport_.clear();
 
+    Debugger::instance().attach(vm);
+    Debugger::instance().setPump([this]() { poll(); });
+
     sq_enabledebuginfo(vm_, SQTrue);
     sq_setnativedebughook(vm_, nativeDebugHook);
     g_active = this;
@@ -126,6 +129,8 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
 }
 
 void DevTool::detach() {
+    stopDap();
+    Debugger::instance().detach();
     if (vm_) {
         sq_setnativedebughook(vm_, nullptr);
         // Leave debuginfo enabled; harmless for subsequent runs on same VM.
@@ -134,6 +139,93 @@ void DevTool::detach() {
     vm_ = nullptr;
     localSnap_.clear();
     uninstallRenderTracer();
+}
+
+int DevTool::startDap(uint16_t port) { return DebugAdapter::instance().listen(port); }
+
+void DevTool::stopDap() { DebugAdapter::instance().stop(); }
+
+void DevTool::poll() { DebugAdapter::instance().poll(); }
+
+void DevTool::exposeScriptApi(ssq::VM& vm) {
+    try {
+        ssq::Table eveTbl = vm.find("eve").toTable();
+        ssq::Table dev    = eveTbl.addTable("dev");
+
+        dev.addFunc("pause", [this]() {
+            debugger().pause(PauseReason::PauseKey);
+            dap().notifyStopped(PauseReason::PauseKey, debugger().pauseLocation());
+        });
+        dev.addFunc("resume", [this]() {
+            debugger().resume();
+            dap().notifyContinued();
+        });
+        dev.addFunc("togglePause", [this]() {
+            if (debugger().isPaused()) {
+                debugger().resume();
+                dap().notifyContinued();
+            } else {
+                debugger().pause(PauseReason::PauseKey);
+                dap().notifyStopped(PauseReason::PauseKey, debugger().pauseLocation());
+            }
+        });
+        dev.addFunc("isPaused", [this]() { return debugger().isPaused(); });
+        dev.addFunc("stepFrame", [this]() { debugger().stepFrame(); });
+        dev.addFunc("stepLine", [this]() { debugger().stepLine(); });
+        dev.addFunc("shouldRunUpdate", [this]() { return debugger().shouldRunUpdate(); });
+        dev.addFunc("notifyFrameDone", [this]() {
+            const bool wasStep = debugger().mode() == RunMode::StepFrame;
+            debugger().notifyFrameDone();
+            if (wasStep || debugger().isPaused())
+                dap().notifyStopped(debugger().lastPauseReason(), debugger().pauseLocation());
+        });
+        dev.addFunc("poll", [this]() { poll(); });
+
+        dev.addFunc("setBreakpoint", [this](std::string source, int line) {
+            return debugger().setBreakpoint(std::move(source), line, true);
+        });
+        dev.addFunc("clearBreakpoint", [this](std::string source, int line) {
+            return debugger().clearBreakpoint(std::move(source), line);
+        });
+        dev.addFunc("clearBreakpoints", [this]() { debugger().clearBreakpoints(); });
+
+        dev.addFunc("addWatch", [this](std::string expr) { debugger().addWatch(std::move(expr)); });
+        dev.addFunc("removeWatch", [this](std::string expr) { return debugger().removeWatch(expr); });
+        dev.addFunc("clearWatches", [this]() { debugger().clearWatches(); });
+        dev.addFunc("eval", [this](std::string expr) {
+            auto info = debugger().evaluate(expr);
+            return info.value;
+        });
+
+        dev.addFunc("markStateRoot",
+                    [](std::string name) { Snapshot::instance().markRoot(std::move(name)); });
+        dev.addFunc("unmarkStateRoot",
+                    [](std::string name) { Snapshot::instance().unmarkRoot(name); });
+        dev.addFunc("saveSnapshot", [this](std::string path) {
+            std::string err;
+            const bool  ok = snapshot().saveFile(vm_, path, &err);
+            if (!ok) return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("loadSnapshot", [this](std::string path) {
+            std::string err;
+            const bool  ok = snapshot().loadFile(vm_, path, &err);
+            if (!ok) return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("captureSnapshot", [this]() {
+            std::string err;
+            return snapshot().capture(vm_, &err);
+        });
+        dev.addFunc("restoreSnapshot", [this](std::string json) {
+            std::string err;
+            const bool  ok = snapshot().restore(vm_, json, &err);
+            if (!ok) return std::string("error:") + err;
+            return std::string("ok");
+        });
+    } catch (...) {
+        // If eve table missing, skip — attach still useful for C++/DAP.
+    }
 }
 
 void DevTool::handleDebugEvent(HSQUIRRELVM vm, int type, const char* source, int line,
@@ -157,6 +249,11 @@ void DevTool::handleDebugEvent(HSQUIRRELVM vm, int type, const char* source, int
         case 'l':
             graph_.onLine(loc);
             if (sampleLocals_) sampleFrameLocals(vm, loc);
+            if (Debugger::instance().onScriptLine(loc)) {
+                dap().notifyStopped(Debugger::instance().lastPauseReason(), loc);
+                Debugger::instance().refreshWatches();
+                Debugger::instance().waitWhilePaused([this]() { poll(); });
+            }
             break;
         default:
             break;
@@ -311,6 +408,10 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     }
     if (report.empty()) report = std::string("Error: ") + errorMessage + "\n";
     lastReport_ = report;
+
+    debugger().pause(PauseReason::Exception);
+    dap().notifyStopped(PauseReason::Exception, site);
+
     return lastReport_;
 }
 

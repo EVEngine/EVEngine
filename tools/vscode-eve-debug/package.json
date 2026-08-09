@@ -1,0 +1,129 @@
+{
+  "name": "eve-debug",
+  "displayName": "EVEngine Squirrel Debug",
+  "description": "Debug Adapter for EVEngine Squirrel scripts (breakpoints, watches, pause, snapshots)",
+  "version": "0.1.0",
+  "publisher": "evengine",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Debuggers"
+  ],
+  "activationEvents": [
+    "onDebugResolve:eve",
+    "onCommand:eve-debug.start"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "eve-debug.start",
+        "title": "EVEngine: Start Debug Session"
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "squirrel"
+      },
+      {
+        "language": "nut"
+      }
+    ],
+    "languages": [
+      {
+        "id": "nut",
+        "aliases": [
+          "Squirrel",
+          "nut"
+        ],
+        "extensions": [
+          ".nut"
+        ]
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "eve",
+        "label": "EVEngine",
+        "languages": [
+          "nut",
+          "squirrel"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Game directory passed to `eve run`",
+                "default": "${workspaceFolder}"
+              },
+              "evePath": {
+                "type": "string",
+                "description": "Path to the eve executable",
+                "default": "eve"
+              },
+              "port": {
+                "type": "number",
+                "description": "DAP TCP port",
+                "default": 4711
+              },
+              "args": {
+                "type": "array",
+                "description": "Extra arguments after `eve run`",
+                "default": []
+              }
+            }
+          },
+          "attach": {
+            "required": [],
+            "properties": {
+              "port": {
+                "type": "number",
+                "description": "DAP TCP port of a running `eve run --dap-port`",
+                "default": 4711
+              },
+              "host": {
+                "type": "string",
+                "default": "127.0.0.1"
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "eve",
+            "request": "launch",
+            "name": "EVEngine: Debug game",
+            "program": "${workspaceFolder}",
+            "port": 4711
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "EVEngine: Launch",
+            "description": "Launch eve with DAP debugging",
+            "body": {
+              "type": "eve",
+              "request": "launch",
+              "name": "EVEngine: Debug game",
+              "program": "^\"\\${workspaceFolder}\"",
+              "port": 4711
+            }
+          },
+          {
+            "label": "EVEngine: Attach",
+            "description": "Attach to eve run --dap-port",
+            "body": {
+              "type": "eve",
+              "request": "attach",
+              "name": "EVEngine: Attach",
+              "port": 4711
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

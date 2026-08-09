@@ -57,6 +57,7 @@ file(GLOB all_test_cpp
   tensor.cpp
   callgraph.cpp
   renderflow.cpp
+  debugger.cpp
   main.cpp
 )
 
