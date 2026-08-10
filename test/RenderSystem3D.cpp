@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <SDL2/SDL.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <algorithm>
@@ -225,10 +226,16 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
 
     RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
 
-    for (int i = 0; i < 30; ++i) {
+    // ~1s of visible rotation so the smoke case is a real on-screen scene.
+    for (int i = 0; i < 60; ++i) {
         ent->transform()->yaw = float(i) * 0.05f;
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
     }
 
     win->close();

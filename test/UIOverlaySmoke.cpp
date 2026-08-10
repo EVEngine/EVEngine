@@ -11,6 +11,7 @@
 #include <SDL2/SDL.h>
 
 #include <cmath>
+#include <string>
 
 using namespace eve::graphics;
 using namespace eve::ui;
@@ -97,5 +98,105 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     CHECK(ui->current()->findById("label") != nullptr);
 
     gfx->setScreenReadbackEnabled(false);
+    win->close();
+}
+
+TEST_CASE("UI.smoke.panelGalleryPreview") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    auto *ui = UI::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    REQUIRE(ui != nullptr);
+
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 720;
+    s.height = 480;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+    REQUIRE(ui->initBackend());
+
+    gfx->setBackgroundColor(Color(0.09f, 0.10f, 0.14f, 1.0f));
+
+    auto *cam = Camera2D::createCamera();
+    cam->data()->r = 0.09f;
+    cam->data()->g = 0.10f;
+    cam->data()->b = 0.14f;
+
+    // Soft backdrop sprites so the world + overlay composition is obvious.
+    auto *bgA = Renderable2D::create();
+    bgA->transform()->x = 40;
+    bgA->transform()->y = 60;
+    bgA->sprite()->width = 220;
+    bgA->sprite()->height = 140;
+    bgA->sprite()->r = 0.25f;
+    bgA->sprite()->g = 0.45f;
+    bgA->sprite()->b = 0.75f;
+    bgA->sprite()->visible = true;
+
+    auto *bgB = Renderable2D::create();
+    bgB->transform()->x = 420;
+    bgB->transform()->y = 220;
+    bgB->sprite()->width = 180;
+    bgB->sprite()->height = 160;
+    bgB->sprite()->r = 0.75f;
+    bgB->sprite()->g = 0.35f;
+    bgB->sprite()->b = 0.45f;
+    bgB->sprite()->visible = true;
+
+    float volume = 0.55f;
+    bool muted = false;
+    int clicks = 0;
+
+    ui->mountAs("gallery",
+                window("EVEngine Preview",
+                       {
+                           text("UI overlay + world sprites", "title"),
+                           separator("sep0"),
+                           checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
+                           slider("Volume", volume, 0.f, 1.f, "vol", [&](float v) { volume = v; }),
+                           progress(volume, "prog", "level"),
+                           button("Ping", "ping", [&]() { ++clicks; }),
+                           text("clicks: 0", "clicks"),
+                       },
+                       "root"));
+
+    for (int frame = 0; frame < 90; ++frame) {
+        bgA->transform()->x = 40.f + float(frame) * 1.2f;
+        bgB->transform()->y = 220.f + std::sin(float(frame) * 0.08f) * 24.f;
+        volume = 0.35f + 0.3f * (0.5f + 0.5f * std::sin(float(frame) * 0.06f));
+
+        ui->remountAs("gallery",
+                      window("EVEngine Preview",
+                             {
+                                 text("UI overlay + world sprites", "title"),
+                                 separator("sep0"),
+                                 checkbox("Mute", muted, "mute", [&](bool v) { muted = v; }),
+                                 slider("Volume", volume, 0.f, 1.f, "vol",
+                                        [&](float v) { volume = v; }),
+                                 progress(volume, "prog", muted ? "muted" : "level"),
+                                 button("Ping", "ping", [&]() { ++clicks; }),
+                                 text("clicks: " + std::to_string(clicks) +
+                                          "  vol: " + std::to_string(int(volume * 100.f)),
+                                      "clicks"),
+                             },
+                             "root"));
+
+        ui->beginFrameAndRender();
+        RenderSystem::render(*gfx);
+        ui->dispatchEvents();
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            ui->processEvent(&e);
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    CHECK(UISystem::findHost("gallery") != nullptr);
+    bgA->sprite()->visible = false;
+    bgB->sprite()->visible = false;
     win->close();
 }

@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -82,6 +83,20 @@ void warmPresent(Graphics *gfx) {
     for (int i = 0; i < 3; ++i) {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
+    }
+}
+
+/** Live-render the shadow scene to the window for ~1s. */
+void previewScene(Graphics *gfx, int ms = 1000) {
+    const int frames = (ms >= 16) ? (ms / 16) : 1;
+    for (int i = 0; i < frames; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) return;
+        }
+        SDL_Delay(16);
     }
 }
 
@@ -189,6 +204,7 @@ TEST_CASE("Shadow3D.dirLightDarkensOccludedGround") {
     }
     REQUIRE(brightest > darkestGeom + 0.02f);
 
+    previewScene(gfx);
     win->close();
 }
 
@@ -214,5 +230,6 @@ TEST_CASE("Shadow3D.receiveShadowFalseIgnoresMap") {
     // Turning receiveShadow on must apply the shadow map and darken umbra texels.
     REQUIRE(maxLumaDelta(gfx, L_offRecv, L_onRecv) > 0.02f);
 
+    previewScene(gfx);
     win->close();
 }

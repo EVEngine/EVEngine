@@ -7,13 +7,19 @@
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
 
+#include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "window/Window.h"
+
+#include <SDL2/SDL.h>
 
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 using namespace eve::scene;
+using namespace eve::graphics;
 
 namespace {
 
@@ -286,4 +292,108 @@ TEST_CASE("Scene.module.queryWrappers") {
     CHECK(bfs[0] == "root");
     CHECK(bfs[1] == "p");
     CHECK(bfs[2] == "c");
+}
+
+TEST_CASE("Scene.render.parentChildOrbitPreview") {
+    if (ecs::current()->getManager<Renderable2D>() != nullptr) {
+        auto view = ecs::View<Renderable2D, Renderable2D::Sprite>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [sp] = *it;
+            sp->visible = false;
+        }
+    }
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 640;
+    s.height = 420;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    SceneHost *h = SceneHost::createHost("orbit");
+    h->setTree(node("root",
+                    {
+                        node("hub")
+                            .withSpace("2d")
+                            .withPosition(320.f, 210.f, 0.f)
+                            .withRotation(0.f, 0.f, 0.f),
+                        node("arm",
+                             {
+                                 node("hand").withSpace("2d").withPosition(90.f, 0.f, 0.f),
+                             })
+                            .withSpace("2d")
+                            .withPosition(320.f, 210.f, 0.f),
+                        node("moon").withSpace("2d").withPosition(420.f, 210.f, 0.f),
+                    })
+                   .withSpace("2d"));
+
+    auto *hub = Renderable2D::create();
+    hub->sprite()->width = 48;
+    hub->sprite()->height = 48;
+    hub->sprite()->r = 0.95f;
+    hub->sprite()->g = 0.75f;
+    hub->sprite()->b = 0.25f;
+    hub->sprite()->visible = true;
+
+    auto *hand = Renderable2D::create();
+    hand->sprite()->width = 28;
+    hand->sprite()->height = 28;
+    hand->sprite()->r = 0.35f;
+    hand->sprite()->g = 0.85f;
+    hand->sprite()->b = 1.f;
+    hand->sprite()->visible = true;
+
+    auto *moon = Renderable2D::create();
+    moon->sprite()->width = 22;
+    moon->sprite()->height = 22;
+    moon->sprite()->r = 0.85f;
+    moon->sprite()->g = 0.45f;
+    moon->sprite()->b = 0.95f;
+    moon->sprite()->visible = true;
+
+    REQUIRE(h->linkRenderable2D("hub", hub));
+    REQUIRE(h->linkRenderable2D("hand", hand));
+    REQUIRE(h->linkRenderable2D("moon", moon));
+
+    auto *cam = Camera2D::createCamera();
+    cam->data()->r = 0.08f;
+    cam->data()->g = 0.09f;
+    cam->data()->b = 0.12f;
+
+    float handTravel = 0.f;
+    float prevHX = hand->transform()->x;
+    for (int frame = 0; frame < 90; ++frame) {
+        const float t = float(frame) * 0.06f;
+        SceneNode *arm = h->findById("arm");
+        SceneNode *moonN = h->findById("moon");
+        REQUIRE(arm != nullptr);
+        REQUIRE(moonN != nullptr);
+        arm->roll = t;
+        arm->localDirty = true;
+        moonN->x = 320.f + std::cos(t * 1.4f) * 120.f;
+        moonN->y = 210.f + std::sin(t * 1.4f) * 70.f;
+        moonN->localDirty = true;
+
+        TransformSystem::updateHost(h);
+        RenderSystem::render(*gfx);
+
+        handTravel += std::fabs(hand->transform()->x - prevHX);
+        prevHX = hand->transform()->x;
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    CHECK_GT(handTravel, 50.f);
+    hub->sprite()->visible = false;
+    hand->sprite()->visible = false;
+    moon->sprite()->visible = false;
+    win->close();
 }

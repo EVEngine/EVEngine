@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -172,6 +173,21 @@ void warmPresent(Graphics *gfx) {
     }
 }
 
+/** Spin the given entity so IBL / env reflections are visibly readable (~1s). */
+void previewRotating(Graphics *gfx, Renderable3D *ent, int ms = 1000) {
+    const int frames = (ms >= 16) ? (ms / 16) : 1;
+    for (int i = 0; i < frames; ++i) {
+        if (ent != nullptr) ent->transform()->yaw = float(i) * 0.04f;
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) return;
+        }
+        SDL_Delay(16);
+    }
+}
+
 }  // namespace
 
 TEST_CASE("IBL.metallicPicksUpEnvColor") {
@@ -212,6 +228,9 @@ TEST_CASE("IBL.metallicPicksUpEnvColor") {
     REQUIRE(c1.r > c0.r + 0.04f);
     REQUIRE(c1.r > c1.g + 0.03f);
     REQUIRE(c1.r > c1.b + 0.03f);
+
+    // Hold the red-env metal sphere so the tint is visible while debugging.
+    previewRotating(gfx, ent);
 
     cam->setEnvIntensity(0.f);
     warmPresent(gfx);
@@ -368,6 +387,7 @@ TEST_CASE("IBL.dielectricEnvWeakerThanMetal") {
     REQUIRE(cMetal.r > cDielectric.r + 0.05f);
     REQUIRE(cMetal.r > cMetal.g + 0.03f);
 
+    previewRotating(gfx, ent);
     win->close();
 }
 
@@ -412,6 +432,7 @@ TEST_CASE("IBL.plusZFaceTintsSmoothMetal") {
     REQUIRE(c.g > c.r + 0.03f);
     REQUIRE(c.b > c.r + 0.03f);
 
+    previewRotating(gfx, ent);
     win->close();
 }
 
@@ -465,6 +486,7 @@ TEST_CASE("IBL.studioEnvBrightensMetal") {
     const float L1 = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
 
     REQUIRE(L1 > L0 + 0.03f);
+    previewRotating(gfx, ent);
     win->close();
 }
 
@@ -506,5 +528,10 @@ TEST_CASE("IBL.outdoorSkyDiffersFromStudio") {
     const float db = std::abs(cStudio.b - cSky.b);
     REQUIRE(dr + dg + db > 0.04f);
 
+    // Studio then outdoor sky, each held briefly so the env change is visible.
+    cam->setEnvMap(loadEnvCubemap(gfx, "studio_small_09"));
+    previewRotating(gfx, ent, 800);
+    cam->setEnvMap(loadEnvCubemap(gfx, "kloppenheim_06_puresky"));
+    previewRotating(gfx, ent, 800);
     win->close();
 }

@@ -12,11 +12,15 @@
 #include "animation/MotionMatcher.h"
 
 #include "common/Exception.h"
+#include "graphics/Graphics.h"
+#include "window/Window.h"
 
+#include <SDL2/SDL.h>
 #include <cmath>
 #include <fstream>
 #include <memory>
 #include <string>
+#include <vector>
 
 using namespace eve::animation;
 
@@ -337,4 +341,135 @@ TEST_CASE("animation.mixamo.moduleEvaFactories") {
     sm->setFloat("speed", 10.f);
     sm->update(0.016f);
     CHECK(sm->getCurrentState() == "Run");
+}
+
+/** Project Mixamo world cm → screen; Y-up world, Y-down screen. */
+static void projectBone(float wx, float wy, float wz, float rootX, float rootZ, float scale,
+                        float originX, float originY, float &sx, float &sy) {
+    sx = originX + (wx - rootX) * scale;
+    sy = originY - wy * scale;
+    (void)wz;
+    (void)rootZ;
+}
+
+static void drawBoneSegment(eve::graphics::Graphics *gfx, float x0, float y0, float x1, float y1,
+                            const Color &color) {
+    const float dx = x1 - x0;
+    const float dy = y1 - y0;
+    const float len = std::sqrt(dx * dx + dy * dy);
+    if (len < 0.5f) return;
+    const float steps = std::max(1.f, len / 3.f);
+    for (float t = 0.f; t <= 1.f; t += 1.f / steps) {
+        const float x = x0 + dx * t;
+        const float y = y0 + dy * t;
+        gfx->drawSolidRect(x - 1.5f, y - 1.5f, 3.f, 3.f, color);
+    }
+}
+
+TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
+    auto pack = loadMixamoEva();
+    std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
+    sm->addState("Idle", pack.idle.get());
+    sm->addState("Run", pack.run.get());
+    sm->addState("Jump", pack.jump.get());
+    sm->setEntry("Idle");
+
+    int toRun = sm->addTransition("Idle", "Run", 0.12f);
+    sm->addFloatCondition(toRun, "speed", ">", 50.f);
+    int toIdle = sm->addTransition("Run", "Idle", 0.12f);
+    sm->addFloatCondition(toIdle, "speed", "<", 10.f);
+    int toJump = sm->addTransition("Idle", "Jump", 0.08f);
+    sm->addTriggerCondition(toJump, "jump");
+    int jumpToIdle = sm->addTransition("Jump", "Idle", 0.1f);
+    sm->setExitTime(jumpToIdle, 0.85f);
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 480;
+    s.height = 640;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    const int hips = pack.skeleton->findBone("mixamorig:Hips");
+    REQUIRE(hips >= 0);
+    const float scale = 2.2f;
+    const float originX = float(gfx->getWidth()) * 0.5f;
+    const float originY = float(gfx->getHeight()) - 40.f;
+
+    gfx->setBackgroundColorRGBA(0.07f, 0.08f, 0.11f, 1.f);
+
+    // Phase timeline (~2.4s): Idle → Run → Idle → Jump → Idle
+    enum Phase { IdleA, RunA, IdleB, JumpA, IdleC };
+    Phase phase = IdleA;
+    int phaseFrames = 0;
+    int drawnBones = 0;
+
+    for (int frame = 0; frame < 150; ++frame) {
+        ++phaseFrames;
+        if (phase == IdleA && phaseFrames > 30) {
+            sm->setFloat("speed", 200.f);
+            phase = RunA;
+            phaseFrames = 0;
+        } else if (phase == RunA && phaseFrames > 40) {
+            sm->setFloat("speed", 0.f);
+            phase = IdleB;
+            phaseFrames = 0;
+        } else if (phase == IdleB && phaseFrames > 20) {
+            sm->setTrigger("jump");
+            phase = JumpA;
+            phaseFrames = 0;
+        } else if (phase == JumpA && phaseFrames > 35) {
+            phase = IdleC;
+            phaseFrames = 0;
+        }
+
+        sm->update(0.016f);
+        AnimPose *pose = sm->getPose();
+        pose->computeWorld(pack.skeleton.get());
+
+        const float rootX = pose->getWorldPositionX(hips);
+        const float rootZ = pose->getWorldPositionZ(hips);
+
+        gfx->clearScreen();
+        // Ground line
+        gfx->drawSolidRect(40.f, originY, float(gfx->getWidth()) - 80.f, 2.f,
+                           Color(0.25f, 0.28f, 0.35f, 1.f));
+
+        drawnBones = 0;
+        const int n = pack.skeleton->getBoneCount();
+        for (int b = 0; b < n; ++b) {
+            const int parent = pack.skeleton->getParent(b);
+            float sx, sy;
+            projectBone(pose->getWorldPositionX(b), pose->getWorldPositionY(b),
+                        pose->getWorldPositionZ(b), rootX, rootZ, scale, originX, originY, sx, sy);
+
+            if (parent >= 0) {
+                float px, py;
+                projectBone(pose->getWorldPositionX(parent), pose->getWorldPositionY(parent),
+                            pose->getWorldPositionZ(parent), rootX, rootZ, scale, originX, originY,
+                            px, py);
+                Color boneCol(0.55f, 0.85f, 1.f, 1.f);
+                if (phase == RunA) boneCol = Color(0.4f, 1.f, 0.55f, 1.f);
+                if (phase == JumpA) boneCol = Color(1.f, 0.75f, 0.3f, 1.f);
+                drawBoneSegment(gfx, px, py, sx, sy, boneCol);
+            }
+            gfx->drawSolidRect(sx - 2.f, sy - 2.f, 4.f, 4.f, Color(1.f, 1.f, 1.f, 1.f));
+            ++drawnBones;
+        }
+
+        gfx->present();
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    CHECK_EQ(drawnBones, 70);
+    CHECK(sm->getCurrentState() == "Idle");
+    win->close();
 }

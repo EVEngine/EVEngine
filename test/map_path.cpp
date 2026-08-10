@@ -7,10 +7,17 @@
 #include "map/Path.h"
 #include "map/FlowField.h"
 #include "map/TileOrientation.h"
+#include "graphics/Graphics.h"
+#include "window/Window.h"
 
+#include <SDL2/SDL.h>
+
+#include <cmath>
 #include <string>
+#include <vector>
 
 using namespace eve::map;
+using namespace eve::graphics;
 
 namespace {
 
@@ -286,4 +293,93 @@ TEST_CASE("map.path.nullLayerReturnsNull") {
     auto *mod = Map::create();
     CHECK(mod->newPathfinder(nullptr) == nullptr);
     CHECK(mod->newPathfinderSize(0, 5) == nullptr);
+}
+
+TEST_CASE("map.path.astar.routePreview") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 640;
+    s.height = 400;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    const int mw = 16;
+    const int mh = 10;
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(mw, mh, 16.f, 16.f);
+    fillOpen(layer, 2);
+    // Vertical wall with a gap, plus a few scattered blocks.
+    for (int y = 0; y < mh; ++y) layer->setTile(6, y, 1);
+    layer->setTile(6, 4, 2);
+    layer->setTile(6, 5, 2);
+    wallRect(layer, 10, 1, 10, 7, 1);
+    layer->setTile(10, 3, 2);
+    layer->setTile(3, 2, 1);
+    layer->setTile(3, 7, 1);
+    layer->setTile(12, 8, 1);
+
+    Pathfinder *pf = mod->newPathfinder(layer);
+    REQUIRE(pf != nullptr);
+    pf->blockGid(1);
+    pf->setTopology("ortho4");
+
+    Path *path = pf->findPath(1, 4, 14, 4);
+    REQUIRE(path != nullptr);
+    REQUIRE(path->getLength() > 0);
+    CHECK(pathWalkable(path, pf));
+
+    const float cell = 28.f;
+    const float ox = (float(gfx->getWidth()) - float(mw) * cell) * 0.5f;
+    const float oy = (float(gfx->getHeight()) - float(mh) * cell) * 0.5f;
+
+    gfx->setBackgroundColorRGBA(0.07f, 0.08f, 0.11f, 1.f);
+    int markerAt = 0;
+
+    for (int frame = 0; frame < 100; ++frame) {
+        gfx->clearScreen();
+        for (int y = 0; y < mh; ++y) {
+            for (int x = 0; x < mw; ++x) {
+                const int gid = layer->getTile(x, y);
+                Color c = (gid == 1) ? Color(0.25f, 0.28f, 0.35f, 1.f)
+                                     : Color(0.55f, 0.58f, 0.48f, 1.f);
+                gfx->drawSolidRect(ox + float(x) * cell, oy + float(y) * cell, cell - 1.f,
+                                   cell - 1.f, c);
+            }
+        }
+
+        // Draw full path corridor.
+        for (int i = 0; i < path->getLength(); ++i) {
+            const float px = ox + float(path->getX(i)) * cell + 6.f;
+            const float py = oy + float(path->getY(i)) * cell + 6.f;
+            gfx->drawSolidRect(px, py, cell - 12.f, cell - 12.f, Color(0.35f, 0.75f, 1.f, 1.f));
+        }
+
+        // Animate a runner along the path.
+        markerAt = (frame / 2) % path->getLength();
+        const float mx = ox + float(path->getX(markerAt)) * cell + 4.f;
+        const float my = oy + float(path->getY(markerAt)) * cell + 4.f;
+        gfx->drawSolidRect(mx, my, cell - 8.f, cell - 8.f, Color(1.f, 0.45f, 0.25f, 1.f));
+
+        // Start / goal markers.
+        gfx->drawSolidRect(ox + 1.f * cell + 2.f, oy + 4.f * cell + 2.f, cell - 4.f, cell - 4.f,
+                           Color(0.4f, 0.95f, 0.45f, 1.f));
+        gfx->drawSolidRect(ox + 14.f * cell + 2.f, oy + 4.f * cell + 2.f, cell - 4.f, cell - 4.f,
+                           Color(0.95f, 0.85f, 0.3f, 1.f));
+
+        gfx->present();
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    CHECK_GT(path->getLength(), 8);
+    delete path;
+    delete pf;
+    win->close();
 }

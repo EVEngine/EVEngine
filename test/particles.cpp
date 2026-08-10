@@ -5,13 +5,29 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
+#include "window/Window.h"
 
+#include <SDL2/SDL.h>
 #include <cmath>
 #include <cstring>
 #include <string>
 
 using namespace eve::particles;
+
+namespace {
+
+void hideAllEmitters() {
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
+    auto view = ecs::View<ParticleEmitter, ParticleEmitter::Draw>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [draw] = *it;
+        draw->visible = false;
+    }
+}
+
+}  // namespace
 
 TEST_CASE("particles.newEmitter.ecsView") {
     auto *mod = Particles::create();
@@ -299,4 +315,66 @@ TEST_CASE("particles.config.newEmitterFromFile") {
     CHECK(std::abs(e->getEmissionRate() - 25.f) < 1e-4f);
     CHECK(e->isActive());
     CHECK_EQ(e->getConfigPath(), std::string(name));
+}
+
+TEST_CASE("particles.render.fireAndSmokePreview") {
+    hideAllEmitters();
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 480;
+    s.height = 360;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    auto *mod = Particles::create();
+    ParticleEmitter *fire = mod->newEmitter(256);
+    fire->applyPreset("fire");
+    fire->setPosition(float(gfx->getWidth()) * 0.5f, float(gfx->getHeight()) * 0.72f);
+    fire->setVisible(true);
+    fire->start();
+
+    ParticleEmitter *smoke = mod->newEmitter(128);
+    smoke->applyPreset("smoke");
+    smoke->setPosition(float(gfx->getWidth()) * 0.5f, float(gfx->getHeight()) * 0.62f);
+    smoke->setVisible(true);
+    smoke->start();
+
+    ParticleEmitter *spark = mod->newEmitter(96);
+    spark->applyPreset("spark");
+    spark->setPosition(float(gfx->getWidth()) * 0.5f, float(gfx->getHeight()) * 0.55f);
+    spark->setVisible(true);
+    spark->start();
+
+    // Seed a few frames so the first present already has particles.
+    for (int i = 0; i < 8; ++i) ParticleSimSystem::update(0.016f);
+
+    gfx->setBackgroundColorRGBA(0.05f, 0.05f, 0.08f, 1.f);
+    int framesAlive = 0;
+    for (int frame = 0; frame < 90; ++frame) {
+        ParticleSimSystem::update(0.016f);
+        gfx->clearScreen();
+        ParticleRenderSystem::render(gfx);
+        gfx->present();
+
+        if (fire->getCount() > 0) ++framesAlive;
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    CHECK_GT(framesAlive, 30);
+    CHECK_GT(fire->getCount(), 0);
+
+    fire->setVisible(false);
+    smoke->setVisible(false);
+    spark->setVisible(false);
+    win->close();
 }

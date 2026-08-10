@@ -5,11 +5,17 @@
 #include "physics/World.h"
 #include "physics/Body.h"
 #include "physics/Fixture.h"
+#include "graphics/Graphics.h"
+#include "window/Window.h"
+
+#include <SDL2/SDL.h>
 
 #include <cmath>
 #include <memory>
+#include <vector>
 
 using namespace eve::physics;
+using namespace eve::graphics;
 
 TEST_CASE("box2d.module.meter") {
     auto *mod = Physics::create();
@@ -132,4 +138,142 @@ TEST_CASE("box2d.world.destroyInvalidates") {
     CHECK(std::fabs(b->getX()) < 0.001f);
     delete b;
     delete world;
+}
+
+static void drawFilledCircle(Graphics *gfx, float cx, float cy, float r, const Color &c) {
+    const int steps = 12;
+    for (int i = 0; i < steps; ++i) {
+        const float a0 = float(i) * 6.2831853f / float(steps);
+        const float a1 = float(i + 1) * 6.2831853f / float(steps);
+        const float x0 = cx + std::cos(a0) * r;
+        const float y0 = cy + std::sin(a0) * r;
+        const float x1 = cx + std::cos(a1) * r;
+        const float y1 = cy + std::sin(a1) * r;
+        // Approximate pie with a small rect along the rim.
+        gfx->drawSolidRect((x0 + x1) * 0.5f - 2.f, (y0 + y1) * 0.5f - 2.f, 4.f, 4.f, c);
+        gfx->drawSolidRect(cx - 2.f, cy - 2.f, 4.f, 4.f, c);
+    }
+    // Fill denser disk
+    for (float rad = r; rad > 0.f; rad -= 3.f) {
+        for (int i = 0; i < steps; ++i) {
+            const float a = float(i) * 6.2831853f / float(steps);
+            gfx->drawSolidRect(cx + std::cos(a) * rad - 2.f, cy + std::sin(a) * rad - 2.f, 4.f, 4.f,
+                               c);
+        }
+    }
+}
+
+static void drawOrientedBox(Graphics *gfx, float cx, float cy, float w, float h, float angle,
+                            const Color &c) {
+    const float hw = w * 0.5f;
+    const float hh = h * 0.5f;
+    const float ca = std::cos(angle);
+    const float sa = std::sin(angle);
+    auto corner = [&](float lx, float ly, float &ox, float &oy) {
+        ox = cx + lx * ca - ly * sa;
+        oy = cy + lx * sa + ly * ca;
+    };
+    float x0, y0, x1, y1, x2, y2, x3, y3;
+    corner(-hw, -hh, x0, y0);
+    corner(hw, -hh, x1, y1);
+    corner(hw, hh, x2, y2);
+    corner(-hw, hh, x3, y3);
+    auto edge = [&](float ax, float ay, float bx, float by) {
+        const float dx = bx - ax;
+        const float dy = by - ay;
+        const float len = std::sqrt(dx * dx + dy * dy);
+        const float steps = std::max(1.f, len / 3.f);
+        for (float t = 0.f; t <= 1.f; t += 1.f / steps)
+            gfx->drawSolidRect(ax + dx * t - 2.f, ay + dy * t - 2.f, 4.f, 4.f, c);
+    };
+    edge(x0, y0, x1, y1);
+    edge(x1, y1, x2, y2);
+    edge(x2, y2, x3, y3);
+    edge(x3, y3, x0, y0);
+    gfx->drawSolidRect(cx - 3.f, cy - 3.f, 6.f, 6.f, c);
+}
+
+TEST_CASE("box2d.render.fallingStackPreview") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 640;
+    s.height = 480;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    auto *mod = Physics::create();
+    mod->setMeter(30.f);
+    std::unique_ptr<World> world(mod->newWorld(0.f, 1200.f, true));
+
+    Body *ground = world->newBody("static", 320.f, 440.f);
+    ground->newRectangleFixture(600.f, 30.f, 0.f, 0.6f, 0.1f);
+
+    Body *ledge = world->newBody("static", 480.f, 280.f);
+    ledge->newRectangleFixture(180.f, 20.f, 0.f, 0.5f, 0.05f);
+    ledge->setAngle(0.25f);
+
+    struct Dyn {
+        Body *body;
+        float w, h;
+        bool circle;
+        Color color;
+    };
+    std::vector<Dyn> dyn;
+    const Color palette[] = {
+        Color(0.95f, 0.45f, 0.35f, 1.f), Color(0.35f, 0.75f, 0.95f, 1.f),
+        Color(0.45f, 0.9f, 0.5f, 1.f),   Color(0.95f, 0.85f, 0.35f, 1.f),
+        Color(0.8f, 0.5f, 0.95f, 1.f),
+    };
+    for (int i = 0; i < 8; ++i) {
+        Body *b = world->newBody("dynamic", 220.f + float(i % 4) * 45.f, 40.f + float(i) * 28.f);
+        const bool circle = (i % 3 == 0);
+        if (circle) {
+            b->newCircleFixture(16.f, 1.f, 0.3f, 0.55f);
+            dyn.push_back({b, 32.f, 32.f, true, palette[i % 5]});
+        } else {
+            b->newRectangleFixture(34.f, 28.f, 1.f, 0.35f, 0.15f);
+            dyn.push_back({b, 34.f, 28.f, false, palette[i % 5]});
+        }
+    }
+
+    // Launch a fast ball into the stack.
+    Body *bullet = world->newBody("dynamic", 40.f, 200.f);
+    bullet->newCircleFixture(14.f, 1.f, 0.2f, 0.7f);
+    bullet->setLinearVelocity(520.f, -40.f);
+    dyn.push_back({bullet, 28.f, 28.f, true, Color(1.f, 1.f, 1.f, 1.f)});
+
+    gfx->setBackgroundColorRGBA(0.08f, 0.09f, 0.12f, 1.f);
+    float maxY = 0.f;
+    for (int frame = 0; frame < 120; ++frame) {
+        world->update(1.f / 60.f);
+        gfx->clearScreen();
+
+        drawOrientedBox(gfx, ground->getX(), ground->getY(), 600.f, 30.f, ground->getAngle(),
+                        Color(0.35f, 0.38f, 0.45f, 1.f));
+        drawOrientedBox(gfx, ledge->getX(), ledge->getY(), 180.f, 20.f, ledge->getAngle(),
+                        Color(0.45f, 0.42f, 0.38f, 1.f));
+
+        for (const Dyn &d : dyn) {
+            if (d.circle)
+                drawFilledCircle(gfx, d.body->getX(), d.body->getY(), d.w * 0.5f, d.color);
+            else
+                drawOrientedBox(gfx, d.body->getX(), d.body->getY(), d.w, d.h, d.body->getAngle(),
+                                d.color);
+            maxY = std::max(maxY, d.body->getY());
+        }
+
+        gfx->present();
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    CHECK_GT(maxY, 200.f);
+    win->close();
 }

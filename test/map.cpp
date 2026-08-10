@@ -9,12 +9,30 @@
 #include "map/DualGrid.h"
 #include "map/MapObject.h"
 #include "graphics/DrawItem2D.h"
+#include "graphics/Graphics.h"
+#include "window/Window.h"
 #include "data/DataModule.h"
 
+#include <SDL2/SDL.h>
+#include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
 
 using namespace eve::map;
+
+namespace {
+
+void hideAllTileLayers() {
+    if (ecs::current()->getManager<TileLayer>() == nullptr) return;
+    auto view = ecs::View<TileLayer, TileLayer::Draw>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [draw] = *it;
+        draw->visible = false;
+    }
+}
+
+}  // namespace
 
 TEST_CASE("map.newLayer.ecsView") {
     auto *mod = Map::create();
@@ -785,4 +803,68 @@ TEST_CASE("map.dualGrid.render.isometricDisplayDepth") {
     display->clear();
     logic->setVisible(false);
     display->setVisible(false);
+}
+
+TEST_CASE("map.render.orthoAndIsoPreview") {
+    hideAllTileLayers();
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 640;
+    s.height = 400;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    auto *mod = Map::create();
+
+    // Left: orthogonal concentric rings (solidForGid colors, no atlas needed).
+    TileLayer *ortho = mod->newLayer(10, 8, 28.f, 28.f);
+    ortho->config()->orientation = MapOrientation::Orthogonal;
+    ortho->setOrigin(40.f, 40.f);
+    for (int y = 0; y < 8; ++y) {
+        for (int x = 0; x < 10; ++x) {
+            const int ring = std::min({x, y, 9 - x, 7 - y});
+            ortho->setTile(x, y, uint32_t(1 + ring));
+        }
+    }
+    ortho->setVisible(true);
+
+    // Right: isometric diamond so projection is visibly different.
+    TileLayer *iso = mod->newLayer(6, 6, 48.f, 24.f);
+    iso->config()->orientation = MapOrientation::Isometric;
+    iso->setOrigin(420.f, 80.f);
+    for (int y = 0; y < 6; ++y) {
+        for (int x = 0; x < 6; ++x) {
+            iso->setTile(x, y, uint32_t(3 + ((x + y) % 4)));
+        }
+    }
+    iso->setVisible(true);
+
+    std::vector<eve::graphics::DrawItem2D> items;
+    TileRenderSystem::collect(items);
+    REQUIRE(items.size() == 10u * 8u + 6u * 6u);
+
+    gfx->setBackgroundColorRGBA(0.08f, 0.09f, 0.12f, 1.f);
+    for (int frame = 0; frame < 75; ++frame) {
+        ortho->setOrigin(40.f + float(frame) * 0.15f, 40.f);
+        iso->setOrigin(420.f, 80.f + float(std::sin(float(frame) * 0.08f)) * 6.f);
+
+        gfx->clearScreen();
+        mod->render(gfx);
+        gfx->present();
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    ortho->setVisible(false);
+    iso->setVisible(false);
+    win->close();
 }

@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <SDL2/SDL.h>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -41,6 +42,23 @@ Texture *makeSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 2
 }
 
 float luma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
+
+/** Hold a textured canvas / texture on the swapchain for ~1s. */
+void previewTexture(Graphics *gfx, Texture *tex, int ms = 1000) {
+    gfx->setBackgroundColorRGBA(0.05f, 0.05f, 0.08f, 1.f);
+    const int frames = (ms >= 16) ? (ms / 16) : 1;
+    for (int i = 0; i < frames; ++i) {
+        gfx->clearScreen();
+        gfx->drawTexturedRectRGBA(tex, 0, 0, float(gfx->getWidth()), float(gfx->getHeight()), 1, 1, 1,
+                                  1);
+        gfx->present();
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) return;
+        }
+        SDL_Delay(16);
+    }
+}
 
 }  // namespace
 
@@ -144,6 +162,9 @@ TEST_CASE("volumetric.occlusionMapAndScatter") {
         }
     }
     CHECK(maxL > 0.05f);
+
+    previewTexture(gfx, shafts->getTexture());
+    win->close();
 }
 
 TEST_CASE("volumetric.applyFromScene") {
@@ -176,6 +197,9 @@ TEST_CASE("volumetric.applyFromScene") {
     const Color farCorner = out->getPixel(10, 140);
     CHECK(luma(nearLight) > luma(farCorner));
     CHECK(luma(nearLight) > 0.2f);
+
+    previewTexture(gfx, out->getTexture());
+    win->close();
 }
 
 TEST_CASE("volumetric.drawOcclusionRespectsFlag") {
@@ -309,6 +333,9 @@ TEST_CASE("volumetric.rayMarchProducesScatter") {
     }
     CHECK(maxL > 0.005f);
     CHECK(sum / float(std::max(n, 1)) > 0.0005f);
+
+    previewTexture(gfx, out->getTexture());
+    win->close();
 }
 
 TEST_CASE("volumetric.rayMarchShadowDarkensBehindOccluder") {
@@ -494,6 +521,9 @@ TEST_CASE("volumetric.applyFogProducesOpacity") {
     }
     CHECK(maxA > 0.02f);
     CHECK(maxL > 0.01f);
+
+    previewTexture(gfx, out->getTexture());
+    win->close();
 }
 
 TEST_CASE("volumetric.fogDenserAtDistance") {

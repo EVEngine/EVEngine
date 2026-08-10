@@ -15,6 +15,7 @@
 #include "image/ImageData.h"
 #include "window/Window.h"
 
+#include <SDL2/SDL.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <assimp/material.h>
@@ -374,19 +375,24 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName,
     const float lz = cz - (cz + rad * 1.8f);
     RenderSystem3D::setDirectionalLight(lx, ly + rad * 1.2f, lz, 1.8f, 1.8f, 1.8f);
 
-    for (int i = 0; i < 10; ++i) {
+    // ~1s live rotation so the asset is visibly on screen before PNG capture.
+    for (int i = 0; i < 60; ++i) {
         if (ecs::current()->getManager<Renderable3D>() != nullptr) {
             auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
             for (auto it = view.begin(); it != view.end(); ++it) {
                 auto [xf, mr] = *it;
                 if (!mr->visible)
                     continue;
-                // Gentle yaw so materials stay readable in the last saved frame.
-                xf->yaw = float(i) * 0.06f;
+                xf->yaw = float(i) * 0.05f;
             }
         }
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
     }
 
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);

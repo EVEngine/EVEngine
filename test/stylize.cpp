@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdio>
 #include <filesystem>
@@ -515,6 +516,22 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
             }
         }
         CHECK_GT(warm, 20);
+
+        // Live gallery: hold each style on the window so the look is visible.
+        Texture *preview = gfx->newTexture(styled.get());
+        REQUIRE(preview != nullptr);
+        gfx->setBackgroundColor(::Color(0.08f, 0.08f, 0.1f, 1.f));
+        for (int frame = 0; frame < 40; ++frame) {
+            gfx->clearScreen();
+            gfx->drawTexturedRect(preview, 0.f, 0.f, float(gfx->getWidth()), float(gfx->getHeight()),
+                                  ::Color(1.f, 1.f, 1.f, 1.f));
+            gfx->present();
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) break;
+            }
+            SDL_Delay(16);
+        }
     }
 
     win->close();

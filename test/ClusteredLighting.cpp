@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <SDL2/SDL.h>
 #include <cmath>
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
@@ -146,6 +147,19 @@ TEST_CASE("ClusteredLighting.manyPointLightsBrightenCenter") {
     const float L_off = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
 
     REQUIRE(L_on > L_off + 0.04f);
+
+    // Re-enable the ring of lights and spin so clustered lighting is visible.
+    for (auto *L : lights) L->setEnabled(true);
+    for (int i = 0; i < 60; ++i) {
+        ent->transform()->yaw = float(i) * 0.04f;
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
 
     dir->setEnabled(false);
     win->close();
