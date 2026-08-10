@@ -1,5 +1,6 @@
 // Script ECS demo — define Component / Entity classes, drive with a System.
 // Use as main.nut (or copy the class definitions into your game).
+// GPU variant: see gpu_main.nut (eve.ShaderSystem + compute shader).
 
 class Position extends eve.Component {
     x = 0.0

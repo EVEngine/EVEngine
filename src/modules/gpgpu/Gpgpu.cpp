@@ -1,11 +1,15 @@
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/ComputeShader.h"
+#include "gpgpu/EcsScriptPack.h"
 #include "gpgpu/GpuBuffer.h"
+#include "gpgpu/ShaderSystem.h"
 #include "gpgpu/VulkanUtil.h"
 
 #include "common/Exception.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+
+#include <functional>
 
 namespace eve::gpgpu {
 namespace {
@@ -161,6 +165,34 @@ void Gpgpu::expose(ssq::Table &table) {
     buf.addFunc("writeFloat32", &GpuBuffer::writeFloat32);
     buf.addFunc("readFloat32", &GpuBuffer::readFloat32);
     buf.addFunc("fillFloat32", &GpuBuffer::fillFloat32);
+
+    // Native ECS↔GPU helper (used by eve.ShaderSystem script class).
+    auto ecsSys = table.addClass<ShaderSystem>(
+        "EcsShaderSystem",
+        std::function<ShaderSystem *()>([]() -> ShaderSystem * { return new ShaderSystem(); }),
+        true);
+    ecsSys.addFunc("setGpgpu", &ShaderSystem::setGpgpu);
+    ecsSys.addFunc("getGpgpu", &ShaderSystem::getGpgpu);
+    ecsSys.addFunc("setShaderSource", &ShaderSystem::setShaderSource);
+    ecsSys.addFunc("setShader", std::function<void(ShaderSystem *, ComputeShader *)>(
+                                    [](ShaderSystem *self, ComputeShader *s) {
+                                        if (self) self->setShader(s, false);
+                                    }));
+    ecsSys.addFunc("getShader", &ShaderSystem::getShader);
+    ecsSys.addFunc("setLocalSize", &ShaderSystem::setLocalSize);
+    ecsSys.addFunc("getLocalSize", &ShaderSystem::getLocalSize);
+    ecsSys.addFunc("ensureBuffer", &ShaderSystem::ensureBuffer);
+    ecsSys.addFunc("getBuffer", &ShaderSystem::getBuffer);
+    ecsSys.addFunc("setFloat", &ShaderSystem::setFloat);
+    ecsSys.addFunc("getFloat", &ShaderSystem::getFloat);
+    ecsSys.addFunc("dispatch", std::function<void(ShaderSystem *, int, float)>(
+                                   [](ShaderSystem *self, int n, float dt) {
+                                       if (self) self->dispatch(n, dt);
+                                   }));
+    ecsSys.addFunc("clearBuffers", &ShaderSystem::clearBuffers);
+
+    table.addFunc("packEcsFloats", packScriptEntityFloats);
+    table.addFunc("unpackEcsFloats", unpackScriptEntityFloats);
 }
 
 void Gpgpu::expose(ssq::Class &cls) {
