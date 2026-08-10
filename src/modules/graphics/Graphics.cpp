@@ -219,8 +219,16 @@ void Graphics::expose(ssq::Table &table) {
     vol.addFunc("applyFromSceneTo", &Volumetric::applyFromSceneTo);
     vol.addFunc("rayMarch", &Volumetric::rayMarch);
     vol.addFunc("rayMarchTo", &Volumetric::rayMarchTo);
+    vol.addFunc("setFogHeight", &Volumetric::setFogHeight);
+    vol.addFunc("setFogHeightFalloff", &Volumetric::setFogHeightFalloff);
+    vol.addFunc("setFogStart", &Volumetric::setFogStart);
+    vol.addFunc("setFogEnd", &Volumetric::setFogEnd);
+    vol.addFunc("setFogNoise", &Volumetric::setFogNoise);
+    vol.addFunc("applyFog", &Volumetric::applyFog);
+    vol.addFunc("applyFogTo", &Volumetric::applyFogTo);
     vol.addFunc("getShader", &Volumetric::getShader);
     vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
+    vol.addFunc("getFogShader", &Volumetric::getFogShader);
 }
 
 void Graphics::expose(ssq::Class &cls) {

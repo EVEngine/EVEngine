@@ -14,12 +14,12 @@ class Shader;
 class Texture;
 
 /**
- * Volumetric light: screen-space god rays (phase 1) + depth ray march (phase 2).
+ * Volumetric light + fog.
  *
- * Phase 1 — Mitchell radial blur (+ dust/fog) on an occlusion map or scene.
- * Phase 2 — Ray march through a linear-depth texture; screen-space marches
- *           toward the light UV approximate directional CSM occlusion
- *           (single-sampler post path; no extra G-buffer required).
+ * Modes:
+ *  - "screenspace" — Mitchell radial blur god rays (+ dust/fog tint)
+ *  - "raymarch"    — depth ray march light shafts (SS occlusion ≈ CSM)
+ *  - "fog"         — height + distance volumetric fog (Beer-Lambert)
  *
  * Quality presets ("low" | "medium" | "high") control sample count and
  * suggested downscale via resolutionFor().
@@ -36,7 +36,7 @@ public:
     void setQuality(const std::string &quality);
     std::string getQuality() const { return quality_; }
 
-    /** "screenspace" | "raymarch" — selects which shader params quality tweaks. */
+    /** "screenspace" | "raymarch" | "fog" — selects which shader params quality tweaks. */
     void setMode(const std::string &mode);
     std::string getMode() const { return mode_; }
 
@@ -67,6 +67,14 @@ public:
     void setIntensity(float intensity);
     void setTime(float seconds);
     void setDensity(float density);
+
+    /** Height fog: denser near world Y = fogHeight; falloff is 1/meters scale. */
+    void setFogHeight(float worldY);
+    void setFogHeightFalloff(float falloff);
+    /** View-distance ramp where fog appears (world units along the ray). */
+    void setFogStart(float startDistance);
+    void setFogEnd(float endDistance);
+    void setFogNoise(float amount);
 
     bool hasParam(const std::string &name) const;
     void setFloat(const std::string &name, float value);
@@ -114,6 +122,14 @@ public:
     void rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
+     * Volumetric height/distance fog from a linear-depth texture.
+     * Writes fog RGB with alpha = 1-transmittance (overlay with alpha blend).
+     * Call setCamera / setFogHeight* / setFogStart/End first.
+     */
+    void applyFog(Graphics *gfx, Texture *linearDepth);
+    void applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
+
+    /**
      * Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
      * depth01(x,y) should return values in [0,1]. Owned by Graphics.
      */
@@ -135,16 +151,19 @@ public:
 
     Shader *getShader() const { return shader_; }
     Shader *getRayMarchShader() const { return rayShader_; }
+    Shader *getFogShader() const { return fogShader_; }
 
 private:
     void applyQualityDefaults();
     void uploadCommon(bool compositeFromScene);
     void uploadRayMarchCommon();
+    void uploadFogCommon();
     void drawFullscreen(Graphics *gfx, Texture *source, Shader *shader);
 
     Graphics *gfx_ = nullptr;     // not owned
     Shader *shader_ = nullptr;    // owned by Graphics (screenspace)
     Shader *rayShader_ = nullptr; // owned by Graphics (ray march)
+    Shader *fogShader_ = nullptr; // owned by Graphics (volumetric fog)
     std::string quality_ = "medium";
     std::string mode_ = "screenspace";
     float downscale_ = 2.f;
@@ -152,6 +171,11 @@ private:
     float nearZ_ = 0.1f;
     float farZ_ = 100.f;
     glm::vec3 lightDir_{0.4f, 1.f, 0.3f};
+    float fogHeight_ = 0.f;
+    float fogHeightFalloff_ = 0.15f;
+    float fogStart_ = 2.f;
+    float fogEnd_ = 40.f;
+    float fogNoise_ = 0.35f;
 };
 
 }  // namespace eve::graphics

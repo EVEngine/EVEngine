@@ -9,6 +9,7 @@
 #include "graphics/Texture.h"
 #include "graphics/shaders/volumetric_post_frag_spv.inc"
 #include "graphics/shaders/volumetric_raymarch_frag_spv.inc"
+#include "graphics/shaders/volumetric_fog_frag_spv.inc"
 
 #include <algorithm>
 #include <cmath>
@@ -112,25 +113,73 @@ Shader *createRayMarchShader(Graphics *gfx) {
     return sh;
 }
 
+Shader *createFogShader(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("Volumetric: null graphics");
+    std::vector<uint32_t> frag(volumetric_fog_frag_spv,
+                               volumetric_fog_frag_spv + volumetric_fog_frag_spv_count);
+    std::vector<uint32_t> vert;
+    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    sh->declareMatrix("invViewProj");
+    sh->declareFloat("lightDx");
+    sh->declareFloat("lightDy");
+    sh->declareFloat("lightDz");
+    sh->declareFloat("density");
+    sh->declareFloat("fogR");
+    sh->declareFloat("fogG");
+    sh->declareFloat("fogB");
+    sh->declareFloat("intensity");
+    sh->declareFloat("nearZ");
+    sh->declareFloat("farZ");
+    sh->declareFloat("sampleCount");
+    sh->declareFloat("fogHeight");
+    sh->declareFloat("heightFalloff");
+    sh->declareFloat("fogStart");
+    sh->declareFloat("fogEnd");
+    sh->declareFloat("noiseAmount");
+
+    sh->sendMatrix("invViewProj", glm::mat4(1.f));
+    sh->sendFloat("lightDx", 0.4f);
+    sh->sendFloat("lightDy", 1.f);
+    sh->sendFloat("lightDz", 0.3f);
+    sh->sendFloat("density", 0.25f);
+    sh->sendFloat("fogR", 0.55f);
+    sh->sendFloat("fogG", 0.62f);
+    sh->sendFloat("fogB", 0.75f);
+    sh->sendFloat("intensity", 1.f);
+    sh->sendFloat("nearZ", 0.1f);
+    sh->sendFloat("farZ", 100.f);
+    sh->sendFloat("sampleCount", 24.f);
+    sh->sendFloat("fogHeight", 0.f);
+    sh->sendFloat("heightFalloff", 0.15f);
+    sh->sendFloat("fogStart", 2.f);
+    sh->sendFloat("fogEnd", 40.f);
+    sh->sendFloat("noiseAmount", 0.35f);
+    return sh;
+}
+
 }  // namespace
 
 Volumetric::Volumetric(Graphics *gfx) : gfx_(gfx) {
     shader_ = createScreenspaceShader(gfx);
     rayShader_ = createRayMarchShader(gfx);
+    fogShader_ = createFogShader(gfx);
     applyQualityDefaults();
 }
 
 Volumetric::~Volumetric() = default;
 
 void Volumetric::applyQualityDefaults() {
-    const bool ray = (mode_ == "raymarch");
     if (quality_ == "low") {
         downscale_ = 4.f;
-        if (ray) {
+        if (mode_ == "raymarch") {
             rayShader_->sendFloat("sampleCount", 8.f);
             rayShader_->sendFloat("shadowSteps", 4.f);
             rayShader_->sendFloat("dustAmount", 0.12f);
             rayShader_->sendFloat("fogAmount", 0.12f);
+        } else if (mode_ == "fog") {
+            fogShader_->sendFloat("sampleCount", 8.f);
+            fogShader_->sendFloat("noiseAmount", 0.15f);
+            fogShader_->sendFloat("density", 0.18f);
         } else {
             setFloat("sampleCount", 16.f);
             setFloat("dustAmount", 0.12f);
@@ -139,11 +188,15 @@ void Volumetric::applyQualityDefaults() {
         }
     } else if (quality_ == "high") {
         downscale_ = 1.f;
-        if (ray) {
+        if (mode_ == "raymarch") {
             rayShader_->sendFloat("sampleCount", 48.f);
             rayShader_->sendFloat("shadowSteps", 16.f);
             rayShader_->sendFloat("dustAmount", 0.35f);
             rayShader_->sendFloat("fogAmount", 0.25f);
+        } else if (mode_ == "fog") {
+            fogShader_->sendFloat("sampleCount", 48.f);
+            fogShader_->sendFloat("noiseAmount", 0.45f);
+            fogShader_->sendFloat("density", 0.32f);
         } else {
             setFloat("sampleCount", 96.f);
             setFloat("dustAmount", 0.35f);
@@ -153,11 +206,15 @@ void Volumetric::applyQualityDefaults() {
     } else {
         quality_ = "medium";
         downscale_ = 2.f;
-        if (ray) {
+        if (mode_ == "raymarch") {
             rayShader_->sendFloat("sampleCount", 24.f);
             rayShader_->sendFloat("shadowSteps", 8.f);
             rayShader_->sendFloat("dustAmount", 0.25f);
             rayShader_->sendFloat("fogAmount", 0.2f);
+        } else if (mode_ == "fog") {
+            fogShader_->sendFloat("sampleCount", 24.f);
+            fogShader_->sendFloat("noiseAmount", 0.35f);
+            fogShader_->sendFloat("density", 0.25f);
         } else {
             setFloat("sampleCount", 48.f);
             setFloat("dustAmount", 0.25f);
@@ -175,6 +232,8 @@ void Volumetric::setQuality(const std::string &quality) {
 void Volumetric::setMode(const std::string &mode) {
     if (mode == "raymarch")
         mode_ = "raymarch";
+    else if (mode == "fog")
+        mode_ = "fog";
     else
         mode_ = "screenspace";
     applyQualityDefaults();
@@ -204,11 +263,15 @@ void Volumetric::setLightDirection(float dx, float dy, float dz) {
     rayShader_->sendFloat("lightDx", d.x);
     rayShader_->sendFloat("lightDy", d.y);
     rayShader_->sendFloat("lightDz", d.z);
+    fogShader_->sendFloat("lightDx", d.x);
+    fogShader_->sendFloat("lightDy", d.y);
+    fogShader_->sendFloat("lightDz", d.z);
 }
 
 void Volumetric::setInvViewProj(const glm::mat4 &invViewProj) {
     invViewProj_ = invViewProj;
     rayShader_->sendMatrix("invViewProj", invViewProj_);
+    fogShader_->sendMatrix("invViewProj", invViewProj_);
 }
 
 void Volumetric::setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY,
@@ -225,6 +288,8 @@ void Volumetric::setCamera(float eyeX, float eyeY, float eyeZ, float targetX, fl
     setInvViewProj(glm::inverse(proj * view));
     rayShader_->sendFloat("nearZ", nearZ_);
     rayShader_->sendFloat("farZ", farZ_);
+    fogShader_->sendFloat("nearZ", nearZ_);
+    fogShader_->sendFloat("farZ", farZ_);
 }
 
 void Volumetric::setShaftColor(float r, float g, float b) {
@@ -240,11 +305,15 @@ void Volumetric::setFogColor(float r, float g, float b) {
     setFloat("fogR", r);
     setFloat("fogG", g);
     setFloat("fogB", b);
+    fogShader_->sendFloat("fogR", r);
+    fogShader_->sendFloat("fogG", g);
+    fogShader_->sendFloat("fogB", b);
 }
 
 void Volumetric::setIntensity(float intensity) {
     setFloat("intensity", intensity);
     rayShader_->sendFloat("intensity", intensity);
+    fogShader_->sendFloat("intensity", intensity);
 }
 
 void Volumetric::setTime(float seconds) { setFloat("time", seconds); }
@@ -252,16 +321,44 @@ void Volumetric::setTime(float seconds) { setFloat("time", seconds); }
 void Volumetric::setDensity(float density) {
     setFloat("density", density);
     rayShader_->sendFloat("density", density);
+    fogShader_->sendFloat("density", density);
+}
+
+void Volumetric::setFogHeight(float worldY) {
+    fogHeight_ = worldY;
+    fogShader_->sendFloat("fogHeight", fogHeight_);
+}
+
+void Volumetric::setFogHeightFalloff(float falloff) {
+    fogHeightFalloff_ = falloff < 0.f ? 0.f : falloff;
+    fogShader_->sendFloat("heightFalloff", fogHeightFalloff_);
+}
+
+void Volumetric::setFogStart(float startDistance) {
+    fogStart_ = startDistance < 0.f ? 0.f : startDistance;
+    fogShader_->sendFloat("fogStart", fogStart_);
+}
+
+void Volumetric::setFogEnd(float endDistance) {
+    fogEnd_ = endDistance <= fogStart_ ? fogStart_ + 1.f : endDistance;
+    fogShader_->sendFloat("fogEnd", fogEnd_);
+}
+
+void Volumetric::setFogNoise(float amount) {
+    fogNoise_ = amount < 0.f ? 0.f : amount;
+    fogShader_->sendFloat("noiseAmount", fogNoise_);
 }
 
 bool Volumetric::hasParam(const std::string &name) const {
-    return (shader_ && shader_->hasUniform(name)) || (rayShader_ && rayShader_->hasUniform(name));
+    return (shader_ && shader_->hasUniform(name)) || (rayShader_ && rayShader_->hasUniform(name)) ||
+           (fogShader_ && fogShader_->hasUniform(name));
 }
 
 void Volumetric::setFloat(const std::string &name, float value) {
     if (!shader_) throw eve::Exception("Volumetric.setFloat: null shader");
     if (shader_->hasUniform(name)) shader_->sendFloat(name, value);
     if (rayShader_ && rayShader_->hasUniform(name)) rayShader_->sendFloat(name, value);
+    if (fogShader_ && fogShader_->hasUniform(name)) fogShader_->sendFloat(name, value);
 }
 
 float Volumetric::getFloat(const std::string &name) const {
@@ -270,6 +367,10 @@ float Volumetric::getFloat(const std::string &name) const {
         float v = 0.f;
         if (rayShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
     }
+    if (mode_ == "fog" && fogShader_ && fogShader_->hasUniform(name)) {
+        float v = 0.f;
+        if (fogShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
+    }
     if (shader_ && shader_->hasUniform(name)) {
         float v = 0.f;
         if (shader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
@@ -277,6 +378,10 @@ float Volumetric::getFloat(const std::string &name) const {
     if (rayShader_ && rayShader_->hasUniform(name)) {
         float v = 0.f;
         if (rayShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
+    }
+    if (fogShader_ && fogShader_->hasUniform(name)) {
+        float v = 0.f;
+        if (fogShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
     }
     throw eve::Exception("Volumetric.getFloat: missing param '%s'", name.c_str());
 }
@@ -300,6 +405,20 @@ void Volumetric::uploadRayMarchCommon() {
     rayShader_->sendFloat("lightDz", lightDir_.z);
     rayShader_->sendFloat("nearZ", nearZ_);
     rayShader_->sendFloat("farZ", farZ_);
+}
+
+void Volumetric::uploadFogCommon() {
+    fogShader_->sendMatrix("invViewProj", invViewProj_);
+    fogShader_->sendFloat("lightDx", lightDir_.x);
+    fogShader_->sendFloat("lightDy", lightDir_.y);
+    fogShader_->sendFloat("lightDz", lightDir_.z);
+    fogShader_->sendFloat("nearZ", nearZ_);
+    fogShader_->sendFloat("farZ", farZ_);
+    fogShader_->sendFloat("fogHeight", fogHeight_);
+    fogShader_->sendFloat("heightFalloff", fogHeightFalloff_);
+    fogShader_->sendFloat("fogStart", fogStart_);
+    fogShader_->sendFloat("fogEnd", fogEnd_);
+    fogShader_->sendFloat("noiseAmount", fogNoise_);
 }
 
 void Volumetric::drawFullscreen(Graphics *gfx, Texture *source, Shader *shader) {
@@ -396,6 +515,20 @@ void Volumetric::rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     rayMarch(gfx, linearDepth);
+    gfx->setCanvas(prev == gfx ? nullptr : prev);
+}
+
+void Volumetric::applyFog(Graphics *gfx, Texture *linearDepth) {
+    uploadFogCommon();
+    drawFullscreen(gfx, linearDepth, fogShader_);
+}
+
+void Volumetric::applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
+    if (!gfx) throw eve::Exception("Volumetric.applyFogTo: null graphics");
+    if (!dest) throw eve::Exception("Volumetric.applyFogTo: null dest");
+    Canvas *prev = gfx->getCanvas();
+    gfx->setCanvas(dest);
+    applyFog(gfx, linearDepth);
     gfx->setCanvas(prev == gfx ? nullptr : prev);
 }
 

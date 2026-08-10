@@ -26,12 +26,13 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
 
-### 屏幕空间体积光（尘雾光柱）
+### 屏幕空间体积光（尘雾光柱）与体积雾
 
-`vol <- gfx.newVolumetric()`。`setQuality("low"|"medium"|"high")` 控制采样与内部降分辨率建议值（`resolutionFor`）。
+`vol <- gfx.newVolumetric()`。`setQuality("low"|"medium"|"high")` 控制采样与 `resolutionFor`。
 
-- **screenspace（默认）**：`beginOcclusionMap` → `drawOccluders2D` / `drawOccluder*` → `scatter`；或 `applyFromScene(sceneTex)`。
-- **raymarch（3D）**：`setMode("raymarch")` + `setCamera` + `setLightDirection` + 线性深度图（R=0..1）→ `rayMarch`。屏空间向光源 UV 步进近似 CSM 遮挡。
+- **screenspace**：`beginOcclusionMap` → `drawOccluders2D` → `scatter`；或 `applyFromScene`
+- **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
+- **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
 
 细节见 [`体积光模块设计.md`](../体积光模块设计.md)。
 
@@ -67,7 +68,7 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - `setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setShadowBias()`、`setShadowStrength()`
 - `setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`
-- `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`beginOcclusionMap`、`drawOccluders2D`、`setCamera`、`setLightDirection`、`setShaftColor`、`setFogColor`、`setDensity`、`setIntensity` 等
+- `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
 
 ## 使用要点
 

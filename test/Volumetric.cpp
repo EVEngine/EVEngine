@@ -412,3 +412,137 @@ TEST_CASE("volumetric.paramRoundTripShared") {
     CHECK(vol->hasParam("invViewProj") == true);
     CHECK(vol->hasParam("exposure") == true);
 }
+
+TEST_CASE("volumetric.fogModeAndQuality") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    REQUIRE(vol->getFogShader() != nullptr);
+
+    vol->setMode("fog");
+    CHECK(vol->getMode() == "fog");
+    vol->setQuality("low");
+    CHECK(vol->getSampleCount() == 8);
+    vol->setQuality("high");
+    CHECK(vol->getSampleCount() == 48);
+    vol->setQuality("medium");
+    CHECK(vol->getSampleCount() == 24);
+}
+
+TEST_CASE("volumetric.fogParamsRoundTrip") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    vol->setMode("fog");
+    vol->setFogHeight(-1.5f);
+    vol->setFogHeightFalloff(0.22f);
+    vol->setFogStart(3.f);
+    vol->setFogEnd(25.f);
+    vol->setFogNoise(0.5f);
+    vol->setFogColor(0.4f, 0.5f, 0.7f);
+    CHECK(std::fabs(vol->getFloat("fogHeight") + 1.5f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("heightFalloff") - 0.22f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("fogStart") - 3.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("fogEnd") - 25.f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("noiseAmount") - 0.5f) < 1e-5f);
+    CHECK(std::fabs(vol->getFloat("fogR") - 0.4f) < 1e-5f);
+}
+
+TEST_CASE("volumetric.applyFogProducesOpacity") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 160, 120);
+
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    vol->setMode("fog");
+    vol->setQuality("medium");
+    vol->setCamera(0.f, 1.5f, 6.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 50.f, 160.f / 120.f, 0.1f, 50.f);
+    vol->setLightDirection(0.3f, 1.f, 0.2f);
+    vol->setFogHeight(0.f);
+    vol->setFogHeightFalloff(0.2f);
+    vol->setFogStart(1.f);
+    vol->setFogEnd(30.f);
+    vol->setDensity(0.45f);
+    vol->setIntensity(1.5f);
+    vol->setFogColor(0.6f, 0.7f, 0.85f);
+    vol->setFogNoise(0.2f);
+
+    BoxDepth bd;
+    bd.w = 80;
+    bd.h = 60;
+    bd.boxDepth = 0.4f;
+    bd.floorDepth = 0.95f;
+    Texture *depth = vol->newLinearDepthTexture(gfx, bd.w, bd.h, boxDepth01, &bd);
+    Canvas *out = gfx->newCanvas(bd.w, bd.h);
+    // Transparent clear so SrcAlpha fog writes measurable alpha (opaque dst always
+    // blends to a=1 with the textured pipeline).
+    gfx->setCanvas(out);
+    gfx->clear(Color(0.f, 0.f, 0.f, 0.f), std::nullopt, std::nullopt);
+    vol->applyFog(gfx, depth);
+    gfx->setCanvas(nullptr);
+
+    float maxA = 0.f;
+    float maxL = 0.f;
+    for (int y = 0; y < bd.h; y += 2) {
+        for (int x = 0; x < bd.w; x += 2) {
+            const Color c = out->getPixel(x, y);
+            maxA = std::max(maxA, c.a);
+            maxL = std::max(maxL, luma(c));
+        }
+    }
+    CHECK(maxA > 0.02f);
+    CHECK(maxL > 0.01f);
+}
+
+TEST_CASE("volumetric.fogDenserAtDistance") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 128, 96);
+
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    vol->setMode("fog");
+    vol->setQuality("high");
+    vol->setCamera(0.f, 1.f, 4.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 55.f, 128.f / 96.f, 0.1f, 40.f);
+    vol->setFogHeight(-0.5f);
+    vol->setFogHeightFalloff(0.05f);
+    vol->setFogStart(0.5f);
+    vol->setFogEnd(20.f);
+    // Keep density moderate so near/far do not both saturate to opaque.
+    vol->setDensity(0.08f);
+    vol->setIntensity(1.2f);
+    vol->setFogNoise(0.0f);
+
+    // Near wall vs far wall depths.
+    BoxDepth nearBd;
+    nearBd.w = 64;
+    nearBd.h = 48;
+    nearBd.boxU0 = 0.f;
+    nearBd.boxU1 = 1.f;
+    nearBd.boxV0 = 0.f;
+    nearBd.boxV1 = 1.f;
+    nearBd.boxDepth = 0.15f;
+    nearBd.floorDepth = 0.15f;
+
+    BoxDepth farBd = nearBd;
+    farBd.boxDepth = 0.95f;
+    farBd.floorDepth = 0.95f;
+
+    Texture *nearDepth = vol->newLinearDepthTexture(gfx, nearBd.w, nearBd.h, boxDepth01, &nearBd);
+    Texture *farDepth = vol->newLinearDepthTexture(gfx, farBd.w, farBd.h, boxDepth01, &farBd);
+    Canvas *nearOut = gfx->newCanvas(nearBd.w, nearBd.h);
+    Canvas *farOut = gfx->newCanvas(farBd.w, farBd.h);
+
+    gfx->setCanvas(nearOut);
+    gfx->clear(Color(0.f, 0.f, 0.f, 0.f), std::nullopt, std::nullopt);
+    vol->applyFog(gfx, nearDepth);
+    gfx->setCanvas(farOut);
+    gfx->clear(Color(0.f, 0.f, 0.f, 0.f), std::nullopt, std::nullopt);
+    vol->applyFog(gfx, farDepth);
+    gfx->setCanvas(nullptr);
+
+    const float nearA = nearOut->getPixel(32, 24).a;
+    const float farA = farOut->getPixel(32, 24).a;
+    CHECK(farA > nearA);
+}

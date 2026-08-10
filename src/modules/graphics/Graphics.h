@@ -321,8 +321,8 @@ virtual void begin3DFrame() = 0;
     virtual Canvas *getCanvas() const = 0;
 
     /**
-     * Screen-space volumetric light (god rays + dust/fog). Caller owns Volumetric*;
-     * its Shader is owned by Graphics.
+     * Volumetric light + fog (screenspace / raymarch / fog). Caller owns Volumetric*;
+     * its Shaders are owned by Graphics.
      */
     Volumetric *newVolumetric();
 
