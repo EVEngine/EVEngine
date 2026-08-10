@@ -107,5 +107,5 @@ FlowField：`getWidth`、`getHeight`、`getGoalX`、`getGoalY`、`costAt`、`nex
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/map/`](../../../src/modules/map/)
-**设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)
+**设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)（设计稿：2D/3D 兼容动态视野与战争迷雾，待实现）
 **相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)
