@@ -27,14 +27,14 @@
 namespace eve::dev {
 namespace {
 
-std::string stringify(const Poco::Dynamic::Var& v) {
+std::string mcpStringify(const Poco::Dynamic::Var& v) {
     std::ostringstream oss;
     // indent=0, step=0 => compact single-line JSON (required for newline framing)
     Poco::JSON::Stringifier::stringify(v, oss, 0, 0);
     return oss.str();
 }
 
-std::string jsonEscape(const std::string& s) {
+std::string mcpJsonEscape(const std::string& s) {
     std::string out;
     out.reserve(s.size() + 8);
     for (char c : s) {
@@ -75,7 +75,7 @@ std::string idToJson(const Poco::Dynamic::Var& id) {
     } catch (...) {
     }
     try {
-        return std::string("\"") + jsonEscape(id.convert<std::string>()) + "\"";
+        return std::string("\"") + mcpJsonEscape(id.convert<std::string>()) + "\"";
     } catch (...) {
         return "null";
     }
@@ -87,7 +87,7 @@ std::string makeResult(const std::string& idJson, const std::string& resultJson)
 
 std::string makeError(const std::string& idJson, int code, const std::string& message) {
     return std::string("{\"jsonrpc\":\"2.0\",\"id\":") + idJson +
-           ",\"error\":{\"code\":" + std::to_string(code) + ",\"message\":\"" + jsonEscape(message) +
+           ",\"error\":{\"code\":" + std::to_string(code) + ",\"message\":\"" + mcpJsonEscape(message) +
            "\"}}";
 }
 
@@ -100,7 +100,7 @@ std::string textContentResult(const std::string& text, bool isError = false) {
     content->add(item);
     result->set("content", content);
     if (isError) result->set("isError", true);
-    return stringify(Poco::Dynamic::Var(result));
+    return mcpStringify(Poco::Dynamic::Var(result));
 }
 
 Poco::JSON::Object::Ptr toolDef(const std::string& name, const std::string& description,
@@ -168,7 +168,7 @@ std::string engineStatusJson(const McpServer& mcp) {
     o->set("gameRoot", mcp.gameRoot());
     o->set("callgraphEvents", static_cast<int>(dt.graph().events().size()));
     o->set("ai", AiPanel::instance().statusLine());
-    return stringify(Poco::Dynamic::Var(o));
+    return mcpStringify(Poco::Dynamic::Var(o));
 }
 
 std::string argString(Poco::JSON::Object::Ptr args, const char* key, const std::string& def = {}) {
@@ -205,7 +205,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         o->set("value", info.value);
         o->set("type", info.type);
         o->set("ok", !info.value.empty() || info.type == "null" || !info.name.empty());
-        return stringify(Poco::Dynamic::Var(o));
+        return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_pause") {
@@ -251,7 +251,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             o->set("function", f.loc.function);
             arr->add(o);
         }
-        return stringify(Poco::Dynamic::Var(arr));
+        return mcpStringify(Poco::Dynamic::Var(arr));
     }
 
     if (name == "eve_locals") {
@@ -265,7 +265,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             o->set("type", v.type);
             arr->add(o);
         }
-        return stringify(Poco::Dynamic::Var(arr));
+        return mcpStringify(Poco::Dynamic::Var(arr));
     }
 
     if (name == "eve_set_breakpoint") {
@@ -291,7 +291,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             o->set("enabled", bp.enabled);
             arr->add(o);
         }
-        return stringify(Poco::Dynamic::Var(arr));
+        return mcpStringify(Poco::Dynamic::Var(arr));
     }
 
     if (name == "eve_watch_add") {
@@ -311,7 +311,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             o->set("ok", w.ok);
             arr->add(o);
         }
-        return stringify(Poco::Dynamic::Var(arr));
+        return mcpStringify(Poco::Dynamic::Var(arr));
     }
 
     if (name == "eve_snapshot_capture") {
@@ -421,7 +421,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson,
                 std::string("EVEngine runtime MCP for AI-assisted game development and testing. "
                             "Use eve_status / eve_eval / eve_pause / eve_snapshot_* / "
                             "eve_error_slice to inspect and drive a live eve run --debug session."));
-    return makeResult(idJson, stringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
 }
 
 std::string handleToolsList(const std::string& idJson) {
@@ -481,7 +481,7 @@ std::string handleToolsList(const std::string& idJson) {
 
     Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     result->set("tools", tools);
-    return makeResult(idJson, stringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
 }
 
 std::string handleToolsCall(McpServer& mcp, const std::string& idJson,
@@ -504,7 +504,7 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson,
 
     std::string detail;
     try {
-        if (args) detail = stringify(Poco::Dynamic::Var(args));
+        if (args) detail = mcpStringify(Poco::Dynamic::Var(args));
     } catch (...) {
     }
     AiPanel::instance().addLog("tool", name, detail);
@@ -536,7 +536,7 @@ std::string handleResourcesList(const std::string& idJson) {
 
     Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     result->set("resources", resources);
-    return makeResult(idJson, stringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
 }
 
 std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::Ptr params) {
@@ -564,7 +564,7 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("events", static_cast<int>(g.events().size()));
         o->set("stackDepth", static_cast<int>(g.currentStack().size()));
-        text = stringify(Poco::Dynamic::Var(o));
+        text = mcpStringify(Poco::Dynamic::Var(o));
         mime = "application/json";
     } else {
         return makeError(idJson, -32002, "Unknown resource: " + uri);
@@ -578,7 +578,7 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
     contents->add(contentsItem);
     Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     result->set("contents", contents);
-    return makeResult(idJson, stringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
 }
 
 std::string handlePromptsList(const std::string& idJson) {
@@ -598,7 +598,7 @@ std::string handlePromptsList(const std::string& idJson) {
 
     Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     result->set("prompts", prompts);
-    return makeResult(idJson, stringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
 }
 
 std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr params) {
@@ -649,7 +649,7 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
     Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     result->set("description", name);
     result->set("messages", messages);
-    return makeResult(idJson, stringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
 }
 
 }  // namespace
