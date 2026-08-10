@@ -35,6 +35,7 @@
 | 断点 | `Debugger::setBreakpoint` 或 VS Code；命中时在 line hook 内阻塞 |
 | Watch | `addWatch` / DAP `evaluate`；读 local 或 roottable（含 `a.b`） |
 | Snapshot | JSON 序列化标记根（或 `gameState` / `eve_state` / 启发式非引擎槽） |
+| MCP / AI | `--mcp-port` 嵌入 MCP；`AiPanel` 会话日志；F9 切换 ImGui「AI / MCP」面板 |
 
 ### C++ API
 
@@ -44,7 +45,9 @@
 - `eve::dev::Debugger`：pause / step / breakpoints / watches
 - `eve::dev::Snapshot`：脚本状态 capture / restore / 文件
 - `eve::dev::DebugAdapter`：DAP TCP（供 VS Code 插件连接）
-- `eve::dev::DevTool`：`attach` + `exposeScriptApi` + 可选 `startDap`
+- `eve::dev::McpServer`：MCP JSON-RPC TCP（AI Agent 测试 / 辅助开发）
+- `eve::dev::AiPanel`：AI 会话日志；ImGui 绘制由 `ImGuiBackend` 注册（避免 EVDevTools 拉入 imgui.h）
+- `eve::dev::DevTool`：`attach` + `exposeScriptApi` + 可选 `startDap` / `startMcp`
 
 ### 脚本 API（`eve.dev`，仅 `--debug`）
 
@@ -61,6 +64,11 @@ eve.dev.addWatch("score");
 eve.dev.markStateRoot("gameState");
 eve.dev.saveSnapshot("boss.json");
 eve.dev.loadSnapshot("boss.json");
+
+// AI / MCP (DevTools panel + agent session log)
+eve.dev.ai.status();
+eve.dev.ai.note("reached boss");
+eve.dev.ai.toggleVisible();  // F9
 ```
 
 ### 使用方式
@@ -68,7 +76,11 @@ eve.dev.loadSnapshot("boss.json");
 ```bash
 eve run --debug .
 eve run --debug --dap-port=4711 .
+eve run --debug --mcp-port=7529 .
+eve run --debug --dap-port=4711 --mcp-port=7529 .
 ```
+
+Cursor / Claude Desktop 通过 [`tools/eve-mcp`](../../../tools/eve-mcp/) 将 stdio MCP 桥到 `--mcp-port`。设计说明见 [AI与MCP支持.md](../../../docs/dev/AI与MCP支持.md)。
 
 异常时 stderr 会打印脚本切片，以及（若有渲染事件）：
 

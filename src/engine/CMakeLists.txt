@@ -248,6 +248,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
 endif()
 
 # Plugins resolve ModuleManager / ModuleRegister symbols from the host process.
+# Export surface is EVENGINE_API (__declspec(dllexport)) only — do not enable
+# WINDOWS_EXPORT_ALL_SYMBOLS: it pulls Poco/ImGui template instantiations into
+# the .def and hits MSVC LNK1189 (65535 export limit) as the engine grows.
 target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE EVENGINE_BUILDING_HOST=1)
 if(WIN32)
     # ENABLE_EXPORTS so plugins can link/import host symbols.
