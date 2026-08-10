@@ -4,6 +4,7 @@
 #include "map/TileLayer.h"
 #include "map/MapObject.h"
 #include "map/Pathfinder.h"
+#include "map/Fov.h"
 
 #include <string>
 #include <vector>
@@ -18,6 +19,7 @@ namespace eve::map {
  * Map module — factory + script binding for 2D tilemaps.
  * Per-frame: TileConfigSystem (hot reload) → unified sprite+tile render.
  * Pathfinding: newPathfinder / newPathfinderSize → A* + Flow Field group paths.
+ * FOV: newFov / newFovSize → shadowcast visibility + explored memory.
  */
 class Map : public Module {
 public:
@@ -31,6 +33,13 @@ public:
     Pathfinder *newPathfinder(TileLayer *layer);
     /** Custom grid pathfinder (no layer); fill with setBlocked / setCellCost. */
     Pathfinder *newPathfinderSize(int mapW, int mapH);
+
+    /** FOV bound to a TileLayer (syncs opacity from opaque GIDs). */
+    Fov *newFov(TileLayer *layer);
+    /** Custom grid FOV (no layer); fill with setOpaque. */
+    Fov *newFovSize(int mapW, int mapH);
+    /** Volume FOV (W×H×D voxels); mode defaults to volume. */
+    Fov *newFovVolume(int mapW, int mapH, int depth);
 
     /**
      * Load map JSON (Tiled-compatible subset or EVEngine simplified format).

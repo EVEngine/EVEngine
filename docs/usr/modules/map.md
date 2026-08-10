@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Map()`
 
-创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染；可用 Pathfinder 做格子寻路与群体 Flow Field。
+创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染；可用 Pathfinder 做格子寻路与群体 Flow Field，用 Fov 做动态视野与探索记忆。
 
 ## 基本用法
 
@@ -57,6 +57,47 @@ local ny = field.nextY(ax, ay);
 
 自定义网格（不绑 TileLayer）：`map.newPathfinderSize(w, h)`，再用 `setBlocked` / `setCellCost`。
 
+### 动态视野（FOV / 战争迷雾）
+
+格子可见性与探索记忆；遮挡（opaque）与寻路可行走（walkable）分开配置。默认算法为 recursive shadowcasting；可选 `raycast` / `permissive` / `rectangle`。模式：`grid2d`（默认）、`heightmap`、`volume`。拓扑：`ortho` / `hex`。
+
+```squirrel
+local fov = map.newFov(layer);
+fov.setBlockEmpty(false);
+fov.blockOpaqueGid(1);
+fov.setRadiusMetric("chebyshev");
+fov.setTopology("auto"); // 或 "hex"
+local id = fov.addRevealer(sx, sy, 8);
+// 软 RPG 挂钩：游戏自行读取 actor 属性后写入
+fov.setRevealerPerception(id, actor.getFinalAttribute("perception"));
+fov.setPerceptionRadiusScale(0.25);
+fov.setDetectionMargin(0.0);
+fov.compute();
+if (fov.canDetect(id, tx, ty, targetStealth)) { /* 可见且感知足够 */ }
+local tex = fov.buildMaskTexture(gfx); // RGBA8 FoW 遮罩，调用方拥有
+```
+
+自定义网格：`map.newFovSize(w, h)` + `setOpaque`。移动观察者后再次 `compute()`；无变更时 `isDirty()` 为 false，`compute` 会跳过。离开视野的格子保留 `explored`，可用 `clearMemory()` 清空。
+
+高度场：
+
+```squirrel
+fov.setMode("heightmap");
+fov.setElevation(4, 1, 2.0);
+fov.setCliffBlock(1.0);
+```
+
+体素 3D：
+
+```squirrel
+local fov3 = map.newFovVolume(32, 32, 8);
+fov3.setOpaque3(4, 4, 2, true);
+fov3.addRevealer3(4, 4, 1, 10);
+fov3.setVerticalRange(4);
+fov3.compute();
+fov3.isVisible3(8, 4, 1);
+```
+
 ### Dual Grid（双网格）
 
 Tiled **没有**原生 dual-grid；在编辑器里画逻辑填充层，运行时解算显示层。支持正交 / 等距 / 交错 / 六角：掩码按格子索引采样，显示层继承投影参数并施加对应半步 origin 偏移。
@@ -89,7 +130,7 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
-- `newPathfinder()`、`newPathfinderSize()`
+- `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`、`newFovVolume()`
 - `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
 - `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTint()`、`setVisible()`、`tileToWorldX()`
 - `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
@@ -100,6 +141,8 @@ Path：`getLength`、`getX`、`getY`、`getTotalCost`
 
 FlowField：`getWidth`、`getHeight`、`getGoalX`、`getGoalY`、`costAt`、`nextX`、`nextY`、`isReachable`
 
+Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgorithm`、`getAlgorithm`、`setRadiusMetric`、`getRadiusMetric`、`setTopology`、`getTopology`、`setCornerPeek`、`blockOpaqueGid`、`unblockOpaqueGid`、`clearOpaqueGids`、`setBlockEmpty`、`setOpaque`、`isOpaque`、`setOpaque3`、`isOpaque3`、`syncFromLayer`、`setElevation`、`getElevation`、`setCliffBlock`、`setEyeOffset`、`setVerticalRange`、`addRevealer`、`addRevealer3`、`removeRevealer`、`clearRevealers`、`setRevealerPosition`、`setRevealerPosition3`、`setRevealerRadius`、`setRevealerFacing`、`clearRevealerFacing`、`setRevealerEnabled`、`getRevealerCount`、`setRevealerPerception`、`getRevealerPerception`、`setPerceptionRadiusScale`、`setDetectionMargin`、`getEffectiveRadius`、`canDetect`、`canDetect3`、`markDirty`、`isDirty`、`compute`、`isVisible`、`isExplored`、`isVisible3`、`isExplored3`、`getState`、`getState3`、`clearMemory`、`resetVisibleOnly`、`getMaskValue`、`getMaskByte`、`getMaskValue3`、`getMaskByte3`、`buildMaskTexture`、`buildMaskTextureSlice`
+
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
@@ -107,5 +150,5 @@ FlowField：`getWidth`、`getHeight`、`getGoalX`、`getGoalY`、`costAt`、`nex
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/map/`](../../../src/modules/map/)
-**设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)
-**相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)
+**设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)
+**相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)、[`test/map_fov.cpp`](../../../test/map_fov.cpp)
