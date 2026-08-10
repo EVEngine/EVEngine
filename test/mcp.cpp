@@ -99,10 +99,22 @@ public:
         while (std::chrono::steady_clock::now() < deadline) {
             auto msg = recv(50);
             if (!msg) continue;
-            if (msg->has("id") && msg->getValue<int>("id") == id && msg->has("result"))
-                return msg;
-            if (msg->has("error")) {
-                REQUIRE_NOT(msg->has("error"));
+            int msgId = -999;
+            if (msg->has("id") && !msg->isNull("id")) {
+                try {
+                    msgId = msg->get("id").convert<int>();
+                } catch (...) {
+                    continue;
+                }
+            }
+            if (msgId == id && msg->has("result")) return msg;
+            if (msgId == id && msg->has("error")) {
+                // Fail with the server error message visible in the assertion.
+                auto err = msg->getObject("error");
+                const std::string em =
+                    err ? err->optValue<std::string>("message", "error") : "error";
+                REQUIRE(em.empty());  // expected no error; message shown if present
+                return nullptr;
             }
         }
         return nullptr;
