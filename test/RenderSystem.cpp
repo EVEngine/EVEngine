@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
-#include <stdexcept>
 #include <cmath>
 
 #include "common/Exception.h"
@@ -90,12 +89,12 @@ static std::vector<uint8_t> makeStripeRGBA(int w, int h, int band) {
     return px;
 }
 
-static eve::filesystem::Filesystem *bootstrapFilesystemForSaveIO() {
+static eve::filesystem::Filesystem *bootstrapFilesystemForSaveIO(const char *identity) {
     auto *fs = eve::filesystem::Filesystem::create();
-    fs->setIdentity("evengine_gfx_smoke", true);
-    if (!fs->setupWriteDirectory()) {
-        throw std::runtime_error("setupWriteDirectory failed");
-    }
+    // Unique identity per caller: CTest runs GraphicsSmoke.* in parallel and the
+    // Filesystem module is a process-wide singleton — shared write dirs race on macOS.
+    REQUIRE(fs->setIdentity(identity, true));
+    REQUIRE(fs->setupWriteDirectory());
     return fs;
 }
 
@@ -117,7 +116,7 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
 
     gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.22f, 1.0f));
 
-    auto *fs = bootstrapFilesystemForSaveIO();
+    auto *fs = bootstrapFilesystemForSaveIO("evengine_gfx_smoke_clear");
     eve::image::Image::create();
 
     auto checkerPx = makeCheckerRGBA(64, 64, 8, 255, 220, 60, 40, 40, 180);
@@ -204,11 +203,13 @@ TEST_CASE("GraphicsSmoke.newTextureFromFileThrowsOnMissing") {
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
 
-    bootstrapFilesystemForSaveIO();
+    // No write-dir bootstrap: missing-file should throw from PhysFS open alone.
+    // (Parallel GraphicsSmoke.clearAndPresentWindow used to race the same identity.)
+    eve::filesystem::Filesystem::create();
     bool threw = false;
     try {
         gfx->newTextureFromFile("definitely_missing_evengine_xyz.png");
-    } catch (const eve::Exception&) {
+    } catch (const eve::Exception &) {
         threw = true;
     }
     CHECK(threw);

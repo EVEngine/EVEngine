@@ -89,10 +89,14 @@ public:
         Canvas *canvas = nullptr;          // nullptr → screen
         Camera2D *camera = nullptr;        // nullptr → default active camera for canvas
         bool receiveLight = true;          // false → force unlit (ignore lights)
+        bool castOcclusion = true;         // volumetric occlusion map (shadow analogue)
     };
 
     COMPONENT(Transform2D, transform)
     COMPONENT(Sprite, sprite)
+
+    void setCastOcclusion(bool cast);
+    bool getCastOcclusion();
 };
 
 class Graphics;
