@@ -2,10 +2,11 @@
 
 **脚本入口：** `eve.Animation()`
 
-支持两类能力：
+支持三类能力：
 
 1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
 2. **3D 骨骼动画播放**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
+3. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
 
 ## 基本用法（Tween）
 
@@ -62,6 +63,39 @@ mm.update(dt);
 local pose = mm.getPose();
 ```
 
+## 基本用法（控制论程序动画）
+
+二阶动力学把目标当成输入 `x`，输出 `y` 满足：
+
+\[
+\ddot y + k_1 \dot y + k_2 y = x + k_3 \dot x
+\]
+
+其中 \(k_1=\zeta/(\pi f)\)，\(k_2=1/(2\pi f)^2\)，\(k_3=r\zeta/(2\pi f)\)（t3ssel8r 参数化）。也可用闭式阻尼弹簧（Ryan Juckett）或单位质量 PD：\(\tau=K_p(x-y)+K_d(\dot x-\dot y)\)，\(K_p=\omega^2\)，\(K_d=2\zeta\omega\)。
+
+```squirrel
+local anim = eve.Animation();
+local ca = anim.newControlAnim(3.0, 0.5, -1.0); // f, ζ, r
+ca.setIntegrator("secondOrder"); // 或 "spring" / "pd"
+ca.set("arm", 0);
+ca.setTarget("arm", 1.2);
+ca.update(dt);
+local y = ca.get("arm");
+
+local sk = anim.newSkeleton();
+// ... addBone ...
+local cp = anim.newControlPose(sk);
+cp.setFrequency(4.0);
+cp.setDamping(0.8);
+cp.setResponse(1.0);
+local target = anim.newPose(sk.getBoneCount());
+sk.applyBindPose(target);
+target.setLocalPosition(1, 0, 2, 0);
+cp.setTargetPose(target);
+cp.update(dt);
+local pose = cp.getPose();
+```
+
 ## 从 Mixamo / FBX 导入
 
 ```squirrel
@@ -81,8 +115,9 @@ run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
 
 - `Animation` 拥有 Tween 注册表并统一 `update`；3D 对象由脚本持有，各自 `update(dt)`。
 - `AnimSkeleton` 定义骨骼层级与 bind pose；`AnimClip` 保存各骨 local TRS 关键帧。
-- `AnimPlayer` / `AnimStateMachine` / `MotionMatcher` 每帧写出 `AnimPose`；渲染侧读取 local/world 变换同步网格或调试骨骼。
+- `AnimPlayer` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；渲染侧读取 local/world 变换同步网格或调试骨骼。
 - Motion Matching：先 `MotionDatabase.bake()`，再周期性搜索 + 交叉淡入。
+- `ControlAnim` / `ControlPose`：每帧更新目标后调用各自的 `update(dt)`；积分器字符串为 `secondOrder` | `spring` | `pd`。
 
 ## 目标导向指南
 
@@ -102,6 +137,10 @@ run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
 
 把行走/奔跑等 clip 加入 `MotionDatabase` 并 `bake`；每帧设置 `setDesiredVelocity` / `setDesiredYaw`，调用 `mm.update(dt)`。
 
+### 给武器或肢体加惯性/跟手感
+
+用 `newControlAnim` 或 `newControlPose`，调低 `ζ`（欠阻尼）并设负的 `r` 可做预期回摆；调高 `f` 让跟踪更快。目标每帧变化时用 `setTarget` / `setTargetPose`，不要每帧 `set`（`set` 会清速度）。
+
 ## 常见问题
 
 - 创建 Tween 后忘记 `start()`。
@@ -109,13 +148,15 @@ run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
 - 普通标量接口插值角度导致跨 360° 绕行。
 - MotionMatcher 在 `bake()` 之前调用 `search`/`update`。
 - 状态机/播放器持有的 skeleton、clip 被提前销毁。
+- `ControlAnim.setIntegrator` / `ControlPose.setIntegrator` 传入未知字符串。
+- 把 `ControlAnim.set` 当每帧追目标用（会清零速度，失去动力学感）。
 
 ## API 快查
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
-- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`
+- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`
@@ -123,6 +164,8 @@ run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
+- `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
+- `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
 
 ## 使用要点
 

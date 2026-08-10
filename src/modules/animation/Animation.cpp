@@ -5,6 +5,8 @@
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimStateMachine.h"
+#include "animation/ControlAnim.h"
+#include "animation/ControlPose.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
 
@@ -48,6 +50,12 @@ MotionDatabase *Animation::newMotionDatabase(AnimSkeleton *skeleton) {
 MotionMatcher *Animation::newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database) {
     return new MotionMatcher(skeleton, database);
 }
+
+ControlAnim *Animation::newControlAnim(float frequencyHz, float dampingZeta, float response) {
+    return new ControlAnim(frequencyHz, dampingZeta, response);
+}
+
+ControlPose *Animation::newControlPose(AnimSkeleton *skeleton) { return new ControlPose(skeleton); }
 
 AnimSkeleton *Animation::newSkeletonFromModel(eve::model3d::ModelData *model) {
     return AnimImporter::loadSkeletonFromModel(model);
@@ -331,6 +339,50 @@ void Animation::expose(ssq::Table &table) {
     mm.addFunc("getPose", &MotionMatcher::getPose);
     mm.addFunc("search", &MotionMatcher::search);
     mm.addFunc("update", &MotionMatcher::update);
+
+    auto ca = table.addClass<ControlAnim>(
+        "ControlAnim", std::function<ControlAnim *()>([]() -> ControlAnim * { return nullptr; }),
+        true);
+    ca.addFunc("setFrequency", &ControlAnim::setFrequency);
+    ca.addFunc("getFrequency", &ControlAnim::getFrequency);
+    ca.addFunc("setDamping", &ControlAnim::setDamping);
+    ca.addFunc("getDamping", &ControlAnim::getDamping);
+    ca.addFunc("setResponse", &ControlAnim::setResponse);
+    ca.addFunc("getResponse", &ControlAnim::getResponse);
+    ca.addFunc("setIntegrator", &ControlAnim::setIntegrator);
+    ca.addFunc("getIntegrator", &ControlAnim::getIntegrator);
+    ca.addFunc("set", &ControlAnim::set);
+    ca.addFunc("setTarget", &ControlAnim::setTarget);
+    ca.addFunc("setTargetVelocity", &ControlAnim::setTargetVelocity);
+    ca.addFunc("impulse", &ControlAnim::impulse);
+    ca.addFunc("has", &ControlAnim::has);
+    ca.addFunc("get", &ControlAnim::get);
+    ca.addFunc("getVelocity", &ControlAnim::getVelocity);
+    ca.addFunc("getTarget", &ControlAnim::getTarget);
+    ca.addFunc("clear", &ControlAnim::clear);
+    ca.addFunc("remove", &ControlAnim::remove);
+    ca.addFunc("getPropertyCount", &ControlAnim::getPropertyCount);
+    ca.addFunc("getPropertyName", &ControlAnim::getPropertyName);
+    ca.addFunc("update", &ControlAnim::update);
+
+    auto cp = table.addClass<ControlPose>(
+        "ControlPose", std::function<ControlPose *()>([]() -> ControlPose * { return nullptr; }),
+        true);
+    cp.addFunc("setFrequency", &ControlPose::setFrequency);
+    cp.addFunc("getFrequency", &ControlPose::getFrequency);
+    cp.addFunc("setDamping", &ControlPose::setDamping);
+    cp.addFunc("getDamping", &ControlPose::getDamping);
+    cp.addFunc("setResponse", &ControlPose::setResponse);
+    cp.addFunc("getResponse", &ControlPose::getResponse);
+    cp.addFunc("setIntegrator", &ControlPose::setIntegrator);
+    cp.addFunc("getIntegrator", &ControlPose::getIntegrator);
+    cp.addFunc("setBoneWeight", &ControlPose::setBoneWeight);
+    cp.addFunc("getBoneWeight", &ControlPose::getBoneWeight);
+    cp.addFunc("setTargetPose", &ControlPose::setTargetPose);
+    cp.addFunc("snapToTarget", &ControlPose::snapToTarget);
+    cp.addFunc("getPose", &ControlPose::getPose);
+    cp.addFunc("getTargetPose", &ControlPose::getTargetPose);
+    cp.addFunc("update", &ControlPose::update);
 }
 
 void Animation::expose(ssq::Class &cls) {
@@ -343,6 +395,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newStateMachine", &Animation::newStateMachine);
     cls.addFunc("newMotionDatabase", &Animation::newMotionDatabase);
     cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);
+    cls.addFunc("newControlAnim", &Animation::newControlAnim);
+    cls.addFunc("newControlPose", &Animation::newControlPose);
     cls.addFunc("newSkeletonFromModel", &Animation::newSkeletonFromModel);
     cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
     cls.addFunc("newSkeletonFromEvaFile", &Animation::newSkeletonFromEvaFile);

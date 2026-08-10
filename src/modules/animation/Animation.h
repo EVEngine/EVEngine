@@ -19,10 +19,13 @@ class AnimPlayer;
 class AnimStateMachine;
 class MotionDatabase;
 class MotionMatcher;
+class ControlAnim;
+class ControlPose;
 
 /**
  * Animation module — tween factory + 3D skeletal playback
- * (player / state machine / motion matching) + per-frame pump.
+ * (player / state machine / motion matching) + control-theory
+ * procedural drivers + per-frame pump.
  * Script: `anim <- eve.Animation();`
  *
  * Tweens own their property tracks; call `anim.update(dt)` (or `tween.update(dt)`)
@@ -30,6 +33,8 @@ class MotionMatcher;
  *
  * 3D: build `AnimSkeleton` + `AnimClip`, then drive with `AnimPlayer`,
  * `AnimStateMachine`, or `MotionMatcher` (+ `MotionDatabase`).
+ * Procedural: `ControlAnim` (scalar second-order/PD/spring) and
+ * `ControlPose` (pose tracking with the same control laws).
  */
 class Animation : public Module {
 public:
@@ -48,6 +53,14 @@ public:
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
+
+    /**
+     * Control-theory procedural animation (second-order / spring / PD).
+     * frequencyHz: natural frequency f (Hz); dampingZeta: ζ; response: r.
+     */
+    ControlAnim *newControlAnim(float frequencyHz = 3.f, float dampingZeta = 1.f,
+                                float response = 1.f);
+    ControlPose *newControlPose(AnimSkeleton *skeleton);
 
     /**
      * Import skeleton/clip from Assimp-backed ModelData, or from compact `.eva`
