@@ -28,11 +28,27 @@ map.render(gfx);
 
 先用地图坐标换算接口把世界位置转成格子，再 `setTile(x, y, gid)`；批量生成地图时先 resize，再填充，避免重复重建图层。0 通常表示空瓦片。
 
+### Dual Grid（双网格）
+
+Tiled **没有**原生 dual-grid；在编辑器里画逻辑填充层，运行时解算显示层：
+
+```squirrel
+local map = eve.Map();
+local logic = map.newLayer(16, 12, 32, 32);
+local display = map.newLayer(1, 1, 32, 32);
+// display.setTileset(tex, 1, 4);  // 4×4 的 15-tile 图集
+logic.setTile(3, 4, 1);
+map.resolveDualGrid(logic, display);  // 半格偏移 + 15 片选瓦
+```
+
+`resolveDualGridFilled(logic, display, filledGid)` 只把指定 GID 当作填充。逻辑层可继续用于碰撞；默认会 `setVisible(false)`。
+
 ## 常见问题
 
 - GID 与图集编号混淆：0 为空，其余值遵循 tileset 映射。
 - 世界坐标直接作为 tile 索引：先做投影换算。
 - 修改 JSON 后未启用 watch/autoReload。
+- 期望 Tiled 直接导出 dual-grid 显示层：不支持；用逻辑层 + `resolveDualGrid`。
 
 ## API 快查
 
@@ -42,9 +58,9 @@ map.render(gfx);
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
-- `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
+- `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
 - `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTint()`、`setVisible()`、`tileToWorldX()`
-- `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`
+- `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`lastDualGridError()`
 
 ## 使用要点
 

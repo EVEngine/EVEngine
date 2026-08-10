@@ -6,6 +6,7 @@
 #include "map/TileSystem.h"
 #include "map/TileConfig.h"
 #include "map/TileProjection.h"
+#include "map/DualGrid.h"
 #include "map/MapObject.h"
 #include "graphics/DrawItem2D.h"
 #include "data/DataModule.h"
@@ -413,4 +414,85 @@ TEST_CASE("map.load.tiledLikeIsometricWithObjects") {
     CHECK_EQ(objs[0].name, "npc");
     CHECK_EQ(objs[0].type, "talker");
     CHECK_EQ(objs[0].gid, 3);
+}
+
+TEST_CASE("map.dualGrid.maskAndFrameTable") {
+    CHECK_EQ(dualGridMaskFromCorners(false, false, false, false), 0);
+    CHECK_EQ(dualGridMaskFromCorners(true, false, false, false), 1);
+    CHECK_EQ(dualGridMaskFromCorners(false, true, false, false), 2);
+    CHECK_EQ(dualGridMaskFromCorners(false, false, true, false), 4);
+    CHECK_EQ(dualGridMaskFromCorners(false, false, false, true), 8);
+    CHECK_EQ(dualGridMaskFromCorners(true, true, true, true), 15);
+    // Diagonal TL+BR (classic dual-grid case that blob edge-masks miss).
+    CHECK_EQ(dualGridMaskFromCorners(true, false, false, true), 9);
+    CHECK_EQ(dualGridDefaultFrame(0), -1);
+    CHECK_EQ(dualGridDefaultFrame(15), 6);
+    CHECK_EQ(dualGridDefaultFrame(9), 4);
+    CHECK_EQ(dualGridDefaultFrameTable()[1], 15);
+}
+
+TEST_CASE("map.dualGrid.resolveHalfOffsetAndSize") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(2, 2, 32.f, 32.f);
+    TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
+    logic->setOrigin(10.f, 20.f);
+    logic->setTile(0, 0, 1);
+    logic->setTile(1, 1, 1);
+
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = false;  // gid = firstGid + mask
+    opts.firstDisplayGid = 10;
+    opts.hideLogic = true;
+    std::string err;
+    CHECK(resolveDualGrid(logic, display, opts, &err));
+    CHECK(err.empty());
+    CHECK_EQ(display->getMapWidth(), 3);
+    CHECK_EQ(display->getMapHeight(), 3);
+    CHECK_EQ(display->getTileWidth(), 32.f);
+    CHECK_EQ(display->getX(), 10.f - 16.f);
+    CHECK_EQ(display->getY(), 20.f - 16.f);
+    CHECK(!logic->isVisible());
+    CHECK(display->isVisible());
+
+    // Display (1,1) samples logic (0,0),(1,0),(0,1),(1,1) → TL+BR = mask 9
+    CHECK_EQ(dualGridMaskAt(*logic, 1, 1, 0), 9);
+    CHECK_EQ(display->getTile(1, 1), 10 + 9);
+    // Display (0,0) samples only out-of-bounds + logic(0,0) as BR → mask 8
+    CHECK_EQ(dualGridMaskAt(*logic, 0, 0, 0), 8);
+    CHECK_EQ(display->getTile(0, 0), 10 + 8);
+    // Empty neighborhood
+    CHECK_EQ(display->getTile(2, 0), 0);
+}
+
+TEST_CASE("map.dualGrid.resolveRejectsSameLayer") {
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(2, 2, 16.f, 16.f);
+    std::string err;
+    CHECK(!resolveDualGrid(layer, layer, DualGridOptions{}, &err));
+    CHECK(!err.empty());
+    CHECK(!mod->resolveDualGrid(nullptr, layer));
+    CHECK(!mod->lastDualGridError().empty());
+}
+
+TEST_CASE("map.dualGrid.filledGidFilter") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(1, 1, 16.f, 16.f);
+    TileLayer *display = mod->newLayer(1, 1, 16.f, 16.f);
+    logic->setTile(0, 0, 5);
+    DualGridOptions opts;
+    opts.filledGid = 9;  // 5 should not count
+    opts.useDefaultFrameTable = false;
+    opts.firstDisplayGid = 1;
+    opts.hideLogic = false;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    // All display cells empty when filled filter mismatches
+    CHECK_EQ(display->getTile(0, 0), 0);
+    CHECK_EQ(display->getTile(1, 0), 0);
+    CHECK_EQ(display->getTile(0, 1), 0);
+    CHECK_EQ(display->getTile(1, 1), 0);
+    CHECK(logic->isVisible());
+
+    CHECK(mod->resolveDualGridFilled(logic, display, 5));
+    CHECK_EQ(dualGridMaskAt(*logic, 1, 1, 5), 8);
+    CHECK_EQ(display->getTile(1, 1), 1 + dualGridDefaultFrame(8));
 }
