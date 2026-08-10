@@ -508,6 +508,9 @@ basic:
 rpg:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/rpg
 
+inventory:
+	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/inventory
+
 ecs:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/ecs
 

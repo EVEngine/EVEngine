@@ -3,6 +3,7 @@
 #include "common/Module.h"
 #include "map/TileLayer.h"
 #include "map/MapObject.h"
+#include "map/Pathfinder.h"
 
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@ namespace eve::map {
 /**
  * Map module — factory + script binding for 2D tilemaps.
  * Per-frame: TileConfigSystem (hot reload) → unified sprite+tile render.
+ * Pathfinding: newPathfinder / newPathfinderSize → A* + Flow Field group paths.
  */
 class Map : public Module {
 public:
@@ -24,6 +26,11 @@ public:
     ~Map() override = default;
 
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);
+
+    /** Pathfinder bound to a TileLayer (syncs walkability from GIDs). */
+    Pathfinder *newPathfinder(TileLayer *layer);
+    /** Custom grid pathfinder (no layer); fill with setBlocked / setCellCost. */
+    Pathfinder *newPathfinderSize(int mapW, int mapH);
 
     /**
      * Load map JSON (Tiled-compatible subset or EVEngine simplified format).

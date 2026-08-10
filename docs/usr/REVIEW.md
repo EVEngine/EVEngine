@@ -42,6 +42,7 @@
 | Particles | `src/modules/particles/Particles.cpp` | `examples/basic/particles/`、`test/particles.cpp` | 补充容量、生命周期、模块统一 update/render |
 | Animation | `src/modules/animation/Animation.cpp`、`Tween.cpp` | `test/animation.cpp` | 说明 Tween 只算值，游戏负责写回属性 |
 | RPG | `src/modules/rpg/RPG.cpp` | `examples/rpg/`、`test/rpg.cpp` | 串联 definition、actor、update、事件和 settlement |
+| Inventory | `src/modules/inventory/Inventory.cpp` | `examples/inventory/`、`test/inventory.cpp` | 串联物品定义、Bag、转移、装备与变更事件 |
 | Procgen | `src/modules/procgen/Procgen.cpp` | `examples/procgen/`、`test/procgen.cpp` | 补充 seed 可复现、Params/Grid/Output 与缓存策略 |
 | Graphics | `src/modules/graphics/Graphics.cpp` | `examples/basic/main.nut`、渲染测试 | 明确资源创建与逐帧提交边界、2D/3D/UI 顺序，以及 Camera2D/3D 拾取换算 |
 | UI | `src/modules/ui/UI.cpp` | `examples/basic/ui_demo.nut`、UI 测试 | 补充 Host、稳定 ID、事件消费和局部更新 |
@@ -56,7 +57,7 @@
 
 本次 review 另执行三个仓库级检查：
 
-- 33 个 `src/modules/*` 目录均有同名用户章节；
+- 各 `src/modules/*` 目录均有同名用户章节；
 - 各目录 C++ 文件中的全部 `addFunc("...")` 均出现在对应章节 API 快查；
 - 所有 Squirrel 示例代码块中的方法调用均能在实际绑定或注入脚本中找到（模块构造器单独由 `Module_REG` 校验）。
 

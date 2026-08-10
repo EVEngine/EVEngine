@@ -133,9 +133,9 @@ else()
 endif()
 
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVAvatar EVDialogue EVProcgen EVStylize)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVInventory EVAvatar EVDialogue EVProcgen EVStylize)
 else()
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVAvatar EVDialogue EVProcgen EVStylize)
+    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVInventory EVAvatar EVDialogue EVProcgen EVStylize)
 endif()
 
 if(EVENGINE_BUILD_DEMO)
@@ -253,8 +253,13 @@ endif()
 # the .def and hits MSVC LNK1189 (65535 export limit) as the engine grows.
 target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE EVENGINE_BUILDING_HOST=1)
 if(WIN32)
+    # ENABLE_EXPORTS so plugins can link/import host symbols.
+    # Do NOT enable WINDOWS_EXPORT_ALL_SYMBOLS: MSVC hits LNK1189 (65535
+    # objects/exports) once the engine grows. Plugins only need EVENGINE_API
+    # (__declspec(dllexport)) symbols such as ModuleManager / ModuleRegister.
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
         ENABLE_EXPORTS ON
+        WINDOWS_EXPORT_ALL_SYMBOLS OFF
     )
 elseif(APPLE)
     # macOS + iOS: Apple ld rejects GNU --export-dynamic.
