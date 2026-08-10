@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "animation/Animation.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPlayer.h"
@@ -188,4 +189,152 @@ TEST_CASE("animation.mixamo.playerCrossFadeIdleToRun") {
     player->getPose()->computeWorld(pack.skeleton.get());
     const int hips = pack.skeleton->findBone("mixamorig:Hips");
     CHECK(std::isfinite(player->getPose()->getWorldPositionY(hips)));
+}
+
+TEST_CASE("animation.mixamo.stateMachine.runJumpIdleCycle") {
+    auto pack = loadMixamoEva();
+    std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
+    sm->addState("Idle", pack.idle.get());
+    sm->addState("Run", pack.run.get());
+    sm->addState("Jump", pack.jump.get());
+    sm->setEntry("Idle");
+
+    int idleToRun = sm->addTransition("Idle", "Run", 0.1f);
+    sm->addFloatCondition(idleToRun, "speed", ">", 50.f);
+    int runToIdle = sm->addTransition("Run", "Idle", 0.1f);
+    sm->addFloatCondition(runToIdle, "speed", "<", 10.f);
+
+    // Jump can interrupt Idle or Run
+    int idleToJump = sm->addTransition("Idle", "Jump", 0.05f);
+    sm->addTriggerCondition(idleToJump, "jump");
+    int runToJump = sm->addTransition("Run", "Jump", 0.05f);
+    sm->addTriggerCondition(runToJump, "jump");
+    int jumpToIdle = sm->addTransition("Jump", "Idle", 0.08f);
+    sm->setExitTime(jumpToIdle, 0.8f);
+
+    sm->setFloat("speed", 180.f);
+    for (int i = 0; i < 30; ++i) sm->update(0.05f);
+    CHECK(sm->getCurrentState() == "Run");
+
+    sm->setTrigger("jump");
+    sm->update(0.016f);
+    CHECK(sm->getCurrentState() == "Jump");
+
+    // Wait until Jump exits (exitTime 0.8 * 1.9s ≈ 1.5s), then observe Idle land.
+    bool sawIdle = false;
+    for (int i = 0; i < 80; ++i) {
+        sm->update(0.05f);
+        if (sm->getCurrentState() == "Idle") {
+            sawIdle = true;
+            break;
+        }
+    }
+    CHECK(sawIdle);
+
+    // Speed still high → resume Run after landing.
+    for (int i = 0; i < 30; ++i) sm->update(0.05f);
+    CHECK(sm->getCurrentState() == "Run");
+}
+
+TEST_CASE("animation.mixamo.stateMachine.boolArmedGate") {
+    auto pack = loadMixamoEva();
+    std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
+    sm->addState("Idle", pack.idle.get());
+    sm->addState("Run", pack.run.get());
+    sm->setEntry("Idle");
+
+    int t = sm->addTransition("Idle", "Run", 0.f);
+    sm->addFloatCondition(t, "speed", ">", 50.f);
+    sm->addBoolCondition(t, "armed", true);
+
+    sm->setFloat("speed", 200.f);
+    sm->setBool("armed", false);
+    sm->update(0.05f);
+    CHECK(sm->getCurrentState() == "Idle");
+
+    sm->setBool("armed", true);
+    sm->update(0.05f);
+    CHECK(sm->getCurrentState() == "Run");
+}
+
+TEST_CASE("animation.mixamo.motionMatching.stableWithIgnoreRadius") {
+    auto pack = loadMixamoEva();
+    const int hips = pack.skeleton->findBone("mixamorig:Hips");
+    REQUIRE(hips >= 0);
+
+    std::unique_ptr<MotionDatabase> db(new MotionDatabase(pack.skeleton.get()));
+    db->setRootBoneByName("mixamorig:Hips");
+    db->addFeatureBoneByName("mixamorig:LeftFoot");
+    db->addFeatureBoneByName("mixamorig:RightFoot");
+    db->addClip(pack.idle.get());
+    db->addClip(pack.run.get());
+    db->bake();
+
+    std::unique_ptr<MotionMatcher> mm(new MotionMatcher(pack.skeleton.get(), db.get()));
+    mm->setSearchInterval(0.1f);
+    mm->setBlendTime(0.1f);
+    mm->setIgnoreRadius(3);
+    mm->setVelocityWeight(2.f);
+    mm->setTrajectoryWeight(1.5f);
+    mm->setDesiredVelocity(0.f, 300.f);
+    mm->search();
+    CHECK_EQ(mm->getMatchedClipIndex(), 1);
+
+    int switches = 0;
+    int lastClip = mm->getMatchedClipIndex();
+    for (int i = 0; i < 30; ++i) {
+        mm->update(0.05f);
+        const int clip = mm->getMatchedClipIndex();
+        if (clip != lastClip) {
+            ++switches;
+            lastClip = clip;
+        }
+    }
+    // Holding a constant high desired speed should stay on run (few/no flips).
+    CHECK(switches <= 2);
+    CHECK_EQ(mm->getMatchedClipIndex(), 1);
+}
+
+TEST_CASE("animation.mixamo.evaExportRoundTripPreservesHips") {
+    auto pack = loadMixamoEva();
+    const std::string text = AnimImporter::exportEva(pack.skeleton.get(), pack.idle.get());
+
+    AnimSkeleton *sk = nullptr;
+    AnimClip *clip   = nullptr;
+    AnimImporter::importEva(text, &sk, &clip);
+    std::unique_ptr<AnimSkeleton> skOwned(sk);
+    std::unique_ptr<AnimClip> clipOwned(clip);
+
+    CHECK_EQ(skOwned->getBoneCount(), 70);
+    CHECK_EQ(skOwned->findBone("mixamorig:Hips"), 1);
+    CHECK(std::fabs(clipOwned->getDuration() - pack.idle->getDuration()) < 1e-3f);
+
+    std::unique_ptr<AnimPose> a(new AnimPose());
+    std::unique_ptr<AnimPose> b(new AnimPose());
+    pack.idle->sample(0.35f, a.get(), pack.skeleton.get());
+    clipOwned->sample(0.35f, b.get(), skOwned.get());
+    const int hips = 1;
+    CHECK(std::fabs(a->getLocalPositionY(hips) - b->getLocalPositionY(hips)) < 0.05f);
+}
+
+TEST_CASE("animation.mixamo.moduleEvaFactories") {
+    auto *anim = Animation::create();
+    std::unique_ptr<AnimSkeleton> sk(anim->newSkeletonFromEvaFile(assetPath("Idle.eva")));
+    std::unique_ptr<AnimClip> idle(anim->newClipFromEvaFile(assetPath("Idle.eva")));
+    std::unique_ptr<AnimClip> run(anim->newClipFromEvaFile(assetPath("SlowRun.eva")));
+    CHECK(sk->getBoneCount() == 70);
+    CHECK(idle->getDuration() > 1.f);
+
+    const int hips = sk->findBone("mixamorig:Hips");
+    run->applyPlanarRootMotion(hips, 0.f, 300.f);
+
+    std::unique_ptr<AnimStateMachine> sm(anim->newStateMachine(sk.get()));
+    sm->addState("Idle", idle.get());
+    sm->addState("Run", run.get());
+    sm->setEntry("Idle");
+    int t = sm->addTransition("Idle", "Run", 0.f);
+    sm->addFloatCondition(t, "speed", ">", 1.f);
+    sm->setFloat("speed", 10.f);
+    sm->update(0.016f);
+    CHECK(sm->getCurrentState() == "Run");
 }
