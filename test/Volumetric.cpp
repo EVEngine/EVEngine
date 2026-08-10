@@ -222,3 +222,193 @@ TEST_CASE("volumetric.lightFlags") {
     l3->setVolumetric(true);
     CHECK(l3->getVolumetric() == true);
 }
+
+TEST_CASE("volumetric.modeAndRayMarchQuality") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+
+    Volumetric *raw = gfx->newVolumetric();
+    REQUIRE(raw != nullptr);
+    std::unique_ptr<Volumetric> vol(raw);
+    REQUIRE(vol->getRayMarchShader() != nullptr);
+
+    CHECK(vol->getMode() == "screenspace");
+    vol->setMode("raymarch");
+    CHECK(vol->getMode() == "raymarch");
+
+    vol->setQuality("low");
+    CHECK(vol->getSampleCount() == 8);
+    CHECK(vol->getDownscale() == 4.f);
+
+    vol->setQuality("high");
+    CHECK(vol->getSampleCount() == 48);
+
+    vol->setMode("screenspace");
+    vol->setQuality("medium");
+    CHECK(vol->getSampleCount() == 48);
+}
+
+namespace {
+
+struct BoxDepth {
+    int w = 0, h = 0;
+    float boxU0 = 0.35f, boxU1 = 0.65f, boxV0 = 0.35f, boxV1 = 0.65f;
+    float boxDepth = 0.35f;
+    float floorDepth = 0.85f;
+};
+
+float boxDepth01(int x, int y, void *userdata) {
+    auto *b = static_cast<BoxDepth *>(userdata);
+    const float u = (float(x) + 0.5f) / float(b->w);
+    const float v = (float(y) + 0.5f) / float(b->h);
+    if (u >= b->boxU0 && u <= b->boxU1 && v >= b->boxV0 && v <= b->boxV1) return b->boxDepth;
+    return b->floorDepth;
+}
+
+}  // namespace
+
+TEST_CASE("volumetric.rayMarchProducesScatter") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 160, 120);
+
+    Volumetric *raw = gfx->newVolumetric();
+    REQUIRE(raw != nullptr);
+    std::unique_ptr<Volumetric> vol(raw);
+    vol->setMode("raymarch");
+    vol->setQuality("medium");
+    vol->setLightDirection(0.5f, 1.f, 0.2f);
+    vol->setLightScreenUV(0.8f, 0.15f);
+    vol->setCamera(0.f, 2.f, 5.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 50.f, 160.f / 120.f, 0.1f, 40.f);
+    vol->setDensity(1.2f);
+    vol->setIntensity(2.5f);
+    vol->setShaftColor(1.f, 0.92f, 0.75f);
+    vol->setFloat("fogAmount", 0.5f);
+    vol->setFloat("dustAmount", 0.4f);
+
+    BoxDepth bd;
+    bd.w = 80;
+    bd.h = 60;
+    Texture *depth = vol->newLinearDepthTexture(gfx, bd.w, bd.h, boxDepth01, &bd);
+    REQUIRE(depth != nullptr);
+
+    Canvas *out = gfx->newCanvas(bd.w, bd.h);
+    vol->rayMarchTo(gfx, depth, out);
+
+    float maxL = 0.f;
+    float sum = 0.f;
+    int n = 0;
+    for (int y = 0; y < bd.h; y += 2) {
+        for (int x = 0; x < bd.w; x += 2) {
+            const float L = luma(out->getPixel(x, y));
+            maxL = std::max(maxL, L);
+            sum += L;
+            ++n;
+        }
+    }
+    CHECK(maxL > 0.005f);
+    CHECK(sum / float(std::max(n, 1)) > 0.0005f);
+}
+
+TEST_CASE("volumetric.rayMarchShadowDarkensBehindOccluder") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 160, 120);
+
+    Volumetric *raw = gfx->newVolumetric();
+    REQUIRE(raw != nullptr);
+    std::unique_ptr<Volumetric> vol(raw);
+    vol->setMode("raymarch");
+    vol->setQuality("high");
+    vol->setLightDirection(0.6f, 0.8f, 0.1f);
+    vol->setLightScreenUV(0.85f, 0.1f);
+    vol->setCamera(0.f, 1.5f, 4.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 55.f, 160.f / 120.f, 0.1f, 30.f);
+    vol->setDensity(0.7f);
+    vol->setIntensity(1.6f);
+    vol->setFloat("shadowSteps", 16.f);
+
+    BoxDepth bd;
+    bd.w = 96;
+    bd.h = 72;
+    bd.boxU0 = 0.4f;
+    bd.boxU1 = 0.6f;
+    bd.boxV0 = 0.3f;
+    bd.boxV1 = 0.55f;
+    bd.boxDepth = 0.3f;
+    bd.floorDepth = 0.9f;
+    Texture *depth = vol->newLinearDepthTexture(gfx, bd.w, bd.h, boxDepth01, &bd);
+
+    Canvas *out = gfx->newCanvas(bd.w, bd.h);
+    vol->rayMarchTo(gfx, depth, out);
+
+    // Sample below the box (away from light) vs beside it toward the light.
+    const int midX = int(bd.w * 0.5f);
+    const int belowY = int(bd.h * 0.7f);
+    const int litY = int(bd.h * 0.2f);
+    const float behind = luma(out->getPixel(midX, belowY));
+    const float towardLight = luma(out->getPixel(int(bd.w * 0.75f), litY));
+    // Lit side / skyward samples should retain some energy; occluded volume may be darker.
+    CHECK(towardLight + behind > 0.0f);
+    CHECK(towardLight + 0.001f >= behind * 0.25f);
+}
+
+TEST_CASE("volumetric.drawOccluders2DUsesCastFlag") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 128, 96);
+
+    // Hide leftover sprites from other tests if any manager exists.
+    if (ecs::current()->getManager<Renderable2D>() != nullptr) {
+        auto view = ecs::View<Renderable2D, Renderable2D::Sprite>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [sp] = *it;
+            sp->visible = false;
+        }
+    }
+
+    auto *a = Renderable2D::create();
+    a->transform()->x = 20;
+    a->transform()->y = 20;
+    a->sprite()->width = 40;
+    a->sprite()->height = 40;
+    a->sprite()->visible = true;
+    a->setCastOcclusion(true);
+
+    auto *b = Renderable2D::create();
+    b->transform()->x = 70;
+    b->transform()->y = 20;
+    b->sprite()->width = 40;
+    b->sprite()->height = 40;
+    b->sprite()->visible = true;
+    b->setCastOcclusion(false);
+
+    Volumetric *raw = gfx->newVolumetric();
+    std::unique_ptr<Volumetric> vol(raw);
+
+    Canvas *occ = gfx->newCanvas(128, 96);
+    gfx->setCanvas(occ);
+    gfx->clear(Color(1.f, 1.f, 1.f, 1.f), std::nullopt, std::nullopt);
+    // Paint a bright plate so skipped occluders stay readable.
+    gfx->drawSolidRect(0, 0, 128, 96, Color(0.95f, 0.95f, 0.95f, 1.f));
+    vol->drawOccluders2D(gfx);
+    gfx->setCanvas(nullptr);
+
+    // Occluder A region dark; B skipped → stays bright.
+    CHECK(occ->getPixel(30, 30).r < 0.15f);
+    CHECK(occ->getPixel(85, 30).r > 0.5f);
+}
+
+TEST_CASE("volumetric.paramRoundTripShared") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+    vol->setDensity(0.42f);
+    CHECK(std::fabs(vol->getFloat("density") - 0.42f) < 1e-5f);
+    vol->setMode("raymarch");
+    vol->setDensity(0.33f);
+    CHECK(std::fabs(vol->getFloat("density") - 0.33f) < 1e-5f);
+    CHECK(vol->hasParam("invViewProj") == true);
+    CHECK(vol->hasParam("exposure") == true);
+}

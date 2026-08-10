@@ -8,20 +8,25 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/shaders/volumetric_post_frag_spv.inc"
+#include "graphics/shaders/volumetric_raymarch_frag_spv.inc"
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <optional>
 #include <vector>
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace eve::graphics {
 namespace {
 
-Shader *createVolumetricShader(Graphics *gfx) {
+Shader *createScreenspaceShader(Graphics *gfx) {
     if (!gfx) throw eve::Exception("Volumetric: null graphics");
     std::vector<uint32_t> frag(volumetric_post_frag_spv,
                                volumetric_post_frag_spv + volumetric_post_frag_spv_count);
-    std::vector<uint32_t> vert;  // empty → default textured.vert
+    std::vector<uint32_t> vert;
     Shader *sh = gfx->newShaderFromSpv(vert, frag);
     sh->declareFloat("lightX");
     sh->declareFloat("lightY");
@@ -63,35 +68,102 @@ Shader *createVolumetricShader(Graphics *gfx) {
     return sh;
 }
 
+Shader *createRayMarchShader(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("Volumetric: null graphics");
+    std::vector<uint32_t> frag(volumetric_raymarch_frag_spv,
+                               volumetric_raymarch_frag_spv + volumetric_raymarch_frag_spv_count);
+    std::vector<uint32_t> vert;
+    Shader *sh = gfx->newShaderFromSpv(vert, frag);
+    sh->declareMatrix("invViewProj");
+    sh->declareFloat("lightDx");
+    sh->declareFloat("lightDy");
+    sh->declareFloat("lightDz");
+    sh->declareFloat("density");
+    sh->declareFloat("shaftR");
+    sh->declareFloat("shaftG");
+    sh->declareFloat("shaftB");
+    sh->declareFloat("intensity");
+    sh->declareFloat("nearZ");
+    sh->declareFloat("farZ");
+    sh->declareFloat("sampleCount");
+    sh->declareFloat("dustAmount");
+    sh->declareFloat("fogAmount");
+    sh->declareFloat("shadowSteps");
+    sh->declareFloat("lightU");
+    sh->declareFloat("lightV");
+
+    sh->sendMatrix("invViewProj", glm::mat4(1.f));
+    sh->sendFloat("lightDx", 0.4f);
+    sh->sendFloat("lightDy", 1.f);
+    sh->sendFloat("lightDz", 0.3f);
+    sh->sendFloat("density", 0.35f);
+    sh->sendFloat("shaftR", 1.f);
+    sh->sendFloat("shaftG", 0.95f);
+    sh->sendFloat("shaftB", 0.85f);
+    sh->sendFloat("intensity", 1.f);
+    sh->sendFloat("nearZ", 0.1f);
+    sh->sendFloat("farZ", 100.f);
+    sh->sendFloat("sampleCount", 24.f);
+    sh->sendFloat("dustAmount", 0.25f);
+    sh->sendFloat("fogAmount", 0.2f);
+    sh->sendFloat("shadowSteps", 8.f);
+    sh->sendFloat("lightU", 0.7f);
+    sh->sendFloat("lightV", 0.2f);
+    return sh;
+}
+
 }  // namespace
 
 Volumetric::Volumetric(Graphics *gfx) : gfx_(gfx) {
-    shader_ = createVolumetricShader(gfx);
+    shader_ = createScreenspaceShader(gfx);
+    rayShader_ = createRayMarchShader(gfx);
     applyQualityDefaults();
 }
 
 Volumetric::~Volumetric() = default;
 
 void Volumetric::applyQualityDefaults() {
+    const bool ray = (mode_ == "raymarch");
     if (quality_ == "low") {
         downscale_ = 4.f;
-        setFloat("sampleCount", 16.f);
-        setFloat("dustAmount", 0.12f);
-        setFloat("fogAmount", 0.10f);
-        setFloat("exposure", 0.40f);
+        if (ray) {
+            rayShader_->sendFloat("sampleCount", 8.f);
+            rayShader_->sendFloat("shadowSteps", 4.f);
+            rayShader_->sendFloat("dustAmount", 0.12f);
+            rayShader_->sendFloat("fogAmount", 0.12f);
+        } else {
+            setFloat("sampleCount", 16.f);
+            setFloat("dustAmount", 0.12f);
+            setFloat("fogAmount", 0.10f);
+            setFloat("exposure", 0.40f);
+        }
     } else if (quality_ == "high") {
         downscale_ = 1.f;
-        setFloat("sampleCount", 96.f);
-        setFloat("dustAmount", 0.35f);
-        setFloat("fogAmount", 0.22f);
-        setFloat("exposure", 0.32f);
+        if (ray) {
+            rayShader_->sendFloat("sampleCount", 48.f);
+            rayShader_->sendFloat("shadowSteps", 16.f);
+            rayShader_->sendFloat("dustAmount", 0.35f);
+            rayShader_->sendFloat("fogAmount", 0.25f);
+        } else {
+            setFloat("sampleCount", 96.f);
+            setFloat("dustAmount", 0.35f);
+            setFloat("fogAmount", 0.22f);
+            setFloat("exposure", 0.32f);
+        }
     } else {
         quality_ = "medium";
         downscale_ = 2.f;
-        setFloat("sampleCount", 48.f);
-        setFloat("dustAmount", 0.25f);
-        setFloat("fogAmount", 0.18f);
-        setFloat("exposure", 0.35f);
+        if (ray) {
+            rayShader_->sendFloat("sampleCount", 24.f);
+            rayShader_->sendFloat("shadowSteps", 8.f);
+            rayShader_->sendFloat("dustAmount", 0.25f);
+            rayShader_->sendFloat("fogAmount", 0.2f);
+        } else {
+            setFloat("sampleCount", 48.f);
+            setFloat("dustAmount", 0.25f);
+            setFloat("fogAmount", 0.18f);
+            setFloat("exposure", 0.35f);
+        }
     }
 }
 
@@ -100,9 +172,19 @@ void Volumetric::setQuality(const std::string &quality) {
     applyQualityDefaults();
 }
 
+void Volumetric::setMode(const std::string &mode) {
+    if (mode == "raymarch")
+        mode_ = "raymarch";
+    else
+        mode_ = "screenspace";
+    applyQualityDefaults();
+}
+
 void Volumetric::setLightScreenUV(float u, float v) {
     setFloat("lightX", u);
     setFloat("lightY", v);
+    rayShader_->sendFloat("lightU", u);
+    rayShader_->sendFloat("lightV", v);
 }
 
 float Volumetric::getLightScreenU() const { return getFloat("lightX"); }
@@ -114,10 +196,44 @@ void Volumetric::setLightScreenPos(float x, float y, float width, float height) 
     setLightScreenUV(x / width, y / height);
 }
 
+void Volumetric::setLightDirection(float dx, float dy, float dz) {
+    glm::vec3 d(dx, dy, dz);
+    if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+    else d = glm::normalize(d);
+    lightDir_ = d;
+    rayShader_->sendFloat("lightDx", d.x);
+    rayShader_->sendFloat("lightDy", d.y);
+    rayShader_->sendFloat("lightDz", d.z);
+}
+
+void Volumetric::setInvViewProj(const glm::mat4 &invViewProj) {
+    invViewProj_ = invViewProj;
+    rayShader_->sendMatrix("invViewProj", invViewProj_);
+}
+
+void Volumetric::setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY,
+                           float targetZ, float upX, float upY, float upZ, float fovYDeg,
+                           float aspect, float nearZ, float farZ) {
+    nearZ_ = nearZ > 1e-4f ? nearZ : 0.1f;
+    farZ_ = farZ > nearZ_ ? farZ : nearZ_ + 1.f;
+    const float aspectSafe = aspect > 1e-4f ? aspect : 1.f;
+    const float fovRad = fovYDeg * 0.017453292519943295f;
+    const glm::mat4 view =
+        glm::lookAtRH(glm::vec3(eyeX, eyeY, eyeZ), glm::vec3(targetX, targetY, targetZ),
+                      glm::vec3(upX, upY, upZ));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(fovRad, aspectSafe, nearZ_, farZ_);
+    setInvViewProj(glm::inverse(proj * view));
+    rayShader_->sendFloat("nearZ", nearZ_);
+    rayShader_->sendFloat("farZ", farZ_);
+}
+
 void Volumetric::setShaftColor(float r, float g, float b) {
     setFloat("shaftR", r);
     setFloat("shaftG", g);
     setFloat("shaftB", b);
+    rayShader_->sendFloat("shaftR", r);
+    rayShader_->sendFloat("shaftG", g);
+    rayShader_->sendFloat("shaftB", b);
 }
 
 void Volumetric::setFogColor(float r, float g, float b) {
@@ -126,25 +242,43 @@ void Volumetric::setFogColor(float r, float g, float b) {
     setFloat("fogB", b);
 }
 
-void Volumetric::setIntensity(float intensity) { setFloat("intensity", intensity); }
+void Volumetric::setIntensity(float intensity) {
+    setFloat("intensity", intensity);
+    rayShader_->sendFloat("intensity", intensity);
+}
 
 void Volumetric::setTime(float seconds) { setFloat("time", seconds); }
 
+void Volumetric::setDensity(float density) {
+    setFloat("density", density);
+    rayShader_->sendFloat("density", density);
+}
+
 bool Volumetric::hasParam(const std::string &name) const {
-    return shader_ && shader_->hasUniform(name);
+    return (shader_ && shader_->hasUniform(name)) || (rayShader_ && rayShader_->hasUniform(name));
 }
 
 void Volumetric::setFloat(const std::string &name, float value) {
     if (!shader_) throw eve::Exception("Volumetric.setFloat: null shader");
-    shader_->sendFloat(name, value);
+    if (shader_->hasUniform(name)) shader_->sendFloat(name, value);
+    if (rayShader_ && rayShader_->hasUniform(name)) rayShader_->sendFloat(name, value);
 }
 
 float Volumetric::getFloat(const std::string &name) const {
-    if (!shader_) throw eve::Exception("Volumetric.getFloat: null shader");
-    float v = 0.f;
-    if (shader_->getFromVar(name, &v, sizeof(v)) != int(sizeof(v)))
-        throw eve::Exception("Volumetric.getFloat: missing param '%s'", name.c_str());
-    return v;
+    // Prefer the active mode's shader so quality/sample queries match setMode.
+    if (mode_ == "raymarch" && rayShader_ && rayShader_->hasUniform(name)) {
+        float v = 0.f;
+        if (rayShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
+    }
+    if (shader_ && shader_->hasUniform(name)) {
+        float v = 0.f;
+        if (shader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
+    }
+    if (rayShader_ && rayShader_->hasUniform(name)) {
+        float v = 0.f;
+        if (rayShader_->getFromVar(name, &v, sizeof(v)) == int(sizeof(v))) return v;
+    }
+    throw eve::Exception("Volumetric.getFloat: missing param '%s'", name.c_str());
 }
 
 int Volumetric::getSampleCount() const { return int(std::lround(getFloat("sampleCount"))); }
@@ -159,15 +293,24 @@ void Volumetric::uploadCommon(bool compositeFromScene) {
     setFloat("compositeMode", compositeFromScene ? 1.f : 0.f);
 }
 
-void Volumetric::drawFullscreen(Graphics *gfx, Texture *source) {
+void Volumetric::uploadRayMarchCommon() {
+    rayShader_->sendMatrix("invViewProj", invViewProj_);
+    rayShader_->sendFloat("lightDx", lightDir_.x);
+    rayShader_->sendFloat("lightDy", lightDir_.y);
+    rayShader_->sendFloat("lightDz", lightDir_.z);
+    rayShader_->sendFloat("nearZ", nearZ_);
+    rayShader_->sendFloat("farZ", farZ_);
+}
+
+void Volumetric::drawFullscreen(Graphics *gfx, Texture *source, Shader *shader) {
     if (!gfx) throw eve::Exception("Volumetric: null graphics");
     if (!source) throw eve::Exception("Volumetric: null source texture");
-    if (!shader_) throw eve::Exception("Volumetric: null shader");
+    if (!shader) throw eve::Exception("Volumetric: null shader");
 
     const float dw = gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
     const float dh =
         gfx->getCanvas() ? float(gfx->getCanvas()->getHeight()) : float(gfx->getHeight());
-    gfx->drawTexturedRectShader(source, shader_, 0.f, 0.f, dw, dh, Color(1.f, 1.f, 1.f, 1.f));
+    gfx->drawTexturedRectShader(source, shader, 0.f, 0.f, dw, dh, Color(1.f, 1.f, 1.f, 1.f));
 }
 
 void Volumetric::beginOcclusionMap(Graphics *gfx, float lightPixelX, float lightPixelY,
@@ -175,7 +318,6 @@ void Volumetric::beginOcclusionMap(Graphics *gfx, float lightPixelX, float light
     if (!gfx) throw eve::Exception("Volumetric.beginOcclusionMap: null graphics");
     gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
     const float r = std::max(lightRadiusPixels, 1.f);
-    // Approximate disc with a bright square (good enough for radial blur sources).
     gfx->drawSolidRect(lightPixelX - r, lightPixelY - r, r * 2.f, r * 2.f,
                        Color(1.f, 1.f, 1.f, 1.f));
     const float w = gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
@@ -217,7 +359,7 @@ void Volumetric::drawOccluders2D(Graphics *gfx) {
 
 void Volumetric::scatter(Graphics *gfx, Texture *occlusion) {
     uploadCommon(false);
-    drawFullscreen(gfx, occlusion);
+    drawFullscreen(gfx, occlusion, shader_);
 }
 
 void Volumetric::scatterTo(Graphics *gfx, Texture *occlusion, Canvas *dest) {
@@ -231,7 +373,7 @@ void Volumetric::scatterTo(Graphics *gfx, Texture *occlusion, Canvas *dest) {
 
 void Volumetric::applyFromScene(Graphics *gfx, Texture *scene) {
     uploadCommon(true);
-    drawFullscreen(gfx, scene);
+    drawFullscreen(gfx, scene, shader_);
 }
 
 void Volumetric::applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest) {
@@ -241,6 +383,44 @@ void Volumetric::applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest) {
     gfx->setCanvas(dest);
     applyFromScene(gfx, scene);
     gfx->setCanvas(prev == gfx ? nullptr : prev);
+}
+
+void Volumetric::rayMarch(Graphics *gfx, Texture *linearDepth) {
+    uploadRayMarchCommon();
+    drawFullscreen(gfx, linearDepth, rayShader_);
+}
+
+void Volumetric::rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
+    if (!gfx) throw eve::Exception("Volumetric.rayMarchTo: null graphics");
+    if (!dest) throw eve::Exception("Volumetric.rayMarchTo: null dest");
+    Canvas *prev = gfx->getCanvas();
+    gfx->setCanvas(dest);
+    rayMarch(gfx, linearDepth);
+    gfx->setCanvas(prev == gfx ? nullptr : prev);
+}
+
+Texture *Volumetric::newLinearDepthTexture(Graphics *gfx, int width, int height,
+                                           float (*depth01)(int x, int y, void *userdata),
+                                           void *userdata) {
+    if (!gfx) throw eve::Exception("Volumetric.newLinearDepthTexture: null graphics");
+    if (width < 1 || height < 1)
+        throw eve::Exception("Volumetric.newLinearDepthTexture: invalid size");
+    if (!depth01) throw eve::Exception("Volumetric.newLinearDepthTexture: null depth fn");
+    std::vector<uint8_t> rgba(size_t(width) * size_t(height) * 4);
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            float d = depth01(x, y, userdata);
+            if (d < 0.f) d = 0.f;
+            if (d > 1.f) d = 1.f;
+            const uint8_t b = uint8_t(std::lround(d * 255.f));
+            const size_t i = size_t(y * width + x) * 4;
+            rgba[i + 0] = b;
+            rgba[i + 1] = b;
+            rgba[i + 2] = b;
+            rgba[i + 3] = 255;
+        }
+    }
+    return gfx->newTexture(width, height, rgba.data());
 }
 
 }  // namespace eve::graphics

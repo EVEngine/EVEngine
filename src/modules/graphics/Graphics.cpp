@@ -189,14 +189,19 @@ void Graphics::expose(ssq::Table &table) {
         "Volumetric", std::function<Volumetric *()>([]() -> Volumetric * { return nullptr; }), true);
     vol.addFunc("setQuality", &Volumetric::setQuality);
     vol.addFunc("getQuality", &Volumetric::getQuality);
+    vol.addFunc("setMode", &Volumetric::setMode);
+    vol.addFunc("getMode", &Volumetric::getMode);
     vol.addFunc("setLightScreenUV", &Volumetric::setLightScreenUV);
     vol.addFunc("getLightScreenU", &Volumetric::getLightScreenU);
     vol.addFunc("getLightScreenV", &Volumetric::getLightScreenV);
     vol.addFunc("setLightScreenPos", &Volumetric::setLightScreenPos);
+    vol.addFunc("setLightDirection", &Volumetric::setLightDirection);
+    vol.addFunc("setCamera", &Volumetric::setCamera);
     vol.addFunc("setShaftColor", &Volumetric::setShaftColor);
     vol.addFunc("setFogColor", &Volumetric::setFogColor);
     vol.addFunc("setIntensity", &Volumetric::setIntensity);
     vol.addFunc("setTime", &Volumetric::setTime);
+    vol.addFunc("setDensity", &Volumetric::setDensity);
     vol.addFunc("hasParam", &Volumetric::hasParam);
     vol.addFunc("setFloat", &Volumetric::setFloat);
     vol.addFunc("getFloat", &Volumetric::getFloat);
@@ -212,7 +217,10 @@ void Graphics::expose(ssq::Table &table) {
     vol.addFunc("scatterTo", &Volumetric::scatterTo);
     vol.addFunc("applyFromScene", &Volumetric::applyFromScene);
     vol.addFunc("applyFromSceneTo", &Volumetric::applyFromSceneTo);
+    vol.addFunc("rayMarch", &Volumetric::rayMarch);
+    vol.addFunc("rayMarchTo", &Volumetric::rayMarchTo);
     vol.addFunc("getShader", &Volumetric::getShader);
+    vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
 }
 
 void Graphics::expose(ssq::Class &cls) {

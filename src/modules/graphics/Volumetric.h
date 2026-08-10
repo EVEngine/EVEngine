@@ -2,6 +2,7 @@
 
 #include <string>
 #include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 namespace eve::graphics {
 
@@ -13,16 +14,15 @@ class Shader;
 class Texture;
 
 /**
- * Screen-space volumetric light (god rays / light shafts) with dust & fog.
+ * Volumetric light: screen-space god rays (phase 1) + depth ray march (phase 2).
  *
- * Pipeline (GPU Gems 3 style):
- *  1) Build an occlusion map (black occluders + bright light) via Drawable::drawOcclusion
- *     or use the lit scene itself as a soft occlusion estimate.
- *  2) Radial blur toward the light screen UV + particulate dust / haze.
- *  3) Composite onto the scene (single-pass from scene, or shafts overlay).
+ * Phase 1 — Mitchell radial blur (+ dust/fog) on an occlusion map or scene.
+ * Phase 2 — Ray march through a linear-depth texture; screen-space marches
+ *           toward the light UV approximate directional CSM occlusion
+ *           (single-sampler post path; no extra G-buffer required).
  *
- * Quality presets ("low" | "medium" | "high") control sample count and optional
- * internal downscale for the scatter pass.
+ * Quality presets ("low" | "medium" | "high") control sample count and
+ * suggested downscale via resolutionFor().
  */
 class Volumetric {
 public:
@@ -36,6 +36,10 @@ public:
     void setQuality(const std::string &quality);
     std::string getQuality() const { return quality_; }
 
+    /** "screenspace" | "raymarch" — selects which shader params quality tweaks. */
+    void setMode(const std::string &mode);
+    std::string getMode() const { return mode_; }
+
     /** Light position in UV (0..1), origin top-left to match 2D UVs. */
     void setLightScreenUV(float u, float v);
     float getLightScreenU() const;
@@ -44,10 +48,25 @@ public:
     /** Pixel-space helper (converts with width/height). */
     void setLightScreenPos(float x, float y, float width, float height);
 
+    /** World-space direction toward the lit surface (ray march / phase). */
+    void setLightDirection(float dx, float dy, float dz);
+
+    /**
+     * Camera for ray march reconstruction (RH + ZO).
+     * Builds inv(viewProj) and near/far used by rayMarch*.
+     */
+    void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
+                   float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ,
+                   float farZ);
+
+    /** Raw inverse view-projection (column-major, matching glm). */
+    void setInvViewProj(const glm::mat4 &invViewProj);
+
     void setShaftColor(float r, float g, float b);
     void setFogColor(float r, float g, float b);
     void setIntensity(float intensity);
     void setTime(float seconds);
+    void setDensity(float density);
 
     bool hasParam(const std::string &name) const;
     void setFloat(const std::string &name, float value);
@@ -87,6 +106,21 @@ public:
     void applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest);
 
     /**
+     * Ray march participating media using a linear-depth texture (R channel,
+     * 0=near .. 1=far). Screen-space steps toward light UV approximate CSM
+     * occlusion. Call setCamera / setLightDirection / setLightScreenUV first.
+     */
+    void rayMarch(Graphics *gfx, Texture *linearDepth);
+    void rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
+
+    /**
+     * Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
+     * depth01(x,y) should return values in [0,1]. Owned by Graphics.
+     */
+    Texture *newLinearDepthTexture(Graphics *gfx, int width, int height,
+                                   float (*depth01)(int x, int y, void *userdata), void *userdata);
+
+    /**
      * Downscale helper: returns floor(dim / downscale), at least 1.
      * Callers create occlusion / scatter canvases at this size for the
      * active quality tier.
@@ -100,16 +134,24 @@ public:
     void drawOccluders2D(Graphics *gfx);
 
     Shader *getShader() const { return shader_; }
+    Shader *getRayMarchShader() const { return rayShader_; }
 
 private:
     void applyQualityDefaults();
     void uploadCommon(bool compositeFromScene);
-    void drawFullscreen(Graphics *gfx, Texture *source);
+    void uploadRayMarchCommon();
+    void drawFullscreen(Graphics *gfx, Texture *source, Shader *shader);
 
-    Graphics *gfx_ = nullptr;  // not owned
-    Shader *shader_ = nullptr;  // owned by Graphics
+    Graphics *gfx_ = nullptr;     // not owned
+    Shader *shader_ = nullptr;    // owned by Graphics (screenspace)
+    Shader *rayShader_ = nullptr; // owned by Graphics (ray march)
     std::string quality_ = "medium";
+    std::string mode_ = "screenspace";
     float downscale_ = 2.f;
+    glm::mat4 invViewProj_{1.f};
+    float nearZ_ = 0.1f;
+    float farZ_ = 100.f;
+    glm::vec3 lightDir_{0.4f, 1.f, 0.3f};
 };
 
 }  // namespace eve::graphics

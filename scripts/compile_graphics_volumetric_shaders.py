@@ -13,6 +13,7 @@ SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 
 FRAGS = [
     "volumetric_post.frag",
+    "volumetric_raymarch.frag",
 ]
 
 
