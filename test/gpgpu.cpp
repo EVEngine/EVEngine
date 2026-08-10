@@ -48,6 +48,26 @@ TEST_CASE("gpgpu.module.create") {
     CHECK_EQ(mod->getName(), std::string("Gpgpu"));
 }
 
+TEST_CASE("gpgpu.graphics.backendName") {
+    if (!tryInitGpuWindow()) return;
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(gfx != nullptr);
+    CHECK_EQ(gfx->getBackendName(), std::string("vulkan"));
+}
+
+TEST_CASE("gpgpu.newShaderFromSpvFile.delegatesWhenMissing") {
+    if (!tryInitGpuWindow()) return;
+    auto *mod = Gpgpu::create();
+    if (!mod->isAvailable()) return;
+    bool threw = false;
+    try {
+        mod->newShaderFromSpvFile("__eve_missing_compute.spv");
+    } catch (...) {
+        threw = true;
+    }
+    CHECK(threw);
+}
+
 TEST_CASE("gpgpu.dispatch.scaleFloats") {
     if (!tryInitGpuWindow()) return;
     auto *mod = Gpgpu::create();

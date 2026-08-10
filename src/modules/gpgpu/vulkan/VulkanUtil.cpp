@@ -1,4 +1,4 @@
-#include "gpgpu/VulkanUtil.h"
+#include "gpgpu/vulkan/VulkanUtil.h"
 
 #include "common/Exception.h"
 #include "common/Module.h"

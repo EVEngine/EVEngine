@@ -10,8 +10,8 @@ class ComputeShader;
 class GpuBuffer;
 
 /**
- * GPGPU module — Vulkan compute shaders + storage buffers.
- * Uses the graphics queue (Apple/MoltenVK has no separate compute family).
+ * GPGPU module — compute shaders + storage buffers via the active Graphics backend.
+ * Uses the graphics queue when no dedicated compute family exists (Apple/MoltenVK).
  *
  * Script: `gpgpu <- eve.Gpgpu(); shader <- gpgpu.newShader(glsl);`
  */
@@ -21,13 +21,16 @@ public:
     Gpgpu() = default;
     ~Gpgpu() override = default;
 
-    /** True when Vulkan Graphics has a live device (after window init). */
+    /** True when the active Graphics backend can run compute (device initialized). */
     bool isAvailable() const;
 
-    /** Compile GLSL compute (#version 450) via glslc. Returns nullptr / throws on failure. */
-    ComputeShader *newShader(const std::string &glsl);
+    /** Compile compute source for the active backend (Vulkan: GLSL via glslc). */
+    ComputeShader *newShader(const std::string &source);
 
-    /** Load precompiled SPIR-V compute module from Filesystem path. */
+    /** Load precompiled compute bytecode from Filesystem path (Vulkan: SPIR-V). */
+    ComputeShader *newShaderFromBytecode(const std::string &path);
+
+    /** Vulkan SPIR-V compatibility wrapper → newShaderFromBytecode. */
     ComputeShader *newShaderFromSpvFile(const std::string &path);
 
     /**

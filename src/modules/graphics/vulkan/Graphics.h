@@ -137,6 +137,8 @@ class Graphics final : public eve::graphics::Graphics {
 public:
     ~Graphics() override;
 
+    std::string getBackendName() const override;
+
     void initWithWindow(void *nativeWindow) override;
     void present() override;
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }

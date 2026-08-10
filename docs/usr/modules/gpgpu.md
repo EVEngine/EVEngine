@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Gpgpu()`
 
-创建 storage buffer 和 compute shader，绑定后调度 Vulkan compute。
+创建 storage buffer 和 compute shader，绑定后调度；后端跟随当前 Graphics（目前为 Vulkan）。
 
 ## 基本用法
 
@@ -18,7 +18,7 @@ if (gpu.isAvailable()) {
 
 ## 对象关系与调用时机
 
-`Gpgpu` 使用 Graphics 的 Vulkan 设备；ComputeShader 保存 SPIR-V 与 bindings；GpuBuffer 保存 storage/staging 数据。dispatch 前所有 binding 和 push constant 必须有效。
+`Gpgpu` 使用当前 Graphics 后端设备；`ComputeShader` / `GpuBuffer` 为后端无关抽象，Vulkan 实现保存 SPIR-V、pipeline 与 buffer。`newShaderFromSpvFile` 是 SPIR-V 兼容包装，等价于 `newShaderFromBytecode`。dispatch 前所有 binding 和 push constant 必须有效。
 
 ## 目标导向指南
 
@@ -41,7 +41,7 @@ if (gpu.isAvailable()) {
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `bindBuffer()`、`clearBindings()`、`dispatch()`、`fillFloat32()`、`getBoundBuffer()`、`getFloat()`、`getName()`、`getSize()`
-- `getUsage()`、`isAvailable()`、`newBuffer()`、`newShader()`、`newShaderFromSpvFile()`、`readData()`、`readFloat32()`、`setFloat()`
+- `getUsage()`、`isAvailable()`、`newBuffer()`、`newShader()`、`newShaderFromBytecode()`、`newShaderFromSpvFile()`、`readData()`、`readFloat32()`、`setFloat()`
 - `writeData()`、`writeFloat32()`
 
 ## 使用要点

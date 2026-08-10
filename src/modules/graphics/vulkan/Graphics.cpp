@@ -46,6 +46,8 @@
 
 namespace eve::graphics::vulkan {
 
+std::string Graphics::getBackendName() const { return "vulkan"; }
+
 Graphics::~Graphics() {
     if (!initialized) return;
     device->waitIdle();

@@ -1,53 +1,9 @@
 #include "dialogue/Dialogue.h"
 
-#include <algorithm>
+#include "common/utf8.h"
+
 #include <cmath>
 #include <simplesquirrel/simplesquirrel.hpp>
-
-namespace {
-
-size_t utf8CodepointCount(const std::string &s) {
-    size_t n = 0;
-    for (size_t i = 0; i < s.size();) {
-        const unsigned char c = static_cast<unsigned char>(s[i]);
-        size_t step = 1;
-        if ((c & 0x80) == 0)
-            step = 1;
-        else if ((c & 0xE0) == 0xC0)
-            step = 2;
-        else if ((c & 0xF0) == 0xE0)
-            step = 3;
-        else if ((c & 0xF8) == 0xF0)
-            step = 4;
-        if (i + step > s.size()) break;
-        i += step;
-        ++n;
-    }
-    return n;
-}
-
-size_t utf8ByteOffsetForCodepoints(const std::string &s, size_t codepoints) {
-    size_t n = 0;
-    size_t i = 0;
-    while (i < s.size() && n < codepoints) {
-        const unsigned char c = static_cast<unsigned char>(s[i]);
-        size_t step = 1;
-        if ((c & 0x80) == 0)
-            step = 1;
-        else if ((c & 0xE0) == 0xC0)
-            step = 2;
-        else if ((c & 0xF0) == 0xE0)
-            step = 3;
-        else if ((c & 0xF8) == 0xF0)
-            step = 4;
-        if (i + step > s.size()) break;
-        i += step;
-        ++n;
-    }
-    return i;
-}
-
-}  // namespace
 
 namespace eve::dialogue {
 
@@ -183,7 +139,7 @@ void Dialogue::beginLine(const std::string &speakerId, const std::string &text) 
     selectedChoiceId_.clear();
     lipSyncTime_ = 0.f;
     if (typeSpeed_ <= 0.f) {
-        typed_ = float(utf8CodepointCount(fullText_));
+        typed_ = float(utf8_codepoint_count(fullText_));
         phase_ = Phase::WaitingAdvance;
         lipSyncValue_ = 0.f;
     } else {
@@ -201,7 +157,7 @@ void Dialogue::setTypeSpeed(float charsPerSecond) { typeSpeed_ = charsPerSecond;
 
 void Dialogue::skipTyping() {
     if (phase_ == Phase::Typing) {
-        typed_ = float(utf8CodepointCount(fullText_));
+        typed_ = float(utf8_codepoint_count(fullText_));
         phase_ = Phase::WaitingAdvance;
     }
 }
@@ -227,11 +183,11 @@ std::string Dialogue::getSpeakerName() const {
 
 std::string Dialogue::getVisibleText() const {
     if (fullText_.empty()) return {};
-    const size_t total = utf8CodepointCount(fullText_);
+    const size_t total = utf8_codepoint_count(fullText_);
     size_t n = size_t(std::floor(typed_ + 1e-4f));
     if (n == 0) return {};
     if (n >= total) return fullText_;
-    return fullText_.substr(0, utf8ByteOffsetForCodepoints(fullText_, n));
+    return fullText_.substr(0, utf8_byte_offset_for_codepoints(fullText_, n));
 }
 
 std::string Dialogue::getPhase() const {
@@ -333,7 +289,7 @@ void Dialogue::applyLipSyncToSpeaker() {
 void Dialogue::update(float dt) {
     if (dt < 0.f) dt = 0.f;
     if (phase_ == Phase::Typing) {
-        const float total = float(utf8CodepointCount(fullText_));
+        const float total = float(utf8_codepoint_count(fullText_));
         typed_ += typeSpeed_ * dt;
         if (typed_ >= total) {
             typed_ = total;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "vkbuilder.hpp"
-
 #include <cstdint>
 #include <string>
 
@@ -12,36 +10,29 @@ class ByteData;
 namespace eve::gpgpu {
 
 /**
- * GPU buffer for compute (storage) or CPU staging transfers.
- * Squirrel-owned; destroys Vulkan resources in destructor.
+ * Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers.
+ * Squirrel-owned; derived class destroys GPU resources in destructor.
  */
 class GpuBuffer {
 public:
     GpuBuffer() = default;
-    ~GpuBuffer();
+    virtual ~GpuBuffer() = default;
 
     GpuBuffer(const GpuBuffer &) = delete;
     GpuBuffer &operator=(const GpuBuffer &) = delete;
 
-    int getSize() const { return int(size_); }
-    std::string getUsage() const { return usage_; }
+    virtual int getSize() const = 0;
+    virtual std::string getUsage() const = 0;
 
-    void writeData(data::ByteData *data, int dstOffset = 0);
-    data::ByteData *readData(int srcOffset = 0, int size = -1);
+    virtual void writeData(data::ByteData *data, int dstOffset = 0) = 0;
+    virtual data::ByteData *readData(int srcOffset = 0, int size = -1) = 0;
 
-    void writeFloat32(int floatIndex, float value);
-    float readFloat32(int floatIndex);
-    void fillFloat32(float value);
+    virtual void writeFloat32(int floatIndex, float value) = 0;
+    virtual float readFloat32(int floatIndex) = 0;
+    virtual void fillFloat32(float value) = 0;
 
-    void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset = 0);
-    void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0);
-
-    vkb::Device *device_ = nullptr;
-    vk::Buffer buffer_{};
-    vk::DeviceMemory memory_{};
-    vk::DeviceSize size_ = 0;
-    std::string usage_ = "storage";
-    bool hostVisible_ = false;
+    virtual void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset = 0) = 0;
+    virtual void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0) = 0;
 };
 
 }  // namespace eve::gpgpu

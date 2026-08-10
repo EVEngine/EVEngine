@@ -1,13 +1,30 @@
 
 #include "common/config.h"
 
-#ifdef EVENGINE_WINDOWS
-
+#include <cstddef>
 #include <string>
+
+#ifdef EVENGINE_WINDOWS
+#define NOMINMAX
 #include <windows.h>
+#endif
 
 namespace eve
 {
+
+/**
+ * Count UTF-8 code points in a string.
+ * Invalid / truncated sequences stop the scan.
+ */
+size_t utf8_codepoint_count(const std::string &s);
+
+/**
+ * Byte offset of the N-th UTF-8 code point (0-based count of code points).
+ * Returns s.size() if there are fewer than N code points.
+ */
+size_t utf8_byte_offset_for_codepoints(const std::string &s, size_t codepoints);
+
+#ifdef EVENGINE_WINDOWS
 
 /**
  * Convert the wide string to a UTF-8 encoded string.
@@ -31,6 +48,6 @@ std::wstring to_widestr(const std::string &str);
  **/
 void replace_char(std::string &str, char find, char replace);
 
-} // eve
-
 #endif // EVENGINE_WINDOWS
+
+} // eve

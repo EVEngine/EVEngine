@@ -1,9 +1,55 @@
 #include "utf8.h"
 
-#ifdef EVENGINE_WINDOWS
-
 namespace eve
 {
+
+namespace {
+
+size_t utf8_step(unsigned char c)
+{
+	if ((c & 0x80) == 0)
+		return 1;
+	if ((c & 0xE0) == 0xC0)
+		return 2;
+	if ((c & 0xF0) == 0xE0)
+		return 3;
+	if ((c & 0xF8) == 0xF0)
+		return 4;
+	return 1;
+}
+
+} // namespace
+
+size_t utf8_codepoint_count(const std::string &s)
+{
+	size_t n = 0;
+	for (size_t i = 0; i < s.size();)
+	{
+		const size_t step = utf8_step(static_cast<unsigned char>(s[i]));
+		if (i + step > s.size())
+			break;
+		i += step;
+		++n;
+	}
+	return n;
+}
+
+size_t utf8_byte_offset_for_codepoints(const std::string &s, size_t codepoints)
+{
+	size_t n = 0;
+	size_t i = 0;
+	while (i < s.size() && n < codepoints)
+	{
+		const size_t step = utf8_step(static_cast<unsigned char>(s[i]));
+		if (i + step > s.size())
+			break;
+		i += step;
+		++n;
+	}
+	return i;
+}
+
+#ifdef EVENGINE_WINDOWS
 
 std::string to_utf8(LPCWSTR wstr)
 {
@@ -57,6 +103,6 @@ void replace_char(std::string &str, char find, char replace)
 	}
 }
 
-} // eve
-
 #endif // EVENGINE_WINDOWS
+
+} // eve

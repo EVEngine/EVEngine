@@ -44,6 +44,9 @@ public:
 
     virtual void present() = 0;
 
+    /** Renderer backend id used by sibling modules (e.g. Gpgpu). */
+    virtual std::string getBackendName() const = 0;
+
     /**
      * Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
      * Must be called after the window exists (SDL_WINDOW_VULKAN).
