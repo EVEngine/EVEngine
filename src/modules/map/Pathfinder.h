@@ -2,30 +2,34 @@
 
 #include "map/FlowField.h"
 #include "map/Path.h"
-#include "map/PathGrid.h"
 #include "map/TileLayer.h"
 
+#include <memory>
 #include <string>
 
 namespace eve::map {
 
 /**
- * Pathfinding facade over a PathGrid.
+ * Pathfinding facade.
  * Single-agent: A*. Group (same goal): Flow Field + follow.
+ * Grid/topology internals stay out of the public ABI (Windows export limit).
  */
 class Pathfinder {
 public:
-    Pathfinder() = default;
+    Pathfinder();
     explicit Pathfinder(TileLayer *layer);
     explicit Pathfinder(int width, int height);
+    ~Pathfinder();
+
+    Pathfinder(Pathfinder &&) noexcept;
+    Pathfinder &operator=(Pathfinder &&) noexcept;
+    Pathfinder(const Pathfinder &) = delete;
+    Pathfinder &operator=(const Pathfinder &) = delete;
 
     void bindLayer(TileLayer *layer);
     void setSize(int width, int height);
 
-    PathGrid &grid() { return grid_; }
-    const PathGrid &grid() const { return grid_; }
-
-    // --- Grid config (script-friendly forwards) ---
+    // --- Grid config (script-friendly) ---
     void setTopology(const std::string &name);
     std::string getTopology() const;
     void setDiagonal(bool enable);
@@ -63,15 +67,8 @@ public:
     void invalidateCache();
 
 private:
-    bool ensureSynced();
-    FlowField *buildFlowFieldUncached(int gx, int gy);
-
-    PathGrid grid_;
-    // Cache for group pathfinding
-    bool hasCachedField_ = false;
-    int cachedGoalX_ = 0;
-    int cachedGoalY_ = 0;
-    FlowField cachedField_;
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
 }  // namespace eve::map

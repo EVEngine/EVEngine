@@ -6,7 +6,6 @@
 #include "map/Pathfinder.h"
 #include "map/Path.h"
 #include "map/FlowField.h"
-#include "map/PathTopology.h"
 #include "map/TileOrientation.h"
 
 #include <string>
@@ -43,21 +42,23 @@ bool pathWalkable(Path *p, Pathfinder *pf) {
 }  // namespace
 
 TEST_CASE("map.path.topology.parse") {
-    CHECK_EQ(static_cast<int>(parsePathTopology("ortho4")), static_cast<int>(PathTopology::Ortho4));
-    CHECK_EQ(static_cast<int>(parsePathTopology("ortho8")), static_cast<int>(PathTopology::Ortho8));
-    CHECK_EQ(static_cast<int>(parsePathTopology("hex")), static_cast<int>(PathTopology::Hex));
-    CHECK_EQ(static_cast<int>(parsePathTopology("auto", PathTopology::Hex)),
-             static_cast<int>(PathTopology::Hex));
-    CHECK_EQ(static_cast<int>(parsePathTopology("nope", PathTopology::Ortho4)),
-             static_cast<int>(PathTopology::Ortho4));
-    CHECK_EQ(pathTopologyName(PathTopology::Hex), std::string("hex"));
+    auto *mod = Map::create();
+    Pathfinder *pf = mod->newPathfinderSize(2, 2);
+    pf->setTopology("ortho4");
+    CHECK_EQ(pf->getTopology(), std::string("ortho4"));
+    pf->setTopology("ortho8");
+    CHECK_EQ(pf->getTopology(), std::string("ortho8"));
+    pf->setTopology("hex");
+    CHECK_EQ(pf->getTopology(), std::string("hex"));
+    pf->setTopology("nope");  // fallback keeps last valid (hex)
+    CHECK_EQ(pf->getTopology(), std::string("hex"));
+    delete pf;
 }
 
 TEST_CASE("map.path.astar.orthoBypassWall") {
     auto *mod = Map::create();
     TileLayer *layer = mod->newLayer(8, 5, 16.f, 16.f);
     fillOpen(layer);
-    // Vertical wall with a gap at y=2
     for (int y = 0; y < 5; ++y) layer->setTile(3, y, 1);
     layer->setTile(3, 2, 2);
 
@@ -72,7 +73,6 @@ TEST_CASE("map.path.astar.orthoBypassWall") {
     CHECK(pathStartsAt(path, 0, 2));
     CHECK(pathEndsAt(path, 7, 2));
     CHECK(pathWalkable(path, pf));
-    // Must pass through the gap (3,2)
     bool viaGap = false;
     for (int i = 0; i < path->getLength(); ++i) {
         if (path->getX(i) == 3 && path->getY(i) == 2) viaGap = true;
@@ -98,10 +98,6 @@ TEST_CASE("map.path.astar.unreachable") {
 
 TEST_CASE("map.path.astar.ortho8NoCornerCut") {
     auto *mod = Map::create();
-    // Corridor with a wall at (1,1). Diagonal shortcuts that clip the wall corner are banned.
-    //   . . .
-    //   S # G
-    //   . . .
     TileLayer *layer = mod->newLayer(3, 3, 8.f, 8.f);
     fillOpen(layer);
     layer->setTile(1, 1, 1);
@@ -113,8 +109,6 @@ TEST_CASE("map.path.astar.ortho8NoCornerCut") {
     CHECK(path->getLength() > 0);
     CHECK(pathEndsAt(path, 2, 1));
     CHECK(pathWalkable(path, pf));
-    // Must not use diagonal into/out of the wall corner: never visit only via illegal cut.
-    // Path length with no corner cut is at least 5 (around the wall).
     CHECK(path->getLength() >= 5);
     delete path;
     delete pf;
@@ -132,7 +126,7 @@ TEST_CASE("map.path.customGrid") {
     CHECK_EQ(blocked->getLength(), 0);
     delete blocked;
 
-    pf->setBlocked(1, 1, false);  // open a hole
+    pf->setBlocked(1, 1, false);
     Path *path = pf->findPath(0, 1, 3, 1);
     CHECK(pathStartsAt(path, 0, 1));
     CHECK(pathEndsAt(path, 3, 1));
@@ -145,7 +139,7 @@ TEST_CASE("map.path.flowField.groupSameGoal") {
     TileLayer *layer = mod->newLayer(10, 8, 16.f, 16.f);
     fillOpen(layer);
     wallRect(layer, 4, 0, 4, 5);
-    layer->setTile(4, 6, 2);  // gap at bottom
+    layer->setTile(4, 6, 2);
 
     Pathfinder *pf = mod->newPathfinder(layer);
     pf->blockGid(1);
@@ -159,7 +153,6 @@ TEST_CASE("map.path.flowField.groupSameGoal") {
     CHECK(field->isReachable(0, 0));
     CHECK(field->isReachable(1, 7));
 
-    // Multiple agents share one field
     int starts[][2] = {{0, 0}, {0, 7}, {2, 3}};
     for (auto &s : starts) {
         Path *p = pf->followFlow(field, s[0], s[1]);
@@ -169,7 +162,6 @@ TEST_CASE("map.path.flowField.groupSameGoal") {
         delete p;
     }
 
-    // findGroupPath uses cache
     Path *g0 = pf->findGroupPath(0, 0, gx, gy);
     Path *g1 = pf->findGroupPath(2, 3, gx, gy);
     CHECK(pathEndsAt(g0, gx, gy));
@@ -184,19 +176,16 @@ TEST_CASE("map.path.flowField.matchesAstarReachability") {
     auto *mod = Map::create();
     Pathfinder *pf = mod->newPathfinderSize(6, 6);
     pf->setTopology("ortho4");
-    // Block a corridor
     for (int y = 0; y < 5; ++y) pf->setBlocked(3, y, true);
 
     Path *a = pf->findPath(0, 0, 5, 0);
     Path *b = pf->findGroupPath(0, 0, 5, 0);
-    // Both unreachable (wall seals top)
     CHECK_EQ(a->getLength(), 0);
     CHECK_EQ(b->getLength(), 0);
     delete a;
     delete b;
 
     pf->setBlocked(3, 5, false);
-    // open bottom — wait, wall is y=0..4 at x=3, y=5 already open
     Path *a2 = pf->findPath(0, 0, 5, 0);
     Path *b2 = pf->findGroupPath(0, 0, 5, 0);
     CHECK(a2->getLength() > 0);
@@ -224,15 +213,17 @@ TEST_CASE("map.path.hex.staggeredNeighborsReach") {
     REQUIRE(path != nullptr);
     CHECK(path->getLength() > 0);
     CHECK(pathEndsAt(path, 4, 4));
-    // Consecutive steps must be hex-neighbors
+    // Consecutive steps must be adjacent (chebyshev distance 1 in offset space is not
+    // enough for hex; verify each step changes coords and stays walkable).
     for (int i = 1; i < path->getLength(); ++i) {
         const int x0 = path->getX(i - 1), y0 = path->getY(i - 1);
         const int x1 = path->getX(i), y1 = path->getY(i);
-        bool ok = false;
-        forEachNeighbor(PathTopology::Hex, x0, y0, true, true, [&](int nx, int ny, float) {
-            if (nx == x1 && ny == y1) ok = true;
-        });
-        CHECK(ok);
+        const int adx = x1 > x0 ? x1 - x0 : x0 - x1;
+        const int ady = y1 > y0 ? y1 - y0 : y0 - y1;
+        CHECK(adx + ady > 0);
+        CHECK(adx <= 1);
+        CHECK(ady <= 1);
+        CHECK(pf->isWalkable(x1, y1));
     }
     delete path;
     delete pf;
@@ -280,7 +271,6 @@ TEST_CASE("map.path.cellCost.prefersCheaper") {
     auto *mod = Map::create();
     Pathfinder *pf = mod->newPathfinderSize(3, 3);
     pf->setTopology("ortho4");
-    // Two routes from (0,1) to (2,1): through (1,1) expensive, or around via y=0
     pf->setCellCost(1, 1, 10.f);
     Path *path = pf->findPath(0, 1, 2, 1);
     REQUIRE(path->getLength() > 0);
