@@ -33,6 +33,10 @@ function(main)
     elseif(MSVC)
         message(STATUS "MSVC INCLUDE unset; clangd may not find STL headers. Use cmake/with-msvc.cmd")
     endif()
+    # Chinese Windows (code page 936): source UTF-8 comments/strings otherwise trigger C4819.
+    if(MSVC)
+        add_compile_options(/utf-8)
+    endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
     set(BUILD_TEST OFF CACHE BOOL "" FORCE)
@@ -125,10 +129,28 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/DungeonTemplateLibrary/include
     )
 
-    # Prefer system Vulkan SDK; otherwise use third-party headers + local import lib.
+    # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
     # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
     # On iOS, link/embed the SDK's MoltenVK.xcframework (iphoneos arm64 slice).
     # On Android, link the NDK loader (libvulkan.so).
+    #
+    # Windows: installer sets Machine-level VULKAN_SDK, but long-lived IDEs (Cursor)
+    # often still lack it in the process env. Probe C:/VulkanSDK/* when unset.
+    if(WIN32 AND (NOT DEFINED ENV{VULKAN_SDK} OR "$ENV{VULKAN_SDK}" STREQUAL ""))
+        file(GLOB _eve_vk_sdk_dirs "C:/VulkanSDK/*")
+        list(SORT _eve_vk_sdk_dirs COMPARE NATURAL ORDER DESCENDING)
+        foreach(_eve_vk_sdk IN LISTS _eve_vk_sdk_dirs)
+            if(EXISTS "${_eve_vk_sdk}/Include/vulkan/vulkan.h"
+               AND (EXISTS "${_eve_vk_sdk}/Lib/vulkan-1.lib"
+                    OR EXISTS "${_eve_vk_sdk}/Lib/vulkan.lib"))
+                set(ENV{VULKAN_SDK} "${_eve_vk_sdk}")
+                message(STATUS "Vulkan: VULKAN_SDK unset in this process; using ${_eve_vk_sdk}")
+                break()
+            endif()
+        endforeach()
+        unset(_eve_vk_sdk_dirs)
+        unset(_eve_vk_sdk)
+    endif()
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
@@ -219,13 +241,17 @@ function(set_include)
             "  3. Re-run CMake (Vulkan_LIBRARY should resolve to libvulkan / MoltenVK).\n"
             "Current hints: VULKAN_SDK='$ENV{VULKAN_SDK}'")
     else()
-        unset(Vulkan_INCLUDE_DIR CACHE)
-        unset(Vulkan_LIBRARY CACHE)
-        set(_eve_vk_inc ${CMAKE_CURRENT_SOURCE_DIR}/third-party/vulkan)
-        set(_eve_vk_lib ${CMAKE_CURRENT_SOURCE_DIR}/cmake/vulkan/vulkan-1.lib)
-        include_directories(${_eve_vk_inc})
-        set(EVENGINE_VULKAN_LIB ${_eve_vk_lib} CACHE INTERNAL "Vulkan link target")
-        message(STATUS "Vulkan: using ${_eve_vk_inc} + ${_eve_vk_lib}")
+        message(FATAL_ERROR
+            "Vulkan SDK is required but was not found via find_package(Vulkan).\n"
+            "  Windows:\n"
+            "    1. Install the LunarG Vulkan SDK from https://vulkan.lunarg.com/\n"
+            "    2. Confirm system env VULKAN_SDK points at C:/VulkanSDK/<version>\n"
+            "       and %VULKAN_SDK%/Bin is on PATH (for glslc)\n"
+            "    3. Fully restart the terminal / Cursor, then re-run CMake\n"
+            "       (IDE processes often miss newly set Machine env vars)\n"
+            "  Linux:\n"
+            "    Install libvulkan-dev (+ glslang-tools), or the LunarG SDK and set VULKAN_SDK\n"
+            "  Current VULKAN_SDK='$ENV{VULKAN_SDK}'")
     endif()
 endfunction()
 

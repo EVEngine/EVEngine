@@ -374,7 +374,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson,
     AiPanel::instance().setClientName(clientName);
     AiPanel::instance().addLog("system", "mcp.initialize", clientName);
 
-    // Static JSON avoids Poco::JSON template instantiations (MSVC LNK1189 export limit).
+    // Hand-built JSON keeps initialize compact (newline framing) without a Poco Object tree.
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"

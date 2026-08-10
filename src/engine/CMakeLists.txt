@@ -132,11 +132,55 @@ else()
         ${SystemLibraries})
 endif()
 
-if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVSpatial EVTensor EVTouch EVCmdLine EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVInventory EVAvatar EVDialogue EVProcgen EVStylize)
-else()
-    set(EVELIBS EVWindow EVMouse EVKeyboard EVJoystick EVEvent EVTimer EVSystem EVAnimation EVIK EVMath EVSpatial EVTensor EVTouch EVCmdLine EVDevTools EVScripts EVCommon EVGraphics EVImage EVDatabase EVFileSystem EVNetwork EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVMap EVGpgpu EVModel3D EVFont EVThread EVPlugins EVPhysics EVRPG EVInventory EVAvatar EVDialogue EVProcgen EVStylize)
+set(EVELIBS
+    EVWindow
+    EVMouse
+    EVKeyboard
+    EVJoystick
+    EVEvent
+    EVTimer
+    EVSystem
+    EVAnimation
+    EVIK
+    EVMath
+    EVSpatial
+    EVTensor
+    EVTouch
+    EVCmdLine)
+
+# Desktop only: DAP / MCP / DevTools (trimmed out of Android / iOS runtimes).
+if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS))
+    list(APPEND EVELIBS EVDevTools)
 endif()
+
+list(APPEND EVELIBS
+    EVScripts
+    EVCommon
+    EVGraphics
+    EVImage
+    EVDatabase
+    EVFileSystem
+    EVNetwork
+    EVData
+    EVSound
+    EVAudio
+    EVUI
+    eve_imgui
+    EVScene
+    EVParticles
+    EVMap
+    EVGpgpu
+    EVModel3D
+    EVFont
+    EVThread
+    EVPlugins
+    EVPhysics
+    EVRPG
+    EVInventory
+    EVAvatar
+    EVDialogue
+    EVProcgen
+    EVStylize)
 
 if(EVENGINE_BUILD_DEMO)
     list(APPEND EVELIBS EVDemo)
@@ -229,8 +273,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${_eve_game_src}" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
-            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
+        "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
+        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
         COMMENT "Bundle iOS game (${EVENGINE_IOS_GAME}) + LaunchScreen into EVEngine.app"
     )
 
@@ -240,8 +284,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         set(_eve_mvk_fw "${EVENGINE_MOLTENVK_FRAMEWORK_DIR}/MoltenVK.framework")
         add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
             COMMAND /bin/sh "${CMAKE_SOURCE_DIR}/cmake/ios_embed_moltenvk.sh"
-                "${_eve_mvk_fw}"
-                "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>"
+            "${_eve_mvk_fw}"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>"
             COMMENT "Embed and sign MoltenVK.framework into EVEngine.app"
         )
     endif()

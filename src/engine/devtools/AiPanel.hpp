@@ -53,8 +53,8 @@ public:
 
     /**
      * Optional ImGui draw hook. Default no-op: in-engine AI status is exposed
-     * via MCP / `eve.dev.ai` (MSVC WINDOWS_EXPORT_ALL_SYMBOLS cannot absorb
-     * another imgui.h-instantiating TU without hitting LNK1189).
+     * via MCP / `eve.dev.ai`. ImGui drawing is registered by the host so
+     * EVDevTools does not need to include imgui.h.
      */
     void drawImGui();
 

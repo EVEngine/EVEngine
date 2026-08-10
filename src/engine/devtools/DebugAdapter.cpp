@@ -668,7 +668,3 @@ bool DebugAdapter::waitUntilConfigured(int timeoutMs) {
 }
 
 }  // namespace eve::dev
-
-// Compile MCP server in this TU so Windows WINDOWS_EXPORT_ALL_SYMBOLS does not
-// grow another object full of Poco JSON template exports (LNK1189).
-#include "devtools/McpServer.inc"

@@ -15,9 +15,6 @@
 #include <string>
 #include <vector>
 
-// AiPanel implementation lives in AiPanel.inc (included at file end) so it does
-// not create an extra MSVC export-heavy object file.
-
 namespace eve::dev {
 namespace {
 
@@ -562,5 +559,3 @@ std::string mcpFormatError(const std::string& message) {
 }
 
 }  // namespace eve::dev
-
-#include "devtools/AiPanel.inc"
