@@ -1,8 +1,9 @@
 #include "devtools/McpServer.hpp"
 
 #include "devtools/AiPanel.hpp"
+#include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
-#include "devtools/DevTool.hpp"
+#include "devtools/McpDevBridge.hpp"
 #include "devtools/Snapshot.hpp"
 
 #include <Poco/Dynamic/Var.h>
@@ -103,37 +104,6 @@ std::string textContentResult(const std::string& text, bool isError = false) {
     return mcpStringify(Poco::Dynamic::Var(result));
 }
 
-Poco::JSON::Object::Ptr toolDef(const std::string& name, const std::string& description,
-                                Poco::JSON::Object::Ptr inputSchema) {
-    Poco::JSON::Object::Ptr t = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    t->set("name", name);
-    t->set("description", description);
-    t->set("inputSchema", inputSchema);
-    return t;
-}
-
-Poco::JSON::Object::Ptr emptyObjectSchema() {
-    Poco::JSON::Object::Ptr schema = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    schema->set("type", "object");
-    schema->set("properties", Poco::JSON::Object::Ptr(new Poco::JSON::Object()));
-    return schema;
-}
-
-Poco::JSON::Object::Ptr stringPropSchema(const std::string& prop, const std::string& desc) {
-    Poco::JSON::Object::Ptr schema = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    schema->set("type", "object");
-    Poco::JSON::Object::Ptr props = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    Poco::JSON::Object::Ptr p     = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    p->set("type", "string");
-    p->set("description", desc);
-    props->set(prop, p);
-    schema->set("properties", props);
-    Poco::JSON::Array::Ptr req = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-    req->add(prop);
-    schema->set("required", req);
-    return schema;
-}
-
 std::string pauseReasonName(PauseReason r) {
     switch (r) {
         case PauseReason::Breakpoint:
@@ -153,9 +123,8 @@ std::string pauseReasonName(PauseReason r) {
 
 std::string engineStatusJson(const McpServer& mcp) {
     auto& dbg = Debugger::instance();
-    auto& dt  = DevTool::instance();
     Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    o->set("attached", dt.isAttached());
+    o->set("attached", mcpDevAttached());
     o->set("paused", dbg.isPaused());
     o->set("pauseReason", pauseReasonName(dbg.lastPauseReason()));
     const auto& loc = dbg.pauseLocation();
@@ -164,9 +133,9 @@ std::string engineStatusJson(const McpServer& mcp) {
     o->set("function", loc.function);
     o->set("mcpPort", mcp.port());
     o->set("mcpConnected", mcp.hasClient());
-    o->set("dapPort", dt.dap().port());
+    o->set("dapPort", DebugAdapter::instance().port());
     o->set("gameRoot", mcp.gameRoot());
-    o->set("callgraphEvents", static_cast<int>(dt.graph().events().size()));
+    o->set("callgraphEvents", static_cast<int>(mcpCallgraphEvents()));
     o->set("ai", AiPanel::instance().statusLine());
     return mcpStringify(Poco::Dynamic::Var(o));
 }
@@ -191,7 +160,7 @@ int argInt(Poco::JSON::Object::Ptr args, const char* key, int def = 0) {
 
 std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object::Ptr args) {
     auto& dbg = Debugger::instance();
-    auto& dt  = DevTool::instance();
+    auto& dap = DebugAdapter::instance();
 
     if (name == "eve_status") return engineStatusJson(mcp);
 
@@ -210,32 +179,32 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     if (name == "eve_pause") {
         dbg.pause(PauseReason::PauseKey);
-        dt.dap().notifyStopped(PauseReason::PauseKey, dbg.pauseLocation());
+        dap.notifyStopped(PauseReason::PauseKey, dbg.pauseLocation());
         return "paused";
     }
     if (name == "eve_continue") {
         dbg.resume();
-        dt.dap().notifyContinued();
+        dap.notifyContinued();
         return "continued";
     }
     if (name == "eve_step_over") {
         dbg.stepOver();
-        dt.dap().notifyContinued();
+        dap.notifyContinued();
         return "step_over";
     }
     if (name == "eve_step_into") {
         dbg.stepInto();
-        dt.dap().notifyContinued();
+        dap.notifyContinued();
         return "step_into";
     }
     if (name == "eve_step_out") {
         dbg.stepOut();
-        dt.dap().notifyContinued();
+        dap.notifyContinued();
         return "step_out";
     }
     if (name == "eve_step_frame") {
         dbg.stepFrame();
-        dt.dap().notifyContinued();
+        dap.notifyContinued();
         return "step_frame";
     }
 
@@ -348,9 +317,9 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_error_slice") {
-        const std::string& last = dt.lastReport();
+        const std::string& last = mcpLastReport();
         if (!last.empty()) return last;
-        return dt.formatError("no prior error; callgraph slice at latest site");
+        return mcpFormatError("no prior error; callgraph slice at latest site");
     }
 
     if (name == "eve_run_script") {
@@ -405,83 +374,66 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson,
     AiPanel::instance().setClientName(clientName);
     AiPanel::instance().addLog("system", "mcp.initialize", clientName);
 
-    Poco::JSON::Object::Ptr result = new Poco::JSON::Object();
-    result->set("protocolVersion", protocol);
-    Poco::JSON::Object::Ptr caps = new Poco::JSON::Object();
-    caps->set("tools", Poco::JSON::Object::Ptr(new Poco::JSON::Object()));
-    caps->set("resources", Poco::JSON::Object::Ptr(new Poco::JSON::Object()));
-    caps->set("prompts", Poco::JSON::Object::Ptr(new Poco::JSON::Object()));
-    result->set("capabilities", caps);
-    Poco::JSON::Object::Ptr serverInfo = new Poco::JSON::Object();
-    serverInfo->set("name", std::string("evengine"));
-    serverInfo->set("title", std::string("EVEngine MCP"));
-    serverInfo->set("version", std::string("0.1.0"));
-    result->set("serverInfo", serverInfo);
-    result->set("instructions",
-                std::string("EVEngine runtime MCP for AI-assisted game development and testing. "
-                            "Use eve_status / eve_eval / eve_pause / eve_snapshot_* / "
-                            "eve_error_slice to inspect and drive a live eve run --debug session."));
-    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
+    // Static JSON avoids Poco::JSON template instantiations (MSVC LNK1189 export limit).
+    const std::string resultJson =
+        std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
+        "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.1.0\"},"
+        "\"instructions\":\"EVEngine runtime MCP for AI-assisted game development and testing.\"}";
+    return makeResult(idJson, resultJson);
 }
 
 std::string handleToolsList(const std::string& idJson) {
-    Poco::JSON::Array::Ptr tools = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-    tools->add(toolDef("eve_status", "Runtime + debugger + MCP/DAP status JSON.",
-                       emptyObjectSchema()));
-    tools->add(toolDef("eve_eval", "Evaluate a Squirrel expression (local or roottable).",
-                       stringPropSchema("expression", "Expression to evaluate")));
-    tools->add(toolDef("eve_pause", "Pause the game / script.", emptyObjectSchema()));
-    tools->add(toolDef("eve_continue", "Continue from pause.", emptyObjectSchema()));
-    tools->add(toolDef("eve_step_over", "Step over next statement.", emptyObjectSchema()));
-    tools->add(toolDef("eve_step_into", "Step into next statement.", emptyObjectSchema()));
-    tools->add(toolDef("eve_step_out", "Step out of current function.", emptyObjectSchema()));
-    tools->add(toolDef("eve_step_frame", "Run one game frame then pause.", emptyObjectSchema()));
-    tools->add(toolDef("eve_stack", "Return current script stack frames.", emptyObjectSchema()));
-    tools->add(toolDef("eve_locals", "List locals at a stack level (default 1).",
-                       emptyObjectSchema()));
-    {
-        Poco::JSON::Object::Ptr schema = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        schema->set("type", "object");
-        Poco::JSON::Object::Ptr props = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        Poco::JSON::Object::Ptr src   = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        src->set("type", "string");
-        props->set("source", src);
-        Poco::JSON::Object::Ptr line = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        line->set("type", "integer");
-        props->set("line", line);
-        schema->set("properties", props);
-        Poco::JSON::Array::Ptr req = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-        req->add("source");
-        req->add("line");
-        schema->set("required", req);
-        tools->add(toolDef("eve_set_breakpoint", "Set a script breakpoint.", schema));
-        tools->add(toolDef("eve_clear_breakpoint", "Clear a script breakpoint.", schema));
-    }
-    tools->add(toolDef("eve_list_breakpoints", "List breakpoints.", emptyObjectSchema()));
-    tools->add(toolDef("eve_watch_add", "Add a watch expression.",
-                       stringPropSchema("expression", "Watch expression")));
-    tools->add(toolDef("eve_watch_list", "List watches with last values.", emptyObjectSchema()));
-    tools->add(toolDef("eve_snapshot_capture", "Capture script-state snapshot JSON.",
-                       emptyObjectSchema()));
-    tools->add(toolDef("eve_snapshot_restore", "Restore script-state from snapshot JSON.",
-                       stringPropSchema("json", "Snapshot JSON")));
-    tools->add(toolDef("eve_snapshot_save", "Save snapshot to a file path.",
-                       stringPropSchema("path", "Output path")));
-    tools->add(toolDef("eve_snapshot_load", "Load snapshot from a file path.",
-                       stringPropSchema("path", "Input path")));
-    tools->add(toolDef("eve_error_slice",
-                       "Return last error report / backward slice (script + render).",
-                       emptyObjectSchema()));
-    tools->add(toolDef("eve_run_script",
-                       "Compile and run a short Squirrel snippet in the live VM.",
-                       stringPropSchema("source", "Squirrel source")));
-    tools->add(toolDef("eve_ai_note", "Append a note to the DevTools AI session log.",
-                       stringPropSchema("text", "Note text")));
-    tools->add(toolDef("eve_ai_log", "Read the DevTools AI session log.", emptyObjectSchema()));
-
-    Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    result->set("tools", tools);
-    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
+    static const char* kToolsJson =
+        "{\"tools\":["
+        "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_eval\",\"description\":\"Evaluate a Squirrel expression (local or roottable).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"expression\":{\"type\":\"string\"}},\"required\":[\"expression\"]}},"
+        "{\"name\":\"eve_pause\",\"description\":\"Pause the game / script.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_continue\",\"description\":\"Continue from pause.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_step_over\",\"description\":\"Step over next statement.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_step_into\",\"description\":\"Step into next statement.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_step_out\",\"description\":\"Step out of current function.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_step_frame\",\"description\":\"Run one game frame then pause.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_stack\",\"description\":\"Return current script stack frames.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_locals\",\"description\":\"List locals at a stack level (default 1).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_set_breakpoint\",\"description\":\"Set a script breakpoint.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"},\"line\":{\"type\":\"integer\"}},\"required\":[\"source\",\"line\"]}},"
+        "{\"name\":\"eve_clear_breakpoint\",\"description\":\"Clear a script breakpoint.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"},\"line\":{\"type\":\"integer\"}},\"required\":[\"source\",\"line\"]}},"
+        "{\"name\":\"eve_list_breakpoints\",\"description\":\"List breakpoints.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_watch_add\",\"description\":\"Add a watch expression.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"expression\":{\"type\":\"string\"}},\"required\":[\"expression\"]}},"
+        "{\"name\":\"eve_watch_list\",\"description\":\"List watches with last values.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_snapshot_capture\",\"description\":\"Capture script-state snapshot JSON.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_snapshot_restore\",\"description\":\"Restore script-state from snapshot JSON.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"json\":{\"type\":\"string\"}},\"required\":[\"json\"]}},"
+        "{\"name\":\"eve_snapshot_save\",\"description\":\"Save snapshot to a file path.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}},\"required\":[\"path\"]}},"
+        "{\"name\":\"eve_snapshot_load\",\"description\":\"Load snapshot from a file path.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}},\"required\":[\"path\"]}},"
+        "{\"name\":\"eve_error_slice\",\"description\":\"Return last error report / backward slice (script + render).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_run_script\",\"description\":\"Compile and run a short Squirrel snippet in the live VM.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"}},\"required\":[\"source\"]}},"
+        "{\"name\":\"eve_ai_note\",\"description\":\"Append a note to the DevTools AI session log.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}},"
+        "{\"name\":\"eve_ai_log\",\"description\":\"Read the DevTools AI session log.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}"
+        "]}";
+    return makeResult(idJson, kToolsJson);
 }
 
 std::string handleToolsCall(McpServer& mcp, const std::string& idJson,
@@ -520,23 +472,13 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson,
 }
 
 std::string handleResourcesList(const std::string& idJson) {
-    Poco::JSON::Array::Ptr resources = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-    auto add = [&](const char* uri, const char* name, const char* desc, const char* mime) {
-        Poco::JSON::Object::Ptr r = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        r->set("uri", uri);
-        r->set("name", name);
-        r->set("description", desc);
-        r->set("mimeType", mime);
-        resources->add(r);
-    };
-    add("eve://status", "status", "Debugger / MCP / DAP status", "application/json");
-    add("eve://error-report", "error-report", "Last DevTools error slice report", "text/plain");
-    add("eve://ai-session", "ai-session", "AI / MCP session log", "text/plain");
-    add("eve://callgraph", "callgraph", "CallGraph event summary", "application/json");
-
-    Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    result->set("resources", resources);
-    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson,
+        "{\"resources\":["
+        "{\"uri\":\"eve://status\",\"name\":\"status\",\"description\":\"Debugger / MCP / DAP status\",\"mimeType\":\"application/json\"},"
+        "{\"uri\":\"eve://error-report\",\"name\":\"error-report\",\"description\":\"Last DevTools error slice report\",\"mimeType\":\"text/plain\"},"
+        "{\"uri\":\"eve://ai-session\",\"name\":\"ai-session\",\"description\":\"AI / MCP session log\",\"mimeType\":\"text/plain\"},"
+        "{\"uri\":\"eve://callgraph\",\"name\":\"callgraph\",\"description\":\"CallGraph event summary\",\"mimeType\":\"application/json\"}"
+        "]}");
 }
 
 std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::Ptr params) {
@@ -554,16 +496,15 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
         text = engineStatusJson(McpServer::instance());
         mime = "application/json";
     } else if (uri == "eve://error-report") {
-        text = DevTool::instance().lastReport();
+        text = mcpLastReport();
         if (text.empty()) text = "(no error report yet)\n";
     } else if (uri == "eve://ai-session") {
         text = AiPanel::instance().formatLog(200);
         if (text.empty()) text = "(empty)\n";
     } else if (uri == "eve://callgraph") {
-        auto& g = DevTool::instance().graph();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        o->set("events", static_cast<int>(g.events().size()));
-        o->set("stackDepth", static_cast<int>(g.currentStack().size()));
+        o->set("events", static_cast<int>(mcpCallgraphEvents()));
+        o->set("stackDepth", static_cast<int>(mcpCallgraphStackDepth()));
         text = mcpStringify(Poco::Dynamic::Var(o));
         mime = "application/json";
     } else {
@@ -582,23 +523,12 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
 }
 
 std::string handlePromptsList(const std::string& idJson) {
-    Poco::JSON::Array::Ptr prompts = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-    auto add = [&](const char* name, const char* desc) {
-        Poco::JSON::Object::Ptr p = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        p->set("name", name);
-        p->set("description", desc);
-        prompts->add(p);
-    };
-    add("debug_failure",
-        "Investigate the latest script/render error using MCP tools and the error slice.");
-    add("test_scenario",
-        "Drive a reproducible in-engine test: pause, snapshot, eval assertions, continue.");
-    add("ai_game_review",
-        "Review live game state for AI-generated content issues.");
-
-    Poco::JSON::Object::Ptr result = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    result->set("prompts", prompts);
-    return makeResult(idJson, mcpStringify(Poco::Dynamic::Var(result)));
+    return makeResult(idJson,
+        "{\"prompts\":["
+        "{\"name\":\"debug_failure\",\"description\":\"Investigate the latest script/render error using MCP tools and the error slice.\"},"
+        "{\"name\":\"test_scenario\",\"description\":\"Drive a reproducible in-engine test: pause, snapshot, eval assertions, continue.\"},"
+        "{\"name\":\"ai_game_review\",\"description\":\"Review live game state for AI-generated content issues.\"}"
+        "]}");
 }
 
 std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr params) {

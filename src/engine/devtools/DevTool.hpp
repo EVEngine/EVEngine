@@ -1,11 +1,9 @@
 #pragma once
 
 #include "common/Export.h"
-#include "devtools/AiPanel.hpp"
 #include "devtools/CallGraph.hpp"
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
-#include "devtools/McpServer.hpp"
 #include "devtools/RenderFlow.hpp"
 #include "devtools/Snapshot.hpp"
 
@@ -21,6 +19,9 @@ class VM;
 }
 
 namespace eve::dev {
+
+class McpServer;
+class AiPanel;
 
 /**
  * Platform-level script + render debugger / dynamic slicer front-end.
@@ -77,8 +78,8 @@ public:
     Debugger&         debugger() { return Debugger::instance(); }
     Snapshot&         snapshot() { return Snapshot::instance(); }
     DebugAdapter&     dap() { return DebugAdapter::instance(); }
-    McpServer&        mcp() { return McpServer::instance(); }
-    AiPanel&          ai() { return AiPanel::instance(); }
+    McpServer&        mcp();
+    AiPanel&          ai();
 
     SliceResult analyzeError(const std::string& errorMessage,
                              const std::vector<std::string>& hintVars = {}) const;

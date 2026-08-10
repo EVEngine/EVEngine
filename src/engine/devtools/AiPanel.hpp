@@ -52,12 +52,9 @@ public:
     std::string statusLine() const;
 
     /**
-     * Draw the DevTools "AI" window when an ImGui drawer is registered
-     * (desktop `ImGuiBackend` registers one). No-op otherwise.
-     *
-     * ImGui code must not live in EVDevTools TUs: including imgui.h there
-     * instantiates thousands of inlines and overflows MSVC's 65535 export
-     * limit under WINDOWS_EXPORT_ALL_SYMBOLS.
+     * Optional ImGui draw hook. Default no-op: in-engine AI status is exposed
+     * via MCP / `eve.dev.ai` (MSVC WINDOWS_EXPORT_ALL_SYMBOLS cannot absorb
+     * another imgui.h-instantiating TU without hitting LNK1189).
      */
     void drawImGui();
 

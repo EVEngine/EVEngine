@@ -5,6 +5,7 @@
 #include "filesystem/Filesystem.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
 #include "devtools/DevTool.hpp"
+#include "devtools/McpServer.hpp"
 #endif
 
 #include <simplesquirrel/simplesquirrel.hpp>

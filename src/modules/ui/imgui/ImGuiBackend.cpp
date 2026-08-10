@@ -12,13 +12,8 @@
 
 #include <algorithm>
 #include <cmath>
-#include <string>
 #include <vulkan/vulkan.h>
 
-// DevTools AI panel (desktop only — EVDevTools is not linked on Android/iOS).
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
-#include "devtools/AiPanel.hpp"
-#endif
 
 namespace eve::ui {
 namespace {
@@ -27,55 +22,6 @@ void checkVk(VkResult err) {
     if (err == 0) return;
     throw eve::Exception("ImGui Vulkan error: VkResult = %d", int(err));
 }
-
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
-void drawDevToolsAiPanel(eve::dev::AiPanel& panel) {
-    if (!panel.isVisible()) return;
-    if (ImGui::GetCurrentContext() == nullptr) return;
-
-    bool open = true;
-    ImGui::SetNextWindowSize(ImVec2(420, 320), ImGuiCond_FirstUseEver);
-    if (!ImGui::Begin("EVEngine AI / MCP", &open)) {
-        ImGui::End();
-        if (!open) panel.setVisible(false);
-        return;
-    }
-    if (!open) {
-        panel.setVisible(false);
-        ImGui::End();
-        return;
-    }
-
-    const std::string status = panel.statusLine();
-    ImGui::TextUnformatted(status.c_str());
-    ImGui::Separator();
-    ImGui::TextWrapped(
-        "Agents connect via MCP (eve run --debug --mcp-port). "
-        "Tool calls and notes appear below for AI-assisted testing.");
-
-    if (ImGui::Button("Clear log")) panel.clearLog();
-    ImGui::SameLine();
-    if (ImGui::Button("Hide")) panel.setVisible(false);
-
-    ImGui::BeginChild("ai_log", ImVec2(0, 0), true);
-    const auto entries = panel.recentLog(panel.maxEntries());
-    for (const auto& e : entries) {
-        ImGui::TextColored(ImVec4(0.55f, 0.75f, 0.95f, 1.f), "[%s]", e.timestamp.c_str());
-        ImGui::SameLine();
-        ImGui::Text("%s", e.kind.c_str());
-        ImGui::SameLine();
-        ImGui::TextUnformatted(e.title.c_str());
-        if (!e.detail.empty()) {
-            ImGui::PushTextWrapPos(0.f);
-            ImGui::TextDisabled("%s", e.detail.c_str());
-            ImGui::PopTextWrapPos();
-        }
-    }
-    if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) ImGui::SetScrollHereY(1.f);
-    ImGui::EndChild();
-    ImGui::End();
-}
-#endif
 
 }  // namespace
 
@@ -156,9 +102,6 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
 
     gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
 
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
-    eve::dev::AiPanel::setImGuiDrawer(&drawDevToolsAiPanel);
-#endif
     initialized_ = true;
 
 #if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
@@ -177,9 +120,6 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
 
 void ImGuiBackend::shutdown() {
     if (!initialized_) return;
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
-    eve::dev::AiPanel::setImGuiDrawer(nullptr);
-#endif
     if (frameOpen_) {
         ImGui::EndFrame();
         frameOpen_ = false;

@@ -1,5 +1,9 @@
 #include "devtools/DevTool.hpp"
 
+#include "devtools/AiPanel.hpp"
+#include "devtools/McpDevBridge.hpp"
+#include "devtools/McpServer.hpp"
+
 #include "common/Module.h"
 #include "common/RenderTrace.h"
 #include "event/Event.h"
@@ -155,6 +159,10 @@ void DevTool::stopDap() { DebugAdapter::instance().stop(); }
 int DevTool::startMcp(uint16_t port) { return McpServer::instance().listen(port); }
 
 void DevTool::stopMcp() { McpServer::instance().stop(); }
+
+McpServer& DevTool::mcp() { return McpServer::instance(); }
+
+AiPanel& DevTool::ai() { return AiPanel::instance(); }
 
 void DevTool::poll() {
     DebugAdapter::instance().poll();
@@ -537,6 +545,20 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     dap().notifyStopped(PauseReason::Exception, site);
 
     return lastReport_;
+}
+
+bool mcpDevAttached() { return DevTool::instance().isAttached(); }
+
+std::size_t mcpCallgraphEvents() { return DevTool::instance().graph().events().size(); }
+
+std::size_t mcpCallgraphStackDepth() {
+    return DevTool::instance().graph().currentStack().size();
+}
+
+const std::string& mcpLastReport() { return DevTool::instance().lastReport(); }
+
+std::string mcpFormatError(const std::string& message) {
+    return DevTool::instance().formatError(message);
 }
 
 }  // namespace eve::dev
