@@ -32,6 +32,7 @@ file(GLOB all_test_cpp
   particles.cpp
   map.cpp
   rpg.cpp
+  inventory.cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
@@ -160,7 +161,7 @@ else()
     endif()
 endif()
 
-set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVIK EVAnimation EVTensor EVNetwork EVDatabase EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread EVRPG EVAvatar EVDialogue EVProcgen EVStylize)
+set(EVELIBS EVCmdLine EVScripts EVWindow EVFileSystem EVMouse EVKeyboard EVJoystick EVTouch EVGraphics EVImage EVDevTools EVCommon EVEvent EVTimer EVSystem EVMath EVIK EVAnimation EVTensor EVNetwork EVDatabase EVData EVSound EVAudio EVUI eve_imgui EVScene EVParticles EVPhysics EVMap EVGpgpu EVModel3D EVFont EVThread EVRPG EVInventory EVAvatar EVDialogue EVProcgen EVStylize)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND EVELIBS EVDemo)
