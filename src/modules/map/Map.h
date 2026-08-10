@@ -38,6 +38,8 @@ public:
     Fov *newFov(TileLayer *layer);
     /** Custom grid FOV (no layer); fill with setOpaque. */
     Fov *newFovSize(int mapW, int mapH);
+    /** Volume FOV (W×H×D voxels); mode defaults to volume. */
+    Fov *newFovVolume(int mapW, int mapH, int depth);
 
     /**
      * Load map JSON (Tiled-compatible subset or EVEngine simplified format).

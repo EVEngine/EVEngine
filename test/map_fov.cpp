@@ -6,6 +6,8 @@
 #include "map/Fov.h"
 
 #include <string>
+#include <vector>
+#include <cstdint>
 
 using namespace eve::map;
 
@@ -34,7 +36,12 @@ TEST_CASE("map.fov.algorithm.defaults") {
     fov->setRadiusMetric("nope");
     CHECK_EQ(fov->getRadiusMetric(), std::string("chebyshev"));
     fov->setAlgorithm("raycast");
-    CHECK_EQ(fov->getAlgorithm(), std::string("shadowcast"));
+    CHECK_EQ(fov->getAlgorithm(), std::string("raycast"));
+    fov->setAlgorithm("permissive");
+    CHECK_EQ(fov->getAlgorithm(), std::string("permissive"));
+    fov->setAlgorithm("nope");
+    CHECK_EQ(fov->getAlgorithm(), std::string("permissive"));
+    CHECK_EQ(fov->getMode(), std::string("grid2d"));
     delete fov;
 }
 
@@ -206,3 +213,146 @@ TEST_CASE("map.fov.removeAndDisable") {
     CHECK_EQ(fov->getRevealerCount(), 0);
     delete fov;
 }
+
+TEST_CASE("map.fov.raycast.wallShadow") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(9, 5);
+    fov->setAlgorithm("raycast");
+    fov->setRadiusMetric("chebyshev");
+    fov->setBlockEmpty(false);
+    for (int y = 0; y < 5; ++y) fov->setOpaque(4, y, true);
+    fov->addRevealer(1, 2, 6);
+    fov->compute();
+    CHECK(fov->isVisible(1, 2));
+    CHECK(fov->isVisible(4, 2));
+    CHECK(!fov->isVisible(6, 2));
+    delete fov;
+}
+
+TEST_CASE("map.fov.permissive.openRadius") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(7, 7);
+    fov->setAlgorithm("permissive");
+    fov->setRadiusMetric("chebyshev");
+    fov->setBlockEmpty(false);
+    fov->addRevealer(3, 3, 2);
+    fov->compute();
+    CHECK(fov->isVisible(3, 3));
+    CHECK(fov->isVisible(5, 5));
+    CHECK(!fov->isVisible(6, 3));
+    delete fov;
+}
+
+TEST_CASE("map.fov.heightmap.cliffBlocks") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(9, 3);
+    fov->setMode("heightmap");
+    fov->setRadiusMetric("chebyshev");
+    fov->setBlockEmpty(false);
+    fov->setCliffBlock(1.f);
+    fov->setEyeOffset(0.f);
+    // Flat ground elev 0; cliff column at x=4 with elev 2
+    for (int y = 0; y < 3; ++y) fov->setElevation(4, y, 2.f);
+    fov->addRevealer(1, 1, 6);
+    fov->compute();
+    CHECK(fov->isVisible(1, 1));
+    CHECK(!fov->isVisible(6, 1));  // behind high cliff
+    // Lower cliff should not block with cliffBlock=1 if elev=0.5
+    fov->setElevation(4, 1, 0.5f);
+    fov->compute();
+    CHECK(fov->isVisible(6, 1));
+    delete fov;
+}
+
+TEST_CASE("map.fov.volume.bridgeLayers") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovVolume(7, 3, 4);
+    REQUIRE(fov != nullptr);
+    CHECK_EQ(fov->getDepth(), 4);
+    CHECK_EQ(fov->getMode(), std::string("volume"));
+    fov->setRadiusMetric("chebyshev");
+    fov->setVerticalRange(3);
+    // Solid slab at z=1 separates upper (z=2) and lower (z=0) spaces.
+    for (int x = 0; x < 7; ++x) fov->setOpaque3(x, 1, 1, true);
+
+    fov->addRevealer3(1, 1, 2, 5);  // above slab
+    fov->compute();
+    CHECK(fov->isVisible3(1, 1, 2));
+    CHECK(fov->isVisible3(3, 1, 2));
+    CHECK(fov->isVisible3(3, 1, 1));   // slab surface lit
+    CHECK(!fov->isVisible3(3, 1, 0));  // below slab blocked
+
+    fov->clearRevealers();
+    fov->addRevealer3(1, 1, 0, 5);  // below slab
+    fov->compute();
+    CHECK(fov->isVisible3(1, 1, 0));
+    CHECK(fov->isVisible3(3, 1, 1));
+    CHECK(!fov->isVisible3(3, 1, 2));
+    delete fov;
+}
+
+TEST_CASE("map.fov.volume.verticalExtend") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovVolume(5, 5, 5);
+    fov->setRadiusMetric("chebyshev");
+    fov->setVerticalRange(2);
+    fov->addRevealer3(2, 2, 2, 1);
+    fov->compute();
+    CHECK(fov->isVisible3(2, 2, 2));
+    CHECK(fov->isVisible3(2, 2, 3));
+    CHECK(fov->isVisible3(2, 2, 4));
+    CHECK(fov->isVisible3(2, 2, 1));
+    CHECK(fov->isVisible3(2, 2, 0));
+    // Block upward
+    fov->setOpaque3(2, 2, 3, true);
+    fov->compute();
+    CHECK(fov->isVisible3(2, 2, 3));  // opaque cell lit
+    CHECK(!fov->isVisible3(2, 2, 4));
+    delete fov;
+}
+
+TEST_CASE("map.fov.dirty.skipsRecompute") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(5, 5);
+    fov->setBlockEmpty(false);
+    fov->setRadiusMetric("chebyshev");
+    fov->addRevealer(2, 2, 1);
+    CHECK(fov->isDirty());
+    fov->compute();
+    CHECK(!fov->isDirty());
+    CHECK(fov->isVisible(2, 2));
+    // Second compute without changes is a no-op (still visible).
+    fov->compute();
+    CHECK(fov->isVisible(2, 2));
+    CHECK(!fov->isDirty());
+    fov->setOpaque(1, 2, true);
+    CHECK(fov->isDirty());
+    fov->markDirty();
+    CHECK(fov->isDirty());
+    delete fov;
+}
+
+TEST_CASE("map.fov.maskExport") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(5, 5);
+    fov->setBlockEmpty(false);
+    fov->setRadiusMetric("chebyshev");
+    const int id = fov->addRevealer(2, 2, 1);
+    fov->compute();
+    CHECK_EQ(fov->getMaskByte(2, 2), 255);
+    CHECK(fov->getMaskValue(2, 2) > 0.9f);
+
+    fov->setRevealerPosition(id, 0, 0);
+    fov->setRevealerRadius(id, 0);
+    fov->compute();
+    CHECK_EQ(fov->getMaskByte(2, 2), 89);  // explored ≈ 0.35*255
+    CHECK(!fov->isVisible(2, 2));
+    CHECK(fov->isExplored(2, 2));
+
+    std::vector<uint8_t> mask;
+    CHECK(fov->fillMaskR8(mask));
+    CHECK_EQ(int(mask.size()), 25);
+    CHECK_EQ(int(mask[size_t(2 + 2 * 5)]), 89);
+    delete fov;
+}
+

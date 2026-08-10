@@ -59,7 +59,7 @@ local ny = field.nextY(ax, ay);
 
 ### 动态视野（FOV / 战争迷雾）
 
-格子可见性与探索记忆；遮挡（opaque）与寻路可行走（walkable）分开配置。默认算法为 recursive shadowcasting。
+格子可见性与探索记忆；遮挡（opaque）与寻路可行走（walkable）分开配置。默认算法为 recursive shadowcasting；可选 `raycast` / `permissive`。模式：`grid2d`（默认）、`heightmap`、`volume`。
 
 ```squirrel
 local fov = map.newFov(layer);
@@ -72,9 +72,29 @@ fov.compute();
 if (fov.isVisible(tx, ty)) { /* 当前可见 */ }
 if (fov.isExplored(tx, ty)) { /* 探索过（含当前可见） */ }
 local st = fov.getState(tx, ty); // "unknown" | "explored" | "visible"
+local mask = fov.getMaskByte(tx, ty); // 255 / 89 / 0，供 CPU 遮罩
 ```
 
-自定义网格：`map.newFovSize(w, h)` + `setOpaque`。移动观察者后再次 `compute()`；离开视野的格子保留 `explored`，可用 `clearMemory()` 清空。
+自定义网格：`map.newFovSize(w, h)` + `setOpaque`。移动观察者后再次 `compute()`；无变更时 `isDirty()` 为 false，`compute` 会跳过。离开视野的格子保留 `explored`，可用 `clearMemory()` 清空。
+
+高度场：
+
+```squirrel
+fov.setMode("heightmap");
+fov.setElevation(4, 1, 2.0);
+fov.setCliffBlock(1.0);
+```
+
+体素 3D：
+
+```squirrel
+local fov3 = map.newFovVolume(32, 32, 8);
+fov3.setOpaque3(4, 4, 2, true);
+fov3.addRevealer3(4, 4, 1, 10);
+fov3.setVerticalRange(4);
+fov3.compute();
+fov3.isVisible3(8, 4, 1);
+```
 
 ### Dual Grid（双网格）
 
@@ -108,7 +128,7 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
-- `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`
+- `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`、`newFovVolume()`
 - `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
 - `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTint()`、`setVisible()`、`tileToWorldX()`
 - `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
@@ -119,7 +139,7 @@ Path：`getLength`、`getX`、`getY`、`getTotalCost`
 
 FlowField：`getWidth`、`getHeight`、`getGoalX`、`getGoalY`、`costAt`、`nextX`、`nextY`、`isReachable`
 
-Fov：`getWidth`、`getHeight`、`setAlgorithm`、`getAlgorithm`、`setRadiusMetric`、`getRadiusMetric`、`setCornerPeek`、`blockOpaqueGid`、`unblockOpaqueGid`、`clearOpaqueGids`、`setBlockEmpty`、`setOpaque`、`isOpaque`、`syncFromLayer`、`addRevealer`、`removeRevealer`、`clearRevealers`、`setRevealerPosition`、`setRevealerRadius`、`setRevealerFacing`、`clearRevealerFacing`、`setRevealerEnabled`、`getRevealerCount`、`compute`、`isVisible`、`isExplored`、`getState`、`clearMemory`、`resetVisibleOnly`
+Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgorithm`、`getAlgorithm`、`setRadiusMetric`、`getRadiusMetric`、`setCornerPeek`、`blockOpaqueGid`、`unblockOpaqueGid`、`clearOpaqueGids`、`setBlockEmpty`、`setOpaque`、`isOpaque`、`setOpaque3`、`isOpaque3`、`syncFromLayer`、`setElevation`、`getElevation`、`setCliffBlock`、`setEyeOffset`、`setVerticalRange`、`addRevealer`、`addRevealer3`、`removeRevealer`、`clearRevealers`、`setRevealerPosition`、`setRevealerPosition3`、`setRevealerRadius`、`setRevealerFacing`、`clearRevealerFacing`、`setRevealerEnabled`、`getRevealerCount`、`markDirty`、`isDirty`、`compute`、`isVisible`、`isExplored`、`isVisible3`、`isExplored3`、`getState`、`getState3`、`clearMemory`、`resetVisibleOnly`、`getMaskValue`、`getMaskByte`、`getMaskValue3`、`getMaskByte3`
 
 ## 使用要点
 
