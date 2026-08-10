@@ -85,8 +85,56 @@ public:
     float cartesianRadius(float x, float y) const;
     float cartesianAngle(float x, float y) const;
 
+    // --- 2D hit / overlap / ray (picking & collision detection) ---
     bool pointInCircle(float px, float py, float cx, float cy, float radius) const;
     bool pointInRect(float px, float py, float rx, float ry, float rw, float rh) const;
+    bool circlesOverlap(float x1, float y1, float r1, float x2, float y2, float r2) const;
+    bool rectsOverlap(float x1, float y1, float w1, float h1, float x2, float y2, float w2,
+                      float h2) const;
+    bool circleRectOverlap(float cx, float cy, float radius, float rx, float ry, float rw,
+                           float rh) const;
+    /** True if segments AB and CD intersect (including endpoints). */
+    bool segmentsIntersect(float ax, float ay, float bx, float by, float cx, float cy, float dx,
+                           float dy) const;
+    /**
+     * Ray vs circle. Hit point = (ox,oy) + t*(dx,dy). Returns t >= 0 on hit, else -1.
+     * Direction need not be unit; for a segment use dir = B-A and accept t in [0,1].
+     */
+    float raycastCircle2(float ox, float oy, float dx, float dy, float cx, float cy,
+                         float radius) const;
+    /** Ray vs axis-aligned rect (x,y,w,h). Returns parametric t >= 0, else -1. */
+    float raycastRect2(float ox, float oy, float dx, float dy, float rx, float ry, float rw,
+                       float rh) const;
+    float closestPointOnSegment2X(float px, float py, float ax, float ay, float bx, float by) const;
+    float closestPointOnSegment2Y(float px, float py, float ax, float ay, float bx, float by) const;
+
+    // --- 3D hit / overlap / ray ---
+    bool pointInSphere(float px, float py, float pz, float cx, float cy, float cz,
+                       float radius) const;
+    /** Inclusive AABB test against [min,max] on each axis. */
+    bool pointInBox(float px, float py, float pz, float minX, float minY, float minZ, float maxX,
+                    float maxY, float maxZ) const;
+    bool spheresOverlap(float x1, float y1, float z1, float r1, float x2, float y2, float z2,
+                        float r2) const;
+    bool boxesOverlap(float minAx, float minAy, float minAz, float maxAx, float maxAy, float maxAz,
+                      float minBx, float minBy, float minBz, float maxBx, float maxBy,
+                      float maxBz) const;
+    float raycastSphere(float ox, float oy, float oz, float dx, float dy, float dz, float cx,
+                        float cy, float cz, float radius) const;
+    float raycastBox(float ox, float oy, float oz, float dx, float dy, float dz, float minX,
+                     float minY, float minZ, float maxX, float maxY, float maxZ) const;
+    /**
+     * Ray vs infinite plane through (px,py,pz) with normal (nx,ny,nz).
+     * Returns parametric t, or -1 if parallel / behind ray origin.
+     */
+    float raycastPlane(float ox, float oy, float oz, float dx, float dy, float dz, float px,
+                       float py, float pz, float nx, float ny, float nz) const;
+    float closestPointOnSegment3X(float px, float py, float pz, float ax, float ay, float az,
+                                  float bx, float by, float bz) const;
+    float closestPointOnSegment3Y(float px, float py, float pz, float ax, float ay, float az,
+                                  float bx, float by, float bz) const;
+    float closestPointOnSegment3Z(float px, float py, float pz, float ax, float ay, float az,
+                                  float bx, float by, float bz) const;
 
     /** Bilinear sample of 4 corners (v00,v10,v01,v11) with u,v in [0,1]. */
     float bilinear(float v00, float v10, float v01, float v11, float u, float v) const;

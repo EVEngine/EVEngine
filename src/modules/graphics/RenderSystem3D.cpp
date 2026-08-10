@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
@@ -151,6 +152,57 @@ void Camera3D::setEnvMap(Texture *cube) { data()->envMap = cube; }
 void Camera3D::setEnvIntensity(float intensity) {
     data()->envIntensity = intensity < 0.f ? 0.f : intensity;
 }
+
+void Camera3D::screenToRay(float screenX, float screenY, float viewW, float viewH) {
+    auto d = data();
+    d->screenRayOx = d->eyeX;
+    d->screenRayOy = d->eyeY;
+    d->screenRayOz = d->eyeZ;
+    d->screenRayDx = 0.f;
+    d->screenRayDy = 0.f;
+    d->screenRayDz = -1.f;
+    if (viewW <= 0.f || viewH <= 0.f) return;
+
+    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
+    const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
+    const glm::vec3 up(d->upX, d->upY, d->upZ);
+    const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
+    const float aspect = viewW / viewH;
+    const float fovRad = d->fovYDeg * 0.017453292519943295f;
+    const glm::mat4 projM = glm::perspectiveRH_ZO(fovRad, aspect, d->nearZ, d->farZ);
+    const glm::mat4 invVP = glm::inverse(projM * viewM);
+
+    // Screen pixel → NDC (Vulkan-style Y-down framebuffer → Y-up NDC).
+    const float ndcX = (screenX / viewW) * 2.f - 1.f;
+    const float ndcY = 1.f - (screenY / viewH) * 2.f;
+    auto unproject = [&](float ndcZ) -> glm::vec3 {
+        glm::vec4 w = invVP * glm::vec4(ndcX, ndcY, ndcZ, 1.f);
+        if (std::fabs(w.w) < 1e-8f) return eye;
+        w /= w.w;
+        return glm::vec3(w);
+    };
+    // ZO depth: near = 0, far = 1.
+    const glm::vec3 nearPt = unproject(0.f);
+    const glm::vec3 farPt  = unproject(1.f);
+    glm::vec3 dir = farPt - nearPt;
+    const float len = glm::length(dir);
+    if (len > 1e-8f) dir /= len;
+    else dir = glm::normalize(target - eye);
+
+    d->screenRayOx = eye.x;
+    d->screenRayOy = eye.y;
+    d->screenRayOz = eye.z;
+    d->screenRayDx = dir.x;
+    d->screenRayDy = dir.y;
+    d->screenRayDz = dir.z;
+}
+
+float Camera3D::getScreenRayOriginX() { return data()->screenRayOx; }
+float Camera3D::getScreenRayOriginY() { return data()->screenRayOy; }
+float Camera3D::getScreenRayOriginZ() { return data()->screenRayOz; }
+float Camera3D::getScreenRayDirX() { return data()->screenRayDx; }
+float Camera3D::getScreenRayDirY() { return data()->screenRayDy; }
+float Camera3D::getScreenRayDirZ() { return data()->screenRayDz; }
 
 void Renderable3D::setPosition(float x, float y, float z) {
     auto t = transform();

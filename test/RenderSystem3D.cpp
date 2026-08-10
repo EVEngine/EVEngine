@@ -430,3 +430,26 @@ TEST_CASE("Lighting3D.metallicIncreasesSpecularHighlight") {
     light->setEnabled(false);
     win->close();
 }
+
+TEST_CASE("Camera3D.screenToRayPick") {
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 5.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setUp(0.f, 1.f, 0.f);
+    cam->setFov(60.f);
+    cam->screenToRay(160.f, 120.f, 320.f, 240.f);  // center pixel
+
+    CHECK(std::fabs(cam->getScreenRayOriginX()) < 1e-4f);
+    CHECK(std::fabs(cam->getScreenRayOriginY()) < 1e-4f);
+    CHECK(std::fabs(cam->getScreenRayOriginZ() - 5.f) < 1e-4f);
+
+    // Looking toward -Z; center ray should be mostly -Z.
+    CHECK(std::fabs(cam->getScreenRayDirX()) < 0.05f);
+    CHECK(std::fabs(cam->getScreenRayDirY()) < 0.05f);
+    CHECK(cam->getScreenRayDirZ() < -0.9f);
+
+    float len = std::sqrt(cam->getScreenRayDirX() * cam->getScreenRayDirX() +
+                          cam->getScreenRayDirY() * cam->getScreenRayDirY() +
+                          cam->getScreenRayDirZ() * cam->getScreenRayDirZ());
+    CHECK(std::fabs(len - 1.f) < 1e-4f);
+}

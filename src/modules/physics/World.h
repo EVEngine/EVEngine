@@ -48,6 +48,28 @@ public:
     /** Optional: draw fixture AABBs via Graphics::drawSolidRect. */
     void drawDebug(graphics::Graphics *gfx);
 
+    /**
+     * Closest raycast in pixel space from (x1,y1) to (x2,y2).
+     * Returns hit body id, or -1. Read hit details via getRayHit*.
+     */
+    int rayCast(float x1, float y1, float x2, float y2);
+    bool  hasRayHit() const { return rayHitBodyId_ >= 0; }
+    int   getRayHitBodyId() const { return rayHitBodyId_; }
+    float getRayHitX() const { return rayHitX_; }
+    float getRayHitY() const { return rayHitY_; }
+    float getRayHitNormalX() const { return rayHitNormalX_; }
+    float getRayHitNormalY() const { return rayHitNormalY_; }
+    /** Fraction along the segment [0,1] of the closest hit. */
+    float getRayHitFraction() const { return rayHitFraction_; }
+
+    /**
+     * Query fixtures overlapping an axis-aligned box in pixel space (x,y,w,h).
+     * Returns match count; read ids with getQueryBodyId(i).
+     */
+    int queryAABB(float x, float y, float w, float h);
+    int getQueryCount() const { return static_cast<int>(queryBodyIds_.size()); }
+    int getQueryBodyId(int index) const;
+
     float toMeters(float pixels) const;
     float toPixels(float meters) const;
 
@@ -75,6 +97,15 @@ private:
 
     std::unordered_set<Body *>    bodies_;
     std::unordered_set<Fixture *> fixtures_;
+
+    int   rayHitBodyId_   = -1;
+    float rayHitX_        = 0.f;
+    float rayHitY_        = 0.f;
+    float rayHitNormalX_  = 0.f;
+    float rayHitNormalY_  = 0.f;
+    float rayHitFraction_ = 0.f;
+
+    std::vector<int> queryBodyIds_;
 };
 
 }  // namespace eve::physics

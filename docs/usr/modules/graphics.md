@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Graphics()`
 
-清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。
+清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 [Math](math.md)，物理体查询见 [Physics](physics.md)。
 
 ## 基本用法
 
@@ -26,26 +26,38 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
 
+### 2D 屏幕拾取
+
+`Camera2D` 用 `setPosition` / `setZoom` 控制视口中心与缩放；`screenToWorldX/Y(screenX, screenY, viewW, viewH)` 把鼠标像素换成世界坐标（`viewW/H` 通常取 `gfx.getWidth/Height`），再交给 Math 的 `pointIn*` 或 Physics 的 `testPoint` / `queryAABB`。
+
+### 3D 屏幕拾取
+
+`Camera3D.screenToRay(screenX, screenY, viewW, viewH)` 写入眼点与单位方向，用 `getScreenRayOrigin*` / `getScreenRayDir*` 读取，再对包围球/盒调用 Math 的 `raycastSphere` / `raycastBox`。
+
 ## 常见问题
 
 - 忘记每帧 `clear()`，保留未定义的旧帧内容。
 - 每帧编译 shader 或上传纹理。
 - 2D/UI/3D 提交顺序错误导致覆盖。
+- 拾取时 `viewW/H` 与实际渲染 drawable 不一致，射线会偏。
 
 ## API 快查
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `clear()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`、`drawSolidRect()`、`drawTexturedRect()`
-- `getCastShadow()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getHeight()`、`getName()`、`getRadius()`、`getShader()`
-- `getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`
-- `getZ()`、`hasUniform()`、`isEnabled()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`、`newShaderFromSpvFile()`
-- `newTexture()`、`present()`、`render3D()`、`reset()`、`sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`
-- `setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`、`setCanvas()`、`setCastShadow()`、`setColor()`、`setDirection()`
-- `setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`、`setEye()`、`setFov()`、`setMesh()`、`setMetallic()`
-- `setNormalTexture()`、`setPosition()`、`setRadius()`、`setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`
-- `setShader()`、`setShadowBias()`、`setShadowStrength()`、`setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`
-- `setViewport()`、`setVisible()`、`setYaw()`
+- `bakeMeshMorph()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
+- `drawSolidRect()`、`drawTexturedRect()`、`getCastShadow()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getHeight()`、`getMorphCount()`
+- `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
+- `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
+- `getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
+- `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
+- `newShaderFromSpvFile()`、`newTexture()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
+- `setCanvas()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
+- `setEye()`、`setFov()`、`setMesh()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPosition()`、`setRadius()`
+- `setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setShadowBias()`、`setShadowStrength()`
+- `setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setYaw()`
+- `setZoom()`、`worldToScreenX()`、`worldToScreenY()`
 
 ## 使用要点
 
@@ -54,4 +66,4 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/graphics/`](../../../src/modules/graphics/)
-**相关测试：** 在 [`test/`](../../../test/) 中搜索 `graphics`。
+**相关测试：** 在 [`test/`](../../../test/) 中搜索 `graphics`、`Camera2D`、`Camera3D`。

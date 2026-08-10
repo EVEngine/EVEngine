@@ -21,6 +21,42 @@ void Camera2D::setAmbient(float r, float g, float b) {
     d->ambientB = b;
 }
 
+void Camera2D::setPosition(float x, float y) {
+    auto d = data();
+    d->x = x;
+    d->y = y;
+}
+
+float Camera2D::getX() { return data()->x; }
+float Camera2D::getY() { return data()->y; }
+
+void Camera2D::setZoom(float zoom) { data()->zoom = zoom; }
+float Camera2D::getZoom() { return data()->zoom; }
+
+float Camera2D::screenToWorldX(float screenX, float /*screenY*/, float viewW, float /*viewH*/) {
+    auto d = data();
+    float z = d->zoom <= 0.f ? 1e-4f : d->zoom;
+    return (screenX - viewW * 0.5f) / z + d->x;
+}
+
+float Camera2D::screenToWorldY(float /*screenX*/, float screenY, float /*viewW*/, float viewH) {
+    auto d = data();
+    float z = d->zoom <= 0.f ? 1e-4f : d->zoom;
+    return (screenY - viewH * 0.5f) / z + d->y;
+}
+
+float Camera2D::worldToScreenX(float worldX, float /*worldY*/, float viewW, float /*viewH*/) {
+    auto d = data();
+    float z = d->zoom <= 0.f ? 1e-4f : d->zoom;
+    return (worldX - d->x) * z + viewW * 0.5f;
+}
+
+float Camera2D::worldToScreenY(float /*worldX*/, float worldY, float /*viewW*/, float viewH) {
+    auto d = data();
+    float z = d->zoom <= 0.f ? 1e-4f : d->zoom;
+    return (worldY - d->y) * z + viewH * 0.5f;
+}
+
 namespace {
 
 float clampZoom(float z) { return z <= 0.f ? 1e-4f : z; }
