@@ -11,10 +11,14 @@
 #include "animation/AnimStateMachine.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
+#include "animation/ControlAnim.h"
+#include "animation/ControlPose.h"
+#include "animation/AnimControlMath.h"
 
 #include "common/Exception.h"
 
 #include <cmath>
+#include <algorithm>
 #include <memory>
 
 #ifndef M_PI
@@ -711,4 +715,120 @@ TEST_CASE("animation.importer.invalidThrows") {
     CHECK(threw);
     CHECK(sk == nullptr);
     CHECK(clip == nullptr);
+}
+
+TEST_CASE("animation.controlAnim.secondOrderTracksTarget") {
+    std::unique_ptr<ControlAnim> ca(new ControlAnim(4.f, 1.f, 1.f));
+    ca->setIntegrator("secondOrder");
+    ca->set("x", 0.f);
+    ca->setTarget("x", 10.f);
+
+    for (int i = 0; i < 120; ++i) ca->update(1.f / 60.f);
+    CHECK(std::fabs(ca->get("x") - 10.f) < 0.15f);
+    CHECK(std::fabs(ca->getVelocity("x")) < 0.5f);
+    CHECK_EQ(ca->getPropertyCount(), 1);
+    CHECK(ca->getPropertyName(0) == "x");
+}
+
+TEST_CASE("animation.controlAnim.springCriticallyDamped") {
+    std::unique_ptr<ControlAnim> ca(new ControlAnim(5.f, 1.f, 0.f));
+    ca->setIntegrator("spring");
+    ca->set("y", 0.f);
+    ca->setTarget("y", 1.f);
+
+    float prev = 0.f;
+    bool moved = false;
+    for (int i = 0; i < 180; ++i) {
+        ca->update(1.f / 60.f);
+        float v = ca->get("y");
+        if (v > prev + 1e-6f) moved = true;
+        // Critically damped: should not overshoot the target significantly.
+        CHECK(v < 1.05f);
+        prev = v;
+    }
+    CHECK(moved);
+    CHECK(std::fabs(ca->get("y") - 1.f) < 0.05f);
+}
+
+TEST_CASE("animation.controlAnim.pdAndUnderdamped") {
+    std::unique_ptr<ControlAnim> ca(new ControlAnim(3.f, 0.35f, 1.f));
+    ca->setIntegrator("pd");
+    ca->set("z", 0.f);
+    ca->setTarget("z", 1.f);
+
+    float maxV = 0.f;
+    for (int i = 0; i < 240; ++i) {
+        ca->update(1.f / 60.f);
+        maxV = std::max(maxV, ca->get("z"));
+    }
+    // Underdamped PD should overshoot then settle near target.
+    CHECK(maxV > 1.02f);
+    CHECK(std::fabs(ca->get("z") - 1.f) < 0.1f);
+}
+
+TEST_CASE("animation.controlAnim.impulseAndIntegratorSwitch") {
+    std::unique_ptr<ControlAnim> ca(new ControlAnim(2.f, 0.5f, 0.f));
+    ca->set("p", 0.f);
+    ca->setTarget("p", 0.f);
+    ca->impulse("p", 5.f);
+    ca->update(1.f / 60.f);
+    CHECK(ca->get("p") > 0.01f);
+
+    bool threw = false;
+    try {
+        ca->setIntegrator("nope");
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
+    CHECK(ca->getIntegrator() == "secondOrder");
+}
+
+TEST_CASE("animation.controlPose.tracksTargetPosition") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<ControlPose> cp(new ControlPose(sk.get()));
+    cp->setFrequency(5.f);
+    cp->setDamping(1.f);
+    cp->setResponse(1.f);
+    cp->setIntegrator("secondOrder");
+
+    std::unique_ptr<AnimPose> target(new AnimPose(2));
+    sk->applyBindPose(target.get());
+    target->setLocalPosition(1, 0.f, 3.f, 0.f);
+    cp->setTargetPose(target.get());
+
+    // Start near bind (y=1), track toward y=3.
+    for (int i = 0; i < 180; ++i) cp->update(1.f / 60.f);
+    AnimPose *pose = cp->getPose();
+    CHECK(std::fabs(pose->getLocalPositionY(1) - 3.f) < 0.2f);
+}
+
+TEST_CASE("animation.controlPose.boneWeightHardFollow") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<ControlPose> cp(new ControlPose(sk.get()));
+    cp->setIntegrator("spring");
+    cp->setBoneWeight(1, 0.f);
+
+    std::unique_ptr<AnimPose> target(new AnimPose(2));
+    sk->applyBindPose(target.get());
+    target->setLocalPosition(1, 4.f, 2.f, -1.f);
+    cp->setTargetPose(target.get());
+    cp->update(1.f / 60.f);
+
+    AnimPose *pose = cp->getPose();
+    CHECK(std::fabs(pose->getLocalPositionX(1) - 4.f) < 1e-4f);
+    CHECK(std::fabs(pose->getLocalPositionY(1) - 2.f) < 1e-4f);
+    CHECK(std::fabs(pose->getLocalPositionZ(1) - -1.f) < 1e-4f);
+}
+
+TEST_CASE("animation.controlMath.pdGainsCritical") {
+    float kp = 0.f, kd = 0.f;
+    pdGainsFromOmegaZeta(10.f, 1.f, kp, kd);
+    CHECK(std::fabs(kp - 100.f) < 1e-4f);
+    CHECK(std::fabs(kd - 20.f) < 1e-4f);
+
+    SecondOrderCoeffs c = makeSecondOrderCoeffs(1.f, 1.f, 1.f);
+    CHECK(c.k1 > 0.f);
+    CHECK(c.k2 > 0.f);
+    CHECK(c.k3 > 0.f);
 }

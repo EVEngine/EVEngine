@@ -33,7 +33,7 @@
 - [Box2D 物理](modules/physics.md)：创建 World、Body 和 Fixture；脚本使用像素坐标，引擎内部换算为米；支持接触事件与 `rayCast` / `queryAABB` / `testPoint` 拾取查询。
 - [Tilemap](modules/map.md)：创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染。
 - [粒子](modules/particles.md)：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。
-- [动画](modules/animation.md)：使用 Tween 对标量或角度属性做延迟、重复、yoyo 和缓动插值。
+- [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、以及控制论程序动画（`ControlAnim` / `ControlPose`）。
 - [RPG 系统](modules/rpg.md)：组合属性、效果、状态、技能、施法与伤害结算。
 - [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
