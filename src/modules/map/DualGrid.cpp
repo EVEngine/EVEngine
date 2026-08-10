@@ -25,8 +25,8 @@ int dualGridDefaultFrame(int mask) {
 }
 
 bool dualGridLogicFilled(TileLayer &logic, int tx, int ty, int filledGid) {
-    auto *cfg = logic.config();
-    if (!cfg || tx < 0 || ty < 0 || tx >= cfg->mapW || ty >= cfg->mapH) return false;
+    auto cfg = logic.config();
+    if (tx < 0 || ty < 0 || tx >= cfg->mapW || ty >= cfg->mapH) return false;
     const int gid = int(tileGid(uint32_t(logic.getTile(tx, ty))));
     if (gid == 0) return false;
     if (filledGid == 0) return true;
@@ -64,8 +64,8 @@ bool resolveDualGrid(TileLayer *logic, TileLayer *display, const DualGridOptions
     display->setTileSize(tileW, tileH);
     display->resize(logicW + 1, logicH + 1);
 
-    auto *lc = logic->config();
-    auto *dc = display->config();
+    auto lc = logic->config();
+    auto dc = display->config();
     dc->orientation = lc->orientation;
     dc->staggerAxis = lc->staggerAxis;
     dc->staggerIndex = lc->staggerIndex;
