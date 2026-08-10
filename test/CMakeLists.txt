@@ -33,6 +33,7 @@ file(GLOB all_test_cpp
   particles.cpp
   map.cpp
   map_path.cpp
+  map_fov.cpp
   rpg.cpp
   inventory.cpp
   avatar.cpp
