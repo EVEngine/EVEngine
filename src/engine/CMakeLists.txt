@@ -250,9 +250,13 @@ endif()
 # Plugins resolve ModuleManager / ModuleRegister symbols from the host process.
 target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE EVENGINE_BUILDING_HOST=1)
 if(WIN32)
+    # ENABLE_EXPORTS so plugins can link/import host symbols.
+    # Do NOT enable WINDOWS_EXPORT_ALL_SYMBOLS: MSVC hits LNK1189 (65535
+    # objects/exports) once the engine grows. Plugins only need EVENGINE_API
+    # (__declspec(dllexport)) symbols such as ModuleManager / ModuleRegister.
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
         ENABLE_EXPORTS ON
-        WINDOWS_EXPORT_ALL_SYMBOLS ON
+        WINDOWS_EXPORT_ALL_SYMBOLS OFF
     )
 elseif(APPLE)
     # macOS + iOS: Apple ld rejects GNU --export-dynamic.
