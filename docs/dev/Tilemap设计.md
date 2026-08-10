@@ -191,4 +191,38 @@ tint, camera, lit 相关字段
 2. 同 layer 内精灵与 tile 按脚点 Y 正确遮挡
 3. 对象层可枚举；脚本可据此生成实体
 4. 现有正交 demo / 测试不回归
-```
+
+## Dual Grid（双网格）
+
+### Tiled 是否支持？
+
+**不原生支持** Oskar Stålberg 式 dual-grid（显示瓦片相对逻辑格半格偏移、由四角采样生成 15 片）。
+
+Tiled 提供的相关能力：
+
+| 能力 | 说明 | 与 dual-grid 关系 |
+|------|------|-------------------|
+| Terrain / Wang **Corner Set** | 同网格角匹配，2 地形完整集 16 片 | 掩码位数相近，但**无半格偏移**，画在逻辑格上 |
+| Terrain Mixed / Blob | 边+角，可达 47 / 256 | 单网格经典 autotile |
+| Automapping | 规则替换 | 可手写近似，非内置 dual-grid |
+| Major Grid | 每 N 格加粗线 | 仅编辑器辅助，无关 autotile |
+
+推荐工作流：在 Tiled 画**逻辑层**（填充 / 空，任意非 0 GID 或指定 `filledGid`）→ 引擎 `resolveDualGrid` 生成**显示层**。
+
+### 引擎 API
+
+- `DualGrid.h`：`dualGridMaskAt` / `dualGridDefaultFrame` / `dualGridHalfOffset` / `resolveDualGrid`
+- 脚本：`Map.resolveDualGrid(logic, display)`、`resolveDualGridFilled`、`dualGridOffsetX/Y`
+- 显示层尺寸 `(logicW+1)×(logicH+1)`；复制 `orientation` / `stagger*` / `hexSideLength`
+- 半步 origin 偏移（相对逻辑 origin）：
+
+| orientation | offset |
+|-------------|--------|
+| Orthogonal | `(-tileW/2, -tileH/2)` |
+| Isometric | `(0, -tileH/2)`（等价逻辑坐标 `(tx-0.5, ty-0.5)`） |
+| Staggered / Hexagonal（Y） | `(-tileW/2, -pitchY/2)` |
+| Staggered / Hexagonal（X） | `(-pitchX/2, -tileH/2)` |
+
+- 角掩码在**格子索引空间**采样（与投影无关）；默认图集为 SpriteCook 式 4×4 frame 表；`useDefaultFrameTable=false` 时 `gid = firstGid + mask`
+
+角位：`TL=1, TR=2, BL=4, BR=8`。mask 0 不绘制。

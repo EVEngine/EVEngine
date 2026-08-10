@@ -57,11 +57,28 @@ local ny = field.nextY(ax, ay);
 
 自定义网格（不绑 TileLayer）：`map.newPathfinderSize(w, h)`，再用 `setBlocked` / `setCellCost`。
 
+### Dual Grid（双网格）
+
+Tiled **没有**原生 dual-grid；在编辑器里画逻辑填充层，运行时解算显示层。支持正交 / 等距 / 交错 / 六角：掩码按格子索引采样，显示层继承投影参数并施加对应半步 origin 偏移。
+
+```squirrel
+local map = eve.Map();
+local logic = map.newLayer(16, 12, 32, 32);
+local display = map.newLayer(1, 1, 32, 32);
+// display.setTileset(tex, 1, 4);  // 4×4 的 15-tile 图集
+logic.setTile(3, 4, 1);
+map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
+// map.dualGridOffsetX(logic) / dualGridOffsetY(logic) 可查偏移量
+```
+
+`resolveDualGridFilled(logic, display, filledGid)` 只把指定 GID 当作填充。逻辑层可继续用于碰撞 / 寻路；默认会 `setVisible(false)`。
+
 ## 常见问题
 
 - GID 与图集编号混淆：0 为空，其余值遵循 tileset 映射；默认空瓦片不可走（`setBlockEmpty`）。
 - 世界坐标直接作为 tile 索引：先做投影换算。
 - 修改 JSON 后未启用 watch/autoReload。
+- 期望 Tiled 直接导出 dual-grid 显示层：不支持；用逻辑层 + `resolveDualGrid`。
 - 寻路失败：`getLength()==0`（越界、不可走或不可达），不是抛异常。
 
 ## API 快查
@@ -73,9 +90,9 @@ local ny = field.nextY(ax, ay);
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
 - `newPathfinder()`、`newPathfinderSize()`
-- `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
+- `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
 - `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTint()`、`setVisible()`、`tileToWorldX()`
-- `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`
+- `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
 
 Pathfinder：`setTopology`、`getTopology`、`setDiagonal`、`blockGid`、`unblockGid`、`clearBlockedGids`、`setBlockEmpty`、`setBlocked`、`isWalkable`、`setCellCost`、`getCellCost`、`syncFromLayer`、`findPath`、`buildFlowField`、`followFlow`、`findGroupPath`、`invalidateCache`
 

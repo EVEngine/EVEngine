@@ -1,4 +1,5 @@
 #include "map/Map.h"
+#include "map/DualGrid.h"
 #include "map/TileSystem.h"
 #include "map/TileConfig.h"
 #include "map/Pathfinder.h"
@@ -104,6 +105,42 @@ int Map::getObjectGid(int i) const {
     return int(objects_[size_t(i)].gid);
 }
 
+bool Map::resolveDualGrid(TileLayer *logic, TileLayer *display) {
+    DualGridOptions opts;
+    const bool ok = eve::map::resolveDualGrid(logic, display, opts, &dualGridError_);
+    return ok;
+}
+
+bool Map::resolveDualGridFilled(TileLayer *logic, TileLayer *display, int filledGid) {
+    DualGridOptions opts;
+    opts.filledGid = filledGid;
+    const bool ok = eve::map::resolveDualGrid(logic, display, opts, &dualGridError_);
+    return ok;
+}
+
+int Map::dualGridMaskAt(TileLayer *logic, int dx, int dy, int filledGid) {
+    if (!logic) return 0;
+    return eve::map::dualGridMaskAt(*logic, dx, dy, filledGid);
+}
+
+int Map::dualGridFrame(int mask) { return dualGridDefaultFrame(mask); }
+
+float Map::dualGridOffsetX(TileLayer *logic) {
+    if (!logic) return 0.f;
+    float ox = 0.f, oy = 0.f;
+    dualGridHalfOffset(*logic->config(), ox, oy);
+    return ox;
+}
+
+float Map::dualGridOffsetY(TileLayer *logic) {
+    if (!logic) return 0.f;
+    float ox = 0.f, oy = 0.f;
+    dualGridHalfOffset(*logic->config(), ox, oy);
+    return oy;
+}
+
+std::string Map::lastDualGridError() const { return dualGridError_; }
+
 void Map::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Map::create, false);
     expose(cls);
@@ -207,6 +244,13 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("getObjectWidth", &Map::getObjectWidth);
     cls.addFunc("getObjectHeight", &Map::getObjectHeight);
     cls.addFunc("getObjectGid", &Map::getObjectGid);
+    cls.addFunc("resolveDualGrid", &Map::resolveDualGrid);
+    cls.addFunc("resolveDualGridFilled", &Map::resolveDualGridFilled);
+    cls.addFunc("dualGridMaskAt", &Map::dualGridMaskAt);
+    cls.addFunc("dualGridFrame", &Map::dualGridFrame);
+    cls.addFunc("dualGridOffsetX", &Map::dualGridOffsetX);
+    cls.addFunc("dualGridOffsetY", &Map::dualGridOffsetY);
+    cls.addFunc("lastDualGridError", &Map::lastDualGridError);
 }
 
 }  // namespace eve::map

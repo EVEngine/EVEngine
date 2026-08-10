@@ -60,8 +60,25 @@ public:
     /** Replace object cache (used by load / hot reload). */
     void setObjects(std::vector<MapObject> objects);
 
+    /**
+     * Dual-grid resolve: paint logic (filled/empty), fill display with 15-tile
+     * autotiles on a half-offset grid. See DualGrid.h.
+     * filledGid 0 = any non-zero logic cell counts as filled.
+     */
+    bool resolveDualGrid(TileLayer *logic, TileLayer *display);
+    bool resolveDualGridFilled(TileLayer *logic, TileLayer *display, int filledGid);
+    /** 4-bit corner mask at display cell (dx,dy); see DualGrid.h. */
+    int dualGridMaskAt(TileLayer *logic, int dx, int dy, int filledGid);
+    /** Default atlas frame for mask (-1 = empty). */
+    int dualGridFrame(int mask);
+    /** Projection-correct half-step origin delta for a logic layer. */
+    float dualGridOffsetX(TileLayer *logic);
+    float dualGridOffsetY(TileLayer *logic);
+    std::string lastDualGridError() const;
+
 private:
     std::vector<MapObject> objects_;
+    std::string dualGridError_;
 };
 
 }  // namespace eve::map
