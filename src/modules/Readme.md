@@ -114,7 +114,8 @@
     属性补间 Tween：`newTween(duration)` → `setFrom` / `setTo` / `setDelta`（相对差值）
     缓动 kind 与 Math.ease 一致；`setDelay` / `setRepeat` / `setYoyo`；角度 `set*Angle`
     帧循环：`anim.update(dt)`（或 `tween.update(dt)`）
-    后期：帧动画 / Skeleton
+    3D 骨骼播放：`AnimSkeleton` / `AnimClip` / `AnimPose` / `AnimPlayer`
+    两套控制器：状态机 `AnimStateMachine`；Motion Matching（`MotionDatabase` + `MotionMatcher`）
     代码：`src/modules/animation/`
 
 12b. 风格化渲染 - stylize（`eve.Stylize`）

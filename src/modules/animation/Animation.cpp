@@ -1,4 +1,11 @@
 #include "animation/Animation.h"
+#include "animation/AnimClip.h"
+#include "animation/AnimPlayer.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/AnimStateMachine.h"
+#include "animation/MotionDatabase.h"
+#include "animation/MotionMatcher.h"
 
 #include <algorithm>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -19,6 +26,26 @@ Tween *Animation::newTween(float duration) {
     auto *t = new Tween(duration);
     registerTween(t);
     return t;
+}
+
+AnimSkeleton *Animation::newSkeleton() { return new AnimSkeleton(); }
+
+AnimClip *Animation::newClip(const std::string &name) { return new AnimClip(name); }
+
+AnimPose *Animation::newPose(int boneCount) { return new AnimPose(boneCount); }
+
+AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
+
+AnimStateMachine *Animation::newStateMachine(AnimSkeleton *skeleton) {
+    return new AnimStateMachine(skeleton);
+}
+
+MotionDatabase *Animation::newMotionDatabase(AnimSkeleton *skeleton) {
+    return new MotionDatabase(skeleton);
+}
+
+MotionMatcher *Animation::newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database) {
+    return new MotionMatcher(skeleton, database);
 }
 
 void Animation::registerTween(Tween *t) {
@@ -116,11 +143,176 @@ void Animation::expose(ssq::Table &table) {
     tw.addFunc("evaluate", &Tween::evaluate);
     tw.addFunc("getPropertyCount", &Tween::getPropertyCount);
     tw.addFunc("getPropertyName", &Tween::getPropertyName);
+
+    auto sk = table.addClass<AnimSkeleton>(
+        "AnimSkeleton", std::function<AnimSkeleton *()>([]() -> AnimSkeleton * { return nullptr; }),
+        true);
+    sk.addFunc("addBone", &AnimSkeleton::addBone);
+    sk.addFunc("getBoneCount", &AnimSkeleton::getBoneCount);
+    sk.addFunc("getBoneName", &AnimSkeleton::getBoneName);
+    sk.addFunc("findBone", &AnimSkeleton::findBone);
+    sk.addFunc("getParent", &AnimSkeleton::getParent);
+    sk.addFunc("setBindPosition", &AnimSkeleton::setBindPosition);
+    sk.addFunc("setBindRotation", &AnimSkeleton::setBindRotation);
+    sk.addFunc("setBindScale", &AnimSkeleton::setBindScale);
+    sk.addFunc("getBindPositionX", &AnimSkeleton::getBindPositionX);
+    sk.addFunc("getBindPositionY", &AnimSkeleton::getBindPositionY);
+    sk.addFunc("getBindPositionZ", &AnimSkeleton::getBindPositionZ);
+    sk.addFunc("getBindRotationX", &AnimSkeleton::getBindRotationX);
+    sk.addFunc("getBindRotationY", &AnimSkeleton::getBindRotationY);
+    sk.addFunc("getBindRotationZ", &AnimSkeleton::getBindRotationZ);
+    sk.addFunc("getBindRotationW", &AnimSkeleton::getBindRotationW);
+    sk.addFunc("getBindScaleX", &AnimSkeleton::getBindScaleX);
+    sk.addFunc("getBindScaleY", &AnimSkeleton::getBindScaleY);
+    sk.addFunc("getBindScaleZ", &AnimSkeleton::getBindScaleZ);
+    sk.addFunc("applyBindPose", &AnimSkeleton::applyBindPose);
+
+    auto clip = table.addClass<AnimClip>(
+        "AnimClip", std::function<AnimClip *()>([]() -> AnimClip * { return nullptr; }), true);
+    clip.addFunc("setName", &AnimClip::setName);
+    clip.addFunc("getName", &AnimClip::getName);
+    clip.addFunc("setDuration", &AnimClip::setDuration);
+    clip.addFunc("getDuration", &AnimClip::getDuration);
+    clip.addFunc("setLoop", &AnimClip::setLoop);
+    clip.addFunc("getLoop", &AnimClip::getLoop);
+    clip.addFunc("setSampleRate", &AnimClip::setSampleRate);
+    clip.addFunc("getSampleRate", &AnimClip::getSampleRate);
+    clip.addFunc("addPositionKey", &AnimClip::addPositionKey);
+    clip.addFunc("addRotationKey", &AnimClip::addRotationKey);
+    clip.addFunc("addScaleKey", &AnimClip::addScaleKey);
+    clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
+    clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
+    clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
+    clip.addFunc("sample", &AnimClip::sample);
+    clip.addFunc("wrapTime", &AnimClip::wrapTime);
+
+    auto pose = table.addClass<AnimPose>(
+        "AnimPose", std::function<AnimPose *()>([]() -> AnimPose * { return nullptr; }), true);
+    pose.addFunc("resize", &AnimPose::resize);
+    pose.addFunc("getBoneCount", &AnimPose::getBoneCount);
+    pose.addFunc("copyFrom", &AnimPose::copyFrom);
+    pose.addFunc("blendFrom", &AnimPose::blendFrom);
+    pose.addFunc("setLocalPosition", &AnimPose::setLocalPosition);
+    pose.addFunc("setLocalRotation", &AnimPose::setLocalRotation);
+    pose.addFunc("setLocalScale", &AnimPose::setLocalScale);
+    pose.addFunc("getLocalPositionX", &AnimPose::getLocalPositionX);
+    pose.addFunc("getLocalPositionY", &AnimPose::getLocalPositionY);
+    pose.addFunc("getLocalPositionZ", &AnimPose::getLocalPositionZ);
+    pose.addFunc("getLocalRotationX", &AnimPose::getLocalRotationX);
+    pose.addFunc("getLocalRotationY", &AnimPose::getLocalRotationY);
+    pose.addFunc("getLocalRotationZ", &AnimPose::getLocalRotationZ);
+    pose.addFunc("getLocalRotationW", &AnimPose::getLocalRotationW);
+    pose.addFunc("getLocalScaleX", &AnimPose::getLocalScaleX);
+    pose.addFunc("getLocalScaleY", &AnimPose::getLocalScaleY);
+    pose.addFunc("getLocalScaleZ", &AnimPose::getLocalScaleZ);
+    pose.addFunc("computeWorld", &AnimPose::computeWorld);
+    pose.addFunc("getWorldPositionX", &AnimPose::getWorldPositionX);
+    pose.addFunc("getWorldPositionY", &AnimPose::getWorldPositionY);
+    pose.addFunc("getWorldPositionZ", &AnimPose::getWorldPositionZ);
+    pose.addFunc("getWorldRotationX", &AnimPose::getWorldRotationX);
+    pose.addFunc("getWorldRotationY", &AnimPose::getWorldRotationY);
+    pose.addFunc("getWorldRotationZ", &AnimPose::getWorldRotationZ);
+    pose.addFunc("getWorldRotationW", &AnimPose::getWorldRotationW);
+
+    auto player = table.addClass<AnimPlayer>(
+        "AnimPlayer", std::function<AnimPlayer *()>([]() -> AnimPlayer * { return nullptr; }),
+        true);
+    player.addFunc("play", &AnimPlayer::play);
+    player.addFunc("crossFade", &AnimPlayer::crossFade);
+    player.addFunc("stop", &AnimPlayer::stop);
+    player.addFunc("pause", &AnimPlayer::pause);
+    player.addFunc("resume", &AnimPlayer::resume);
+    player.addFunc("setSpeed", &AnimPlayer::setSpeed);
+    player.addFunc("getSpeed", &AnimPlayer::getSpeed);
+    player.addFunc("setTime", &AnimPlayer::setTime);
+    player.addFunc("getTime", &AnimPlayer::getTime);
+    player.addFunc("setLoop", &AnimPlayer::setLoop);
+    player.addFunc("getLoop", &AnimPlayer::getLoop);
+    player.addFunc("isPlaying", &AnimPlayer::isPlaying);
+    player.addFunc("isPaused", &AnimPlayer::isPaused);
+    player.addFunc("getPose", &AnimPlayer::getPose);
+    player.addFunc("update", &AnimPlayer::update);
+
+    auto sm = table.addClass<AnimStateMachine>(
+        "AnimStateMachine",
+        std::function<AnimStateMachine *()>([]() -> AnimStateMachine * { return nullptr; }), true);
+    sm.addFunc("addState", &AnimStateMachine::addState);
+    sm.addFunc("setEntry", &AnimStateMachine::setEntry);
+    sm.addFunc("hasState", &AnimStateMachine::hasState);
+    sm.addFunc("getCurrentState", &AnimStateMachine::getCurrentState);
+    sm.addFunc("getStateCount", &AnimStateMachine::getStateCount);
+    sm.addFunc("addTransition", &AnimStateMachine::addTransition);
+    sm.addFunc("addFloatCondition", &AnimStateMachine::addFloatCondition);
+    sm.addFunc("addBoolCondition", &AnimStateMachine::addBoolCondition);
+    sm.addFunc("addTriggerCondition", &AnimStateMachine::addTriggerCondition);
+    sm.addFunc("setExitTime", &AnimStateMachine::setExitTime);
+    sm.addFunc("setHasExitTime", &AnimStateMachine::setHasExitTime);
+    sm.addFunc("setFloat", &AnimStateMachine::setFloat);
+    sm.addFunc("getFloat", &AnimStateMachine::getFloat);
+    sm.addFunc("setBool", &AnimStateMachine::setBool);
+    sm.addFunc("getBool", &AnimStateMachine::getBool);
+    sm.addFunc("setTrigger", &AnimStateMachine::setTrigger);
+    sm.addFunc("resetTrigger", &AnimStateMachine::resetTrigger);
+    sm.addFunc("getPose", &AnimStateMachine::getPose);
+    sm.addFunc("getStateTime", &AnimStateMachine::getStateTime);
+    sm.addFunc("isBlending", &AnimStateMachine::isBlending);
+    sm.addFunc("update", &AnimStateMachine::update);
+
+    auto db = table.addClass<MotionDatabase>(
+        "MotionDatabase",
+        std::function<MotionDatabase *()>([]() -> MotionDatabase * { return nullptr; }), true);
+    db.addFunc("addFeatureBone", &MotionDatabase::addFeatureBone);
+    db.addFunc("addFeatureBoneByName", &MotionDatabase::addFeatureBoneByName);
+    db.addFunc("addClip", &MotionDatabase::addClip);
+    db.addFunc("getClipCount", &MotionDatabase::getClipCount);
+    db.addFunc("bake", &MotionDatabase::bake);
+    db.addFunc("isBaked", &MotionDatabase::isBaked);
+    db.addFunc("getFrameCount", &MotionDatabase::getFrameCount);
+    db.addFunc("getFeatureSize", &MotionDatabase::getFeatureSize);
+    db.addFunc("getFrameTime", &MotionDatabase::getFrameTime);
+    db.addFunc("getFrameClipIndex", &MotionDatabase::getFrameClipIndex);
+    db.addFunc("getFeatureBoneCount", &MotionDatabase::getFeatureBoneCount);
+    db.addFunc("getFeatureBone", &MotionDatabase::getFeatureBone);
+
+    auto mm = table.addClass<MotionMatcher>(
+        "MotionMatcher",
+        std::function<MotionMatcher *()>([]() -> MotionMatcher * { return nullptr; }), true);
+    mm.addFunc("setDesiredVelocity", &MotionMatcher::setDesiredVelocity);
+    mm.addFunc("getDesiredVelocityX", &MotionMatcher::getDesiredVelocityX);
+    mm.addFunc("getDesiredVelocityZ", &MotionMatcher::getDesiredVelocityZ);
+    mm.addFunc("setDesiredYaw", &MotionMatcher::setDesiredYaw);
+    mm.addFunc("getDesiredYaw", &MotionMatcher::getDesiredYaw);
+    mm.addFunc("setSearchInterval", &MotionMatcher::setSearchInterval);
+    mm.addFunc("getSearchInterval", &MotionMatcher::getSearchInterval);
+    mm.addFunc("setBlendTime", &MotionMatcher::setBlendTime);
+    mm.addFunc("getBlendTime", &MotionMatcher::getBlendTime);
+    mm.addFunc("setTrajectoryWeight", &MotionMatcher::setTrajectoryWeight);
+    mm.addFunc("getTrajectoryWeight", &MotionMatcher::getTrajectoryWeight);
+    mm.addFunc("setPoseWeight", &MotionMatcher::setPoseWeight);
+    mm.addFunc("getPoseWeight", &MotionMatcher::getPoseWeight);
+    mm.addFunc("setVelocityWeight", &MotionMatcher::setVelocityWeight);
+    mm.addFunc("getVelocityWeight", &MotionMatcher::getVelocityWeight);
+    mm.addFunc("setIgnoreRadius", &MotionMatcher::setIgnoreRadius);
+    mm.addFunc("getIgnoreRadius", &MotionMatcher::getIgnoreRadius);
+    mm.addFunc("getMatchedFrame", &MotionMatcher::getMatchedFrame);
+    mm.addFunc("getMatchedClipIndex", &MotionMatcher::getMatchedClipIndex);
+    mm.addFunc("getMatchedTime", &MotionMatcher::getMatchedTime);
+    mm.addFunc("getLastSearchCost", &MotionMatcher::getLastSearchCost);
+    mm.addFunc("getPose", &MotionMatcher::getPose);
+    mm.addFunc("search", &MotionMatcher::search);
+    mm.addFunc("update", &MotionMatcher::update);
 }
 
 void Animation::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Animation::getName);
     cls.addFunc("newTween", &Animation::newTween);
+    cls.addFunc("newSkeleton", &Animation::newSkeleton);
+    cls.addFunc("newClip", &Animation::newClip);
+    cls.addFunc("newPose", &Animation::newPose);
+    cls.addFunc("newPlayer", &Animation::newPlayer);
+    cls.addFunc("newStateMachine", &Animation::newStateMachine);
+    cls.addFunc("newMotionDatabase", &Animation::newMotionDatabase);
+    cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);
