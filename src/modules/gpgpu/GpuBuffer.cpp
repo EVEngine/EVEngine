@@ -54,7 +54,7 @@ void GpuBuffer::uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset
     (*device_)->freeMemory(staging.memory, device_->allocation_callbacks);
 }
 
-void GpuBuffer::downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset) {
+void GpuBuffer::downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset) const {
     if (!device_ || !buffer_ || !dst || nbytes == 0) return;
     if (srcOffset + nbytes > size_)
         throw Exception("GpuBuffer.read: out of range (offset=%llu size=%llu capacity=%llu)",
@@ -112,6 +112,18 @@ float GpuBuffer::readFloat32(int floatIndex) {
     float v = 0.f;
     downloadBytes(&v, sizeof(float), uint64_t(floatIndex) * sizeof(float));
     return v;
+}
+
+void GpuBuffer::writeFloat32s(const float *data, int count, int startIndex) {
+    if (!data || count <= 0 || startIndex < 0) return;
+    uploadBytes(data, uint64_t(count) * sizeof(float),
+                uint64_t(startIndex) * sizeof(float));
+}
+
+void GpuBuffer::readFloat32s(float *out, int count, int startIndex) const {
+    if (!out || count <= 0 || startIndex < 0) return;
+    downloadBytes(out, uint64_t(count) * sizeof(float),
+                  uint64_t(startIndex) * sizeof(float));
 }
 
 void GpuBuffer::fillFloat32(float value) {
