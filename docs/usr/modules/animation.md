@@ -2,9 +2,12 @@
 
 **脚本入口：** `eve.Animation()`
 
-使用 Tween 对标量或角度属性做延迟、重复、yoyo 和缓动插值。
+支持两类能力：
 
-## 基本用法
+1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
+2. **3D 骨骼动画播放**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
+
+## 基本用法（Tween）
 
 ```squirrel
 local anim = eve.Animation();
@@ -16,9 +19,70 @@ move.start();
 anim.update(dt);
 ```
 
+## 基本用法（3D 状态机）
+
+```squirrel
+local anim = eve.Animation();
+local sk = anim.newSkeleton();
+local root = sk.addBone("root", -1);
+local hip = sk.addBone("hip", root);
+sk.setBindPosition(hip, 0, 1, 0);
+
+local idle = anim.newClip("idle");
+// idle.addPositionKey / addRotationKey ...
+local walk = anim.newClip("walk");
+
+local sm = anim.newStateMachine(sk);
+sm.addState("Idle", idle);
+sm.addState("Walk", walk);
+sm.setEntry("Idle");
+local t = sm.addTransition("Idle", "Walk", 0.15);
+sm.addFloatCondition(t, "speed", ">", 0.5);
+sm.setFloat("speed", 1.0);
+sm.update(dt);
+local pose = sm.getPose();
+```
+
+## 基本用法（Motion Matching）
+
+```squirrel
+local db = anim.newMotionDatabase(sk);
+db.setRootBoneByName("mixamorig:Hips"); // Mixamo 等角色常用髋骨做轨迹根
+db.addFeatureBoneByName("mixamorig:LeftFoot");
+db.addFeatureBoneByName("mixamorig:RightFoot");
+db.addClip(walk);
+db.addClip(run);
+db.bake();
+
+local mm = anim.newMotionMatcher(sk, db);
+mm.setDesiredVelocity(0, 3);
+mm.setDesiredYaw(0);
+mm.setSearchInterval(0.1);
+mm.update(dt);
+local pose = mm.getPose();
+```
+
+## 从 Mixamo / FBX 导入
+
+```squirrel
+// Assimp 路径（Model3D 解码后）：
+local model = model3d.newModelDataFromFile("Idle.fbx");
+local sk = anim.newSkeletonFromModel(model);
+local idle = anim.newClipFromModel(model, sk, 0);
+
+// 或加载测试用紧凑 `.eva`（无网格关键帧，见 test/assets/mixamo/）：
+local sk2 = anim.newSkeletonFromEvaFile("test/assets/mixamo/Idle.eva");
+local idle2 = anim.newClipFromEvaFile("test/assets/mixamo/Idle.eva");
+// Mixamo 原地跑可补平面根运动：
+run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
+```
+
 ## 对象关系与调用时机
 
-`Animation` 拥有多个 Tween 并统一 update；Tween 以字符串属性名保存多个标量轨道。Tween 只计算值，不会自动写回任意游戏对象。
+- `Animation` 拥有 Tween 注册表并统一 `update`；3D 对象由脚本持有，各自 `update(dt)`。
+- `AnimSkeleton` 定义骨骼层级与 bind pose；`AnimClip` 保存各骨 local TRS 关键帧。
+- `AnimPlayer` / `AnimStateMachine` / `MotionMatcher` 每帧写出 `AnimPose`；渲染侧读取 local/world 变换同步网格或调试骨骼。
+- Motion Matching：先 `MotionDatabase.bake()`，再周期性搜索 + 交叉淡入。
 
 ## 目标导向指南
 
@@ -30,22 +94,35 @@ anim.update(dt);
 
 设置 duration、repeat 和 `setYoyo(true)`；颜色或缩放用多个命名属性并行插值。角度必须使用 `setFromAngle` / `setToAngle`，避免跨 360° 绕远路。
 
+### 用状态机切换 Idle/Walk
+
+`addState` 绑定 clip，`addTransition` + `addFloatCondition`/`addTriggerCondition`；每帧写参数并 `sm.update(dt)`，从 `getPose()` 取姿态。
+
+### 用 Motion Matching 跟手移动
+
+把行走/奔跑等 clip 加入 `MotionDatabase` 并 `bake`；每帧设置 `setDesiredVelocity` / `setDesiredYaw`，调用 `mm.update(dt)`。
+
 ## 常见问题
 
 - 创建 Tween 后忘记 `start()`。
 - update 后不读取 `get(property)` 写回对象。
 - 普通标量接口插值角度导致跨 360° 绕行。
+- MotionMatcher 在 `bake()` 之前调用 `search`/`update`。
+- 状态机/播放器持有的 skeleton、clip 被提前销毁。
 
 ## API 快查
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
+下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
-- `clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`
-- `getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`
-- `getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`
-- `isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`
-- `setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`
-- `setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
+- Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
+- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`
+- `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
+- `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
+- `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`
+- `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`update()`
+- `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
+- `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
+- `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
 
 ## 使用要点
 

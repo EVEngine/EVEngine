@@ -61,6 +61,7 @@ file(GLOB all_test_cpp
   spatial.cpp
   ik.cpp
   animation.cpp
+  animation_mixamo.cpp
   tensor.cpp
   callgraph.cpp
   renderflow.cpp
