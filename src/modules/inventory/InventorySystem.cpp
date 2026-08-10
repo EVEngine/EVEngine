@@ -131,14 +131,9 @@ void InventorySystem::ensureBuiltins() {
 
     auto slotsOk = [](const Bag &bag, const ItemDefinition &def, int quantity, std::string *reason) {
         int need = quantity;
-        int maxStack = def.maxStack > 0 ? def.maxStack : 1;
-        for (size_t i = 0; i < bag.slots().size() && need > 0; ++i) {
-            const auto &s = bag.slots()[i];
-            if (s.empty()) {
-                need -= maxStack;
-            } else if (s.itemId == def.id) {
-                need -= std::max(0, maxStack - s.quantity);
-            }
+        for (int i = 0; i < bag.getSlotCount() && need > 0; ++i) {
+            int space = freeSpaceInSlot(bag, i, def);
+            if (space > 0) need -= space;
         }
         if (need > 0) {
             if (reason) *reason = "no_slot";
@@ -256,6 +251,16 @@ int InventorySystem::freeSpaceInSlot(const Bag &bag, int slot, const ItemDefinit
     if (slot < 0 || slot >= bag.getSlotCount()) return 0;
     const auto &s = bag.slots()[size_t(slot)];
     int maxStack = def.maxStack > 0 ? def.maxStack : 1;
+    // If the bag's stack rule rejects merging two identical probes, treat every
+    // slot as capacity 1 (e.g. built-in "never").
+    {
+        ItemStack probeA;
+        probeA.itemId = def.id;
+        probeA.quantity = 1;
+        ItemStack probeB = probeA;
+        probeB.instanceId = 1;
+        if (!canStackTogether(bag, probeA, probeB, def)) maxStack = 1;
+    }
     if (s.empty()) return maxStack;
     ItemStack probe;
     probe.itemId = def.id;

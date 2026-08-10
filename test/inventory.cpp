@@ -63,18 +63,21 @@ TEST_CASE("inventory.bag.addStackRemove") {
     bag.setMaxWeight(100.f);
 
     CHECK(bag.canAddItem("coin", 10));
-    CHECK_EQ(bag.addItem("coin", 150), 150);  // 99 + 51 across two slots
+    // NOTE: zeroerr CHECK_EQ evaluates the LHS twice (compare + print), so
+    // side-effecting calls must be stored in a local first.
+    int added = bag.addItem("coin", 150);
+    CHECK_EQ(added, 150);  // 99 + 51 across two slots
     CHECK_EQ(bag.countItem("coin"), 150);
     CHECK_EQ(bag.getUsedSlotCount(), 2);
     CHECK_EQ(bag.getSlotQuantity(0), 99);
     CHECK_EQ(bag.getSlotQuantity(1), 51);
 
-    CHECK_EQ(bag.removeItem("coin", 60), 60);
+    int removed = bag.removeItem("coin", 60);
+    CHECK_EQ(removed, 60);
     CHECK_EQ(bag.countItem("coin"), 90);
     CHECK_EQ(bag.getSlotQuantity(0), 39);  // removed from first stack first
     CHECK_EQ(bag.getSlotQuantity(1), 51);
 
-    bag.destroy();
     ItemRegistry::clear();
 }
 
@@ -104,8 +107,6 @@ TEST_CASE("inventory.bag.acceptTagsAndReject") {
     CHECK_EQ(general.canAddItemReason("quest.letter", 1), "rejected_tag");
     CHECK(general.canAddItem("junk", 1));
 
-    questBag.destroy();
-    general.destroy();
     ItemRegistry::clear();
 }
 
@@ -123,12 +124,12 @@ TEST_CASE("inventory.bag.weightCapacity") {
     bag.setMaxWeight(5.f);
     bag.setCapacityPolicy("slotsAndWeight");
 
-    CHECK_EQ(bag.addItem("ore", 3), 2);  // 2*2=4 <=5, third would be 6
+    int added = bag.addItem("ore", 3);
+    CHECK_EQ(added, 2);  // 2*2=4 <=5, third would be 6
     CHECK(approxEq(bag.getUsedWeight(), 4.f));
     CHECK(!bag.canAddItem("ore", 1));
     CHECK_EQ(bag.canAddItemReason("ore", 1), "over_weight");
 
-    bag.destroy();
     ItemRegistry::clear();
 }
 
@@ -160,7 +161,6 @@ TEST_CASE("inventory.bag.moveSwapSplit") {
     CHECK(bag.isSlotEmpty(0));
     CHECK_EQ(bag.getSlotQuantity(2), 8);
 
-    bag.destroy();
     ItemRegistry::clear();
 }
 
@@ -181,12 +181,11 @@ TEST_CASE("inventory.bag.transferBetweenBags") {
     b.setId("b");
     a.addItem("herb", 15);
 
-    CHECK_EQ(InventorySystem::transfer(&a, &b, "herb", 10), 10);
+    int moved = InventorySystem::transfer(&a, &b, "herb", 10);
+    CHECK_EQ(moved, 10);
     CHECK_EQ(a.countItem("herb"), 5);
     CHECK_EQ(b.countItem("herb"), 10);
 
-    a.destroy();
-    b.destroy();
     ItemRegistry::clear();
 }
 
@@ -222,13 +221,13 @@ TEST_CASE("inventory.extension.customAcceptAndStack") {
     bag.setAcceptRule("minLevel3");
     bag.setStackRule("neverSame");
     CHECK(bag.canAddItem("scroll.a", 1));
-    CHECK_EQ(bag.addItem("scroll.a", 3), 3);
-    // never stack -> 3 slots used
+    int added = bag.addItem("scroll.a", 3);
+    CHECK_EQ(added, 3);
+    // never stack -> each unit occupies its own slot
     CHECK_EQ(bag.getUsedSlotCount(), 3);
 
     InventorySystem::unregisterAcceptRule("minLevel3");
     InventorySystem::unregisterStackRule("neverSame");
-    bag.destroy();
     ItemRegistry::clear();
 }
 
@@ -276,7 +275,6 @@ TEST_CASE("inventory.equipment.equipUnequip") {
     CHECK(eq.isSlotEmpty("weapon"));
     CHECK_EQ(bag.countItem("sword.iron"), 1);
 
-    bag.destroy();
     ItemRegistry::clear();
 }
 
@@ -298,7 +296,8 @@ TEST_CASE("inventory.events.andFacade") {
 
     Bag *bag = inv->newBag(4);
     bag->setId("pack");
-    CHECK_EQ(bag->addItem("apple", 4), 4);
+    int added = bag->addItem("apple", 4);
+    CHECK_EQ(added, 4);
     CHECK(inv->getChangeEventCount() >= 1);
     bool sawAdd = false;
     for (int i = 0; i < inv->getChangeEventCount(); ++i) {
