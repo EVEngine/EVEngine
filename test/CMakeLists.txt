@@ -31,6 +31,7 @@ file(GLOB all_test_cpp
   scene.cpp
   particles.cpp
   map.cpp
+  map_path.cpp
   rpg.cpp
   avatar.cpp
   dialogue.cpp
