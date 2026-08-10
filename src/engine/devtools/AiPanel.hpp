@@ -52,10 +52,17 @@ public:
     std::string statusLine() const;
 
     /**
-     * Draw the DevTools "AI" window with Dear ImGui when linked.
-     * Safe to call every frame; no-op without imgui headers/runtime.
+     * Draw the DevTools "AI" window when an ImGui drawer is registered
+     * (desktop `ImGuiBackend` registers one). No-op otherwise.
+     *
+     * ImGui code must not live in EVDevTools TUs: including imgui.h there
+     * instantiates thousands of inlines and overflows MSVC's 65535 export
+     * limit under WINDOWS_EXPORT_ALL_SYMBOLS.
      */
     void drawImGui();
+
+    using ImGuiDrawer = void (*)(AiPanel& panel);
+    static void setImGuiDrawer(ImGuiDrawer fn);
 
     void setMaxEntries(size_t n);
     size_t maxEntries() const { return maxEntries_; }

@@ -655,13 +655,36 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
 }  // namespace
 
 McpServer& McpServer::instance() {
-    static McpServer inst;
-    return inst;
+    // Intentionally leaked so AiPanel/McpServer mutexes are never destroyed
+    // while the other singleton's destructor still calls into them (macOS abort).
+    static McpServer* inst = new McpServer();
+    return *inst;
 }
 
 McpServer::McpServer() = default;
 
-McpServer::~McpServer() { stop(); }
+McpServer::~McpServer() {
+    // Only reached if someone deletes the instance; keep sockets tidy without
+    // touching AiPanel (may already be torn down in other lifetime models).
+    std::lock_guard<std::mutex> lock(ioMu_);
+    if (client_) {
+        try {
+            client_->close();
+        } catch (...) {
+        }
+        client_.reset();
+    }
+    if (server_) {
+        try {
+            server_->close();
+        } catch (...) {
+        }
+        server_.reset();
+    }
+    listening_.store(false);
+    hasClient_.store(false);
+    port_.store(0);
+}
 
 void McpServer::setGameRoot(std::string root) {
     for (char& c : root) {

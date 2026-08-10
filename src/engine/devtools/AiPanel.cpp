@@ -4,29 +4,18 @@
 #include <ctime>
 #include <sstream>
 
-#if defined(__has_include)
-#if __has_include(<imgui.h>)
-#define EVE_AI_PANEL_HAS_IMGUI 1
-#include <imgui.h>
-#if __has_include(<imgui_internal.h>)
-#include <imgui_internal.h>
-#define EVE_AI_PANEL_HAS_IMGUI_INTERNAL 1
-#endif
-#endif
-#endif
-
-#ifndef EVE_AI_PANEL_HAS_IMGUI
-#define EVE_AI_PANEL_HAS_IMGUI 0
-#endif
-#ifndef EVE_AI_PANEL_HAS_IMGUI_INTERNAL
-#define EVE_AI_PANEL_HAS_IMGUI_INTERNAL 0
-#endif
-
 namespace eve::dev {
+namespace {
+
+AiPanel::ImGuiDrawer g_imguiDrawer = nullptr;
+
+}  // namespace
 
 AiPanel& AiPanel::instance() {
-    static AiPanel inst;
-    return inst;
+    // Intentionally leaked: McpServer/tests touch AiPanel during process teardown;
+    // destroying a mutex singleton then re-locking it aborts on libc++.
+    static AiPanel* inst = new AiPanel();
+    return *inst;
 }
 
 std::string AiPanel::nowStamp() {
@@ -144,59 +133,12 @@ void AiPanel::setMaxEntries(size_t n) {
     while (log_.size() > maxEntries_) log_.pop_front();
 }
 
+void AiPanel::setImGuiDrawer(ImGuiDrawer fn) { g_imguiDrawer = fn; }
+
 void AiPanel::drawImGui() {
-#if EVE_AI_PANEL_HAS_IMGUI
-    if (!isVisible()) return;
-    if (ImGui::GetCurrentContext() == nullptr) return;
-#if EVE_AI_PANEL_HAS_IMGUI_INTERNAL
-    // Avoid Begin() outside NewFrame..Render (games that skip UI this frame).
-    if (GImGui == nullptr || !GImGui->WithinFrameScope) return;
-#endif
-
-    bool open = true;
-    ImGui::SetNextWindowSize(ImVec2(420, 320), ImGuiCond_FirstUseEver);
-    if (!ImGui::Begin("EVEngine AI / MCP", &open)) {
-        ImGui::End();
-        if (!open) setVisible(false);
-        return;
-    }
-    if (!open) {
-        setVisible(false);
-        ImGui::End();
-        return;
-    }
-
-    ImGui::TextUnformatted(statusLine().c_str());
-    ImGui::Separator();
-    ImGui::TextWrapped(
-        "Agents connect via MCP (eve run --debug --mcp-port). "
-        "Tool calls and notes appear below for AI-assisted testing.");
-
-    if (ImGui::Button("Clear log")) clearLog();
-    ImGui::SameLine();
-    if (ImGui::Button("Hide")) setVisible(false);
-
-    ImGui::BeginChild("ai_log", ImVec2(0, 0), true);
-    const auto entries = recentLog(maxEntries_);
-    for (const auto& e : entries) {
-        ImGui::TextColored(ImVec4(0.55f, 0.75f, 0.95f, 1.f), "[%s]", e.timestamp.c_str());
-        ImGui::SameLine();
-        ImGui::Text("%s", e.kind.c_str());
-        ImGui::SameLine();
-        ImGui::TextUnformatted(e.title.c_str());
-        if (!e.detail.empty()) {
-            ImGui::PushTextWrapPos(0.f);
-            ImGui::TextDisabled("%s", e.detail.c_str());
-            ImGui::PopTextWrapPos();
-        }
-    }
-    if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-        ImGui::SetScrollHereY(1.f);
-    ImGui::EndChild();
-    ImGui::End();
-#else
-    (void)0;
-#endif
+    // ImGui UI lives in eve_imgui (ImGuiBackend) so EVDevTools does not
+    // instantiate imgui.h inlines — that blew the MSVC 65535 export limit.
+    if (g_imguiDrawer) g_imguiDrawer(*this);
 }
 
 }  // namespace eve::dev

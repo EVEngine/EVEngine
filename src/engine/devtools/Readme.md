@@ -46,7 +46,7 @@
 - `eve::dev::Snapshot`：脚本状态 capture / restore / 文件
 - `eve::dev::DebugAdapter`：DAP TCP（供 VS Code 插件连接）
 - `eve::dev::McpServer`：MCP JSON-RPC TCP（AI Agent 测试 / 辅助开发）
-- `eve::dev::AiPanel`：AI 会话日志 + 可选 ImGui 面板
+- `eve::dev::AiPanel`：AI 会话日志；ImGui 绘制由 `ImGuiBackend` 注册（避免 EVDevTools 拉入 imgui.h）
 - `eve::dev::DevTool`：`attach` + `exposeScriptApi` + 可选 `startDap` / `startMcp`
 
 ### 脚本 API（`eve.dev`，仅 `--debug`）
