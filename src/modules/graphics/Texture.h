@@ -19,6 +19,8 @@ public:
     ~Texture() override;
 
     void draw(Graphics *gfx, const glm::mat4 &matrix) const override;
+    /** Black silhouette using texture alpha (volumetric occlusion map). */
+    void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
 
     int getWidth() const { return width; }
     int getHeight() const { return height; }

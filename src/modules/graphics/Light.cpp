@@ -50,6 +50,14 @@ float Light2D::getRadius() { return data()->radius; }
 void Light2D::setEnabled(bool enabled) { data()->enabled = enabled; }
 bool Light2D::isEnabled() { return data()->enabled; }
 
+void Light2D::setVolumetric(bool enabled) { data()->volumetric = enabled; }
+bool Light2D::getVolumetric() { return data()->volumetric; }
+
+void Light2D::setVolumetricIntensity(float intensity) {
+    data()->volumetricIntensity = intensity < 0.f ? 0.f : intensity;
+}
+float Light2D::getVolumetricIntensity() { return data()->volumetricIntensity; }
+
 void Light2D::setCanvas(Canvas *canvas) { data()->canvas = canvas; }
 
 Light3D *Light3D::createLight(const std::string &type) {
@@ -116,5 +124,13 @@ void Light3D::setShadowStrength(float strength) {
     data()->shadowStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
 }
 float Light3D::getShadowStrength() { return data()->shadowStrength; }
+
+void Light3D::setVolumetric(bool enabled) { data()->volumetric = enabled; }
+bool Light3D::getVolumetric() { return data()->volumetric; }
+
+void Light3D::setVolumetricIntensity(float intensity) {
+    data()->volumetricIntensity = intensity < 0.f ? 0.f : intensity;
+}
+float Light3D::getVolumetricIntensity() { return data()->volumetricIntensity; }
 
 }  // namespace eve::graphics

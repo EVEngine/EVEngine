@@ -1,9 +1,21 @@
 #include "graphics/Mesh.h"
 
+#include "graphics/Graphics.h"
+
 #include <algorithm>
 #include <cmath>
 
 namespace eve::graphics {
+
+void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
+    if (!gfx || !getCastOcclusion()) return;
+    const float x = matrix[3][0];
+    const float y = matrix[3][1];
+    const float w = std::sqrt(matrix[0][0] * matrix[0][0] + matrix[0][1] * matrix[0][1]);
+    const float h = std::sqrt(matrix[1][0] * matrix[1][0] + matrix[1][1] * matrix[1][1]);
+    if (w <= 0.f || h <= 0.f) return;
+    gfx->drawOcclusionSolid(x, y, w, h);
+}
 
 void Mesh::clearMorphData() {
     basePos_.clear();

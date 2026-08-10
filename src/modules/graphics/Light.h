@@ -44,6 +44,9 @@ public:
         float intensity = 1.f;
         float radius = 200.f;
         bool enabled = true;
+        /** Contribute as volumetric shaft source when collecting occlusion maps. */
+        bool volumetric = false;
+        float volumetricIntensity = 1.f;
         Canvas *canvas = nullptr;
         Light2D *entity = nullptr;
     };
@@ -69,6 +72,11 @@ public:
 
     void setEnabled(bool enabled);
     bool isEnabled();
+
+    void setVolumetric(bool enabled);
+    bool getVolumetric();
+    void setVolumetricIntensity(float intensity);
+    float getVolumetricIntensity();
 
     void setCanvas(Canvas *canvas);
 };
@@ -107,6 +115,8 @@ public:
         bool castShadow = false;       // only dir lights; at most one active caster per frame
         float shadowBias = 0.002f;
         float shadowStrength = 1.f;
+        bool volumetric = false;
+        float volumetricIntensity = 1.f;
         Light3D *entity = nullptr;
     };
 
@@ -140,6 +150,11 @@ public:
     float getShadowBias();
     void setShadowStrength(float strength);
     float getShadowStrength();
+
+    void setVolumetric(bool enabled);
+    bool getVolumetric();
+    void setVolumetricIntensity(float intensity);
+    float getVolumetricIntensity();
 };
 
 }  // namespace eve::graphics

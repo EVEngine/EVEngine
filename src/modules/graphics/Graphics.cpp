@@ -7,6 +7,7 @@
 #include "graphics/Texture.h"
 #include "graphics/Quad.h"
 #include "graphics/Font.h"
+#include "graphics/Volumetric.h"
 #include "font/FontData.h"
 #include "image/ImageData.h"
 #include "common/Exception.h"
@@ -35,6 +36,17 @@ void Graphics::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
 
+    auto texCls =
+        table.addClass<Texture>("Texture", std::function<Texture *()>([]() -> Texture * { return nullptr; }),
+                                true);
+    texCls.addFunc("setCastOcclusion", &Texture::setCastOcclusion);
+    texCls.addFunc("getCastOcclusion", &Texture::getCastOcclusion);
+    texCls.addFunc("getWidth", &Texture::getWidth);
+    texCls.addFunc("getHeight", &Texture::getHeight);
+
+    // Texture / Mesh expose occlusion flags used by volumetric light shafts.
+    // (create returns null — instances come from Graphics::newTexture / newMesh*)
+
     auto meshCls =
         table.addClass<Mesh>("Mesh", std::function<Mesh *()>([]() -> Mesh * { return nullptr; }), true);
     meshCls.addFunc("getVertexCount", &Mesh::getVertexCount);
@@ -46,8 +58,8 @@ void Graphics::expose(ssq::Table &table) {
     meshCls.addFunc("clearMorphWeights", &Mesh::clearMorphWeights);
     meshCls.addFunc("hasMorphData", &Mesh::hasMorphData);
     meshCls.addFunc("isMorphDirty", &Mesh::isMorphDirty);
-    table.addClass<Texture>("Texture", std::function<Texture *()>([]() -> Texture * { return nullptr; }),
-                            true);
+    meshCls.addFunc("setCastOcclusion", &Mesh::setCastOcclusion);
+    meshCls.addFunc("getCastOcclusion", &Mesh::getCastOcclusion);
 
     auto quad = table.addClass<Quad>(
         "Quad", std::function<Quad *()>([]() -> Quad * { return nullptr; }), true);
@@ -99,6 +111,10 @@ void Graphics::expose(ssq::Table &table) {
     light.addFunc("getRadius", &Light2D::getRadius);
     light.addFunc("setEnabled", &Light2D::setEnabled);
     light.addFunc("isEnabled", &Light2D::isEnabled);
+    light.addFunc("setVolumetric", &Light2D::setVolumetric);
+    light.addFunc("getVolumetric", &Light2D::getVolumetric);
+    light.addFunc("setVolumetricIntensity", &Light2D::setVolumetricIntensity);
+    light.addFunc("getVolumetricIntensity", &Light2D::getVolumetricIntensity);
     light.addFunc("setCanvas", &Light2D::setCanvas);
 
     auto cam = table.addClass<Camera3D>(
@@ -142,6 +158,10 @@ void Graphics::expose(ssq::Table &table) {
     light3d.addFunc("getShadowBias", &Light3D::getShadowBias);
     light3d.addFunc("setShadowStrength", &Light3D::setShadowStrength);
     light3d.addFunc("getShadowStrength", &Light3D::getShadowStrength);
+    light3d.addFunc("setVolumetric", &Light3D::setVolumetric);
+    light3d.addFunc("getVolumetric", &Light3D::getVolumetric);
+    light3d.addFunc("setVolumetricIntensity", &Light3D::setVolumetricIntensity);
+    light3d.addFunc("getVolumetricIntensity", &Light3D::getVolumetricIntensity);
 
     auto ent = table.addClass<Renderable3D>(
         "Renderable3D", std::function<Renderable3D *()>([]() { return Renderable3D::create(); }), true);
@@ -161,7 +181,38 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
     ent.addFunc("setCastShadow", &Renderable3D::setCastShadow);
     ent.addFunc("setReceiveShadow", &Renderable3D::setReceiveShadow);
+    ent.addFunc("setCastOcclusion", &Renderable3D::setCastOcclusion);
+    ent.addFunc("getCastOcclusion", &Renderable3D::getCastOcclusion);
     ent.addFunc("setCamera", &Renderable3D::setCamera);
+
+    auto vol = table.addClass<Volumetric>(
+        "Volumetric", std::function<Volumetric *()>([]() -> Volumetric * { return nullptr; }), true);
+    vol.addFunc("setQuality", &Volumetric::setQuality);
+    vol.addFunc("getQuality", &Volumetric::getQuality);
+    vol.addFunc("setLightScreenUV", &Volumetric::setLightScreenUV);
+    vol.addFunc("getLightScreenU", &Volumetric::getLightScreenU);
+    vol.addFunc("getLightScreenV", &Volumetric::getLightScreenV);
+    vol.addFunc("setLightScreenPos", &Volumetric::setLightScreenPos);
+    vol.addFunc("setShaftColor", &Volumetric::setShaftColor);
+    vol.addFunc("setFogColor", &Volumetric::setFogColor);
+    vol.addFunc("setIntensity", &Volumetric::setIntensity);
+    vol.addFunc("setTime", &Volumetric::setTime);
+    vol.addFunc("hasParam", &Volumetric::hasParam);
+    vol.addFunc("setFloat", &Volumetric::setFloat);
+    vol.addFunc("getFloat", &Volumetric::getFloat);
+    vol.addFunc("getSampleCount", &Volumetric::getSampleCount);
+    vol.addFunc("getDownscale", &Volumetric::getDownscale);
+    vol.addFunc("resolutionFor", &Volumetric::resolutionFor);
+    vol.addFunc("beginOcclusionMap", &Volumetric::beginOcclusionMap);
+    vol.addFunc("drawOccluder", &Volumetric::drawOccluder);
+    vol.addFunc("drawOccluderSolid", &Volumetric::drawOccluderSolid);
+    vol.addFunc("drawOccluderTexture", &Volumetric::drawOccluderTexture);
+    vol.addFunc("drawOccluders2D", &Volumetric::drawOccluders2D);
+    vol.addFunc("scatter", &Volumetric::scatter);
+    vol.addFunc("scatterTo", &Volumetric::scatterTo);
+    vol.addFunc("applyFromScene", &Volumetric::applyFromScene);
+    vol.addFunc("applyFromSceneTo", &Volumetric::applyFromSceneTo);
+    vol.addFunc("getShader", &Volumetric::getShader);
 }
 
 void Graphics::expose(ssq::Class &cls) {
@@ -187,6 +238,9 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("render3D", &Graphics::render3D);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
     cls.addFunc("newQuad", &Graphics::newQuad);
+    cls.addFunc("newVolumetric", &Graphics::newVolumetric);
+    cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
+    cls.addFunc("drawOcclusionTexture", &Graphics::drawOcclusionTexture);
 }
 
 void Graphics::reset() {
@@ -197,6 +251,25 @@ void Graphics::reset() {
 void Graphics::setShader(Shader *shader) { currentShader = shader; }
 
 void Graphics::setShader() { currentShader = nullptr; }
+
+Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
+
+void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
+    if (drawable) drawable->draw(this, m);
+}
+
+void Graphics::drawOcclusion(Drawable *drawable, const glm::mat4 &m) {
+    if (drawable && drawable->getCastOcclusion()) drawable->drawOcclusion(this, m);
+}
+
+void Graphics::drawOcclusionSolid(float x, float y, float w, float h) {
+    drawSolidRect(x, y, w, h, Color(0.f, 0.f, 0.f, 1.f));
+}
+
+void Graphics::drawOcclusionTexture(Texture *texture, float x, float y, float w, float h) {
+    // Black RGB keeps silhouette; texture alpha cuts soft edges (same idea as shadow masks).
+    drawTexturedRect(texture, x, y, w, h, Color(0.f, 0.f, 0.f, 1.f));
+}
 
 void Graphics::clearScreen() {
     clear(std::nullopt, std::nullopt, std::nullopt);

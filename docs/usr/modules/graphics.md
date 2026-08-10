@@ -26,6 +26,15 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
 
+### 屏幕空间体积光（尘雾光柱）
+
+`vol <- gfx.newVolumetric()`。`setQuality("low"|"medium"|"high")` 控制采样与内部降分辨率建议值（`resolutionFor`）。
+
+- **遮挡图路径（2D 推荐）**：`beginOcclusionMap` 画亮光源 → `drawOccluders2D` / `drawOccluder*`（`Drawable.castOcclusion`，语义对齐阴影）→ `scatter` 得到光柱。
+- **场景路径（3D 亮源在屏内）**：`applyFromScene(sceneTex)` 单 Pass 把径向散射与尘雾加到场景上。
+
+细节见 [`体积光模块设计.md`](../体积光模块设计.md)。
+
 ### 2D 屏幕拾取
 
 `Camera2D` 用 `setPosition` / `setZoom` 控制视口中心与缩放；`screenToWorldX/Y(screenX, screenY, viewW, viewH)` 把鼠标像素换成世界坐标（`viewW/H` 通常取 `gfx.getWidth/Height`），再交给 Math 的 `pointIn*` 或 Physics 的 `testPoint` / `queryAABB`。
@@ -46,18 +55,19 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `bakeMeshMorph()`、`clear()`、`clearMorphWeights()`、`declareFloat()`、`declareMatrix()`、`declareVec2()`、`declareVec3()`、`declareVec4()`
-- `drawSolidRect()`、`drawTexturedRect()`、`getCastShadow()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getHeight()`、`getMorphCount()`
+- `drawSolidRect()`、`drawTexturedRect()`、`drawOcclusionSolid()`、`drawOcclusionTexture()`、`getCastShadow()`、`getCastOcclusion()`、`getDirX()`、`getDirY()`、`getDirZ()`、`getHeight()`、`getMorphCount()`
 - `getMorphName()`、`getMorphWeight()`、`getName()`、`getRadius()`、`getScreenRayDirX()`、`getScreenRayDirY()`、`getScreenRayDirZ()`、`getScreenRayOriginX()`
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
-- `getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
+- `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`newTexture()`、`newVolumetric()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
-- `setCanvas()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
+- `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPosition()`、`setRadius()`
 - `setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setShadowBias()`、`setShadowStrength()`
-- `setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setYaw()`
+- `setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`
+- `Volumetric`：`setQuality`、`scatter`、`applyFromScene`、`beginOcclusionMap`、`drawOccluders2D`、`setShaftColor`、`setFogColor`、`setIntensity` 等
 
 ## 使用要点
 

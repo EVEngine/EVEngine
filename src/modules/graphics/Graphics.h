@@ -11,6 +11,7 @@
 #include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
+#include "graphics/Volumetric.h"
 #include <vector>
 #include <optional>
 #include <cstdint>
@@ -319,7 +320,21 @@ virtual void begin3DFrame() = 0;
     virtual bool isCanvasActive() const = 0;
     virtual Canvas *getCanvas() const = 0;
 
+    /**
+     * Screen-space volumetric light (god rays + dust/fog). Caller owns Volumetric*;
+     * its Shader is owned by Graphics.
+     */
+    Volumetric *newVolumetric();
+
     void draw(Drawable *drawable, const glm::mat4 &m);
+
+    /**
+     * Volumetric occlusion helpers (shadow-pass analogue for light shafts).
+     * drawOcclusion skips drawables with castOcclusion=false.
+     */
+    void drawOcclusion(Drawable *drawable, const glm::mat4 &m);
+    void drawOcclusionSolid(float x, float y, float w, float h);
+    void drawOcclusionTexture(Texture *texture, float x, float y, float w, float h);
 	// void draw(Texture *texture, Quad *quad, const glm::mat4 &m);
 	// void drawLayer(Texture *texture, int layer, const glm::mat4 &m);
 	// void drawLayer(Texture *texture, int layer, Quad *quad, const glm::mat4 &m);
