@@ -1,0 +1,13 @@
+{
+  "name": "eve-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "stdio MCP bridge to a live EVEngine --mcp-port server",
+  "bin": {
+    "eve-mcp": "./server.js"
+  },
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  }
+}

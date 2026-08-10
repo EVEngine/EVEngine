@@ -263,7 +263,18 @@ function handle_dev_key(key, scancode) {
     if (key == "F7") {
         local r = eve.dev.loadSnapshot("eve_snapshot.json");
         print("dev: loadSnapshot -> " + r + "\n");
+        return;
     }
+    // F9 = toggle DevTools AI / MCP panel.
+    if (key == "F9") {
+        eve.dev.ai.toggleVisible();
+        print("dev: AI panel " + (eve.dev.ai.isVisible() ? "shown" : "hidden") + "\n");
+    }
+}
+
+function dev_draw_ai() {
+    if (has_dev())
+        eve.dev.ai.draw();
 }
 
 // On Android, SDL may queue a spurious "quit" while setOrientation recreates
@@ -311,6 +322,8 @@ while (running) {
             dev_notify_frame_done();
         }
         eve_render();
+        // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
+        dev_draw_ai();
         gfx.present();
         ui.dispatchEvents();
     } catch (e) {

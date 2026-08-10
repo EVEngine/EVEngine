@@ -35,6 +35,7 @@
 - [粒子](modules/particles.md)：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。
 - [动画](modules/animation.md)：使用 Tween 对标量或角度属性做延迟、重复、yoyo 和缓动插值。
 - [RPG 系统](modules/rpg.md)：组合属性、效果、状态、技能、施法与伤害结算。
+- [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
 
 ## 表现与场景

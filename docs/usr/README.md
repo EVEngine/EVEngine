@@ -221,11 +221,12 @@ eve_render <- function() {
 
 ## 6. 调试
 
-命令行调试模式支持暂停、断点、监视和快照：
+命令行调试模式支持暂停、断点、监视、快照，以及面向 AI Agent 的 MCP：
 
 ```sh
 build/linux-debug/src/engine/eve run --debug /绝对路径/my-game
 build/linux-debug/src/engine/eve run --debug --dap-port=4711 /绝对路径/my-game
+build/linux-debug/src/engine/eve run --debug --mcp-port=7529 /绝对路径/my-game
 ```
 
 脚本中可在调试模式下使用：
@@ -237,9 +238,10 @@ eve.dev.addWatch("score");
 eve.dev.markStateRoot("gameState");
 eve.dev.saveSnapshot("boss.json");
 eve.dev.loadSnapshot("boss.json");
+eve.dev.ai.note("boss phase");  // DevTools AI 会话日志；F9 切换面板
 ```
 
-VS Code 调试适配器位于 `tools/vscode-eve-debug/`。如果只需快速定位问题，先确认：
+VS Code 调试适配器位于 `tools/vscode-eve-debug/`；Cursor 等 Agent 可通过 `tools/eve-mcp/` 连接 `--mcp-port`（见[开发者文档：AI 与 MCP](../dev/AI与MCP支持.md)）。如果只需快速定位问题，先确认：
 
 1. `config.nut` 和 `main.nut` 位于传给 `run` 的同一游戏目录；
 2. 每帧绘制前调用了 `gfx.clear()`；

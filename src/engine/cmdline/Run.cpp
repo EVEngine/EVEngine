@@ -5,6 +5,7 @@
 #include "filesystem/Filesystem.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
 #include "devtools/DevTool.hpp"
+#include "devtools/McpServer.hpp"
 #endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -32,14 +33,17 @@ struct RunArgs : Handler {
     std::string log_path, root_path;
     bool no_window = false, debug = false;
     int dap_port = 0;
+    int mcp_port = 0;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         auto run = app.add_subcommand("run", "Run game under current path");
         run->allow_extras()->formatter(formatter);
         run->add_flag("--no-window", no_window, "Run script only, no window mode");
-        run->add_flag("--debug", debug, "debug mode (slicer + pause/breakpoints/snapshot)");
+        run->add_flag("--debug", debug, "debug mode (slicer + pause/breakpoints/snapshot/MCP)");
         run->add_option("--dap-port", dap_port,
                         "Start Debug Adapter Protocol server on port (implies --debug)");
+        run->add_option("--mcp-port", mcp_port,
+                        "Start Model Context Protocol server on port for AI agents (implies --debug)");
         run->add_option("-l,--log", log_path, "log messages into a file");
         run->add_option("-r,--root", root_path, "give a entry script instead of using the system default one");
     }
@@ -47,7 +51,7 @@ struct RunArgs : Handler {
     int parse(CLI::App& app, Cmdline& cmd) override {
         auto run = app.get_subcommand("run");
         if (run->parsed() || cmd.getArgc() == 1) {
-            if (dap_port > 0) debug = true;
+            if (dap_port > 0 || mcp_port > 0) debug = true;
             std::string current_path = cmd.get_remaining(run);
             if (root_path != "") {
                 ifstream ifs(root_path);
@@ -56,9 +60,9 @@ struct RunArgs : Handler {
                     return -1;
                 }
                 std::string load_root((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
-                return cmd.Run(current_path, load_root, debug, dap_port);
+                return cmd.Run(current_path, load_root, debug, dap_port, mcp_port);
             } else
-                return cmd.Run(current_path, load_content, debug, dap_port);
+                return cmd.Run(current_path, load_content, debug, dap_port, mcp_port);
         }
         return -1; // not handle
     }
@@ -68,7 +72,7 @@ CMD_REG(RunArgs);
 
 
 // create a new project
-int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort) {
+int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, int mcpPort) {
     try {
         // Switch to the game directory so load.nut can dofile("config.nut") / "main.nut".
         if (!path.empty() && path != ".") {
@@ -114,10 +118,24 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort) {
                     cerr << "Failed to start DAP server on port " << dapPort << endl;
                 }
             }
+            if (mcpPort > 0) {
+                try {
+                    dt.mcp().setGameRoot(std::filesystem::current_path().string());
+                } catch (...) {
+                }
+                const int bound = dt.startMcp(static_cast<uint16_t>(mcpPort));
+                if (bound > 0) {
+                    cerr << "MCP listening on 127.0.0.1:" << bound
+                         << " (newline JSON-RPC; use tools/eve-mcp for Cursor stdio)" << endl;
+                } else {
+                    cerr << "Failed to start MCP server on port " << mcpPort << endl;
+                }
+            }
         }
 #else
         (void)debug;
         (void)dapPort;
+        (void)mcpPort;
 #endif
         // Embedded default demo (src/scripts/demo.nut); load.nut runs it when no main.nut.
         {
