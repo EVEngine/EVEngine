@@ -1,5 +1,7 @@
 build*/
 dist/
+# Poly Haven 1k HDR downloads used only to regenerate test/Textures/env faces.
+test/Textures/env/_src/
 .vscode/
 .superpowers/
 artifacts-local-test/

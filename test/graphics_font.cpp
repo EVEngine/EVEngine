@@ -10,6 +10,8 @@
 #include "image/ImageData.h"
 #include "window/Window.h"
 
+#include <SDL2/SDL.h>
+
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -161,6 +163,23 @@ TEST_CASE("graphics.print.rendersGlyphPixelsOnCanvas") {
         }
     }
     CHECK(litPixels > 0);
+
+    // Hold the window open so the glyph is visible while debugging (~2s).
+    // Left: magnified canvas from the assert above. Right: live print at 3x.
+    fx.gfx->setBackgroundColorRGBA(0.08f, 0.08f, 0.1f, 1.f);
+    for (int frame = 0; frame < 60; ++frame) {
+        fx.gfx->clearScreen();
+        fx.gfx->drawTexturedRect(rt->getTexture(), 16.f, 16.f, 128.f, 128.f,
+                                 Color(1.f, 1.f, 1.f, 1.f));
+        fx.gfx->print(kIconUtf8, 160.f, 40.f, Color(1.f, 1.f, 1.f, 1.f), 3.f);
+        fx.gfx->present();
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
 
     // Reset so other tests don't inherit this font.
     fx.gfx->setFont(nullptr);

@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <cstring>
+#include <initializer_list>
+#include <string>
 #include <vector>
 
 #include "graphics/Graphics.h"
@@ -52,6 +54,30 @@ static Texture *makeBiasedNormal(Graphics *gfx, int w, int h) {
     return gfx->newTexture(&imageData);
 }
 
+/** Live-render the current lit scene to the window for ~1s.
+ *  Retargets cam / sprites / lights from the offscreen canvas onto the swapchain
+ *  so we don't depend on sampling a stale canvas texture after getPixel/present. */
+static void previewOnWindow(Graphics *gfx, Camera2D *cam,
+                            std::initializer_list<Renderable2D *> sprites,
+                            std::initializer_list<Light2D *> lights, int ms = 1000) {
+    cam->data()->canvas = nullptr;
+    // 128×64 content → roughly fill a 320×240 window.
+    cam->data()->zoom = 2.5f;
+    for (auto *sp : sprites) sp->sprite()->canvas = nullptr;
+    for (auto *L : lights) L->setCanvas(nullptr);
+
+    gfx->setBackgroundColorRGBA(0.06f, 0.06f, 0.08f, 1.f);
+    const int frames = (ms >= 16) ? (ms / 16) : 1;
+    for (int i = 0; i < frames; ++i) {
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) return;
+        }
+        SDL_Delay(16);
+    }
+}
+
 TEST_CASE("Lighting2D.pointLightBrightensNearbyUnlitSprite") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
@@ -94,7 +120,7 @@ TEST_CASE("Lighting2D.pointLightBrightensNearbyUnlitSprite") {
     nearSp->sprite()->visible = true;
 
     auto *farSp = Renderable2D::create();
-    farSp->transform()->x = 96.f;
+    farSp->transform()->x = 46.f;
     farSp->transform()->y = 16.f;
     farSp->sprite()->width = 24.f;
     farSp->sprite()->height = 24.f;
@@ -113,8 +139,10 @@ TEST_CASE("Lighting2D.pointLightBrightensNearbyUnlitSprite") {
     RenderSystem::render(*gfx);
 
     float nearL = luma(rt->getPixel(20, 28));
-    float farL = luma(rt->getPixel(108, 28));
+    float farL = luma(rt->getPixel(48, 28));
     CHECK(nearL > farL + 0.08f);
+
+    previewOnWindow(gfx, cam, {nearSp, farSp}, {light});
 
     nearSp->sprite()->visible = false;
     farSp->sprite()->visible = false;
@@ -188,6 +216,8 @@ TEST_CASE("Lighting2D.normalMapLitSideBrighter") {
     float leftL = luma(rt->getPixel(42, 32));
     float rightL = luma(rt->getPixel(86, 32));
     CHECK(rightL > leftL + 0.05f);
+
+    previewOnWindow(gfx, cam, {sp}, {light, light2});
 
     sp->sprite()->visible = false;
     light->setEnabled(false);
