@@ -1,0 +1,238 @@
+EVEngine Commercial License
+===========================
+
+Copyright (c) 2024-2026 西风逍遥游 <sunxfancy@gmail.com>
+Copyright (c) 2024-2026 EVEngine Contributors
+
+版本：1.1  
+适用于：年营收超过人民币 10 万元的项目，及其他需付费商业授权的情形
+
+重要提示
+--------
+
+本文件描述商业许可的标准条款框架。在下列情形下，你必须取得本商业许可后方可**继续**使用 EVEngine：
+
+1. 使用本软件的项目**年营收超过人民币 100,000 元**；或
+2. 书面协议约定必须使用商业许可的其他情形。
+
+年营收定义与「超过门槛后 **1 个月内** 必须申请商业许可，否则不得继续使用」的规则，见 [LICENSE-OPENSOURCE](LICENSE-OPENSOURCE) 第 1.3、1.4 条及第 4 条。免费适用条件（开源且未超标，或年营收 ≤ 10 万元）见该文件。
+
+取得商业许可须：
+
+1. 与版权方签署书面（含电子邮件确认的）商业授权协议；并且
+2. 按约定支付许可费用。
+
+**超标后未在一个月内完成上述步骤的，你无权继续使用本软件。**
+
+1. 定义
+-------
+
+1.1 「本软件」含义同免费许可中的定义。
+
+1.2 「被授权方」指已与版权方达成有效商业授权并完成付款（或按协议约定的付款安排）的自然人或法人。
+
+1.3 「授权产品」指商业授权协议中列明的、被授权方开发或发行的特定游戏或软件产品。
+
+1.4 「年营收」「营收门槛」含义同 [LICENSE-OPENSOURCE](LICENSE-OPENSOURCE)。
+
+1.5 「商业用途」包括但不限于：付费销售、订阅、内购、广告变现、众筹发行、为客户交付的定制游戏/应用等。
+
+2. 授权授予
+-----------
+
+在被授权方遵守商业授权协议及本许可的前提下，版权方授予被授权方：
+
+(a) 非独占、不可转让（除非协议另有约定）、有期限或无期限（以协议为准）的权利；
+(b) 将本软件嵌入、链接或捆绑进授权产品；
+(c) 以闭源形式复制、发行、销售授权产品；
+(d) 为本软件制作仅用于授权产品的内部修改，该等修改的所有权归属以协议约定为准（默认：对引擎核心的修改不改变版权方对本软件原有部分的权利）。
+
+具体席位数、产品数量、平台范围、是否含源码、是否可再分发运行时等，以书面商业授权协议为准；协议与本文件冲突时，**以书面协议为准**。
+
+3. 费用与申请时限
+-----------------
+
+3.1 年营收超过营收门槛后，须支付许可费并取得本商业许可。价格、付款方式、税费、续费与升级条件由双方书面约定。
+
+3.2 **申请时限**：自年营收超过人民币 100,000 元之日起 **一个月内** 必须向版权方提出申请并完成授权；逾期则不得继续使用本软件（详见免费许可第 4 条）。
+
+3.3 参考询价（非要约，最终以签约报价为准）可联系：
+
+    邮箱：sunxfancy@gmail.com
+    项目：https://github.com/EVEngine/EVEngine
+
+3.4 常见授权形态（可协商）：
+    - 单款游戏授权（按标题）
+    - 工作室年费授权（多款产品）
+    - 运行时再分发授权
+    - 源码级商业授权（如需要）
+    - 由免费许可因营收超标而升级的过渡授权
+
+4. 限制
+-------
+
+除非书面协议明确允许，被授权方不得：
+
+(a) 将本软件作为独立产品转售、出租或再许可给第三方；
+(b) 移除、篡改版权声明或归属信息；
+(c) 将本软件用于协议未覆盖的其他产品；
+(d) 声称拥有本软件的版权。
+
+5. 归属与声明
+-------------
+
+发行授权产品时，建议（若协议要求则为必须）在鸣谢、关于页面或文档中注明使用了 EVEngine。是否必须展示引擎标识以书面协议为准。
+
+6. 支持与更新
+-------------
+
+商业许可是否包含技术支持、安全修复与版本升级，以书面协议约定为准。本文件本身不构成支持承诺。
+
+7. 无担保与责任限制
+------------------
+
+除书面协议另有强制性约定外，本软件按「现状」提供。在法律允许范围内，版权方的累计赔偿责任不超过被授权方就该授权实际支付的许可费总额。
+
+8. 期限与终止
+-------------
+
+8.1 授权期限以书面协议为准。
+
+8.2 被授权方严重违约（包括未付款、超范围使用）时，版权方可终止授权。终止后，被授权方应停止将本软件用于新的复制与发行；协议可另行约定已售出拷贝的处理方式。
+
+9. 与免费许可的关系
+-------------------
+
+商业许可与免费许可相互独立。取得商业许可后，被授权方在协议范围内可不受免费许可中营收门槛与开源义务的限制；但第三方依赖库仍须遵守其各自许可证。年营收未超过门槛时，可选择仅适用免费许可而无需取得本商业许可。
+
+10. 适用法律
+------------
+
+除双方另有约定外，本许可及商业授权争议适用中华人民共和国法律。协商不成的，提交版权方所在地有管辖权的人民法院诉讼解决。
+
+11. 文本
+--------
+
+本许可中文文本为准。英文翻译（如有）仅供参考。
+
+
+================================================================================
+English translation (for reference only; the Chinese text above prevails)
+================================================================================
+
+EVEngine Commercial License
+===========================
+
+Copyright (c) 2024-2026 西风逍遥游 <sunxfancy@gmail.com>
+Copyright (c) 2024-2026 EVEngine Contributors
+
+Version: 1.1  
+Applies to: projects with Annual Revenue exceeding RMB 100,000, and other cases requiring a paid commercial license
+
+Important notice
+----------------
+
+This document describes the standard framework for the Commercial License. You must obtain this Commercial License before you may **continue** to use EVEngine if:
+
+1. the project using the Software has **Annual Revenue exceeding RMB 100,000**; or
+2. a written agreement requires use of the Commercial License in other circumstances.
+
+Definitions of Annual Revenue and the rule that you must apply for a Commercial License within **one (1) month** after exceeding the threshold—or else you may not continue use—are set out in [LICENSE-OPENSOURCE](LICENSE-OPENSOURCE) Sections 1.3, 1.4, and 4. Free-use eligibility (open source and under the threshold, or Annual Revenue ≤ RMB 100,000) is also described there.
+
+To obtain a Commercial License you must:
+
+1. enter into a written commercial authorization agreement with the copyright holder (email confirmation counts); and
+2. pay the license fees as agreed.
+
+**If you do not complete the above within one month after exceeding the threshold, you have no right to continue using the Software.**
+
+1. Definitions
+--------------
+
+1.1 “Software” has the same meaning as in the Free License.
+
+1.2 “Licensee” means a natural or legal person that has entered into a valid commercial authorization with the copyright holder and completed payment (or is performing under a payment arrangement agreed in the contract).
+
+1.3 “Licensed Product” means the specific game or software product developed or distributed by the Licensee as listed in the commercial authorization agreement.
+
+1.4 “Annual Revenue” and “Revenue Threshold” have the same meanings as in [LICENSE-OPENSOURCE](LICENSE-OPENSOURCE).
+
+1.5 “Commercial Use” includes without limitation: paid sales, subscriptions, in-app purchases, advertising monetization, crowdfunding releases, and closed-source custom games/apps delivered to clients.
+
+2. Grant
+--------
+
+Subject to the Licensee’s compliance with the commercial authorization agreement and this license, the copyright holder grants the Licensee:
+
+(a) a non-exclusive, non-transferable (unless otherwise agreed), term or perpetual (as agreed) right;
+(b) to embed, link, or bundle the Software into the Licensed Product;
+(c) to copy, distribute, and sell the Licensed Product in closed-source form;
+(d) to make internal modifications to the Software solely for the Licensed Product; ownership of such modifications is as agreed in writing (by default, modifications to the engine core do not affect the copyright holder’s rights in the original Software).
+
+Seat counts, number of products, platforms, whether source is included, whether the runtime may be redistributed, and similar terms are governed by the written commercial authorization agreement; if that agreement conflicts with this document, **the written agreement prevails**.
+
+3. Fees and application deadline
+--------------------------------
+
+3.1 After Annual Revenue exceeds the Revenue Threshold, you must pay license fees and obtain this Commercial License. Price, payment method, taxes, renewal, and upgrade terms are agreed in writing.
+
+3.2 **Application deadline**: Within **one (1) month** from the date Annual Revenue exceeds RMB 100,000, you must apply to the copyright holder and complete authorization; after that deadline you may not continue using the Software (see Free License Section 4).
+
+3.3 For pricing inquiries (not an offer; final terms are as quoted in the signed agreement), contact:
+
+    Email: sunxfancy@gmail.com
+    Project: https://github.com/EVEngine/EVEngine
+
+3.4 Common licensing forms (negotiable):
+    - Per-title game license
+    - Studio annual license (multiple products)
+    - Runtime redistribution license
+    - Source-level commercial license (if needed)
+    - Transition license upgrading from the Free License after exceeding the revenue threshold
+
+4. Restrictions
+---------------
+
+Unless expressly allowed in writing, the Licensee may not:
+
+(a) resell, lease, or sublicense the Software as a standalone product to third parties;
+(b) remove or alter copyright notices or attribution;
+(c) use the Software in products not covered by the agreement;
+(d) claim copyright ownership of the Software.
+
+5. Attribution
+--------------
+
+When distributing the Licensed Product, it is recommended (and mandatory if required by the agreement) to credit EVEngine in acknowledgements, an about page, or documentation. Whether engine branding must be displayed is governed by the written agreement.
+
+6. Support and updates
+----------------------
+
+Whether the Commercial License includes technical support, security fixes, and version upgrades is determined by the written agreement. This document alone is not a support commitment.
+
+7. Disclaimer and limitation of liability
+-----------------------------------------
+
+Except as mandatorily agreed in writing, the Software is provided “AS IS”. To the extent permitted by law, the copyright holder’s aggregate liability shall not exceed the total license fees actually paid by the Licensee for that authorization.
+
+8. Term and termination
+-----------------------
+
+8.1 The license term is as stated in the written agreement.
+
+8.2 Upon material breach by the Licensee (including non-payment or use beyond scope), the copyright holder may terminate the authorization. After termination, the Licensee must stop using the Software for new copies and distribution; handling of copies already sold may be agreed separately.
+
+9. Relationship to the Free License
+-----------------------------------
+
+The Commercial License and the Free License are independent. After obtaining a Commercial License, within the scope of the agreement the Licensee is not bound by the Free License’s revenue threshold or open-source obligations; third-party dependencies remain under their own licenses. While Annual Revenue does not exceed the threshold, you may choose to rely solely on the Free License without obtaining this Commercial License.
+
+10. Governing law
+-----------------
+
+Unless otherwise agreed, this license and commercial authorization disputes are governed by the laws of the People’s Republic of China. If negotiation fails, the dispute shall be submitted to a people’s court with jurisdiction at the copyright holder’s location.
+
+11. Language
+------------
+
+The Chinese text of this license prevails. Any English translation is for reference only.

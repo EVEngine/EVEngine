@@ -2,6 +2,8 @@ EVEngine
 =======================
 Evolutionary Vision Engine
 
+[English](Readme.en.md)
+
 ## 文档导航
 
 - [游戏开发者文档](docs/usr/README.md)：安装、运行与项目结构；[模块使用手册](docs/usr/MODULES.md)逐个说明脚本 API 和示例。
@@ -428,3 +430,14 @@ EVEngine/
 ```
 
 使用说明见 `docs/usr/`，引擎设计说明见 `docs/dev/`。
+
+## 许可证
+
+EVEngine 采用**双许可**：
+
+| 用途 | 许可文件 | 费用 |
+|------|----------|------|
+| 开源项目；或项目年营收 ≤ 人民币 10 万元 | [LICENSE-OPENSOURCE](LICENSE-OPENSOURCE) | 免费 |
+| 年营收超过人民币 10 万元 | [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) | 收费；超标后 **1 个月内** 须申请，否则不得继续使用 |
+
+总说明见 [LICENSE](LICENSE)。商业授权咨询：`sunxfancy@gmail.com`。

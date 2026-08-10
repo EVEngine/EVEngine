@@ -1,0 +1,190 @@
+EVEngine Free License
+=====================
+
+Copyright (c) 2024-2026 西风逍遥游 <sunxfancy@gmail.com>
+Copyright (c) 2024-2026 EVEngine Contributors
+
+版本：1.1  
+文件名：LICENSE-OPENSOURCE  
+适用于：开源项目，以及年营收不超过人民币 10 万元的项目（免费）
+
+1. 定义
+-------
+
+1.1 「本软件」指 EVEngine 及其随本许可分发的源代码、二进制、文档与示例（不含第三方库自身受其他许可证约束的部分）。
+
+1.2 「开源项目」指同时满足以下条件的软件项目：
+    (a) 以 OSI 认可的开源许可证（例如 MIT、Apache-2.0、BSD、GPL、LGPL、MPL 等）公开发布；
+    (b) 向公众提供完整、可对应的源代码；
+    (c) 不以闭源形式作为主要发行方式。
+
+1.3 「年营收」指使用本软件的产品 / 项目在一个自然年（公历 1 月 1 日至 12 月 31 日）内的总营业收入，包括但不限于：销售收入、订阅费、内购、广告分成、授权费、众筹到账、定制开发款等与该产品直接相关的全部收入（按权责发生或实际到账口径，以较高、更能反映真实经营规模者为准），**不扣除**成本、税费、渠道分成前的平台扣款以外你仍应计入的部分；外币收入按发生当日或月度合理汇率折算为人民币。
+
+1.4 「营收门槛」指人民币 **100,000 元（拾万元）** 整。
+
+2. 谁可以免费使用
+----------------
+
+在遵守本许可全部条款的前提下，下列情形可免费使用本软件：
+
+(a) **开源项目**引用、集成或再分发本软件，且该项目当年年营收未超过营收门槛；或
+(b) **非开源项目**（含商业 / 闭源游戏或软件）使用本软件，且该项目当年年营收未超过营收门槛。
+
+一旦年营收超过营收门槛，本免费许可下的继续使用权受第 4 条约束，你应改用 [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL)。
+
+3. 授权范围（免费）
+------------------
+
+在适用第 2 条且遵守本许可的前提下，版权方特此免费授予你全球范围内的、非独占的、不可转让的权利：
+
+(a) 使用、复制、修改、合并本软件；
+(b) 将本软件或其修改版本作为你的项目的一部分进行分发（开源项目须保持开源；低营收闭源项目可闭源分发）；
+(c) 发布基于本软件的衍生作品（在仍符合第 2 条的前提下）。
+
+4. 营收超标与强制商业许可
+------------------------
+
+4.1 若使用本软件的项目年营收**超过**营收门槛（人民币 100,000 元），你必须在该超标事实发生之日起 **一个月（30 个自然日）内**：
+    (a) 书面联系版权方申请商业许可；并且
+    (b) 按约定完成签约与付费（或按版权方书面同意的付款安排开始履行）。
+
+4.2 在第 4.1 款规定的一个月期限内，你可继续使用本软件，但仅限于为完成商业许可过渡所合理需要的范围，且不得故意拖延申请。
+
+4.3 **逾期后果**：若未在上述一个月内完成商业许可申请并达成有效授权（因版权方无合理理由拒绝签约的除外，此时双方应善意协商），则你在本许可下使用本软件的权利**自动终止**，你必须立即停止继续使用本软件，包括但不限于：继续开发、编译构建、将运行时随产品分发、以及任何形式的商业发行与运营。
+
+4.4 下一自然年若年营收回落至营收门槛及以下，并不自动恢复已因逾期终止的权利；是否可重新适用本免费许可，以版权方书面确认为准。正在有效商业许可期内的，依商业许可执行。
+
+5. 其他条件
+-----------
+
+5.1 **开源项目额外义务**：若你以开源项目身份主张第 2(a) 条，则包含或依赖本软件的项目必须以开源许可证公开其源代码。
+
+5.2 **保留声明**：你必须在源代码及发行说明中保留本版权声明与本许可文本（或指向本文件的明确链接），并注明使用了 EVEngine。
+
+5.3 **修改标记**：若你修改了本软件，须在修改文件中注明修改事实与日期。
+
+5.4 **诚实义务**：你不得通过拆分主体、关联公司转移收入、虚报或隐瞒营收等方式规避营收门槛。版权方有权要求你提供合理范围内的营收说明以核实是否仍适用本许可。
+
+5.5 **商标**：本许可不授予对「EVEngine」名称、标识或其他商标的使用权，合理指明出处除外。
+
+6. 专利
+-------
+
+若你对本软件主张专利侵权，则你在本许可下获得的权利自动终止。
+
+7. 无担保与责任限制
+------------------
+
+本软件按「现状（AS IS）」提供，不附带任何明示或默示担保，包括但不限于适销性、特定用途适用性及非侵权。在法律允许的最大范围内，版权方不对因使用本软件产生的任何直接、间接、附带或后果性损害承担责任。
+
+8. 终止
+-------
+
+除第 4.3 条外，若你违反本许可，授权自动终止。终止后你必须停止使用与分发本软件。此前已合法获得本软件副本的下游接受者，在仍遵守适用许可时可继续使用其副本。
+
+9. 其他
+-------
+
+9.1 本许可不构成对商业许可条款的放弃。
+
+9.2 若某条款被认定无效，其余条款继续有效。
+
+9.3 本许可以中文文本为准；以下英文译文仅供参考。
+
+
+================================================================================
+English translation (for reference only; the Chinese text above prevails)
+================================================================================
+
+EVEngine Free License
+=====================
+
+Copyright (c) 2024-2026 西风逍遥游 <sunxfancy@gmail.com>
+Copyright (c) 2024-2026 EVEngine Contributors
+
+Version: 1.1  
+Filename: LICENSE-OPENSOURCE  
+Applies to: open-source projects, and projects with Annual Revenue not exceeding RMB 100,000 (free of charge)
+
+1. Definitions
+--------------
+
+1.1 “Software” means EVEngine and the source code, binaries, documentation, and examples distributed under this license (excluding portions of third-party libraries governed by other licenses).
+
+1.2 “Open-Source Project” means a software project that simultaneously:
+    (a) is publicly released under an OSI-approved open-source license (e.g., MIT, Apache-2.0, BSD, GPL, LGPL, MPL);
+    (b) makes complete, corresponding source code available to the public; and
+    (c) is not primarily distributed in closed-source form.
+
+1.3 “Annual Revenue” means the total operating revenue of the product / project that uses the Software during a calendar year (1 January through 31 December), including without limitation: sales revenue, subscription fees, in-app purchases, advertising share, licensing fees, crowdfunding proceeds, custom-development fees, and all other revenue directly related to that product (measured on an accrual or cash basis, whichever is higher and better reflects actual commercial scale), **without deducting** costs or taxes; amounts you remain obliged to count after platform channel deductions shall still be included. Foreign-currency revenue shall be converted to RMB at the exchange rate on the date of occurrence or a reasonable monthly rate.
+
+1.4 “Revenue Threshold” means **RMB 100,000 (one hundred thousand yuan)** exactly.
+
+2. Who may use the Software for free
+------------------------------------
+
+Subject to full compliance with this license, you may use the Software free of charge if:
+
+(a) an **Open-Source Project** uses, integrates, or redistributes the Software, and that project’s Annual Revenue for the year does not exceed the Revenue Threshold; or
+(b) a **non-open-source project** (including commercial / closed-source games or software) uses the Software, and that project’s Annual Revenue for the year does not exceed the Revenue Threshold.
+
+Once Annual Revenue exceeds the Revenue Threshold, continued use under this Free License is subject to Section 4, and you must switch to [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL).
+
+3. Grant (free)
+---------------
+
+Provided Section 2 applies and you comply with this license, the copyright holder hereby grants you a worldwide, non-exclusive, non-transferable, royalty-free right to:
+
+(a) use, copy, modify, and merge the Software;
+(b) distribute the Software or modified versions as part of your project (Open-Source Projects must remain open source; low-revenue closed-source projects may distribute closed source);
+(c) publish derivative works based on the Software (while still satisfying Section 2).
+
+4. Exceeding the threshold and mandatory commercial license
+-----------------------------------------------------------
+
+4.1 If the project using the Software has Annual Revenue **exceeding** the Revenue Threshold (RMB 100,000), you must, within **one (1) month (30 calendar days)** from the date that fact occurs:
+    (a) contact the copyright holder in writing to apply for a Commercial License; and
+    (b) complete signing and payment as agreed (or begin performance under a payment arrangement approved in writing by the copyright holder).
+
+4.2 During the one-month period in Section 4.1, you may continue to use the Software only to the extent reasonably necessary to complete the transition to a Commercial License, and you must not deliberately delay the application.
+
+4.3 **Consequences of delay**: If you fail within the one-month period to apply for and obtain a valid Commercial License (except where the copyright holder unreasonably refuses to contract, in which case the parties shall negotiate in good faith), your rights to use the Software under this license **terminate automatically**, and you must immediately stop continued use of the Software, including without limitation: continued development, compilation/builds, redistributing the runtime with a product, and any form of commercial distribution or operation.
+
+4.4 If Annual Revenue falls back to the Revenue Threshold or below in a later calendar year, rights already terminated for delay are not automatically restored; whether this Free License may apply again requires written confirmation from the copyright holder. If a Commercial License is already in force, that Commercial License governs.
+
+5. Additional conditions
+------------------------
+
+5.1 **Extra duties for Open-Source Projects**: If you claim Section 2(a) as an Open-Source Project, any project that includes or depends on the Software must publish its source code under an open-source license.
+
+5.2 **Notices**: You must retain this copyright notice and this license text (or a clear link to this file) in source code and distribution notices, and state that EVEngine is used.
+
+5.3 **Modification marks**: If you modify the Software, you must note the fact and date of modification in the modified files.
+
+5.4 **Good faith**: You must not evade the Revenue Threshold by splitting entities, shifting revenue among affiliates, misreporting, or concealing revenue. The copyright holder may require reasonably scoped revenue explanations to verify that this license still applies.
+
+5.5 **Trademarks**: This license does not grant rights to use the name “EVEngine”, logos, or other trademarks, except for reasonable attribution.
+
+6. Patents
+----------
+
+If you assert a patent infringement claim against the Software, your rights under this license terminate automatically.
+
+7. Disclaimer and limitation of liability
+-----------------------------------------
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE COPYRIGHT HOLDER SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING FROM USE OF THE SOFTWARE.
+
+8. Termination
+--------------
+
+In addition to Section 4.3, your rights terminate automatically if you breach this license. After termination you must stop using and distributing the Software. Downstream recipients who previously obtained copies lawfully may continue to use their copies while they remain in compliance with the applicable license.
+
+9. Miscellaneous
+----------------
+
+9.1 This license does not waive any terms of the Commercial License.
+
+9.2 If any provision is held invalid, the remaining provisions remain in effect.
+
+9.3 The Chinese text of this license prevails. The English translation is for reference only.

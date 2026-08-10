@@ -1,0 +1,86 @@
+EVEngine Dual License
+=====================
+
+Copyright (c) 2024-2026 西风逍遥游 <sunxfancy@gmail.com>
+Copyright (c) 2024-2026 EVEngine Contributors
+
+EVEngine（Evolutionary Vision Engine）采用**双许可（Dual Licensing）**模式发布。
+你必须根据用途选择下列之一：
+
+1. **免费许可** — 见 [LICENSE-OPENSOURCE](LICENSE-OPENSOURCE)
+2. **商业许可** — 见 [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL)
+
+选择规则（简要）
+----------------
+
+| 你的用途 | 应使用的许可 | 费用 |
+|----------|--------------|------|
+| 开源项目引用 / 集成；**或**使用本软件的项目**年营收不超过人民币 10 万元** | LICENSE-OPENSOURCE | **免费** |
+| 项目年营收**超过人民币 10 万元**；或其他需闭源商业授权的情形 | LICENSE-COMMERCIAL | **需付费并取得书面授权** |
+| 不确定 | 请联系版权方确认 | — |
+
+营收门槛
+--------
+
+- 「年营收」指使用本软件的产品 / 项目在一个自然年内的总营业收入（含销售收入、订阅、内购、广告、授权、众筹到账等与该产品相关的全部收入，未扣除成本）。
+- 年营收 **≤ 人民币 100,000 元** 的，可继续适用免费许可。
+- 年营收 **一旦超过** 人民币 100,000 元，你必须在该超标事实发生之日起 **1 个月内** 向版权方申请并完成商业许可；逾期未完成的，**不得再继续使用**本软件（包括继续开发、构建、运行时分发与商业发行）。
+
+说明
+----
+
+- 第三方依赖库仍遵循其各自原有许可证；本双许可仅覆盖 EVEngine 自身原创代码与资源。
+- 获得任一许可即表示你已阅读并同意该许可的全部条款。
+
+联系商业授权
+------------
+
+邮箱：sunxfancy@gmail.com  
+项目：https://github.com/EVEngine/EVEngine
+
+（中文文本为准；以下英文译文仅供参考。）
+
+
+================================================================================
+English translation (for reference only; the Chinese text above prevails)
+================================================================================
+
+EVEngine Dual License
+=====================
+
+Copyright (c) 2024-2026 西风逍遥游 <sunxfancy@gmail.com>
+Copyright (c) 2024-2026 EVEngine Contributors
+
+EVEngine (Evolutionary Vision Engine) is released under a **dual licensing** model.
+You must choose one of the following according to your use:
+
+1. **Free License** — see [LICENSE-OPENSOURCE](LICENSE-OPENSOURCE)
+2. **Commercial License** — see [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL)
+
+Selection rules (summary)
+-------------------------
+
+| Your use | Applicable license | Cost |
+|----------|--------------------|------|
+| Open-source project use / integration; **or** a project using this Software with **annual revenue not exceeding RMB 100,000** | LICENSE-OPENSOURCE | **Free** |
+| Project annual revenue **exceeding RMB 100,000**; or other cases requiring a commercial license | LICENSE-COMMERCIAL | **Paid; written authorization required** |
+| Unsure | Contact the copyright holder | — |
+
+Revenue threshold
+-----------------
+
+- “Annual Revenue” means the total operating revenue of the product / project that uses this Software in a calendar year (including sales, subscriptions, in-app purchases, advertising, licensing fees, crowdfunding proceeds, and all other revenue related to that product, without deducting costs).
+- If Annual Revenue is **≤ RMB 100,000**, the Free License may continue to apply.
+- Once Annual Revenue **exceeds** RMB 100,000, you must apply for and complete a Commercial License with the copyright holder within **one (1) month** from the date that threshold is exceeded; if you fail to do so in time, you **may not continue to use** this Software (including continued development, builds, runtime redistribution, and commercial distribution).
+
+Notes
+-----
+
+- Third-party dependencies remain under their own licenses; this dual license covers only EVEngine’s original code and assets.
+- Acceptance of either license means you have read and agree to all of its terms.
+
+Commercial licensing contact
+----------------------------
+
+Email: sunxfancy@gmail.com  
+Project: https://github.com/EVEngine/EVEngine
