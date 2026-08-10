@@ -14,8 +14,7 @@ void PathGrid::resize(int width, int height) {
 void PathGrid::bindLayer(TileLayer *layer) {
     layer_ = layer;
     if (!layer_) return;
-    auto *cfg = layer_->config();
-    if (!cfg) return;
+    auto cfg = layer_->config();
     resize(cfg->mapW, cfg->mapH);
     staggerAxisY_ = cfg->staggerAxis == StaggerAxis::Y;
     staggerOdd_ = cfg->staggerIndex == StaggerIndex::Odd;
@@ -26,15 +25,14 @@ void PathGrid::bindLayer(TileLayer *layer) {
 void PathGrid::clearLayer() { layer_ = nullptr; }
 
 void PathGrid::applyAutoTopologyFromLayer() {
-    if (!layer_ || !layer_->config()) return;
+    if (!layer_) return;
     topology_ = topologyFromOrientation(layer_->config()->orientation, diagonal_);
 }
 
 void PathGrid::syncFromLayer() {
     if (!layer_) return;
-    auto *cfg = layer_->config();
-    auto *tiles = layer_->tiles();
-    if (!cfg || !tiles) return;
+    auto cfg = layer_->config();
+    auto tiles = layer_->tiles();
     if (cfg->mapW != width_ || cfg->mapH != height_) resize(cfg->mapW, cfg->mapH);
     staggerAxisY_ = cfg->staggerAxis == StaggerAxis::Y;
     staggerOdd_ = cfg->staggerIndex == StaggerIndex::Odd;

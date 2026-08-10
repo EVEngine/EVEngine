@@ -43,11 +43,13 @@ bool pathWalkable(Path *p, Pathfinder *pf) {
 }  // namespace
 
 TEST_CASE("map.path.topology.parse") {
-    CHECK(parsePathTopology("ortho4") == PathTopology::Ortho4);
-    CHECK(parsePathTopology("ortho8") == PathTopology::Ortho8);
-    CHECK(parsePathTopology("hex") == PathTopology::Hex);
-    CHECK(parsePathTopology("auto", PathTopology::Hex) == PathTopology::Hex);
-    CHECK(parsePathTopology("nope", PathTopology::Ortho4) == PathTopology::Ortho4);
+    CHECK_EQ(static_cast<int>(parsePathTopology("ortho4")), static_cast<int>(PathTopology::Ortho4));
+    CHECK_EQ(static_cast<int>(parsePathTopology("ortho8")), static_cast<int>(PathTopology::Ortho8));
+    CHECK_EQ(static_cast<int>(parsePathTopology("hex")), static_cast<int>(PathTopology::Hex));
+    CHECK_EQ(static_cast<int>(parsePathTopology("auto", PathTopology::Hex)),
+             static_cast<int>(PathTopology::Hex));
+    CHECK_EQ(static_cast<int>(parsePathTopology("nope", PathTopology::Ortho4)),
+             static_cast<int>(PathTopology::Ortho4));
     CHECK_EQ(pathTopologyName(PathTopology::Hex), std::string("hex"));
 }
 
