@@ -52,10 +52,14 @@ bool vulkanGraphicsReady() {
 }
 
 vk::Queue computeQueue(graphics::vulkan::Graphics *vkg) {
-    // Prefer dedicated/separate compute; fall back to graphics (MoltenVK / unified).
-    vk::Queue q = vkg->getDevice().getQueue(vkb::QueueType::compute);
-    if (!q) q = vkg->getDevice().getQueue(vkb::QueueType::graphics);
-    return q;
+    // Must match computeCommandPool (uploadPool is graphics-family). Only use a
+    // dedicated compute queue when it shares that family; otherwise submit on graphics.
+    auto &device = vkg->getDevice();
+    const uint32_t graphicsFamily = device.get_queue_index(vkb::QueueType::graphics);
+    vk::Queue compute = device.getQueue(vkb::QueueType::compute);
+    if (compute && device.get_queue_index(vkb::QueueType::compute) == graphicsFamily)
+        return compute;
+    return device.getQueue(vkb::QueueType::graphics);
 }
 
 vk::CommandPool computeCommandPool(graphics::vulkan::Graphics *vkg) {

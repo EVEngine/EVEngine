@@ -1082,8 +1082,10 @@ void Graphics::ensureOffscreenPipelines() {
 
 void Graphics::ensureShaderOffscreenPipeline(Shader *shader) {
     if (!shader || !shader->gpuHandle || !offscreenRenderPass) return;
+    // Mesh3D SPIR-V / layout is incompatible with the 2D textured offscreen pass.
+    if (shader->getKind() == Shader::Kind::eMesh3D) return;
     auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
-    if (gpu->offscreenPipeline) return;
+    if (gpu->isMesh3D || gpu->offscreenPipeline) return;
     gpu->offscreenPipeline = createTexturedStylePipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
                                                          offscreenRenderPass, shaderPipelineLayout);
 }

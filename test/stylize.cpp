@@ -128,17 +128,6 @@ void saveImageDataPng(ImageData *frame, const std::string &path) {
     std::printf("stylize render saved: %s\n", path.c_str());
 }
 
-std::string docsStylizeDir() {
-#ifdef EVENGINE_SOURCE_DIR
-    return std::string(EVENGINE_SOURCE_DIR) + "/docs/images/stylize";
-#else
-    std::string here = __FILE__;
-    auto slash = here.find_last_of("/\\");
-    std::string dir = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/../docs/images/stylize";
-#endif
-}
-
 std::string testOutDir() {
     return std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
 }
@@ -451,13 +440,11 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
     REQUIRE(albedo != nullptr);
 
     auto *mod = Stylize::create();
-    const std::string docsDir = docsStylizeDir();
     const std::string outDir = testOutDir();
 
     std::unique_ptr<ImageData> baseFrame(renderCylinderFrame(gfx, cylinder, albedo, nullptr));
     REQUIRE(baseFrame.get() != nullptr);
     saveImageDataPng(baseFrame.get(), outDir + "/cylinder_base.png");
-    saveImageDataPng(baseFrame.get(), docsDir + "/cylinder_base.png");
 
     // Cartoon uses object-space cel mesh first, then outline post (UTS-like).
     Shader *toonMesh = mod->newMeshShader(gfx, "cartoon");
@@ -516,7 +503,6 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
 
         const std::string name = std::string("cylinder_") + id + ".png";
         saveImageDataPng(styled.get(), outDir + "/" + name);
-        saveImageDataPng(styled.get(), docsDir + "/" + name);
 
         // Sanity: some non-background pixels exist (cylinder albedo is warm).
         int warm = 0;
