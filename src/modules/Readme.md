@@ -52,6 +52,12 @@
     Vec2 / Vec3 / Mat4（glm）；标量与几何工具；noise1/2/3；贝塞尔；可种子随机数
     代码：`src/modules/math/`
 
+6b1. 空间索引 - spatial（`eve.Spatial`）
+    QuadTree / Octree / SpatialHash2D·3D / BSPTree2D·3D：AABB 宽相查询与地图裁剪候选
+    `insert` / `queryRect|queryAABB` / `queryCircle|querySphere` / `getResultId`
+    代码：`src/modules/spatial/`
+    设计：`docs/dev/空间索引模块设计.md`
+
 6b2. 逆运动学 - ik（`eve.IK`）
     封装 [ik.hpp](https://github.com/sunxfancy/ik.hpp)（`external/ik.hpp`）：Skeleton2D/3D、Solver2D/3D（FABRIK）
     `newSkeleton2D` / `newSolver2D` / `createBone` / `addTarget` / `solve` / `step`
