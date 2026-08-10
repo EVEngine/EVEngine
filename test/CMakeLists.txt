@@ -63,6 +63,7 @@ file(GLOB all_test_cpp
   renderflow.cpp
   debugger.cpp
   dap.cpp
+  mcp.cpp
   main.cpp
 )
 
