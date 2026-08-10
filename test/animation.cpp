@@ -285,8 +285,8 @@ TEST_CASE("animation.stateMachine.floatTransition") {
     CHECK(sm->getCurrentState() == "Idle");
     sm->setFloat("speed", 1.f);
     sm->update(0.016f);
-    // May be blending into Walk
-    CHECK(sm->getCurrentState() == "Idle" || sm->getCurrentState() == "Walk" || sm->isBlending());
+    // Logical state switches immediately; pose may still be blending.
+    CHECK((sm->getCurrentState() == "Walk" || sm->isBlending()));
     for (int i = 0; i < 20; ++i) sm->update(0.05f);
     CHECK(sm->getCurrentState() == "Walk");
 
