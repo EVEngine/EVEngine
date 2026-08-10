@@ -322,6 +322,95 @@ eve.System <- class {
     function update(dt) {}
 }
 
+// GPU-backed System: pack float component fields → SSBO → compute shader → unpack.
+// Requires eve.Gpgpu / eve.EcsShaderSystem (gpgpu module). Push constants:
+//   pc.data[0] = dt, pc.data[1] = entityCount. Each bindFields() maps one binding.
+eve.ShaderSystem <- class extends eve.System {
+    _gpu = null
+    _backend = null
+    _bindings = null
+    _readback = true
+    _localSize = 64
+
+    constructor(query = null, gpu = null, glsl = null, localSize = 64) {
+        base.constructor(query)
+        _bindings = []
+        _readback = true
+        _localSize = localSize
+        if (gpu != null) setGpgpu(gpu)
+        if (gpu != null && glsl != null) setShaderSource(glsl)
+    }
+
+    function setGpgpu(gpu) {
+        _gpu = gpu
+        if (_backend == null) {
+            if (!("EcsShaderSystem" in eve))
+                throw "eve.ShaderSystem requires gpgpu module (eve.EcsShaderSystem)"
+            _backend = eve.EcsShaderSystem()
+        }
+        _backend.setGpgpu(gpu)
+        _backend.setLocalSize(_localSize)
+        return this
+    }
+
+    function setShaderSource(glsl) {
+        if (_backend == null) throw "eve.ShaderSystem.setShaderSource: call setGpgpu first"
+        _backend.setShaderSource(glsl)
+        return this
+    }
+
+    function setLocalSize(n) {
+        _localSize = n
+        if (_backend != null) _backend.setLocalSize(n)
+        return this
+    }
+
+    function setReadback(enabled) {
+        _readback = enabled
+        return this
+    }
+
+    // binding: SSBO index; slot: entity component field name; fields: ["x","y",...]
+    function bindFields(binding, slot, fields) {
+        _bindings.push({ binding = binding, slot = slot, fields = fields })
+        return this
+    }
+
+    function setFloat(index, value) {
+        if (_backend != null) _backend.setFloat(index, value)
+        return this
+    }
+
+    function getBackend() { return _backend }
+
+    function update(dt) {
+        if (_backend == null || _gpu == null) return
+        if (!("packEcsFloats" in eve) || !("unpackEcsFloats" in eve)) return
+
+        local ents = entities()
+        local n = ents.len()
+        if (n <= 0) return
+
+        foreach (b in _bindings) {
+            local floatsPer = b.fields.len()
+            if (floatsPer <= 0) continue
+            local buf = _backend.ensureBuffer(b.binding, n * floatsPer)
+            eve.packEcsFloats(ents, b.slot, b.fields, buf)
+        }
+
+        _backend.dispatch(n, dt)
+
+        if (_readback) {
+            foreach (b in _bindings) {
+                local floatsPer = b.fields.len()
+                if (floatsPer <= 0) continue
+                local buf = _backend.getBuffer(b.binding)
+                eve.unpackEcsFloats(ents, b.slot, b.fields, buf, n)
+            }
+        }
+    }
+}
+
 function eve::view(entityClass) {
     local out = []
     if (entityClass == null) return out

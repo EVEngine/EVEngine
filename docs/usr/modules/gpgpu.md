@@ -1,8 +1,8 @@
 # GPU 计算模块
 
-**脚本入口：** `eve.Gpgpu()`
+**脚本入口：** `eve.Gpgpu()` / `eve.EcsShaderSystem` / `eve.ShaderSystem`
 
-创建 storage buffer 和 compute shader，绑定后调度；后端跟随当前 Graphics（目前为 Vulkan）。
+创建 storage buffer 和 compute shader，绑定后调度 Vulkan compute。也可把 ECS System 写成 compute shader：打包组件 float 字段 → SSBO → dispatch → 写回。
 
 ## 基本用法
 
@@ -16,9 +16,28 @@ if (gpu.isAvailable()) {
 }
 ```
 
+## 用 shader 写 ECS System
+
+```squirrel
+class Moveable extends eve.Entity { pos = Position; vel = Velocity }
+
+local sys = eve.ShaderSystem(Moveable, gpgpu, moveGlsl, 64)
+sys.bindFields(0, "pos", ["x", "y"])
+sys.bindFields(1, "vel", ["x", "y"])
+
+eve_update = function(dt) { sys.update(dt) }
+```
+
+Compute shader 约定：
+
+- `binding i`：对应 `bindFields(i, …)` 的 AoS float 流（按实体顺序紧密排列）
+- `push_constant data[0]` = `dt`，`data[1]` = 实体数量
+
+C++ 侧可用 `gpgpu::ShaderSystem` + `gpgpu/EcsGpu.h` 的 `packViewComponent` / `unpackViewComponent` 对 `ECS.hpp` View 做同样的打包与调度。
+
 ## 对象关系与调用时机
 
-`Gpgpu` 使用当前 Graphics 后端设备；`ComputeShader` / `GpuBuffer` 为后端无关抽象，Vulkan 实现保存 SPIR-V、pipeline 与 buffer。`newShaderFromSpvFile` 是 SPIR-V 兼容包装，等价于 `newShaderFromBytecode`。dispatch 前所有 binding 和 push constant 必须有效。
+`Gpgpu` 使用当前 Graphics 后端设备；`ComputeShader` / `GpuBuffer` 为后端无关抽象，Vulkan 实现保存 SPIR-V、pipeline 与 buffer。`newShaderFromSpvFile` 是 SPIR-V 兼容包装，等价于 `newShaderFromBytecode`。`EcsShaderSystem` / `eve.ShaderSystem` 负责 ECS 查询、打包与 dispatch。dispatch 前所有 binding 和 push constant 必须有效。
 
 ## 目标导向指南
 
@@ -26,15 +45,20 @@ if (gpu.isAvailable()) {
 
 先检查 `isAvailable()`，创建 storage buffer 并写入 float，创建 compute shader，binding 0 绑定 buffer、push constant 设置倍率，按 local size 计算 group 数后 `dispatch()`，最后读回结果。
 
+### ECS 积分 / 粒子式批量更新
+
+用 `eve.ShaderSystem` 绑定要读写的组件浮点字段，在 `eve_update` 调用 `update(dt)`。需要 CPU 侧逻辑（碰撞反弹等）时，可在 GPU 积分后再遍历 `entities()`。
+
 ### 避免 GPU 同步拖慢帧
 
-频繁 readData 会等待 GPU；将连续计算保留在 device-local buffer，最终需要 CPU 结果时再读回。shader、buffer 和 binding 应复用，尺寸变化时才重建。
+频繁 readData / `setReadback(true)`（默认）会等待 GPU；将连续计算保留在 device-local buffer，最终需要 CPU 结果时再读回。shader、buffer 和 binding 应复用，尺寸变化时才重建。
 
 ## 常见问题
 
 - 未检查 `isAvailable()` 就创建资源。
-- dispatch group 数按元素数而非 local size 取整。
+- dispatch group 数按元素数而非 local size 取整（`ShaderSystem` 已按 local size 处理）。
 - GPU 写完立即频繁 readback，造成同步停顿。
+- 组件字段不是 number：只有 float/int 字段可打包。
 
 ## API 快查
 
@@ -42,7 +66,9 @@ if (gpu.isAvailable()) {
 
 - `bindBuffer()`、`clearBindings()`、`dispatch()`、`fillFloat32()`、`getBoundBuffer()`、`getFloat()`、`getName()`、`getSize()`
 - `getUsage()`、`isAvailable()`、`newBuffer()`、`newShader()`、`newShaderFromBytecode()`、`newShaderFromSpvFile()`、`readData()`、`readFloat32()`、`setFloat()`
-- `writeData()`、`writeFloat32()`
+- `writeData()`、`writeFloat32()`、`packEcsFloats()`、`unpackEcsFloats()`
+- `eve.EcsShaderSystem`：`setGpgpu` / `setShaderSource` / `ensureBuffer` / `dispatch` / …
+- `eve.ShaderSystem`：`bindFields` / `setShaderSource` / `setReadback` / `update`
 
 ## 使用要点
 
@@ -51,4 +77,5 @@ if (gpu.isAvailable()) {
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/gpgpu/`](../../../src/modules/gpgpu/)
-**相关测试：** 在 [`test/`](../../../test/) 中搜索 `gpgpu`。
+**相关测试：** 在 [`test/`](../../../test/) 中搜索 `gpgpu` / `ShaderECS`。
+**示例：** [`examples/ecs/gpu_main.nut`](../../../examples/ecs/gpu_main.nut)、[`examples/basic/compute/ecs_move.comp`](../../../examples/basic/compute/ecs_move.comp)

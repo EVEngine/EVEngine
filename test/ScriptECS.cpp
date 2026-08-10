@@ -134,6 +134,19 @@ function testStaticComponentsTable() {
     if (n.pos.x != 1.0) return false
     return true
 }
+
+function testShaderSystemClassExists() {
+    if (!("ShaderSystem" in eve)) return false
+    // Construction without GPU is allowed; update() no-ops until setGpgpu.
+    class Pos extends eve.Component { x = 0.0; y = 0.0 }
+    class Vel extends eve.Component { x = 1.0; y = 0.0 }
+    class Mover extends eve.Entity { pos = Pos; vel = Vel }
+    local sys = eve.ShaderSystem(Mover)
+    sys.bindFields(0, "pos", ["x", "y"])
+    sys.bindFields(1, "vel", ["x", "y"])
+    sys.update(0.016)
+    return true
+}
 )SQ";
 
 UnitSciptTest(ScriptEcsTest, kScriptEcsContent);
@@ -160,4 +173,8 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.typeMarkersAndEntityContainer") {
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.staticComponentsTable") {
     CHECK(vm.callFunc(vm.findFunc("testStaticComponentsTable"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemClassExists") {
+    CHECK(vm.callFunc(vm.findFunc("testShaderSystemClassExists"), vm).toBool());
 }

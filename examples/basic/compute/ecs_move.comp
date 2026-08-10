@@ -1,0 +1,28 @@
+#version 450
+// ECS move kernel for eve.ShaderSystem / gpgpu::ShaderSystem
+// binding 0 = position xy AoS, binding 1 = velocity xy AoS
+// push: data[0]=dt, data[1]=entityCount
+
+layout(local_size_x = 64) in;
+
+layout(set = 0, binding = 0) buffer Pos {
+    float data[];
+} pos;
+
+layout(set = 0, binding = 1) buffer Vel {
+    float data[];
+} vel;
+
+layout(push_constant) uniform PC {
+    float data[32];
+} pc;
+
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    uint n = uint(pc.data[1]);
+    if (i >= n) return;
+    float dt = pc.data[0];
+    uint b = i * 2u;
+    pos.data[b + 0u] += vel.data[b + 0u] * dt;
+    pos.data[b + 1u] += vel.data[b + 1u] * dt;
+}

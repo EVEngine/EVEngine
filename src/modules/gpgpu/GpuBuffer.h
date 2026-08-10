@@ -31,8 +31,12 @@ public:
     virtual float readFloat32(int floatIndex) = 0;
     virtual void fillFloat32(float value) = 0;
 
+    /** Bulk float upload/download (one transfer). startIndex is in floats. */
+    virtual void writeFloat32s(const float *data, int count, int startIndex = 0) = 0;
+    virtual void readFloat32s(float *out, int count, int startIndex = 0) const = 0;
+
     virtual void uploadBytes(const void *src, uint64_t nbytes, uint64_t dstOffset = 0) = 0;
-    virtual void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0) = 0;
+    virtual void downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset = 0) const = 0;
 };
 
 }  // namespace eve::gpgpu
