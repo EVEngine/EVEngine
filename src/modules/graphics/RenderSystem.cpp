@@ -57,6 +57,10 @@ float Camera2D::worldToScreenY(float /*worldX*/, float worldY, float /*viewW*/, 
     return (worldY - d->y) * z + viewH * 0.5f;
 }
 
+void Renderable2D::setCastOcclusion(bool cast) { sprite()->castOcclusion = cast; }
+
+bool Renderable2D::getCastOcclusion() { return sprite()->castOcclusion; }
+
 namespace {
 
 float clampZoom(float z) { return z <= 0.f ? 1e-4f : z; }

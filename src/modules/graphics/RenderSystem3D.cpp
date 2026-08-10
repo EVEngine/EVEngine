@@ -257,6 +257,10 @@ void Renderable3D::setCastShadow(bool cast) { meshRenderer()->castShadow = cast;
 
 void Renderable3D::setReceiveShadow(bool receive) { meshRenderer()->receiveShadow = receive; }
 
+void Renderable3D::setCastOcclusion(bool cast) { meshRenderer()->castOcclusion = cast; }
+
+bool Renderable3D::getCastOcclusion() { return meshRenderer()->castOcclusion; }
+
 void Renderable3D::setCamera(Camera3D *camera) { meshRenderer()->camera = camera; }
 
 void RenderSystem3D::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {

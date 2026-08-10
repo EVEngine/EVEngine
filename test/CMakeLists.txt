@@ -23,6 +23,7 @@ file(GLOB all_test_cpp
   ClusteredLighting.cpp
   IBL.cpp
   Shadow3D.cpp
+  Volumetric.cpp
   UISystem.cpp
   UIBuilder.cpp
   UIPhaseB.cpp

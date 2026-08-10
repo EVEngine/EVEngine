@@ -89,6 +89,7 @@ public:
         bool receiveLight = true;
         bool castShadow = true;
         bool receiveShadow = true;
+        bool castOcclusion = true;  // volumetric occlusion (screen-space shafts)
         Camera3D *camera = nullptr;
     };
 
@@ -111,6 +112,8 @@ public:
     void setReceiveLight(bool receive);
     void setCastShadow(bool cast);
     void setReceiveShadow(bool receive);
+    void setCastOcclusion(bool cast);
+    bool getCastOcclusion();
     void setCamera(Camera3D *camera);
 };
 
