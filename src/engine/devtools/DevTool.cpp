@@ -1,5 +1,9 @@
 #include "devtools/DevTool.hpp"
 
+#include "devtools/AiPanel.hpp"
+#include "devtools/McpDevBridge.hpp"
+#include "devtools/McpServer.hpp"
+
 #include "common/Module.h"
 #include "common/RenderTrace.h"
 #include "event/Event.h"
@@ -10,6 +14,9 @@
 #include <cstring>
 #include <string>
 #include <vector>
+
+// AiPanel implementation lives in AiPanel.inc (included at file end) so it does
+// not create an extra MSVC export-heavy object file.
 
 namespace eve::dev {
 namespace {
@@ -133,6 +140,7 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
 
 void DevTool::detach() {
     stopDap();
+    stopMcp();
     Debugger::instance().detach();
     if (vm_) {
         sq_setnativedebughook(vm_, nullptr);
@@ -148,7 +156,20 @@ int DevTool::startDap(uint16_t port) { return DebugAdapter::instance().listen(po
 
 void DevTool::stopDap() { DebugAdapter::instance().stop(); }
 
-void DevTool::poll() { DebugAdapter::instance().poll(); }
+int DevTool::startMcp(uint16_t port) { return McpServer::instance().listen(port); }
+
+void DevTool::stopMcp() { McpServer::instance().stop(); }
+
+McpServer& DevTool::mcp() { return McpServer::instance(); }
+
+AiPanel& DevTool::ai() { return AiPanel::instance(); }
+
+void DevTool::poll() {
+    DebugAdapter::instance().poll();
+    McpServer::instance().poll();
+}
+
+void DevTool::drawAiPanel() { AiPanel::instance().drawImGui(); }
 
 void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
@@ -253,8 +274,24 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             if (!ok) return std::string("error:") + err;
             return std::string("ok");
         });
+
+        // AI / MCP surface (DevTools panel + agent session log).
+        ssq::Table ai = dev.addTable("ai");
+        ai.addFunc("status", []() { return AiPanel::instance().statusLine(); });
+        ai.addFunc("isVisible", []() { return AiPanel::instance().isVisible(); });
+        ai.addFunc("setVisible", [](bool on) { AiPanel::instance().setVisible(on); });
+        ai.addFunc("toggleVisible", []() { AiPanel::instance().toggleVisible(); });
+        ai.addFunc("note", [](std::string text) {
+            AiPanel::instance().addNote(std::move(text));
+            return std::string("ok");
+        });
+        ai.addFunc("log", []() { return AiPanel::instance().formatLog(64); });
+        ai.addFunc("clearLog", []() { AiPanel::instance().clearLog(); });
+        ai.addFunc("mcpPort", []() { return AiPanel::instance().mcpPort(); });
+        ai.addFunc("mcpConnected", []() { return AiPanel::instance().mcpConnected(); });
+        ai.addFunc("draw", [this]() { drawAiPanel(); });
     } catch (...) {
-        // If eve table missing, skip — attach still useful for C++/DAP.
+        // If eve table missing, skip — attach still useful for C++/DAP/MCP.
     }
 }
 
@@ -510,4 +547,20 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     return lastReport_;
 }
 
+bool mcpDevAttached() { return DevTool::instance().isAttached(); }
+
+std::size_t mcpCallgraphEvents() { return DevTool::instance().graph().events().size(); }
+
+std::size_t mcpCallgraphStackDepth() {
+    return DevTool::instance().graph().currentStack().size();
+}
+
+const std::string& mcpLastReport() { return DevTool::instance().lastReport(); }
+
+std::string mcpFormatError(const std::string& message) {
+    return DevTool::instance().formatError(message);
+}
+
 }  // namespace eve::dev
+
+#include "devtools/AiPanel.inc"

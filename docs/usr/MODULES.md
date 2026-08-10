@@ -35,6 +35,7 @@
 - [粒子](modules/particles.md)：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。
 - [动画](modules/animation.md)：使用 Tween 对标量或角度属性做延迟、重复、yoyo 和缓动插值。
 - [RPG 系统](modules/rpg.md)：组合属性、效果、状态、技能、施法与伤害结算。
+- [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
 
 ## 表现与场景
@@ -46,6 +47,7 @@
 ## 高级能力
 
 - [数学](modules/math.md)：提供向量、矩阵、2D/3D 拾取与重叠几何测试、噪声、随机数、插值和缓动工具。
+- [空间索引](modules/spatial.md)：四叉树 / 八叉树 / 空间哈希 / 空间二分树，用于地图与场景的快速裁剪与邻近查询。
 - [逆运动学](modules/ik.md)：创建 2D/3D 骨架和 FABRIK Solver，设置目标并逐帧求解。
 - [GPU 计算](modules/gpgpu.md)：创建 storage buffer 和 compute shader，绑定后调度 Vulkan compute。
 - [张量](modules/tensor.md)：执行 eager 张量运算，或用 Func 构图、编译并重复运行。

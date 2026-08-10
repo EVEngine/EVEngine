@@ -14,6 +14,7 @@
 #include <cmath>
 #include <vulkan/vulkan.h>
 
+
 namespace eve::ui {
 namespace {
 
@@ -100,6 +101,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     fontsUploaded_ = true;
 
     gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
+
     initialized_ = true;
 
 #if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)

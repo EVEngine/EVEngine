@@ -42,7 +42,7 @@ install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
 
 set(_eve_module_dirs
     animation audio data event filesystem graphics image ik joystick keyboard mouse
-    model3d network particles plugins sound timer touch ui window
+    model3d network particles plugins sound spatial timer touch ui window
 )
 foreach(_eve_mod IN LISTS _eve_module_dirs)
     if(EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")

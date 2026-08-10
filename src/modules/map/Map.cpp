@@ -1,6 +1,9 @@
 #include "map/Map.h"
 #include "map/TileSystem.h"
 #include "map/TileConfig.h"
+#include "map/Pathfinder.h"
+#include "map/Path.h"
+#include "map/FlowField.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "common/Module.h"
@@ -13,6 +16,16 @@ Module_IMPL(Map, new Map());
 
 TileLayer *Map::newLayer(int mapW, int mapH, float tileW, float tileH) {
     return TileLayer::createLayer(mapW, mapH, tileW, tileH);
+}
+
+Pathfinder *Map::newPathfinder(TileLayer *layer) {
+    if (!layer) return nullptr;
+    return new Pathfinder(layer);
+}
+
+Pathfinder *Map::newPathfinderSize(int mapW, int mapH) {
+    if (mapW <= 0 || mapH <= 0) return nullptr;
+    return new Pathfinder(mapW, mapH);
 }
 
 TileLayer *Map::newLayerFromFile(const std::string &path) {
@@ -133,6 +146,46 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("depthYAt", &TileLayer::depthYAt);
     layer.addFunc("worldToTileX", &TileLayer::worldToTileX);
     layer.addFunc("worldToTileY", &TileLayer::worldToTileY);
+
+    auto path = table.addClass<Path>(
+        "Path", std::function<Path *()>([]() -> Path * { return nullptr; }), true);
+    path.addFunc("getLength", &Path::getLength);
+    path.addFunc("getX", &Path::getX);
+    path.addFunc("getY", &Path::getY);
+    path.addFunc("getTotalCost", &Path::getTotalCost);
+
+    auto field = table.addClass<FlowField>(
+        "FlowField", std::function<FlowField *()>([]() -> FlowField * { return nullptr; }), true);
+    field.addFunc("getWidth", &FlowField::getWidth);
+    field.addFunc("getHeight", &FlowField::getHeight);
+    field.addFunc("getGoalX", &FlowField::getGoalX);
+    field.addFunc("getGoalY", &FlowField::getGoalY);
+    field.addFunc("costAt", &FlowField::costAt);
+    field.addFunc("nextX", &FlowField::nextX);
+    field.addFunc("nextY", &FlowField::nextY);
+    field.addFunc("isReachable", &FlowField::isReachable);
+
+    auto pf = table.addClass<Pathfinder>(
+        "Pathfinder", std::function<Pathfinder *()>([]() -> Pathfinder * { return nullptr; }), true);
+    pf.addFunc("setTopology", &Pathfinder::setTopology);
+    pf.addFunc("getTopology", &Pathfinder::getTopology);
+    pf.addFunc("setDiagonal", &Pathfinder::setDiagonal);
+    pf.addFunc("getDiagonal", &Pathfinder::getDiagonal);
+    pf.addFunc("blockGid", &Pathfinder::blockGid);
+    pf.addFunc("unblockGid", &Pathfinder::unblockGid);
+    pf.addFunc("clearBlockedGids", &Pathfinder::clearBlockedGids);
+    pf.addFunc("setBlockEmpty", &Pathfinder::setBlockEmpty);
+    pf.addFunc("getBlockEmpty", &Pathfinder::getBlockEmpty);
+    pf.addFunc("setBlocked", &Pathfinder::setBlocked);
+    pf.addFunc("isWalkable", &Pathfinder::isWalkable);
+    pf.addFunc("setCellCost", &Pathfinder::setCellCost);
+    pf.addFunc("getCellCost", &Pathfinder::getCellCost);
+    pf.addFunc("syncFromLayer", &Pathfinder::syncFromLayer);
+    pf.addFunc("findPath", &Pathfinder::findPath);
+    pf.addFunc("buildFlowField", &Pathfinder::buildFlowField);
+    pf.addFunc("followFlow", &Pathfinder::followFlow);
+    pf.addFunc("findGroupPath", &Pathfinder::findGroupPath);
+    pf.addFunc("invalidateCache", &Pathfinder::invalidateCache);
 }
 
 void Map::expose(ssq::Class &cls) {
@@ -140,6 +193,8 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("newLayer", &Map::newLayer);
     cls.addFunc("newLayerFromFile", &Map::newLayerFromFile);
     cls.addFunc("loadFromFile", &Map::loadFromFile);
+    cls.addFunc("newPathfinder", &Map::newPathfinder);
+    cls.addFunc("newPathfinderSize", &Map::newPathfinderSize);
     cls.addFunc("update", &Map::update);
     cls.addFunc("render", &Map::render);
     cls.addFunc("pollConfigs", &Map::pollConfigs);
