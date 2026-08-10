@@ -462,6 +462,11 @@ TEST_CASE("map.dualGrid.resolveHalfOffsetAndSize") {
     CHECK_EQ(display->getTile(0, 0), 10 + 8);
     // Empty neighborhood
     CHECK_EQ(display->getTile(2, 0), 0);
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
 }
 
 TEST_CASE("map.dualGrid.resolveRejectsSameLayer") {
@@ -472,6 +477,8 @@ TEST_CASE("map.dualGrid.resolveRejectsSameLayer") {
     CHECK(!err.empty());
     CHECK(!mod->resolveDualGrid(nullptr, layer));
     CHECK(!mod->lastDualGridError().empty());
+    layer->clear();
+    layer->setVisible(false);
 }
 
 TEST_CASE("map.dualGrid.filledGidFilter") {
@@ -493,6 +500,14 @@ TEST_CASE("map.dualGrid.filledGidFilter") {
     CHECK(logic->isVisible());
 
     CHECK(mod->resolveDualGridFilled(logic, display, 5));
-    CHECK_EQ(dualGridMaskAt(*logic, 1, 1, 5), 8);
-    CHECK_EQ(display->getTile(1, 1), 1 + dualGridDefaultFrame(8));
+    // logic(0,0) is BR of display(0,0) and TL of display(1,1).
+    CHECK_EQ(dualGridMaskAt(*logic, 0, 0, 5), 8);
+    CHECK_EQ(dualGridMaskAt(*logic, 1, 1, 5), 1);
+    CHECK_EQ(display->getTile(0, 0), 1 + dualGridDefaultFrame(8));
+    CHECK_EQ(display->getTile(1, 1), 1 + dualGridDefaultFrame(1));
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
 }
