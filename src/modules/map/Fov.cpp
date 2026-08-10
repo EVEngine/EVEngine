@@ -1,10 +1,15 @@
 #include "map/Fov.h"
 
+#include "graphics/Graphics.h"
+#include "graphics/Texture.h"
+#include "map/TileOrientation.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <string>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 namespace eve::map {
@@ -13,15 +18,17 @@ namespace {
 constexpr float kPi = 3.14159265358979323846f;
 constexpr float kExploredMask = 0.35f;
 
-enum class Algorithm : uint8_t { Shadowcast, Raycast, Permissive };
+enum class Algorithm : uint8_t { Shadowcast, Raycast, Permissive, Rectangle };
 enum class RadiusMetric : uint8_t { Euclidean, Chebyshev, Manhattan };
 enum class Mode : uint8_t { Grid2D, Heightmap, Volume };
+enum class Topology : uint8_t { Ortho, Hex };
 enum class CellState : uint8_t { Unknown = 0, Explored = 1, Visible = 2 };
 
 Algorithm parseAlgorithm(const std::string &name, Algorithm fallback) {
     if (name == "shadowcast") return Algorithm::Shadowcast;
     if (name == "raycast") return Algorithm::Raycast;
     if (name == "permissive") return Algorithm::Permissive;
+    if (name == "rectangle") return Algorithm::Rectangle;
     return fallback;
 }
 
@@ -31,6 +38,8 @@ std::string algorithmName(Algorithm a) {
         return "raycast";
     case Algorithm::Permissive:
         return "permissive";
+    case Algorithm::Rectangle:
+        return "rectangle";
     case Algorithm::Shadowcast:
     default:
         return "shadowcast";
@@ -75,7 +84,32 @@ std::string metricName(RadiusMetric m) {
     return "euclidean";
 }
 
-bool inRadius(RadiusMetric metric, int dx, int dy, int radius) {
+std::string topologyName(Topology t) { return t == Topology::Hex ? "hex" : "ortho"; }
+
+void offsetToCube(int x, int y, int &q, int &r, int &s) {
+    // odd-r staggered (matches Pathfinder hex)
+    q = x - (y - (y & 1)) / 2;
+    r = y;
+    s = -q - r;
+}
+
+void cubeToOffset(int q, int r, int &x, int &y) {
+    y = r;
+    x = q + (r - (r & 1)) / 2;
+}
+
+int cubeDistance(int q0, int r0, int s0, int q1, int r1, int s1) {
+    return std::max({std::abs(q0 - q1), std::abs(r0 - r1), std::abs(s0 - s1)});
+}
+
+int hexDistance(int x0, int y0, int x1, int y1) {
+    int q0, r0, s0, q1, r1, s1;
+    offsetToCube(x0, y0, q0, r0, s0);
+    offsetToCube(x1, y1, q1, r1, s1);
+    return cubeDistance(q0, r0, s0, q1, r1, s1);
+}
+
+bool inRadiusOrtho(RadiusMetric metric, int dx, int dy, int radius) {
     if (radius < 0) return false;
     const int adx = std::abs(dx);
     const int ady = std::abs(dy);
@@ -90,7 +124,7 @@ bool inRadius(RadiusMetric metric, int dx, int dy, int radius) {
     }
 }
 
-bool inRadius3(RadiusMetric metric, int dx, int dy, int dz, int radius) {
+bool inRadius3Ortho(RadiusMetric metric, int dx, int dy, int dz, int radius) {
     if (radius < 0) return false;
     const int adx = std::abs(dx);
     const int ady = std::abs(dy);
@@ -144,10 +178,18 @@ float stateToMaskValue(CellState s) {
     }
 }
 
+float normalizeAngle(float a) {
+    while (a <= -kPi) a += 2.f * kPi;
+    while (a > kPi) a -= 2.f * kPi;
+    return a;
+}
+
 constexpr int kMultXX[8] = {1, 0, 0, -1, -1, 0, 0, 1};
 constexpr int kMultXY[8] = {0, 1, -1, 0, 0, -1, 1, 0};
 constexpr int kMultYX[8] = {0, 1, 1, 0, 0, -1, -1, 0};
 constexpr int kMultYY[8] = {1, 0, 0, 1, -1, 0, 0, -1};
+
+constexpr int kCubeDirs[6][3] = {{1, -1, 0}, {1, 0, -1}, {0, 1, -1}, {-1, 1, 0}, {-1, 0, 1}, {0, -1, 1}};
 
 }  // namespace
 
@@ -162,6 +204,16 @@ struct Fov::Impl {
         bool useCone = false;
         float facingDeg = 0.f;
         float halfAngleDeg = 180.f;
+        float perception = 0.f;
+    };
+
+    struct Rect {
+        int x0, y0, x1, y1;
+    };
+
+    struct AngleShadow {
+        float start;
+        float end;
     };
 
     int width = 0;
@@ -171,17 +223,21 @@ struct Fov::Impl {
     Algorithm algorithm = Algorithm::Shadowcast;
     RadiusMetric metric = RadiusMetric::Euclidean;
     Mode mode = Mode::Grid2D;
+    Topology topology = Topology::Ortho;
+    bool topologyManual = false;
     bool cornerPeek = false;
     bool blockEmpty = true;
     bool dirty = true;
     float cliffBlock = 1.f;
     float eyeOffset = 0.f;
-    int verticalRange = -1;  // <0 => use depth
+    int verticalRange = -1;
+    float perceptionRadiusScale = 0.f;
+    float detectionMargin = 0.f;
 
-    std::vector<uint8_t> opaque;    // W*H*D
-    std::vector<float> elevation;   // W*H (heightmap)
-    std::vector<CellState> state;   // W*H*D
-    std::vector<int> visibleList;   // indices currently Visible
+    std::vector<uint8_t> opaque;
+    std::vector<float> elevation;
+    std::vector<CellState> state;
+    std::vector<int> visibleList;
     std::unordered_set<uint32_t> opaqueGids;
     std::vector<Revealer> revealers;
     int nextRevealerId = 1;
@@ -196,6 +252,30 @@ struct Fov::Impl {
     int effectiveVerticalRange() const {
         if (verticalRange < 0) return std::max(0, depth);
         return verticalRange;
+    }
+
+    int effectiveRadiusOf(const Revealer &r) const {
+        const int bonus = int(std::floor(r.perception * perceptionRadiusScale));
+        return std::max(0, r.radius + bonus);
+    }
+
+    bool inRadius2(int ox, int oy, int x, int y, int radius) const {
+        if (topology == Topology::Hex) return hexDistance(ox, oy, x, y) <= radius;
+        return inRadiusOrtho(metric, x - ox, y - oy, radius);
+    }
+
+    bool inRadius3(int ox, int oy, int oz, int x, int y, int z, int radius) const {
+        if (topology == Topology::Hex) {
+            return hexDistance(ox, oy, x, y) + std::abs(z - oz) <= radius;
+        }
+        return inRadius3Ortho(metric, x - ox, y - oy, z - oz, radius);
+    }
+
+    void applyAutoTopologyFromLayer() {
+        if (!layer || topologyManual) return;
+        const auto o = layer->config()->orientation;
+        topology = (o == MapOrientation::Hexagonal || o == MapOrientation::Staggered) ? Topology::Hex
+                                                                                     : Topology::Ortho;
     }
 
     void resize(int w, int h, int d) {
@@ -216,6 +296,7 @@ struct Fov::Impl {
         auto cfg = layer->config();
         resize(cfg->mapW, cfg->mapH, 1);
         if (mode == Mode::Volume) mode = Mode::Grid2D;
+        applyAutoTopologyFromLayer();
         syncFromLayer();
     }
 
@@ -226,6 +307,7 @@ struct Fov::Impl {
         if (cfg->mapW != width || cfg->mapH != height || depth != 1) {
             resize(cfg->mapW, cfg->mapH, 1);
         }
+        applyAutoTopologyFromLayer();
         const int n = width * height;
         for (int i = 0; i < n; ++i) {
             const uint32_t gid = (i < int(tiles->gids.size())) ? tileGid(tiles->gids[size_t(i)]) : 0u;
@@ -297,9 +379,14 @@ struct Fov::Impl {
         return nullptr;
     }
 
-    /** Bresenham LOS: intermediate opaque cells block. Destination may be opaque. */
-    bool losBresenham2(int x0, int y0, int x1, int y1, int zSlice,
-                       bool applyHeight) const {
+    const Revealer *findRevealerConst(int id) const {
+        for (const auto &r : revealers) {
+            if (r.id == id) return &r;
+        }
+        return nullptr;
+    }
+
+    bool losBresenham2(int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const {
         int dx = std::abs(x1 - x0);
         int dy = std::abs(y1 - y0);
         const int sx = x0 < x1 ? 1 : -1;
@@ -322,13 +409,11 @@ struct Fov::Impl {
                 err += dx;
                 ny += sy;
             }
-            // Stepping onto next cell
             const bool atEnd = (nx == x1 && ny == y1);
             if (!atEnd && cellOpaqueOnSlice(nx, ny, zSlice)) return false;
             if (applyHeight && mode == Mode::Heightmap && !atEnd) {
                 if (elevAt(nx, ny) >= viewerElev + cliffBlock) return false;
             }
-            // Diagonal step: optional corner block when !cornerPeek
             if (!cornerPeek && nx != x && ny != y) {
                 if (cellOpaqueOnSlice(nx, y, zSlice) && cellOpaqueOnSlice(x, ny, zSlice)) {
                     return false;
@@ -339,22 +424,58 @@ struct Fov::Impl {
         }
     }
 
+    bool losHexCube(int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const {
+        int q0, r0, s0, q1, r1, s1;
+        offsetToCube(x0, y0, q0, r0, s0);
+        offsetToCube(x1, y1, q1, r1, s1);
+        const int n = cubeDistance(q0, r0, s0, q1, r1, s1);
+        if (n == 0) return true;
+        const float viewerElev = elevAt(x0, y0) + eyeOffset;
+        for (int i = 1; i <= n; ++i) {
+            const float t = float(i) / float(n);
+            const float qf = float(q0) + (float(q1) - float(q0)) * t;
+            const float rf = float(r0) + (float(r1) - float(r0)) * t;
+            const float sf = float(s0) + (float(s1) - float(s0)) * t;
+            // cube round
+            int rq = int(std::lround(qf));
+            int rr = int(std::lround(rf));
+            int rs = int(std::lround(sf));
+            const float qdiff = std::fabs(rq - qf);
+            const float rdiff = std::fabs(rr - rf);
+            const float sdiff = std::fabs(rs - sf);
+            if (qdiff > rdiff && qdiff > sdiff) rq = -rr - rs;
+            else if (rdiff > sdiff) rr = -rq - rs;
+            else rs = -rq - rr;
+            (void)rs;
+            int x, y;
+            cubeToOffset(rq, rr, x, y);
+            const bool atEnd = (i == n);
+            if (!atEnd && cellOpaqueOnSlice(x, y, zSlice)) return false;
+            if (applyHeight && mode == Mode::Heightmap && !atEnd) {
+                if (elevAt(x, y) >= viewerElev + cliffBlock) return false;
+            }
+        }
+        return true;
+    }
+
+    bool los2(int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const {
+        if (topology == Topology::Hex) return losHexCube(x0, y0, x1, y1, zSlice, applyHeight);
+        return losBresenham2(x0, y0, x1, y1, zSlice, applyHeight);
+    }
+
     bool passesHeightToTarget(int ox, int oy, int tx, int ty) const {
         if (mode != Mode::Heightmap) return true;
-        return losBresenham2(ox, oy, tx, ty, 0, true);
+        return los2(ox, oy, tx, ty, 0, true);
     }
 
     void tryMark2(int ox, int oy, int x, int y, int zSlice, bool useCone, float facingDeg,
                   float halfAngleDeg, int radius) {
         if (!inBounds2(x, y)) return;
-        if (!inRadius(metric, x - ox, y - oy, radius)) return;
+        if (!inRadius2(ox, oy, x, y, radius)) return;
         if (!inCone(ox, oy, x, y, useCone, facingDeg, halfAngleDeg)) return;
         if (!passesHeightToTarget(ox, oy, x, y)) return;
-        if (mode == Mode::Volume) {
-            markVisible3(x, y, zSlice);
-        } else {
-            markVisible2(x, y);
-        }
+        if (mode == Mode::Volume) markVisible3(x, y, zSlice);
+        else markVisible2(x, y);
     }
 
     void castLight(int ox, int oy, int radius, int row, float startSlope, float endSlope, int xx,
@@ -372,12 +493,9 @@ struct Fov::Impl {
                 const int mapY = oy + dx * yx + dy * yy;
                 const float leftSlope = (float(dx) - 0.5f) / (float(dy) + 0.5f);
                 const float rightSlope = (float(dx) + 0.5f) / (float(dy) - 0.5f);
-
                 if (startSlope < rightSlope) continue;
                 if (endSlope > leftSlope) break;
-
                 tryMark2(ox, oy, mapX, mapY, zSlice, useCone, facingDeg, halfAngleDeg, radius);
-
                 if (blocked) {
                     if (cellOpaqueOnSlice(mapX, mapY, zSlice)) {
                         newStart = rightSlope;
@@ -396,9 +514,8 @@ struct Fov::Impl {
         }
     }
 
-    void computeShadowcast(const Revealer &r, int zSlice) {
-        tryMark2(r.x, r.y, r.x, r.y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg, r.radius);
-        const int radius = std::max(0, r.radius);
+    void computeOrthoShadowcast(const Revealer &r, int zSlice, int radius) {
+        tryMark2(r.x, r.y, r.x, r.y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg, radius);
         if (radius == 0) return;
         for (int oct = 0; oct < 8; ++oct) {
             castLight(r.x, r.y, radius, 1, 1.f, 0.f, kMultXX[oct], kMultXY[oct], kMultYX[oct],
@@ -406,8 +523,110 @@ struct Fov::Impl {
         }
     }
 
+    float hexCellAngle(int ox, int oy, int x, int y) const {
+        const float px = float(x) + ((y & 1) ? 0.5f : 0.f);
+        const float py = float(y) * 0.86602540378f;  // ≈ √3/2
+        const float opx = float(ox) + ((oy & 1) ? 0.5f : 0.f);
+        const float opy = float(oy) * 0.86602540378f;
+        return std::atan2(py - opy, px - opx);
+    }
+
+    bool angleFullyCovered(float a0, float a1, const std::vector<AngleShadow> &shadows) const {
+        // Conservative: sample mid angle; for small cells this is enough for FOV.
+        float mid = normalizeAngle(0.5f * (a0 + a1));
+        // handle wrap when a0/a1 straddle ±π
+        if (std::fabs(a1 - a0) > kPi) mid = normalizeAngle(mid + kPi);
+        for (const auto &sh : shadows) {
+            float s = sh.start, e = sh.end;
+            if (s <= e) {
+                if (mid >= s && mid <= e) return true;
+            } else {
+                if (mid >= s || mid <= e) return true;
+            }
+        }
+        return false;
+    }
+
+    void addAngleShadow(std::vector<AngleShadow> &shadows, float a0, float a1) const {
+        a0 = normalizeAngle(a0);
+        a1 = normalizeAngle(a1);
+        // Ensure [start,end] covers the short arc from a0 to a1 going the opaque wedge way:
+        // use unordered span expanded slightly.
+        float start = a0;
+        float end = a1;
+        float diff = normalizeAngle(end - start);
+        if (diff < 0.f) std::swap(start, end);
+        shadows.push_back(AngleShadow{normalizeAngle(start), normalizeAngle(end)});
+    }
+
+    void computeHexShadowcast(const Revealer &r, int zSlice, int radius) {
+        tryMark2(r.x, r.y, r.x, r.y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg, radius);
+        if (radius == 0) return;
+        std::vector<AngleShadow> shadows;
+        shadows.reserve(64);
+
+        int cq, cr, cs;
+        offsetToCube(r.x, r.y, cq, cr, cs);
+
+        for (int ring = 1; ring <= radius; ++ring) {
+            // Start at cube +dir0 * ring, walk 6 edges
+            int q = cq + kCubeDirs[4][0] * ring;
+            int rr = cr + kCubeDirs[4][1] * ring;
+            int s = cs + kCubeDirs[4][2] * ring;
+            for (int side = 0; side < 6; ++side) {
+                for (int step = 0; step < ring; ++step) {
+                    int x, y;
+                    cubeToOffset(q, rr, x, y);
+                    if (inBounds2(x, y) && inRadius2(r.x, r.y, x, y, radius) &&
+                        inCone(r.x, r.y, x, y, r.useCone, r.facingDeg, r.halfAngleDeg)) {
+                        const float ang = hexCellAngle(r.x, r.y, x, y);
+                        const float half =
+                            (ring <= 0) ? kPi : (0.55f / float(ring));  // angular half-width
+                        const float a0 = normalizeAngle(ang - half);
+                        const float a1 = normalizeAngle(ang + half);
+                        if (!angleFullyCovered(a0, a1, shadows) &&
+                            passesHeightToTarget(r.x, r.y, x, y)) {
+                            tryMark2(r.x, r.y, x, y, zSlice, false, 0.f, 180.f, radius);
+                        }
+                        if (cellOpaqueOnSlice(x, y, zSlice)) {
+                            addAngleShadow(shadows, a0, a1);
+                        }
+                    }
+                    q += kCubeDirs[side][0];
+                    rr += kCubeDirs[side][1];
+                    s += kCubeDirs[side][2];
+                    (void)s;
+                }
+            }
+        }
+    }
+
+    void computeShadowcast(const Revealer &r, int zSlice, int radius) {
+        if (topology == Topology::Hex) computeHexShadowcast(r, zSlice, radius);
+        else computeOrthoShadowcast(r, zSlice, radius);
+    }
+
     void castRayLine(int ox, int oy, int tx, int ty, int zSlice, bool useCone, float facingDeg,
                      float halfAngleDeg, int radius) {
+        if (topology == Topology::Hex) {
+            // Follow cube line, marking until blocked.
+            int q0, r0, s0, q1, r1, s1;
+            offsetToCube(ox, oy, q0, r0, s0);
+            offsetToCube(tx, ty, q1, r1, s1);
+            const int n = std::max(1, cubeDistance(q0, r0, s0, q1, r1, s1));
+            for (int i = 0; i <= n; ++i) {
+                const float t = float(i) / float(n);
+                int rq = int(std::lround(float(q0) + (float(q1) - float(q0)) * t));
+                int rr = int(std::lround(float(r0) + (float(r1) - float(r0)) * t));
+                int rs = -rq - rr;
+                (void)rs;
+                int x, y;
+                cubeToOffset(rq, rr, x, y);
+                tryMark2(ox, oy, x, y, zSlice, useCone, facingDeg, halfAngleDeg, radius);
+                if (i > 0 && cellOpaqueOnSlice(x, y, zSlice)) break;
+            }
+            return;
+        }
         int dx = std::abs(tx - ox);
         int dy = std::abs(ty - oy);
         const int sx = ox < tx ? 1 : -1;
@@ -431,11 +650,28 @@ struct Fov::Impl {
         }
     }
 
-    void computeRaycast(const Revealer &r, int zSlice) {
-        tryMark2(r.x, r.y, r.x, r.y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg, r.radius);
-        const int radius = std::max(0, r.radius);
+    void computeRaycast(const Revealer &r, int zSlice, int radius) {
+        tryMark2(r.x, r.y, r.x, r.y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg, radius);
         if (radius == 0) return;
-        // Cast to every cell on the radius square perimeter (dense enough for gameplay).
+        if (topology == Topology::Hex) {
+            int cq, cr, cs;
+            offsetToCube(r.x, r.y, cq, cr, cs);
+            for (int ring = 1; ring <= radius; ++ring) {
+                int q = cq + kCubeDirs[4][0] * ring;
+                int rr = cr + kCubeDirs[4][1] * ring;
+                for (int side = 0; side < 6; ++side) {
+                    for (int step = 0; step < ring; ++step) {
+                        int x, y;
+                        cubeToOffset(q, rr, x, y);
+                        castRayLine(r.x, r.y, x, y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg,
+                                    radius);
+                        q += kCubeDirs[side][0];
+                        rr += kCubeDirs[side][1];
+                    }
+                }
+            }
+            return;
+        }
         for (int i = -radius; i <= radius; ++i) {
             castRayLine(r.x, r.y, r.x + i, r.y - radius, zSlice, r.useCone, r.facingDeg,
                         r.halfAngleDeg, radius);
@@ -448,9 +684,8 @@ struct Fov::Impl {
         }
     }
 
-    void computePermissive(const Revealer &r, int zSlice) {
-        tryMark2(r.x, r.y, r.x, r.y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg, r.radius);
-        const int radius = std::max(0, r.radius);
+    void computePermissive(const Revealer &r, int zSlice, int radius) {
+        tryMark2(r.x, r.y, r.x, r.y, zSlice, r.useCone, r.facingDeg, r.halfAngleDeg, radius);
         if (radius == 0) return;
         for (int dy = -radius; dy <= radius; ++dy) {
             for (int dx = -radius; dx <= radius; ++dx) {
@@ -458,14 +693,9 @@ struct Fov::Impl {
                 const int tx = r.x + dx;
                 const int ty = r.y + dy;
                 if (!inBounds2(tx, ty)) continue;
-                if (!inRadius(metric, dx, dy, radius)) continue;
+                if (!inRadius2(r.x, r.y, tx, ty, radius)) continue;
                 if (!inCone(r.x, r.y, tx, ty, r.useCone, r.facingDeg, r.halfAngleDeg)) continue;
-
-                // Center-to-center LOS (destination may be opaque).
-                bool see = losBresenham2(r.x, r.y, tx, ty, zSlice, mode == Mode::Heightmap);
-
-                // Permissive peek: also accept if an orthogonally adjacent open cell
-                // on the near side has LOS, then the shared edge/corner does not fully seal.
+                bool see = los2(r.x, r.y, tx, ty, zSlice, mode == Mode::Heightmap);
                 if (!see) {
                     const int sx = (dx > 0) ? -1 : (dx < 0 ? 1 : 0);
                     const int sy = (dy > 0) ? -1 : (dy < 0 ? 1 : 0);
@@ -476,26 +706,148 @@ struct Fov::Impl {
                         if (ax == tx && ay == ty) continue;
                         if (!inBounds2(ax, ay)) continue;
                         if (cellOpaqueOnSlice(ax, ay, zSlice)) continue;
-                        if (!inRadius(metric, ax - r.x, ay - r.y, radius)) continue;
-                        if (losBresenham2(r.x, r.y, ax, ay, zSlice, mode == Mode::Heightmap)) {
+                        if (!inRadius2(r.x, r.y, ax, ay, radius)) continue;
+                        if (los2(r.x, r.y, ax, ay, zSlice, mode == Mode::Heightmap)) {
                             see = true;
                             break;
                         }
                     }
                 }
-
-                if (see) {
-                    tryMark2(r.x, r.y, tx, ty, zSlice, false, 0.f, 180.f, radius);
-                }
+                if (see) tryMark2(r.x, r.y, tx, ty, zSlice, false, 0.f, 180.f, radius);
             }
         }
     }
 
-    void extendVertical(const Revealer &r, int zSlice) {
+    std::vector<Rect> buildOpaqueRects(int ox, int oy, int radius, int zSlice) const {
+        const int xMin = std::max(0, ox - radius);
+        const int xMax = std::min(width - 1, ox + radius);
+        const int yMin = std::max(0, oy - radius);
+        const int yMax = std::min(height - 1, oy + radius);
+        const int bw = xMax - xMin + 1;
+        const int bh = yMax - yMin + 1;
+        std::vector<uint8_t> used(size_t(bw * bh), 0);
+        auto usedAt = [&](int x, int y) -> uint8_t & {
+            return used[size_t((y - yMin) * bw + (x - xMin))];
+        };
+
+        std::vector<Rect> rects;
+        for (int y = yMin; y <= yMax; ++y) {
+            for (int x = xMin; x <= xMax; ++x) {
+                if (usedAt(x, y)) continue;
+                if (!cellOpaqueOnSlice(x, y, zSlice)) continue;
+                if (!inRadius2(ox, oy, x, y, radius)) continue;
+                int x1 = x;
+                while (x1 + 1 <= xMax && !usedAt(x1 + 1, y) && cellOpaqueOnSlice(x1 + 1, y, zSlice) &&
+                       inRadius2(ox, oy, x1 + 1, y, radius)) {
+                    ++x1;
+                }
+                int y1 = y;
+                bool grow = true;
+                while (grow && y1 + 1 <= yMax) {
+                    for (int xx = x; xx <= x1; ++xx) {
+                        if (usedAt(xx, y1 + 1) || !cellOpaqueOnSlice(xx, y1 + 1, zSlice) ||
+                            !inRadius2(ox, oy, xx, y1 + 1, radius)) {
+                            grow = false;
+                            break;
+                        }
+                    }
+                    if (grow) ++y1;
+                }
+                for (int yy = y; yy <= y1; ++yy)
+                    for (int xx = x; xx <= x1; ++xx) usedAt(xx, yy) = 1;
+                rects.push_back(Rect{x, y, x1, y1});
+            }
+        }
+        return rects;
+    }
+
+    void computeRectangle(const Revealer &r, int zSlice, int radius) {
+        // Mark all in-radius cells, then carve umbras behind opaque rectangles.
+        std::vector<uint8_t> lit(size_t(width * height), 0);
+        auto litAt = [&](int x, int y) -> uint8_t & { return lit[size_t(index2(x, y))]; };
+
+        for (int y = std::max(0, r.y - radius); y <= std::min(height - 1, r.y + radius); ++y) {
+            for (int x = std::max(0, r.x - radius); x <= std::min(width - 1, r.x + radius); ++x) {
+                if (!inRadius2(r.x, r.y, x, y, radius)) continue;
+                if (!inCone(r.x, r.y, x, y, r.useCone, r.facingDeg, r.halfAngleDeg)) continue;
+                if (!passesHeightToTarget(r.x, r.y, x, y)) continue;
+                litAt(x, y) = 1;
+            }
+        }
+
+        auto rects = buildOpaqueRects(r.x, r.y, radius, zSlice);
+        const float ox = float(r.x) + 0.5f;
+        const float oy = float(r.y) + 0.5f;
+        std::sort(rects.begin(), rects.end(), [&](const Rect &a, const Rect &b) {
+            const int acx = (a.x0 + a.x1) / 2;
+            const int acy = (a.y0 + a.y1) / 2;
+            const int bcx = (b.x0 + b.x1) / 2;
+            const int bcy = (b.y0 + b.y1) / 2;
+            return inRadius2(r.x, r.y, acx, acy, radius) &&
+                   (std::abs(acx - r.x) + std::abs(acy - r.y)) <
+                       (std::abs(bcx - r.x) + std::abs(bcy - r.y));
+        });
+
+        for (const auto &rc : rects) {
+            // Tangents from origin to rectangle corners → umbra angles.
+            const float corners[4][2] = {
+                {float(rc.x0), float(rc.y0)},
+                {float(rc.x1) + 1.f, float(rc.y0)},
+                {float(rc.x0), float(rc.y1) + 1.f},
+                {float(rc.x1) + 1.f, float(rc.y1) + 1.f},
+            };
+            float angles[4];
+            for (int i = 0; i < 4; ++i) {
+                angles[i] = std::atan2(corners[i][1] - oy, corners[i][0] - ox);
+            }
+            float aMin = angles[0], aMax = angles[0];
+            for (int i = 1; i < 4; ++i) {
+                const float dMin = normalizeAngle(angles[i] - aMin);
+                const float dMax = normalizeAngle(angles[i] - aMax);
+                if (dMin < 0.f) aMin = angles[i];
+                if (dMax > 0.f) aMax = angles[i];
+            }
+            const float nearest2 =
+                float(std::min({(rc.x0 - r.x) * (rc.x0 - r.x) + (rc.y0 - r.y) * (rc.y0 - r.y),
+                                (rc.x1 - r.x) * (rc.x1 - r.x) + (rc.y0 - r.y) * (rc.y0 - r.y),
+                                (rc.x0 - r.x) * (rc.x0 - r.x) + (rc.y1 - r.y) * (rc.y1 - r.y),
+                                (rc.x1 - r.x) * (rc.x1 - r.x) + (rc.y1 - r.y) * (rc.y1 - r.y)}));
+
+            for (int y = std::max(0, r.y - radius); y <= std::min(height - 1, r.y + radius); ++y) {
+                for (int x = std::max(0, r.x - radius); x <= std::min(width - 1, r.x + radius); ++x) {
+                    if (!litAt(x, y)) continue;
+                    // Keep the blocking rectangle itself lit.
+                    if (x >= rc.x0 && x <= rc.x1 && y >= rc.y0 && y <= rc.y1) continue;
+                    const float d2 = float((x - r.x) * (x - r.x) + (y - r.y) * (y - r.y));
+                    if (d2 <= nearest2 + 0.01f) continue;
+                    const float ang = std::atan2(float(y) + 0.5f - oy, float(x) + 0.5f - ox);
+                    bool inside = false;
+                    if (aMin <= aMax) inside = (ang >= aMin && ang <= aMax);
+                    else inside = (ang >= aMin || ang <= aMax);
+                    // Use normalized compare for wrapped wedges.
+                    if (normalizeAngle(aMax - aMin) < 0.f) {
+                        inside = normalizeAngle(ang - aMin) >= 0.f ||
+                                 normalizeAngle(aMax - ang) >= 0.f;
+                    } else {
+                        const float da = normalizeAngle(ang - aMin);
+                        const float span = normalizeAngle(aMax - aMin);
+                        inside = da >= 0.f && da <= span;
+                    }
+                    if (inside) litAt(x, y) = 0;
+                }
+            }
+        }
+
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (litAt(x, y)) tryMark2(r.x, r.y, x, y, zSlice, false, 0.f, 180.f, radius);
+            }
+        }
+    }
+
+    void extendVertical(const Revealer &r, int zSlice, int radius) {
         if (mode != Mode::Volume) return;
         const int vRange = effectiveVerticalRange();
-        const int radius = std::max(0, r.radius);
-        // Walk all cells that were marked visible on this slice within radius.
         for (int y = std::max(0, r.y - radius); y <= std::min(height - 1, r.y + radius); ++y) {
             for (int x = std::max(0, r.x - radius); x <= std::min(width - 1, r.x + radius); ++x) {
                 const int idx = index3(x, y, zSlice);
@@ -504,7 +856,7 @@ struct Fov::Impl {
                     for (int step = 1; step <= vRange; ++step) {
                         const int z = zSlice + dir * step;
                         if (z < 0 || z >= depth) break;
-                        if (!inRadius3(metric, x - r.x, y - r.y, z - r.z, radius)) break;
+                        if (!inRadius3(r.x, r.y, r.z, x, y, z, radius)) break;
                         markVisible3(x, y, z);
                         if (cellOpaque3(x, y, z)) break;
                     }
@@ -521,20 +873,24 @@ struct Fov::Impl {
             if (!inBounds3(r.x, r.y, r.z)) return;
             zSlice = r.z;
         }
+        const int radius = effectiveRadiusOf(r);
 
         switch (algorithm) {
         case Algorithm::Raycast:
-            computeRaycast(r, zSlice);
+            computeRaycast(r, zSlice, radius);
             break;
         case Algorithm::Permissive:
-            computePermissive(r, zSlice);
+            computePermissive(r, zSlice, radius);
+            break;
+        case Algorithm::Rectangle:
+            computeRectangle(r, zSlice, radius);
             break;
         case Algorithm::Shadowcast:
         default:
-            computeShadowcast(r, zSlice);
+            computeShadowcast(r, zSlice, radius);
             break;
         }
-        extendVertical(r, zSlice);
+        extendVertical(r, zSlice, radius);
     }
 
     void compute() {
@@ -546,13 +902,9 @@ struct Fov::Impl {
 };
 
 Fov::Fov() : impl_(std::make_unique<Impl>()) {}
-
 Fov::Fov(TileLayer *layer) : Fov() { bindLayer(layer); }
-
 Fov::Fov(int width, int height) : Fov() { setSize(width, height); }
-
 Fov::Fov(int width, int height, int depth) : Fov() { setVolumeSize(width, height, depth); }
-
 Fov::~Fov() = default;
 Fov::Fov(Fov &&) noexcept = default;
 Fov &Fov::operator=(Fov &&) noexcept = default;
@@ -564,7 +916,7 @@ void Fov::bindLayer(TileLayer *layer) {
 
 void Fov::setSize(int width, int height) {
     impl_->layer = nullptr;
-    impl_->mode = (impl_->mode == Mode::Volume) ? Mode::Grid2D : impl_->mode;
+    if (impl_->mode == Mode::Volume) impl_->mode = Mode::Grid2D;
     impl_->resize(width, height, 1);
 }
 
@@ -580,14 +932,8 @@ int Fov::getDepth() const { return impl_->depth; }
 
 void Fov::setMode(const std::string &name) {
     const Mode next = parseMode(name, impl_->mode);
-    if (next == Mode::Volume && impl_->depth < 2) {
-        // Keep current footprint; ensure at least depth 1 volume semantics.
-        impl_->mode = Mode::Volume;
-    } else {
-        impl_->mode = next;
-    }
+    impl_->mode = next;
     if (next != Mode::Volume && impl_->depth != 1) {
-        // Collapse to 2D footprint preserving z=0 opaque/state via resize wipe.
         impl_->resize(impl_->width, impl_->height, 1);
     }
     impl_->dirty = true;
@@ -608,6 +954,23 @@ void Fov::setRadiusMetric(const std::string &name) {
 }
 
 std::string Fov::getRadiusMetric() const { return metricName(impl_->metric); }
+
+void Fov::setTopology(const std::string &name) {
+    if (name == "auto") {
+        impl_->topologyManual = false;
+        impl_->applyAutoTopologyFromLayer();
+        if (!impl_->layer) impl_->topology = Topology::Ortho;
+    } else if (name == "hex" || name == "hexagonal" || name == "staggered") {
+        impl_->topologyManual = true;
+        impl_->topology = Topology::Hex;
+    } else if (name == "ortho" || name == "orthogonal") {
+        impl_->topologyManual = true;
+        impl_->topology = Topology::Ortho;
+    }
+    impl_->dirty = true;
+}
+
+std::string Fov::getTopology() const { return topologyName(impl_->topology); }
 
 void Fov::setCornerPeek(bool enable) {
     impl_->cornerPeek = enable;
@@ -645,11 +1008,9 @@ bool Fov::getBlockEmpty() const { return impl_->blockEmpty; }
 
 void Fov::setOpaque(int x, int y, bool opaque) {
     if (!impl_->inBounds2(x, y)) return;
-    // 2D API writes z=0 (or sole layer).
-    const int z = 0;
     if (impl_->mode == Mode::Volume) {
-        if (!impl_->inBounds3(x, y, z)) return;
-        impl_->opaque[size_t(impl_->index3(x, y, z))] = opaque ? 1u : 0u;
+        if (!impl_->inBounds3(x, y, 0)) return;
+        impl_->opaque[size_t(impl_->index3(x, y, 0))] = opaque ? 1u : 0u;
     } else {
         impl_->opaque[size_t(impl_->index2(x, y))] = opaque ? 1u : 0u;
     }
@@ -724,9 +1085,7 @@ void Fov::clearRevealers() {
 }
 
 void Fov::setRevealerPosition(int id, int x, int y) {
-    if (auto *r = impl_->findRevealer(id)) {
-        setRevealerPosition3(id, x, y, r->z);
-    }
+    if (auto *r = impl_->findRevealer(id)) setRevealerPosition3(id, x, y, r->z);
 }
 
 void Fov::setRevealerPosition3(int id, int x, int y, int z) {
@@ -771,9 +1130,49 @@ void Fov::setRevealerEnabled(int id, bool enabled) {
 
 int Fov::getRevealerCount() const { return int(impl_->revealers.size()); }
 
+void Fov::setRevealerPerception(int id, float perception) {
+    if (auto *r = impl_->findRevealer(id)) {
+        r->perception = perception;
+        impl_->dirty = true;
+    }
+}
+
+float Fov::getRevealerPerception(int id) const {
+    if (const auto *r = impl_->findRevealerConst(id)) return r->perception;
+    return 0.f;
+}
+
+void Fov::setPerceptionRadiusScale(float scale) {
+    impl_->perceptionRadiusScale = scale;
+    impl_->dirty = true;
+}
+float Fov::getPerceptionRadiusScale() const { return impl_->perceptionRadiusScale; }
+
+void Fov::setDetectionMargin(float margin) { impl_->detectionMargin = margin; }
+float Fov::getDetectionMargin() const { return impl_->detectionMargin; }
+
+int Fov::getEffectiveRadius(int id) const {
+    if (const auto *r = impl_->findRevealerConst(id)) return impl_->effectiveRadiusOf(*r);
+    return 0;
+}
+
+bool Fov::canDetect(int revealerId, int x, int y, float targetStealth) const {
+    if (impl_->mode == Mode::Volume) return canDetect3(revealerId, x, y, 0, targetStealth);
+    const auto *r = impl_->findRevealerConst(revealerId);
+    if (!r || !r->enabled) return false;
+    if (!isVisible(x, y)) return false;
+    return (r->perception + impl_->detectionMargin) >= targetStealth;
+}
+
+bool Fov::canDetect3(int revealerId, int x, int y, int z, float targetStealth) const {
+    const auto *r = impl_->findRevealerConst(revealerId);
+    if (!r || !r->enabled) return false;
+    if (!isVisible3(x, y, z)) return false;
+    return (r->perception + impl_->detectionMargin) >= targetStealth;
+}
+
 void Fov::markDirty() { impl_->dirty = true; }
 bool Fov::isDirty() const { return impl_->dirty; }
-
 void Fov::compute() { impl_->compute(); }
 
 bool Fov::isVisible(int x, int y) const {
@@ -808,7 +1207,6 @@ std::string Fov::getState(int x, int y) const {
         return "visible";
     case CellState::Explored:
         return "explored";
-    case CellState::Unknown:
     default:
         return "unknown";
     }
@@ -821,7 +1219,6 @@ std::string Fov::getState3(int x, int y, int z) const {
         return "visible";
     case CellState::Explored:
         return "explored";
-    case CellState::Unknown:
     default:
         return "unknown";
     }
@@ -871,16 +1268,32 @@ bool Fov::fillMaskR8Slice(std::vector<uint8_t> &out, int sliceZ) const {
     out.resize(size_t(impl_->width * impl_->height));
     for (int y = 0; y < impl_->height; ++y) {
         for (int x = 0; x < impl_->width; ++x) {
-            CellState s;
-            if (impl_->mode == Mode::Volume) {
-                s = impl_->state[size_t(impl_->index3(x, y, sliceZ))];
-            } else {
-                s = impl_->state[size_t(impl_->index2(x, y))];
-            }
+            CellState s = (impl_->mode == Mode::Volume)
+                              ? impl_->state[size_t(impl_->index3(x, y, sliceZ))]
+                              : impl_->state[size_t(impl_->index2(x, y))];
             out[size_t(impl_->index2(x, y))] = stateToMaskByte(s);
         }
     }
     return true;
+}
+
+graphics::Texture *Fov::buildMaskTexture(graphics::Graphics *gfx) const {
+    return buildMaskTextureSlice(gfx, 0);
+}
+
+graphics::Texture *Fov::buildMaskTextureSlice(graphics::Graphics *gfx, int sliceZ) const {
+    if (!gfx) return nullptr;
+    std::vector<uint8_t> r8;
+    if (!fillMaskR8Slice(r8, sliceZ)) return nullptr;
+    std::vector<uint8_t> rgba(size_t(impl_->width * impl_->height * 4));
+    for (size_t i = 0; i < r8.size(); ++i) {
+        const uint8_t v = r8[i];
+        rgba[i * 4 + 0] = v;
+        rgba[i * 4 + 1] = v;
+        rgba[i * 4 + 2] = v;
+        rgba[i * 4 + 3] = v;
+    }
+    return gfx->newTexture(impl_->width, impl_->height, rgba.data());
 }
 
 }  // namespace eve::map

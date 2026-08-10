@@ -4,10 +4,12 @@
 #include "map/Map.h"
 #include "map/TileLayer.h"
 #include "map/Fov.h"
+#include "graphics/Graphics.h"
+#include "graphics/Texture.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 using namespace eve::map;
 
@@ -39,9 +41,12 @@ TEST_CASE("map.fov.algorithm.defaults") {
     CHECK_EQ(fov->getAlgorithm(), std::string("raycast"));
     fov->setAlgorithm("permissive");
     CHECK_EQ(fov->getAlgorithm(), std::string("permissive"));
+    fov->setAlgorithm("rectangle");
+    CHECK_EQ(fov->getAlgorithm(), std::string("rectangle"));
     fov->setAlgorithm("nope");
-    CHECK_EQ(fov->getAlgorithm(), std::string("permissive"));
+    CHECK_EQ(fov->getAlgorithm(), std::string("rectangle"));
     CHECK_EQ(fov->getMode(), std::string("grid2d"));
+    CHECK_EQ(fov->getTopology(), std::string("ortho"));
     delete fov;
 }
 
@@ -355,4 +360,91 @@ TEST_CASE("map.fov.maskExport") {
     CHECK_EQ(int(mask[size_t(2 + 2 * 5)]), 89);
     delete fov;
 }
+
+TEST_CASE("map.fov.hex.topologyRadius") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(11, 11);
+    fov->setTopology("hex");
+    fov->setBlockEmpty(false);
+    CHECK_EQ(fov->getTopology(), std::string("hex"));
+    fov->addRevealer(5, 5, 2);
+    fov->compute();
+    CHECK(fov->isVisible(5, 5));
+    // Hex distance 2 neighbors should be visible; far chebyshev corner may not.
+    CHECK(fov->isVisible(6, 5));
+    const bool nearRing = fov->isVisible(5, 7) || fov->isVisible(6, 6);
+    CHECK(nearRing);
+    CHECK(!fov->isVisible(0, 0));
+    delete fov;
+}
+
+TEST_CASE("map.fov.hex.wallBlocksCubeLine") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(9, 5);
+    fov->setTopology("hex");
+    fov->setAlgorithm("shadowcast");
+    fov->setBlockEmpty(false);
+    for (int y = 0; y < 5; ++y) fov->setOpaque(4, y, true);
+    fov->addRevealer(1, 2, 5);
+    fov->compute();
+    CHECK(fov->isVisible(1, 2));
+    CHECK(fov->isVisible(4, 2));
+    CHECK(!fov->isVisible(7, 2));
+    delete fov;
+}
+
+TEST_CASE("map.fov.rectangle.wallShadow") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(11, 5);
+    fov->setAlgorithm("rectangle");
+    fov->setRadiusMetric("chebyshev");
+    fov->setBlockEmpty(false);
+    for (int y = 0; y < 5; ++y) {
+        fov->setOpaque(5, y, true);
+        fov->setOpaque(6, y, true);  // thick wall merges to a rect
+    }
+    fov->addRevealer(1, 2, 8);
+    fov->compute();
+    CHECK(fov->isVisible(1, 2));
+    CHECK(fov->isVisible(5, 2));
+    CHECK(!fov->isVisible(9, 2));
+    delete fov;
+}
+
+TEST_CASE("map.fov.perception.canDetect") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(7, 7);
+    fov->setBlockEmpty(false);
+    fov->setRadiusMetric("chebyshev");
+    fov->setPerceptionRadiusScale(1.f);
+    const int id = fov->addRevealer(3, 3, 1);
+    fov->setRevealerPerception(id, 2.f);  // effective radius 3
+    CHECK_EQ(fov->getEffectiveRadius(id), 3);
+    fov->compute();
+    CHECK(fov->isVisible(3, 6));
+    fov->setDetectionMargin(0.f);
+    CHECK(fov->canDetect(id, 3, 3, 1.f));   // perception 2 >= stealth 1
+    CHECK(!fov->canDetect(id, 3, 3, 3.f));  // stealth too high
+    CHECK(!fov->canDetect(id, 0, 0, 0.f));  // not visible
+    delete fov;
+}
+
+TEST_CASE("map.fov.gpuMaskTexture") {
+    auto *mod = Map::create();
+    Fov *fov = mod->newFovSize(4, 4);
+    fov->setBlockEmpty(false);
+    fov->addRevealer(1, 1, 1);
+    fov->compute();
+    CHECK(fov->buildMaskTexture(nullptr) == nullptr);
+
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(gfx != nullptr);
+    auto *tex = fov->buildMaskTexture(gfx);
+    REQUIRE(tex != nullptr);
+    CHECK_EQ(tex->getWidth(), 4);
+    CHECK_EQ(tex->getHeight(), 4);
+    delete tex;
+    delete fov;
+}
+
 

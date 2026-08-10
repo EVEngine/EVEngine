@@ -251,6 +251,8 @@ void Map::expose(ssq::Table &table) {
     fov.addFunc("getAlgorithm", &Fov::getAlgorithm);
     fov.addFunc("setRadiusMetric", &Fov::setRadiusMetric);
     fov.addFunc("getRadiusMetric", &Fov::getRadiusMetric);
+    fov.addFunc("setTopology", &Fov::setTopology);
+    fov.addFunc("getTopology", &Fov::getTopology);
     fov.addFunc("setCornerPeek", &Fov::setCornerPeek);
     fov.addFunc("getCornerPeek", &Fov::getCornerPeek);
     fov.addFunc("blockOpaqueGid", &Fov::blockOpaqueGid);
@@ -282,6 +284,15 @@ void Map::expose(ssq::Table &table) {
     fov.addFunc("clearRevealerFacing", &Fov::clearRevealerFacing);
     fov.addFunc("setRevealerEnabled", &Fov::setRevealerEnabled);
     fov.addFunc("getRevealerCount", &Fov::getRevealerCount);
+    fov.addFunc("setRevealerPerception", &Fov::setRevealerPerception);
+    fov.addFunc("getRevealerPerception", &Fov::getRevealerPerception);
+    fov.addFunc("setPerceptionRadiusScale", &Fov::setPerceptionRadiusScale);
+    fov.addFunc("getPerceptionRadiusScale", &Fov::getPerceptionRadiusScale);
+    fov.addFunc("setDetectionMargin", &Fov::setDetectionMargin);
+    fov.addFunc("getDetectionMargin", &Fov::getDetectionMargin);
+    fov.addFunc("getEffectiveRadius", &Fov::getEffectiveRadius);
+    fov.addFunc("canDetect", &Fov::canDetect);
+    fov.addFunc("canDetect3", &Fov::canDetect3);
     fov.addFunc("markDirty", &Fov::markDirty);
     fov.addFunc("isDirty", &Fov::isDirty);
     fov.addFunc("compute", &Fov::compute);
@@ -297,6 +308,8 @@ void Map::expose(ssq::Table &table) {
     fov.addFunc("getMaskByte", &Fov::getMaskByte);
     fov.addFunc("getMaskValue3", &Fov::getMaskValue3);
     fov.addFunc("getMaskByte3", &Fov::getMaskByte3);
+    fov.addFunc("buildMaskTexture", &Fov::buildMaskTexture);
+    fov.addFunc("buildMaskTextureSlice", &Fov::buildMaskTextureSlice);
 }
 
 void Map::expose(ssq::Class &cls) {

@@ -7,13 +7,19 @@
 #include <string>
 #include <vector>
 
+namespace eve::graphics {
+class Graphics;
+class Texture;
+}  // namespace eve::graphics
+
 namespace eve::map {
 
 /**
  * Dynamic field-of-view / fog-of-war facade.
  * Phase A: 2D shadowcast + multi-revealer + explored memory.
- * Phase B: raycast/permissive, heightmap, volume (slice RSC + vertical),
- *          dirty/incremental visible-list reset, CPU mask export.
+ * Phase B: raycast/permissive, heightmap, volume, dirty-skip, CPU masks.
+ * Phase C: hex topology FOV, rectangle-based FOV, perception/stealth
+ *          detection helpers, GPU mask Texture upload.
  */
 class Fov {
 public:
@@ -39,13 +45,17 @@ public:
     void setMode(const std::string &name);
     std::string getMode() const;
 
-    /** "shadowcast" (default) | "raycast" | "permissive" */
+    /** "shadowcast" | "raycast" | "permissive" | "rectangle" */
     void setAlgorithm(const std::string &name);
     std::string getAlgorithm() const;
 
-    /** "euclidean" (default) | "chebyshev" | "manhattan" */
+    /** "euclidean" | "chebyshev" | "manhattan" — ignored when topology is hex (cube distance). */
     void setRadiusMetric(const std::string &name);
     std::string getRadiusMetric() const;
+
+    /** "ortho" (default) | "hex" | "auto" (hex if bound layer is hex/staggered). */
+    void setTopology(const std::string &name);
+    std::string getTopology() const;
 
     void setCornerPeek(bool enable);
     bool getCornerPeek() const;
@@ -61,7 +71,6 @@ public:
     bool isOpaque3(int x, int y, int z) const;
     void syncFromLayer();
 
-    /** heightmap */
     void setElevation(int x, int y, float elev);
     float getElevation(int x, int y) const;
     void setCliffBlock(float delta);
@@ -69,11 +78,9 @@ public:
     void setEyeOffset(float offset);
     float getEyeOffset() const;
 
-    /** volume vertical extend distance (voxels). Default = depth. */
     void setVerticalRange(int range);
     int getVerticalRange() const;
 
-    /** Returns revealer id (>= 1). */
     int addRevealer(int x, int y, int radius);
     int addRevealer3(int x, int y, int z, int radius);
     void removeRevealer(int id);
@@ -86,6 +93,21 @@ public:
     void setRevealerEnabled(int id, bool enabled);
     int getRevealerCount() const;
 
+    /**
+     * Soft RPG hooks (no hard dependency on rpg module).
+     * effectiveRadius = radius + floor(perception * perceptionRadiusScale)
+     * canDetect: cell visible AND perception + detectionMargin >= targetStealth
+     */
+    void setRevealerPerception(int id, float perception);
+    float getRevealerPerception(int id) const;
+    void setPerceptionRadiusScale(float scale);
+    float getPerceptionRadiusScale() const;
+    void setDetectionMargin(float margin);
+    float getDetectionMargin() const;
+    int getEffectiveRadius(int id) const;
+    bool canDetect(int revealerId, int x, int y, float targetStealth) const;
+    bool canDetect3(int revealerId, int x, int y, int z, float targetStealth) const;
+
     void markDirty();
     bool isDirty() const;
     void compute();
@@ -93,26 +115,24 @@ public:
     bool isExplored(int x, int y) const;
     bool isVisible3(int x, int y, int z) const;
     bool isExplored3(int x, int y, int z) const;
-    /** "unknown" | "explored" | "visible" */
     std::string getState(int x, int y) const;
     std::string getState3(int x, int y, int z) const;
     void clearMemory();
     void resetVisibleOnly();
 
-    /**
-     * Mask helpers for CPU FoW overlays.
-     * visible=1, explored≈0.35, unknown=0 (byte: 255 / 89 / 0).
-     */
     float getMaskValue(int x, int y) const;
     int getMaskByte(int x, int y) const;
     float getMaskValue3(int x, int y, int z) const;
     int getMaskByte3(int x, int y, int z) const;
-    /**
-     * Fill tightly packed R8 buffer of size width*height (2D / z-slice).
-     * Returns false if out size mismatch. sliceZ ignored in non-volume modes.
-     */
     bool fillMaskR8(std::vector<uint8_t> &out) const;
     bool fillMaskR8Slice(std::vector<uint8_t> &out, int sliceZ) const;
+
+    /**
+     * Upload current 2D / slice mask as RGBA8 Texture (R=G=B=A=mask byte).
+     * Caller owns the returned Texture*. Null gfx / empty grid → nullptr.
+     */
+    graphics::Texture *buildMaskTexture(graphics::Graphics *gfx) const;
+    graphics::Texture *buildMaskTextureSlice(graphics::Graphics *gfx, int sliceZ) const;
 
 private:
     struct Impl;

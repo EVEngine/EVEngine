@@ -59,20 +59,22 @@ local ny = field.nextY(ax, ay);
 
 ### 动态视野（FOV / 战争迷雾）
 
-格子可见性与探索记忆；遮挡（opaque）与寻路可行走（walkable）分开配置。默认算法为 recursive shadowcasting；可选 `raycast` / `permissive`。模式：`grid2d`（默认）、`heightmap`、`volume`。
+格子可见性与探索记忆；遮挡（opaque）与寻路可行走（walkable）分开配置。默认算法为 recursive shadowcasting；可选 `raycast` / `permissive` / `rectangle`。模式：`grid2d`（默认）、`heightmap`、`volume`。拓扑：`ortho` / `hex`。
 
 ```squirrel
 local fov = map.newFov(layer);
 fov.setBlockEmpty(false);
-fov.blockOpaqueGid(1);           // 墙挡视线
-fov.setRadiusMetric("chebyshev"); // euclidean | chebyshev | manhattan
+fov.blockOpaqueGid(1);
+fov.setRadiusMetric("chebyshev");
+fov.setTopology("auto"); // 或 "hex"
 local id = fov.addRevealer(sx, sy, 8);
-fov.setRevealerFacing(id, 90.0, 45.0); // 可选扇形；clearRevealerFacing 恢复全向
+// 软 RPG 挂钩：游戏自行读取 actor 属性后写入
+fov.setRevealerPerception(id, actor.getFinalAttribute("perception"));
+fov.setPerceptionRadiusScale(0.25);
+fov.setDetectionMargin(0.0);
 fov.compute();
-if (fov.isVisible(tx, ty)) { /* 当前可见 */ }
-if (fov.isExplored(tx, ty)) { /* 探索过（含当前可见） */ }
-local st = fov.getState(tx, ty); // "unknown" | "explored" | "visible"
-local mask = fov.getMaskByte(tx, ty); // 255 / 89 / 0，供 CPU 遮罩
+if (fov.canDetect(id, tx, ty, targetStealth)) { /* 可见且感知足够 */ }
+local tex = fov.buildMaskTexture(gfx); // RGBA8 FoW 遮罩，调用方拥有
 ```
 
 自定义网格：`map.newFovSize(w, h)` + `setOpaque`。移动观察者后再次 `compute()`；无变更时 `isDirty()` 为 false，`compute` 会跳过。离开视野的格子保留 `explored`，可用 `clearMemory()` 清空。
@@ -139,7 +141,7 @@ Path：`getLength`、`getX`、`getY`、`getTotalCost`
 
 FlowField：`getWidth`、`getHeight`、`getGoalX`、`getGoalY`、`costAt`、`nextX`、`nextY`、`isReachable`
 
-Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgorithm`、`getAlgorithm`、`setRadiusMetric`、`getRadiusMetric`、`setCornerPeek`、`blockOpaqueGid`、`unblockOpaqueGid`、`clearOpaqueGids`、`setBlockEmpty`、`setOpaque`、`isOpaque`、`setOpaque3`、`isOpaque3`、`syncFromLayer`、`setElevation`、`getElevation`、`setCliffBlock`、`setEyeOffset`、`setVerticalRange`、`addRevealer`、`addRevealer3`、`removeRevealer`、`clearRevealers`、`setRevealerPosition`、`setRevealerPosition3`、`setRevealerRadius`、`setRevealerFacing`、`clearRevealerFacing`、`setRevealerEnabled`、`getRevealerCount`、`markDirty`、`isDirty`、`compute`、`isVisible`、`isExplored`、`isVisible3`、`isExplored3`、`getState`、`getState3`、`clearMemory`、`resetVisibleOnly`、`getMaskValue`、`getMaskByte`、`getMaskValue3`、`getMaskByte3`
+Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgorithm`、`getAlgorithm`、`setRadiusMetric`、`getRadiusMetric`、`setTopology`、`getTopology`、`setCornerPeek`、`blockOpaqueGid`、`unblockOpaqueGid`、`clearOpaqueGids`、`setBlockEmpty`、`setOpaque`、`isOpaque`、`setOpaque3`、`isOpaque3`、`syncFromLayer`、`setElevation`、`getElevation`、`setCliffBlock`、`setEyeOffset`、`setVerticalRange`、`addRevealer`、`addRevealer3`、`removeRevealer`、`clearRevealers`、`setRevealerPosition`、`setRevealerPosition3`、`setRevealerRadius`、`setRevealerFacing`、`clearRevealerFacing`、`setRevealerEnabled`、`getRevealerCount`、`setRevealerPerception`、`getRevealerPerception`、`setPerceptionRadiusScale`、`setDetectionMargin`、`getEffectiveRadius`、`canDetect`、`canDetect3`、`markDirty`、`isDirty`、`compute`、`isVisible`、`isExplored`、`isVisible3`、`isExplored3`、`getState`、`getState3`、`clearMemory`、`resetVisibleOnly`、`getMaskValue`、`getMaskByte`、`getMaskValue3`、`getMaskByte3`、`buildMaskTexture`、`buildMaskTextureSlice`
 
 ## 使用要点
 
