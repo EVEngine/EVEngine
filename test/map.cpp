@@ -652,10 +652,12 @@ TEST_CASE("map.dualGrid.resolve.staggeredXEven") {
     auto *mod = Map::create();
     TileLayer *logic = mod->newLayer(2, 3, 64.f, 32.f);
     TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
-    auto *lc = logic->config();
-    lc->orientation = MapOrientation::Staggered;
-    lc->staggerAxis = StaggerAxis::X;
-    lc->staggerIndex = StaggerIndex::Even;
+    {
+        auto lc = logic->config();
+        lc->orientation = MapOrientation::Staggered;
+        lc->staggerAxis = StaggerAxis::X;
+        lc->staggerIndex = StaggerIndex::Even;
+    }
     logic->setOrigin(10.f, 20.f);
     logic->setTile(0, 1, 1);
     logic->setTile(1, 1, 1);
@@ -683,11 +685,13 @@ TEST_CASE("map.dualGrid.resolve.hexagonal") {
     auto *mod = Map::create();
     TileLayer *logic = mod->newLayer(2, 2, 64.f, 32.f);
     TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
-    auto *lc = logic->config();
-    lc->orientation = MapOrientation::Hexagonal;
-    lc->staggerAxis = StaggerAxis::Y;
-    lc->staggerIndex = StaggerIndex::Odd;
-    lc->hexSideLength = 16.f;
+    {
+        auto lc = logic->config();
+        lc->orientation = MapOrientation::Hexagonal;
+        lc->staggerAxis = StaggerAxis::Y;
+        lc->staggerIndex = StaggerIndex::Odd;
+        lc->hexSideLength = 16.f;
+    }
     logic->setOrigin(5.f, 7.f);
     logic->setTile(0, 0, 1);
 
