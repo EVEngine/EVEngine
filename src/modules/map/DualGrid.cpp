@@ -1,4 +1,5 @@
 #include "map/DualGrid.h"
+#include "map/TileOrientation.h"
 
 namespace eve::map {
 namespace {
@@ -15,6 +16,16 @@ int resolveFirstGid(TileLayer *display, int firstDisplayGid) {
     return ts > 0 ? ts : 1;
 }
 
+float staggerPitchY(const TileLayer::Config &cfg) {
+    const bool hex = cfg.orientation == MapOrientation::Hexagonal && cfg.hexSideLength > 0.f;
+    return hex ? (cfg.tileH + cfg.hexSideLength) * 0.5f : cfg.tileH * 0.5f;
+}
+
+float staggerPitchX(const TileLayer::Config &cfg) {
+    const bool hex = cfg.orientation == MapOrientation::Hexagonal && cfg.hexSideLength > 0.f;
+    return hex ? (cfg.tileW + cfg.hexSideLength) * 0.5f : cfg.tileW * 0.5f;
+}
+
 }  // namespace
 
 const std::array<int, 16> &dualGridDefaultFrameTable() { return kDefaultFrameByMask; }
@@ -22,6 +33,31 @@ const std::array<int, 16> &dualGridDefaultFrameTable() { return kDefaultFrameByM
 int dualGridDefaultFrame(int mask) {
     if (mask < 0 || mask > 15) return -1;
     return kDefaultFrameByMask[size_t(mask)];
+}
+
+void dualGridHalfOffset(const TileLayer::Config &cfg, float &offX, float &offY) {
+    switch (cfg.orientation) {
+    case MapOrientation::Isometric:
+        // tileToWorld(tx-0.5, ty-0.5) with same iso formula ⇒ origin (ox, oy - th/2).
+        offX = 0.f;
+        offY = -cfg.tileH * 0.5f;
+        break;
+    case MapOrientation::Staggered:
+    case MapOrientation::Hexagonal:
+        if (cfg.staggerAxis == StaggerAxis::Y) {
+            offX = -cfg.tileW * 0.5f;
+            offY = -staggerPitchY(cfg) * 0.5f;
+        } else {
+            offX = -staggerPitchX(cfg) * 0.5f;
+            offY = -cfg.tileH * 0.5f;
+        }
+        break;
+    case MapOrientation::Orthogonal:
+    default:
+        offX = -cfg.tileW * 0.5f;
+        offY = -cfg.tileH * 0.5f;
+        break;
+    }
 }
 
 bool dualGridLogicFilled(TileLayer &logic, int tx, int ty, int filledGid) {
@@ -72,7 +108,9 @@ bool resolveDualGrid(TileLayer *logic, TileLayer *display, const DualGridOptions
     dc->hexSideLength = lc->hexSideLength;
 
     if (opts.applyHalfOffset) {
-        display->setOrigin(logic->getX() - tileW * 0.5f, logic->getY() - tileH * 0.5f);
+        float offX = 0.f, offY = 0.f;
+        dualGridHalfOffset(*lc, offX, offY);
+        display->setOrigin(logic->getX() + offX, logic->getY() + offY);
     } else {
         display->setOrigin(logic->getX(), logic->getY());
     }

@@ -21,7 +21,7 @@
 - GID 翻转/对角旋转绘制（高位仍剥离，不改 UV）
 - `compression: "zstd"`（当前无解码依赖；导出请用 zlib；可后补）
 - 粒子 / UI 进入统一 2D 队列
-- 视锥裁剪 / chunk 批处理（可后加）
+- 视锥裁剪 / chunk 批处理（可后加；宽相候选可用独立模块 [`spatial`](./空间索引模块设计.md)）
 
 ## 背景（现状）
 
@@ -211,10 +211,18 @@ Tiled 提供的相关能力：
 
 ### 引擎 API
 
-- `DualGrid.h`：`dualGridMaskAt` / `dualGridDefaultFrame` / `resolveDualGrid`
-- 脚本：`Map.resolveDualGrid(logic, display)`、`resolveDualGridFilled(logic, display, filledGid)`
-- 显示层尺寸 `(logicW+1)×(logicH+1)`，默认 origin 偏移 `(-tileW/2, -tileH/2)`
-- 默认图集映射为 SpriteCook 式 4×4 frame 表（mask→local id）；可用 `useDefaultFrameTable=false` 改为 `gid = firstGid + mask`
+- `DualGrid.h`：`dualGridMaskAt` / `dualGridDefaultFrame` / `dualGridHalfOffset` / `resolveDualGrid`
+- 脚本：`Map.resolveDualGrid(logic, display)`、`resolveDualGridFilled`、`dualGridOffsetX/Y`
+- 显示层尺寸 `(logicW+1)×(logicH+1)`；复制 `orientation` / `stagger*` / `hexSideLength`
+- 半步 origin 偏移（相对逻辑 origin）：
+
+| orientation | offset |
+|-------------|--------|
+| Orthogonal | `(-tileW/2, -tileH/2)` |
+| Isometric | `(0, -tileH/2)`（等价逻辑坐标 `(tx-0.5, ty-0.5)`） |
+| Staggered / Hexagonal（Y） | `(-tileW/2, -pitchY/2)` |
+| Staggered / Hexagonal（X） | `(-pitchX/2, -tileH/2)` |
+
+- 角掩码在**格子索引空间**采样（与投影无关）；默认图集为 SpriteCook 式 4×4 frame 表；`useDefaultFrameTable=false` 时 `gid = firstGid + mask`
 
 角位：`TL=1, TR=2, BL=4, BR=8`。mask 0 不绘制。
-```

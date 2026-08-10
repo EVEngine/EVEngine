@@ -511,3 +511,274 @@ TEST_CASE("map.dualGrid.filledGidFilter") {
     logic->setVisible(false);
     display->setVisible(false);
 }
+
+TEST_CASE("map.dualGrid.halfOffset.orthogonalIsoStaggerHex") {
+    TileLayer::Config ortho;
+    ortho.orientation = MapOrientation::Orthogonal;
+    ortho.tileW = 32.f;
+    ortho.tileH = 32.f;
+    float ox = 0, oy = 0;
+    dualGridHalfOffset(ortho, ox, oy);
+    CHECK_EQ(ox, -16.f);
+    CHECK_EQ(oy, -16.f);
+
+    TileLayer::Config iso;
+    iso.orientation = MapOrientation::Isometric;
+    iso.tileW = 64.f;
+    iso.tileH = 32.f;
+    dualGridHalfOffset(iso, ox, oy);
+    CHECK_EQ(ox, 0.f);
+    CHECK_EQ(oy, -16.f);
+
+    TileLayer::Config stagY;
+    stagY.orientation = MapOrientation::Staggered;
+    stagY.staggerAxis = StaggerAxis::Y;
+    stagY.tileW = 64.f;
+    stagY.tileH = 32.f;
+    dualGridHalfOffset(stagY, ox, oy);
+    CHECK_EQ(ox, -32.f);
+    CHECK_EQ(oy, -8.f);  // pitchY = th/2 = 16 → half = 8
+
+    TileLayer::Config stagX;
+    stagX.orientation = MapOrientation::Staggered;
+    stagX.staggerAxis = StaggerAxis::X;
+    stagX.tileW = 64.f;
+    stagX.tileH = 32.f;
+    dualGridHalfOffset(stagX, ox, oy);
+    CHECK_EQ(ox, -16.f);  // pitchX = tw/2 = 32 → half = 16
+    CHECK_EQ(oy, -16.f);
+
+    TileLayer::Config hexY;
+    hexY.orientation = MapOrientation::Hexagonal;
+    hexY.staggerAxis = StaggerAxis::Y;
+    hexY.tileW = 64.f;
+    hexY.tileH = 32.f;
+    hexY.hexSideLength = 16.f;
+    dualGridHalfOffset(hexY, ox, oy);
+    // pitchY = (32+16)/2 = 24 → half = 12
+    CHECK_EQ(ox, -32.f);
+    CHECK_EQ(oy, -12.f);
+
+    TileLayer::Config hexX;
+    hexX.orientation = MapOrientation::Hexagonal;
+    hexX.staggerAxis = StaggerAxis::X;
+    hexX.tileW = 64.f;
+    hexX.tileH = 32.f;
+    hexX.hexSideLength = 16.f;
+    dualGridHalfOffset(hexX, ox, oy);
+    // pitchX = (64+16)/2 = 40 → half = 20
+    CHECK_EQ(ox, -20.f);
+    CHECK_EQ(oy, -16.f);
+}
+
+TEST_CASE("map.dualGrid.resolve.isometric") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(2, 2, 64.f, 32.f);
+    TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
+    logic->config()->orientation = MapOrientation::Isometric;
+    logic->setOrigin(100.f, 200.f);
+    logic->setTile(0, 0, 1);
+    logic->setTile(1, 1, 1);
+
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = false;
+    opts.firstDisplayGid = 1;
+    opts.hideLogic = true;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    CHECK_EQ(static_cast<int>(display->config()->orientation),
+             static_cast<int>(MapOrientation::Isometric));
+    CHECK_EQ(display->getMapWidth(), 3);
+    CHECK_EQ(display->getMapHeight(), 3);
+    CHECK_EQ(display->getX(), 100.f);          // iso: offX = 0
+    CHECK_EQ(display->getY(), 200.f - 16.f);   // offY = -tileH/2
+    CHECK_EQ(mod->dualGridOffsetX(logic), 0.f);
+    CHECK_EQ(mod->dualGridOffsetY(logic), -16.f);
+
+    // Index-space mask unchanged from orthogonal dual-grid.
+    CHECK_EQ(dualGridMaskAt(*logic, 1, 1, 0), 9);
+    CHECK_EQ(display->getTile(1, 1), 1 + 9);
+
+    // display(1,0) == logic fractional (0.5, -0.5) under iso projection:
+    // wx = ox + (1-0)*tw/2 = ox+32, wy = (oy-th/2) + (1+0)*th/2 = oy
+    CHECK_EQ(display->tileToWorldX(1, 0), 100.f + 32.f);
+    CHECK_EQ(display->tileToWorldY(1, 0), 200.f);
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
+}
+
+TEST_CASE("map.dualGrid.resolve.staggeredYOdd") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(3, 2, 64.f, 32.f);
+    TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
+    {
+        auto lc = logic->config();
+        lc->orientation = MapOrientation::Staggered;
+        lc->staggerAxis = StaggerAxis::Y;
+        lc->staggerIndex = StaggerIndex::Odd;
+    }
+    logic->setOrigin(0.f, 0.f);
+    logic->fill(1);
+
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = false;
+    opts.firstDisplayGid = 20;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    CHECK_EQ(static_cast<int>(display->config()->orientation),
+             static_cast<int>(MapOrientation::Staggered));
+    CHECK_EQ(static_cast<int>(display->config()->staggerAxis), static_cast<int>(StaggerAxis::Y));
+    CHECK_EQ(static_cast<int>(display->config()->staggerIndex),
+             static_cast<int>(StaggerIndex::Odd));
+    CHECK_EQ(display->getMapWidth(), 4);
+    CHECK_EQ(display->getMapHeight(), 3);
+    CHECK_EQ(display->getX(), -32.f);
+    CHECK_EQ(display->getY(), -8.f);
+
+    // Interior display(1,1) sees four filled logic cells → mask 15
+    CHECK_EQ(dualGridMaskAt(*logic, 1, 1, 0), 15);
+    CHECK_EQ(display->getTile(1, 1), 20 + 15);
+    // Corner display(0,0) only BR → mask 8
+    CHECK_EQ(display->getTile(0, 0), 20 + 8);
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
+}
+
+TEST_CASE("map.dualGrid.resolve.staggeredXEven") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(2, 3, 64.f, 32.f);
+    TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
+    auto *lc = logic->config();
+    lc->orientation = MapOrientation::Staggered;
+    lc->staggerAxis = StaggerAxis::X;
+    lc->staggerIndex = StaggerIndex::Even;
+    logic->setOrigin(10.f, 20.f);
+    logic->setTile(0, 1, 1);
+    logic->setTile(1, 1, 1);
+
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = false;
+    opts.firstDisplayGid = 1;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    CHECK_EQ(static_cast<int>(display->config()->staggerAxis), static_cast<int>(StaggerAxis::X));
+    CHECK_EQ(static_cast<int>(display->config()->staggerIndex),
+             static_cast<int>(StaggerIndex::Even));
+    CHECK_EQ(display->getX(), 10.f - 16.f);
+    CHECK_EQ(display->getY(), 20.f - 16.f);
+    // display(1,2) samples logic (0,1),(1,1),(0,2),(1,2) → TL+TR = mask 3
+    CHECK_EQ(dualGridMaskAt(*logic, 1, 2, 0), 3);
+    CHECK_EQ(display->getTile(1, 2), 1 + 3);
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
+}
+
+TEST_CASE("map.dualGrid.resolve.hexagonal") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(2, 2, 64.f, 32.f);
+    TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
+    auto *lc = logic->config();
+    lc->orientation = MapOrientation::Hexagonal;
+    lc->staggerAxis = StaggerAxis::Y;
+    lc->staggerIndex = StaggerIndex::Odd;
+    lc->hexSideLength = 16.f;
+    logic->setOrigin(5.f, 7.f);
+    logic->setTile(0, 0, 1);
+
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = true;
+    opts.firstDisplayGid = 1;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    CHECK_EQ(static_cast<int>(display->config()->orientation),
+             static_cast<int>(MapOrientation::Hexagonal));
+    CHECK_EQ(display->config()->hexSideLength, 16.f);
+    CHECK_EQ(display->getX(), 5.f - 32.f);
+    CHECK_EQ(display->getY(), 7.f - 12.f);  // pitchY=24 → half=12
+    CHECK_EQ(display->getTile(0, 0), 1 + dualGridDefaultFrame(8));
+    CHECK_EQ(display->getTile(1, 1), 1 + dualGridDefaultFrame(1));
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
+}
+
+TEST_CASE("map.dualGrid.flipFlagsCountAsFilled") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(1, 1, 16.f, 16.f);
+    TileLayer *display = mod->newLayer(1, 1, 16.f, 16.f);
+    // Tiled horizontal flip flag on GID 1
+    logic->setTile(0, 0, int(0x80000001u));
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = false;
+    opts.firstDisplayGid = 1;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    CHECK_EQ(dualGridMaskAt(*logic, 0, 0, 0), 8);
+    CHECK_EQ(display->getTile(0, 0), 1 + 8);
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
+}
+
+TEST_CASE("map.dualGrid.noHalfOffsetKeepsOrigin") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(2, 1, 32.f, 32.f);
+    TileLayer *display = mod->newLayer(1, 1, 8.f, 8.f);
+    logic->config()->orientation = MapOrientation::Isometric;
+    logic->setOrigin(40.f, 50.f);
+    logic->setTile(0, 0, 1);
+    DualGridOptions opts;
+    opts.applyHalfOffset = false;
+    opts.useDefaultFrameTable = false;
+    opts.firstDisplayGid = 1;
+    opts.hideLogic = false;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    CHECK_EQ(display->getX(), 40.f);
+    CHECK_EQ(display->getY(), 50.f);
+    CHECK_EQ(static_cast<int>(display->config()->orientation),
+             static_cast<int>(MapOrientation::Isometric));
+    CHECK(logic->isVisible());
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
+}
+
+TEST_CASE("map.dualGrid.render.isometricDisplayDepth") {
+    auto *mod = Map::create();
+    TileLayer *logic = mod->newLayer(2, 2, 64.f, 32.f);
+    TileLayer *display = mod->newLayer(1, 1, 64.f, 32.f);
+    logic->config()->orientation = MapOrientation::Isometric;
+    logic->setOrigin(0.f, 0.f);
+    logic->fill(1);
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = false;
+    opts.firstDisplayGid = 1;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+
+    std::vector<eve::graphics::DrawItem2D> items;
+    TileRenderSystem::collect(items);
+    // Interior + border dual cells that are non-empty on a full 2x2 logic map:
+    // display 3x3, only mask0 empty — all 9 have some contribution from filled
+    // neighbors except none are fully empty when logic is full... actually edges
+    // still have non-zero masks. All 9 display cells should be non-empty.
+    CHECK_EQ(items.size(), 9u);
+    eve::graphics::sortDrawItems2D(items);
+    for (size_t i = 1; i < items.size(); ++i) {
+        CHECK(items[i - 1].depthY <= items[i].depthY);
+    }
+
+    logic->clear();
+    display->clear();
+    logic->setVisible(false);
+    display->setVisible(false);
+}
