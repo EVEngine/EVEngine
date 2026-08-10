@@ -10,6 +10,13 @@ create_module(EVMath math)
 create_module(EVIK ik)
 target_include_directories(EVIK PUBLIC ${CMAKE_SOURCE_DIR}/external/ik.hpp)
 create_module(EVAnimation animation)
+# AnimImporter uses Assimp headers (same install tree as model3d / medialoader).
+target_include_directories(EVAnimation PRIVATE
+  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include
+  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include
+  ${CMAKE_SOURCE_DIR}/third-party/medialoader/include
+  ${CMAKE_SOURCE_DIR}/third-party/medialoader/assimp/include
+)
 create_module(EVTensor tensor)
 create_module(EVMouse mouse)
 create_module(EVKeyboard keyboard)

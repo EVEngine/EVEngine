@@ -94,11 +94,12 @@ void MotionMatcher::buildQuery(std::vector<float> &query) const {
     AnimPose cur;
     cur.copyFrom(&pose_);
     cur.computeWorld(skeleton_);
-    const float rootX = cur.getWorldPositionX(0);
-    const float rootZ = cur.getWorldPositionZ(0);
+    const int root    = database_->getRootBone();
+    const float rootX = cur.getWorldPositionX(root);
+    const float rootZ = cur.getWorldPositionZ(root);
     // Estimate current yaw from root rotation.
-    const float qy = cur.getWorldRotationY(0);
-    const float qw = cur.getWorldRotationW(0);
+    const float qy = cur.getWorldRotationY(root);
+    const float qw = cur.getWorldRotationW(root);
     const float yaw =
         std::atan2(2.f * (qw * qy), 1.f - 2.f * (qy * qy));
     const float c2 = std::cos(yaw);

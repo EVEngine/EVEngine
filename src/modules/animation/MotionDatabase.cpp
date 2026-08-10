@@ -31,6 +31,20 @@ void MotionDatabase::addFeatureBoneByName(const std::string &name) {
     addFeatureBone(id);
 }
 
+void MotionDatabase::setRootBone(int boneIndex) {
+    if (boneIndex < 0 || boneIndex >= skeleton_->getBoneCount()) {
+        throw Exception("MotionDatabase.setRootBone: invalid bone %d", boneIndex);
+    }
+    rootBone_ = boneIndex;
+    baked_    = false;
+}
+
+void MotionDatabase::setRootBoneByName(const std::string &name) {
+    const int id = skeleton_->findBone(name);
+    if (id < 0) throw Exception("MotionDatabase.setRootBoneByName: unknown '%s'", name.c_str());
+    setRootBone(id);
+}
+
 void MotionDatabase::addClip(AnimClip *clip) {
     if (!clip) throw Exception("MotionDatabase.addClip: clip is null");
     clips_.push_back(clip);
@@ -68,7 +82,7 @@ void MotionDatabase::extractFeature(AnimClip *clip, float time, float dtSample,
     clip->sample(time, &scratchPose_, skeleton_);
     scratchPose_.computeWorld(skeleton_);
 
-    const int root = 0;
+    const int root = rootBone_;
     rootX          = scratchPose_.getWorldPositionX(root);
     rootZ          = scratchPose_.getWorldPositionZ(root);
     rootYaw        = yawFromQuat(scratchPose_.getWorldRotationX(root),

@@ -84,6 +84,84 @@ int AnimClip::getScaleKeyCount(int boneIndex) const {
     return static_cast<int>(tracks_[static_cast<size_t>(boneIndex)].scales.size());
 }
 
+namespace {
+void requireKey(int boneIndex, int keyIndex, int count, const char *what) {
+    if (boneIndex < 0 || keyIndex < 0 || keyIndex >= count) {
+        throw Exception("AnimClip: invalid %s key bone=%d index=%d", what, boneIndex, keyIndex);
+    }
+}
+}  // namespace
+
+float AnimClip::getPositionKeyTime(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getPositionKeyCount(boneIndex), "position");
+    return tracks_[static_cast<size_t>(boneIndex)].positions[static_cast<size_t>(keyIndex)].t;
+}
+float AnimClip::getPositionKeyX(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getPositionKeyCount(boneIndex), "position");
+    return tracks_[static_cast<size_t>(boneIndex)].positions[static_cast<size_t>(keyIndex)].x;
+}
+float AnimClip::getPositionKeyY(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getPositionKeyCount(boneIndex), "position");
+    return tracks_[static_cast<size_t>(boneIndex)].positions[static_cast<size_t>(keyIndex)].y;
+}
+float AnimClip::getPositionKeyZ(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getPositionKeyCount(boneIndex), "position");
+    return tracks_[static_cast<size_t>(boneIndex)].positions[static_cast<size_t>(keyIndex)].z;
+}
+
+float AnimClip::getRotationKeyTime(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getRotationKeyCount(boneIndex), "rotation");
+    return tracks_[static_cast<size_t>(boneIndex)].rotations[static_cast<size_t>(keyIndex)].t;
+}
+float AnimClip::getRotationKeyX(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getRotationKeyCount(boneIndex), "rotation");
+    return tracks_[static_cast<size_t>(boneIndex)].rotations[static_cast<size_t>(keyIndex)].x;
+}
+float AnimClip::getRotationKeyY(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getRotationKeyCount(boneIndex), "rotation");
+    return tracks_[static_cast<size_t>(boneIndex)].rotations[static_cast<size_t>(keyIndex)].y;
+}
+float AnimClip::getRotationKeyZ(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getRotationKeyCount(boneIndex), "rotation");
+    return tracks_[static_cast<size_t>(boneIndex)].rotations[static_cast<size_t>(keyIndex)].z;
+}
+float AnimClip::getRotationKeyW(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getRotationKeyCount(boneIndex), "rotation");
+    return tracks_[static_cast<size_t>(boneIndex)].rotations[static_cast<size_t>(keyIndex)].w;
+}
+
+float AnimClip::getScaleKeyTime(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getScaleKeyCount(boneIndex), "scale");
+    return tracks_[static_cast<size_t>(boneIndex)].scales[static_cast<size_t>(keyIndex)].t;
+}
+float AnimClip::getScaleKeyX(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getScaleKeyCount(boneIndex), "scale");
+    return tracks_[static_cast<size_t>(boneIndex)].scales[static_cast<size_t>(keyIndex)].x;
+}
+float AnimClip::getScaleKeyY(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getScaleKeyCount(boneIndex), "scale");
+    return tracks_[static_cast<size_t>(boneIndex)].scales[static_cast<size_t>(keyIndex)].y;
+}
+float AnimClip::getScaleKeyZ(int boneIndex, int keyIndex) const {
+    requireKey(boneIndex, keyIndex, getScaleKeyCount(boneIndex), "scale");
+    return tracks_[static_cast<size_t>(boneIndex)].scales[static_cast<size_t>(keyIndex)].z;
+}
+
+void AnimClip::applyPlanarRootMotion(int boneIndex, float speedX, float speedZ) {
+    ensureBone(boneIndex);
+    auto &keys = tracks_[static_cast<size_t>(boneIndex)].positions;
+    if (keys.empty()) {
+        // Create start/end keys from zero so motion matching sees a trajectory.
+        keys.push_back({0.f, 0.f, 0.f, 0.f});
+        keys.push_back({duration_, speedX * duration_, 0.f, speedZ * duration_});
+        return;
+    }
+    for (auto &k : keys) {
+        k.x += speedX * k.t;
+        k.z += speedZ * k.t;
+    }
+}
+
 float AnimClip::wrapTime(float time) const {
     if (duration_ <= 1e-8f) return 0.f;
     if (loop_) {

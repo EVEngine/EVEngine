@@ -47,7 +47,9 @@ local pose = sm.getPose();
 
 ```squirrel
 local db = anim.newMotionDatabase(sk);
-db.addFeatureBoneByName("hip");
+db.setRootBoneByName("mixamorig:Hips"); // Mixamo 等角色常用髋骨做轨迹根
+db.addFeatureBoneByName("mixamorig:LeftFoot");
+db.addFeatureBoneByName("mixamorig:RightFoot");
 db.addClip(walk);
 db.addClip(run);
 db.bake();
@@ -58,6 +60,21 @@ mm.setDesiredYaw(0);
 mm.setSearchInterval(0.1);
 mm.update(dt);
 local pose = mm.getPose();
+```
+
+## 从 Mixamo / FBX 导入
+
+```squirrel
+// Assimp 路径（Model3D 解码后）：
+local model = model3d.newModelDataFromFile("Idle.fbx");
+local sk = anim.newSkeletonFromModel(model);
+local idle = anim.newClipFromModel(model, sk, 0);
+
+// 或加载测试用紧凑 `.eva`（无网格关键帧，见 test/assets/mixamo/）：
+local sk2 = anim.newSkeletonFromEvaFile("test/assets/mixamo/Idle.eva");
+local idle2 = anim.newClipFromEvaFile("test/assets/mixamo/Idle.eva");
+// Mixamo 原地跑可补平面根运动：
+run.applyPlanarRootMotion(sk.findBone("mixamorig:Hips"), 0, 300);
 ```
 
 ## 对象关系与调用时机

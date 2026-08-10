@@ -191,16 +191,17 @@ bool AnimStateMachine::tryTransition() {
         nextState_     = tr.to;
         blendDuration_ = tr.blendSeconds;
         blendElapsed_  = 0.f;
+        stateTime_     = 0.f;
         if (blendDuration_ <= 1e-6f) {
             currentState_ = nextState_;
-            stateTime_    = 0.f;
             blending_     = false;
             states_.at(currentState_).clip->sample(0.f, &pose_, skeleton_);
         } else {
+            // Switch logical state immediately; pose cross-fades from previous.
             fromPose_.copyFrom(&pose_);
-            blending_  = true;
-            stateTime_ = 0.f;  // time in destination while blending
-            states_.at(nextState_).clip->sample(0.f, &toPose_, skeleton_);
+            currentState_ = nextState_;
+            blending_     = true;
+            states_.at(currentState_).clip->sample(0.f, &toPose_, skeleton_);
             pose_.blendFrom(&fromPose_, &toPose_, 0.f);
         }
         return true;
@@ -219,12 +220,11 @@ void AnimStateMachine::update(float dt) {
     if (blending_) {
         blendElapsed_ += dt;
         stateTime_ += dt;
-        const State &dst = states_.at(nextState_);
+        const State &dst = states_.at(currentState_);
         dst.clip->sample(stateTime_, &toPose_, skeleton_);
         float t = blendDuration_ > 1e-8f ? blendElapsed_ / blendDuration_ : 1.f;
         if (t >= 1.f) {
-            currentState_ = nextState_;
-            blending_     = false;
+            blending_ = false;
             pose_.copyFrom(&toPose_);
         } else {
             // Keep fromPose frozen at transition start for stable crossfade.

@@ -43,6 +43,29 @@ public:
     int getRotationKeyCount(int boneIndex) const;
     int getScaleKeyCount(int boneIndex) const;
 
+    float getPositionKeyTime(int boneIndex, int keyIndex) const;
+    float getPositionKeyX(int boneIndex, int keyIndex) const;
+    float getPositionKeyY(int boneIndex, int keyIndex) const;
+    float getPositionKeyZ(int boneIndex, int keyIndex) const;
+
+    float getRotationKeyTime(int boneIndex, int keyIndex) const;
+    float getRotationKeyX(int boneIndex, int keyIndex) const;
+    float getRotationKeyY(int boneIndex, int keyIndex) const;
+    float getRotationKeyZ(int boneIndex, int keyIndex) const;
+    float getRotationKeyW(int boneIndex, int keyIndex) const;
+
+    float getScaleKeyTime(int boneIndex, int keyIndex) const;
+    float getScaleKeyX(int boneIndex, int keyIndex) const;
+    float getScaleKeyY(int boneIndex, int keyIndex) const;
+    float getScaleKeyZ(int boneIndex, int keyIndex) const;
+
+    /**
+     * Bake planar root motion onto an existing position track (or create one).
+     * For each position key at time t: x += speedX * t, z += speedZ * t.
+     * Useful when source clips are Mixamo in-place locomotion.
+     */
+    void applyPlanarRootMotion(int boneIndex, float speedX, float speedZ);
+
     /**
      * Sample local pose at time (seconds). If skeleton non-null, missing tracks
      * fall back to bind pose; otherwise identity.

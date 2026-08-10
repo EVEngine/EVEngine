@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+namespace eve::model3d {
+class ModelData;
+}
+
 namespace eve::animation {
 
 class AnimSkeleton;
@@ -44,6 +48,16 @@ public:
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
+
+    /**
+     * Import skeleton/clip from Assimp-backed ModelData, or from compact `.eva`
+     * fixtures (see AnimImporter).
+     */
+    AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
+    AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
+                                   int animIndex = 0);
+    AnimSkeleton *newSkeletonFromEvaFile(const std::string &path);
+    AnimClip     *newClipFromEvaFile(const std::string &path);
 
     /** Advance all registered tweens. */
     void update(float dt);

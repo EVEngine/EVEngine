@@ -33,6 +33,14 @@ public:
     void addFeatureBone(int boneIndex);
     void addFeatureBoneByName(const std::string &name);
 
+    /**
+     * Bone used for trajectory / velocity features (default 0).
+     * Mixamo clips typically want hips (`mixamorig:Hips`).
+     */
+    void setRootBone(int boneIndex);
+    int  getRootBone() const { return rootBone_; }
+    void setRootBoneByName(const std::string &name);
+
     void addClip(AnimClip *clip);
     int  getClipCount() const { return static_cast<int>(clips_.size()); }
 
@@ -77,6 +85,7 @@ private:
     std::vector<int>           featureBones_;
     std::vector<Frame>         frames_;
     int                        featureSize_ = 0;
+    int                        rootBone_    = 0;
     bool                       baked_       = false;
     mutable AnimPose           scratchPose_;
 };

@@ -1,5 +1,6 @@
 #include "animation/Animation.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimImporter.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
@@ -46,6 +47,31 @@ MotionDatabase *Animation::newMotionDatabase(AnimSkeleton *skeleton) {
 
 MotionMatcher *Animation::newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database) {
     return new MotionMatcher(skeleton, database);
+}
+
+AnimSkeleton *Animation::newSkeletonFromModel(eve::model3d::ModelData *model) {
+    return AnimImporter::loadSkeletonFromModel(model);
+}
+
+AnimClip *Animation::newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
+                                      int animIndex) {
+    return AnimImporter::loadClipFromModel(model, skeleton, animIndex);
+}
+
+AnimSkeleton *Animation::newSkeletonFromEvaFile(const std::string &path) {
+    AnimSkeleton *sk = nullptr;
+    AnimClip *clip   = nullptr;
+    AnimImporter::importEvaFile(path, &sk, &clip);
+    delete clip;
+    return sk;
+}
+
+AnimClip *Animation::newClipFromEvaFile(const std::string &path) {
+    AnimSkeleton *sk = nullptr;
+    AnimClip *clip   = nullptr;
+    AnimImporter::importEvaFile(path, &sk, &clip);
+    delete sk;
+    return clip;
 }
 
 void Animation::registerTween(Tween *t) {
@@ -183,6 +209,7 @@ void Animation::expose(ssq::Table &table) {
     clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
     clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
     clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
+    clip.addFunc("applyPlanarRootMotion", &AnimClip::applyPlanarRootMotion);
     clip.addFunc("sample", &AnimClip::sample);
     clip.addFunc("wrapTime", &AnimClip::wrapTime);
 
@@ -263,6 +290,9 @@ void Animation::expose(ssq::Table &table) {
         std::function<MotionDatabase *()>([]() -> MotionDatabase * { return nullptr; }), true);
     db.addFunc("addFeatureBone", &MotionDatabase::addFeatureBone);
     db.addFunc("addFeatureBoneByName", &MotionDatabase::addFeatureBoneByName);
+    db.addFunc("setRootBone", &MotionDatabase::setRootBone);
+    db.addFunc("getRootBone", &MotionDatabase::getRootBone);
+    db.addFunc("setRootBoneByName", &MotionDatabase::setRootBoneByName);
     db.addFunc("addClip", &MotionDatabase::addClip);
     db.addFunc("getClipCount", &MotionDatabase::getClipCount);
     db.addFunc("bake", &MotionDatabase::bake);
@@ -313,6 +343,10 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newStateMachine", &Animation::newStateMachine);
     cls.addFunc("newMotionDatabase", &Animation::newMotionDatabase);
     cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);
+    cls.addFunc("newSkeletonFromModel", &Animation::newSkeletonFromModel);
+    cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
+    cls.addFunc("newSkeletonFromEvaFile", &Animation::newSkeletonFromEvaFile);
+    cls.addFunc("newClipFromEvaFile", &Animation::newClipFromEvaFile);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);
