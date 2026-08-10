@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Map()`
 
-创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染；可用 Pathfinder 做格子寻路与群体 Flow Field。
+创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染；可用 Pathfinder 做格子寻路与群体 Flow Field，用 Fov 做动态视野与探索记忆。
 
 ## 基本用法
 
@@ -57,6 +57,25 @@ local ny = field.nextY(ax, ay);
 
 自定义网格（不绑 TileLayer）：`map.newPathfinderSize(w, h)`，再用 `setBlocked` / `setCellCost`。
 
+### 动态视野（FOV / 战争迷雾）
+
+格子可见性与探索记忆；遮挡（opaque）与寻路可行走（walkable）分开配置。默认算法为 recursive shadowcasting。
+
+```squirrel
+local fov = map.newFov(layer);
+fov.setBlockEmpty(false);
+fov.blockOpaqueGid(1);           // 墙挡视线
+fov.setRadiusMetric("chebyshev"); // euclidean | chebyshev | manhattan
+local id = fov.addRevealer(sx, sy, 8);
+fov.setRevealerFacing(id, 90.0, 45.0); // 可选扇形；clearRevealerFacing 恢复全向
+fov.compute();
+if (fov.isVisible(tx, ty)) { /* 当前可见 */ }
+if (fov.isExplored(tx, ty)) { /* 探索过（含当前可见） */ }
+local st = fov.getState(tx, ty); // "unknown" | "explored" | "visible"
+```
+
+自定义网格：`map.newFovSize(w, h)` + `setOpaque`。移动观察者后再次 `compute()`；离开视野的格子保留 `explored`，可用 `clearMemory()` 清空。
+
 ### Dual Grid（双网格）
 
 Tiled **没有**原生 dual-grid；在编辑器里画逻辑填充层，运行时解算显示层。支持正交 / 等距 / 交错 / 六角：掩码按格子索引采样，显示层继承投影参数并施加对应半步 origin 偏移。
@@ -89,7 +108,7 @@ map.resolveDualGrid(logic, display);  // 半步偏移 + 15 片选瓦
 - `getMapHeight()`、`getMapWidth()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
-- `newPathfinder()`、`newPathfinderSize()`
+- `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`
 - `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
 - `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTint()`、`setVisible()`、`tileToWorldX()`
 - `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
@@ -100,6 +119,8 @@ Path：`getLength`、`getX`、`getY`、`getTotalCost`
 
 FlowField：`getWidth`、`getHeight`、`getGoalX`、`getGoalY`、`costAt`、`nextX`、`nextY`、`isReachable`
 
+Fov：`getWidth`、`getHeight`、`setAlgorithm`、`getAlgorithm`、`setRadiusMetric`、`getRadiusMetric`、`setCornerPeek`、`blockOpaqueGid`、`unblockOpaqueGid`、`clearOpaqueGids`、`setBlockEmpty`、`setOpaque`、`isOpaque`、`syncFromLayer`、`addRevealer`、`removeRevealer`、`clearRevealers`、`setRevealerPosition`、`setRevealerRadius`、`setRevealerFacing`、`clearRevealerFacing`、`setRevealerEnabled`、`getRevealerCount`、`compute`、`isVisible`、`isExplored`、`getState`、`clearMemory`、`resetVisibleOnly`
+
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
@@ -107,5 +128,5 @@ FlowField：`getWidth`、`getHeight`、`getGoalX`、`getGoalY`、`costAt`、`nex
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/map/`](../../../src/modules/map/)
-**设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)（设计稿：2D/3D 兼容动态视野与战争迷雾，待实现）
-**相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)
+**设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)
+**相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)、[`test/map_fov.cpp`](../../../test/map_fov.cpp)

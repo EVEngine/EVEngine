@@ -5,6 +5,7 @@
 #include "map/Pathfinder.h"
 #include "map/Path.h"
 #include "map/FlowField.h"
+#include "map/Fov.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "common/Module.h"
@@ -27,6 +28,16 @@ Pathfinder *Map::newPathfinder(TileLayer *layer) {
 Pathfinder *Map::newPathfinderSize(int mapW, int mapH) {
     if (mapW <= 0 || mapH <= 0) return nullptr;
     return new Pathfinder(mapW, mapH);
+}
+
+Fov *Map::newFov(TileLayer *layer) {
+    if (!layer) return nullptr;
+    return new Fov(layer);
+}
+
+Fov *Map::newFovSize(int mapW, int mapH) {
+    if (mapW <= 0 || mapH <= 0) return nullptr;
+    return new Fov(mapW, mapH);
 }
 
 TileLayer *Map::newLayerFromFile(const std::string &path) {
@@ -223,6 +234,40 @@ void Map::expose(ssq::Table &table) {
     pf.addFunc("followFlow", &Pathfinder::followFlow);
     pf.addFunc("findGroupPath", &Pathfinder::findGroupPath);
     pf.addFunc("invalidateCache", &Pathfinder::invalidateCache);
+
+    auto fov = table.addClass<Fov>("Fov", std::function<Fov *()>([]() -> Fov * { return nullptr; }),
+                                   true);
+    fov.addFunc("getWidth", &Fov::getWidth);
+    fov.addFunc("getHeight", &Fov::getHeight);
+    fov.addFunc("setAlgorithm", &Fov::setAlgorithm);
+    fov.addFunc("getAlgorithm", &Fov::getAlgorithm);
+    fov.addFunc("setRadiusMetric", &Fov::setRadiusMetric);
+    fov.addFunc("getRadiusMetric", &Fov::getRadiusMetric);
+    fov.addFunc("setCornerPeek", &Fov::setCornerPeek);
+    fov.addFunc("getCornerPeek", &Fov::getCornerPeek);
+    fov.addFunc("blockOpaqueGid", &Fov::blockOpaqueGid);
+    fov.addFunc("unblockOpaqueGid", &Fov::unblockOpaqueGid);
+    fov.addFunc("clearOpaqueGids", &Fov::clearOpaqueGids);
+    fov.addFunc("setBlockEmpty", &Fov::setBlockEmpty);
+    fov.addFunc("getBlockEmpty", &Fov::getBlockEmpty);
+    fov.addFunc("setOpaque", &Fov::setOpaque);
+    fov.addFunc("isOpaque", &Fov::isOpaque);
+    fov.addFunc("syncFromLayer", &Fov::syncFromLayer);
+    fov.addFunc("addRevealer", &Fov::addRevealer);
+    fov.addFunc("removeRevealer", &Fov::removeRevealer);
+    fov.addFunc("clearRevealers", &Fov::clearRevealers);
+    fov.addFunc("setRevealerPosition", &Fov::setRevealerPosition);
+    fov.addFunc("setRevealerRadius", &Fov::setRevealerRadius);
+    fov.addFunc("setRevealerFacing", &Fov::setRevealerFacing);
+    fov.addFunc("clearRevealerFacing", &Fov::clearRevealerFacing);
+    fov.addFunc("setRevealerEnabled", &Fov::setRevealerEnabled);
+    fov.addFunc("getRevealerCount", &Fov::getRevealerCount);
+    fov.addFunc("compute", &Fov::compute);
+    fov.addFunc("isVisible", &Fov::isVisible);
+    fov.addFunc("isExplored", &Fov::isExplored);
+    fov.addFunc("getState", &Fov::getState);
+    fov.addFunc("clearMemory", &Fov::clearMemory);
+    fov.addFunc("resetVisibleOnly", &Fov::resetVisibleOnly);
 }
 
 void Map::expose(ssq::Class &cls) {
@@ -232,6 +277,8 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("loadFromFile", &Map::loadFromFile);
     cls.addFunc("newPathfinder", &Map::newPathfinder);
     cls.addFunc("newPathfinderSize", &Map::newPathfinderSize);
+    cls.addFunc("newFov", &Map::newFov);
+    cls.addFunc("newFovSize", &Map::newFovSize);
     cls.addFunc("update", &Map::update);
     cls.addFunc("render", &Map::render);
     cls.addFunc("pollConfigs", &Map::pollConfigs);
