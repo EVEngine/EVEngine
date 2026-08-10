@@ -66,6 +66,8 @@
 
 命名：脚本与 C++ 均用 **`V` 后缀**（如 `pointInCircleV`）。
 
+说明：不新增 `length4`/`dot4`/`distance4` 等 float 分量 API；`length4V` 等直接基于 `Vec4` 分量计算（或委托 `Vec4` 成员），与「保留现有 float API、不强制对称扩 float」一致。
+
 ### 几何 / 向量
 
 | float | Vec 版 |
