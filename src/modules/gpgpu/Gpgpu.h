@@ -14,6 +14,7 @@ class GpuBuffer;
  * Uses the graphics queue (Apple/MoltenVK has no separate compute family).
  *
  * Script: `gpgpu <- eve.Gpgpu(); shader <- gpgpu.newShader(glsl);`
+ * ECS: `eve.ShaderSystem` / `eve.EcsShaderSystem` bridge entity float fields to SSBOs.
  */
 class Gpgpu : public Module {
 public:
