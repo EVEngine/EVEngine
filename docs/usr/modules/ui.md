@@ -29,6 +29,10 @@ ui.mountBuildAs("hud");
 
 文本变化用 `setText(id, value)`，进度用 `setValue()`，显示隐藏用 `setVisible()`；结构变化才重新 build 并 `remountBuildAs()`。多宿主时先 `select(host)` 再按局部 ID 操作。
 
+### 切换统一主题
+
+内置 `dark` / `light` 预设共享圆角、边框、间距与字体缩放，只切换配色。推荐 `setTheme("dark")` / `setTheme("light")`，用 `getTheme()` 读取当前名；也可用 `setThemeDark()` / `setThemeLight()`。DPI 用 `setScale()`，主题几何会按比例缩放。
+
 ## 常见问题
 
 - 每帧重新 mount，丢失输入焦点与控件状态。
@@ -41,10 +45,10 @@ ui.mountBuildAs("hud");
 
 - `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginWindow()`、`bindOwner()`
 - `button()`、`checkbox()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
-- `getScale()`、`getValue()`、`getValueText()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
+- `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
 - `mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`select()`、`separator()`、`setChecked()`
 - `setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPos()`、`setHostVisible()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`text()`、`wantCaptureKeyboard()`
+- `setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`text()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`
 
 ## 使用要点

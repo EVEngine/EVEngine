@@ -99,6 +99,9 @@ public:
 
     void setThemeDark();
     void setThemeLight();
+    /** Named preset: "dark" / "light" (case-insensitive). Returns false if unknown. */
+    bool setTheme(const std::string &name);
+    std::string getTheme() const;
     void setNavKeyboard(bool enabled);
     void setScale(float scale);
     float getScale() const;

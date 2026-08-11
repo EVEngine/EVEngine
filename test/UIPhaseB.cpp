@@ -82,15 +82,44 @@ TEST_CASE("UI.b.themeAndCheckbox") {
     UI *ui = UI::create();
     ui->setThemeLight();
     CHECK(globalTheme().windowBg[0] > 0.5f);
+    CHECK(ui->getTheme() == "light");
+    // Light/dark share geometry so switching palette keeps a unified look.
+    CHECK(globalTheme().frameRounding == Theme::dark().frameRounding);
+    CHECK(globalTheme().windowPaddingX == Theme::dark().windowPaddingX);
+    CHECK(globalTheme().fontScale == Theme::dark().fontScale);
+
     ui->setThemeDark();
+    CHECK(ui->getTheme() == "dark");
     ui->setNavKeyboard(true);
     CHECK(globalTheme().navEnableKeyboard);
+
+    CHECK(ui->setTheme("LIGHT"));
+    CHECK(ui->getTheme() == "light");
+    CHECK(globalTheme().windowBg[0] > 0.5f);
+    CHECK(!ui->setTheme("unknown"));
+    CHECK(ui->getTheme() == "light");  // unchanged on failure
 
     ui->mountAs("chk", window("C", {checkbox("Mute", false, "mute")}, "root"));
     CHECK(ui->current()->findById("mute") != nullptr);
     CHECK(!ui->current()->findById("mute")->checked);
     ui->setChecked("mute", true);
     CHECK(ui->current()->findById("mute")->checked);
+}
+
+TEST_CASE("UI.b.themeTokensUnified") {
+    Theme dark = Theme::dark();
+    Theme light = Theme::light();
+    CHECK(dark.frameRounding == light.frameRounding);
+    CHECK(dark.windowRounding == light.windowRounding);
+    CHECK(dark.windowBorderSize == light.windowBorderSize);
+    CHECK(dark.frameBorderSize == light.frameBorderSize);
+    CHECK(dark.itemSpacingX == light.itemSpacingX);
+    CHECK(dark.windowPaddingY == light.windowPaddingY);
+    CHECK(dark.fontScale == light.fontScale);
+    // Palettes differ
+    CHECK(dark.windowBg[0] < 0.5f);
+    CHECK(light.windowBg[0] > 0.5f);
+    CHECK(dark.text[0] > light.text[0]);
 }
 
 TEST_CASE("UI.b.scriptListBuilder") {

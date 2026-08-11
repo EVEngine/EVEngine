@@ -90,6 +90,8 @@ struct Mesh3DUBO {
     glm::vec4 cameraPos{0.f, 0.f, 3.f, 0.45f};    // xyz = eye; w = roughness
     glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f}; // rgb = ambient; w = metallic
     Light3DGpu lights[Lighting3DPack::kMaxLights]{};
+    // Appended: custom shaders that only read the prefix stay valid (buffer may be larger).
+    glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f}; // x=cellScale, y=strength (0=off), z=rotAmount
 };
 
 struct Mesh3DClusteredUBO {
@@ -103,6 +105,7 @@ struct Mesh3DClusteredUBO {
     glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
     glm::vec4 gridInfo{16.f, 9.f, 24.f, 0.f};
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};
+    glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f}; // x=cellScale, y=strength (0=off), z=rotAmount
 };
 
 struct GpuTexture {
@@ -187,8 +190,12 @@ public:
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
+    void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
+                                float originZ, const std::string &faceDir, Texture *atlas,
+                                int tilesPerRow = 16) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DMaterial(float metallic, float roughness) override;
+    void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void setMesh3DLighting(const Lighting3DPack &pack) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
@@ -238,6 +245,10 @@ private:
     void createLit2DPipeline();
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
+    void createVoxelRectPipeline();
+    void destroyVoxelRectResources();
+    void ensureVoxelUnitQuad();
+    vk::DescriptorSet voxelRectSetFor(GpuTexture *gpuTex);
     void createShadowResources();
     void destroyShadowResources();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
@@ -355,6 +366,9 @@ private:
     float mesh3dEnvIntensity = 0.f;
     float mesh3dMetallic = 0.f;
     float mesh3dRoughness = 0.45f;
+    float mesh3dTexBombScale = 4.f;
+    float mesh3dTexBombStrength = 0.f;
+    float mesh3dTexBombRot = 1.f;
     Lighting3DPack mesh3dLighting{};
     ShadowUpload mesh3dShadows{};
     bool mesh3dShadowReceive = true;
@@ -448,6 +462,29 @@ private:
 
     bool swapchainPassOpen = false;
     Mesh3DUBO mesh3dFrameUbo{};
+
+    // Instanced voxel face rectangles (packed uint32 instances).
+    struct VoxelRectPC {
+        glm::mat4 viewProj{1.f};
+        glm::vec4 chunkOrigin{0.f};  // xyz = origin, w = faceDir
+        glm::vec4 atlasInfo{16.f, 0.f, 0.f, 0.f};
+        glm::vec4 tint{1.f};
+    };
+    vk::DescriptorSetLayout voxelRectSetLayout{};
+    vk::UniqueDescriptorSetLayout voxelRectSetLayoutUnique;
+    vk::PipelineLayout voxelRectPipelineLayout{};
+    vk::Pipeline voxelRectPipeline{};
+    vkb::GenericBuffer voxelUnitQuadVerts;
+    vkb::GenericBuffer voxelUnitQuadIndices;
+    bool voxelUnitQuadReady = false;
+    std::unordered_map<GpuTexture *, vk::DescriptorSet> voxelRectSets;
+    // Grow-only instance buffer pool (reset index each begin3DFrame).
+    struct VoxelInstanceSlot {
+        vkb::GenericBuffer buffer;
+        size_t capacityBytes = 0;
+    };
+    std::vector<VoxelInstanceSlot> voxelInstanceSlots;
+    size_t voxelInstanceDrawIndex = 0;
 };
 
 }  // namespace eve::graphics::vulkan

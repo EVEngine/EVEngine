@@ -246,8 +246,9 @@ ui.beginWindow("Shop", "root")
   ui.checkbox("Member", false, "mem")
 ui.end()
 ui.mountBuildAs("shop")
-ui.setThemeDark()
+ui.setTheme("dark")   // or "light"; getTheme() returns current name
 ui.setNavKeyboard(true)
+// dark/light share rounding / borders / spacing / fontScale — only the palette changes
 ```
 
 ### 4.5 脚本 Component（B）
@@ -340,7 +341,7 @@ sequenceDiagram
 - [x] 条件子树 `when` / `whenElse`
 - [x] `Component`（C++ `build` / `setState` / `rebuild` / key reconcile）
 - [x] 按 key 局部 dirty（`setTreeReconcile` / `applyTreeReconcile`）
-- [x] 主题 `Theme` + `setThemeDark` / `setThemeLight`；键盘导航开关
+- [x] 主题 `Theme` 统一令牌（色板/圆角/边框/间距/字体缩放）+ `setTheme` / `setThemeDark` / `setThemeLight` / `getTheme`；键盘导航开关；与 `setScale` 同步缩放
 - [x] 原语扩展：`Separator` / `Checkbox`
 - [x] 脚本侧 `class X extends eve.UIComponent { build() }`
 - [x] 高级原语：`Slider` / `Progress` / `InputText` / `CollapsingHeader` / `Child`

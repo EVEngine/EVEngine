@@ -29,12 +29,12 @@ Evolutionary Vision Engine
 1. 2d tilemap - 并且包含可扩展的地图编辑器
 2. 2d 摄像机
 3. 简单的数据库
-4. box2d 物理
+4. box2d / box3d 物理
 5. rpg框架
 6. 可扩展战斗模型组件
 7. 对话框及脚本
 8. avatar分层渲染
-9. 2d 流体引擎
+9. 2d 流体引擎（`Physics.newFluid`；另含可交互布料 `newCloth`）
 10. 粒子系统
 11. sprite-stacking的伪3d技术
 12. 真实3d模型渲染

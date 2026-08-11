@@ -85,11 +85,11 @@ elseif(UNIX)
         wayland-client wayland-cursor wayland-egl xkbcommon
         asound
     )
-    # OpenAL Soft may reference sndio backends when that library is present locally;
+    # OpenAL Soft may compile the sndio backend when libsndio-dev is present.
     # GitHub Actions runners typically lack libsndio, so only link when found.
-    find_library(EVENGINE_SNDIO_LIB sndio)
-    if(EVENGINE_SNDIO_LIB)
-        set(SystemLibraries ${SystemLibraries} sndio)
+    find_library(EVENGINE_SNDIO_LIBRARY sndio)
+    if(EVENGINE_SNDIO_LIBRARY)
+        list(APPEND SystemLibraries sndio)
     endif()
 endif()
 
@@ -186,6 +186,7 @@ list(APPEND EVELIBS
     EVAvatar
     EVDialogue
     EVProcgen
+    EVVoxel
     EVStylize)
 
 if(EVENGINE_BUILD_DEMO)

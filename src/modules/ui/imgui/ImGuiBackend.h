@@ -2,8 +2,6 @@
 
 #include "ui/UIBackend.h"
 
-#include <imgui.h>
-
 namespace eve::ui {
 
 /** Dear ImGui + SDL input + Vulkan present overlay. */
@@ -37,7 +35,6 @@ private:
     bool fontsUploaded_ = false;
     bool frameOpen_ = false;
     float uiScale_ = 1.f;
-    ImGuiStyle baseStyle_{};
     eve::graphics::Graphics *gfx_ = nullptr;
     SDL_Window *window_ = nullptr;
     void *imguiDescriptorPool_ = nullptr;  // VkDescriptorPool

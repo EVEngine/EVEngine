@@ -40,6 +40,8 @@
 #include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
 #include "graphics/shaders/lit2d_frag_spv.inc"
+#include "graphics/shaders/voxel_rect_vert_spv.inc"
+#include "graphics/shaders/voxel_rect_frag_spv.inc"
 
 #include <assimp/mesh.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -79,6 +81,7 @@ Graphics::~Graphics() {
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
     mesh3dSetLayoutUnique.reset();
     mesh3dUboSlots.clear();
+    destroyVoxelRectResources();
     if (mesh3dClusteredPipeline) device->destroyPipeline(mesh3dClusteredPipeline);
     if (mesh3dClusteredPipelineLayout) device->destroyPipelineLayout(mesh3dClusteredPipelineLayout);
     mesh3dClusteredSetLayoutUnique.reset();
@@ -197,6 +200,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     createTexturedPipeline();
     createMesh3DPipeline();
     createMesh3DClusteredPipeline();
+    createVoxelRectPipeline();
     // Must be set before createShadowResources(): it clears the shadow cascade
     // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
     // asserts `initialized` is already true.
@@ -2202,6 +2206,7 @@ void Graphics::begin3DFrame() {
 
     mesh3dDrawIndex = 0;
     mesh3dClusteredDrawIndex = 0;
+    voxelInstanceDrawIndex = 0;
     swapchainPassOpen = true;
     frameHad3D = true;
     hasPendingClear = false;
@@ -2217,6 +2222,270 @@ void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
 
 void Graphics::setMesh3DCameraPos(const glm::vec3 &eye) {
     mesh3dFrameUbo.cameraPos = glm::vec4(eye, mesh3dFrameUbo.cameraPos.w);
+}
+
+void Graphics::destroyVoxelRectResources() {
+    for (auto &slot : voxelInstanceSlots) {
+        if (slot.buffer.buffer) {
+            device->destroyBuffer(slot.buffer.buffer, device.allocation_callbacks);
+            device->freeMemory(slot.buffer.memory, device.allocation_callbacks);
+            slot.buffer.buffer = vk::Buffer{};
+            slot.buffer.memory = vk::DeviceMemory{};
+        }
+        slot.capacityBytes = 0;
+    }
+    voxelInstanceSlots.clear();
+    voxelInstanceDrawIndex = 0;
+    voxelRectSets.clear();
+    auto destroyBuf = [&](vkb::GenericBuffer &b) {
+        if (b.buffer) {
+            device->destroyBuffer(b.buffer, device.allocation_callbacks);
+            device->freeMemory(b.memory, device.allocation_callbacks);
+            b.buffer = vk::Buffer{};
+            b.memory = vk::DeviceMemory{};
+        }
+    };
+    if (voxelUnitQuadReady) {
+        destroyBuf(voxelUnitQuadVerts);
+        destroyBuf(voxelUnitQuadIndices);
+        voxelUnitQuadReady = false;
+    }
+    if (voxelRectPipeline) {
+        device->destroyPipeline(voxelRectPipeline);
+        voxelRectPipeline = vk::Pipeline{};
+    }
+    if (voxelRectPipelineLayout) {
+        device->destroyPipelineLayout(voxelRectPipelineLayout);
+        voxelRectPipelineLayout = vk::PipelineLayout{};
+    }
+    voxelRectSetLayoutUnique.reset();
+    voxelRectSetLayout = vk::DescriptorSetLayout{};
+}
+
+void Graphics::createVoxelRectPipeline() {
+    if (voxelRectPipeline) return;
+
+    vkb::DescriptorSetLayoutBuilder layoutBuilder;
+    voxelRectSetLayoutUnique =
+        layoutBuilder
+            .image(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .createUnique(device.instance);
+    voxelRectSetLayout = *voxelRectSetLayoutUnique;
+
+    vk::PushConstantRange pcr{};
+    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex;
+    pcr.offset = 0;
+    pcr.size = sizeof(VoxelRectPC);
+
+    vk::PipelineLayoutCreateInfo plInfo{};
+    plInfo.setLayoutCount = 1;
+    plInfo.pSetLayouts = &voxelRectSetLayout;
+    plInfo.pushConstantRangeCount = 1;
+    plInfo.pPushConstantRanges = &pcr;
+    voxelRectPipelineLayout = device->createPipelineLayout(plInfo);
+
+    std::vector<uint32_t> vert(voxel_rect_vert_spv, voxel_rect_vert_spv + voxel_rect_vert_spv_count);
+    std::vector<uint32_t> frag(voxel_rect_frag_spv, voxel_rect_frag_spv + voxel_rect_frag_spv_count);
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+
+    vk::PipelineShaderStageCreateInfo stages[2]{};
+    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
+    stages[0].module = vertModule;
+    stages[0].pName = "main";
+    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
+    stages[1].module = fragModule;
+    stages[1].pName = "main";
+
+    vk::VertexInputBindingDescription bindings[2]{};
+    bindings[0].binding = 0;
+    bindings[0].stride = sizeof(glm::vec2);
+    bindings[0].inputRate = vk::VertexInputRate::eVertex;
+    bindings[1].binding = 1;
+    bindings[1].stride = sizeof(uint32_t);
+    bindings[1].inputRate = vk::VertexInputRate::eInstance;
+
+    vk::VertexInputAttributeDescription attrs[2]{};
+    attrs[0].location = 0;
+    attrs[0].binding = 0;
+    attrs[0].format = vk::Format::eR32G32Sfloat;
+    attrs[0].offset = 0;
+    attrs[1].location = 1;
+    attrs[1].binding = 1;
+    attrs[1].format = vk::Format::eR32Uint;
+    attrs[1].offset = 0;
+
+    vk::PipelineVertexInputStateCreateInfo vi{};
+    vi.vertexBindingDescriptionCount = 2;
+    vi.pVertexBindingDescriptions = bindings;
+    vi.vertexAttributeDescriptionCount = 2;
+    vi.pVertexAttributeDescriptions = attrs;
+
+    vk::PipelineInputAssemblyStateCreateInfo ia{};
+    ia.topology = vk::PrimitiveTopology::eTriangleList;
+
+    vk::PipelineViewportStateCreateInfo vp{};
+    vp.viewportCount = 1;
+    vp.scissorCount = 1;
+
+    vk::PipelineRasterizationStateCreateInfo rs{};
+    rs.polygonMode = vk::PolygonMode::eFill;
+    rs.cullMode = vk::CullModeFlagBits::eBack;
+    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.lineWidth = 1.0f;
+
+    vk::PipelineMultisampleStateCreateInfo ms{};
+    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
+
+    vk::PipelineDepthStencilStateCreateInfo ds{};
+    ds.depthTestEnable = true;
+    ds.depthWriteEnable = true;
+    ds.depthCompareOp = vk::CompareOp::eLess;
+
+    vk::PipelineColorBlendAttachmentState blendAtt{};
+    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+    blendAtt.blendEnable = false;
+
+    vk::PipelineColorBlendStateCreateInfo blend{};
+    blend.attachmentCount = 1;
+    blend.pAttachments = &blendAtt;
+
+    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
+    vk::PipelineDynamicStateCreateInfo dyn{};
+    dyn.dynamicStateCount = 2;
+    dyn.pDynamicStates = dynStates;
+
+    vk::GraphicsPipelineCreateInfo pci{};
+    pci.stageCount = 2;
+    pci.pStages = stages;
+    pci.pVertexInputState = &vi;
+    pci.pInputAssemblyState = &ia;
+    pci.pViewportState = &vp;
+    pci.pRasterizationState = &rs;
+    pci.pMultisampleState = &ms;
+    pci.pDepthStencilState = &ds;
+    pci.pColorBlendState = &blend;
+    pci.pDynamicState = &dyn;
+    pci.layout = voxelRectPipelineLayout;
+    pci.renderPass = renderpass;
+    pci.subpass = 0;
+
+    auto result = device->createGraphicsPipeline(nullptr, pci);
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
+    if (result.result != vk::Result::eSuccess)
+        throw Exception("failed to create voxel rect pipeline");
+    voxelRectPipeline = result.value;
+
+    ensureVoxelUnitQuad();
+}
+
+void Graphics::ensureVoxelUnitQuad() {
+    if (voxelUnitQuadReady) return;
+    const float corners[8] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    voxelUnitQuadVerts.allocate(device, vk::BufferUsageFlagBits::eVertexBuffer, sizeof(corners),
+                                vk::MemoryPropertyFlagBits::eHostVisible |
+                                    vk::MemoryPropertyFlagBits::eHostCoherent);
+    voxelUnitQuadVerts.updateLocal(corners, sizeof(corners));
+    const uint32_t indices[6] = {0, 1, 2, 0, 2, 3};
+    voxelUnitQuadIndices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer, sizeof(indices),
+                                  vk::MemoryPropertyFlagBits::eHostVisible |
+                                      vk::MemoryPropertyFlagBits::eHostCoherent);
+    voxelUnitQuadIndices.updateLocal(indices, sizeof(indices));
+    voxelUnitQuadReady = true;
+}
+
+vk::DescriptorSet Graphics::voxelRectSetFor(GpuTexture *gpuTex) {
+    ASSERT(gpuTex != nullptr);
+    auto it = voxelRectSets.find(gpuTex);
+    if (it != voxelRectSets.end()) return it->second;
+
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = descriptorPool;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &voxelRectSetLayout;
+    vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
+
+    vkb::DescriptorSetUpdater updater(4, 4, 0);
+    updater.beginDescriptorSet(set)
+        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(gpuTex->sampler, gpuTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .update(device.instance);
+
+    voxelRectSets.emplace(gpuTex, set);
+    return set;
+}
+
+void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
+                                      float originY, float originZ, const std::string &faceDir,
+                                      Texture *atlas, int tilesPerRow) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("drawVoxelFaceInstances: graphics not initialized");
+    if (!swapchainPassOpen) throw Exception("drawVoxelFaceInstances: call begin3DFrame first");
+    if (!voxelRectPipeline) createVoxelRectPipeline();
+    if (!packed || count <= 0) return;
+
+    int face = -1;
+    if (faceDir == "posX" || faceDir == "+x")
+        face = 0;
+    else if (faceDir == "negX" || faceDir == "-x")
+        face = 1;
+    else if (faceDir == "posY" || faceDir == "+y")
+        face = 2;
+    else if (faceDir == "negY" || faceDir == "-y")
+        face = 3;
+    else if (faceDir == "posZ" || faceDir == "+z")
+        face = 4;
+    else if (faceDir == "negZ" || faceDir == "-z")
+        face = 5;
+    else
+        throw Exception("drawVoxelFaceInstances: unknown faceDir '%s'", faceDir.c_str());
+
+    Texture *tex = atlas ? atlas : whiteTexture;
+    if (!tex || !tex->gpuHandle) throw Exception("drawVoxelFaceInstances: missing texture");
+    auto *gpuTex = static_cast<GpuTexture *>(tex->gpuHandle);
+
+    ensureVoxelUnitQuad();
+
+    const vk::DeviceSize bytes = vk::DeviceSize(count) * sizeof(uint32_t);
+    const size_t slotIndex = voxelInstanceDrawIndex++;
+    while (voxelInstanceSlots.size() <= slotIndex) voxelInstanceSlots.emplace_back();
+    auto &slot = voxelInstanceSlots[slotIndex];
+    if (slot.capacityBytes < size_t(bytes) || !slot.buffer.buffer) {
+        if (slot.buffer.buffer) {
+            device->destroyBuffer(slot.buffer.buffer, device.allocation_callbacks);
+            device->freeMemory(slot.buffer.memory, device.allocation_callbacks);
+            slot.buffer.buffer = vk::Buffer{};
+            slot.buffer.memory = vk::DeviceMemory{};
+        }
+        const size_t alloc = std::max(size_t(bytes), slot.capacityBytes ? slot.capacityBytes * 2 : size_t(bytes));
+        slot.buffer.allocate(device, vk::BufferUsageFlagBits::eVertexBuffer, vk::DeviceSize(alloc),
+                             vk::MemoryPropertyFlagBits::eHostVisible |
+                                 vk::MemoryPropertyFlagBits::eHostCoherent);
+        slot.capacityBytes = alloc;
+    }
+    slot.buffer.updateLocal(packed, size_t(bytes));
+
+    VoxelRectPC pc{};
+    pc.viewProj = mesh3dFrameUbo.mvp;
+    pc.chunkOrigin = glm::vec4(originX, originY, originZ, float(face));
+    pc.atlasInfo = glm::vec4(float(std::max(1, tilesPerRow)), 0.f, 0.f, 0.f);
+    pc.tint = mesh3dFrameUbo.tint;
+
+    auto &cb = presentModel.getCurrentCommandBuffer();
+    vk::DescriptorSet set = voxelRectSetFor(gpuTex);
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, voxelRectPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, voxelRectPipelineLayout, 0, 1, &set, 0,
+                          nullptr);
+    cb.pushConstants(voxelRectPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(VoxelRectPC),
+                     &pc);
+
+    vk::Buffer vbufs[2] = {voxelUnitQuadVerts.buffer, slot.buffer.buffer};
+    vk::DeviceSize offsets[2] = {0, 0};
+    cb.bindVertexBuffers(0, 2, vbufs, offsets);
+    cb.bindIndexBuffer(voxelUnitQuadIndices.buffer, 0, vk::IndexType::eUint32);
+    cb.drawIndexed(6, uint32_t(count), 0, 0, 0);
 }
 
 void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = normal; }
@@ -2309,6 +2578,14 @@ void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dRoughness = roughness;
     mesh3dFrameUbo.ambient.w = metallic;
     mesh3dFrameUbo.cameraPos.w = roughness;
+}
+
+void Graphics::setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount) {
+    mesh3dTexBombScale = cellScale > 1e-3f ? cellScale : 1e-3f;
+    mesh3dTexBombStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
+    mesh3dTexBombRot = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);
+    mesh3dFrameUbo.texBomb =
+        glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
 }
 
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
@@ -2761,6 +3038,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.ambient = glm::vec4(glm::vec3(mesh3dClustered.ambient), mesh3dMetallic);
         ubo.gridInfo = mesh3dClustered.gridInfo;
         ubo.clipInfo = mesh3dClustered.clipInfo;
+        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
 
         const size_t slot = mesh3dClusteredDrawIndex++;
         vk::DescriptorSet set = mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, slot);
@@ -2786,6 +3064,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.lightDir.w = float(lightCount);
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = envIntensity;
+    ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     if (lightCount > 0) {
         ubo.lightDir = glm::vec4(glm::vec3(mesh3dLighting.lights[0].posRadius), float(lightCount));

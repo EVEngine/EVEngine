@@ -7,6 +7,7 @@
 #include "graphics/Texture.h"
 #include "graphics/Quad.h"
 #include "graphics/Font.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "font/FontData.h"
 #include "image/ImageData.h"
@@ -178,6 +179,10 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setTint", &Renderable3D::setTint);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
     ent.addFunc("setRoughness", &Renderable3D::setRoughness);
+    ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);
+    ent.addFunc("getTexCellBombScale", &Renderable3D::getTexCellBombScale);
+    ent.addFunc("getTexCellBombStrength", &Renderable3D::getTexCellBombStrength);
+    ent.addFunc("getTexCellBombRotation", &Renderable3D::getTexCellBombRotation);
     ent.addFunc("setVisible", &Renderable3D::setVisible);
     ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
     ent.addFunc("setCastShadow", &Renderable3D::setCastShadow);
@@ -234,6 +239,28 @@ void Graphics::expose(ssq::Table &table) {
     vol.addFunc("getShader", &Volumetric::getShader);
     vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
     vol.addFunc("getFogShader", &Volumetric::getFogShader);
+
+    auto aa = table.addClass<AntiAliasing>(
+        "AntiAliasing", std::function<AntiAliasing *()>([]() -> AntiAliasing * { return nullptr; }),
+        true);
+    aa.addFunc("setQuality", &AntiAliasing::setQuality);
+    aa.addFunc("getQuality", &AntiAliasing::getQuality);
+    aa.addFunc("setMode", &AntiAliasing::setMode);
+    aa.addFunc("getMode", &AntiAliasing::getMode);
+    aa.addFunc("hasParam", &AntiAliasing::hasParam);
+    aa.addFunc("setFloat", &AntiAliasing::setFloat);
+    aa.addFunc("getFloat", &AntiAliasing::getFloat);
+    aa.addFunc("suggestScale", &AntiAliasing::suggestScale);
+    aa.addFunc("resolutionFor", &AntiAliasing::resolutionFor);
+    aa.addFunc("apply", &AntiAliasing::apply);
+    aa.addFunc("applyTo", &AntiAliasing::applyTo);
+    aa.addFunc("applyCanvas", &AntiAliasing::applyCanvas);
+    aa.addFunc("applyCanvasTo", &AntiAliasing::applyCanvasTo);
+    aa.addFunc("getShader", &AntiAliasing::getShader);
+    aa.addFunc("getFxaaShader", &AntiAliasing::getFxaaShader);
+    aa.addFunc("getSmaaShader", &AntiAliasing::getSmaaShader);
+    aa.addFunc("getSsaaShader", &AntiAliasing::getSsaaShader);
+    aa.addFunc("getNfaaShader", &AntiAliasing::getNfaaShader);
 }
 
 void Graphics::expose(ssq::Class &cls) {
@@ -265,6 +292,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
+    cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
     cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
     cls.addFunc("drawOcclusionTexture", &Graphics::drawOcclusionTexture);
 }
@@ -279,6 +307,8 @@ void Graphics::setShader(Shader *shader) { currentShader = shader; }
 void Graphics::setShader() { currentShader = nullptr; }
 
 Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
+
+AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
     if (drawable) drawable->draw(this, m);

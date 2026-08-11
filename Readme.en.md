@@ -30,12 +30,12 @@ Built-in systems:
 1. 2D tilemap — with an extensible map editor
 2. 2D camera
 3. Simple database
-4. Box2D physics
+4. Box2D / Box3D physics
 5. RPG framework
 6. Extensible combat model components
 7. Dialogs and scripting
 8. Layered avatar rendering
-9. 2D fluid engine
+9. 2D fluid engine (`Physics.newFluid`; also interactive cloth via `newCloth`)
 10. Particle system
 11. Sprite-stacking pseudo-3D
 12. Real 3D model rendering

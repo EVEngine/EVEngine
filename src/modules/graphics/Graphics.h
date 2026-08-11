@@ -12,6 +12,7 @@
 #include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include <vector>
 #include <optional>
@@ -211,6 +212,13 @@ virtual void begin3DFrame() = 0;
     /** Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
 
+    /**
+     * Texture cell bombing for the next default mesh draw (breaks tiling).
+     * cellScale: cells per UV unit (typical 2..16). strength: 0=off, 1=full.
+     * rotAmount: 0..1 per-cell rotation scale (default 1).
+     */
+    virtual void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) = 0;
+
     /** Per-frame ambient + up to 8 lights packed into Mesh3DUBO. */
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;
 
@@ -225,6 +233,16 @@ virtual void begin3DFrame() = 0;
 
     /** Camera eye used by mesh shaders that need view/rim (stored in Mesh3DUBO). */
     virtual void setMesh3DCameraPos(const glm::vec3 &eye) = 0;
+
+    /**
+     * Instanced voxel face rectangles (32-bit packed instances).
+     * faceDir: "posX"|"negX"|"posY"|"negY"|"posZ"|"negZ" (also "+x"/"-x"/…).
+     * Requires begin3DFrame(); uses viewProj from setMesh3DViewProj.
+     * atlas may be null → white; tilesPerRow subdivides atlas for texture indices.
+     */
+    virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
+                                        float originY, float originZ, const std::string &faceDir,
+                                        Texture *atlas, int tilesPerRow = 16) = 0;
 
     /**
      * Specular IBL environment for subsequent default mesh draws.
@@ -364,6 +382,12 @@ virtual void begin3DFrame() = 0;
      * its Shaders are owned by Graphics.
      */
     Volumetric *newVolumetric();
+
+    /**
+     * Classic image-space AA (FXAA / SMAA / SSAA / NFAA). Caller owns AntiAliasing*;
+     * its Shaders are owned by Graphics.
+     */
+    AntiAliasing *newAntiAliasing();
 
     void draw(Drawable *drawable, const glm::mat4 &m);
 

@@ -42,6 +42,8 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 
 几何 LOD：`Renderable3D.setMeshLod(index, mesh, switchDistance)`，`RenderSystem3D` 按相机距离选择网格。
 
+大面积平铺 albedo（地面、墙面）若出现明显重复，可对实体调用 `setTexCellBomb(cellScale, strength, rotAmount=1)`：按 UV 划分 cell，对邻接 cell 做随机偏移/旋转并混合。`strength=0`（默认）关闭，行为与原先一致；`cellScale` 一般为 2～16。
+
 ### 屏幕空间体积光（尘雾光柱）与体积雾
 
 `vol <- gfx.newVolumetric()`。`setQuality("low"|"medium"|"high")` 控制采样与 `resolutionFor`。
@@ -50,7 +52,18 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 - **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
 
-细节见 [`体积光模块设计.md`](../体积光模块设计.md)。
+细节见 [`体积光模块设计.md`](../../dev/体积光模块设计.md)。
+
+### 经典抗锯齿（FXAA / SMAA / SSAA / NFAA）
+
+`aa <- gfx.newAntiAliasing()`。`setQuality("low"|"medium"|"high")` 调整阈值与搜索；`setMode` 选择算法：
+
+- **fxaa**：FXAA 3.11 风格亮度边搜索
+- **smaa**：SMAA 启发的单 Pass 形态学 AA
+- **ssaa**：超采样 Resolve（先画到 `resolutionFor` 尺寸的 Canvas）
+- **nfaa**：沿亮度梯度切向的 Normal Filter AA
+
+典型流程：场景 → Canvas → `aa.applyCanvas` / `applyCanvasTo` → 屏幕。细节见 [`抗锯齿模块设计.md`](../../dev/抗锯齿模块设计.md)。
 
 ### 2D 屏幕拾取
 
@@ -77,14 +90,15 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAntiAliasing()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPosition()`、`setRadius()`
 - `setReceiveLight()`、`setReceiveShadow()`、`setRotation()`、`setRoughness()`、`setScale()`、`setShader()`、`setShadowBias()`、`setShadowStrength()`
-- `setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
+- `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
+- `AntiAliasing`：`setQuality`、`setMode`、`apply`、`applyTo`、`applyCanvas`、`applyCanvasTo`、`suggestScale`、`resolutionFor`、`setFloat`、`getFloat` 等
 
 ## 使用要点
 
