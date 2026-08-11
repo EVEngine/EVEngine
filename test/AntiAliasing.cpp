@@ -149,7 +149,8 @@ TEST_CASE("aa.allModesSmoke") {
     std::unique_ptr<AntiAliasing> aa(gfx->newAntiAliasing());
     Texture *src = makeChecker(gfx, 160, 120);
     Canvas *dest = gfx->newCanvas(160, 120);
-    REQUIRE(src && dest);
+    REQUIRE(src != nullptr);
+    REQUIRE(dest != nullptr);
 
     const char *modes[] = {"fxaa", "smaa", "ssaa", "nfaa"};
     for (const char *mode : modes) {
@@ -179,7 +180,8 @@ TEST_CASE("aa.ssaaFromHiResCanvas") {
 
     Canvas *hi = gfx->newCanvas(sw, sh);
     Canvas *lo = gfx->newCanvas(dw, dh);
-    REQUIRE(hi && lo);
+    REQUIRE(hi != nullptr);
+    REQUIRE(lo != nullptr);
 
     // Draw a high-contrast diagonal into the supersampled canvas.
     gfx->setCanvas(hi);
