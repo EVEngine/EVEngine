@@ -113,7 +113,7 @@ GAME ?=
 	reinstall/third-party/macosx reinstall/third-party/macosx-debug \
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
-	link-compile-commands
+	link-compile-commands download-classic-scenes download-skinned-character
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
 all: $(ALL_DEBUG_TARGETS)
@@ -426,6 +426,10 @@ test: test/$(PLATFORM)-debug
 # Cornell Box is committed under test/assets/classic/cornell/.
 download-classic-scenes:
 	bash scripts/download_classic_scenes.sh
+
+# Fetch CesiumMan (~0.5 MB) for animation.skinned.* skeletal skinning tests.
+download-skinned-character:
+	bash scripts/download_skinned_character.sh
 
 # Optional name-prefix filter for platform targets: make test FILTER=graphics.print
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')

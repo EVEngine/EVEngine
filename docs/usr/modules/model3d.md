@@ -36,6 +36,8 @@ local mesh = models.newModelDataFromFile("models/hero.glb");
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `empty()`、`getFaceCount()`、`getMaterialCount()`、`getMeshCount()`、`getName()`、`getVertexCount()`、`hasNormals()`、`hasTexCoords()`
+- 蒙皮：`hasBones()`、`getBoneCount()`、`getBoneName()`、`getInverseBindMatrixElement()`、`getBoneWeightCount()`、`getBoneWeightVertex()`、`getBoneWeightValue()`
+- 动画剪辑：`getAnimationCount()`、`getAnimationName()`
 - `newModelData()`、`newModelDataFromFile()`
 
 ## 使用要点

@@ -21,6 +21,7 @@ class MotionDatabase;
 class MotionMatcher;
 class ControlAnim;
 class ControlPose;
+class AnimSkin;
 
 /**
  * Animation module — tween factory + 3D skeletal playback
@@ -71,6 +72,13 @@ public:
                                    int animIndex = 0);
     AnimSkeleton *newSkeletonFromEvaFile(const std::string &path);
     AnimClip     *newClipFromEvaFile(const std::string &path);
+
+    /**
+     * CPU linear-blend skin binding for a skinned mesh on ModelData.
+     * meshIndex selects the Assimp mesh; bone names must match the skeleton.
+     */
+    AnimSkin *newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
+                               AnimSkeleton *skeleton);
 
     /** Advance all registered tweens. */
     void update(float dt);

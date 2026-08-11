@@ -4,6 +4,7 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimSkin.h"
 #include "animation/AnimStateMachine.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
@@ -80,6 +81,11 @@ AnimClip *Animation::newClipFromEvaFile(const std::string &path) {
     AnimImporter::importEvaFile(path, &sk, &clip);
     delete sk;
     return clip;
+}
+
+AnimSkin *Animation::newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
+                                      AnimSkeleton *skeleton) {
+    return AnimSkin::fromModel(model, meshIndex, skeleton);
 }
 
 void Animation::registerTween(Tween *t) {
@@ -248,6 +254,21 @@ void Animation::expose(ssq::Table &table) {
     pose.addFunc("getWorldRotationY", &AnimPose::getWorldRotationY);
     pose.addFunc("getWorldRotationZ", &AnimPose::getWorldRotationZ);
     pose.addFunc("getWorldRotationW", &AnimPose::getWorldRotationW);
+    pose.addFunc("getWorldMatrixElement", &AnimPose::getWorldMatrixElement);
+
+    auto skin = table.addClass<AnimSkin>(
+        "AnimSkin", std::function<AnimSkin *()>([]() -> AnimSkin * { return nullptr; }), true);
+    skin.addFunc("getVertexCount", &AnimSkin::getVertexCount);
+    skin.addFunc("getBoneCount", &AnimSkin::getBoneCount);
+    skin.addFunc("getInfluenceCount", &AnimSkin::getInfluenceCount);
+    skin.addFunc("getSkeletonBone", &AnimSkin::getSkeletonBone);
+    skin.addFunc("getSkinBoneName", &AnimSkin::getSkinBoneName);
+    skin.addFunc("getInverseBindElement", &AnimSkin::getInverseBindElement);
+    skin.addFunc("getBindPositionX", &AnimSkin::getBindPositionX);
+    skin.addFunc("getBindPositionY", &AnimSkin::getBindPositionY);
+    skin.addFunc("getBindPositionZ", &AnimSkin::getBindPositionZ);
+    skin.addFunc("getVertexBone", &AnimSkin::getVertexBone);
+    skin.addFunc("getVertexWeight", &AnimSkin::getVertexWeight);
 
     auto player = table.addClass<AnimPlayer>(
         "AnimPlayer", std::function<AnimPlayer *()>([]() -> AnimPlayer * { return nullptr; }),
@@ -401,6 +422,7 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
     cls.addFunc("newSkeletonFromEvaFile", &Animation::newSkeletonFromEvaFile);
     cls.addFunc("newClipFromEvaFile", &Animation::newClipFromEvaFile);
+    cls.addFunc("newSkinFromModel", &Animation::newSkinFromModel);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);
