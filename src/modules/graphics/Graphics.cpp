@@ -9,6 +9,7 @@
 #include "graphics/Font.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
+#include "graphics/AmbientOcclusion.h"
 #include "font/FontData.h"
 #include "image/ImageData.h"
 #include "common/Exception.h"
@@ -240,6 +241,42 @@ void Graphics::expose(ssq::Table &table) {
     vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
     vol.addFunc("getFogShader", &Volumetric::getFogShader);
 
+    auto ao = table.addClass<AmbientOcclusion>(
+        "AmbientOcclusion",
+        std::function<AmbientOcclusion *()>([]() -> AmbientOcclusion * { return nullptr; }), true);
+    ao.addFunc("setQuality", &AmbientOcclusion::setQuality);
+    ao.addFunc("getQuality", &AmbientOcclusion::getQuality);
+    ao.addFunc("setMode", &AmbientOcclusion::setMode);
+    ao.addFunc("getMode", &AmbientOcclusion::getMode);
+    ao.addFunc("setCamera", &AmbientOcclusion::setCamera);
+    ao.addFunc("setRadius", &AmbientOcclusion::setRadius);
+    ao.addFunc("setBias", &AmbientOcclusion::setBias);
+    ao.addFunc("setIntensity", &AmbientOcclusion::setIntensity);
+    ao.addFunc("setPower", &AmbientOcclusion::setPower);
+    ao.addFunc("setThickness", &AmbientOcclusion::setThickness);
+    ao.addFunc("getRadius", &AmbientOcclusion::getRadius);
+    ao.addFunc("getBias", &AmbientOcclusion::getBias);
+    ao.addFunc("getIntensity", &AmbientOcclusion::getIntensity);
+    ao.addFunc("getPower", &AmbientOcclusion::getPower);
+    ao.addFunc("hasParam", &AmbientOcclusion::hasParam);
+    ao.addFunc("setFloat", &AmbientOcclusion::setFloat);
+    ao.addFunc("getFloat", &AmbientOcclusion::getFloat);
+    ao.addFunc("getSampleCount", &AmbientOcclusion::getSampleCount);
+    ao.addFunc("getDownscale", &AmbientOcclusion::getDownscale);
+    ao.addFunc("resolutionFor", &AmbientOcclusion::resolutionFor);
+    ao.addFunc("compute", &AmbientOcclusion::compute);
+    ao.addFunc("computeTo", &AmbientOcclusion::computeTo);
+    ao.addFunc("blur", &AmbientOcclusion::blur);
+    ao.addFunc("blurTo", &AmbientOcclusion::blurTo);
+    ao.addFunc("applyOverlay", &AmbientOcclusion::applyOverlay);
+    ao.addFunc("applyOverlayTo", &AmbientOcclusion::applyOverlayTo);
+    ao.addFunc("getShader", &AmbientOcclusion::getShader);
+    ao.addFunc("getSsaoShader", &AmbientOcclusion::getSsaoShader);
+    ao.addFunc("getHbaoShader", &AmbientOcclusion::getHbaoShader);
+    ao.addFunc("getGtaoShader", &AmbientOcclusion::getGtaoShader);
+    ao.addFunc("getBlurShader", &AmbientOcclusion::getBlurShader);
+    ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
+
     auto aa = table.addClass<AntiAliasing>(
         "AntiAliasing", std::function<AntiAliasing *()>([]() -> AntiAliasing * { return nullptr; }),
         true);
@@ -292,6 +329,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
+    cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
     cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
     cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
     cls.addFunc("drawOcclusionTexture", &Graphics::drawOcclusionTexture);
@@ -307,6 +345,8 @@ void Graphics::setShader(Shader *shader) { currentShader = shader; }
 void Graphics::setShader() { currentShader = nullptr; }
 
 Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
+
+AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
 AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 

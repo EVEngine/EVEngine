@@ -54,6 +54,17 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 
 细节见 [`体积光模块设计.md`](../../dev/体积光模块设计.md)。
 
+### 屏幕空间环境光遮蔽（SSAO / HBAO / GTAO）
+
+`ao <- gfx.newAmbientOcclusion()`。`setMode("ssao"|"hbao"|"gtao")`，`setQuality` 控制采样与 `resolutionFor`。
+
+1. `setCamera` + 线性深度纹理（与体积雾相同约定）
+2. `compute` / `computeTo` → AO 图（RGB=遮蔽因子，A=深度）
+3. 可选 `blur` / `blurTo`（双边）
+4. `applyOverlay` 以黑 + `alpha=(1-ao)*intensity` 叠到已有场景
+
+细节见 [`环境光遮蔽模块设计.md`](../../dev/环境光遮蔽模块设计.md)。
+
 ### 经典抗锯齿（FXAA / SMAA / SSAA / NFAA）
 
 `aa <- gfx.newAntiAliasing()`。`setQuality("low"|"medium"|"high")` 调整阈值与搜索；`setMode` 选择算法：
@@ -90,7 +101,7 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAntiAliasing()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newAntiAliasing()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPosition()`、`setRadius()`
@@ -98,6 +109,7 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 - `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
+- `AmbientOcclusion`：`setQuality`、`setMode`、`setCamera`、`setRadius`、`setBias`、`setIntensity`、`setPower`、`compute`、`blur`、`applyOverlay`、`resolutionFor` 等
 - `AntiAliasing`：`setQuality`、`setMode`、`apply`、`applyTo`、`applyCanvas`、`applyCanvasTo`、`suggestScale`、`resolutionFor`、`setFloat`、`getFloat` 等
 
 ## 使用要点

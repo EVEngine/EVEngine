@@ -14,6 +14,7 @@
 #include "graphics/Shadow.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
+#include "graphics/AmbientOcclusion.h"
 #include <vector>
 #include <optional>
 #include <cstdint>
@@ -382,6 +383,12 @@ virtual void begin3DFrame() = 0;
      * its Shaders are owned by Graphics.
      */
     Volumetric *newVolumetric();
+
+    /**
+     * Screen-space ambient occlusion (ssao / hbao / gtao). Caller owns AmbientOcclusion*;
+     * its Shaders are owned by Graphics.
+     */
+    AmbientOcclusion *newAmbientOcclusion();
 
     /**
      * Classic image-space AA (FXAA / SMAA / SSAA / NFAA). Caller owns AntiAliasing*;

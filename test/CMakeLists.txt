@@ -27,6 +27,7 @@ file(GLOB all_test_cpp
   ClassicScenes.cpp
   Volumetric.cpp
   TextureSampler.cpp
+  AmbientOcclusion.cpp
   AntiAliasing.cpp
   UISystem.cpp
   UIBuilder.cpp
