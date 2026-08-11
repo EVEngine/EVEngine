@@ -422,6 +422,11 @@ log/ios:
 
 test: test/$(PLATFORM)-debug
 
+# Fetch large classic render scenes (Sponza / DamagedHelmet) for ClassicScenes.* tests.
+# Cornell Box is committed under test/assets/classic/cornell/.
+download-classic-scenes:
+	bash scripts/download_classic_scenes.sh
+
 # Optional name-prefix filter for platform targets: make test FILTER=graphics.print
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 
