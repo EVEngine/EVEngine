@@ -34,7 +34,18 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
 
-细节见 [`体积光模块设计.md`](../体积光模块设计.md)。
+细节见 [`体积光模块设计.md`](../../dev/体积光模块设计.md)。
+
+### 屏幕空间环境光遮蔽（SSAO / HBAO / GTAO）
+
+`ao <- gfx.newAmbientOcclusion()`。`setMode("ssao"|"hbao"|"gtao")`，`setQuality` 控制采样与 `resolutionFor`。
+
+1. `setCamera` + 线性深度纹理（与体积雾相同约定）
+2. `compute` / `computeTo` → AO 图（RGB=遮蔽因子，A=深度）
+3. 可选 `blur` / `blurTo`（双边）
+4. `applyOverlay` 以黑 + `alpha=(1-ao)*intensity` 叠到已有场景
+
+细节见 [`环境光遮蔽模块设计.md`](../../dev/环境光遮蔽模块设计.md)。
 
 ### 2D 屏幕拾取
 
@@ -61,7 +72,7 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`newVolumetric()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`newTexture()`、`newVolumetric()`、`newAmbientOcclusion()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPosition()`、`setRadius()`
@@ -69,6 +80,7 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - `setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
+- `AmbientOcclusion`：`setQuality`、`setMode`、`setCamera`、`setRadius`、`setBias`、`setIntensity`、`setPower`、`compute`、`blur`、`applyOverlay`、`resolutionFor` 等
 
 ## 使用要点
 

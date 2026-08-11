@@ -24,6 +24,7 @@ file(GLOB all_test_cpp
   IBL.cpp
   Shadow3D.cpp
   Volumetric.cpp
+  AmbientOcclusion.cpp
   UISystem.cpp
   UIBuilder.cpp
   UIPhaseB.cpp
