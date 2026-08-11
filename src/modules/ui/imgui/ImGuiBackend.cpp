@@ -4,6 +4,7 @@
 #include "common/config.h"
 #include "graphics/Graphics.h"
 #include "graphics/vulkan/Graphics.h"
+#include "ui/Theme.h"
 #include "vkbuilder.hpp"
 
 #include <imgui.h>
@@ -43,8 +44,9 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     window_ = window;
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    baseStyle_ = ImGui::GetStyle();
+    // Start from unified theme tokens (not a one-off ImGui palette).
+    setThemeUiScale(uiScale_);
+    applyThemeToImGui(globalTheme(), uiScale_);
 
     ImGui_ImplSDL2_InitForVulkan(window);
 
@@ -167,10 +169,10 @@ void ImGuiBackend::newFrame() {
 void ImGuiBackend::applyScale(float scale) {
     if (!initialized_) return;
     scale = std::clamp(scale, 0.5f, 5.f);
-    ImGui::GetStyle() = baseStyle_;
-    ImGui::GetStyle().ScaleAllSizes(scale);
-    ImGui::GetIO().FontGlobalScale = scale;
     uiScale_ = scale;
+    setThemeUiScale(scale);
+    // Re-apply design tokens so geometry / font stay in sync with theme + DPI.
+    applyThemeToImGui(globalTheme(), scale);
 }
 
 void ImGuiBackend::setScale(float scale) {

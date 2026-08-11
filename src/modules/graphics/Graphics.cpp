@@ -7,6 +7,7 @@
 #include "graphics/Texture.h"
 #include "graphics/Quad.h"
 #include "graphics/Font.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
 #include "font/FontData.h"
@@ -266,6 +267,28 @@ void Graphics::expose(ssq::Table &table) {
     ao.addFunc("getGtaoShader", &AmbientOcclusion::getGtaoShader);
     ao.addFunc("getBlurShader", &AmbientOcclusion::getBlurShader);
     ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
+
+    auto aa = table.addClass<AntiAliasing>(
+        "AntiAliasing", std::function<AntiAliasing *()>([]() -> AntiAliasing * { return nullptr; }),
+        true);
+    aa.addFunc("setQuality", &AntiAliasing::setQuality);
+    aa.addFunc("getQuality", &AntiAliasing::getQuality);
+    aa.addFunc("setMode", &AntiAliasing::setMode);
+    aa.addFunc("getMode", &AntiAliasing::getMode);
+    aa.addFunc("hasParam", &AntiAliasing::hasParam);
+    aa.addFunc("setFloat", &AntiAliasing::setFloat);
+    aa.addFunc("getFloat", &AntiAliasing::getFloat);
+    aa.addFunc("suggestScale", &AntiAliasing::suggestScale);
+    aa.addFunc("resolutionFor", &AntiAliasing::resolutionFor);
+    aa.addFunc("apply", &AntiAliasing::apply);
+    aa.addFunc("applyTo", &AntiAliasing::applyTo);
+    aa.addFunc("applyCanvas", &AntiAliasing::applyCanvas);
+    aa.addFunc("applyCanvasTo", &AntiAliasing::applyCanvasTo);
+    aa.addFunc("getShader", &AntiAliasing::getShader);
+    aa.addFunc("getFxaaShader", &AntiAliasing::getFxaaShader);
+    aa.addFunc("getSmaaShader", &AntiAliasing::getSmaaShader);
+    aa.addFunc("getSsaaShader", &AntiAliasing::getSsaaShader);
+    aa.addFunc("getNfaaShader", &AntiAliasing::getNfaaShader);
 }
 
 void Graphics::expose(ssq::Class &cls) {
@@ -293,6 +316,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
+    cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
     cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
     cls.addFunc("drawOcclusionTexture", &Graphics::drawOcclusionTexture);
 }
@@ -309,6 +333,8 @@ void Graphics::setShader() { currentShader = nullptr; }
 Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
 
 AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
+
+AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
     if (drawable) drawable->draw(this, m);

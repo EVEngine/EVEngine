@@ -58,6 +58,12 @@
     代码：`src/modules/spatial/`
     设计：`docs/dev/空间索引模块设计.md`
 
+6b1b. 体素渲染 - voxel（`eve.Voxel`）
+    32³ chunk、贪婪矩形合并、32-bit 打包实例、六向缓冲、视锥/距离/朝向裁剪
+    `newWorld` / `selectVisible` / `drawVisible`；`Graphics::drawVoxelFaceInstances`
+    代码：`src/modules/voxel/`
+    设计：`docs/dev/体素渲染模块设计.md`
+
 6b2. 逆运动学 - ik（`eve.IK`）
     封装 [ik.hpp](https://github.com/sunxfancy/ik.hpp)（`external/ik.hpp`）：Skeleton2D/3D、Solver2D/3D（FABRIK）
     `newSkeleton2D` / `newSolver2D` / `createBone` / `addTarget` / `solve` / `step`
@@ -90,12 +96,16 @@
     Module：工厂、`newEmitterFromFile`、脚本绑定；`update` 含 poll+sim
 
 11. Box2d物理 - box2d（脚本模块名 `Physics`）
-    负责管理box2d物理引擎
-    Module：`Physics`（`setMeter` / `newWorld`）
+    负责管理box2d物理引擎，以及可交互布料 / 2D 流体
+    Module：`Physics`（`setMeter` / `newWorld` / `newCloth` / `newFluid`）
     类型：`World` / `Body` / `Fixture`；坐标为像素，内部按 meter 换算
-    帧循环：`world.update(dt)`；碰撞事件：`begincontact` / `endcontact` → `event`
-    可选：`world.drawDebug(gfx)`
+    类型：`Cloth`（Verlet 布料，`grabAt` / `update` / `draw`）
+    类型：`Fluid`（双密度松弛流体，`emit` / `interactAt` / `update` / `draw`）
+    帧循环：`world.update(dt)` / `cloth.update(dt)` / `fluid.update(dt)`
+    碰撞事件：`begincontact` / `endcontact` → `event`（刚体）
+    可选：`world.drawDebug(gfx)`；布料/流体用自带 `draw(gfx)`
     代码：`src/modules/physics/`（避免与第三方 `Box2D/` 在大小写不敏感文件系统上冲突）
+    示例：`examples/softbody/`
 
 11b. 声明式场景树 - scene（`eve.Scene`）
     与 ui 同构：`SceneComponent.build` → `NodeDesc` → `SceneHost`；`mount` / `remountReconcile` / `beginBuild`

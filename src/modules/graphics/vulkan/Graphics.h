@@ -178,6 +178,9 @@ public:
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
+    void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
+                                float originZ, const std::string &faceDir, Texture *atlas,
+                                int tilesPerRow = 16) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DMaterial(float metallic, float roughness) override;
     void setMesh3DLighting(const Lighting3DPack &pack) override;
@@ -229,6 +232,10 @@ private:
     void createLit2DPipeline();
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
+    void createVoxelRectPipeline();
+    void destroyVoxelRectResources();
+    void ensureVoxelUnitQuad();
+    vk::DescriptorSet voxelRectSetFor(GpuTexture *gpuTex);
     void createShadowResources();
     void destroyShadowResources();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
@@ -436,6 +443,29 @@ private:
 
     bool swapchainPassOpen = false;
     Mesh3DUBO mesh3dFrameUbo{};
+
+    // Instanced voxel face rectangles (packed uint32 instances).
+    struct VoxelRectPC {
+        glm::mat4 viewProj{1.f};
+        glm::vec4 chunkOrigin{0.f};  // xyz = origin, w = faceDir
+        glm::vec4 atlasInfo{16.f, 0.f, 0.f, 0.f};
+        glm::vec4 tint{1.f};
+    };
+    vk::DescriptorSetLayout voxelRectSetLayout{};
+    vk::UniqueDescriptorSetLayout voxelRectSetLayoutUnique;
+    vk::PipelineLayout voxelRectPipelineLayout{};
+    vk::Pipeline voxelRectPipeline{};
+    vkb::GenericBuffer voxelUnitQuadVerts;
+    vkb::GenericBuffer voxelUnitQuadIndices;
+    bool voxelUnitQuadReady = false;
+    std::unordered_map<GpuTexture *, vk::DescriptorSet> voxelRectSets;
+    // Grow-only instance buffer pool (reset index each begin3DFrame).
+    struct VoxelInstanceSlot {
+        vkb::GenericBuffer buffer;
+        size_t capacityBytes = 0;
+    };
+    std::vector<VoxelInstanceSlot> voxelInstanceSlots;
+    size_t voxelInstanceDrawIndex = 0;
 };
 
 }  // namespace eve::graphics::vulkan

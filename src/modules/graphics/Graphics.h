@@ -11,6 +11,7 @@
 #include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
 #include <vector>
@@ -192,6 +193,16 @@ virtual void begin3DFrame() = 0;
     virtual void setMesh3DCameraPos(const glm::vec3 &eye) = 0;
 
     /**
+     * Instanced voxel face rectangles (32-bit packed instances).
+     * faceDir: "posX"|"negX"|"posY"|"negY"|"posZ"|"negZ" (also "+x"/"-x"/…).
+     * Requires begin3DFrame(); uses viewProj from setMesh3DViewProj.
+     * atlas may be null → white; tilesPerRow subdivides atlas for texture indices.
+     */
+    virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
+                                        float originY, float originZ, const std::string &faceDir,
+                                        Texture *atlas, int tilesPerRow = 16) = 0;
+
+    /**
      * Specular IBL environment for subsequent default mesh draws.
      * cube must be from newCubemap (or nullptr → black / intensity 0).
      * intensity is packed into Mesh3DUBO lightColor.w.
@@ -335,6 +346,12 @@ virtual void begin3DFrame() = 0;
      * its Shaders are owned by Graphics.
      */
     AmbientOcclusion *newAmbientOcclusion();
+
+    /**
+     * Classic image-space AA (FXAA / SMAA / SSAA / NFAA). Caller owns AntiAliasing*;
+     * its Shaders are owned by Graphics.
+     */
+    AntiAliasing *newAntiAliasing();
 
     void draw(Drawable *drawable, const glm::mat4 &m);
 
