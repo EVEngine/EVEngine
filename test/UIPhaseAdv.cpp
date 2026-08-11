@@ -120,3 +120,116 @@ UnitSciptTest(UIScriptComponentTest, kScriptComponentContent);
 TEST_CASE_FIXTURE(UIScriptComponentTest, "UI.adv.scriptUIComponent") {
     CHECK(vm.callFunc(vm.findFunc("testScriptComponent"), vm).toBool());
 }
+
+TEST_CASE("UI.adv.flexRowColumnSpacer") {
+    ui::UIHost *h = ui::UIHost::createHost("flex");
+    h->setTree(ui::window(
+        "Flex",
+        {
+            ui::row(
+                {
+                    ui::button("L", "left"),
+                    ui::spacer("mid"),
+                    ui::button("R", "right").withFlexGrow(0.f),
+                },
+                "toolbar")
+                .withGap(8.f)
+                .withJustify(ui::FlexJustify::Start),
+            ui::column(
+                {
+                    ui::text("A", "a"),
+                    ui::text("B", "b"),
+                },
+                "stack")
+                .withGap(4.f)
+                .withAlign(ui::FlexAlign::Stretch),
+            ui::flex(ui::FlexDirection::Row,
+                     {
+                         ui::button("1", "one").withFlexGrow(1.f),
+                         ui::button("2", "two").withFlexGrow(2.f),
+                     },
+                     "growrow")
+                .withJustify(ui::FlexJustify::SpaceBetween),
+        },
+        "root"));
+
+    auto *toolbar = h->findById("toolbar");
+    CHECK(toolbar != nullptr);
+    CHECK_EQ(int(toolbar->type), int(ui::NodeType::Flex));
+    CHECK_EQ(int(toolbar->flexDirection), int(ui::FlexDirection::Row));
+    CHECK(std::abs(toolbar->gap - 8.f) < 1e-5f);
+
+    auto *mid = h->findById("mid");
+    CHECK(mid != nullptr);
+    CHECK_EQ(int(mid->type), int(ui::NodeType::Spacer));
+    CHECK(mid->flexGrow > 0.f);
+
+    auto *stack = h->findById("stack");
+    CHECK(stack != nullptr);
+    CHECK_EQ(int(stack->flexDirection), int(ui::FlexDirection::Column));
+    CHECK_EQ(int(stack->alignItems), int(ui::FlexAlign::Stretch));
+
+    auto *one = h->findById("one");
+    CHECK(one != nullptr);
+    CHECK(std::abs(one->flexGrow - 1.f) < 1e-5f);
+    CHECK(std::abs(h->findById("two")->flexGrow - 2.f) < 1e-5f);
+}
+
+TEST_CASE("UI.adv.flexBuilderAPI") {
+    ui::UI *uimod = ui::UI::create();
+    uimod->beginBuild();
+    uimod->beginWindow("Bar", "root");
+    uimod->beginRow("tools", 6.f);
+    uimod->setFlexJustify("space-between");
+    uimod->setFlexAlign("center");
+    uimod->addButton("Save", "save");
+    uimod->addSpacer("sp");
+    uimod->addButton("Quit", "quit");
+    uimod->setItemFlexGrow(0.f);
+    uimod->setItemSize(80.f, 0.f);
+    uimod->end();
+    uimod->beginColumn("body", 2.f);
+    uimod->addText("Hello", "hello");
+    uimod->addText("World", "world");
+    uimod->end();
+    uimod->beginFlex("column", "side", 0.f);
+    uimod->addButton("X", "x");
+    uimod->end();
+    uimod->end();
+    CHECK(uimod->mountBuildAs("bar"));
+
+    auto *tools = uimod->current()->findById("tools");
+    CHECK(tools != nullptr);
+    CHECK_EQ(int(tools->type), int(ui::NodeType::Flex));
+    CHECK_EQ(int(tools->flexDirection), int(ui::FlexDirection::Row));
+    CHECK_EQ(int(tools->justifyContent), int(ui::FlexJustify::SpaceBetween));
+    CHECK_EQ(int(tools->alignItems), int(ui::FlexAlign::Center));
+    CHECK(std::abs(tools->gap - 6.f) < 1e-5f);
+
+    auto *quit = uimod->current()->findById("quit");
+    CHECK(quit != nullptr);
+    CHECK(std::abs(quit->sizeX - 80.f) < 1e-5f);
+
+    auto *sp = uimod->current()->findById("sp");
+    CHECK(sp != nullptr);
+    CHECK_EQ(int(sp->type), int(ui::NodeType::Spacer));
+
+    auto *side = uimod->current()->findById("side");
+    CHECK(side != nullptr);
+    CHECK_EQ(int(side->flexDirection), int(ui::FlexDirection::Column));
+}
+
+TEST_CASE("UI.adv.flexReconcileKeepsStructure") {
+    ui::UIHost *h = ui::UIHost::createHost("flexrec");
+    auto tree1 = ui::window(
+        "F", {ui::row({ui::button("A", "a"), ui::spacer("s"), ui::button("B", "b")}, "r")}, "root");
+    h->setTree(tree1);
+    auto tree2 = ui::window(
+        "F",
+        {ui::row({ui::button("A2", "a"), ui::spacer("s"), ui::button("B2", "b")}, "r").withGap(10.f)},
+        "root");
+    bool rebuilt = h->setTreeReconcile(std::move(tree2));
+    CHECK(!rebuilt);
+    CHECK(h->findById("a")->text == "A2");
+    CHECK(std::abs(h->findById("r")->gap - 10.f) < 1e-5f);
+}

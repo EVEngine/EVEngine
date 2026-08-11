@@ -57,6 +57,16 @@ public:
     void beginList(const std::string &id);
     void beginCollapsing(const std::string &label, const std::string &id = "", bool open = true);
     void beginChild(const std::string &id, float width = 0.f, float height = 120.f);
+    /**
+     * Begin a Flex container.
+     * @param direction "row" / "column" (case-insensitive; default row)
+     * @param id stable node id
+     * @param gap spacing between children; <0 uses theme ItemSpacing
+     */
+    void beginFlex(const std::string &direction = "row", const std::string &id = "",
+                   float gap = -1.f);
+    void beginRow(const std::string &id = "", float gap = -1.f);
+    void beginColumn(const std::string &id = "", float gap = -1.f);
     void end();
     void addText(const std::string &content, const std::string &id = "");
     void addButton(const std::string &label, const std::string &id = "");
@@ -67,6 +77,17 @@ public:
                    const std::string &id = "");
     void addProgress(float fraction, const std::string &id = "", const std::string &overlay = "");
     void addInputText(const std::string &label, const std::string &value, const std::string &id = "");
+    /** Flexible empty space inside Flex (default grow=1). */
+    void addSpacer(const std::string &id = "", float grow = 1.f);
+    /**
+     * Set flex item props on the most recently added child of the current open container.
+     * No-op if there is no current child.
+     */
+    void setItemFlexGrow(float grow);
+    void setItemSize(float width, float height);
+    /** Set Flex container align/justify on the current open Flex (no-op otherwise). */
+    void setFlexAlign(const std::string &align);
+    void setFlexJustify(const std::string &justify);
     /** Append one list row button (call inside beginList). */
     void addListItem(const std::string &label, const std::string &id = "");
 

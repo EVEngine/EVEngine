@@ -238,6 +238,51 @@ void UI::beginChild(const std::string &id, float width, float height) {
     pushOpen(child(id, {}, width, height));
 }
 
+namespace {
+
+std::string toLowerCopy(std::string s) {
+    for (char &c : s) {
+        if (c >= 'A' && c <= 'Z') c = char(c - 'A' + 'a');
+    }
+    return s;
+}
+
+FlexDirection parseFlexDirection(const std::string &direction) {
+    const std::string d = toLowerCopy(direction);
+    if (d == "column" || d == "col" || d == "vertical" || d == "v") return FlexDirection::Column;
+    return FlexDirection::Row;
+}
+
+FlexAlign parseFlexAlign(const std::string &align) {
+    const std::string a = toLowerCopy(align);
+    if (a == "center") return FlexAlign::Center;
+    if (a == "end" || a == "right" || a == "bottom") return FlexAlign::End;
+    if (a == "stretch") return FlexAlign::Stretch;
+    return FlexAlign::Start;
+}
+
+FlexJustify parseFlexJustify(const std::string &justify) {
+    const std::string j = toLowerCopy(justify);
+    if (j == "center") return FlexJustify::Center;
+    if (j == "end" || j == "right" || j == "bottom") return FlexJustify::End;
+    if (j == "spacebetween" || j == "space-between" || j == "between")
+        return FlexJustify::SpaceBetween;
+    if (j == "spacearound" || j == "space-around" || j == "around") return FlexJustify::SpaceAround;
+    return FlexJustify::Start;
+}
+
+}  // namespace
+
+void UI::beginFlex(const std::string &direction, const std::string &id, float gap) {
+    WidgetDesc d = flex(parseFlexDirection(direction), {}, id);
+    d.gap = gap;
+    pushOpen(std::move(d));
+}
+
+void UI::beginRow(const std::string &id, float gap) { beginFlex("row", id, gap); }
+
+void UI::beginColumn(const std::string &id, float gap) { beginFlex("column", id, gap); }
+
 void UI::end() {
     if (openStack_.empty()) throw std::runtime_error("ui: end() without begin");
     WidgetDesc finished = std::move(openStack_.back());
@@ -279,6 +324,35 @@ void UI::addProgress(float fraction, const std::string &id, const std::string &o
 
 void UI::addInputText(const std::string &label, const std::string &value, const std::string &id) {
     currentParent().children.push_back(inputText(label, value, id));
+}
+
+void UI::addSpacer(const std::string &id, float grow) {
+    currentParent().children.push_back(spacer(id, grow));
+}
+
+void UI::setItemFlexGrow(float grow) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().flexGrow = grow;
+}
+
+void UI::setItemSize(float width, float height) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().sizeX = width;
+    parent.children.back().sizeY = height;
+}
+
+void UI::setFlexAlign(const std::string &align) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type != NodeType::Flex) return;
+    parent.alignItems = parseFlexAlign(align);
+}
+
+void UI::setFlexJustify(const std::string &justify) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type != NodeType::Flex) return;
+    parent.justifyContent = parseFlexJustify(justify);
 }
 
 void UI::addListItem(const std::string &label, const std::string &id) {
@@ -457,6 +531,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginList", &UI::beginList);
     cls.addFunc("beginCollapsing", &UI::beginCollapsing);
     cls.addFunc("beginChild", &UI::beginChild);
+    cls.addFunc("beginFlex", &UI::beginFlex);
+    cls.addFunc("beginRow", &UI::beginRow);
+    cls.addFunc("beginColumn", &UI::beginColumn);
     cls.addFunc("end", &UI::end);
     cls.addFunc("text", &UI::addText);
     cls.addFunc("button", &UI::addButton);
@@ -466,6 +543,11 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("slider", &UI::addSlider);
     cls.addFunc("progress", &UI::addProgress);
     cls.addFunc("inputText", &UI::addInputText);
+    cls.addFunc("spacer", &UI::addSpacer);
+    cls.addFunc("setItemFlexGrow", &UI::setItemFlexGrow);
+    cls.addFunc("setItemSize", &UI::setItemSize);
+    cls.addFunc("setFlexAlign", &UI::setFlexAlign);
+    cls.addFunc("setFlexJustify", &UI::setFlexJustify);
     cls.addFunc("listItem", &UI::addListItem);
     cls.addFunc("mountBuild", &UI::mountBuild);
 
