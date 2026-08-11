@@ -44,6 +44,7 @@ file(GLOB all_test_cpp
   voxel.cpp
   gpgpu.cpp
   box2d.cpp
+  softbody.cpp
   hotreload.cpp
   shader.cpp
   simplesquirrel.cpp

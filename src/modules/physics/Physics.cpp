@@ -2,6 +2,8 @@
 #include "physics/World.h"
 #include "physics/Body.h"
 #include "physics/Fixture.h"
+#include "physics/Cloth.h"
+#include "physics/Fluid.h"
 
 #include "common/Exception.h"
 
@@ -22,6 +24,12 @@ float Physics::getMeter() const { return meter_; }
 World *Physics::newWorld(float gravityX, float gravityY, bool sleep) {
     return new World(gravityX, gravityY, sleep, meter_);
 }
+
+Cloth *Physics::newCloth(int cols, int rows, float spacing, float originX, float originY) {
+    return new Cloth(cols, rows, spacing, originX, originY);
+}
+
+Fluid *Physics::newFluid(int capacity) { return new Fluid(capacity); }
 
 void Physics::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Physics::create, false);
@@ -96,6 +104,76 @@ void Physics::expose(ssq::Table &table) {
     fixture.addFunc("getBody", &Fixture::getBody);
     fixture.addFunc("testPoint", &Fixture::testPoint);
     fixture.addFunc("destroy", &Fixture::destroy);
+
+    auto cloth = table.addClass<Cloth>(
+        "Cloth", std::function<Cloth *()>([]() -> Cloth * { return nullptr; }), true);
+    cloth.addFunc("update", &Cloth::update);
+    cloth.addFunc("setGravity", &Cloth::setGravity);
+    cloth.addFunc("getGravityX", &Cloth::getGravityX);
+    cloth.addFunc("getGravityY", &Cloth::getGravityY);
+    cloth.addFunc("setStiffness", &Cloth::setStiffness);
+    cloth.addFunc("getStiffness", &Cloth::getStiffness);
+    cloth.addFunc("setIterations", &Cloth::setIterations);
+    cloth.addFunc("getIterations", &Cloth::getIterations);
+    cloth.addFunc("setDamping", &Cloth::setDamping);
+    cloth.addFunc("getDamping", &Cloth::getDamping);
+    cloth.addFunc("setBounds", &Cloth::setBounds);
+    cloth.addFunc("clearBounds", &Cloth::clearBounds);
+    cloth.addFunc("pin", &Cloth::pin);
+    cloth.addFunc("unpin", &Cloth::unpin);
+    cloth.addFunc("pinTopRow", &Cloth::pinTopRow);
+    cloth.addFunc("isPinned", &Cloth::isPinned);
+    cloth.addFunc("grabAt", &Cloth::grabAt);
+    cloth.addFunc("moveGrab", &Cloth::moveGrab);
+    cloth.addFunc("releaseGrab", &Cloth::releaseGrab);
+    cloth.addFunc("isGrabbing", &Cloth::isGrabbing);
+    cloth.addFunc("getGrabIndex", &Cloth::getGrabIndex);
+    cloth.addFunc("applyForce", &Cloth::applyForce);
+    cloth.addFunc("setColor", &Cloth::setColor);
+    cloth.addFunc("draw", &Cloth::draw);
+    cloth.addFunc("getCols", &Cloth::getCols);
+    cloth.addFunc("getRows", &Cloth::getRows);
+    cloth.addFunc("getParticleCount", &Cloth::getParticleCount);
+    cloth.addFunc("getParticleX", &Cloth::getParticleX);
+    cloth.addFunc("getParticleY", &Cloth::getParticleY);
+    cloth.addFunc("setParticlePosition", &Cloth::setParticlePosition);
+    cloth.addFunc("getSpacing", &Cloth::getSpacing);
+    cloth.addFunc("destroy", &Cloth::destroy);
+
+    auto fluid = table.addClass<Fluid>(
+        "Fluid", std::function<Fluid *()>([]() -> Fluid * { return nullptr; }), true);
+    fluid.addFunc("update", &Fluid::update);
+    fluid.addFunc("setGravity", &Fluid::setGravity);
+    fluid.addFunc("getGravityX", &Fluid::getGravityX);
+    fluid.addFunc("getGravityY", &Fluid::getGravityY);
+    fluid.addFunc("setSmoothingRadius", &Fluid::setSmoothingRadius);
+    fluid.addFunc("getSmoothingRadius", &Fluid::getSmoothingRadius);
+    fluid.addFunc("setRestDensity", &Fluid::setRestDensity);
+    fluid.addFunc("getRestDensity", &Fluid::getRestDensity);
+    fluid.addFunc("setPressureStiffness", &Fluid::setPressureStiffness);
+    fluid.addFunc("getPressureStiffness", &Fluid::getPressureStiffness);
+    fluid.addFunc("setNearPressureStiffness", &Fluid::setNearPressureStiffness);
+    fluid.addFunc("getNearPressureStiffness", &Fluid::getNearPressureStiffness);
+    fluid.addFunc("setViscosity", &Fluid::setViscosity);
+    fluid.addFunc("getViscosity", &Fluid::getViscosity);
+    fluid.addFunc("setIterations", &Fluid::setIterations);
+    fluid.addFunc("getIterations", &Fluid::getIterations);
+    fluid.addFunc("setBounds", &Fluid::setBounds);
+    fluid.addFunc("clearBounds", &Fluid::clearBounds);
+    fluid.addFunc("emit", &Fluid::emit);
+    fluid.addFunc("clear", &Fluid::clear);
+    fluid.addFunc("interactAt", &Fluid::interactAt);
+    fluid.addFunc("setColor", &Fluid::setColor);
+    fluid.addFunc("setParticleSize", &Fluid::setParticleSize);
+    fluid.addFunc("getParticleSize", &Fluid::getParticleSize);
+    fluid.addFunc("draw", &Fluid::draw);
+    fluid.addFunc("getCapacity", &Fluid::getCapacity);
+    fluid.addFunc("getParticleCount", &Fluid::getParticleCount);
+    fluid.addFunc("getParticleX", &Fluid::getParticleX);
+    fluid.addFunc("getParticleY", &Fluid::getParticleY);
+    fluid.addFunc("getParticleVx", &Fluid::getParticleVx);
+    fluid.addFunc("getParticleVy", &Fluid::getParticleVy);
+    fluid.addFunc("destroy", &Fluid::destroy);
 }
 
 void Physics::expose(ssq::Class &cls) {
@@ -103,6 +181,9 @@ void Physics::expose(ssq::Class &cls) {
     cls.addFunc("setMeter", &Physics::setMeter);
     cls.addFunc("getMeter", &Physics::getMeter);
     cls.addFunc("newWorld", &Physics::newWorld);
+    cls.addFunc("newCloth", &Physics::newCloth);
+    cls.addFunc("newFluid", &Physics::newFluid);
 }
 
 }  // namespace eve::physics
+
