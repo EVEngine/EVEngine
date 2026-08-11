@@ -194,4 +194,25 @@ float AnimPose::getWorldRotationW(int boneIndex) const {
     return worlds_[static_cast<size_t>(boneIndex)].qw;
 }
 
+const TransformTRS &AnimPose::world(int boneIndex) const {
+    requireBone(boneIndex);
+    return worlds_[static_cast<size_t>(boneIndex)];
+}
+
+float AnimPose::getWorldMatrixElement(int boneIndex, int elementIndex) const {
+    requireBone(boneIndex);
+    if (elementIndex < 0 || elementIndex > 15) {
+        throw Exception("AnimPose.getWorldMatrixElement: elementIndex must be 0..15");
+    }
+    const Mat4 mat = Mat4::fromTRS(worlds_[static_cast<size_t>(boneIndex)]);
+    return mat.m[elementIndex];
+}
+
+void AnimPose::getWorldMatrix(int boneIndex, float *out16) const {
+    requireBone(boneIndex);
+    if (!out16) throw Exception("AnimPose.getWorldMatrix: out16 is null");
+    const Mat4 mat = Mat4::fromTRS(worlds_[static_cast<size_t>(boneIndex)]);
+    for (int i = 0; i < 16; ++i) out16[i] = mat.m[i];
+}
+
 }  // namespace eve::animation

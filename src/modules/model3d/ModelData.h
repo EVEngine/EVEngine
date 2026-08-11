@@ -33,6 +33,20 @@ public:
     int getMorphTargetCount(int meshIndex) const;
     std::string getMorphTargetName(int meshIndex, int morphIndex) const;
 
+    /** Assimp skeletal skin data (aiBone / vertex weights) on a mesh. */
+    bool hasBones(int meshIndex) const;
+    int getBoneCount(int meshIndex) const;
+    std::string getBoneName(int meshIndex, int boneIndex) const;
+    /** Inverse-bind (offset) matrix element, column-major, elementIndex in [0,15]. */
+    float getInverseBindMatrixElement(int meshIndex, int boneIndex, int elementIndex) const;
+    int getBoneWeightCount(int meshIndex, int boneIndex) const;
+    int getBoneWeightVertex(int meshIndex, int boneIndex, int weightIndex) const;
+    float getBoneWeightValue(int meshIndex, int boneIndex, int weightIndex) const;
+
+    /** Scene-level animation clips (aiAnimation). */
+    int getAnimationCount() const;
+    std::string getAnimationName(int animIndex) const;
+
     const aiScene *getScene() const;
     const aiMesh *getMesh(int meshIndex) const;
 
