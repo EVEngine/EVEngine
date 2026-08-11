@@ -58,6 +58,12 @@
     代码：`src/modules/spatial/`
     设计：`docs/dev/空间索引模块设计.md`
 
+6b1b. 体素渲染 - voxel（`eve.Voxel`）
+    32³ chunk、贪婪矩形合并、32-bit 打包实例、六向缓冲、视锥/距离/朝向裁剪
+    `newWorld` / `selectVisible` / `drawVisible`；`Graphics::drawVoxelFaceInstances`
+    代码：`src/modules/voxel/`
+    设计：`docs/dev/体素渲染模块设计.md`
+
 6b2. 逆运动学 - ik（`eve.IK`）
     封装 [ik.hpp](https://github.com/sunxfancy/ik.hpp)（`external/ik.hpp`）：Skeleton2D/3D、Solver2D/3D（FABRIK）
     `newSkeleton2D` / `newSolver2D` / `createBone` / `addTarget` / `solve` / `step`

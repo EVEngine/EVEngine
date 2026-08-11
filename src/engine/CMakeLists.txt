@@ -180,6 +180,7 @@ list(APPEND EVELIBS
     EVAvatar
     EVDialogue
     EVProcgen
+    EVVoxel
     EVStylize)
 
 if(EVENGINE_BUILD_DEMO)
