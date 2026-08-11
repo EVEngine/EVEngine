@@ -1,5 +1,8 @@
 #version 450
 
+#extension GL_GOOGLE_include_directive : enable
+#include "tex_cell_bomb.glsl"
+
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
 layout(location = 2) in vec4 vTint;
@@ -20,6 +23,7 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 cameraPos;         // xyz = eye; w = roughness
     vec4 ambient;           // rgb = ambient; w = metallic
     Light3D lights[8];
+    vec4 texBomb;           // x = cellScale, y = strength (0=off), z = rotAmount, w unused
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
@@ -123,14 +127,17 @@ float sampleShadowPCF(vec3 worldPos, float viewDepth) {
 }
 
 void main() {
-    vec4 base = texture(albedoSampler, vUV) * vTint;
+    float bombScale = ubo.texBomb.x;
+    float bombStrength = ubo.texBomb.y;
+    float bombRot = ubo.texBomb.z;
+    vec4 base = textureCellBomb(albedoSampler, vUV, bombScale, bombStrength, bombRot) * vTint;
     vec3 albedo = base.rgb;
     float metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     float roughness = clamp(ubo.cameraPos.w, 0.04, 1.0);
     int count = int(ubo.lightDirIntensity.w + 0.5);
 
     vec3 N = normalize(vNormal);
-    vec3 nSample = texture(normalSampler, vUV).xyz;
+    vec3 nSample = textureCellBomb(normalSampler, vUV, bombScale, bombStrength, bombRot).xyz;
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, vUV);
 

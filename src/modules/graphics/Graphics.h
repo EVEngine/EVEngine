@@ -176,6 +176,13 @@ virtual void begin3DFrame() = 0;
     /** Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
 
+    /**
+     * Texture cell bombing for the next default mesh draw (breaks tiling).
+     * cellScale: cells per UV unit (typical 2..16). strength: 0=off, 1=full.
+     * rotAmount: 0..1 per-cell rotation scale (default 1).
+     */
+    virtual void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) = 0;
+
     /** Per-frame ambient + up to 8 lights packed into Mesh3DUBO. */
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;
 

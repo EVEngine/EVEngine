@@ -85,6 +85,9 @@ public:
         float r = 1, g = 1, b = 1, a = 1;
         float metallic = 0.f;
         float roughness = 0.45f;
+        float texBombScale = 4.f;     // cells per UV unit
+        float texBombStrength = 0.f;  // 0 = off (default, preserves tiling)
+        float texBombRot = 1.f;       // 0..1 per-cell rotation amount
         bool visible = true;
         bool receiveLight = true;
         bool castShadow = true;
@@ -108,6 +111,14 @@ public:
     void setTint(float r, float g, float b, float a = 1.f);
     void setMetallic(float metallic);
     void setRoughness(float roughness);
+    /**
+     * Texture cell bombing — random per-cell UV offset/rotation blended across a 2×2
+     * neighborhood to hide tiling. strength 0 disables (default).
+     */
+    void setTexCellBomb(float cellScale, float strength, float rotAmount = 1.f);
+    float getTexCellBombScale();
+    float getTexCellBombStrength();
+    float getTexCellBombRotation();
     void setVisible(bool visible);
     void setReceiveLight(bool receive);
     void setCastShadow(bool cast);

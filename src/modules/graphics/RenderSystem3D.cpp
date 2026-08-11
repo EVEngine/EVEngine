@@ -249,6 +249,19 @@ void Renderable3D::setMetallic(float metallic) { meshRenderer()->metallic = meta
 
 void Renderable3D::setRoughness(float roughness) { meshRenderer()->roughness = roughness; }
 
+void Renderable3D::setTexCellBomb(float cellScale, float strength, float rotAmount) {
+    auto mr = meshRenderer();
+    mr->texBombScale = cellScale > 1e-3f ? cellScale : 1e-3f;
+    mr->texBombStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
+    mr->texBombRot = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);
+}
+
+float Renderable3D::getTexCellBombScale() { return meshRenderer()->texBombScale; }
+
+float Renderable3D::getTexCellBombStrength() { return meshRenderer()->texBombStrength; }
+
+float Renderable3D::getTexCellBombRotation() { return meshRenderer()->texBombRot; }
+
 void Renderable3D::setVisible(bool visible) { meshRenderer()->visible = visible; }
 
 void Renderable3D::setReceiveLight(bool receive) { meshRenderer()->receiveLight = receive; }
@@ -376,6 +389,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         gfx.setMesh3DViewProj(projM * viewM);
         gfx.setMesh3DCameraPos(eye);
         gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
+        gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
         gfx.setMesh3DNormalTexture(mr->normalTexture);
         gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
         gfx.setMesh3DShadowReceive(mr->receiveShadow);

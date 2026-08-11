@@ -2371,6 +2371,14 @@ void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dFrameUbo.cameraPos.w = roughness;
 }
 
+void Graphics::setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount) {
+    mesh3dTexBombScale = cellScale > 1e-3f ? cellScale : 1e-3f;
+    mesh3dTexBombStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
+    mesh3dTexBombRot = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);
+    mesh3dFrameUbo.texBomb =
+        glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+}
+
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
     mesh3dLighting = pack;
     mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);
@@ -2821,6 +2829,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.ambient = glm::vec4(glm::vec3(mesh3dClustered.ambient), mesh3dMetallic);
         ubo.gridInfo = mesh3dClustered.gridInfo;
         ubo.clipInfo = mesh3dClustered.clipInfo;
+        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
 
         const size_t slot = mesh3dClusteredDrawIndex++;
         vk::DescriptorSet set = mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, slot);
@@ -2846,6 +2855,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.lightDir.w = float(lightCount);
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = envIntensity;
+    ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     if (lightCount > 0) {
         ubo.lightDir = glm::vec4(glm::vec3(mesh3dLighting.lights[0].posRadius), float(lightCount));
