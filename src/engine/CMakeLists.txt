@@ -187,7 +187,8 @@ list(APPEND EVELIBS
     EVDialogue
     EVProcgen
     EVVoxel
-    EVStylize)
+    EVStylize
+    EVEditor)
 
 if(EVENGINE_BUILD_DEMO)
     list(APPEND EVELIBS EVDemo)

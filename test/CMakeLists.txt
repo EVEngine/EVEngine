@@ -69,6 +69,7 @@ file(GLOB all_test_cpp
   system.cpp
   math.cpp
   spatial.cpp
+  editor.cpp
   ik.cpp
   animation.cpp
   animation_mixamo.cpp
@@ -198,6 +199,7 @@ set(EVELIBS
   EVSystem
   EVMath
   EVSpatial
+  EVEditor
   EVIK
   EVAnimation
   EVTensor
@@ -222,7 +224,8 @@ set(EVELIBS
   EVDialogue
   EVProcgen
   EVVoxel
-  EVStylize)
+  EVStylize
+  EVEditor)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND
