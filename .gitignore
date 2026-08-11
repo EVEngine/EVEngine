@@ -2,6 +2,10 @@ build*/
 dist/
 # Poly Haven 1k HDR downloads used only to regenerate test/Textures/env faces.
 test/Textures/env/_src/
+# Large classic scenes fetched by scripts/download_classic_scenes.sh
+test/assets/classic/sponza/
+test/assets/classic/damaged_helmet/
+test/assets/classic/.downloaded
 .vscode/
 .superpowers/
 artifacts-local-test/

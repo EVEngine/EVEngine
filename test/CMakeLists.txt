@@ -23,6 +23,7 @@ file(GLOB all_test_cpp
   ClusteredLighting.cpp
   IBL.cpp
   Shadow3D.cpp
+  ClassicScenes.cpp
   Volumetric.cpp
   UISystem.cpp
   UIBuilder.cpp
@@ -223,6 +224,30 @@ target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULK
 target_compile_definitions(unit_test PRIVATE
   EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
   EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+
+# Large classic scenes (Sponza / DamagedHelmet). Cornell Box is committed.
+# Enable with -DEVENGINE_DOWNLOAD_CLASSIC_SCENES=ON, or build target
+# `download_classic_scenes` before running ClassicScenes.* tests.
+option(EVENGINE_DOWNLOAD_CLASSIC_SCENES
+  "Download large classic render test scenes (Sponza, DamagedHelmet)" OFF)
+set(_eve_classic_scenes_script "${CMAKE_SOURCE_DIR}/scripts/download_classic_scenes.sh")
+set(_eve_classic_scenes_marker "${CMAKE_SOURCE_DIR}/test/assets/classic/.downloaded")
+add_custom_target(download_classic_scenes
+  COMMAND ${CMAKE_COMMAND} -E env
+          "EVENGINE_CLASSIC_SCENES_DIR=${CMAKE_SOURCE_DIR}/test/assets/classic"
+          bash "${_eve_classic_scenes_script}"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  COMMENT "Downloading classic graphics test scenes (Sponza, DamagedHelmet)"
+  VERBATIM)
+if(EVENGINE_DOWNLOAD_CLASSIC_SCENES)
+  add_custom_command(TARGET unit_test PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E env
+            "EVENGINE_CLASSIC_SCENES_DIR=${CMAKE_SOURCE_DIR}/test/assets/classic"
+            bash "${_eve_classic_scenes_script}"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    COMMENT "PRE_BUILD: download classic scenes"
+    VERBATIM)
+endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 zeroerr_discover_tests(unit_test)
