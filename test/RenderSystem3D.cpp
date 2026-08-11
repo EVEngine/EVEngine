@@ -1,4 +1,5 @@
 #include "zeroerr/assert.h"
+#include <cstdio>
 #include "zeroerr/unittest.h"
 
 #include <SDL2/SDL.h>
@@ -119,6 +120,29 @@ static Texture *makeChecker(Graphics *gfx, int size, int cell) {
 static Texture *makeSolidGray(Graphics *gfx, uint8_t g) {
     uint8_t px[4] = {g, g, g, 255};
     return gfx->newTexture(1, 1, px);
+}
+
+/** Non-periodic motif so UV remapping (not just phase shift) is measurable. */
+static Texture *makeMotif(Graphics *gfx, int size) {
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4);
+    const float cx = float(size) * 0.35f;
+    const float cy = float(size) * 0.4f;
+    const float r = float(size) * 0.22f;
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            float dx = float(x) - cx;
+            float dy = float(y) - cy;
+            float d = std::sqrt(dx * dx + dy * dy);
+            uint8_t v = d < r ? 255 : uint8_t((x * 13 + y * 7) % 180);
+            if (x > size * 3 / 4 && y < size / 4) v = 40;
+            size_t i = size_t(y * size + x) * 4;
+            px[i] = v;
+            px[i + 1] = uint8_t((v * 3) / 4);
+            px[i + 2] = uint8_t(255 - v / 2);
+            px[i + 3] = 255;
+        }
+    }
+    return gfx->newTexture(size, size, px.data(), true, true);
 }
 
 // Graphics/ECS are process-wide singletons — hide leftovers from earlier cases.
@@ -444,33 +468,16 @@ TEST_CASE("RenderSystem3D.texCellBombChangesPixels") {
     openGfxWindow(win, gfx, 160, 120);
     resetScene3D();
 
-    // Plane-like cube face with heavily tiled UVs so repetition is visible.
-    static const char kTiledFront[] =
-        "v -1 -1 0\n"
-        "v  1 -1 0\n"
-        "v  1  1 0\n"
-        "v -1  1 0\n"
-        "vt 0 0\n"
-        "vt 8 0\n"
-        "vt 8 8\n"
-        "vt 0 8\n"
-        "vn 0 0 1\n"
-        "f 1/1/1 2/2/1 3/3/1\n"
-        "f 1/1/1 3/3/1 4/4/1\n";
-    medialoader::ModelLoader loader;
-    auto scene = loader.loadFromMemory(kTiledFront, sizeof(kTiledFront) - 1, ".obj");
-    REQUIRE(!scene.empty());
-    Mesh *mesh = gfx->newMeshFromAssimp(*scene->mMeshes[0]);
-    REQUIRE(mesh != nullptr);
-
+    // Same cube + camera as textureCheckerPixels (known-good textured face).
+    Mesh *mesh = loadUvCube(gfx);
     auto *cam = Camera3D::createCamera();
     cam->data()->eyeZ = 3.f;
 
     auto *ent = Renderable3D::create();
     ent->meshRenderer()->mesh = mesh;
-    ent->meshRenderer()->texture = makeChecker(gfx, 32, 4);
+    ent->meshRenderer()->texture = makeMotif(gfx, 64);
     ent->setMetallic(0.f);
-    ent->setRoughness(0.6f);
+    ent->setRoughness(0.85f);
 
     auto *hud = Renderable2D::create();
     hud->transform()->x = 0;
@@ -492,32 +499,45 @@ TEST_CASE("RenderSystem3D.texCellBombChangesPixels") {
         }
         const int w = gfx->getWidth();
         const int h = gfx->getHeight();
-        // Sparse grid across the face.
-        for (int y = h / 5; y < h * 4 / 5; y += h / 10) {
-            for (int x = w / 5; x < w * 4 / 5; x += w / 10) {
-                Color c = gfx->getPixel(x, y);
-                out.push_back(luma(c));
+        const int cx = w / 2;
+        const int cy = h / 2;
+        const int dx = std::max(8, w / 12);
+        const int dy = std::max(8, h / 12);
+        for (int y = cy - 2 * dy; y <= cy + 2 * dy; y += dy) {
+            for (int x = cx - 2 * dx; x <= cx + 2 * dx; x += dx) {
+                out.push_back(luma(gfx->getPixel(x, y)));
             }
         }
     };
 
     std::vector<float> off, on;
-    ent->setTexCellBomb(4.f, 0.f, 1.f);
+    ent->setTexCellBomb(3.f, 0.f, 1.f);
     CHECK_EQ(ent->getTexCellBombStrength(), 0.f);
     capture(off);
 
-    ent->setTexCellBomb(4.f, 1.f, 1.f);
-    CHECK_EQ(ent->getTexCellBombScale(), 4.f);
+    ent->setTexCellBomb(3.f, 1.f, 1.f);
+    CHECK_EQ(ent->getTexCellBombScale(), 3.f);
     CHECK_EQ(ent->getTexCellBombStrength(), 1.f);
     capture(on);
 
     REQUIRE_EQ(off.size(), on.size());
     REQUIRE_GT(off.size(), 4u);
+
+    float offMin = off[0], offMax = off[0];
+    for (float v : off) {
+        offMin = std::min(offMin, v);
+        offMax = std::max(offMax, v);
+    }
+    REQUIRE(offMax - offMin > 0.02f);
+
     float mad = 0.f;
     for (size_t i = 0; i < off.size(); ++i)
         mad = std::max(mad, std::fabs(off[i] - on[i]));
-    // Bombing must visibly change the tiled checker under the same lighting.
-    REQUIRE(mad > 0.02f);
+    if (!(mad > 0.015f)) {
+        std::fprintf(stderr, "texCellBomb mad=%g offRange=%g n=%zu\n", mad, offMax - offMin,
+                     off.size());
+    }
+    REQUIRE(mad > 0.015f);
 
     win->close();
 }

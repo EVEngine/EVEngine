@@ -250,7 +250,7 @@ void Renderable3D::setMetallic(float metallic) { meshRenderer()->metallic = meta
 void Renderable3D::setRoughness(float roughness) { meshRenderer()->roughness = roughness; }
 
 void Renderable3D::setTexCellBomb(float cellScale, float strength, float rotAmount) {
-    auto *mr = meshRenderer();
+    auto mr = meshRenderer();
     mr->texBombScale = cellScale > 1e-3f ? cellScale : 1e-3f;
     mr->texBombStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
     mr->texBombRot = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);

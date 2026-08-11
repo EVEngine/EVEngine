@@ -47,16 +47,20 @@ inline void texCellBombSampleUV(float u, float v, const TexCellBombParams &p, fl
     texBombHash22(cx, cy, rndx, rndy);
     float rndBx = 0.f, rndBy = 0.f;
     texBombHash22(cx + 19.f, cy + 47.f, rndBx, rndBy);
-    const float ox = (rndx * 2.f - 1.f) * p.strength;
-    const float oy = (rndy * 2.f - 1.f) * p.strength;
+    const float ox = (rndx * 2.f - 1.f) * (p.strength / scale);
+    const float oy = (rndy * 2.f - 1.f) * (p.strength / scale);
     float rot = p.rotAmount;
     if (rot < 0.f) rot = 0.f;
     if (rot > 1.f) rot = 1.f;
     const float ang = (rndBx * 2.f - 1.f) * 3.14159265f * rot * p.strength;
     const float s = std::sin(ang);
     const float c = std::cos(ang);
-    ou = u + (c * ox - s * oy);
-    ov = v + (s * ox + c * oy);
+    const float cellCenterU = (cx + 0.5f) / scale;
+    const float cellCenterV = (cy + 0.5f) / scale;
+    const float lu = u - cellCenterU;
+    const float lv = v - cellCenterV;
+    ou = cellCenterU + (c * lu - s * lv) + ox;
+    ov = cellCenterV + (s * lu + c * lv) + oy;
 }
 
 }  // namespace eve::graphics

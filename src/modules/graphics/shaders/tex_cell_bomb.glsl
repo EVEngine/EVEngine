@@ -21,8 +21,12 @@ vec2 texBombRotate(vec2 v, float angle) {
 /**
  * Sample `tex` with cell bombing.
  * cellScale — cells per UV unit (typical 2..16). Ignored when strength≈0.
- * strength  — 0 = plain texture(uv); 1 = full random offset + blend.
+ * strength  — 0 = plain texture(uv); 1 = full random offset + rotation.
  * rotAmount — 0..1 scales per-cell rotation (multiplied by strength).
+ *
+ * Each cell applies a random UV rotation about the cell center plus a random
+ * offset. Pure translation of a periodic texture would look identical; rotation
+ * is what breaks the repeating lattice.
  */
 vec4 textureCellBomb(sampler2D tex, vec2 uv, float cellScale, float strength,
                      float rotAmount) {
@@ -46,10 +50,14 @@ vec4 textureCellBomb(sampler2D tex, vec2 uv, float cellScale, float strength,
             vec2 rnd = texBombHash22(cij);
             vec2 rndB = texBombHash22(cij + vec2(19.0, 47.0));
 
-            vec2 offset = (rnd * 2.0 - 1.0) * strength;
+            // Offset in UV units (fraction of a cell width, scaled by strength).
+            vec2 offset = (rnd * 2.0 - 1.0) * (strength / scale);
             float ang = (rndB.x * 2.0 - 1.0) * 3.14159265 * clamp(rotAmount, 0.0, 1.0) *
                         strength;
-            vec2 sampleUV = uv + texBombRotate(offset, ang);
+
+            // Rotate UV about this cell's center, then add offset.
+            vec2 cellCenter = (cij + vec2(0.5)) / scale;
+            vec2 sampleUV = cellCenter + texBombRotate(uv - cellCenter, ang) + offset;
 
             float wij = mix(1.0 - w.x, w.x, float(i)) * mix(1.0 - w.y, w.y, float(j));
             acc += textureGrad(tex, sampleUV, dx, dy) * wij;
