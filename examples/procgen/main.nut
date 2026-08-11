@@ -1,5 +1,5 @@
-// Runtime procedural dungeon + texture demo (Phase A/B).
-// Maps:  R regenerate, 1 BSP, 2 cellular, 3 drunkard, 4 maze, 5 terrain
+// Runtime procedural dungeon + texture demo (Phase A/B + WFC).
+// Maps:  R regenerate, 1 BSP, 2 cellular, 3 drunkard, 4 maze, 5 terrain, 6 WFC
 // Textures: T cycle recipe, N toggle normal preview, -/= change tex seed
 // Run: make run/linux-debug GAME=examples/procgen
 
@@ -14,6 +14,7 @@ if (!("tex" in getroottable())) tex <- null;
 if (!("showNormal" in getroottable())) showNormal <- false;
 if (!("texRecipes" in getroottable())) texRecipes <- ["tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"];
 if (!("texIndex" in getroottable())) texIndex <- 0;
+if (!("wfcPreset" in getroottable())) wfcPreset <- "dungeon";
 
 TILE = 12;
 
@@ -65,6 +66,9 @@ function regenerateMap() {
     } else if (algo == "noise.terrain") {
         p.setFloat("frequency", 5.0);
         p.setInt("octaves", 4);
+    } else if (algo == "wfc.simple") {
+        p.setString("preset", wfcPreset);
+        p.setInt("maxAttempts", 64);
     }
 
     local out = procgen.newOutput();
@@ -134,6 +138,9 @@ function update(dt) {
     if (keyPressed("3")) { algo = "cave.drunkard"; regenerateMap(); }
     if (keyPressed("4")) { algo = "maze.backtrack"; regenerateMap(); }
     if (keyPressed("5")) { algo = "noise.terrain"; regenerateMap(); }
+    if (keyPressed("6")) { algo = "wfc.simple"; wfcPreset = "dungeon"; regenerateMap(); }
+    if (keyPressed("7")) { algo = "wfc.simple"; wfcPreset = "cave"; regenerateMap(); }
+    if (keyPressed("8")) { algo = "wfc.simple"; wfcPreset = "terrain"; regenerateMap(); }
 
     if (keyPressed("t") || keyPressed("T")) {
         texIndex = (texIndex + 1) % texRecipes.len();

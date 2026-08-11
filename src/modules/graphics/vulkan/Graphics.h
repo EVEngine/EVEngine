@@ -173,6 +173,8 @@ public:
                                  const std::vector<uint32_t> &fragSpv) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
+    Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                            int vertexCount, const uint32_t *indices, int indexCount) override;
     bool bakeMeshMorph(Mesh *mesh) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;

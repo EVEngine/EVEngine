@@ -2527,6 +2527,52 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     return raw;
 }
 
+Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                  int vertexCount, const uint32_t *indices, int indexCount) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newMeshFromArrays: graphics not initialized");
+    if (!posXYZ || vertexCount <= 0) throw Exception("newMeshFromArrays: empty positions");
+    if (!indices || indexCount < 3) throw Exception("newMeshFromArrays: empty indices");
+    if (indexCount % 3 != 0) throw Exception("newMeshFromArrays: indexCount must be multiple of 3");
+
+    std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
+    for (int i = 0; i < vertexCount; ++i) {
+        MeshVertex &v = verts[static_cast<size_t>(i)];
+        v.pos = {posXYZ[size_t(i) * 3u], posXYZ[size_t(i) * 3u + 1u], posXYZ[size_t(i) * 3u + 2u]};
+        if (nrmXYZ)
+            v.normal = {nrmXYZ[size_t(i) * 3u], nrmXYZ[size_t(i) * 3u + 1u],
+                        nrmXYZ[size_t(i) * 3u + 2u]};
+        else
+            v.normal = {0.f, 1.f, 0.f};
+        if (uvST)
+            v.uv = {uvST[size_t(i) * 2u], uvST[size_t(i) * 2u + 1u]};
+        else
+            v.uv = {0.f, 0.f};
+    }
+
+    std::vector<uint32_t> idx(indices, indices + indexCount);
+    for (uint32_t id : idx) {
+        if (int(id) >= vertexCount) throw Exception("newMeshFromArrays: index out of range");
+    }
+
+    auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertices.allocate<MeshVertex>(device, verts);
+    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+                          idx.size() * sizeof(uint32_t),
+                          vk::MemoryPropertyFlagBits::eHostVisible |
+                              vk::MemoryPropertyFlagBits::eHostCoherent);
+    gpu->indices.updateLocal(idx.data(), idx.size() * sizeof(uint32_t));
+    gpu->indexCount = uint32_t(idx.size());
+
+    auto handle = std::make_unique<Mesh>();
+    handle->indexCount = int(gpu->indexCount);
+    handle->gpuHandle = gpu.get();
+    Mesh *raw = handle.get();
+    ownedGpuMeshes.push_back(std::move(gpu));
+    ownedMeshes.push_back(std::move(handle));
+    return raw;
+}
+
 bool Graphics::bakeMeshMorph(Mesh *mesh) {
     if (!mesh || !mesh->gpuHandle || !mesh->hasMorphData() || !mesh->isMorphDirty()) return false;
     if (!initialized) return false;

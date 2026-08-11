@@ -3,9 +3,11 @@
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"
+#include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/texture/TextureRecipe.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
 
@@ -20,6 +22,7 @@ Module_IMPL(Procgen, new Procgen());
 Procgen::Procgen() {
     GeneratorRegistry::instance().registerBuiltins();
     TextureRecipeRegistry::instance().registerBuiltins();
+    MeshRecipeRegistry::instance().registerBuiltins();
     // Sensible pixel-RPG default palette (games override GIDs to match tileset).
     setPaletteGid("default", "empty", 0);
     setPaletteGid("default", "wall", 1);
@@ -206,6 +209,57 @@ bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
+MeshBuild *Procgen::buildMesh(const std::string &recipeId, Params *params) {
+    lastError_.clear();
+    if (!params) {
+        lastError_ = "buildMesh: null params";
+        return nullptr;
+    }
+    MeshRecipeRegistry::instance().registerBuiltins();
+    auto *mesh = new MeshBuild();
+    if (!MeshRecipeRegistry::instance().generate(recipeId, *params, *mesh, lastError_)) {
+        if (lastError_.empty()) lastError_ = "buildMesh failed";
+        delete mesh;
+        return nullptr;
+    }
+    return mesh;
+}
+
+graphics::Mesh *Procgen::generateMesh(const std::string &recipeId, Params *params,
+                                      graphics::Graphics *gfx) {
+    if (!gfx) {
+        lastError_ = "generateMesh: null Graphics";
+        return nullptr;
+    }
+    MeshBuild *cpu = buildMesh(recipeId, params);
+    if (!cpu) return nullptr;
+    graphics::Mesh *gpu =
+        gfx->newMeshFromArrays(cpu->positions().data(), cpu->normals().data(), cpu->uvs().data(),
+                               cpu->getVertexCount(), cpu->indices().data(), cpu->getIndexCount());
+    delete cpu;
+    return gpu;
+}
+
+int Procgen::getMeshRecipeCount() const {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    meshRecipeIdsCache_ = MeshRecipeRegistry::instance().list();
+    return int(meshRecipeIdsCache_.size());
+}
+
+std::string Procgen::getMeshRecipeId(int index) const {
+    if (meshRecipeIdsCache_.empty()) {
+        MeshRecipeRegistry::instance().registerBuiltins();
+        meshRecipeIdsCache_ = MeshRecipeRegistry::instance().list();
+    }
+    if (index < 0 || index >= int(meshRecipeIdsCache_.size())) return {};
+    return meshRecipeIdsCache_[size_t(index)];
+}
+
+bool Procgen::hasMeshRecipe(const std::string &recipeId) const {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    return MeshRecipeRegistry::instance().has(recipeId);
+}
+
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
@@ -258,6 +312,25 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getObjectWidth", &Grid2D::getObjectWidth);
     grid.addFunc("getObjectHeight", &Grid2D::getObjectHeight);
     grid.addFunc("getObjectGid", &Grid2D::getObjectGid);
+
+    auto mesh = table.addClass<MeshBuild>(
+        "ProcgenMeshBuild", std::function<MeshBuild *()>([]() -> MeshBuild * { return nullptr; }),
+        true);
+    mesh.addFunc("clear", &MeshBuild::clear);
+    mesh.addFunc("getVertexCount", &MeshBuild::getVertexCount);
+    mesh.addFunc("getIndexCount", &MeshBuild::getIndexCount);
+    mesh.addFunc("empty", &MeshBuild::empty);
+    mesh.addFunc("getPositionX", &MeshBuild::getPositionX);
+    mesh.addFunc("getPositionY", &MeshBuild::getPositionY);
+    mesh.addFunc("getPositionZ", &MeshBuild::getPositionZ);
+    mesh.addFunc("getNormalX", &MeshBuild::getNormalX);
+    mesh.addFunc("getNormalY", &MeshBuild::getNormalY);
+    mesh.addFunc("getNormalZ", &MeshBuild::getNormalZ);
+    mesh.addFunc("getUvU", &MeshBuild::getUvU);
+    mesh.addFunc("getUvV", &MeshBuild::getUvV);
+    mesh.addFunc("getIndex", &MeshBuild::getIndex);
+    mesh.addFunc("setMeta", &MeshBuild::setMeta);
+    mesh.addFunc("getMeta", &MeshBuild::getMeta);
 }
 
 void Procgen::expose(ssq::Class &cls) {
@@ -281,6 +354,11 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
     cls.addFunc("getTextureRecipeId", &Procgen::getTextureRecipeId);
     cls.addFunc("hasTextureRecipe", &Procgen::hasTextureRecipe);
+    cls.addFunc("buildMesh", &Procgen::buildMesh);
+    cls.addFunc("generateMesh", &Procgen::generateMesh);
+    cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
+    cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
+    cls.addFunc("hasMeshRecipe", &Procgen::hasMeshRecipe);
 }
 
 }  // namespace eve::procgen
