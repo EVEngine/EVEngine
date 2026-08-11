@@ -5,12 +5,14 @@
 namespace eve::physics {
 
 class World;
+class World3D;
 class Cloth;
 class Fluid;
 
 /**
- * Physics module — Box2D rigid bodies plus interactive cloth / SPH fluid.
+ * Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive cloth / SPH fluid.
  * Script: `physics <- eve.Physics(); world <- physics.newWorld(0, 900);`
+ *         `world3 <- physics.newWorld3D(0, -9.8, 0);`
  */
 class Physics : public Module {
 public:
@@ -18,17 +20,27 @@ public:
     Physics() = default;
     ~Physics() override = default;
 
-    /** Pixels per meter (default 30, same as LÖVE). */
+    /** Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE). */
     void  setMeter(float pixelsPerMeter);
     float getMeter() const;
 
     /**
-     * Create a physics world.
+     * Create a 2D Box2D physics world.
      * @param gravityX gravity X in pixels/s²
      * @param gravityY gravity Y in pixels/s²
      * @param sleep allow sleeping bodies
      */
     World *newWorld(float gravityX, float gravityY, bool sleep = true);
+
+    /**
+     * Create a 3D Box3D physics world.
+     * Coordinates are meters (Box3D native); +Y is up by convention.
+     * @param gravityX gravity X in m/s²
+     * @param gravityY gravity Y in m/s²
+     * @param gravityZ gravity Z in m/s²
+     * @param sleep allow sleeping bodies
+     */
+    World3D *newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep = true);
 
     /**
      * Create a Verlet cloth grid (top row pinned).

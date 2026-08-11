@@ -95,16 +95,18 @@
     System：`ParticleConfigSystem`（filesystem watch + mtime 回退）/ `ParticleSimSystem` / `ParticleRenderSystem`
     Module：工厂、`newEmitterFromFile`、脚本绑定；`update` 含 poll+sim
 
-11. Box2d物理 - box2d（脚本模块名 `Physics`）
-    负责管理box2d物理引擎，以及可交互布料 / 2D 流体
-    Module：`Physics`（`setMeter` / `newWorld` / `newCloth` / `newFluid`）
-    类型：`World` / `Body` / `Fixture`；坐标为像素，内部按 meter 换算
+11. 物理 - box2d / box3d（脚本模块名 `Physics`）
+    负责管理 Box2D（2D）与 Box3D（3D）刚体，以及可交互布料 / 2D 流体
+    Module：`Physics`（`setMeter` / `newWorld` / `newWorld3D` / `newCloth` / `newFluid`）
+    类型：`World` / `Body` / `Fixture`；2D 坐标为像素，内部按 meter 换算
+    类型：`World3D` / `Body3D` / `Shape3D`；3D 坐标为米（Box3D）；形状 box/sphere/capsule
     类型：`Cloth`（Verlet 布料，`grabAt` / `update` / `draw`）
     类型：`Fluid`（双密度松弛流体，`emit` / `interactAt` / `update` / `draw`）
-    帧循环：`world.update(dt)` / `cloth.update(dt)` / `fluid.update(dt)`
-    碰撞事件：`begincontact` / `endcontact` → `event`（刚体）
+    帧循环：`world.update(dt)` / `world3.update(dt)` / `cloth.update(dt)` / `fluid.update(dt)`
+    碰撞事件：2D `begincontact` / `endcontact`；3D `begincontact3d` / `endcontact3d` → `event`
     可选：`world.drawDebug(gfx)`；布料/流体用自带 `draw(gfx)`
     代码：`src/modules/physics/`（避免与第三方 `Box2D/` 在大小写不敏感文件系统上冲突）
+    依赖：`external/box3d`（submodule）
     示例：`examples/softbody/`
 
 11b. 声明式场景树 - scene（`eve.Scene`）

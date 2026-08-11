@@ -30,7 +30,7 @@ Built-in systems:
 1. 2D tilemap — with an extensible map editor
 2. 2D camera
 3. Simple database
-4. Box2D physics
+4. Box2D / Box3D physics
 5. RPG framework
 6. Extensible combat model components
 7. Dialogs and scripting
