@@ -72,8 +72,9 @@ TEST_CASE("ao.qualityAndModePresets") {
     Graphics *gfx = nullptr;
     openGfxWindow(win, gfx);
 
-    std::unique_ptr<AmbientOcclusion> ao(gfx->newAmbientOcclusion());
-    REQUIRE(ao != nullptr);
+    AmbientOcclusion *raw = gfx->newAmbientOcclusion();
+    REQUIRE(raw != nullptr);
+    std::unique_ptr<AmbientOcclusion> ao(raw);
     REQUIRE(ao->getSsaoShader() != nullptr);
     REQUIRE(ao->getHbaoShader() != nullptr);
     REQUIRE(ao->getGtaoShader() != nullptr);
