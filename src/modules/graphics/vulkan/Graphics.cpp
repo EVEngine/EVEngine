@@ -175,6 +175,16 @@ void Graphics::initWithWindow(void *nativeWindow) {
     selector.add_required_extension("VK_KHR_portability_subset");
 #endif
     auto phys = selector.select();
+    {
+        const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
+        if (supported.samplerAnisotropy) {
+            phys.features.samplerAnisotropy = VK_TRUE;
+            maxSamplerAnisotropy = phys.properties.limits.maxSamplerAnisotropy;
+            if (maxSamplerAnisotropy < 1.f) maxSamplerAnisotropy = 1.f;
+        } else {
+            maxSamplerAnisotropy = 1.f;
+        }
+    }
     vkb::DeviceBuilder deviceBuilder{phys};
     device = deviceBuilder.build();
 
@@ -1273,7 +1283,160 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
     solidBatch.addRect(x, y, w, h, color);
 }
 
+namespace {
+
+uint32_t rgba8MipBytes(uint32_t width, uint32_t height) {
+    // Matches VKBuilder GenericImage::upload packing for eR8G8B8A8Unorm.
+    return 4u * width * height;
+}
+
+void appendBoxFilteredMip(std::vector<uint8_t> &out, const uint8_t *src, uint32_t srcW,
+                          uint32_t srcH, uint32_t dstW, uint32_t dstH) {
+    const size_t base = out.size();
+    out.resize(base + size_t(rgba8MipBytes(dstW, dstH)));
+    uint8_t *dst = out.data() + base;
+    for (uint32_t y = 0; y < dstH; ++y) {
+        const uint32_t y0 = std::min(y * 2u, srcH - 1u);
+        const uint32_t y1 = std::min(y0 + 1u, srcH - 1u);
+        for (uint32_t x = 0; x < dstW; ++x) {
+            const uint32_t x0 = std::min(x * 2u, srcW - 1u);
+            const uint32_t x1 = std::min(x0 + 1u, srcW - 1u);
+            uint32_t acc[4] = {0, 0, 0, 0};
+            const uint32_t samples[4][2] = {{x0, y0}, {x1, y0}, {x0, y1}, {x1, y1}};
+            for (const auto &s : samples) {
+                const size_t i = (size_t(s[1]) * srcW + s[0]) * 4u;
+                acc[0] += src[i + 0];
+                acc[1] += src[i + 1];
+                acc[2] += src[i + 2];
+                acc[3] += src[i + 3];
+            }
+            const size_t o = (size_t(y) * dstW + x) * 4u;
+            dst[o + 0] = static_cast<uint8_t>((acc[0] + 2u) / 4u);
+            dst[o + 1] = static_cast<uint8_t>((acc[1] + 2u) / 4u);
+            dst[o + 2] = static_cast<uint8_t>((acc[2] + 2u) / 4u);
+            dst[o + 3] = static_cast<uint8_t>((acc[3] + 2u) / 4u);
+        }
+    }
+}
+
+/** Packed mip chain for one 2D layer (base + downsampled levels). */
+std::vector<uint8_t> buildMipChain2D(const uint8_t *rgba, uint32_t width, uint32_t height,
+                                     uint32_t mipLevels) {
+    std::vector<uint8_t> packed;
+    packed.reserve(size_t(width) * size_t(height) * 4u * 2u);
+    packed.insert(packed.end(), rgba, rgba + size_t(rgba8MipBytes(width, height)));
+
+    uint32_t srcW = width;
+    uint32_t srcH = height;
+    size_t srcOffset = 0;
+    for (uint32_t level = 1; level < mipLevels; ++level) {
+        const uint32_t dstW = std::max(srcW >> 1, 1u);
+        const uint32_t dstH = std::max(srcH >> 1, 1u);
+        const uint8_t *src = packed.data() + srcOffset;
+        srcOffset = packed.size();
+        appendBoxFilteredMip(packed, src, srcW, srcH, dstW, dstH);
+        srcW = dstW;
+        srcH = dstH;
+    }
+    return packed;
+}
+
+/**
+ * Cubemap packed as VKBuilder expects: for each mip, for each face (+X..-Z).
+ * Input faces are contiguous full-res faces.
+ */
+std::vector<uint8_t> buildMipChainCube(const uint8_t *rgbaFaces, uint32_t faceSize,
+                                       uint32_t mipLevels) {
+    const uint32_t faceBytes = rgba8MipBytes(faceSize, faceSize);
+    std::vector<std::vector<uint8_t>> faceChains(6);
+    for (uint32_t f = 0; f < 6; ++f) {
+        faceChains[f] = buildMipChain2D(rgbaFaces + size_t(f) * faceBytes, faceSize, faceSize,
+                                        mipLevels);
+    }
+
+    std::vector<uint8_t> packed;
+    uint32_t w = faceSize;
+    uint32_t h = faceSize;
+    size_t faceOffsets[6] = {0, 0, 0, 0, 0, 0};
+    for (uint32_t level = 0; level < mipLevels; ++level) {
+        const uint32_t levelBytes = rgba8MipBytes(w, h);
+        for (uint32_t f = 0; f < 6; ++f) {
+            const uint8_t *src = faceChains[f].data() + faceOffsets[f];
+            packed.insert(packed.end(), src, src + levelBytes);
+            faceOffsets[f] += levelBytes;
+        }
+        w = std::max(w >> 1, 1u);
+        h = std::max(h >> 1, 1u);
+    }
+    return packed;
+}
+
+TextureCreateInfo normalizeTextureInfo(TextureCreateInfo info) {
+    if (info.generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
+        info.sampler.mipmap = MipmapMode::Linear;
+    if (info.sampler.maxAnisotropy < 1.f) info.sampler.maxAnisotropy = 1.f;
+    return info;
+}
+
+}  // namespace
+
+float Graphics::getMaxAnisotropy() const { return maxSamplerAnisotropy; }
+
+vk::Sampler Graphics::createVkSampler(const TextureSampler &sampler, uint32_t mipLevels) const {
+    auto wrapMode = [](bool repeat) {
+        return repeat ? vk::SamplerAddressMode::eRepeat : vk::SamplerAddressMode::eClampToEdge;
+    };
+    auto toFilter = [](FilterMode m) {
+        return m == FilterMode::Nearest ? vk::Filter::eNearest : vk::Filter::eLinear;
+    };
+    auto toMip = [](MipmapMode m) {
+        return m == MipmapMode::Nearest ? vk::SamplerMipmapMode::eNearest
+                                        : vk::SamplerMipmapMode::eLinear;
+    };
+
+    const bool useMips = sampler.mipmap != MipmapMode::Disabled && mipLevels > 1;
+    float maxLod = useMips ? std::min(sampler.maxLod, float(mipLevels - 1)) : 0.f;
+    if (maxLod < sampler.minLod) maxLod = sampler.minLod;
+
+    float aniso = 1.f;
+    bool enableAniso = false;
+    if (sampler.maxAnisotropy > 1.f && maxSamplerAnisotropy > 1.f) {
+        enableAniso = true;
+        aniso = std::min(sampler.maxAnisotropy, maxSamplerAnisotropy);
+    }
+
+    vkb::SamplerBuilder sb;
+    return sb.magFilter(toFilter(sampler.mag))
+        .minFilter(toFilter(sampler.min))
+        .mipmapMode(useMips ? toMip(sampler.mipmap) : vk::SamplerMipmapMode::eNearest)
+        .addressModeU(wrapMode(sampler.repeatU))
+        .addressModeV(wrapMode(sampler.repeatV))
+        .addressModeW(wrapMode(sampler.repeatW))
+        .mipLodBias(sampler.lodBias)
+        .anisotropyEnable(enableAniso ? VK_TRUE : VK_FALSE)
+        .maxAnisotropy(aniso)
+        .minLod(useMips ? sampler.minLod : 0.f)
+        .maxLod(maxLod)
+        .build(device.instance);
+}
+
+void Graphics::writeCombinedImageDescriptor(GpuTexture *gpu) {
+    if (!gpu || !gpu->descriptorSet) return;
+    vkb::DescriptorSetUpdater updater;
+    updater.beginDescriptorSet(gpu->descriptorSet)
+        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(gpu->sampler, gpu->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .update(device.instance);
+}
+
 Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, bool repeatU, bool repeatV) {
+    TextureCreateInfo info;
+    info.sampler.repeatU = repeatU;
+    info.sampler.repeatV = repeatV;
+    return newTexture(w, h, rgba, info);
+}
+
+Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCreateInfo &rawInfo) {
     ASSERT(initialized);
     ASSERT_GT(w, 0);
     ASSERT_GT(h, 0);
@@ -1281,38 +1444,36 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, bool repeatU, b
     if (!initialized) throw Exception("newTexture: graphics not initialized");
     if (w <= 0 || h <= 0 || !rgba) throw Exception("newTexture: invalid args");
 
+    TextureCreateInfo info = normalizeTextureInfo(rawInfo);
+    const uint32_t mipLevels =
+        info.generateMipmaps ? uint32_t(mipmapCountForSize(w, h)) : 1u;
+
     auto gpu = std::make_unique<GpuTexture>();
     gpu->width = w;
     gpu->height = h;
     gpu->isCube = false;
-    gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h));
-    std::vector<uint8_t> bytes(rgba, rgba + size_t(w) * size_t(h) * 4);
+    gpu->mipLevels = mipLevels;
+    gpu->samplerState = info.sampler;
+    gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
+
+    std::vector<uint8_t> bytes =
+        (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
+                        : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
     gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
-    auto wrapMode = [](bool repeat) {
-        return repeat ? vk::SamplerAddressMode::eRepeat : vk::SamplerAddressMode::eClampToEdge;
-    };
-    vkb::SamplerBuilder sb;
-    gpu->sampler = sb.magFilter(vk::Filter::eLinear)
-                       .minFilter(vk::Filter::eLinear)
-                       .addressModeU(wrapMode(repeatU))
-                       .addressModeV(wrapMode(repeatV))
-                       .build(device.instance);
+    gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
     gpu->descriptorSet = sets[0];
-
-    vkb::DescriptorSetUpdater updater;
-    updater.beginDescriptorSet(gpu->descriptorSet)
-        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpu->sampler, gpu->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
-        .update(device.instance);
+    writeCombinedImageDescriptor(gpu.get());
 
     auto tex = std::make_unique<Texture>();
     tex->width = w;
     tex->height = h;
     tex->pixelWidth = w;
     tex->pixelHeight = h;
+    tex->mipmapCount = int(mipLevels);
+    tex->sampler = info.sampler;
     tex->gpuHandle = gpu.get();
 
     Texture *raw = tex.get();
@@ -1322,32 +1483,42 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, bool repeatU, b
 }
 
 Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces) {
+    // IBL shaders use textureLod(roughness * 5); generate mips by default.
+    return newCubemap(faceSize, rgbaFaces, TextureCreateInfo::withMipmaps(false));
+}
+
+Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
+                              const TextureCreateInfo &rawInfo) {
     ASSERT(initialized);
     ASSERT_GT(faceSize, 0);
     ASSERT(rgbaFaces != nullptr);
     if (!initialized) throw Exception("newCubemap: graphics not initialized");
     if (faceSize <= 0 || !rgbaFaces) throw Exception("newCubemap: invalid args");
 
+    TextureCreateInfo info = normalizeTextureInfo(rawInfo);
+    info.sampler.repeatU = false;
+    info.sampler.repeatV = false;
+    info.sampler.repeatW = false;
+    const uint32_t mipLevels =
+        info.generateMipmaps ? uint32_t(mipmapCountForSize(faceSize, faceSize)) : 1u;
+
     const size_t faceBytes = size_t(faceSize) * size_t(faceSize) * 4u;
     auto gpu = std::make_unique<GpuTexture>();
     gpu->width = faceSize;
     gpu->height = faceSize;
     gpu->isCube = true;
+    gpu->mipLevels = mipLevels;
+    gpu->samplerState = info.sampler;
     gpu->cubeImage = vkb::TextureImageCube(device, device.physical_device.memory_properties,
-                                           uint32_t(faceSize), uint32_t(faceSize));
-    std::vector<uint8_t> bytes(rgbaFaces, rgbaFaces + faceBytes * 6u);
+                                           uint32_t(faceSize), uint32_t(faceSize), mipLevels);
+
+    std::vector<uint8_t> bytes =
+        (mipLevels > 1) ? buildMipChainCube(rgbaFaces, uint32_t(faceSize), mipLevels)
+                        : std::vector<uint8_t>(rgbaFaces, rgbaFaces + faceBytes * 6u);
     gpu->cubeImage.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
-    vkb::SamplerBuilder sb;
-    gpu->sampler = sb.magFilter(vk::Filter::eLinear)
-                       .minFilter(vk::Filter::eLinear)
-                       .mipmapMode(vk::SamplerMipmapMode::eLinear)
-                       .addressModeU(vk::SamplerAddressMode::eClampToEdge)
-                       .addressModeV(vk::SamplerAddressMode::eClampToEdge)
-                       .addressModeW(vk::SamplerAddressMode::eClampToEdge)
-                       .minLod(0.f)
-                       .maxLod(1.f)
-                       .build(device.instance);
+    gpu->sampler = createVkSampler(info.sampler, mipLevels);
+    // Cubemap sampled via mesh3d descriptor sets — no 2D texSetLayout binding required here.
 
     auto tex = std::make_unique<Texture>();
     tex->width = faceSize;
@@ -1355,6 +1526,8 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces) {
     tex->pixelWidth = faceSize;
     tex->pixelHeight = faceSize;
     tex->layers = 6;
+    tex->mipmapCount = int(mipLevels);
+    tex->sampler = info.sampler;
     tex->gpuHandle = gpu.get();
 
     Texture *raw = tex.get();
@@ -1372,6 +1545,15 @@ Texture *Graphics::newTexture(image::ImageData *data) {
                       static_cast<const uint8_t *>(data->getData()));
 }
 
+Texture *Graphics::newTexture(image::ImageData *data, const TextureCreateInfo &info) {
+    ASSERT(data != nullptr);
+    if (!data) throw Exception("newTexture: null ImageData");
+    if (data->getFormat() != "RGBA8")
+        throw Exception("newTexture: only RGBA8 ImageData supported for now");
+    return newTexture(data->getWidth(), data->getHeight(),
+                      static_cast<const uint8_t *>(data->getData()), info);
+}
+
 namespace {
 
 std::string normalizeTexPath(std::string path) {
@@ -1385,6 +1567,24 @@ std::string normalizeTexPath(std::string path) {
 
 }  // namespace
 
+void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler) {
+    if (!texture || !texture->gpuHandle || !initialized) return;
+    for (auto &owned : ownedGpuTextures) {
+        if (owned.get() != texture->gpuHandle) continue;
+        if (owned->sampler) device->destroySampler(owned->sampler);
+        owned->samplerState = sampler;
+        owned->sampler = createVkSampler(sampler, owned->mipLevels);
+        texture->sampler = sampler;
+        if (!owned->isCube) writeCombinedImageDescriptor(owned.get());
+        // Mesh3D / lit descriptors cache sampler bindings; force rebinding by
+        // clearing per-frame set caches that reference this GpuTexture.
+        for (auto &slot : mesh3dUboSlots) slot.sets.clear();
+        for (auto &slot : mesh3dClusteredUboSlots) slot.sets.clear();
+        lit2dSets.clear();
+        return;
+    }
+}
+
 bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     if (!tex || !data) return false;
     if (data->getFormat() != "RGBA8") return false;
@@ -1393,28 +1593,30 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     const auto *rgba = static_cast<const uint8_t *>(data->getData());
     if (w <= 0 || h <= 0 || !rgba) return false;
 
+    TextureCreateInfo info;
+    info.sampler = tex->sampler;
+    info.generateMipmaps = tex->mipmapCount > 1;
+    info = normalizeTextureInfo(info);
+    const uint32_t mipLevels =
+        info.generateMipmaps ? uint32_t(mipmapCountForSize(w, h)) : 1u;
+
     auto gpu = std::make_unique<GpuTexture>();
     gpu->width = w;
     gpu->height = h;
-    gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h));
-    std::vector<uint8_t> bytes(rgba, rgba + size_t(w) * size_t(h) * 4);
+    gpu->isCube = false;
+    gpu->mipLevels = mipLevels;
+    gpu->samplerState = info.sampler;
+    gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
+    std::vector<uint8_t> bytes =
+        (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
+                        : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
     gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
-    vkb::SamplerBuilder sb;
-    gpu->sampler = sb.magFilter(vk::Filter::eLinear)
-                       .minFilter(vk::Filter::eLinear)
-                       .addressModeU(vk::SamplerAddressMode::eClampToEdge)
-                       .addressModeV(vk::SamplerAddressMode::eClampToEdge)
-                       .build(device.instance);
+    gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
     gpu->descriptorSet = sets[0];
-
-    vkb::DescriptorSetUpdater updater;
-    updater.beginDescriptorSet(gpu->descriptorSet)
-        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpu->sampler, gpu->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
-        .update(device.instance);
+    writeCombinedImageDescriptor(gpu.get());
 
     void *oldHandle = tex->gpuHandle;
     for (auto &owned : ownedGpuTextures) {
@@ -1426,6 +1628,11 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
         tex->height = h;
         tex->pixelWidth = w;
         tex->pixelHeight = h;
+        tex->mipmapCount = int(mipLevels);
+        tex->sampler = info.sampler;
+        for (auto &slot : mesh3dUboSlots) slot.sets.clear();
+        for (auto &slot : mesh3dClusteredUboSlots) slot.sets.clear();
+        lit2dSets.clear();
         return true;
     }
 
@@ -1435,6 +1642,8 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     tex->height = h;
     tex->pixelWidth = w;
     tex->pixelHeight = h;
+    tex->mipmapCount = int(mipLevels);
+    tex->sampler = info.sampler;
     ownedGpuTextures.push_back(std::move(gpu));
     return true;
 }

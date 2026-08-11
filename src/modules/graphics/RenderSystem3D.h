@@ -78,6 +78,8 @@ public:
     };
 
     struct MeshRenderer {
+        static constexpr int kMaxLodLevels = 4;
+
         Mesh *mesh = nullptr;
         Texture *texture = nullptr;
         Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
@@ -94,6 +96,31 @@ public:
         bool receiveShadow = true;
         bool castOcclusion = true;  // volumetric occlusion (screen-space shafts)
         Camera3D *camera = nullptr;
+
+        /**
+         * Optional geometric LOD. When lodCount > 0, lodMeshes[0..lodCount) are used
+         * instead of `mesh` based on camera distance. lodDistances[i] is the distance
+         * at which rendering switches from lodMeshes[i] to lodMeshes[i+1].
+         */
+        int lodCount = 0;
+        Mesh *lodMeshes[kMaxLodLevels] = {};
+        float lodDistances[kMaxLodLevels - 1] = {25.f, 60.f, 120.f};
+
+        /** Pick LOD mesh for a camera distance; falls back to `mesh` when LOD disabled. */
+        Mesh *meshForDistance(float distance) const {
+            if (lodCount <= 0) return mesh;
+            int level = 0;
+            while (level + 1 < lodCount && distance >= lodDistances[level]) ++level;
+            Mesh *picked = lodMeshes[level];
+            return picked ? picked : mesh;
+        }
+
+        int lodLevelForDistance(float distance) const {
+            if (lodCount <= 0) return 0;
+            int level = 0;
+            while (level + 1 < lodCount && distance >= lodDistances[level]) ++level;
+            return level;
+        }
     };
 
     COMPONENT(Transform3D, transform)
@@ -126,6 +153,16 @@ public:
     void setCastOcclusion(bool cast);
     bool getCastOcclusion();
     void setCamera(Camera3D *camera);
+
+    /**
+     * Configure geometric LOD. index 0 = highest detail.
+     * For index > 0, switchDistance is the camera distance that selects this level
+     * (stored in lodDistances[index-1]). Passing nullptr mesh clears that slot.
+     */
+    void setMeshLod(int index, Mesh *mesh, float switchDistance = 0.f);
+    void clearMeshLod();
+    int getMeshLodCount();
+    int getMeshLodLevelAtDistance(float distance);
 };
 
 class RenderSystem3D {

@@ -26,6 +26,7 @@ file(GLOB all_test_cpp
   Shadow3D.cpp
   ClassicScenes.cpp
   Volumetric.cpp
+  TextureSampler.cpp
   AmbientOcclusion.cpp
   AntiAliasing.cpp
   UISystem.cpp

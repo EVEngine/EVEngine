@@ -5,6 +5,7 @@
 #include "graphics/Drawable.h"
 #include "graphics/Canvas.h"
 #include "graphics/Texture.h"
+#include "graphics/TextureSampler.h"
 #include "graphics/Mesh.h"
 #include "graphics/Quad.h"
 #include "graphics/Font.h"
@@ -44,6 +45,21 @@ public:
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V. Caller owns Texture*. */
     Texture *newTextureFromImageData(image::ImageData *data, bool repeatU = false,
                                      bool repeatV = false);
+    /** Upload RGBA8 ImageData with mipmaps / filter / anisotropy options. */
+    Texture *newTextureFromImageData(image::ImageData *data, const TextureCreateInfo &info);
+
+    /**
+     * Script-friendly texture create: filter = "linear"|"nearest", mipmap = "none"|"linear"|"nearest".
+     * generateMipmaps builds a full mip chain; maxAnisotropy > 1 enables anisotropic filtering.
+     */
+    Texture *newTextureWithSampler(image::ImageData *data, bool repeatU, bool repeatV,
+                                   bool generateMipmaps, float maxAnisotropy,
+                                   const std::string &filter, const std::string &mipmap,
+                                   float lodBias = 0.f);
+
+    /** Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias). */
+    void setTextureSamplerParams(Texture *texture, const std::string &filter,
+                                 const std::string &mipmap, float maxAnisotropy, float lodBias);
 
     virtual void present() = 0;
 
@@ -78,14 +94,34 @@ public:
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                                 bool repeatV = false) = 0;
 
+    /** Create RGBA8 texture with explicit sampler / mipmap options. Caller owns Texture*. */
+    virtual Texture *newTexture(int width, int height, const uint8_t *rgba,
+                                const TextureCreateInfo &info) = 0;
+
     /**
      * Create an RGBA8 cubemap from 6 faces packed as +X,-X,+Y,-Y,+Z,-Z
      * (each faceSize×faceSize, total bytes = faceSize²×4×6). Owned by Graphics.
      */
     virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) = 0;
 
+    /** Cubemap with mipmap / sampler options (IBL-friendly when generateMipmaps=true). */
+    virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
+                                const TextureCreateInfo &info) = 0;
+
     /** Create texture from ImageData (RGBA8 required for now). */
     virtual Texture *newTexture(image::ImageData *data) = 0;
+
+    /** Create texture from ImageData with sampler / mipmap options. */
+    virtual Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) = 0;
+
+    /**
+     * Recreate the sampler for an existing texture (keeps image / mip chain).
+     * No-op when texture is null or not owned by this Graphics.
+     */
+    virtual void setTextureSampler(Texture *texture, const TextureSampler &sampler) = 0;
+
+    /** Device max supported anisotropy (1 if unsupported). Valid after initWithWindow. */
+    virtual float getMaxAnisotropy() const = 0;
 
     /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure.
      *  Same path returns the same Texture* and reloads pixels in place on repeat calls. */

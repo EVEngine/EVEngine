@@ -276,6 +276,32 @@ bool Renderable3D::getCastOcclusion() { return meshRenderer()->castOcclusion; }
 
 void Renderable3D::setCamera(Camera3D *camera) { meshRenderer()->camera = camera; }
 
+void Renderable3D::setMeshLod(int index, Mesh *mesh, float switchDistance) {
+    auto mr = meshRenderer();
+    if (index < 0 || index >= MeshRenderer::kMaxLodLevels) return;
+    mr->lodMeshes[index] = mesh;
+    if (index > 0) mr->lodDistances[index - 1] = switchDistance;
+    if (mesh) {
+        if (mr->lodCount < index + 1) mr->lodCount = index + 1;
+    } else if (index + 1 == mr->lodCount) {
+        while (mr->lodCount > 0 && !mr->lodMeshes[mr->lodCount - 1]) --mr->lodCount;
+    }
+    // Keep primary mesh in sync with LOD0 when set.
+    if (index == 0 && mesh) mr->mesh = mesh;
+}
+
+void Renderable3D::clearMeshLod() {
+    auto mr = meshRenderer();
+    mr->lodCount = 0;
+    for (int i = 0; i < MeshRenderer::kMaxLodLevels; ++i) mr->lodMeshes[i] = nullptr;
+}
+
+int Renderable3D::getMeshLodCount() { return meshRenderer()->lodCount; }
+
+int Renderable3D::getMeshLodLevelAtDistance(float distance) {
+    return meshRenderer()->lodLevelForDistance(distance);
+}
+
 void RenderSystem3D::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
     glm::vec3 d(dx, dy, dz);
     if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
@@ -343,11 +369,20 @@ void RenderSystem3D::render(Graphics &gfx) {
                 gfx.beginShadowPass(c);
                 for (auto it = casterView.begin(); it != casterView.end(); ++it) {
                     auto [xf, mr] = *it;
-                    if (!mr->visible || !mr->mesh || !mr->castShadow) continue;
+                    if (!mr->visible || !mr->castShadow) continue;
+                    Mesh *drawMesh = mr->mesh;
+                    if (defaultCam) {
+                        auto cd = defaultCam->data();
+                        const float dx = xf->x - cd->eyeX;
+                        const float dy = xf->y - cd->eyeY;
+                        const float dz = xf->z - cd->eyeZ;
+                        drawMesh = mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz));
+                    }
+                    if (!drawMesh) continue;
                     const glm::mat4 model = modelFromTransform(*xf);
                     eve::debug::rtBind("mesh", "shadowCaster");
                     eve::debug::rtDraw("drawMeshShadow", "cascade");
-                    gfx.drawMeshShadow(mr->mesh, shadowUpload.ubo.lightVP[c] * model);
+                    gfx.drawMeshShadow(drawMesh, shadowUpload.ubo.lightVP[c] * model);
                 }
                 gfx.endShadowPass();
                 eve::debug::rtPassEnd("ShadowPass");
@@ -374,13 +409,19 @@ void RenderSystem3D::render(Graphics &gfx) {
     auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [xf, mr] = *it;
-        if (!mr->visible || !mr->mesh) continue;
+        if (!mr->visible) continue;
 
         Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
         if (!camEnt) continue;
         auto cd = camEnt->data();
 
         const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+        const float dx = xf->x - eye.x;
+        const float dy = xf->y - eye.y;
+        const float dz = xf->z - eye.z;
+        Mesh *drawMesh = mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz));
+        if (!drawMesh) continue;
+
         const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
         const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
@@ -441,7 +482,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         if (mr->shader) eve::debug::rtBind("shader", "mesh");
         eve::debug::rtBind("mesh", "renderable3d");
         eve::debug::rtDraw("drawMeshShader", mr->shader ? "custom" : "default");
-        gfx.drawMeshShader(mr->mesh, model, mr->texture, tint, mr->shader);
+        gfx.drawMeshShader(drawMesh, model, mr->texture, tint, mr->shader);
     }
 }
 
