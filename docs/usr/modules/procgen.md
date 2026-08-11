@@ -21,7 +21,18 @@ local grid = gen.generate("dungeon.bsp", p);
 
 ### 生成可玩的地牢层
 
-创建 Params，设置 seed 和尺寸，按需添加算法参数；用 `generate("dungeon.bsp", p)` 先检查 Grid，也可配置 Output 将结果直接写入 TileLayer。保存 seed 可复现关卡。
+创建 Params，设置 seed 和尺寸，按需添加算法参数；用 `generate("dungeon.bsp", p)` 先检查 Grid，也可配置 Output 将结果直接写入 TileLayer。保存 seed 可复现关卡。也可用 `generate("wfc.simple", p)`（`preset`=`dungeon`|`cave`|`terrain`）做约束驱动铺贴。
+
+### 生成等值面网格（Marching Cubes）
+
+```squirrel
+local p = gen.newParams();
+p.setSeed(1);
+p.setInt("resolution", 32);
+p.setString("field", "sphere"); // sphere | torus | noise | terrain
+local cpu = gen.buildMesh("mesh.marchingcubes", p);
+local gpu = gen.generateMesh("mesh.marchingcubes", p, gfx);
+```
 
 ### 生成无缝材质
 
@@ -37,11 +48,11 @@ local grid = gen.generate("dungeon.bsp", p);
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `addObject()`、`addObjectAt()`、`applyToLayer()`、`clearObjects()`、`fill()`、`generate()`、`generateImage()`、`generateNormalImage()`
+- `addObject()`、`addObjectAt()`、`applyToLayer()`、`buildMesh()`、`clearObjects()`、`fill()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
 - `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getFloat()`、`getHeight()`、`getInt()`
-- `getLayer()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
+- `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
-- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasTextureRecipe()`
+- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`
 - `lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`resize()`、`setCell()`、`setFloat()`、`setInt()`
 - `setLayer()`、`setMeta()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setSeed()`、`setSize()`、`setString()`
 - `setTarget()`

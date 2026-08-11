@@ -193,6 +193,9 @@ bool genCaveDrunkard(const Params &params, Grid2D &out, std::string &error) {
 
 }  // namespace
 
+// Defined in WfcSimple.cpp
+void registerWfcSimple(GeneratorRegistry &registry);
+
 void GeneratorRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
     registerAlgorithm("dungeon.bsp", genDungeonBsp);
@@ -200,6 +203,7 @@ void GeneratorRegistry::registerBuiltins() {
     registerAlgorithm("cave.drunkard", genCaveDrunkard);
     registerAlgorithm("maze.backtrack", genMazeBacktrack);
     registerAlgorithm("noise.terrain", genNoiseTerrain);
+    registerWfcSimple(*this);
     builtinsRegistered_ = true;
 }
 

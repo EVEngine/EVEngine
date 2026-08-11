@@ -167,6 +167,14 @@ public:
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
 
     /**
+     * Upload a triangle mesh from packed CPU arrays. Owned by Graphics.
+     * posXYZ required (vertexCount*3). nrmXYZ/uvST may be null (flat normal / zero UV).
+     * indices required (indexCount, triangles).
+     */
+    virtual Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                    int vertexCount, const uint32_t *indices, int indexCount) = 0;
+
+    /**
      * If mesh morph weights are dirty, bake blended positions and upload to the GPU VBO.
      * Returns true when an upload happened. No-op when no morph data / not dirty / null.
      */
