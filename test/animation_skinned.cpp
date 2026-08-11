@@ -39,12 +39,14 @@ bool fileExists(const std::string &path) {
     return std::filesystem::is_regular_file(path);
 }
 
-std::string cesiumManGltf() {
-    return pathBesideThisSource("assets/skinned/cesium_man/glTF/CesiumMan.gltf");
+std::string cesiumManDir() {
+    return pathBesideThisSource("assets/skinned/cesium_man/glTF");
 }
 
+std::string cesiumManGltfPath() { return cesiumManDir() + "/CesiumMan.gltf"; }
+
 bool ensureSkinnedAssets() {
-    const std::string gltf = cesiumManGltf();
+    const std::string gltf = cesiumManGltfPath();
     if (fileExists(gltf)) return true;
     std::printf(
         "animation.skinned: missing %s — run scripts/download_skinned_character.sh "
@@ -52,6 +54,20 @@ bool ensureSkinnedAssets() {
         "-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=ON)\n",
         gltf.c_str());
     return false;
+}
+
+/** Mount the CesiumMan glTF folder in physfs and load via relative path. */
+eve::model3d::ModelData *loadCesiumMan(const char *fsIdentity) {
+    const std::string dir = cesiumManDir();
+    REQUIRE(fileExists(dir + "/CesiumMan.gltf"));
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs != nullptr);
+    REQUIRE(fs->setIdentity(fsIdentity, true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(dir);
+    REQUIRE(fs->mount(dir, "", false));
+    auto *mod = eve::model3d::Model3D::create();
+    return mod->newModelDataFromFile("CesiumMan.gltf");
 }
 
 int findFirstSkinnedMesh(const eve::model3d::ModelData *model) {
@@ -88,7 +104,7 @@ TEST_CASE("animation.skinned.mat4FromTRSIdentity") {
 
 TEST_CASE("animation.skinned.worldMatrixMatchesTRS") {
     std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
-    const int root = sk->addBone("root", -1);
+    const int root  = sk->addBone("root", -1);
     const int child = sk->addBone("child", root);
     sk->setBindPosition(child, 0.f, 1.f, 0.f);
 
@@ -110,14 +126,8 @@ TEST_CASE("animation.skinned.worldMatrixMatchesTRS") {
 TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
     if (!ensureSkinnedAssets()) return;
 
-    auto *fs = eve::filesystem::Filesystem::create();
-    REQUIRE(fs != nullptr);
-    REQUIRE(fs->setIdentity("ev_ut_animation_skinned", true));
-
-    std::unique_ptr<eve::model3d::Model3D> models(eve::model3d::Model3D::create());
-    std::unique_ptr<eve::model3d::ModelData> model(
-        models->newModelDataFromFile(cesiumManGltf()));
-    REQUIRE(model != nullptr);
+    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_animation_skinned"));
+    REQUIRE(model.get() != nullptr);
     REQUIRE(!model->empty());
     CHECK(model->getMeshCount() >= 1);
     CHECK(model->getAnimationCount() >= 1);
@@ -133,7 +143,7 @@ TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
     for (int b = 0; b < model->getBoneCount(meshIndex); ++b) {
         const std::string name = model->getBoneName(meshIndex, b);
         CHECK(!name.empty());
-        // Inverse-bind should be a finite matrix (translation column often non-zero).
+        // Inverse-bind should be a finite matrix.
         float sumAbs = 0.f;
         for (int e = 0; e < 16; ++e) {
             const float v = model->getInverseBindMatrixElement(meshIndex, b, e);
@@ -156,7 +166,7 @@ TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
     CHECK(totalWeights > 0);
 
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
-    REQUIRE(skeleton != nullptr);
+    REQUIRE(skeleton.get() != nullptr);
     CHECK(skeleton->getBoneCount() >= model->getBoneCount(meshIndex));
 
     // Skin joints should resolve onto the imported hierarchy by name.
@@ -167,11 +177,11 @@ TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
 
     std::unique_ptr<AnimClip> clip(
         AnimImporter::loadClipFromModel(model.get(), skeleton.get(), 0));
-    REQUIRE(clip != nullptr);
+    REQUIRE(clip.get() != nullptr);
     CHECK(clip->getDuration() > 0.1f);
 
     std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
-    REQUIRE(skin != nullptr);
+    REQUIRE(skin.get() != nullptr);
     CHECK(skin->getVertexCount() == model->getVertexCount(meshIndex));
     CHECK(skin->getBoneCount() >= 2);
 
@@ -222,24 +232,19 @@ TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
 TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
     if (!ensureSkinnedAssets()) return;
 
-    auto *fs = eve::filesystem::Filesystem::create();
-    REQUIRE(fs != nullptr);
-    REQUIRE(fs->setIdentity("ev_ut_animation_skinned_factory", true));
-
-    std::unique_ptr<eve::model3d::Model3D> models(eve::model3d::Model3D::create());
     std::unique_ptr<eve::model3d::ModelData> model(
-        models->newModelDataFromFile(cesiumManGltf()));
-    REQUIRE(model != nullptr);
+        loadCesiumMan("ev_ut_animation_skinned_factory"));
+    REQUIRE(model.get() != nullptr);
 
     std::unique_ptr<Animation> anim(Animation::create());
     std::unique_ptr<AnimSkeleton> sk(anim->newSkeletonFromModel(model.get()));
-    REQUIRE(sk != nullptr);
+    REQUIRE(sk.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
     std::unique_ptr<AnimSkin> skin(anim->newSkinFromModel(model.get(), meshIndex, sk.get()));
-    REQUIRE(skin != nullptr);
+    REQUIRE(skin.get() != nullptr);
     CHECK(skin->getVertexCount() > 0);
     std::unique_ptr<AnimClip> clip(anim->newClipFromModel(model.get(), sk.get(), 0));
-    REQUIRE(clip != nullptr);
+    REQUIRE(clip.get() != nullptr);
     CHECK(clip->getDuration() > 0.f);
 }
