@@ -10,6 +10,7 @@
 - [命令行设计](命令行设计.md)
 - [测试覆盖](测试覆盖.md)
 - [AI 与 MCP 支持](AI与MCP支持.md)
+- [引擎对标调研：DragonRuby / LÖVE / Usagi](引擎对标调研-DragonRuby-Love2D-Usagi.md)
 
 ## 功能设计
 
