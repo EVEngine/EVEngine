@@ -128,8 +128,12 @@ elseif(UNIX)
     dl pthread m rt bz2 png
     X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
     wayland-client wayland-cursor wayland-egl xkbcommon
-    asound sndio
+    asound
   )
+  find_library(EVENGINE_SNDIO_LIB sndio)
+  if(EVENGINE_SNDIO_LIB)
+    set(SystemLibraries ${SystemLibraries} sndio)
+  endif()
 endif()
 
 # Windows lib names must match local + CI third-party install (md/mdd postfixes).

@@ -79,13 +79,18 @@ elseif(APPLE)
     )
 elseif(UNIX)
     # Static SDL2 pulls Wayland/X11 extras; FreeType needs bz2/png.
-    # OpenAL (third-party) may reference sndio backends on Linux.
     set(SystemLibraries ${SystemLibraries}
         dl pthread m rt bz2 png
         X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
         wayland-client wayland-cursor wayland-egl xkbcommon
-        asound sndio
+        asound
     )
+    # OpenAL Soft may reference sndio backends when that library is present locally;
+    # GitHub Actions runners typically lack libsndio, so only link when found.
+    find_library(EVENGINE_SNDIO_LIB sndio)
+    if(EVENGINE_SNDIO_LIB)
+        set(SystemLibraries ${SystemLibraries} sndio)
+    endif()
 endif()
 
 # Windows MSVC static-lib names match third-party install postfixes (md/mdd).
