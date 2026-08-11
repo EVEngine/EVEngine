@@ -205,20 +205,25 @@ void Cloth::solveConstraints() {
         for (const Link &link : links_) {
             Particle &a = particles_[static_cast<size_t>(link.a)];
             Particle &b = particles_[static_cast<size_t>(link.b)];
+            if (a.pinned && b.pinned) continue;
             float dx = b.x - a.x;
             float dy = b.y - a.y;
             float dist = std::sqrt(dx * dx + dy * dy);
             if (dist < 1e-5f) continue;
-            const float diff = (dist - link.rest) / dist;
-            const float corrX = dx * 0.5f * diff * stiffness_;
-            const float corrY = dy * 0.5f * diff * stiffness_;
-            if (!a.pinned) {
-                a.x += corrX;
-                a.y += corrY;
-            }
-            if (!b.pinned) {
-                b.x -= corrX;
-                b.y -= corrY;
+            const float diff = (dist - link.rest) / dist * stiffness_;
+            // When one end is pinned, apply the full correction to the free end.
+            if (a.pinned) {
+                b.x -= dx * diff;
+                b.y -= dy * diff;
+            } else if (b.pinned) {
+                a.x += dx * diff;
+                a.y += dy * diff;
+            } else {
+                const float half = diff * 0.5f;
+                a.x += dx * half;
+                a.y += dy * half;
+                b.x -= dx * half;
+                b.y -= dy * half;
             }
         }
         if (validIndex(grabIndex_)) {

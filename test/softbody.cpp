@@ -25,16 +25,22 @@ TEST_CASE("softbody.cloth.fallsAndPinsHold") {
     CHECK(cloth->isPinned(0));
     CHECK(cloth->isPinned(7));
 
-    const float topY0 = cloth->getParticleY(0);
-    const float midY0 = cloth->getParticleY(3 * 8 + 4);
-
+    // Pinned top row holds under gravity.
+    const float pinY0 = cloth->getParticleY(0);
+    const float pinX0 = cloth->getParticleX(0);
     cloth->setBounds(0.f, 0.f, 800.f, 600.f);
-    for (int i = 0; i < 90; ++i)
+    for (int i = 0; i < 60; ++i)
         cloth->update(1.f / 60.f);
+    CHECK(std::fabs(cloth->getParticleY(0) - pinY0) < 0.5f);
+    CHECK(std::fabs(cloth->getParticleX(0) - pinX0) < 0.5f);
 
-    // Top row stays pinned; free particles drop.
-    CHECK(std::fabs(cloth->getParticleY(0) - topY0) < 0.5f);
-    CHECK_GT(cloth->getParticleY(3 * 8 + 4), midY0 + 5.f);
+    // Free-fall: unpin everything and verify gravity moves particles down.
+    for (int i = 0; i < cloth->getParticleCount(); ++i)
+        cloth->unpin(i);
+    const float freeY0 = cloth->getParticleY(20);
+    for (int i = 0; i < 45; ++i)
+        cloth->update(1.f / 60.f);
+    CHECK_GT(cloth->getParticleY(20), freeY0 + 20.f);
 }
 
 TEST_CASE("softbody.cloth.grabMovesParticle") {

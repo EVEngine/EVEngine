@@ -101,7 +101,7 @@ eve_update = function(dt) {
 
     // Gentle wind on the cloth.
     windT += dt;
-    cloth.applyForce(math.polarX(120.0, windT * 1.4), 0.0);
+    cloth.applyForce(math.polarX(420.0, windT * 1.4), 0.0);
 
     cloth.update(dt);
     fluid.update(dt);
