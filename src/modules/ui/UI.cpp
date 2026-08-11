@@ -402,25 +402,13 @@ std::string UI::consumeClick() { return UISystem::consumeClick(); }
 
 std::string UI::consumeChange() { return UISystem::consumeChange(); }
 
-void UI::setThemeDark() {
-    Theme t;
-    setGlobalTheme(t);
-}
+void UI::setThemeDark() { setThemeByName("dark"); }
 
-void UI::setThemeLight() {
-    Theme t;
-    t.windowBg[0] = 0.94f;
-    t.windowBg[1] = 0.94f;
-    t.windowBg[2] = 0.94f;
-    t.windowBg[3] = 1.f;
-    t.text[0] = t.text[1] = t.text[2] = 0.f;
-    t.text[3] = 1.f;
-    t.button[0] = 0.26f;
-    t.button[1] = 0.59f;
-    t.button[2] = 0.98f;
-    t.button[3] = 0.6f;
-    setGlobalTheme(t);
-}
+void UI::setThemeLight() { setThemeByName("light"); }
+
+bool UI::setTheme(const std::string &name) { return setThemeByName(name); }
+
+std::string UI::getTheme() const { return globalThemeName(); }
 
 void UI::setNavKeyboard(bool enabled) {
     globalTheme().navEnableKeyboard = enabled;
@@ -431,6 +419,7 @@ void UI::setScale(float scale) {
         if (!initBackend()) return;
     }
     if (backend_) backend_->setScale(scale);
+    setThemeUiScale(getScale());
 }
 
 float UI::getScale() const {
@@ -498,6 +487,8 @@ void UI::expose(ssq::Class &cls) {
 
     cls.addFunc("setThemeDark", &UI::setThemeDark);
     cls.addFunc("setThemeLight", &UI::setThemeLight);
+    cls.addFunc("setTheme", &UI::setTheme);
+    cls.addFunc("getTheme", &UI::getTheme);
     cls.addFunc("setNavKeyboard", &UI::setNavKeyboard);
     cls.addFunc("setScale", &UI::setScale);
     cls.addFunc("getScale", &UI::getScale);
