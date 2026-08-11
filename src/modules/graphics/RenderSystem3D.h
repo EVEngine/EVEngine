@@ -81,6 +81,7 @@ public:
         Mesh *mesh = nullptr;
         Texture *texture = nullptr;
         Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
+        Texture *heightTexture = nullptr;  // nullptr → no parallax height (R = height)
         Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
         float r = 1, g = 1, b = 1, a = 1;
         float metallic = 0.f;
@@ -88,6 +89,9 @@ public:
         float texBombScale = 4.f;     // cells per UV unit
         float texBombStrength = 0.f;  // 0 = off (default, preserves tiling)
         float texBombRot = 1.f;       // 0..1 per-cell rotation amount
+        float parallaxScale = 0.f;    // 0 = off (default)
+        float parallaxMinLayers = 8.f;
+        float parallaxMaxLayers = 32.f;
         bool visible = true;
         bool receiveLight = true;
         bool castShadow = true;
@@ -107,6 +111,8 @@ public:
     void setMesh(Mesh *mesh);
     void setTexture(Texture *texture);
     void setNormalTexture(Texture *texture);
+    /** Height map for parallax (R channel; white = raised). nullptr disables sampling. */
+    void setHeightTexture(Texture *texture);
     void setShader(Shader *shader);
     void setTint(float r, float g, float b, float a = 1.f);
     void setMetallic(float metallic);
@@ -119,6 +125,14 @@ public:
     float getTexCellBombScale();
     float getTexCellBombStrength();
     float getTexCellBombRotation();
+    /**
+     * Parallax occlusion mapping. scale 0 disables (default). Typical scale 0.02..0.08.
+     * Requires a height texture via setHeightTexture.
+     */
+    void setParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f);
+    float getParallaxScale();
+    float getParallaxMinLayers();
+    float getParallaxMaxLayers();
     void setVisible(bool visible);
     void setReceiveLight(bool receive);
     void setCastShadow(bool cast);

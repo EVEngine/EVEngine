@@ -20,6 +20,7 @@ file(GLOB all_test_cpp
   RenderSystem3D.cpp
   Quad.cpp
   TextureCellBomb.cpp
+  ParallaxMap.cpp
   Lighting2D.cpp
   ClusteredLighting.cpp
   IBL.cpp

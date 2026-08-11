@@ -542,6 +542,105 @@ TEST_CASE("RenderSystem3D.texCellBombChangesPixels") {
     win->close();
 }
 
+/** Left-half high / right-half low height so glancing POM shifts albedo UVs. */
+static Texture *makeSplitHeight(Graphics *gfx, int size) {
+    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4);
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            uint8_t h = (x < size / 2) ? 255 : 0;
+            size_t i = size_t(y * size + x) * 4;
+            px[i] = h;
+            px[i + 1] = h;
+            px[i + 2] = h;
+            px[i + 3] = 255;
+        }
+    }
+    return gfx->newTexture(size, size, px.data(), true, true);
+}
+
+TEST_CASE("RenderSystem3D.parallaxChangesPixels") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 160, 120);
+    resetScene3D();
+
+    Mesh *mesh = loadUvCube(gfx);
+    auto *cam = Camera3D::createCamera();
+    // Off-axis eye so tangent-space view has a strong XY component.
+    cam->setEye(1.6f, 0.7f, 2.4f);
+    cam->setTarget(0.f, 0.f, 0.f);
+
+    auto *ent = Renderable3D::create();
+    ent->meshRenderer()->mesh = mesh;
+    ent->meshRenderer()->texture = makeMotif(gfx, 64);
+    ent->setHeightTexture(makeSplitHeight(gfx, 64));
+    ent->setMetallic(0.f);
+    ent->setRoughness(0.85f);
+
+    auto *hud = Renderable2D::create();
+    hud->transform()->x = 0;
+    hud->transform()->y = 0;
+    hud->sprite()->width = 2;
+    hud->sprite()->height = 2;
+    hud->sprite()->r = 0.f;
+    hud->sprite()->g = 0.f;
+    hud->sprite()->b = 0.f;
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
+
+    auto capture = [&](std::vector<float> &out) {
+        out.clear();
+        for (int i = 0; i < 3; ++i) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        const int w = gfx->getWidth();
+        const int h = gfx->getHeight();
+        const int cx = w / 2;
+        const int cy = h / 2;
+        const int dx = std::max(8, w / 12);
+        const int dy = std::max(8, h / 12);
+        for (int y = cy - 2 * dy; y <= cy + 2 * dy; y += dy) {
+            for (int x = cx - 2 * dx; x <= cx + 2 * dx; x += dx) {
+                out.push_back(luma(gfx->getPixel(x, y)));
+            }
+        }
+    };
+
+    std::vector<float> off, on;
+    ent->setParallax(0.f);
+    CHECK_EQ(ent->getParallaxScale(), 0.f);
+    capture(off);
+
+    ent->setParallax(0.12f, 8.f, 24.f);
+    CHECK_EQ(ent->getParallaxScale(), 0.12f);
+    CHECK_EQ(ent->getParallaxMinLayers(), 8.f);
+    CHECK_EQ(ent->getParallaxMaxLayers(), 24.f);
+    capture(on);
+
+    REQUIRE_EQ(off.size(), on.size());
+    REQUIRE_GT(off.size(), 4u);
+
+    float offMin = off[0], offMax = off[0];
+    for (float v : off) {
+        offMin = std::min(offMin, v);
+        offMax = std::max(offMax, v);
+    }
+    REQUIRE(offMax - offMin > 0.02f);
+
+    float mad = 0.f;
+    for (size_t i = 0; i < off.size(); ++i)
+        mad = std::max(mad, std::fabs(off[i] - on[i]));
+    if (!(mad > 0.01f)) {
+        std::fprintf(stderr, "parallax mad=%g offRange=%g n=%zu\n", mad, offMax - offMin,
+                     off.size());
+    }
+    REQUIRE(mad > 0.01f);
+
+    win->close();
+}
+
 TEST_CASE("Camera3D.screenToRayPick") {
     auto *cam = Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 5.f);
