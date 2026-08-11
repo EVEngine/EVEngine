@@ -1,168 +1,135 @@
-# The original Cornell Box in OBJ format.
-# Note that the real box is not a perfect cube, so
-# the faces are imperfect in this data set.
-#
-# Created by Guedis Cardenas and Morgan McGuire at Williams College, 2011
-# Released into the Public Domain.
-#
+# Cornell Box (EVEngine test fixture)
+# Based on the public-domain recreation by Guedis Cardenas & Morgan McGuire (2011).
+# Faces are wound so normals point into the room (engine uses back-face culling).
 # http://graphics.cs.williams.edu/data
 # http://www.graphics.cornell.edu/online/box/data.html
-#
 
 mtllib CornellBox-Original.mtl
 
-## Object floor
-v  -1.01  0.00   0.99
-v   1.00  0.00   0.99
-v   1.00  0.00  -1.04
-v  -0.99  0.00  -1.04
-
+# Floor (normal +Y)
+v -1.01 0.00  0.99
+v  1.00 0.00  0.99
+v  1.00 0.00 -1.04
+v -0.99 0.00 -1.04
 g floor
 usemtl floor
-f -4 -3 -2 -1
+f 1 2 3
+f 1 3 4
 
-## Object ceiling 
-v  -1.02  1.99   0.99  
-v  -1.02  1.99  -1.04
-v   1.00  1.99  -1.04
-v   1.00  1.99   0.99
-
+# Ceiling (normal -Y)
+v -1.02 1.99  0.99
+v  1.00 1.99  0.99
+v  1.00 1.99 -1.04
+v -1.02 1.99 -1.04
 g ceiling
 usemtl ceiling
-f -4 -3 -2 -1
+f 5 8 7
+f 5 7 6
 
-## Object backwall  
-v  -0.99  0.00  -1.04 
-v   1.00  0.00  -1.04
-v   1.00  1.99  -1.04
-v  -1.02  1.99  -1.04
-
+# Back wall (normal +Z, facing into room)
+v -0.99 0.00 -1.04
+v  1.00 0.00 -1.04
+v  1.00 1.99 -1.04
+v -1.02 1.99 -1.04
 g backWall
 usemtl backWall
-f -4 -3 -2 -1
+f 9 12 11
+f 9 11 10
 
-## Object rightwall 
-v	1.00  0.00  -1.04   
-v	1.00  0.00   0.99
-v	1.00  1.99   0.99
-v	1.00  1.99  -1.04
-
+# Right wall green (x=+1, normal -X)
+v 1.00 0.00 -1.04
+v 1.00 0.00  0.99
+v 1.00 1.99  0.99
+v 1.00 1.99 -1.04
 g rightWall
 usemtl rightWall
-f -4 -3 -2 -1
+f 13 16 15
+f 13 15 14
 
-## Object leftWall   
-v  -1.01  0.00   0.99
-v  -0.99  0.00  -1.04
-v  -1.02  1.99  -1.04
-v  -1.02  1.99   0.99
-
+# Left wall red (x=-1, normal +X)
+v -1.01 0.00  0.99
+v -0.99 0.00 -1.04
+v -1.02 1.99 -1.04
+v -1.02 1.99  0.99
 g leftWall
 usemtl leftWall
-f -4 -3 -2 -1
+f 17 20 19
+f 17 19 18
 
-## Object shortBox 
+# Short box
 usemtl shortBox
-
-# Top Face 
-v	0.53  0.60   0.75 
-v	0.70  0.60   0.17  
-v	0.13  0.60   0.00
-v  -0.05  0.60   0.57
-f -4 -3 -2 -1
-
-# Left Face 
-v  -0.05  0.00   0.57
-v  -0.05  0.60   0.57
-v   0.13  0.60   0.00 
-v   0.13  0.00   0.00
-f -4 -3 -2 -1
-
-# Front Face
-v	0.53  0.00   0.75
-v	0.53  0.60   0.75
-v  -0.05  0.60   0.57
-v  -0.05  0.00   0.57
-f -4 -3 -2 -1
-
-# Right Face
-v	0.70  0.00   0.17
-v	0.70  0.60   0.17
-v	0.53  0.60   0.75
-v	0.53  0.00   0.75
-f -4 -3 -2 -1
-
-# Back Face
-v	0.13  0.00   0.00
-v	0.13  0.60   0.00
-v	0.70  0.60   0.17
-v	0.70  0.00   0.17
-f -4 -3 -2 -1 
-
-# Bottom Face
-v	0.53  0.00   0.75 
-v	0.70  0.00   0.17  
-v	0.13  0.00   0.00
-v  -0.05  0.00   0.57
-f -12 -11 -10 -9
-
 g shortBox
-usemtl shortBox
+v  0.53 0.60  0.75
+v  0.70 0.60  0.17
+v  0.13 0.60  0.00
+v -0.05 0.60  0.57
+f 21 22 23
+f 21 23 24
+v -0.05 0.00  0.57
+v -0.05 0.60  0.57
+v  0.13 0.60  0.00
+v  0.13 0.00  0.00
+f 25 26 27
+f 25 27 28
+v  0.53 0.00  0.75
+v  0.53 0.60  0.75
+v -0.05 0.60  0.57
+v -0.05 0.00  0.57
+f 29 30 31
+f 29 31 32
+v  0.70 0.00  0.17
+v  0.70 0.60  0.17
+v  0.53 0.60  0.75
+v  0.53 0.00  0.75
+f 33 34 35
+f 33 35 36
+v  0.13 0.00  0.00
+v  0.13 0.60  0.00
+v  0.70 0.60  0.17
+v  0.70 0.00  0.17
+f 37 38 39
+f 37 39 40
 
-## Object tallBox 
+# Tall box
 usemtl tallBox
-
-# Top Face
-v	-0.53  1.20   0.09
-v	 0.04  1.20  -0.09
-v	-0.14  1.20  -0.67
-v	-0.71  1.20  -0.49
-f -4 -3 -2 -1
-
-# Left Face
-v	-0.53  0.00   0.09
-v	-0.53  1.20   0.09
-v	-0.71  1.20  -0.49
-v	-0.71  0.00  -0.49
-f -4 -3 -2 -1
-
-# Back Face
-v	-0.71  0.00  -0.49
-v	-0.71  1.20  -0.49
-v	-0.14  1.20  -0.67
-v	-0.14  0.00  -0.67
-f -4 -3 -2 -1
-
-# Right Face
-v	-0.14  0.00  -0.67
-v	-0.14  1.20  -0.67
-v	 0.04  1.20  -0.09
-v	 0.04  0.00  -0.09
-f -4 -3 -2 -1
-
-# Front Face
-v	 0.04  0.00  -0.09
-v	 0.04  1.20  -0.09
-v	-0.53  1.20   0.09
-v	-0.53  0.00   0.09
-f -4 -3 -2 -1
-
-# Bottom Face
-v	-0.53  0.00   0.09
-v	 0.04  0.00  -0.09
-v	-0.14  0.00  -0.67
-v	-0.71  0.00  -0.49
-f -8 -7 -6 -5
-
 g tallBox
-usemtl tallBox
+v -0.53 1.20  0.09
+v  0.04 1.20 -0.09
+v -0.14 1.20 -0.67
+v -0.71 1.20 -0.49
+f 41 42 43
+f 41 43 44
+v -0.53 0.00  0.09
+v -0.53 1.20  0.09
+v -0.71 1.20 -0.49
+v -0.71 0.00 -0.49
+f 45 46 47
+f 45 47 48
+v -0.71 0.00 -0.49
+v -0.71 1.20 -0.49
+v -0.14 1.20 -0.67
+v -0.14 0.00 -0.67
+f 49 50 51
+f 49 51 52
+v -0.14 0.00 -0.67
+v -0.14 1.20 -0.67
+v  0.04 1.20 -0.09
+v  0.04 0.00 -0.09
+f 53 54 55
+f 53 55 56
+v  0.04 0.00 -0.09
+v  0.04 1.20 -0.09
+v -0.53 1.20  0.09
+v -0.53 0.00  0.09
+f 57 58 59
+f 57 59 60
 
-## Object light 
-v	-0.24  1.98   0.16
-v	-0.24  1.98  -0.22
-v	 0.23  1.98  -0.22
-v	 0.23  1.98   0.16
-
+# Ceiling light panel (normal -Y)
+v -0.24 1.98  0.16
+v  0.23 1.98  0.16
+v  0.23 1.98 -0.22
+v -0.24 1.98 -0.22
 g light
 usemtl light
-f -4 -3 -2 -1
+f 61 64 63
+f 61 63 62

@@ -3,9 +3,11 @@
 
 #include <SDL2/SDL.h>
 #include <assimp/material.h>
+#include <assimp/matrix4x4.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <assimp/texture.h>
+#include <assimp/vector3.h>
 
 #include <algorithm>
 #include <cmath>
@@ -15,6 +17,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -154,8 +157,9 @@ Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiM
     if (!scene || !mat) return nullptr;
 
     aiString path;
-    if (mat->GetTexture(aiTextureType_DIFFUSE, 0, &path) != AI_SUCCESS &&
-        mat->GetTexture(aiTextureType_BASE_COLOR, 0, &path) != AI_SUCCESS) {
+    // glTF PBR stores albedo as BASE_COLOR; older assets use DIFFUSE.
+    if (mat->GetTexture(aiTextureType_BASE_COLOR, 0, &path) != AI_SUCCESS &&
+        mat->GetTexture(aiTextureType_DIFFUSE, 0, &path) != AI_SUCCESS) {
         return nullptr;
     }
 
@@ -244,14 +248,29 @@ struct Bounds {
     }
 };
 
-Bounds boundsOf(eve::model3d::ModelData *md) {
-    Bounds b;
-    for (int i = 0; i < md->getMeshCount(); ++i) {
-        const aiMesh *mesh = md->getMesh(i);
-        if (!mesh) continue;
-        for (unsigned v = 0; v < mesh->mNumVertices; ++v)
-            b.expand(mesh->mVertices[v].x, mesh->mVertices[v].y, mesh->mVertices[v].z);
+void expandBoundsTransformed(Bounds &b, const aiMesh *mesh, const aiMatrix4x4 &world) {
+    if (!mesh) return;
+    for (unsigned v = 0; v < mesh->mNumVertices; ++v) {
+        const aiVector3D p = world * mesh->mVertices[v];
+        b.expand(p.x, p.y, p.z);
     }
+}
+
+Bounds boundsOfScene(const aiScene *scene) {
+    Bounds b;
+    if (!scene || !scene->mRootNode) return b;
+    std::function<void(const aiNode *, const aiMatrix4x4 &)> walk =
+        [&](const aiNode *node, const aiMatrix4x4 &parent) {
+            const aiMatrix4x4 world = parent * node->mTransformation;
+            for (unsigned i = 0; i < node->mNumMeshes; ++i) {
+                const unsigned mi = node->mMeshes[i];
+                if (mi >= scene->mNumMeshes) continue;
+                expandBoundsTransformed(b, scene->mMeshes[mi], world);
+            }
+            for (unsigned c = 0; c < node->mNumChildren; ++c)
+                walk(node->mChildren[c], world);
+        };
+    walk(scene->mRootNode, aiMatrix4x4());
     return b;
 }
 
@@ -412,12 +431,57 @@ float meanLuma(Graphics *gfx, int step = 8) {
     return n ? float(sum / n) : 0.f;
 }
 
-/** Spawn every Assimp mesh with material tint / diffuse texture. */
+/** Upload an Assimp mesh with a baked world transform (copies positions/normals). */
+Mesh *uploadMeshWorld(Graphics *gfx, const aiMesh *src, const aiMatrix4x4 &world) {
+    REQUIRE(src != nullptr);
+    std::vector<aiVector3D> positions(src->mNumVertices);
+    std::vector<aiVector3D> normals(src->mNumVertices);
+    aiMatrix3x3 nmat(world);
+    nmat.Inverse().Transpose();
+    for (unsigned i = 0; i < src->mNumVertices; ++i) {
+        positions[i] = world * src->mVertices[i];
+        if (src->HasNormals()) {
+            normals[i] = nmat * src->mNormals[i];
+            normals[i].Normalize();
+        } else {
+            normals[i] = aiVector3D(0.f, 1.f, 0.f);
+        }
+    }
+    // Build a non-owning view: aiMesh's destructor frees mVertices/mNormals/mFaces,
+    // so never copy-construct from *src and null out pointers before destruction.
+    aiMesh tmp;
+    std::memset(&tmp, 0, sizeof(tmp));
+    tmp.mPrimitiveTypes = src->mPrimitiveTypes;
+    tmp.mNumVertices = src->mNumVertices;
+    tmp.mVertices = positions.data();
+    tmp.mNormals = normals.data();
+    tmp.mNumFaces = src->mNumFaces;
+    tmp.mFaces = src->mFaces;
+    tmp.mMaterialIndex = src->mMaterialIndex;
+    if (src->HasTextureCoords(0)) {
+        tmp.mTextureCoords[0] = src->mTextureCoords[0];
+        tmp.mNumUVComponents[0] = src->mNumUVComponents[0];
+    }
+    Mesh *out = gfx->newMeshFromAssimp(tmp);
+    tmp.mVertices = nullptr;
+    tmp.mNormals = nullptr;
+    tmp.mFaces = nullptr;
+    tmp.mTextureCoords[0] = nullptr;
+    return out;
+}
+
+/** Spawn every Assimp mesh with node transforms baked + material tint/texture.
+ *  @param texturesLoaded optional out-counter for successfully decoded maps.
+ *  @param useMaterialPbrFactors when false, keep caller metallic/roughness defaults
+ *         (glTF's metallicFactor default is 1.0; without sampling the MR texture that
+ *         turns dielectrics into black mirrors under direct light). */
 int spawnModel(Graphics *gfx, eve::model3d::ModelData *md, const std::string &assetDir,
-               SceneActors &out, float defaultMetallic = 0.05f, float defaultRoughness = 0.55f) {
+               SceneActors &out, float defaultMetallic = 0.05f, float defaultRoughness = 0.55f,
+               int *texturesLoaded = nullptr, bool useMaterialPbrFactors = true) {
     REQUIRE(md != nullptr);
     const aiScene *scene = md->getScene();
     REQUIRE(scene != nullptr);
+    REQUIRE(scene->mRootNode != nullptr);
     Texture *white = makeSolid(gfx, 230, 230, 230);
 
     struct MatLook {
@@ -428,33 +492,43 @@ int spawnModel(Graphics *gfx, eve::model3d::ModelData *md, const std::string &as
     };
     std::unordered_map<unsigned, MatLook> matCache;
 
-    int spawned = 0;
-    for (int i = 0; i < md->getMeshCount(); ++i) {
-        const aiMesh *ai = md->getMesh(i);
-        if (!ai || ai->mNumFaces == 0) continue;
-        Mesh *mesh = gfx->newMeshFromAssimp(*ai);
-        REQUIRE(mesh != nullptr);
-
-        MatLook look{white, 1.f, 1.f, 1.f, defaultMetallic, defaultRoughness};
-        const unsigned matIndex = ai->mMaterialIndex;
+    auto resolveMat = [&](unsigned matIndex) -> MatLook {
         auto cached = matCache.find(matIndex);
-        if (cached != matCache.end()) {
-            look = cached->second;
-        } else if (scene->mMaterials && matIndex < scene->mNumMaterials) {
+        if (cached != matCache.end()) return cached->second;
+        MatLook look{white, 1.f, 1.f, 1.f, defaultMetallic, defaultRoughness};
+        if (scene->mMaterials && matIndex < scene->mNumMaterials) {
             const aiMaterial *mat = scene->mMaterials[matIndex];
             aiColor3D kd(1.f, 1.f, 1.f);
             mat->Get(AI_MATKEY_COLOR_DIFFUSE, kd);
             float metallic = defaultMetallic;
             float roughness = defaultRoughness;
-            mat->Get(AI_MATKEY_METALLIC_FACTOR, metallic);
-            mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
-
+            if (useMaterialPbrFactors) {
+                mat->Get(AI_MATKEY_METALLIC_FACTOR, metallic);
+                mat->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
+                // If a metallic-roughness map exists, factors alone are not enough —
+                // fall back to dielectrics so architecture stays lit without IBL.
+                aiString mrPath;
+                if (mat->GetTexture(aiTextureType_UNKNOWN, 0, &mrPath) == AI_SUCCESS ||
+                    mat->GetTexture(aiTextureType_METALNESS, 0, &mrPath) == AI_SUCCESS ||
+                    mat->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &mrPath) == AI_SUCCESS) {
+                    metallic = defaultMetallic;
+                    roughness = defaultRoughness;
+                }
+            }
+            // Prefer BASE_COLOR factor when present (glTF).
+            aiColor4D base(kd.r, kd.g, kd.b, 1.f);
+            if (mat->Get(AI_MATKEY_BASE_COLOR, base) == AI_SUCCESS) {
+                kd.r = base.r;
+                kd.g = base.g;
+                kd.b = base.b;
+            }
             Texture *fromMat = loadAssimpDiffuseTexture(gfx, scene, mat, assetDir);
             if (fromMat) {
                 look.tex = fromMat;
                 look.tr = kd.r;
                 look.tg = kd.g;
                 look.tb = kd.b;
+                if (texturesLoaded) ++(*texturesLoaded);
             } else {
                 look.tex = makeSolid(gfx, uint8_t(std::clamp(kd.r, 0.f, 1.f) * 255.f + 0.5f),
                                      uint8_t(std::clamp(kd.g, 0.f, 1.f) * 255.f + 0.5f),
@@ -463,28 +537,62 @@ int spawnModel(Graphics *gfx, eve::model3d::ModelData *md, const std::string &as
             }
             look.metallic = metallic;
             look.roughness = roughness;
-            matCache[matIndex] = look;
         }
+        matCache[matIndex] = look;
+        return look;
+    };
 
-        auto *ent = Renderable3D::create();
-        ent->meshRenderer()->mesh = mesh;
-        ent->meshRenderer()->texture = look.tex;
-        ent->meshRenderer()->visible = true;
-        ent->setTint(look.tr, look.tg, look.tb, 1.f);
-        ent->setMetallic(look.metallic);
-        ent->setRoughness(look.roughness);
-        ent->setCastShadow(true);
-        ent->setReceiveShadow(true);
-        out.ents.push_back(ent);
-        ++spawned;
-    }
+    int spawned = 0;
+    std::function<void(const aiNode *, const aiMatrix4x4 &)> walk =
+        [&](const aiNode *node, const aiMatrix4x4 &parent) {
+            const aiMatrix4x4 world = parent * node->mTransformation;
+            for (unsigned i = 0; i < node->mNumMeshes; ++i) {
+                const unsigned mi = node->mMeshes[i];
+                if (mi >= scene->mNumMeshes) continue;
+                const aiMesh *ai = scene->mMeshes[mi];
+                if (!ai || ai->mNumFaces == 0) continue;
+                Mesh *mesh = uploadMeshWorld(gfx, ai, world);
+                REQUIRE(mesh != nullptr);
+
+                MatLook look = resolveMat(ai->mMaterialIndex);
+                auto *ent = Renderable3D::create();
+                ent->meshRenderer()->mesh = mesh;
+                ent->meshRenderer()->texture = look.tex;
+                ent->meshRenderer()->visible = true;
+                ent->setTint(look.tr, look.tg, look.tb, 1.f);
+                ent->setMetallic(look.metallic);
+                ent->setRoughness(look.roughness);
+                ent->setCastShadow(true);
+                ent->setReceiveShadow(true);
+                out.ents.push_back(ent);
+                ++spawned;
+            }
+            for (unsigned c = 0; c < node->mNumChildren; ++c)
+                walk(node->mChildren[c], world);
+        };
+    walk(scene->mRootNode, aiMatrix4x4());
+    out.bounds = boundsOfScene(scene);
     return spawned;
 }
 
-/** Procedural metal/roughness chart — classic material-response test. */
+/** Procedural metal/roughness chart on XZ — classic material-response test. */
 void spawnMetalRoughnessChart(Graphics *gfx, SceneActors &out) {
     Mesh *sphere = gfx->newMeshSphere(24, 16);
     REQUIRE(sphere != nullptr);
+    // Ground plane so shadows have somewhere to land.
+    auto *ground = Renderable3D::create();
+    ground->setMesh(gfx->newMeshSphere(16, 8));
+    ground->setTexture(makeSolid(gfx, 60, 62, 68));
+    ground->setPosition(0.f, -0.55f, 0.f);
+    ground->setScale(4.5f, 0.08f, 4.5f);
+    ground->setMetallic(0.f);
+    ground->setRoughness(0.95f);
+    ground->setCastShadow(false);
+    ground->setReceiveShadow(true);
+    out.ents.push_back(ground);
+    out.bounds.expand(-4.f, -0.7f, -4.f);
+    out.bounds.expand(4.f, 1.2f, 4.f);
+
     const int nM = 4;
     const int nR = 4;
     for (int im = 0; im < nM; ++im) {
@@ -493,16 +601,16 @@ void spawnMetalRoughnessChart(Graphics *gfx, SceneActors &out) {
             ent->setMesh(sphere);
             ent->setTexture(makeSolid(gfx, 210, 210, 215));
             const float x = (float(im) - 1.5f) * 1.15f;
-            const float y = (float(ir) - 1.5f) * 1.15f;
-            ent->setPosition(x, y, 0.f);
+            const float z = (float(ir) - 1.5f) * 1.15f;
+            ent->setPosition(x, 0.f, z);
             ent->setScale(0.42f, 0.42f, 0.42f);
             ent->setMetallic(float(im) / float(nM - 1));
             ent->setRoughness(0.08f + 0.85f * (float(ir) / float(nR - 1)));
             ent->setCastShadow(true);
             ent->setReceiveShadow(true);
             out.ents.push_back(ent);
-            out.bounds.expand(x - 0.5f, y - 0.5f, -0.5f);
-            out.bounds.expand(x + 0.5f, y + 0.5f, 0.5f);
+            out.bounds.expand(x - 0.5f, -0.5f, z - 0.5f);
+            out.bounds.expand(x + 0.5f, 0.6f, z + 0.5f);
         }
     }
 }
@@ -574,17 +682,21 @@ std::vector<CamKey> makeCornellPath(const Bounds &b) {
 }
 
 std::vector<CamKey> makeSponzaPath(const Bounds &b) {
-    const float cx = b.centerX();
-    const float cy = b.centerY();
-    const float cz = b.centerZ();
-    const float rad = std::max(1.f, b.radius());
-    // Walk the atrium long axis then lift to a gallery-ish view.
+    // Crytek Sponza's open atrium runs along +X; keep the eye inside the courtyard
+    // rather than outside the facade (which reads as a black wall fill).
+    const float x0 = b.minX + (b.maxX - b.minX) * 0.18f;
+    const float x1 = b.minX + (b.maxX - b.minX) * 0.82f;
+    const float yEye = b.minY + (b.maxY - b.minY) * 0.18f;
+    const float yTgt = b.minY + (b.maxY - b.minY) * 0.16f;
+    const float z = b.centerZ();
+    const float zSide = (b.maxZ - b.minZ) * 0.08f;
     return {
-        CamKey{cx, cy + rad * 0.08f, cz + rad * 0.55f, cx, cy + rad * 0.05f, cz},
-        CamKey{cx + rad * 0.25f, cy + rad * 0.12f, cz, cx, cy + rad * 0.08f, cz - rad * 0.1f},
-        CamKey{cx, cy + rad * 0.1f, cz - rad * 0.5f, cx, cy + rad * 0.08f, cz},
-        CamKey{cx - rad * 0.2f, cy + rad * 0.28f, cz + rad * 0.15f, cx, cy + rad * 0.05f, cz},
-        CamKey{cx, cy + rad * 0.08f, cz + rad * 0.55f, cx, cy + rad * 0.05f, cz},
+        CamKey{x0, yEye, z, x1, yTgt, z},
+        CamKey{b.centerX(), yEye, z + zSide, b.centerX() + (x1 - x0) * 0.15f, yTgt, z},
+        CamKey{x1, yEye * 1.05f, z, x0, yTgt, z},
+        CamKey{b.centerX(), b.minY + (b.maxY - b.minY) * 0.42f, z - zSide,
+              b.centerX(), yTgt, z},
+        CamKey{x0, yEye, z, x1, yTgt, z},
     };
 }
 
@@ -656,10 +768,10 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
 void expectLightingResponse(const std::vector<float> &L) {
     REQUIRE(L.size() >= 5);
     // Directional lit should brighten vs ambient-only.
-    CHECK(L[1] > L[0] + 0.01f);
+    REQUIRE(L[1] > L[0] + 0.01f);
     // Multi-point and IBL should produce non-black frames.
-    CHECK(L[3] > 0.02f);
-    CHECK(L[4] > 0.02f);
+    REQUIRE(L[3] > 0.02f);
+    REQUIRE(L[4] > 0.02f);
 }
 
 }  // namespace
@@ -678,9 +790,8 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     REQUIRE(md != nullptr);
 
     SceneActors actors;
-    actors.bounds = boundsOf(md);
-    REQUIRE(actors.bounds.valid);
     REQUIRE(spawnModel(gfx, md, dir, actors, 0.02f, 0.75f) >= 1);
+    REQUIRE(actors.bounds.valid);
 
     actors.cam = Camera3D::createCamera();
     actors.cam->data()->nearZ = 0.05f;
@@ -721,7 +832,7 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
 
     SceneActors actors;
     spawnMetalRoughnessChart(gfx, actors);
-    REQUIRE(actors.ents.size() == 16);
+    REQUIRE(actors.ents.size() == 17);  // 16 spheres + ground
     REQUIRE(actors.bounds.valid);
 
     actors.cam = Camera3D::createCamera();
@@ -730,7 +841,7 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     actors.env = makeStudioCubemap(gfx);
     setupLights(actors, actors.bounds);
 
-    auto path = makeOrbitPath(actors.bounds, 0.15f, 2.4f);
+    auto path = makeOrbitPath(actors.bounds, 0.55f, 1.9f);
     auto L = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
     expectLightingResponse(L);
 
@@ -761,9 +872,16 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     REQUIRE(md->getMeshCount() >= 10);
 
     SceneActors actors;
-    actors.bounds = boundsOf(md);
+    int texLoaded = 0;
+    REQUIRE(spawnModel(gfx, md, dir, actors, 0.02f, 0.7f, &texLoaded,
+                       /*useMaterialPbrFactors=*/false) >= 10);
     REQUIRE(actors.bounds.valid);
-    REQUIRE(spawnModel(gfx, md, dir, actors, 0.05f, 0.65f) >= 10);
+    std::printf(
+        "ClassicScenes[sponza] bounds center=(%.2f,%.2f,%.2f) radius=%.2f meshes=%zu textures=%d\n",
+        actors.bounds.centerX(), actors.bounds.centerY(), actors.bounds.centerZ(),
+        actors.bounds.radius(), actors.ents.size(), texLoaded);
+    // Ensure we actually bound albedo maps — otherwise the atrium stays pitch black.
+    REQUIRE(texLoaded >= 5);
 
     actors.cam = Camera3D::createCamera();
     const float rad = std::max(1.f, actors.bounds.radius());
@@ -771,7 +889,12 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     actors.cam->data()->farZ = std::max(200.f, rad * 25.f);
     actors.env = makeStudioCubemap(gfx);
     setupLights(actors, actors.bounds);
-    actors.sun->setDirection(0.35f, 1.f, 0.15f);
+    actors.sun->setDirection(0.25f, 1.f, 0.2f);
+    actors.sun->setColor(1.f, 0.98f, 0.94f, 6.f);
+    actors.pointA->setColor(1.f, 0.75f, 0.45f, 18.f);
+    actors.pointA->setRadius(rad * 1.2f);
+    actors.pointB->setColor(0.45f, 0.65f, 1.f, 16.f);
+    actors.pointB->setRadius(rad * 1.2f);
 
     auto path = makeSponzaPath(actors.bounds);
     auto L = flyThroughConfigs(gfx, actors, path, "sponza", /*polishMetalsForIbl=*/false,
@@ -779,8 +902,8 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     expectLightingResponse(L);
 
     // Shadows should not black out the whole atrium vs plain directional.
-    CHECK(L[2] > 0.02f);
-    CHECK(std::abs(L[2] - L[1]) < 0.45f);
+    REQUIRE(L[2] > 0.02f);
+    REQUIRE(std::abs(L[2] - L[1]) < 0.45f);
 
     delete md;
     win->close();
@@ -805,9 +928,8 @@ TEST_CASE("ClassicScenes.damagedHelmet.flythroughConfigs") {
     REQUIRE(md != nullptr);
 
     SceneActors actors;
-    actors.bounds = boundsOf(md);
-    REQUIRE(actors.bounds.valid);
     REQUIRE(spawnModel(gfx, md, dir, actors, 0.9f, 0.35f) >= 1);
+    REQUIRE(actors.bounds.valid);
 
     actors.cam = Camera3D::createCamera();
     actors.cam->data()->nearZ = 0.05f;

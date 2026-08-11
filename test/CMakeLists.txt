@@ -130,6 +130,11 @@ elseif(UNIX)
     wayland-client wayland-cursor wayland-egl xkbcommon
     asound
   )
+  # OpenAL Soft may compile the sndio backend when libsndio-dev is present.
+  find_library(EVENGINE_SNDIO_LIBRARY sndio)
+  if(EVENGINE_SNDIO_LIBRARY)
+    list(APPEND SystemLibraries sndio)
+  endif()
 endif()
 
 # Windows lib names must match local + CI third-party install (md/mdd postfixes).
