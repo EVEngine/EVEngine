@@ -264,7 +264,7 @@ bool Renderable3D::getCastOcclusion() { return meshRenderer()->castOcclusion; }
 void Renderable3D::setCamera(Camera3D *camera) { meshRenderer()->camera = camera; }
 
 void Renderable3D::setMeshLod(int index, Mesh *mesh, float switchDistance) {
-    auto *mr = meshRenderer();
+    auto mr = meshRenderer();
     if (index < 0 || index >= MeshRenderer::kMaxLodLevels) return;
     mr->lodMeshes[index] = mesh;
     if (index > 0) mr->lodDistances[index - 1] = switchDistance;
@@ -278,7 +278,7 @@ void Renderable3D::setMeshLod(int index, Mesh *mesh, float switchDistance) {
 }
 
 void Renderable3D::clearMeshLod() {
-    auto *mr = meshRenderer();
+    auto mr = meshRenderer();
     mr->lodCount = 0;
     for (int i = 0; i < MeshRenderer::kMaxLodLevels; ++i) mr->lodMeshes[i] = nullptr;
 }

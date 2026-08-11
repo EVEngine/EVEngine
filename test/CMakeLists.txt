@@ -128,7 +128,7 @@ elseif(UNIX)
     dl pthread m rt bz2 png
     X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
     wayland-client wayland-cursor wayland-egl xkbcommon
-    asound
+    asound sndio
   )
 endif()
 

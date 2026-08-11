@@ -13,9 +13,9 @@ enum class FilterMode {
     Linear,
 };
 
-/** Mipmap filter; None disables mip sampling (maxLod clamped to 0). */
+/** Mipmap filter; Disabled turns off mip sampling (maxLod clamped to 0). */
 enum class MipmapMode {
-    None,
+    Disabled,
     Nearest,
     Linear,
 };
@@ -27,7 +27,7 @@ enum class MipmapMode {
 struct TextureSampler {
     FilterMode min = FilterMode::Linear;
     FilterMode mag = FilterMode::Linear;
-    MipmapMode mipmap = MipmapMode::None;
+    MipmapMode mipmap = MipmapMode::Disabled;
     bool repeatU = false;
     bool repeatV = false;
     bool repeatW = false;
@@ -42,7 +42,7 @@ struct TextureSampler {
         TextureSampler s;
         s.min = FilterMode::Nearest;
         s.mag = FilterMode::Nearest;
-        s.mipmap = MipmapMode::None;
+        s.mipmap = MipmapMode::Disabled;
         return s;
     }
 
@@ -50,7 +50,7 @@ struct TextureSampler {
         TextureSampler s;
         s.min = FilterMode::Linear;
         s.mag = FilterMode::Linear;
-        s.mipmap = MipmapMode::None;
+        s.mipmap = MipmapMode::Disabled;
         return s;
     }
 
@@ -76,7 +76,7 @@ struct TextureSampler {
     }
 
     static MipmapMode parseMipmap(const std::string &name) {
-        if (name == "none" || name == "None" || name == "NONE" || name.empty()) return MipmapMode::None;
+        if (name == "none" || name == "None" || name == "NONE" || name.empty()) return MipmapMode::Disabled;
         if (name == "nearest" || name == "Nearest" || name == "NEAREST") return MipmapMode::Nearest;
         return MipmapMode::Linear;
     }
@@ -87,7 +87,7 @@ struct TextureSampler {
 
     static const char *mipmapName(MipmapMode m) {
         switch (m) {
-        case MipmapMode::None:
+        case MipmapMode::Disabled:
             return "none";
         case MipmapMode::Nearest:
             return "nearest";
@@ -99,7 +99,7 @@ struct TextureSampler {
 
 /**
  * Options for Graphics::newTexture / newCubemap.
- * When generateMipmaps is true and sampler.mipmap is None, mipmap mode becomes Linear.
+ * When generateMipmaps is true and sampler.mipmap is Disabled, mipmap mode becomes Linear.
  */
 struct TextureCreateInfo {
     TextureSampler sampler{};

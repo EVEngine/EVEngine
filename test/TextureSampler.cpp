@@ -57,11 +57,16 @@ TEST_CASE("TextureSampler.mipmapCountForSize") {
 }
 
 TEST_CASE("TextureSampler.parseFilterAndMipmap") {
-    CHECK(TextureSampler::parseFilter("nearest") == FilterMode::Nearest);
-    CHECK(TextureSampler::parseFilter("linear") == FilterMode::Linear);
-    CHECK(TextureSampler::parseMipmap("none") == MipmapMode::None);
-    CHECK(TextureSampler::parseMipmap("linear") == MipmapMode::Linear);
-    CHECK(TextureSampler::parseMipmap("nearest") == MipmapMode::Nearest);
+    CHECK_EQ(static_cast<int>(TextureSampler::parseFilter("nearest")),
+             static_cast<int>(FilterMode::Nearest));
+    CHECK_EQ(static_cast<int>(TextureSampler::parseFilter("linear")),
+             static_cast<int>(FilterMode::Linear));
+    CHECK_EQ(static_cast<int>(TextureSampler::parseMipmap("none")),
+             static_cast<int>(MipmapMode::Disabled));
+    CHECK_EQ(static_cast<int>(TextureSampler::parseMipmap("linear")),
+             static_cast<int>(MipmapMode::Linear));
+    CHECK_EQ(static_cast<int>(TextureSampler::parseMipmap("nearest")),
+             static_cast<int>(MipmapMode::Nearest));
 }
 
 TEST_CASE("GraphicsSmoke.textureMipmapsAndAnisotropy") {
@@ -72,7 +77,7 @@ TEST_CASE("GraphicsSmoke.textureMipmapsAndAnisotropy") {
     Texture *tex = fx.gfx->newTexture(64, 64, px.data(), info);
     REQUIRE(tex != nullptr);
     CHECK_EQ(tex->getMipmapCount(), mipmapCountForSize(64, 64));
-    CHECK(tex->getSampler().mipmap == MipmapMode::Linear);
+    CHECK_EQ(static_cast<int>(tex->getSampler().mipmap), static_cast<int>(MipmapMode::Linear));
     CHECK(tex->getSampler().maxAnisotropy >= 8.f - 1e-3f);
 
     const float deviceMax = fx.gfx->getMaxAnisotropy();
@@ -80,8 +85,8 @@ TEST_CASE("GraphicsSmoke.textureMipmapsAndAnisotropy") {
 
     // Nearest pixel-art style sampler without rebuilding image.
     fx.gfx->setTextureSampler(tex, TextureSampler::nearest());
-    CHECK(tex->getSampler().min == FilterMode::Nearest);
-    CHECK(tex->getSampler().mag == FilterMode::Nearest);
+    CHECK_EQ(static_cast<int>(tex->getSampler().min), static_cast<int>(FilterMode::Nearest));
+    CHECK_EQ(static_cast<int>(tex->getSampler().mag), static_cast<int>(FilterMode::Nearest));
 
     // Draw once to exercise descriptor rewrite path.
     fx.gfx->setBackgroundColor(Color(0.05f, 0.05f, 0.08f, 1.f));
@@ -97,7 +102,7 @@ TEST_CASE("GraphicsSmoke.cubemapGeneratesMipChain") {
     Texture *cube = fx.gfx->newCubemap(face, faces.data());
     REQUIRE(cube != nullptr);
     CHECK_EQ(cube->getMipmapCount(), mipmapCountForSize(face, face));
-    CHECK(cube->getSampler().mipmap == MipmapMode::Linear);
+    CHECK_EQ(static_cast<int>(cube->getSampler().mipmap), static_cast<int>(MipmapMode::Linear));
 }
 
 TEST_CASE("Renderable3D.meshLodSelectsByDistance") {
@@ -120,7 +125,7 @@ TEST_CASE("Renderable3D.meshLodSelectsByDistance") {
     CHECK_EQ(ent->getMeshLodLevelAtDistance(50.f), 2);
     CHECK_EQ(ent->getMeshLodLevelAtDistance(999.f), 2);
 
-    auto *mr = ent->meshRenderer();
+    auto mr = ent->meshRenderer();
     CHECK(mr->meshForDistance(5.f) == hi);
     CHECK(mr->meshForDistance(25.f) == mid);
     CHECK(mr->meshForDistance(80.f) == lo);

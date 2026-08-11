@@ -343,7 +343,7 @@ Texture *Graphics::newTextureWithSampler(image::ImageData *data, bool repeatU, b
     info.sampler.min = TextureSampler::parseFilter(filter);
     info.sampler.mag = info.sampler.min;
     info.sampler.mipmap = TextureSampler::parseMipmap(mipmap);
-    if (generateMipmaps && info.sampler.mipmap == MipmapMode::None)
+    if (generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
         info.sampler.mipmap = MipmapMode::Linear;
     info.sampler.repeatU = repeatU;
     info.sampler.repeatV = repeatV;

@@ -1368,7 +1368,7 @@ std::vector<uint8_t> buildMipChainCube(const uint8_t *rgbaFaces, uint32_t faceSi
 }
 
 TextureCreateInfo normalizeTextureInfo(TextureCreateInfo info) {
-    if (info.generateMipmaps && info.sampler.mipmap == MipmapMode::None)
+    if (info.generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
         info.sampler.mipmap = MipmapMode::Linear;
     if (info.sampler.maxAnisotropy < 1.f) info.sampler.maxAnisotropy = 1.f;
     return info;
@@ -1390,7 +1390,7 @@ vk::Sampler Graphics::createVkSampler(const TextureSampler &sampler, uint32_t mi
                                         : vk::SamplerMipmapMode::eLinear;
     };
 
-    const bool useMips = sampler.mipmap != MipmapMode::None && mipLevels > 1;
+    const bool useMips = sampler.mipmap != MipmapMode::Disabled && mipLevels > 1;
     float maxLod = useMips ? std::min(sampler.maxLod, float(mipLevels - 1)) : 0.f;
     if (maxLod < sampler.minLod) maxLod = sampler.minLod;
 

@@ -79,11 +79,12 @@ elseif(APPLE)
     )
 elseif(UNIX)
     # Static SDL2 pulls Wayland/X11 extras; FreeType needs bz2/png.
+    # OpenAL (third-party) may reference sndio backends on Linux.
     set(SystemLibraries ${SystemLibraries}
         dl pthread m rt bz2 png
         X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
         wayland-client wayland-cursor wayland-egl xkbcommon
-        asound
+        asound sndio
     )
 endif()
 
