@@ -23,7 +23,20 @@ ui.mountBuildAs("hud");
 
 ### 创建可交互 HUD
 
-`beginBuild()` 后用 Window/Group/List 组织控件，给每个交互控件稳定 ID，完成后 `mountBuildAs("hud")`。更新阶段循环 `consumeClick()` / `consumeChange()`，渲染阶段调用 `beginFrameAndRender()`。
+`beginBuild()` 后用 Window/Flex/Group/List 组织控件，给每个交互控件稳定 ID，完成后 `mountBuildAs("hud")`。更新阶段循环 `consumeClick()` / `consumeChange()`，渲染阶段调用 `beginFrameAndRender()`。
+
+### 使用弹性布局（Flex）
+
+`beginRow` / `beginColumn` / `beginFlex("row"|"column", id, gap)` 自动排列子控件，无需手写 `sameLine`。`spacer()` 吸收剩余空间；`setItemFlexGrow` / `setItemSize` 作用在刚添加的子项上；`setFlexAlign` / `setFlexJustify` 配置当前 Flex 容器。
+
+```squirrel
+ui.beginRow("toolbar", 8.0);
+ui.setFlexJustify("space-between");
+ui.button("Save", "save");
+ui.spacer("sp");
+ui.button("Quit", "quit");
+ui.end();
+```
 
 ### 更新而不重建整个 UI
 
@@ -43,12 +56,12 @@ ui.mountBuildAs("hud");
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginWindow()`、`bindOwner()`
+- `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginRow()`、`beginWindow()`、`bindOwner()`
 - `button()`、`checkbox()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
 - `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
 - `mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`select()`、`separator()`、`setChecked()`
-- `setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPos()`、`setHostVisible()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`text()`、`wantCaptureKeyboard()`
+- `setFlexAlign()`、`setFlexJustify()`、`setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPos()`、`setHostVisible()`、`setItemFlexGrow()`、`setItemSize()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`text()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`
 
 ## 使用要点
