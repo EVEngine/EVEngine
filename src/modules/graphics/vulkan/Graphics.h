@@ -113,6 +113,8 @@ struct GpuTexture {
     vk::DescriptorSet descriptorSet;
     int width = 0;
     int height = 0;
+    uint32_t mipLevels = 1;
+    TextureSampler samplerState{};
 
     vk::ImageView imageView() const {
         return isCube ? cubeImage.imageView() : image.imageView();
@@ -146,8 +148,15 @@ public:
     void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                         bool repeatV = false) override;
+    Texture *newTexture(int width, int height, const uint8_t *rgba,
+                        const TextureCreateInfo &info) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
+    Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
+                        const TextureCreateInfo &info) override;
     Texture *newTexture(image::ImageData *data) override;
+    Texture *newTexture(image::ImageData *data, const TextureCreateInfo &info) override;
+    void setTextureSampler(Texture *texture, const TextureSampler &sampler) override;
+    float getMaxAnisotropy() const override;
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
     bool replaceTexturePixels(Texture *tex, image::ImageData *data);
@@ -257,6 +266,8 @@ private:
                                    size_t uboSlot);
     void ensureDefaultEnvCubemap();
     void ensureFlatNormalTexture3D();
+    vk::Sampler createVkSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
+    void writeCombinedImageDescriptor(GpuTexture *gpu);
     /** Rebuild surface/swapchain when dirty. Returns false if surface not ready. */
     bool rebuildSwapchainIfNeeded();
     /** acquire + begin command buffer; recreates swapchain and retries on failure. */
@@ -264,6 +275,7 @@ private:
 
     bool initialized = false;
     bool hasPresentedFrame = false;
+    float maxSamplerAnisotropy = 1.f;
     std::vector<uint8_t> lastFrameRgba;
     Canvas *activeCanvas = nullptr;
     bool swapchainDirty = false;

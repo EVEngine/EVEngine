@@ -2,6 +2,7 @@
 
 #include "graphics/Drawable.h"
 #include "graphics/Quad.h"
+#include "graphics/TextureSampler.h"
 #include <cstdint>
 #include <vector>
 
@@ -26,6 +27,8 @@ public:
     int getHeight() const { return height; }
     int getPixelWidth() const { return pixelWidth; }
     int getPixelHeight() const { return pixelHeight; }
+    int getMipmapCount() const { return mipmapCount; }
+    const TextureSampler &getSampler() const { return sampler; }
 
     /** Backend-private GPU object (vulkan::GpuTexture*). */
     void *gpuHandle = nullptr;
@@ -37,6 +40,7 @@ public:
     int mipmapCount = 1;
     int pixelWidth = 0;
     int pixelHeight = 0;
+    TextureSampler sampler{};
 };
 
 }  // namespace eve::graphics
