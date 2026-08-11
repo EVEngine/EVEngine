@@ -11,6 +11,7 @@
 #include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include <vector>
 #include <optional>
@@ -328,6 +329,12 @@ virtual void begin3DFrame() = 0;
      * its Shaders are owned by Graphics.
      */
     Volumetric *newVolumetric();
+
+    /**
+     * Classic image-space AA (FXAA / SMAA / SSAA / NFAA). Caller owns AntiAliasing*;
+     * its Shaders are owned by Graphics.
+     */
+    AntiAliasing *newAntiAliasing();
 
     void draw(Drawable *drawable, const glm::mat4 &m);
 

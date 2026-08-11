@@ -34,7 +34,18 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - **raymarch**：`setMode("raymarch")` + `setCamera` + 线性深度 → `rayMarch`
 - **fog**：`setMode("fog")` + `setFogHeight*` / `setFogStart`/`End` + 线性深度 → `applyFog`（雾色 alpha 叠加场景）
 
-细节见 [`体积光模块设计.md`](../体积光模块设计.md)。
+细节见 [`体积光模块设计.md`](../../dev/体积光模块设计.md)。
+
+### 经典抗锯齿（FXAA / SMAA / SSAA / NFAA）
+
+`aa <- gfx.newAntiAliasing()`。`setQuality("low"|"medium"|"high")` 调整阈值与搜索；`setMode` 选择算法：
+
+- **fxaa**：FXAA 3.11 风格亮度边搜索
+- **smaa**：SMAA 启发的单 Pass 形态学 AA
+- **ssaa**：超采样 Resolve（先画到 `resolutionFor` 尺寸的 Canvas）
+- **nfaa**：沿亮度梯度切向的 Normal Filter AA
+
+典型流程：场景 → Canvas → `aa.applyCanvas` / `applyCanvasTo` → 屏幕。细节见 [`抗锯齿模块设计.md`](../../dev/抗锯齿模块设计.md)。
 
 ### 2D 屏幕拾取
 
@@ -61,7 +72,7 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`newVolumetric()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`newTexture()`、`newVolumetric()`、`newAntiAliasing()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setPosition()`、`setRadius()`
@@ -69,6 +80,7 @@ gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);
 - `setTarget()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
+- `AntiAliasing`：`setQuality`、`setMode`、`apply`、`applyTo`、`applyCanvas`、`applyCanvasTo`、`suggestScale`、`resolutionFor`、`setFloat`、`getFloat` 等
 
 ## 使用要点
 
