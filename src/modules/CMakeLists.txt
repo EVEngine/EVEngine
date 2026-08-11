@@ -70,6 +70,14 @@ target_compile_definitions(EVParticles PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS
 create_module(EVPhysics physics)
 # Box2D headers use <Box2D/Common/...>; prefer source tree over flattened install.
 target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
+# Box3D (Erin Catto) — 3D rigid bodies; submodule under external/box3d.
+set(BOX3D_SAMPLES OFF CACHE BOOL "" FORCE)
+set(BOX3D_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BOX3D_BENCHMARKS OFF CACHE BOOL "" FORCE)
+set(BOX3D_DOCS OFF CACHE BOOL "" FORCE)
+set(BOX3D_VALIDATE OFF CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/box3d ${CMAKE_BINARY_DIR}/external/box3d)
+target_link_libraries(EVPhysics PUBLIC box3d::box3d)
 create_module(EVMap map)
 target_compile_definitions(EVMap PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVGpgpu gpgpu)

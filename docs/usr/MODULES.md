@@ -30,7 +30,7 @@
 ## 游戏玩法
 
 - [脚本 ECS](modules/entity.md)：通过 Component、Entity 和 System 声明数据组合与批量更新逻辑。
-- [Box2D 物理](modules/physics.md)：创建 World、Body 和 Fixture；脚本使用像素坐标，引擎内部换算为米；支持接触事件与 `rayCast` / `queryAABB` / `testPoint` 拾取查询。
+- [物理（Box2D / Box3D）](modules/physics.md)：2D World/Body/Fixture（像素坐标 + meter）与 3D World3D/Body3D/Shape3D（米）；接触事件与 `rayCast` / `queryAABB` / `testPoint` 拾取查询。
 - [Tilemap](modules/map.md)：创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染。
 - [粒子](modules/particles.md)：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。
 - [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、以及控制论程序动画（`ControlAnim` / `ControlPose`）。

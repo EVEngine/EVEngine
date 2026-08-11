@@ -37,7 +37,7 @@
 | Thread | `src/modules/thread/Thread.cpp`、`ThreadPool.cpp` | `test/thread.cpp` | 明确 worker 禁止访问 VM/GPU/UI，主线程消费 Channel |
 | Plugins | `src/modules/plugins/Plugins.cpp` | `examples/native-plugin/` | 补充 ABI、平台扩展名与依赖库排错 |
 | Entity | `src/modules/entity/EntityModule.cpp` | `examples/ecs/main.nut`、`test/ECS.cpp` | 说明 Component/Entity/System 分工和系统顺序 |
-| Physics | `src/modules/physics/Physics.cpp`、`World.cpp` | `examples/basic/main.nut`、`test/box2d.cpp` | 确认像素/米、Body 中心、Fixture sensor、每帧 update，以及 rayCast/queryAABB/testPoint |
+| Physics | `src/modules/physics/Physics.cpp`、`World.cpp`、`World3D.cpp` | `examples/basic/main.nut`、`test/box2d.cpp`、`test/box3d.cpp` | 确认 2D 像素/米与 3D 米制、Body 中心、sensor、每帧 update，以及 rayCast/queryAABB/testPoint |
 | Map | `src/modules/map/Map.cpp` | `examples/basic/maps/`、`test/map.cpp` | 补充 GID、投影坐标、运行时修改和 JSON 热更 |
 | Particles | `src/modules/particles/Particles.cpp` | `examples/basic/particles/`、`test/particles.cpp` | 补充容量、生命周期、模块统一 update/render |
 | Animation | `src/modules/animation/Animation.cpp`、`Tween.cpp` | `test/animation.cpp` | 说明 Tween 只算值，游戏负责写回属性 |
