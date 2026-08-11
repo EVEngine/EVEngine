@@ -191,6 +191,16 @@ virtual void begin3DFrame() = 0;
     virtual void setMesh3DCameraPos(const glm::vec3 &eye) = 0;
 
     /**
+     * Instanced voxel face rectangles (32-bit packed instances).
+     * faceDir: "posX"|"negX"|"posY"|"negY"|"posZ"|"negZ" (also "+x"/"-x"/…).
+     * Requires begin3DFrame(); uses viewProj from setMesh3DViewProj.
+     * atlas may be null → white; tilesPerRow subdivides atlas for texture indices.
+     */
+    virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
+                                        float originY, float originZ, const std::string &faceDir,
+                                        Texture *atlas, int tilesPerRow = 16) = 0;
+
+    /**
      * Specular IBL environment for subsequent default mesh draws.
      * cube must be from newCubemap (or nullptr → black / intensity 0).
      * intensity is packed into Mesh3DUBO lightColor.w.

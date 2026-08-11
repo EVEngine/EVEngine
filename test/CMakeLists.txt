@@ -41,6 +41,7 @@ file(GLOB all_test_cpp
   dialogue.cpp
   procgen.cpp
   stylize.cpp
+  voxel.cpp
   gpgpu.cpp
   box2d.cpp
   hotreload.cpp
@@ -214,6 +215,7 @@ set(EVELIBS
   EVAvatar
   EVDialogue
   EVProcgen
+  EVVoxel
   EVStylize)
 
 if(EVENGINE_BUILD_DEMO)
