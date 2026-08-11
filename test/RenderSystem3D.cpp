@@ -438,6 +438,90 @@ TEST_CASE("Lighting3D.metallicIncreasesSpecularHighlight") {
     win->close();
 }
 
+TEST_CASE("RenderSystem3D.texCellBombChangesPixels") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 160, 120);
+    resetScene3D();
+
+    // Plane-like cube face with heavily tiled UVs so repetition is visible.
+    static const char kTiledFront[] =
+        "v -1 -1 0\n"
+        "v  1 -1 0\n"
+        "v  1  1 0\n"
+        "v -1  1 0\n"
+        "vt 0 0\n"
+        "vt 8 0\n"
+        "vt 8 8\n"
+        "vt 0 8\n"
+        "vn 0 0 1\n"
+        "f 1/1/1 2/2/1 3/3/1\n"
+        "f 1/1/1 3/3/1 4/4/1\n";
+    medialoader::ModelLoader loader;
+    auto scene = loader.loadFromMemory(kTiledFront, sizeof(kTiledFront) - 1, ".obj");
+    REQUIRE(!scene.empty());
+    Mesh *mesh = gfx->newMeshFromAssimp(*scene->mMeshes[0]);
+    REQUIRE(mesh != nullptr);
+
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeZ = 3.f;
+
+    auto *ent = Renderable3D::create();
+    ent->meshRenderer()->mesh = mesh;
+    ent->meshRenderer()->texture = makeChecker(gfx, 32, 4);
+    ent->setMetallic(0.f);
+    ent->setRoughness(0.6f);
+
+    auto *hud = Renderable2D::create();
+    hud->transform()->x = 0;
+    hud->transform()->y = 0;
+    hud->sprite()->width = 2;
+    hud->sprite()->height = 2;
+    hud->sprite()->r = 0.f;
+    hud->sprite()->g = 0.f;
+    hud->sprite()->b = 0.f;
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
+
+    auto capture = [&](std::vector<float> &out) {
+        out.clear();
+        for (int i = 0; i < 3; ++i) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        const int w = gfx->getWidth();
+        const int h = gfx->getHeight();
+        // Sparse grid across the face.
+        for (int y = h / 5; y < h * 4 / 5; y += h / 10) {
+            for (int x = w / 5; x < w * 4 / 5; x += w / 10) {
+                Color c = gfx->getPixel(x, y);
+                out.push_back(luma(c));
+            }
+        }
+    };
+
+    std::vector<float> off, on;
+    ent->setTexCellBomb(4.f, 0.f, 1.f);
+    CHECK_EQ(ent->getTexCellBombStrength(), 0.f);
+    capture(off);
+
+    ent->setTexCellBomb(4.f, 1.f, 1.f);
+    CHECK_EQ(ent->getTexCellBombScale(), 4.f);
+    CHECK_EQ(ent->getTexCellBombStrength(), 1.f);
+    capture(on);
+
+    REQUIRE_EQ(off.size(), on.size());
+    REQUIRE_GT(off.size(), 4u);
+    float mad = 0.f;
+    for (size_t i = 0; i < off.size(); ++i)
+        mad = std::max(mad, std::fabs(off[i] - on[i]));
+    // Bombing must visibly change the tiled checker under the same lighting.
+    REQUIRE(mad > 0.02f);
+
+    win->close();
+}
+
 TEST_CASE("Camera3D.screenToRayPick") {
     auto *cam = Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 5.f);

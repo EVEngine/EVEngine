@@ -177,6 +177,10 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setTint", &Renderable3D::setTint);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
     ent.addFunc("setRoughness", &Renderable3D::setRoughness);
+    ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);
+    ent.addFunc("getTexCellBombScale", &Renderable3D::getTexCellBombScale);
+    ent.addFunc("getTexCellBombStrength", &Renderable3D::getTexCellBombStrength);
+    ent.addFunc("getTexCellBombRotation", &Renderable3D::getTexCellBombRotation);
     ent.addFunc("setVisible", &Renderable3D::setVisible);
     ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
     ent.addFunc("setCastShadow", &Renderable3D::setCastShadow);
