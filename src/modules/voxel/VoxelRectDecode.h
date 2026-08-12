@@ -108,4 +108,18 @@ inline bool decodedWindingMatchesNormal(const DecodedRect &q) {
     return cx * q.normal[0] + cy * q.normal[1] + cz * q.normal[2] > 0.f;
 }
 
+/** True when the second GPU triangle (0,3,2) also matches the outward normal. */
+inline bool decodedSecondTriangleMatchesNormal(const DecodedRect &q) {
+    const float e1x = q.corners[3][0] - q.corners[0][0];
+    const float e1y = q.corners[3][1] - q.corners[0][1];
+    const float e1z = q.corners[3][2] - q.corners[0][2];
+    const float e2x = q.corners[2][0] - q.corners[0][0];
+    const float e2y = q.corners[2][1] - q.corners[0][1];
+    const float e2z = q.corners[2][2] - q.corners[0][2];
+    const float cx = e1y * e2z - e1z * e2y;
+    const float cy = e1z * e2x - e1x * e2z;
+    const float cz = e1x * e2y - e1y * e2x;
+    return cx * q.normal[0] + cy * q.normal[1] + cz * q.normal[2] > 0.f;
+}
+
 }  // namespace eve::voxel
