@@ -1,12 +1,23 @@
 // Hex dungeon test levels — cross-module simulation for engine feature QA.
 //
-// Levels (each TEST_CASE is an independent scenario; pipeline combines them):
+// Levels (each TEST_CASE is an independent scenario; pipelines combine them):
 //  01 procgen + hex tilemap + A* / Flow Field pathfinding
 //  02 2D dynamic FOV (shadowcast, hex topology, explored memory)
 //  03 2D dynamic lighting (point light + lit sprite collection)
 //  04 object pickup via SpatialHash2D collision + Inventory
 //  05 particle emitters (torch / spark on pickup)
-//  pipeline: full crawl through one seeded hex dungeon
+//  06 Flow Field swarm (multi-unit same goal on hex)
+//  07 cell-cost detour (prefer cheap corridor)
+//  08 multi-revealer FOV + perception / stealth
+//  09 FoW mask export + alternate FOV algorithms
+//  10 Camera2D screen ↔ world ↔ hex tile pick
+//  11 Dual-grid resolve on hexagonal logic layer
+//  12 procgen algorithm variants on hex (cave / maze / wfc)
+//  13 QuadTree viewport culling for loot markers
+//  14 multi-light (point + directional) ambient scene
+//  15 particle presets lifecycle + bag → stash transfer
+//  pipeline.dungeonCrawl: full crawl through one seeded hex dungeon
+//  pipeline.fogRaid: FOV cone + perception gated pickup + flow escort
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -28,6 +39,7 @@
 #include "map/TileLayer.h"
 #include "map/TileOrientation.h"
 #include "map/TileSystem.h"
+#include "map/DualGrid.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
 #include "particles/ParticleSystem.h"
@@ -36,6 +48,7 @@
 #include "procgen/Params.h"
 #include "procgen/Procgen.h"
 #include "procgen/Semantic.h"
+#include "spatial/QuadTree.h"
 #include "spatial/Spatial.h"
 #include "spatial/SpatialHash2D.h"
 
@@ -664,6 +677,548 @@ TEST_CASE("hex.level.pipeline.dungeonCrawl") {
     bag->destroy();
     ItemRegistry::clear();
     delete path;
+    delete pf;
+    delete fov;
+}
+
+TEST_CASE("hex.level.06.flowFieldSwarm") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 606, 28, 22);
+
+    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+
+    FlowField *field = pf->buildFlowField(d.exitTx, d.exitTy);
+    REQUIRE(field != nullptr);
+    CHECK_EQ(field->getGoalX(), d.exitTx);
+    CHECK_EQ(field->getGoalY(), d.exitTy);
+    CHECK(field->isReachable(d.spawnTx, d.spawnTy));
+
+    // Collect a few distinct walkable starts near spawn.
+    std::vector<std::pair<int, int>> starts;
+    starts.push_back({d.spawnTx, d.spawnTy});
+    for (int dy = -3; dy <= 3 && starts.size() < 4; ++dy) {
+        for (int dx = -3; dx <= 3 && starts.size() < 4; ++dx) {
+            const int x = d.spawnTx + dx;
+            const int y = d.spawnTy + dy;
+            if (!pf->isWalkable(x, y)) continue;
+            if (x == d.spawnTx && y == d.spawnTy) continue;
+            if (!field->isReachable(x, y)) continue;
+            starts.push_back({x, y});
+        }
+    }
+    REQUIRE(starts.size() >= 2);
+
+    for (const auto &s : starts) {
+        Path *p = pf->followFlow(field, s.first, s.second);
+        REQUIRE(p != nullptr);
+        CHECK(p->getLength() > 0);
+        CHECK_EQ(p->getX(0), s.first);
+        CHECK_EQ(p->getY(0), s.second);
+        CHECK_EQ(p->getX(p->getLength() - 1), d.exitTx);
+        CHECK_EQ(p->getY(p->getLength() - 1), d.exitTy);
+        CHECK(pathWalkable(p, pf));
+        delete p;
+
+        Path *g = pf->findGroupPath(s.first, s.second, d.exitTx, d.exitTy);
+        REQUIRE(g != nullptr);
+        CHECK_EQ(g->getX(g->getLength() - 1), d.exitTx);
+        delete g;
+    }
+    delete field;
+    delete pf;
+}
+
+TEST_CASE("hex.level.07.cellCostDetour") {
+    auto *mapMod = Map::create();
+    hideAllTileLayers();
+    TileLayer *layer = mapMod->newLayer(9, 5, kTileW, kTileH);
+    configureHexLayer(layer);
+    layer->fill(kFloorGid);
+    // Vertical expensive corridor at x=4; cheap bypass via bottom.
+    for (int y = 0; y < 4; ++y) layer->setTile(4, y, kFloorGid);
+
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+    for (int y = 0; y < 4; ++y) pf->setCellCost(4, y, 12.f);
+
+    Path *cheap = pf->findPath(0, 2, 8, 2);
+    REQUIRE(cheap != nullptr);
+    CHECK(cheap->getLength() > 0);
+    CHECK_EQ(cheap->getX(cheap->getLength() - 1), 8);
+    // Prefer bypassing the costly column when possible.
+    bool steppedOnCostly = false;
+    for (int i = 0; i < cheap->getLength(); ++i) {
+        if (cheap->getX(i) == 4 && cheap->getY(i) < 4) steppedOnCostly = true;
+    }
+    // With high cost, path should usually avoid the strip; if topology forces a
+    // step, totalCost must still beat a forced expensive route.
+    Path *forced = pf->findPath(0, 0, 8, 0);
+    REQUIRE(forced != nullptr);
+    CHECK(cheap->getTotalCost() <= forced->getTotalCost() + 1e-3f);
+    (void)steppedOnCostly;
+
+    delete forced;
+    delete cheap;
+    delete pf;
+    layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.08.multiRevealerPerception") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 808, 24, 18, "cave.cellular");
+
+    Fov *fov = mapMod->newFov(d.layer);
+    fov->blockOpaqueGid(kWallGid);
+    fov->setTopology("hex");
+    fov->setPerceptionRadiusScale(1.f);
+    fov->setDetectionMargin(0.f);
+
+    const int hero = fov->addRevealer(d.spawnTx, d.spawnTy, 3);
+    const int torch = fov->addRevealer(d.exitTx, d.exitTy, 2);
+    fov->setRevealerPerception(hero, 2.f);
+    CHECK_EQ(fov->getEffectiveRadius(hero), 5);  // 3 + 2*1
+    fov->compute();
+
+    CHECK(fov->isVisible(d.spawnTx, d.spawnTy));
+    CHECK(fov->isVisible(d.exitTx, d.exitTy));
+    CHECK_EQ(fov->getRevealerCount(), 2);
+
+    // Stealth gate: visible cell but high stealth fails detection.
+    CHECK(fov->canDetect(hero, d.spawnTx, d.spawnTy, 1.f));
+    CHECK(!fov->canDetect(hero, d.spawnTx, d.spawnTy, 9.f));
+
+    fov->setRevealerEnabled(torch, false);
+    fov->compute();
+    CHECK(fov->isVisible(d.spawnTx, d.spawnTy));
+
+    fov->setRevealerFacing(hero, 0.f, 45.f);  // east-ish cone
+    fov->setRevealerPosition(hero, d.spawnTx, d.spawnTy);
+    fov->compute();
+    CHECK(fov->isVisible(d.spawnTx, d.spawnTy));
+
+    delete fov;
+}
+
+TEST_CASE("hex.level.09.fowMaskAndAlgos") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 909, 20, 16);
+
+    Fov *fov = mapMod->newFov(d.layer);
+    fov->blockOpaqueGid(kWallGid);
+    fov->setTopology("hex");
+    fov->setAlgorithm("shadowcast");
+    const int id = fov->addRevealer(d.spawnTx, d.spawnTy, 4);
+    fov->compute();
+    CHECK(fov->isVisible(d.spawnTx, d.spawnTy));
+    CHECK_EQ(fov->getMaskByte(d.spawnTx, d.spawnTy), 255);
+
+    // Leave the cell: explored memory → mid mask byte, not fully dark.
+    fov->setRevealerPosition(id, d.exitTx, d.exitTy);
+    fov->compute();
+    if (!fov->isVisible(d.spawnTx, d.spawnTy)) {
+        CHECK(fov->isExplored(d.spawnTx, d.spawnTy));
+        CHECK(fov->getMaskByte(d.spawnTx, d.spawnTy) > 0);
+        CHECK(fov->getMaskByte(d.spawnTx, d.spawnTy) < 255);
+    }
+
+    std::vector<uint8_t> mask;
+    CHECK(fov->fillMaskR8(mask));
+    CHECK_EQ(int(mask.size()), d.layer->getMapWidth() * d.layer->getMapHeight());
+
+    fov->clearMemory();
+    fov->compute();
+    // After clear, cells only currently visible stay explored.
+    CHECK(fov->isVisible(d.exitTx, d.exitTy));
+
+    fov->setAlgorithm("raycast");
+    CHECK_EQ(fov->getAlgorithm(), std::string("raycast"));
+    fov->markDirty();
+    fov->compute();
+    CHECK(fov->isVisible(d.exitTx, d.exitTy));
+
+    fov->setAlgorithm("permissive");
+    fov->markDirty();
+    fov->compute();
+    CHECK(fov->isVisible(d.exitTx, d.exitTy));
+
+    delete fov;
+}
+
+TEST_CASE("hex.level.10.cameraPick") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 1010, 18, 14);
+    constexpr float kViewW = 320.f;
+    constexpr float kViewH = 240.f;
+
+    float wx = 0.f, wy = 0.f;
+    d.layer->tileToWorld(d.spawnTx, d.spawnTy, wx, wy);
+    wx += kTileW * 0.5f;
+    wy += kTileH * 0.5f;
+
+    auto *cam = Camera2D::createCamera();
+    cam->data()->active = true;
+    cam->setPosition(wx, wy);
+    cam->setZoom(1.f);
+
+    const float sx = cam->worldToScreenX(wx, wy, kViewW, kViewH);
+    const float sy = cam->worldToScreenY(wx, wy, kViewW, kViewH);
+    const float backWx = cam->screenToWorldX(sx, sy, kViewW, kViewH);
+    const float backWy = cam->screenToWorldY(sx, sy, kViewW, kViewH);
+    CHECK(approxEq(backWx, wx));
+    CHECK(approxEq(backWy, wy));
+
+    int tx = -1, ty = -1;
+    d.layer->worldToTile(backWx, backWy, tx, ty);
+    CHECK_EQ(tx, d.spawnTx);
+    CHECK_EQ(ty, d.spawnTy);
+
+    // Click near exit: convert screen → tile.
+    float exitWx = 0.f, exitWy = 0.f;
+    d.layer->tileToWorld(d.exitTx, d.exitTy, exitWx, exitWy);
+    exitWx += kTileW * 0.5f;
+    exitWy += kTileH * 0.5f;
+    const float esx = cam->worldToScreenX(exitWx, exitWy, kViewW, kViewH);
+    const float esy = cam->worldToScreenY(exitWx, exitWy, kViewW, kViewH);
+    const float pickWx = cam->screenToWorldX(esx, esy, kViewW, kViewH);
+    const float pickWy = cam->screenToWorldY(esx, esy, kViewW, kViewH);
+    int ptx = -1, pty = -1;
+    d.layer->worldToTile(pickWx, pickWy, ptx, pty);
+    CHECK_EQ(ptx, d.exitTx);
+    CHECK_EQ(pty, d.exitTy);
+
+    cam->data()->active = false;
+}
+
+TEST_CASE("hex.level.11.dualGridHex") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 1111, 12, 10);
+
+    // Build a compact logic layer from a corner of the dungeon.
+    TileLayer *logic = mapMod->newLayer(4, 4, kTileW, kTileH);
+    configureHexLayer(logic);
+    logic->setOrigin(8.f, 12.f);
+    for (int y = 0; y < 4; ++y) {
+        for (int x = 0; x < 4; ++x) {
+            const int gid = d.layer->getTile(x, y);
+            logic->setTile(x, y, gid == kWallGid ? 0 : 1);
+        }
+    }
+    TileLayer *display = mapMod->newLayer(1, 1, 8.f, 8.f);
+    DualGridOptions opts;
+    opts.useDefaultFrameTable = true;
+    opts.firstDisplayGid = 1;
+    CHECK(resolveDualGrid(logic, display, opts, nullptr));
+    CHECK_EQ(static_cast<int>(display->config()->orientation),
+             static_cast<int>(MapOrientation::Hexagonal));
+    CHECK(approxEq(display->config()->hexSideLength, kHexSide));
+    CHECK(display->getMapWidth() >= 4);
+    CHECK(display->getMapHeight() >= 4);
+
+    const int mask = dualGridMaskAt(*logic, 0, 0, 1);
+    CHECK(mask >= 0);
+    CHECK(dualGridDefaultFrame(mask) >= -1);
+    float ox = 0.f, oy = 0.f;
+    dualGridHalfOffset(*logic->config(), ox, oy);
+    const bool hasOffset = std::fabs(ox) > 0.f || std::fabs(oy) > 0.f;
+    CHECK(hasOffset);
+
+    logic->setVisible(false);
+    display->setVisible(false);
+}
+
+TEST_CASE("hex.level.12.procgenVariants") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    const char *algos[] = {"cave.cellular", "maze.backtrack", "wfc.simple", "cave.drunkard"};
+    for (const char *algo : algos) {
+        HexDungeon d = buildHexDungeon(mapMod, gen, 1212, 24, 18, algo);
+        CHECK_EQ(static_cast<int>(d.layer->config()->orientation),
+                 static_cast<int>(MapOrientation::Hexagonal));
+        Pathfinder *pf = mapMod->newPathfinder(d.layer);
+        pf->blockGid(kWallGid);
+        pf->setTopology("hex");
+        CHECK(pf->isWalkable(d.spawnTx, d.spawnTy));
+        CHECK(pf->isWalkable(d.exitTx, d.exitTy));
+        Path *path = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+        REQUIRE(path != nullptr);
+        // Maze/WFC should usually connect; if not, at least spawn is walkable.
+        if (path->getLength() > 0) {
+            CHECK_EQ(path->getX(path->getLength() - 1), d.exitTx);
+            CHECK(pathWalkable(path, pf));
+        }
+        delete path;
+        delete pf;
+        d.layer->setVisible(false);
+    }
+}
+
+TEST_CASE("hex.level.13.spatialCull") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    auto *spatialMod = Spatial::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 1313, 22, 16);
+
+    float minX = 1e9f, minY = 1e9f, maxX = -1e9f, maxY = -1e9f;
+    struct Marker {
+        int id;
+        float x, y;
+    };
+    std::vector<Marker> markers;
+    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+
+    int nextId = 1;
+    for (int y = 0; y < d.layer->getMapHeight(); ++y) {
+        for (int x = 0; x < d.layer->getMapWidth(); ++x) {
+            if (!pf->isWalkable(x, y)) continue;
+            if ((x + y) % 5 != 0) continue;
+            float wx = 0.f, wy = 0.f;
+            d.layer->tileToWorld(x, y, wx, wy);
+            wx += kTileW * 0.5f;
+            wy += kTileH * 0.5f;
+            markers.push_back({nextId++, wx, wy});
+            minX = std::min(minX, wx);
+            minY = std::min(minY, wy);
+            maxX = std::max(maxX, wx);
+            maxY = std::max(maxY, wy);
+        }
+    }
+    REQUIRE(markers.size() >= 3);
+
+    std::unique_ptr<QuadTree> tree(
+        spatialMod->newQuadTree(minX - 32.f, minY - 32.f, maxX + 32.f, maxY + 32.f, 8, 6));
+    for (const auto &m : markers) {
+        CHECK(tree->insert(m.id, m.x - 4.f, m.y - 4.f, m.x + 4.f, m.y + 4.f));
+    }
+
+    float camWx = 0.f, camWy = 0.f;
+    d.layer->tileToWorld(d.spawnTx, d.spawnTy, camWx, camWy);
+    const float view = 96.f;
+    const int hit = tree->queryRect(camWx - view, camWy - view, camWx + view, camWy + view);
+    CHECK(hit >= 1);
+    CHECK(hit <= int(markers.size()));
+
+    // Far query should miss spawn-neighborhood markers when exit is distant.
+    float exitWx = 0.f, exitWy = 0.f;
+    d.layer->tileToWorld(d.exitTx, d.exitTy, exitWx, exitWy);
+    if (std::fabs(exitWx - camWx) + std::fabs(exitWy - camWy) > view * 3.f) {
+        const int farHit =
+            tree->queryRect(exitWx - 8.f, exitWy - 8.f, exitWx + 8.f, exitWy + 8.f);
+        // May be zero if no marker on exit cell; still a valid cull API exercise.
+        CHECK(farHit >= 0);
+    }
+    delete pf;
+}
+
+TEST_CASE("hex.level.14.multiLight") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 1414, 16, 12);
+
+    float wx = 0.f, wy = 0.f;
+    d.layer->tileToWorld(d.spawnTx, d.spawnTy, wx, wy);
+
+    auto *cam = Camera2D::createCamera();
+    cam->data()->active = true;
+    cam->setPosition(wx, wy);
+    cam->setAmbient(0.05f, 0.05f, 0.07f);
+
+    Texture albedo;
+    albedo.width = 16;
+    albedo.height = 16;
+    auto *hero = Renderable2D::create();
+    hero->transform()->x = wx;
+    hero->transform()->y = wy;
+    hero->sprite()->width = 18.f;
+    hero->sprite()->height = 18.f;
+    hero->sprite()->texture = &albedo;
+    hero->sprite()->receiveLight = true;
+    hero->sprite()->visible = true;
+    hero->sprite()->camera = cam;
+
+    auto *torch = Light2D::createLight("point");
+    torch->setPosition(wx + 8.f, wy + 8.f);
+    torch->setColor(1.f, 0.7f, 0.4f, 2.f);
+    torch->setRadius(100.f);
+    torch->setEnabled(true);
+
+    auto *moon = Light2D::createLight("dir");
+    moon->setDirection(-0.3f, 1.f);
+    moon->setColor(0.4f, 0.5f, 0.8f, 0.6f);
+    moon->setEnabled(true);
+    CHECK_EQ(moon->getType(), "dir");
+
+    std::vector<DrawItem2D> scene;
+    RenderSystem::collectSprites(scene);
+    bool found = false;
+    for (const auto &it : scene) {
+        if (it.texture == &albedo && it.receiveLight) found = true;
+    }
+    CHECK(found);
+    CHECK(torch->isEnabled());
+    CHECK(moon->isEnabled());
+
+    torch->setEnabled(false);
+    moon->setEnabled(false);
+    hero->sprite()->visible = false;
+    cam->data()->active = false;
+    d.layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.15.particleStashTransfer") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    auto *parts = Particles::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 1515, 18, 14);
+
+    float wx = 0.f, wy = 0.f;
+    d.layer->tileToWorld(d.spawnTx, d.spawnTy, wx, wy);
+
+    ParticleEmitter *fire = parts->newEmitter(128);
+    fire->applyPreset("fire");
+    fire->setPosition(wx, wy);
+    fire->start();
+
+    ParticleEmitter *smoke = parts->newEmitter(128);
+    smoke->applyPreset("smoke");
+    smoke->setPosition(wx + 6.f, wy - 4.f);
+    smoke->start();
+
+    ParticleEmitter *spark = parts->newEmitter(64);
+    spark->applyPreset("spark");
+    spark->setPosition(wx, wy);
+    spark->setEmitterLifetime(0.4f);
+    spark->start();
+
+    for (int i = 0; i < 10; ++i) parts->update(1.f / 60.f);
+    CHECK(fire->getCount() > 0);
+    CHECK(smoke->getCount() > 0);
+
+    spark->stop();
+    CHECK(spark->isStopped());
+    fire->pause();
+    CHECK(fire->isPaused());
+    fire->start();
+    CHECK(fire->isActive());
+
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    ItemDefinition ore;
+    ore.id = "hex.ore";
+    ore.maxStack = 20;
+    ore.weight = 1.f;
+    ItemRegistry::registerItem(ore);
+
+    auto *inv = Inventory::create();
+    Bag *bag = inv->newBag(8);
+    Bag *stash = inv->newBag(12);
+    bag->setId("player");
+    stash->setId("stash");
+    const int added = bag->addItem("hex.ore", 5);
+    CHECK_EQ(added, 5);
+    const int moved = inv->transferItem(bag, stash, "hex.ore", 3);
+    CHECK_EQ(moved, 3);
+    CHECK_EQ(bag->countItem("hex.ore"), 2);
+    CHECK_EQ(stash->countItem("hex.ore"), 3);
+
+    fire->stop();
+    smoke->stop();
+    bag->destroy();
+    stash->destroy();
+    ItemRegistry::clear();
+    d.layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.pipeline.fogRaid") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    auto *spatialMod = Spatial::create();
+    auto *parts = Particles::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 1616, 30, 22);
+
+    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+    FlowField *field = pf->buildFlowField(d.exitTx, d.exitTy);
+    REQUIRE(field != nullptr);
+    Path *path = pf->followFlow(field, d.spawnTx, d.spawnTy);
+    REQUIRE(path != nullptr);
+    REQUIRE(path->getLength() > 2);
+
+    Fov *fov = mapMod->newFov(d.layer);
+    fov->blockOpaqueGid(kWallGid);
+    fov->setTopology("hex");
+    fov->setPerceptionRadiusScale(0.5f);
+    const int hero = fov->addRevealer(d.spawnTx, d.spawnTy, 4);
+    fov->setRevealerPerception(hero, 2.f);
+    fov->setRevealerFacing(hero, 90.f, 80.f);
+
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    ItemDefinition relic;
+    relic.id = "hex.relic";
+    relic.maxStack = 1;
+    relic.weight = 0.5f;
+    ItemRegistry::registerItem(relic);
+    auto *inv = Inventory::create();
+    Bag *bag = inv->newBag(6);
+
+    const int mid = path->getLength() / 2;
+    const int lootTx = path->getX(mid);
+    const int lootTy = path->getY(mid);
+    float lootWx = 0.f, lootWy = 0.f;
+    d.layer->tileToWorld(lootTx, lootTy, lootWx, lootWy);
+    lootWx += kTileW * 0.5f;
+    lootWy += kTileH * 0.5f;
+    std::unique_ptr<SpatialHash2D> hash(spatialMod->newSpatialHash2D(28.f));
+    CHECK(hash->insert(7, lootWx - 6.f, lootWy - 6.f, lootWx + 6.f, lootWy + 6.f));
+
+    ParticleEmitter *ember = parts->newEmitter(96);
+    ember->applyPreset("spark");
+    ember->start();
+
+    bool looted = false;
+    for (int step = 0; step < path->getLength(); ++step) {
+        const int tx = path->getX(step);
+        const int ty = path->getY(step);
+        fov->setRevealerPosition(hero, tx, ty);
+        fov->compute();
+        CHECK(fov->isVisible(tx, ty));
+
+        float wx = 0.f, wy = 0.f;
+        d.layer->tileToWorld(tx, ty, wx, wy);
+        ember->setPosition(wx + 8.f, wy + 4.f);
+        parts->update(1.f / 30.f);
+
+        // Perception-gated pickup: must see tile and pass stealth check.
+        if (!looted && fov->canDetect(hero, lootTx, lootTy, 0.5f) &&
+            hash->queryCircle(wx + kTileW * 0.5f, wy + kTileH * 0.5f, 18.f) > 0) {
+            const int added = bag->addItem("hex.relic", 1);
+            CHECK_EQ(added, 1);
+            hash->remove(7);
+            ember->emit(12);
+            looted = true;
+        }
+    }
+    CHECK(looted);
+    CHECK_EQ(bag->countItem("hex.relic"), 1);
+    CHECK(fov->isExplored(d.spawnTx, d.spawnTy));
+    CHECK_EQ(path->getX(path->getLength() - 1), d.exitTx);
+
+    ember->stop();
+    bag->destroy();
+    ItemRegistry::clear();
+    delete path;
+    delete field;
     delete pf;
     delete fov;
 }

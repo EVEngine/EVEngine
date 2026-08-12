@@ -2,14 +2,18 @@
 // EVEngine 六边形关卡测试套件 —— Hex Levels
 //
 // 用程序化生成的六边形地牢，串联验证引擎能力：
-//   1 程序化 hex tilemap + A* / Flow Field 寻路
+//   1 程序化 hex tilemap + A* 寻路
 //   2 2D 动态视野（FOV / 战争迷雾）
 //   3 2D 动态点光源（火把跟随 + 环境光）
 //   4 空间哈希拾取碰撞 + Inventory
 //   5 粒子（火把 / 拾取爆发）
+//   6 Flow Field 群体寻路可视化
+//   7 格子代价绕路
+//   8 多观察者 + 感知检测
+//   9 FoW 遮罩强度 / 算法切换
 //
-// 关卡可独立切换；数字键 1–5 选关，0 为综合通关模式。
-// 操作：WASD / 方向键移动  E 拾取  R 重生成  N 下一关
+// 关卡可独立切换；数字键 1–9 选关，0 为综合通关模式。
+// 操作：WASD / 方向键移动  E 拾取  R 重生成  N 下一关  T 切换 FOV 算法
 // 运行： make run/<platform>-debug GAME=examples/hex-levels
 // ============================================================================
 
@@ -43,6 +47,10 @@ if (!("uiBuilt" in getroottable())) uiBuilt <- false;
 if (!("pathLen" in getroottable())) pathLen <- 0;
 if (!("visibleCount" in getroottable())) visibleCount <- 0;
 if (!("exploredCount" in getroottable())) exploredCount <- 0;
+if (!("flowPaths" in getroottable())) flowPaths <- [];
+if (!("fovAlgo" in getroottable())) fovAlgo <- "shadowcast";
+if (!("torchRevealerId" in getroottable())) torchRevealerId <- -1;
+if (!("mudCells" in getroottable())) mudCells <- [];
 
 TILE_W <- 48.0;
 TILE_H <- 28.0;
@@ -60,7 +68,11 @@ LEVEL_NAMES <- {
     [2] = "动态视野",
     [3] = "动态光照",
     [4] = "拾取碰撞",
-    [5] = "粒子系统"
+    [5] = "粒子系统",
+    [6] = "Flow Field 群体",
+    [7] = "格子代价绕路",
+    [8] = "多观察者感知",
+    [9] = "FoW 遮罩算法"
 };
 
 function pushLog(text) {
@@ -166,10 +178,30 @@ function placeLootNear(tx, ty, itemId, lootId) {
 function rebuildPath() {
     pathLen = 0;
     path = null;
+    flowPaths = [];
     if (pf == null) return;
     path = pf.findPath(playerTx, playerTy, exitTx, exitTy);
     if (path != null)
         pathLen = path.getLength();
+
+    if (level == 0 || level == 6) {
+        local field = pf.buildFlowField(exitTx, exitTy);
+        if (field != null) {
+            local starts = [
+                [playerTx, playerTy],
+                [spawnTx + 1, spawnTy],
+                [spawnTx, spawnTy + 1],
+                [spawnTx - 1, spawnTy]
+            ];
+            foreach (s in starts) {
+                if (!pf.isWalkable(s[0], s[1])) continue;
+                if (!field.isReachable(s[0], s[1])) continue;
+                local fp = pf.followFlow(field, s[0], s[1]);
+                if (fp != null && fp.getLength() > 0)
+                    flowPaths.push(fp);
+            }
+        }
+    }
 }
 
 function refreshFov() {
@@ -326,12 +358,37 @@ function regenerate() {
     pf.setBlockEmpty(true);
     pf.setTopology("auto");
 
+    mudCells = [];
+    if (level == 0 || level == 7) {
+        // Paint a costly strip near spawn for detour demos.
+        local y = spawnTy - 1;
+        while (y <= spawnTy + 1) {
+            local x = spawnTx + 2;
+            while (x <= spawnTx + 5) {
+                if (pf.isWalkable(x, y)) {
+                    pf.setCellCost(x, y, 8.0);
+                    mudCells.push({ tx = x, ty = y });
+                }
+                x += 1;
+            }
+            y += 1;
+        }
+    }
+
     fov = map.newFov(layer);
     fov.blockOpaqueGid(WALL_GID);
     fov.setBlockEmpty(false);
     fov.setTopology("auto");
-    fov.setAlgorithm("shadowcast");
-    revealerId = fov.addRevealer(playerTx, playerTy, 6);
+    fov.setAlgorithm(fovAlgo);
+    if (level == 0 || level == 8) {
+        fov.setPerceptionRadiusScale(1.0);
+        revealerId = fov.addRevealer(playerTx, playerTy, 4);
+        fov.setRevealerPerception(revealerId, 2.0);
+        torchRevealerId = fov.addRevealer(exitTx, exitTy, 3);
+    } else {
+        revealerId = fov.addRevealer(playerTx, playerTy, 6);
+        torchRevealerId = -1;
+    }
 
     rebuildPath();
     local lootId = 1;
@@ -350,7 +407,7 @@ function regenerate() {
 
     local lname = (level in LEVEL_NAMES) ? LEVEL_NAMES[level] : ("L" + level);
     status = lname + " | " + algo + " seed=" + seed + " path=" + pathLen +
-             " topo=" + pf.getTopology();
+             " topo=" + pf.getTopology() + " fov=" + fovAlgo;
     pushLog("进入关卡: " + lname);
 }
 
@@ -420,8 +477,8 @@ function buildUi() {
     ui.text("", "stats");
     ui.text("", "bag");
     ui.separator("sep");
-    ui.text("[1-5]关卡 [0]综合 [N]下一关 [R]重生成", "help1");
-    ui.text("[WASD]移动 [E]拾取  [F/G/H]算法", "help2");
+    ui.text("[1-9]关卡 [0]综合 [N]下一关 [R]重生成", "help1");
+    ui.text("[WASD]移动 [E]拾取 [T]FOV算法 [F/G/H]生成", "help2");
     ui.text("", "log");
     ui.end();
     ui.mountBuildAs("hud");
@@ -452,7 +509,7 @@ function refreshHud() {
 }
 
 function nextLevel() {
-    level = (level + 1) % 6;
+    level = (level + 1) % 10;
     regenerate();
 }
 
@@ -475,11 +532,28 @@ eve_update = function(dt) {
     if (keyPressed("3")) { level = 3; regenerate(); }
     if (keyPressed("4")) { level = 4; regenerate(); }
     if (keyPressed("5")) { level = 5; regenerate(); }
+    if (keyPressed("6")) { level = 6; regenerate(); }
+    if (keyPressed("7")) { level = 7; regenerate(); }
+    if (keyPressed("8")) { level = 8; regenerate(); }
+    if (keyPressed("9")) { level = 9; regenerate(); }
     if (keyPressed("0")) { level = 0; regenerate(); }
     if (keyPressed("n") || keyPressed("N")) nextLevel();
     if (keyPressed("r") || keyPressed("R")) {
         seed += 1;
         regenerate();
+    }
+    if (keyPressed("t") || keyPressed("T")) {
+        if (fovAlgo == "shadowcast") fovAlgo = "raycast";
+        else if (fovAlgo == "raycast") fovAlgo = "permissive";
+        else if (fovAlgo == "permissive") fovAlgo = "rectangle";
+        else fovAlgo = "shadowcast";
+        if (fov != null) {
+            fov.setAlgorithm(fovAlgo);
+            fov.markDirty();
+            refreshFov();
+        }
+        status = "FOV 算法 → " + fovAlgo;
+        pushLog(status);
     }
     if (keyPressed("f") || keyPressed("F")) { algo = "dungeon.bsp"; regenerate(); }
     if (keyPressed("g") || keyPressed("G")) { algo = "cave.cellular"; regenerate(); }
@@ -505,8 +579,18 @@ eve_render = function() {
     gfx.clear();
     map.render(gfx);
 
-    // Path breadcrumbs (pathfinding levels).
-    if ((level == 0 || level == 1) && path != null) {
+    // Mud / high-cost cells (level 7).
+    if (level == 0 || level == 7) {
+        foreach (m in mudCells) {
+            local wx = layer.tileToWorldX(m.tx, m.ty);
+            local wy = layer.tileToWorldY(m.tx, m.ty);
+            gfx.drawSolidRect(wx + TILE_W * 0.15, wy + TILE_H * 0.2,
+                              TILE_W * 0.7, TILE_H * 0.6, 0.45, 0.32, 0.12, 0.55);
+        }
+    }
+
+    // A* path breadcrumbs.
+    if ((level == 0 || level == 1 || level == 7) && path != null) {
         local i = 0;
         while (i < path.getLength()) {
             local tx = path.getX(i);
@@ -519,7 +603,21 @@ eve_render = function() {
         }
     }
 
-    // FoW overlay for FOV levels.
+    // Flow-field swarm paths (level 6).
+    if ((level == 0 || level == 6) && flowPaths.len() > 0) {
+        foreach (fp in flowPaths) {
+            local i = 0;
+            while (i < fp.getLength()) {
+                local wx = layer.tileToWorldX(fp.getX(i), fp.getY(i));
+                local wy = layer.tileToWorldY(fp.getX(i), fp.getY(i));
+                gfx.drawSolidRect(wx + TILE_W * 0.4, wy + TILE_H * 0.4,
+                                  TILE_W * 0.2, TILE_H * 0.2, 0.95, 0.55, 0.15, 0.7);
+                i += 1;
+            }
+        }
+    }
+
+    // FoW overlay — level 9 uses mask byte intensity.
     if ((level == 0 || level >= 2) && fov != null) {
         local y = 0;
         while (y < layer.getMapHeight()) {
@@ -530,10 +628,16 @@ eve_render = function() {
                 if (!vis) {
                     local wx = layer.tileToWorldX(x, y);
                     local wy = layer.tileToWorldY(x, y);
-                    if (!fov.isExplored(x, y))
+                    if (level == 9) {
+                        local mb = fov.getMaskByte(x, y).tofloat();
+                        local a = 1.0 - (mb / 255.0);
+                        if (a < 0.2) a = 0.2;
+                        gfx.drawSolidRect(wx, wy, TILE_W, TILE_H, 0.0, 0.0, 0.05, a);
+                    } else if (!fov.isExplored(x, y)) {
                         gfx.drawSolidRect(wx, wy, TILE_W, TILE_H, 0.0, 0.0, 0.0, 0.82);
-                    else
+                    } else {
                         gfx.drawSolidRect(wx, wy, TILE_W, TILE_H, 0.0, 0.0, 0.0, 0.45);
+                    }
                 }
                 x += 1;
             }
@@ -559,16 +663,22 @@ eve_render = function() {
         gfx.drawSolidRect(ex + TILE_W * 0.25, ey + TILE_H * 0.25,
                           TILE_W * 0.5, TILE_H * 0.5, 0.25, 0.9, 0.4, 0.85);
 
-    // Hero + torch glow (visual stand-in; Light2D drives ambient for lit sprites).
+    // Hero + torch glow.
     local pos = {};
     playerWorldCenter(pos);
-    if (level == 0 || level >= 3) {
+    if (level == 0 || level == 3 || level >= 8) {
         gfx.drawSolidRect(pos.x - 40.0, pos.y - 40.0, 80.0, 80.0, 1.0, 0.7, 0.35, 0.12);
         gfx.drawSolidRect(pos.x - 22.0, pos.y - 22.0, 44.0, 44.0, 1.0, 0.85, 0.45, 0.18);
     }
+    // Static exit torch for multi-revealer level.
+    if ((level == 0 || level == 8) && torchRevealerId >= 0) {
+        local txw = layer.tileToWorldX(exitTx, exitTy) + TILE_W * 0.5;
+        local tyw = layer.tileToWorldY(exitTx, exitTy) + TILE_H * 0.5;
+        gfx.drawSolidRect(txw - 16.0, tyw - 16.0, 32.0, 32.0, 0.4, 0.7, 1.0, 0.22);
+    }
     gfx.drawSolidRect(pos.x - 9.0, pos.y - 9.0, 18.0, 18.0, 0.95, 0.85, 0.35, 1.0);
 
-    if (level == 0 || level >= 5)
+    if (level == 0 || level == 5 || level >= 8)
         particles.render(gfx);
 
     ui.beginFrameAndRender();
