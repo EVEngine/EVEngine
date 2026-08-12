@@ -2,7 +2,7 @@
 
 | Asset | Location | Size | Source / license |
 |---|---|---|---|
-| **CesiumMan** | `cesium_man/` (downloaded) | ~0.5 MB glTF | [Khronos glTF Sample Assets — CesiumMan](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CesiumMan); original by Cesium (CC-BY 4.0) |
+| **CesiumMan** | `cesium_man/` (vendored glTF) | ~0.5 MB glTF | [Khronos glTF Sample Assets — CesiumMan](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CesiumMan); original by Cesium (CC-BY 4.0) |
 
 CesiumMan is a free skinned walking human used by `animation.skinned.*` tests to exercise Assimp skin import, `AnimSkeleton`/`AnimClip` playback, and CPU linear-blend skinning (`AnimSkin`).
 

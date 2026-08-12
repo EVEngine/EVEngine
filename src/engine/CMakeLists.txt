@@ -183,6 +183,7 @@ list(APPEND EVELIBS
     EVPhysics
     EVRPG
     EVInventory
+    EVBuilding
     EVAvatar
     EVDialogue
     EVProcgen

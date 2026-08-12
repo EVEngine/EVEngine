@@ -1,4 +1,4 @@
-build*/
+/build*/
 dist/
 # Poly Haven 1k HDR downloads used only to regenerate test/Textures/env faces.
 test/Textures/env/_src/
@@ -6,9 +6,8 @@ test/Textures/env/_src/
 test/assets/classic/sponza/
 test/assets/classic/damaged_helmet/
 test/assets/classic/.downloaded
-# Skinned character (CesiumMan) fetched by scripts/download_skinned_character.sh
-test/assets/skinned/cesium_man/
-test/assets/skinned/.downloaded
+# Skinned character: CesiumMan glTF is committed under test/assets/skinned/cesium_man/
+# (see ATTRIBUTION.md). Re-run scripts/download_skinned_character.sh to refresh.
 .vscode/
 .superpowers/
 artifacts-local-test/
