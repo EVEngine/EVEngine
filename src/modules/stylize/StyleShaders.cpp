@@ -42,7 +42,7 @@ bool styleSupports(const std::string &style, const std::string &feature) {
     if (!isKnownStyle(style)) return false;
     if (feature == "post" || feature == "cpu") return true;
     if (feature == "mesh") return style == "cartoon" || style == "ink";
-    if (feature == "gbuffer") return false;  // reserved: depth/normal outline, etc.
+    if (feature == "gbuffer") return true;  // depth/normal available via graphics.RenderControl
     return false;
 }
 

@@ -25,6 +25,7 @@ file(GLOB all_test_cpp
   ClusteredLighting.cpp
   IBL.cpp
   Shadow3D.cpp
+  MaterialRenderControl.cpp
   ClassicScenes.cpp
   Volumetric.cpp
   TextureSampler.cpp

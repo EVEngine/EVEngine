@@ -216,6 +216,11 @@ public:
     void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
     void endShadowPass() override;
 
+    void beginGBufferPass(int width, int height) override;
+    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
+                         float farZ) override;
+    void endGBufferPass() override;
+
     Canvas *newCanvas(int width, int height) override;
     void setCanvas(Canvas *canvas) override;
     bool isCanvasActive() const override;
@@ -260,6 +265,8 @@ private:
     vk::DescriptorSet voxelRectSetFor(GpuTexture *gpuTex);
     void createShadowResources();
     void destroyShadowResources();
+    void createGBufferResources(int width, int height);
+    void destroyGBufferResources();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     vk::DescriptorSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
@@ -431,6 +438,46 @@ private:
         glm::mat4 mvp{1.f};
     };
     std::vector<ShadowDraw> shadowPassDraws;
+
+    // Screen-space G-buffer (normal / linear-depth / albedo + HW depth).
+    struct GBufferPush {
+        glm::mat4 mvp{1.f};
+        glm::vec4 modelR0{1.f, 0.f, 0.f, 0.f};
+        glm::vec4 modelR1{0.f, 1.f, 0.f, 0.f};
+        glm::vec4 modelR2{0.f, 0.f, 1.f, 0.f};
+        glm::vec4 clip{0.1f, 100.f, 0.f, 0.f};
+    };
+    static_assert(sizeof(GBufferPush) == 128, "GBuffer push constants must be 128 bytes");
+    struct GBufferDraw {
+        Mesh *mesh = nullptr;
+        GBufferPush push{};
+    };
+    int gbufferWidth = 0;
+    int gbufferHeight = 0;
+    vk::Image gbufferNormalImage{};
+    vk::DeviceMemory gbufferNormalMemory{};
+    vk::ImageView gbufferNormalView{};
+    vk::Image gbufferDepthColorImage{};
+    vk::DeviceMemory gbufferDepthColorMemory{};
+    vk::ImageView gbufferDepthColorView{};
+    vk::Image gbufferAlbedoImage{};
+    vk::DeviceMemory gbufferAlbedoMemory{};
+    vk::ImageView gbufferAlbedoView{};
+    vk::Image gbufferDepthImage{};
+    vk::DeviceMemory gbufferDepthMemory{};
+    vk::ImageView gbufferDepthView{};
+    vk::Framebuffer gbufferFramebuffer{};
+    vk::RenderPass gbufferRenderPass{};
+    vk::PipelineLayout gbufferPipelineLayout{};
+    vk::Pipeline gbufferPipeline{};
+    GpuTexture gbufferNormalGpu{};
+    GpuTexture gbufferDepthColorGpu{};
+    GpuTexture gbufferAlbedoGpu{};
+    Texture gbufferNormalTex{};
+    Texture gbufferDepthColorTex{};
+    Texture gbufferAlbedoTex{};
+    bool gbufferPassActive = false;
+    std::vector<GBufferDraw> gbufferPassDraws;
 
     vkb::Present presentModel;
     vkb::DepthStencilImage depthImage;
