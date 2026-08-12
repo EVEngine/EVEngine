@@ -12,6 +12,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Shadow.h"
 #include "window/Window.h"
 
 using namespace eve::graphics;
@@ -232,4 +233,21 @@ TEST_CASE("Shadow3D.receiveShadowFalseIgnoresMap") {
 
     previewScene(gfx);
     win->close();
+}
+
+TEST_CASE("Shadow.directionalCSM.clampsFarAndSplitsAreViewZ") {
+    const glm::vec3 dir(0.3f, 1.f, 0.2f);
+    const glm::vec3 eye(0.f, 2.f, 8.f);
+    const glm::vec3 target(0.f, 1.f, 0.f);
+    const glm::vec3 up(0.f, 1.f, 0.f);
+    ShadowUpload u = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f,
+                                         0.002f, 1.f);
+    REQUIRE(u.active);
+    // Far used for splits must be the practical shadow distance, not camera far=500.
+    CHECK(u.ubo.splits.x > 0.1f);
+    CHECK(u.ubo.splits.x < u.ubo.splits.y);
+    CHECK(u.ubo.splits.y <= u.ubo.splits.z + 1e-4f);
+    CHECK(u.ubo.splits.z <= ShadowConfig::kMaxDistance + 1e-3f);
+    CHECK(u.ubo.splits.z < 100.f);
+    CHECK(u.ubo.bias.x >= 0.002f);
 }

@@ -1623,7 +1623,9 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
 
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eBack;
+    // Architecture (Sponza banners, plant cards, mirrored-node winding) is often
+    // two-sided. A single triangle is rasterized once; Less depth avoids z-fight.
+    rs.cullMode = vk::CullModeFlagBits::eNone;
     rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
 
@@ -3389,16 +3391,25 @@ void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) 
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
     mesh3dLighting = pack;
     mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);
-    mesh3dFrameUbo.lightDir.w = float(pack.count);
-    if (pack.count > 0) {
-        mesh3dFrameUbo.lightDir =
-            glm::vec4(glm::vec3(pack.lights[0].posRadius), float(pack.count));
-        // Preserve .w (envIntensity) filled by setMesh3DEnv.
+    const int n = std::max(0, std::min(pack.count, Lighting3DPack::kMaxLights));
+    mesh3dFrameUbo.lightDir.w = float(n);
+    int dirI = -1;
+    for (int i = 0; i < n; ++i) {
+        if (pack.lights[i].posRadius.w <= 0.f) {
+            dirI = i;
+            break;
+        }
+    }
+    if (dirI >= 0) {
+        glm::vec3 d(pack.lights[dirI].posRadius);
+        if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+        else d = glm::normalize(d);
+        mesh3dFrameUbo.lightDir = glm::vec4(d, float(n));
         mesh3dFrameUbo.lightColor =
-            glm::vec4(glm::vec3(pack.lights[0].color), mesh3dFrameUbo.lightColor.w);
+            glm::vec4(glm::vec3(pack.lights[dirI].color), mesh3dFrameUbo.lightColor.w);
     } else {
-        // count==0 must zero the legacy primary slot — the shader always shades it.
-        mesh3dFrameUbo.lightDir = glm::vec4(0.f, 1.f, 0.f, 0.f);
+        // No directional: zero the legacy primary slot. mesh3d.frag always shades it.
+        mesh3dFrameUbo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(n));
         mesh3dFrameUbo.lightColor =
             glm::vec4(0.f, 0.f, 0.f, mesh3dFrameUbo.lightColor.w);
     }
@@ -3470,6 +3481,10 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
 
 void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) {
     mesh3dFrameUbo.mvp = viewProj;
+}
+
+void Graphics::setMesh3DView(const glm::mat4 &view) {
+    mesh3dFrameUbo.view = view;
 }
 
 Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
@@ -3561,7 +3576,11 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     std::vector<aiVector3D> positions(mesh.mNumVertices);
     std::vector<aiVector3D> normals(mesh.mNumVertices);
     aiMatrix3x3 nmat(worldTransform);
-    nmat.Inverse().Transpose();
+    const float ndet = nmat.Determinant();
+    if (std::fabs(ndet) > 1e-8f) {
+        nmat.Inverse();
+        nmat.Transpose();
+    }
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
         positions[i] = worldTransform * mesh.mVertices[i];
         if (mesh.HasNormals()) {
@@ -3569,6 +3588,30 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
             normals[i].Normalize();
         } else {
             normals[i] = aiVector3D(0.f, 1.f, 0.f);
+        }
+    }
+
+    // Negative determinant mirrors the mesh: winding flips while inverse-transpose
+    // keeps normals consistent, so back-face cull would hide the visible side.
+    const bool flipWinding = worldTransform.Determinant() < 0.f;
+    std::vector<aiFace> flippedFaces;
+    std::vector<unsigned> flippedIdx;
+    if (flipWinding) {
+        flippedFaces.resize(mesh.mNumFaces);
+        flippedIdx.resize(size_t(mesh.mNumFaces) * 3u);
+        for (unsigned f = 0; f < mesh.mNumFaces; ++f) {
+            const aiFace &src = mesh.mFaces[f];
+            aiFace &dst = flippedFaces[f];
+            dst.mNumIndices = src.mNumIndices;
+            if (src.mNumIndices == 3 && src.mIndices) {
+                unsigned *idx = flippedIdx.data() + size_t(f) * 3u;
+                idx[0] = src.mIndices[0];
+                idx[1] = src.mIndices[2];
+                idx[2] = src.mIndices[1];
+                dst.mIndices = idx;
+            } else {
+                dst.mIndices = src.mIndices;
+            }
         }
     }
 
@@ -3580,7 +3623,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     tmp.mVertices = positions.data();
     tmp.mNormals = normals.data();
     tmp.mNumFaces = mesh.mNumFaces;
-    tmp.mFaces = mesh.mFaces;
+    tmp.mFaces = flipWinding ? flippedFaces.data() : mesh.mFaces;
     tmp.mMaterialIndex = mesh.mMaterialIndex;
     tmp.mNumAnimMeshes = mesh.mNumAnimMeshes;
     tmp.mAnimMeshes = mesh.mAnimMeshes;
@@ -3988,9 +4031,22 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.parallax =
         glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
-    if (lightCount > 0) {
-        ubo.lightDir = glm::vec4(glm::vec3(mesh3dLighting.lights[0].posRadius), float(lightCount));
-        ubo.lightColor = glm::vec4(glm::vec3(mesh3dLighting.lights[0].color), envIntensity);
+    int dirI = -1;
+    for (int i = 0; i < lightCount; ++i) {
+        if (mesh3dLighting.lights[i].posRadius.w <= 0.f) {
+            dirI = i;
+            break;
+        }
+    }
+    if (dirI >= 0) {
+        glm::vec3 d(mesh3dLighting.lights[dirI].posRadius);
+        if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+        else d = glm::normalize(d);
+        ubo.lightDir = glm::vec4(d, float(lightCount));
+        ubo.lightColor = glm::vec4(glm::vec3(mesh3dLighting.lights[dirI].color), envIntensity);
+    } else {
+        ubo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(lightCount));
+        ubo.lightColor = glm::vec4(0.f, 0.f, 0.f, envIntensity);
     }
 
     auto &fslots = currentMesh3dFrameSlots();

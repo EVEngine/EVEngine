@@ -243,6 +243,9 @@ virtual void begin3DFrame() = 0;
      *  Expect RH + ZO with Vulkan NDC Y (see perspectiveVulkanRH_ZO). */
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
 
+    /** Camera view matrix for subsequent drawMesh (view-space depth / CSM select). */
+    virtual void setMesh3DView(const glm::mat4 &view) = 0;
+
     /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
 

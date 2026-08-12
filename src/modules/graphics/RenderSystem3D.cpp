@@ -66,6 +66,16 @@ void collectLights3D(std::vector<PackedLight3D> &out, size_t maxCount) {
     if (out.size() > maxCount) out.resize(maxCount);
 }
 
+/** mesh3d.frag always shades lights[0] as the primary directional. Keep a real
+ *  directional in slot 0 whenever one exists (points stay in the remaining slots). */
+void promoteDirectional(std::vector<PackedLight3D> &packed) {
+    for (size_t i = 0; i < packed.size(); ++i) {
+        if (packed[i].isPoint) continue;
+        if (i != 0) std::swap(packed[0], packed[i]);
+        return;
+    }
+}
+
 Lighting3DPack packLights3D(const std::vector<PackedLight3D> &lights, const Camera3D::Data *cam) {
     Lighting3DPack pack{};
     if (cam) {
@@ -419,6 +429,7 @@ void RenderSystem3D::render(Graphics &gfx) {
 
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
+    promoteDirectional(packed);
     Light3D::Data *shadowCaster = doShadow ? findShadowCasterDir(packed) : nullptr;
     prioritizeShadowCaster(packed, shadowCaster);
 
@@ -663,6 +674,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         const float fovRad = cd->fovYDeg * 0.017453292519943295f;
         const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
         gfx.setMesh3DViewProj(projM * viewM);
+        gfx.setMesh3DView(viewM);
         gfx.setMesh3DCameraPos(eye);
         gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
 

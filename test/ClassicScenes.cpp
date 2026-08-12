@@ -368,7 +368,7 @@ void applyConfig(SceneActors &a, RenderCfg cfg, bool polishMetals) {
 
     switch (cfg) {
     case RenderCfg::AmbientOnly:
-        a.cam->setAmbient(0.18f, 0.18f, 0.2f);
+        a.cam->setAmbient(0.26f, 0.26f, 0.28f);
         break;
     case RenderCfg::DirectionalLit:
         a.cam->setAmbient(0.06f, 0.06f, 0.07f);
@@ -394,7 +394,7 @@ void applyConfig(SceneActors &a, RenderCfg cfg, bool polishMetals) {
         a.sun->setCastShadow(false);
         a.sun->setColor(0.55f, 0.55f, 0.6f, 0.8f);
         a.cam->setEnvMap(a.env);
-        a.cam->setEnvIntensity(1.35f);
+        a.cam->setEnvIntensity(1.0f);
         if (polishMetals) {
             for (auto *e : a.ents) {
                 e->setMetallic(std::max(e->meshRenderer()->metallic, 0.85f));
@@ -1178,14 +1178,14 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     actors.cam = Camera3D::createCamera();
     const float rad = std::max(1.f, actors.bounds.radius());
     actors.cam->data()->nearZ = std::max(0.05f, rad * 0.002f);
-    actors.cam->data()->farZ = std::max(200.f, rad * 25.f);
+    actors.cam->data()->farZ = std::max(60.f, rad * 4.f);
     actors.env = makeStudioCubemap(gfx);
     setupLights(actors, actors.bounds);
     actors.sun->setDirection(0.25f, 1.f, 0.2f);
-    actors.sun->setColor(1.f, 0.98f, 0.94f, 6.f);
-    actors.pointA->setColor(1.f, 0.75f, 0.45f, 18.f);
+    actors.sun->setColor(1.f, 0.98f, 0.94f, 3.2f);
+    actors.pointA->setColor(1.f, 0.75f, 0.45f, 7.f);
     actors.pointA->setRadius(rad * 1.2f);
-    actors.pointB->setColor(0.45f, 0.65f, 1.f, 16.f);
+    actors.pointB->setColor(0.45f, 0.65f, 1.f, 6.f);
     actors.pointB->setRadius(rad * 1.2f);
 
     auto path = makeSponzaPath(actors.bounds);
@@ -1457,7 +1457,7 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
             actors.cam = Camera3D::createCamera();
             const float rad = std::max(1.f, actors.bounds.radius());
             actors.cam->data()->nearZ = std::max(0.05f, rad * 0.002f);
-            actors.cam->data()->farZ = std::max(200.f, rad * 25.f);
+            actors.cam->data()->farZ = std::max(60.f, rad * 4.f);
             actors.env = makeStudioCubemap(gfx);
             setupLights(actors, actors.bounds);
             actors.sun->setDirection(0.25f, 1.f, 0.2f);

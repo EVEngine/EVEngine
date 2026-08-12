@@ -93,6 +93,7 @@ struct Mesh3DUBO {
     // Appended: custom shaders that only read the prefix stay valid (buffer may be larger).
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f}; // x=cellScale, y=strength (0=off), z=rotAmount
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f}; // x=scale (0=off), y=minLayers, z=maxLayers
+    glm::mat4 view{1.f};                     // camera view (CSM / view-space depth)
 };
 
 struct Mesh3DClusteredUBO {
@@ -204,6 +205,7 @@ public:
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     void begin3DFrame() override;
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
+    void setMesh3DView(const glm::mat4 &view) override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
