@@ -1414,3 +1414,121 @@ TEST_CASE("voxel.world.removeChunk_then_get_air") {
     CHECK_EQ(int(world->getVoxel(1, 1, 1)), 0);
     CHECK_EQ(world->getChunkCount(), 0);
 }
+
+TEST_CASE("voxel.decode.uv_grid_for_many_tex_indices") {
+    const int tiles = 8;
+    for (int tex = 0; tex < 32; ++tex) {
+        const PackedRect r = PackedRect::pack(0, 0, 0, 1, 1, tex);
+        const DecodedRect q = decodePackedRect(r, FaceDir::PosY, 0, 0, 0, tiles);
+        const float tile = 1.f / float(tiles);
+        const float col = float(tex % tiles);
+        const float row = float(tex / tiles);
+        CHECK(std::fabs(q.uv[0][0] - col * tile) < 1e-5f);
+        CHECK(std::fabs(q.uv[0][1] - row * tile) < 1e-5f);
+        CHECK(std::fabs(q.uv[2][0] - (col + 1.f) * tile) < 1e-5f);
+        CHECK(std::fabs(q.uv[2][1] - (row + 1.f) * tile) < 1e-5f);
+        CHECK_EQ(q.tex, tex);
+    }
+}
+
+TEST_CASE("voxel.decode.uv_tex127_tiles16") {
+    const PackedRect r = PackedRect::pack(0, 0, 0, 2, 2, 127);
+    const DecodedRect q = decodePackedRect(r, FaceDir::PosX, 0, 0, 0, 16);
+    // 127 → col=15, row=7
+    CHECK(std::fabs(q.uv[0][0] - (15.f / 16.f)) < 1e-5f);
+    CHECK(std::fabs(q.uv[0][1] - (7.f / 16.f)) < 1e-5f);
+    CHECK(std::fabs(q.uv[2][0] - 1.f) < 1e-5f);
+    CHECK(std::fabs(q.uv[2][1] - (8.f / 16.f)) < 1e-5f);
+}
+
+TEST_CASE("voxel.greedy.four_textures_in_a_row") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    for (int x = 0; x < 4; ++x) chunk->set(x, 0, 0, uint8_t(x + 1));
+    chunk->remesh();
+    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 4);
+    for (const auto &r : chunk->faceRects(FaceDir::PosY)) {
+        CHECK_EQ(r.width(), 1);
+        CHECK_EQ(r.height(), 1);
+    }
+}
+
+TEST_CASE("voxel.greedy.same_tex_gap_no_merge_across_air") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    chunk->set(0, 0, 0, 5);
+    chunk->set(2, 0, 0, 5);  // gap at x=1
+    chunk->remesh();
+    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 2);
+    for (const auto &r : chunk->faceRects(FaceDir::PosY)) {
+        CHECK_EQ(r.tex(), 5);
+        CHECK_EQ(r.width(), 1);
+    }
+}
+
+TEST_CASE("voxel.greedy.many_tex_ids_preserved") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    for (int i = 1; i <= 16; ++i) chunk->set(i, 0, 0, uint8_t(i));
+    chunk->remesh();
+    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 16);
+    bool seen[128]{};
+    for (const auto &r : chunk->faceRects(FaceDir::PosY)) {
+        CHECK(r.tex() >= 1);
+        CHECK(r.tex() <= 16);
+        seen[r.tex()] = true;
+    }
+    for (int i = 1; i <= 16; ++i) CHECK(seen[i]);
+}
+
+TEST_CASE("voxel.world.multi_tex_remesh_updates_all") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    world->setVoxel(0, 0, 0, 1);
+    world->setVoxel(2, 0, 0, 2);
+    world->setVoxel(4, 0, 0, 3);
+    world->remeshDirty();
+    Chunk *c = world->getChunk(0, 0, 0);
+    REQUIRE(c != nullptr);
+    CHECK_EQ(c->faceRectCount(FaceDir::PosY), 3);
+
+    world->setVoxel(0, 0, 0, 7);
+    world->setVoxel(2, 0, 0, 8);
+    world->setVoxel(4, 0, 0, 9);
+    world->remeshDirty();
+    bool saw[128]{};
+    for (const auto &r : c->faceRects(FaceDir::PosY)) saw[r.tex()] = true;
+    CHECK(saw[7]);
+    CHECK(saw[8]);
+    CHECK(saw[9]);
+    CHECK(!saw[1]);
+}
+
+TEST_CASE("voxel.pack.tex_field_isolates_from_xyz") {
+    for (int tex = 0; tex <= 127; tex += 17) {
+        const PackedRect r = PackedRect::pack(3, 5, 7, 2, 4, tex);
+        CHECK_EQ(r.x(), 3);
+        CHECK_EQ(r.y(), 5);
+        CHECK_EQ(r.z(), 7);
+        CHECK_EQ(r.width(), 2);
+        CHECK_EQ(r.height(), 4);
+        CHECK_EQ(r.tex(), tex);
+    }
+}
+
+TEST_CASE("voxel.module.meshVoxels_keeps_distinct_textures") {
+    auto *mod = Voxel::create();
+    uint8_t voxels[32 * 32 * 32];
+    std::memset(voxels, 0, sizeof(voxels));
+    voxels[0] = 3;
+    voxels[1] = 11;
+    voxels[2] = 22;
+    mod->meshVoxels(voxels, int(sizeof(voxels)));
+    CHECK_EQ(mod->getMeshFaceCount("posY"), 3);
+    bool saw3 = false, saw11 = false, saw22 = false;
+    for (int i = 0; i < mod->getMeshFaceCount("posY"); ++i) {
+        const int t = PackedRect{mod->getMeshFacePacked("posY", i)}.tex();
+        if (t == 3) saw3 = true;
+        if (t == 11) saw11 = true;
+        if (t == 22) saw22 = true;
+    }
+    CHECK(saw3);
+    CHECK(saw11);
+    CHECK(saw22);
+}

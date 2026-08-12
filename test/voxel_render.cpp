@@ -46,6 +46,47 @@ static Texture *makeSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b) {
     return gfx->newTexture(1, 1, px);
 }
 
+/** Deterministic high-contrast palette for atlas tile `id` (0..127). */
+static void atlasTileRgb(int id, uint8_t &r, uint8_t &g, uint8_t &b) {
+    static const uint8_t kPal[][3] = {
+        {220, 40, 40},  {40, 220, 40},  {40, 40, 220},  {220, 220, 40},
+        {220, 40, 220}, {40, 220, 220}, {240, 240, 240}, {220, 120, 40},
+        {120, 40, 220}, {40, 160, 120}, {200, 80, 120}, {80, 200, 80},
+        {80, 80, 200},  {200, 160, 40}, {160, 40, 80},  {40, 200, 200},
+    };
+    const int n = int(sizeof(kPal) / sizeof(kPal[0]));
+    const int i = ((id % n) + n) % n;
+    r = kPal[i][0];
+    g = kPal[i][1];
+    b = kPal[i][2];
+}
+
+/** NxM tile atlas (1px per tile). `tilesPerRow` must match draw call. */
+static Texture *makeTileAtlas(Graphics *gfx, int tilesPerRow, int rows) {
+    const int w = std::max(1, tilesPerRow);
+    const int h = std::max(1, rows);
+    std::vector<uint8_t> px(size_t(w * h * 4));
+    for (int ty = 0; ty < h; ++ty) {
+        for (int tx = 0; tx < w; ++tx) {
+            const int id = tx + ty * w;
+            uint8_t r, g, b;
+            atlasTileRgb(id, r, g, b);
+            const size_t o = size_t((ty * w + tx) * 4);
+            px[o + 0] = r;
+            px[o + 1] = g;
+            px[o + 2] = b;
+            px[o + 3] = 255;
+        }
+    }
+    return gfx->newTexture(w, h, px.data());
+}
+
+static void fillCube(VoxelWorld *world, int x0, int y0, int z0, int s, uint8_t tex) {
+    for (int z = 0; z < s; ++z)
+        for (int y = 0; y < s; ++y)
+            for (int x = 0; x < s; ++x) world->setVoxel(x0 + x, y0 + y, z0 + z, tex);
+}
+
 static void tinyHud(Graphics *gfx) {
     (void)gfx;
     // Keep 2D present path consistent with other 3D tests.
@@ -1350,4 +1391,363 @@ TEST_CASE("voxel.render.fullChunkSixFacesOrbitPixel") {
     CHECK(world->getVisibleBatchCount() <= 3);
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(mid) > 0.05f);
+}
+
+TEST_CASE("voxel.render.atlas4x4_tex1_green") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    // Voxel storage 0 = air; solid tex starts at 1 → atlas tile 1 (green).
+    fillCube(world.get(), 0, 0, 0, 4, 1);
+    world->remeshDirty();
+
+    const glm::vec3 eye(2.f, 2.f, 14.f);
+    renderVoxelFrame(gfx, world.get(), atlas, 4, eye, glm::vec3(2.f, 2.f, 2.f), 100.f, true);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(mid.g > mid.r);
+    CHECK(mid.g > mid.b);
+    CHECK(mid.g > 0.08f);
+}
+
+TEST_CASE("voxel.render.atlas4x4_eachPaletteChannel") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 280, 200);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    const glm::vec3 eye(2.f, 2.f, 14.f);
+    const glm::vec3 target(2.f, 2.f, 2.f);
+
+    // tex 1 green, 2 blue, 3 yellow, 4 magenta, 5 cyan
+    struct Expect {
+        uint8_t tex;
+        char channel;  // 'r','g','b' dominant or 'y' r&g, 'm' r&b, 'c' g&b
+    };
+    const Expect cases[] = {{1, 'g'}, {2, 'b'}, {3, 'y'}, {4, 'm'}, {5, 'c'}};
+    for (const Expect &e : cases) {
+        std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+        fillCube(world.get(), 0, 0, 0, 4, e.tex);
+        world->remeshDirty();
+        renderVoxelFrame(gfx, world.get(), atlas, 4, eye, target, 100.f, true);
+        Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        CHECK(luma(mid) > 0.04f);
+        if (e.channel == 'g') {
+            CHECK(mid.g > mid.r);
+            CHECK(mid.g > mid.b);
+        } else if (e.channel == 'b') {
+            CHECK(mid.b > mid.r);
+            CHECK(mid.b > mid.g);
+        } else if (e.channel == 'y') {
+            CHECK(mid.r > mid.b);
+            CHECK(mid.g > mid.b);
+        } else if (e.channel == 'm') {
+            CHECK(mid.r > mid.g);
+            CHECK(mid.b > mid.g);
+        } else if (e.channel == 'c') {
+            CHECK(mid.g > mid.r);
+            CHECK(mid.b > mid.r);
+        }
+    }
+}
+
+TEST_CASE("voxel.render.atlas8x8_highTexIndex") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    // 8×8 = 64 tiles; tex 15 uses palette slot 15 → cyan-ish (40,200,200)
+    Texture *atlas = makeTileAtlas(gfx, 8, 8);
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    fillCube(world.get(), 0, 0, 0, 5, 15);
+    world->remeshDirty();
+    CHECK_EQ(world->getChunk(0, 0, 0)->faceRects(FaceDir::PosZ)[0].tex(), 15);
+
+    const glm::vec3 eye(2.5f, 2.5f, 16.f);
+    renderVoxelFrame(gfx, world.get(), atlas, 8, eye, glm::vec3(2.5f, 2.5f, 2.5f), 100.f, true);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(mid.g > mid.r);
+    CHECK(mid.b > mid.r);
+    CHECK(luma(mid) > 0.05f);
+}
+
+TEST_CASE("voxel.render.atlas16x8_tex63") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    // tilesPerRow=16, 8 rows → indices 0..127
+    Texture *atlas = makeTileAtlas(gfx, 16, 8);
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    fillCube(world.get(), 0, 0, 0, 4, 63);
+    world->remeshDirty();
+    REQUIRE(world->getChunk(0, 0, 0)->faceRectCount(FaceDir::PosY) >= 1);
+    CHECK_EQ(world->getChunk(0, 0, 0)->faceRects(FaceDir::PosY)[0].tex(), 63);
+
+    const glm::vec3 eye(2.f, 10.f, 2.f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(2.f, 2.f, 2.f), glm::vec3(0, 0, -1));
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+    world->selectVisible(&vp[0][0], eye.x, eye.y, eye.z, 100.f, true);
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        world->drawVisible(gfx, atlas, 16);
+    }
+    RenderSystem::render(*gfx);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.04f);
+}
+
+TEST_CASE("voxel.render.swapTexIdChangesAtlasColor") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    fillCube(world.get(), 0, 0, 0, 4, 1);  // green
+    world->remeshDirty();
+    const glm::vec3 eye(2.f, 2.f, 14.f);
+    const glm::vec3 target(2.f, 2.f, 2.f);
+
+    renderVoxelFrame(gfx, world.get(), atlas, 4, eye, target, 100.f, true);
+    Color green = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(green.g > green.r);
+
+    for (int z = 0; z < 4; ++z)
+        for (int y = 0; y < 4; ++y)
+            for (int x = 0; x < 4; ++x) world->setVoxel(x, y, z, 2);  // blue
+    world->remeshDirty();
+    renderVoxelFrame(gfx, world.get(), atlas, 4, eye, target, 100.f, true);
+    Color blue = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(blue.b > blue.g);
+    CHECK(blue.b > green.b);
+}
+
+TEST_CASE("voxel.render.multiTexStripesDoNotMerge") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    // Horizontal stripes of alternating tex 1 and 2 on a slab.
+    for (int z = 0; z < 8; ++z)
+        for (int x = 0; x < 8; ++x) world->setVoxel(x, 0, z, (z % 2) ? 1 : 2);
+    world->remeshDirty();
+    Chunk *c = world->getChunk(0, 0, 0);
+    REQUIRE(c != nullptr);
+    CHECK(c->faceRectCount(FaceDir::PosY) >= 4);
+
+    const glm::vec3 eye(4.f, 12.f, 4.f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(4.f, 0.f, 4.f), glm::vec3(0, 0, -1));
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+    world->selectVisible(&vp[0][0], eye.x, eye.y, eye.z, 100.f, true);
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        world->drawVisible(gfx, atlas, 4);
+    }
+    RenderSystem::render(*gfx);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.04f);
+}
+
+TEST_CASE("voxel.render.manualDrawDifferentTexIndices") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    // Two quads side by side: tex1 green @ x=0, tex2 blue @ origin shifted.
+    uint32_t green = PackedRect::pack(0, 0, 0, 3, 3, 1).bits;
+    uint32_t blue = PackedRect::pack(0, 0, 0, 3, 3, 2).bits;
+
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::vec3 eye(1.5f, 8.f, 1.5f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(1.5f, 0.f, 1.5f), glm::vec3(0, 0, -1));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        gfx->drawVoxelFaceInstances(&green, 1, 0.f, 0.f, 0.f, "posY", atlas, 4);
+    }
+    RenderSystem::render(*gfx);
+    Color cGreen = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(cGreen.g > cGreen.b);
+
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        gfx->drawVoxelFaceInstances(&blue, 1, 0.f, 0.f, 0.f, "posY", atlas, 4);
+    }
+    RenderSystem::render(*gfx);
+    Color cBlue = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(cBlue.b > cBlue.g);
+}
+
+TEST_CASE("voxel.render.maxTex127_on16WideAtlas") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 16, 8);
+    uint32_t packed = PackedRect::pack(0, 0, 0, 4, 4, 127).bits;
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::vec3 eye(2.f, 10.f, 2.f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(2.f, 0.f, 2.f), glm::vec3(0, 0, -1));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 16);
+    }
+    RenderSystem::render(*gfx);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.04f);
+}
+
+TEST_CASE("voxel.render.fourTexBlocksSameFrame") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 360, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    fillCube(world.get(), 0, 0, 0, 3, 1);
+    fillCube(world.get(), 5, 0, 0, 3, 2);
+    fillCube(world.get(), 0, 0, 5, 3, 3);
+    fillCube(world.get(), 5, 0, 5, 3, 4);
+    world->remeshDirty();
+    // Four different top-face textures → at least 4 PosY rects.
+    CHECK(world->getChunk(0, 0, 0)->faceRectCount(FaceDir::PosY) >= 4);
+
+    const glm::vec3 eye(4.f, 16.f, 4.f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(4.f, 0.f, 4.f), glm::vec3(0, 0, -1));
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(55.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+    world->selectVisible(&vp[0][0], eye.x, eye.y, eye.z, 100.f, true);
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        world->drawVisible(gfx, atlas, 4);
+    }
+    RenderSystem::render(*gfx);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.03f);
+}
+
+TEST_CASE("voxel.render.packedTex0_samplesFirstAtlasTile") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    // Packed tex 0 is a valid atlas index even though voxel air is also 0.
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    uint32_t packed = PackedRect::pack(0, 0, 0, 4, 4, 0).bits;  // tile 0 = red
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::vec3 eye(2.f, 10.f, 2.f);
+    const glm::mat4 view =
+        glm::lookAtRH(eye, glm::vec3(2.f, 0.f, 2.f), glm::vec3(0, 0, -1));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posY", atlas, 4);
+    }
+    RenderSystem::render(*gfx);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(mid.r > mid.g);
+    CHECK(mid.r > mid.b);
+    CHECK(mid.r > 0.08f);
+}
+
+TEST_CASE("voxel.render.atlasYellowThenMagentaSwap") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 300, 220);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    fillCube(world.get(), 0, 0, 0, 5, 3);  // yellow
+    world->remeshDirty();
+    const glm::vec3 eye(2.5f, 2.5f, 16.f);
+    const glm::vec3 target(2.5f, 2.5f, 2.5f);
+
+    renderVoxelFrame(gfx, world.get(), atlas, 4, eye, target, 100.f, true);
+    Color yellow = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(yellow.r > yellow.b);
+    CHECK(yellow.g > yellow.b);
+
+    for (int z = 0; z < 5; ++z)
+        for (int y = 0; y < 5; ++y)
+            for (int x = 0; x < 5; ++x) world->setVoxel(x, y, z, 4);  // magenta
+    world->remeshDirty();
+    renderVoxelFrame(gfx, world.get(), atlas, 4, eye, target, 100.f, true);
+    Color magenta = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(magenta.r > magenta.g);
+    CHECK(magenta.b > magenta.g);
 }
