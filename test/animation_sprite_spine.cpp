@@ -23,7 +23,8 @@ using namespace eve::animation;
 
 TEST_CASE("animation.sprite.sheetGridAndNamed") {
     std::unique_ptr<SpriteSheet> sheet(new SpriteSheet());
-    CHECK_EQ(sheet->setGrid(4, 2, 32, 48, 0, 0, 0, 0), 8);
+    int added = sheet->setGrid(4, 2, 32, 48, 0, 0, 0, 0);
+    CHECK_EQ(added, 8);
     CHECK_EQ(sheet->getFrameCount(), 8);
     CHECK_EQ(sheet->getFrameX(0), 0);
     CHECK_EQ(sheet->getFrameY(0), 0);
@@ -33,8 +34,10 @@ TEST_CASE("animation.sprite.sheetGridAndNamed") {
     CHECK_EQ(sheet->getFrameY(5), 48);
 
     sheet->clear();
-    CHECK_EQ(sheet->addFrame("idle0", 10, 20, 16, 16), 0);
-    CHECK_EQ(sheet->addFrame("idle1", 26, 20, 16, 16), 1);
+    int i0 = sheet->addFrame("idle0", 10, 20, 16, 16);
+    int i1 = sheet->addFrame("idle1", 26, 20, 16, 16);
+    CHECK_EQ(i0, 0);
+    CHECK_EQ(i1, 1);
     CHECK_EQ(sheet->findFrame("idle1"), 1);
     CHECK_EQ(sheet->findFrame("missing"), -1);
 
@@ -185,16 +188,20 @@ TEST_CASE("animation.spine.skeletonAndAnim") {
         "  size: 24, 24\n";
 
     auto *animMod = Animation::create();
-    std::unique_ptr<SpineSkeletonData> data(animMod->newSpineSkeletonDataFromJson(json));
-    REQUIRE(data != nullptr);
+    SpineSkeletonData *dataRaw = animMod->newSpineSkeletonDataFromJson(json);
+    std::unique_ptr<SpineSkeletonData> data(dataRaw);
+    CHECK(dataRaw != nullptr);
+    if (!dataRaw) return;
     CHECK_EQ(data->getBoneCount(), 3);
     CHECK_EQ(data->findBone("head"), 2);
     CHECK_EQ(data->getSlotCount(), 2);
     CHECK_EQ(data->getAnimationCount(), 2);
     CHECK(std::fabs(data->getAnimationDuration(data->findAnimation("idle")) - 1.f) < 1e-4f);
 
-    std::unique_ptr<SpineAtlas> atlas(animMod->newSpineAtlasFromText(atlasText));
-    REQUIRE(atlas != nullptr);
+    SpineAtlas *atlasRaw = animMod->newSpineAtlasFromText(atlasText);
+    std::unique_ptr<SpineAtlas> atlas(atlasRaw);
+    CHECK(atlasRaw != nullptr);
+    if (!atlasRaw) return;
 
     std::unique_ptr<SpineSkeleton> sk(animMod->newSpineSkeleton(data.get()));
     sk->updateWorldTransform();
@@ -212,7 +219,8 @@ TEST_CASE("animation.spine.skeletonAndAnim") {
     CHECK(std::fabs(sk->getBoneLocalRotation(1) - 20.f) < 1e-3f);
     CHECK_EQ(player->getDrawSlotCount(), 2);
 
-    player->play("nod");
+    CHECK(player->play("nod"));
+    player->setLoop(false);
     player->setTime(0.25f);
     player->apply();
     // head setup y=30 + translate -8
@@ -240,8 +248,10 @@ TEST_CASE("animation.spine.modulePump") {
     ]}}}
   }
 })JSON";
-    std::unique_ptr<SpineSkeletonData> data(anim->newSpineSkeletonDataFromJson(json));
-    REQUIRE(data);
+    SpineSkeletonData *dataRaw = anim->newSpineSkeletonDataFromJson(json);
+    std::unique_ptr<SpineSkeletonData> data(dataRaw);
+    CHECK(dataRaw != nullptr);
+    if (!dataRaw) return;
     std::unique_ptr<SpineSkeleton> sk(anim->newSpineSkeleton(data.get()));
     std::unique_ptr<SpineAnim> player(anim->newSpineAnim(sk.get()));
     player->play("spin");

@@ -106,29 +106,57 @@ bool SpineAtlas::loadFromText(const std::string &text, std::string *error) {
     int pageIndex = -1;
     Region *cur   = nullptr;
 
-    auto finishRegion = [&]() { cur = nullptr; };
+    auto applyKeyValue = [&](const std::string &keyIn, const std::string &val) {
+        std::string key = keyIn;
+        for (char &c : key) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        if (cur) {
+            if (key == "rotate") {
+                bool b = false;
+                parseBool(val, b);
+                cur->rotate = b;
+            } else if (key == "xy") {
+                parsePair(val, cur->x, cur->y);
+            } else if (key == "size") {
+                parsePair(val, cur->w, cur->h);
+            } else if (key == "orig" || key == "originalsize") {
+                parsePair(val, cur->origW, cur->origH);
+            } else if (key == "offset") {
+                parsePair(val, cur->offsetX, cur->offsetY);
+            }
+        } else if (pageIndex >= 0) {
+            Page &p = pages_[static_cast<size_t>(pageIndex)];
+            if (key == "size") parsePair(val, p.width, p.height);
+        }
+    };
 
     while (std::getline(in, line)) {
         if (!line.empty() && line.back() == '\r') line.pop_back();
         std::string raw = line;
         std::string t   = trim(line);
         if (t.empty()) {
-            finishRegion();
+            cur = nullptr;
             continue;
         }
 
-        if (!startsWithIndent(raw)) {
-            finishRegion();
+        const bool indented = startsWithIndent(raw);
+        auto colon          = t.find(':');
+
+        // Spine atlas: page keys may be unindented ("size: W,H"); region keys are indented.
+        if (colon != std::string::npos && (indented || cur == nullptr)) {
+            // Unindented key:value while no region → page property (ends region context).
+            if (!indented) cur = nullptr;
+            applyKeyValue(trim(t.substr(0, colon)), trim(t.substr(colon + 1)));
+            continue;
+        }
+
+        if (!indented && colon == std::string::npos) {
             std::string lower = t;
             for (char &c : lower) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
             const bool looksLikeImage =
-                lower.size() > 4 && (lower.find(".png") != std::string::npos ||
-                                     lower.find(".jpg") != std::string::npos ||
-                                     lower.find(".jpeg") != std::string::npos ||
-                                     lower.find(".webp") != std::string::npos ||
-                                     lower.find(".ktx") != std::string::npos ||
-                                     lower.find(".pvr") != std::string::npos);
-            // First entry, or an image filename → new atlas page; otherwise region.
+                lower.find(".png") != std::string::npos || lower.find(".jpg") != std::string::npos ||
+                lower.find(".jpeg") != std::string::npos || lower.find(".webp") != std::string::npos ||
+                lower.find(".ktx") != std::string::npos || lower.find(".pvr") != std::string::npos;
+
             if (pageIndex < 0 || looksLikeImage) {
                 Page p;
                 p.name = t;
@@ -151,36 +179,8 @@ bool SpineAtlas::loadFromText(const std::string &text, std::string *error) {
             continue;
         }
 
-        // Indented key: value
-        auto colon = t.find(':');
-        if (colon == std::string::npos) continue;
-        std::string key = trim(t.substr(0, colon));
-        std::string val = trim(t.substr(colon + 1));
-        for (char &c : key) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-
-        if (cur) {
-            if (key == "rotate") {
-                bool b = false;
-                parseBool(val, b);
-                cur->rotate = b;
-            } else if (key == "xy") {
-                parsePair(val, cur->x, cur->y);
-            } else if (key == "size") {
-                parsePair(val, cur->w, cur->h);
-            } else if (key == "orig" || key == "originalsize") {
-                parsePair(val, cur->origW, cur->origH);
-            } else if (key == "offset") {
-                parsePair(val, cur->offsetX, cur->offsetY);
-            } else if (key == "index") {
-                // unused
-            }
-        } else if (pageIndex >= 0) {
-            Page &p = pages_[static_cast<size_t>(pageIndex)];
-            if (key == "size") {
-                parsePair(val, p.width, p.height);
-            }
-            // format/filter/repeat ignored
-        }
+        if (colon != std::string::npos)
+            applyKeyValue(trim(t.substr(0, colon)), trim(t.substr(colon + 1)));
     }
 
     for (Region &r : regions_) {

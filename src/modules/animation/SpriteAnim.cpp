@@ -62,6 +62,10 @@ void SpriteAnim::setLoop(bool loop) {
     loopValue_    = loop;
 }
 
+bool SpriteAnim::getLoop() const {
+    return loopOverride_ ? loopValue_ : (clip_ && clip_->getLoop());
+}
+
 int SpriteAnim::getSheetFrame() const {
     if (!clip_ || clipFrame_ < 0) return -1;
     return clip_->getSheetFrame(clipFrame_);

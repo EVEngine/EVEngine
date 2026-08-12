@@ -42,7 +42,7 @@ public:
     void  setTime(float seconds);
     float getTime() const { return time_; }
     void  setLoop(bool loop);
-    bool  getLoop() const { return loopOverride_ ? loopValue_ : (clip_ && clip_->getLoop()); }
+    bool  getLoop() const;
 
     bool isPlaying() const { return playing_ && !paused_; }
     bool isPaused() const { return paused_; }
