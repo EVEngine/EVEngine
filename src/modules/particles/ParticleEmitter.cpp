@@ -150,8 +150,8 @@ void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, fl
 void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
     // Prefer skin surface when configured on the owning entity.
     if (cfg.entity) {
-        auto *skinComp = cfg.entity->skinSource();
-        if (skinComp && skinComp->enabled) {
+        auto skinComp = cfg.entity->skinSource();
+        if (skinComp->enabled) {
             float sx = cfg.x, sy = cfg.y;
             if (sampleSkinSpawn(*skinComp, sim, sx, sy)) {
                 spawnParticleAt(cfg, sim, sx, sy);
@@ -504,7 +504,7 @@ bool ParticleEmitter::getAutoReload() { return resource()->autoReload; }
 std::string ParticleEmitter::getConfigPath() { return resource()->path; }
 
 void ParticleEmitter::attachToBone(animation::AnimPose *pose, int boneIndex) {
-    auto *a = attach();
+    auto a = attach();
     a->pose = pose;
     a->boneIndex = boneIndex;
     a->enabled = pose != nullptr && boneIndex >= 0;
@@ -514,7 +514,7 @@ void ParticleEmitter::attachToBone(animation::AnimPose *pose, int boneIndex) {
 void ParticleEmitter::attachToBoneByName(animation::AnimPose *pose,
                                          animation::AnimSkeleton *skeleton,
                                          const std::string &boneName) {
-    auto *a = attach();
+    auto a = attach();
     a->skeleton = skeleton;
     int idx = -1;
     if (skeleton) idx = skeleton->findBone(boneName);
@@ -522,7 +522,7 @@ void ParticleEmitter::attachToBoneByName(animation::AnimPose *pose,
 }
 
 void ParticleEmitter::setAttachOffset(float x, float y, float z) {
-    auto *a = attach();
+    auto a = attach();
     a->offsetX = x;
     a->offsetY = y;
     a->offsetZ = z;
@@ -545,7 +545,7 @@ void ParticleEmitter::setFollowBoneRotation(bool enable) {
 }
 
 void ParticleEmitter::detach() {
-    auto *a = attach();
+    auto a = attach();
     a->enabled = false;
     a->pose = nullptr;
     a->boneIndex = -1;
@@ -559,7 +559,7 @@ void ParticleEmitter::syncAttach() {
 }
 
 void ParticleEmitter::setSkinSource(animation::AnimSkin *skin, animation::AnimPose *pose) {
-    auto *s = skinSource();
+    auto s = skinSource();
     s->skin = skin;
     s->pose = pose;
     s->enabled = skin != nullptr && pose != nullptr;
@@ -568,7 +568,7 @@ void ParticleEmitter::setSkinSource(animation::AnimSkin *skin, animation::AnimPo
 }
 
 void ParticleEmitter::setSkinBoneFilter(int skeletonBoneIndex, float minWeight) {
-    auto *s = skinSource();
+    auto s = skinSource();
     s->filterBone = skeletonBoneIndex;
     s->minWeight = minWeight < 0.f ? 0.f : minWeight;
     s->candidatesDirty = true;
@@ -576,7 +576,7 @@ void ParticleEmitter::setSkinBoneFilter(int skeletonBoneIndex, float minWeight) 
 
 void ParticleEmitter::setSkinBoneFilterByName(animation::AnimSkeleton *skeleton,
                                               const std::string &boneName, float minWeight) {
-    auto *s = skinSource();
+    auto s = skinSource();
     s->skeleton = skeleton;
     int idx = -1;
     if (skeleton) idx = skeleton->findBone(boneName);
@@ -590,7 +590,7 @@ void ParticleEmitter::setSkinPlane(const std::string &plane) {
 void ParticleEmitter::setSkinScale(float scale) { skinSource()->scale = scale; }
 
 void ParticleEmitter::clearSkinSource() {
-    auto *s = skinSource();
+    auto s = skinSource();
     s->enabled = false;
     s->skin = nullptr;
     s->pose = nullptr;
@@ -603,7 +603,7 @@ bool ParticleEmitter::hasSkinSource() { return skinSource()->enabled; }
 
 void ParticleEmitter::emitFromSkin(int count) {
     if (count <= 0) return;
-    auto *s = skinSource();
+    auto s = skinSource();
     if (!s->enabled) return;
     auto c = config();
     auto simc = sim();
