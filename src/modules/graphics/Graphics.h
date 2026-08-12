@@ -376,6 +376,15 @@ virtual void begin3DFrame() = 0;
         return newMeshShader(std::string(), fragGlsl);
     }
 
+    /**
+     * Hair/fur card shader (alpha blend + Kajiya-Kay). Empty vert → mesh3d_hair.vert.
+     * Owned by Graphics.
+     */
+    virtual Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                         const std::vector<uint32_t> &fragSpv) = 0;
+    /** Built-in hair shader with default anisotropic parameters. */
+    Shader *newHairShader();
+
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
 

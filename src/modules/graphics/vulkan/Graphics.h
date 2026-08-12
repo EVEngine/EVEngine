@@ -136,6 +136,7 @@ struct GpuShader {
     vk::Pipeline mesh3dPipeline;
     vk::PipelineLayout pipelineLayout;
     bool isMesh3D = false;
+    bool isHair3D = false;
 };
 
 class Graphics final : public eve::graphics::Graphics {
@@ -181,6 +182,8 @@ public:
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
+    Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                 const std::vector<uint32_t> &fragSpv) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
@@ -265,6 +268,9 @@ private:
     vk::Pipeline createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
                                            const std::vector<uint32_t> &frag,
                                            vk::PipelineLayout layout);
+    vk::Pipeline createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
+                                          const std::vector<uint32_t> &frag,
+                                          vk::PipelineLayout layout);
     void destroySwapchainResources();
     void flushBatch();
     void flushToSwapchain();

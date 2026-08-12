@@ -1,4 +1,5 @@
 #include "graphics/Graphics.h"
+#include "graphics/HairShader.h"
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/RenderSystem.h"
@@ -177,6 +178,8 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setTexture", &Renderable3D::setTexture);
     ent.addFunc("setNormalTexture", &Renderable3D::setNormalTexture);
     ent.addFunc("setShader", &Renderable3D::setShader);
+    ent.addFunc("setHair", &Renderable3D::setHair);
+    ent.addFunc("getHair", &Renderable3D::getHair);
     ent.addFunc("setTint", &Renderable3D::setTint);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
     ent.addFunc("setRoughness", &Renderable3D::setRoughness);
@@ -321,6 +324,7 @@ void Graphics::expose(ssq::Class &cls) {
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShader));
     cls.addFunc("newMeshShader",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newMeshShader));
+    cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
@@ -349,6 +353,8 @@ Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
 AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
 AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
+
+Shader *Graphics::newHairShader() { return hair::createShader(this); }
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
     if (drawable) drawable->draw(this, m);

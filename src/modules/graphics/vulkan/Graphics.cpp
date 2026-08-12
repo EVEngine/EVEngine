@@ -38,6 +38,8 @@
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
 #include "graphics/shaders/lit2d_frag_spv.inc"
 #include "graphics/shaders/voxel_rect_vert_spv.inc"
@@ -1045,6 +1047,95 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
     return result.value;
 }
 
+vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
+                                                const std::vector<uint32_t> &frag,
+                                                vk::PipelineLayout layout) {
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+
+    vk::PipelineShaderStageCreateInfo stages[2]{};
+    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
+    stages[0].module = vertModule;
+    stages[0].pName = "main";
+    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
+    stages[1].module = fragModule;
+    stages[1].pName = "main";
+
+    auto binding = MeshVertex::getBindingDescription(0);
+    auto attrs = MeshVertex::getAttributeDescription(0);
+    vk::PipelineVertexInputStateCreateInfo vi{};
+    vi.vertexBindingDescriptionCount = 1;
+    vi.pVertexBindingDescriptions = &binding;
+    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
+    vi.pVertexAttributeDescriptions = attrs.data();
+
+    vk::PipelineInputAssemblyStateCreateInfo ia{};
+    ia.topology = vk::PrimitiveTopology::eTriangleList;
+
+    vk::PipelineViewportStateCreateInfo vp{};
+    vp.viewportCount = 1;
+    vp.scissorCount = 1;
+
+    vk::PipelineRasterizationStateCreateInfo rs{};
+    rs.polygonMode = vk::PolygonMode::eFill;
+    rs.cullMode = vk::CullModeFlagBits::eNone;
+    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.lineWidth = 1.0f;
+    rs.depthBiasEnable = true;
+    rs.depthBiasConstantFactor = -1.5f;
+    rs.depthBiasSlopeFactor = -1.0f;
+
+    vk::PipelineMultisampleStateCreateInfo ms{};
+    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
+
+    vk::PipelineDepthStencilStateCreateInfo ds{};
+    ds.depthTestEnable = true;
+    ds.depthWriteEnable = false;
+    ds.depthCompareOp = vk::CompareOp::eLess;
+
+    vk::PipelineColorBlendAttachmentState blendAtt{};
+    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+    blendAtt.blendEnable = true;
+    blendAtt.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
+    blendAtt.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+    blendAtt.colorBlendOp = vk::BlendOp::eAdd;
+    blendAtt.srcAlphaBlendFactor = vk::BlendFactor::eOne;
+    blendAtt.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+    blendAtt.alphaBlendOp = vk::BlendOp::eAdd;
+
+    vk::PipelineColorBlendStateCreateInfo blend{};
+    blend.attachmentCount = 1;
+    blend.pAttachments = &blendAtt;
+
+    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
+    vk::PipelineDynamicStateCreateInfo dyn{};
+    dyn.dynamicStateCount = 2;
+    dyn.pDynamicStates = dynStates;
+
+    vk::GraphicsPipelineCreateInfo pci{};
+    pci.stageCount = 2;
+    pci.pStages = stages;
+    pci.pVertexInputState = &vi;
+    pci.pInputAssemblyState = &ia;
+    pci.pViewportState = &vp;
+    pci.pRasterizationState = &rs;
+    pci.pMultisampleState = &ms;
+    pci.pDepthStencilState = &ds;
+    pci.pColorBlendState = &blend;
+    pci.pDynamicState = &dyn;
+    pci.layout = layout;
+    pci.renderPass = renderpass;
+    pci.subpass = 0;
+
+    auto result = device->createGraphicsPipeline(nullptr, pci);
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
+    if (result.result != vk::Result::eSuccess)
+        throw Exception("failed to create mesh3d hair pipeline");
+    return result.value;
+}
+
 void Graphics::ensureOffscreenPipelines() {
     if (offscreenRenderPass) return;
 
@@ -1951,6 +2042,38 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
     gpu->mesh3dPipeline =
         createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout);
+
+    auto sh = std::make_unique<Shader>();
+    sh->setKind(Shader::Kind::eMesh3D);
+    sh->setSpirv(std::move(vert), fragSpv);
+    sh->gpuHandle = gpu.get();
+
+    Shader *raw = sh.get();
+    ownedShaders.push_back(std::move(sh));
+    ownedGpuShaders.push_back(std::move(gpu));
+    return raw;
+}
+
+Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
+                                       const std::vector<uint32_t> &fragSpv) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newHairShaderFromSpv: graphics not initialized");
+    if (fragSpv.empty()) throw Exception("newHairShaderFromSpv: empty fragment SPIR-V");
+    if (!mesh3dShaderPipelineLayout)
+        throw Exception("newHairShaderFromSpv: mesh3d pipeline layout missing");
+
+    std::vector<uint32_t> vert = vertSpv;
+    if (vert.empty())
+        vert.assign(mesh3d_hair_vert_spv, mesh3d_hair_vert_spv + mesh3d_hair_vert_spv_count);
+    if (vert[0] != 0x07230203 || fragSpv[0] != 0x07230203)
+        throw Exception("newHairShaderFromSpv: SPIR-V magic mismatch");
+
+    auto gpu = std::make_unique<GpuShader>();
+    gpu->isMesh3D = true;
+    gpu->isHair3D = true;
+    gpu->pipelineLayout = mesh3dShaderPipelineLayout;
+    gpu->mesh3dPipeline =
+        createMesh3DHairPipeline(vert, fragSpv, mesh3dShaderPipelineLayout);
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
