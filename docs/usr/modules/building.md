@@ -3,6 +3,8 @@
 面向策略 / RTS / 经营模拟（ETS）的建筑放置框架：数据驱动定义、格子占用世界、鬼影预览、
 可插拔校验与吸附规则。设计见 [建筑放置系统设计](../../dev/建筑放置系统设计.md)。
 
+可运行示例：[`examples/building`](../../../examples/building/)（`make building`）。
+
 ## 入口
 
 ```squirrel

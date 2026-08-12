@@ -315,3 +315,51 @@ TEST_CASE("building.facade.endToEnd") {
     mod.clearBuildingDefinitions();
     mod.clearChangeEvents();
 }
+
+TEST_CASE("building.demo.townSandboxDefs") {
+    // Mirrors examples/building/main.nut definitions: road / house / stall / dock / L-barn.
+    BuildingRegistry::clear();
+    PlacementSystem::clearEvents();
+    PlacementSystem::ensureBuiltins();
+
+    Building mod;
+    int n = mod.registerBuildingsFromJson(R"([
+      {"id":"road","displayName":"石板路","category":"infra",
+       "footprintW":1,"footprintH":1,"tags":["road"],"cost":{"gold":2}},
+      {"id":"house.wood","displayName":"木屋","category":"housing",
+       "footprintW":2,"footprintH":2,"tags":["house","housing"],
+       "requireTerrain":[1],"cost":{"gold":15,"wood":20}},
+      {"id":"stall","displayName":"摊位","category":"commerce",
+       "footprintW":1,"footprintH":1,"tags":["shop"],
+       "requireTerrain":[1],"requireAdjacentTag":"road","cost":{"gold":8,"wood":6}},
+      {"id":"dock","displayName":"码头","category":"infra",
+       "footprintW":2,"footprintH":1,"tags":["dock"],
+       "requireTerrain":[2],"rotationMode":"cardinal","cost":{"gold":25,"wood":30}},
+      {"id":"barn.l","displayName":"L形仓","category":"storage",
+       "footprintW":2,"footprintH":2,"tags":["barn"],
+       "footprintMask":[1,1,1,0],"requireTerrain":[1],"cost":{"gold":18,"wood":24}}
+    ])");
+    CHECK_EQ(n, 5);
+
+    PlacementWorld world(24, 18, 28.f);
+    world.fillTerrain(1);
+    for (int x = 0; x < 24; ++x) world.setTerrain(x, 11, 2);
+
+    CHECK(world.placeAt("road", 5, 5, 0.f) > 0);
+    CHECK(!world.canPlace("stall", 10, 5, 0.f));
+    CHECK_EQ(world.canPlaceReason("stall", 10, 5, 0.f), "adjacency_tag");
+    CHECK(world.canPlace("stall", 5, 4, 0.f));
+    CHECK(world.placeAt("stall", 5, 4, 0.f) > 0);
+
+    CHECK(!world.canPlace("dock", 1, 1, 0.f));
+    CHECK_EQ(world.canPlaceReason("dock", 1, 1, 0.f), "terrain_mismatch");
+    CHECK(world.canPlace("dock", 3, 11, 0.f));
+    CHECK(world.placeAt("dock", 3, 11, 0.f) > 0);
+
+    CHECK(world.placeAt("house.wood", 8, 5, 0.f) > 0);
+    CHECK(world.placeAt("barn.l", 12, 5, 0.f) > 0);
+    CHECK(world.isCellEmpty(13, 6));  // L mask hole
+    CHECK_EQ(world.getBuildingCount(), 5);
+
+    BuildingRegistry::clear();
+}
