@@ -14,11 +14,21 @@ print(image.getName() + "\n");
 // 若已从 FontData 得到 ImageData，可交给 gfx.newTexture(imageData)。
 ```
 
-不要照搬 `Image.h` 中只面向 C++ 的方法到脚本。需要直接编辑像素时，应先确认目标方法已在 `Image::expose` 中注册。
+不要照搬 `Image.h` 中只面向 C++ 的方法到脚本。需要直接编辑像素时，应先确认目标方法已在 `Image::expose` 中注册。通过 `FontData` 暴露的 `ImageData` 目前支持 `getWidth` / `getHeight` / `getFormat` / `getSize` / `rotate`。
 
 ## 对象关系与调用时机
 
 C++ `Image` 能创建和解码 `ImageData`，但当前 `Image::expose()` 仅绑定 `getName()`。用户文档严格描述脚本可用面，避免把内部接口误写成 Squirrel API。
+
+`ImageData::rotate(radians, filter, expand)`（C++，脚本经 Font 绑定的 ImageData 也可调用）按**逆映射**旋转像素：遍历目标图每个像素，用逆旋转矩阵回算源坐标，再按 `filter` 采样。
+
+| 参数 | 含义 |
+|------|------|
+| `radians` | 弧度；与 `Math.rotate2*` 同号（Y 向下时视觉为顺时针，同 LÖVE） |
+| `filter` | `"nearest"`（像素风）或 `"linear"`（双线性） |
+| `expand` | `true` 时画布扩到容纳整图 AABB；`false` 保持原尺寸（可能裁切） |
+
+返回同格式的新 `ImageData`（调用方拥有）；源范围外采样为透明黑。
 
 ## 目标导向指南
 
@@ -40,6 +50,7 @@ C++ `Image` 能创建和解码 `ImageData`，但当前 `Image::expose()` 仅绑�
 
 - `getName()`：返回模块名。
 - C++ 侧的 `newImageData(...)`、`isCompressed(...)`、`newCubeFaces(...)` 和 `newVolumeLayers(...)` 当前不是脚本 API。
+- `ImageData.rotate(radians, filter, expand)`：CPU 像素旋转（经 Font 绑定的 ImageData）；`filter` 为 `"nearest"` / `"linear"`。
 
 ## 使用要点
 

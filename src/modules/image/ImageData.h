@@ -60,6 +60,24 @@ public:
 	void paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh);
 
 	/**
+	 * Rotate pixels around the image center and return a new ImageData.
+	 *
+	 * Uses inverse mapping (iterate destination → sample source) so every output
+	 * pixel is filled — the standard approach for image rotation.
+	 *
+	 * Angle convention matches Math::rotate2*: positive radians appear clockwise
+	 * with the engine's Y-down screen coordinates (same as LÖVE draw rotation).
+	 *
+	 * @param radians Rotation angle in radians.
+	 * @param filter  "nearest" (pixel art / sharp) or "linear" (bilinear).
+	 * @param expand  If true, grow the canvas to fit the full rotated AABB;
+	 *                if false, keep the source size (edges may be clipped).
+	 * @return Caller-owned ImageData in the same pixel format; out-of-source
+	 *         samples remain transparent black.
+	 **/
+	ImageData *rotate(float radians, std::string filter = "nearest", bool expand = true) const;
+
+	/**
 	 * Checks whether a position is inside this ImageData. Useful for checking bounds.
 	 * @param x The position along the x-axis.
 	 * @param y The position along the y-axis.

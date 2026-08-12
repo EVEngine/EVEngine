@@ -207,3 +207,99 @@ TEST_CASE("image.newCubeFaces.invalidDimensionsThrows") {
     std::unique_ptr<eve::image::ImageData> src(module->newImageData(5, 7));
     CHECK(expectException([&] { module->newCubeFaces(src.get()); }));
 }
+
+TEST_CASE("image.rotate.ninetyDegreesNearest") {
+    auto* module = img();
+    // 3x2 with a unique corner marker at (2,0).
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(3, 2));
+    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
+    Colorf green{0.0f, 1.0f, 0.0f, 1.0f};
+    src->setPixel(2, 0, red);
+    src->setPixel(0, 1, green);
+
+    // +90° with Math::rotate2* / Y-down → clockwise on screen.
+    // Corner (2,0) relative to center (1.5,1.0): (+0.5,-1.0) → (+1.0,+0.5)
+    // → destination pixel center ≈ (dstCx+1, dstCy+0.5).
+    std::unique_ptr<eve::image::ImageData> rotated(
+        src->rotate(float(M_PI) * 0.5f, "nearest", true));
+    REQUIRE(rotated.get() != nullptr);
+    // Expanded AABB of 3x2 at 90° is 2x3.
+    CHECK_EQ(rotated->getWidth(), 2);
+    CHECK_EQ(rotated->getHeight(), 3);
+
+    // Find red: should land near the bottom of the tall canvas after clockwise 90°.
+    int redCount = 0, greenCount = 0;
+    int redX = -1, redY = -1, greenX = -1, greenY = -1;
+    for (int y = 0; y < rotated->getHeight(); ++y) {
+        for (int x = 0; x < rotated->getWidth(); ++x) {
+            Colorf p = rotated->getPixel(x, y);
+            if (nearColor(p, red)) {
+                ++redCount;
+                redX = x;
+                redY = y;
+            }
+            if (nearColor(p, green)) {
+                ++greenCount;
+                greenX = x;
+                greenY = y;
+            }
+        }
+    }
+    CHECK_EQ(redCount, 1);
+    CHECK_EQ(greenCount, 1);
+    // Clockwise 90°: former top-right becomes bottom-ish; former bottom-left becomes top-ish.
+    CHECK(redY > greenY);
+    (void)redX;
+    (void)greenX;
+}
+
+TEST_CASE("image.rotate.identityAndExpandFalse") {
+    auto* module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(4, 4));
+    Colorf c{0.2f, 0.4f, 0.6f, 1.0f};
+    src->setPixel(1, 2, c);
+
+    std::unique_ptr<eve::image::ImageData> same(
+        src->rotate(0.f, "nearest", false));
+    REQUIRE(same.get() != nullptr);
+    CHECK_EQ(same->getWidth(), 4);
+    CHECK_EQ(same->getHeight(), 4);
+    CHECK(nearColor(same->getPixel(1, 2), c));
+
+    // 45° without expand keeps size; marker stays near center area.
+    std::unique_ptr<eve::image::ImageData> clipped(
+        src->rotate(float(M_PI) * 0.25f, "nearest", false));
+    REQUIRE(clipped.get() != nullptr);
+    CHECK_EQ(clipped->getWidth(), 4);
+    CHECK_EQ(clipped->getHeight(), 4);
+}
+
+TEST_CASE("image.rotate.bilinearAndBadFilter") {
+    auto* module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(2, 2));
+    Colorf white{1.0f, 1.0f, 1.0f, 1.0f};
+    src->setPixel(0, 0, white);
+    src->setPixel(1, 0, white);
+    src->setPixel(0, 1, white);
+    src->setPixel(1, 1, white);
+
+    std::unique_ptr<eve::image::ImageData> rotated(
+        src->rotate(float(M_PI) * 0.25f, "linear", true));
+    REQUIRE(rotated.get() != nullptr);
+    CHECK(rotated->getWidth() >= 2);
+    CHECK(rotated->getHeight() >= 2);
+
+    // At least one opaque-ish sample should survive bilinear sampling.
+    bool anyLit = false;
+    for (int y = 0; y < rotated->getHeight() && !anyLit; ++y) {
+        for (int x = 0; x < rotated->getWidth(); ++x) {
+            if (rotated->getPixel(x, y).a > 0.1f) {
+                anyLit = true;
+                break;
+            }
+        }
+    }
+    CHECK(anyLit);
+
+    CHECK(expectException([&] { src->rotate(0.1f, "cubic", true); }));
+}

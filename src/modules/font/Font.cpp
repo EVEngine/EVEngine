@@ -92,6 +92,7 @@ void Font::expose(ssq::Table &table) {
     img.addFunc("getHeight", &image::ImageData::getHeight);
     img.addFunc("getFormat", &image::ImageData::getFormat);
     img.addFunc("getSize", &image::ImageData::getSize);
+    img.addFunc("rotate", &image::ImageData::rotate);
 }
 
 void Font::expose(ssq::Class &cls) {

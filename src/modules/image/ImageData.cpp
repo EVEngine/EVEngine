@@ -23,7 +23,10 @@
 #include "filesystem/Filesystem.h"
 #include "medialoader/image/pixelformat.h"
 
+#include "common/Exception.h"
+
 #include <algorithm>  // min/max
+#include <cmath>
 #include <cstring>    // memcpy
 
 using namespace medialoader;
@@ -495,6 +498,164 @@ Colorf ImageData::getPixel(int x, int y) const {
     Colorf c;
     getPixel(x, y, c);
     return c;
+}
+
+namespace {
+
+enum class RotateFilter {
+	Nearest,
+	Linear,
+};
+
+RotateFilter parseRotateFilter(const std::string &name) {
+	if (name == "nearest" || name == "Nearest" || name == "NEAREST")
+		return RotateFilter::Nearest;
+	if (name == "linear" || name == "Linear" || name == "LINEAR" ||
+	    name == "bilinear" || name == "Bilinear" || name == "BILINEAR")
+		return RotateFilter::Linear;
+	throw eve::Exception("Unsupported ImageData rotate filter '%s' (use \"nearest\" or \"linear\")",
+	                     name.c_str());
+}
+
+void rotatePoint(float dx, float dy, float c, float s, float &ox, float &oy) {
+	// Same convention as Math::rotate2X/Y.
+	ox = dx * c - dy * s;
+	oy = dx * s + dy * c;
+}
+
+void inverseRotatePoint(float dx, float dy, float c, float s, float &ox, float &oy) {
+	// Inverse of Math::rotate2*: apply -angle (cos'=c, sin'=-s).
+	ox = dx * c + dy * s;
+	oy = -dx * s + dy * c;
+}
+
+Colorf sampleNearest(const ImageData *src, float sx, float sy) {
+	const int rx = (int)std::floor(sx + 0.5f);
+	const int ry = (int)std::floor(sy + 0.5f);
+	if (!src->inside(rx, ry))
+		return Colorf{0.f, 0.f, 0.f, 0.f};
+	return src->getPixel(rx, ry);
+}
+
+Colorf sampleBilinear(const ImageData *src, float sx, float sy) {
+	const int x0 = (int)std::floor(sx);
+	const int y0 = (int)std::floor(sy);
+	const int x1 = x0 + 1;
+	const int y1 = y0 + 1;
+	const float fx = sx - (float)x0;
+	const float fy = sy - (float)y0;
+	const float ifx = 1.f - fx;
+	const float ify = 1.f - fy;
+
+	auto sampleOrZero = [&](int x, int y) -> Colorf {
+		if (!src->inside(x, y))
+			return Colorf{0.f, 0.f, 0.f, 0.f};
+		return src->getPixel(x, y);
+	};
+
+	const Colorf c00 = sampleOrZero(x0, y0);
+	const Colorf c10 = sampleOrZero(x1, y0);
+	const Colorf c01 = sampleOrZero(x0, y1);
+	const Colorf c11 = sampleOrZero(x1, y1);
+
+	const float w00 = ifx * ify;
+	const float w10 = fx * ify;
+	const float w01 = ifx * fy;
+	const float w11 = fx * fy;
+
+	Colorf out;
+	out.r = w00 * c00.r + w10 * c10.r + w01 * c01.r + w11 * c11.r;
+	out.g = w00 * c00.g + w10 * c10.g + w01 * c01.g + w11 * c11.g;
+	out.b = w00 * c00.b + w10 * c10.b + w01 * c01.b + w11 * c11.b;
+	out.a = w00 * c00.a + w10 * c10.a + w01 * c01.a + w11 * c11.a;
+	return out;
+}
+
+} // namespace
+
+ImageData *ImageData::rotate(float radians, std::string filter, bool expand) const {
+	if (pixelGetFunction == nullptr || pixelSetFunction == nullptr)
+		throw eve::Exception("Unhandled pixel format %s in ImageData::rotate", format.c_str());
+
+	const RotateFilter mode = parseRotateFilter(filter);
+
+	const float srcW = (float)width;
+	const float srcH = (float)height;
+	// Pixel-center coordinates: centers of the image.
+	const float srcCx = srcW * 0.5f;
+	const float srcCy = srcH * 0.5f;
+
+	const float c = std::cos(radians);
+	const float s = std::sin(radians);
+
+	int dstW = width;
+	int dstH = height;
+	float dstCx = srcCx;
+	float dstCy = srcCy;
+
+	if (expand) {
+		// Forward-map the four corners (pixel edges) to compute the AABB.
+		const float corners[4][2] = {
+		    {-srcCx, -srcCy},
+		    {srcW - srcCx, -srcCy},
+		    {-srcCx, srcH - srcCy},
+		    {srcW - srcCx, srcH - srcCy},
+		};
+		float minX = 0.f, maxX = 0.f, minY = 0.f, maxY = 0.f;
+		for (int i = 0; i < 4; ++i) {
+			float ox, oy;
+			rotatePoint(corners[i][0], corners[i][1], c, s, ox, oy);
+			if (i == 0) {
+				minX = maxX = ox;
+				minY = maxY = oy;
+			} else {
+				minX = std::min(minX, ox);
+				maxX = std::max(maxX, ox);
+				minY = std::min(minY, oy);
+				maxY = std::max(maxY, oy);
+			}
+		}
+		dstW = std::max(1, (int)std::ceil(maxX - minX));
+		dstH = std::max(1, (int)std::ceil(maxY - minY));
+		dstCx = dstW * 0.5f;
+		dstCy = dstH * 0.5f;
+	}
+
+	ImageData *dst = nullptr;
+	try {
+		dst = new ImageData(dstW, dstH, format);
+	} catch (std::bad_alloc &) {
+		throw eve::Exception("Out of memory");
+	}
+
+	// Near-identity: copy when angle is ~0 and canvas unchanged.
+	if (!expand && std::fabs(radians) < 1e-7f) {
+		std::memcpy(dst->getData(), data, getSize());
+		return dst;
+	}
+
+	for (int yt = 0; yt < dstH; ++yt) {
+		const float dy = ((float)yt + 0.5f) - dstCy;
+		for (int xt = 0; xt < dstW; ++xt) {
+			const float dx = ((float)xt + 0.5f) - dstCx;
+			float relX, relY;
+			inverseRotatePoint(dx, dy, c, s, relX, relY);
+			// Map back to source pixel-center space.
+			const float sx = relX + srcCx - 0.5f;
+			const float sy = relY + srcCy - 0.5f;
+
+			Colorf color;
+			if (mode == RotateFilter::Nearest)
+				color = sampleNearest(this, sx, sy);
+			else
+				color = sampleBilinear(this, sx, sy);
+
+			if (color.a != 0.f || color.r != 0.f || color.g != 0.f || color.b != 0.f)
+				dst->setPixel(xt, yt, color);
+		}
+	}
+
+	return dst;
 }
 
 union Row {
