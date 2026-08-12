@@ -6,6 +6,7 @@
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 #include "animation/AnimStateMachine.h"
+#include "animation/AnimTrail.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
 #include "animation/MotionDatabase.h"
@@ -87,6 +88,8 @@ AnimSkin *Animation::newSkinFromModel(eve::model3d::ModelData *model, int meshIn
                                       AnimSkeleton *skeleton) {
     return AnimSkin::fromModel(model, meshIndex, skeleton);
 }
+
+AnimTrail *Animation::newTrail(int capacity) { return new AnimTrail(capacity); }
 
 void Animation::registerTween(Tween *t) {
     if (!t) return;
@@ -404,6 +407,45 @@ void Animation::expose(ssq::Table &table) {
     cp.addFunc("getPose", &ControlPose::getPose);
     cp.addFunc("getTargetPose", &ControlPose::getTargetPose);
     cp.addFunc("update", &ControlPose::update);
+
+    auto trail = table.addClass<AnimTrail>(
+        "AnimTrail", std::function<AnimTrail *()>([]() -> AnimTrail * { return nullptr; }), true);
+    trail.addFunc("setCapacity", &AnimTrail::setCapacity);
+    trail.addFunc("getCapacity", &AnimTrail::getCapacity);
+    trail.addFunc("setDuration", &AnimTrail::setDuration);
+    trail.addFunc("getDuration", &AnimTrail::getDuration);
+    trail.addFunc("setMinDistance", &AnimTrail::setMinDistance);
+    trail.addFunc("getMinDistance", &AnimTrail::getMinDistance);
+    trail.addFunc("setWidth", &AnimTrail::setWidth);
+    trail.addFunc("getWidth", &AnimTrail::getWidth);
+    trail.addFunc("setColor", &AnimTrail::setColor);
+    trail.addFunc("getColorR", &AnimTrail::getColorR);
+    trail.addFunc("getColorG", &AnimTrail::getColorG);
+    trail.addFunc("getColorB", &AnimTrail::getColorB);
+    trail.addFunc("getColorA", &AnimTrail::getColorA);
+    trail.addFunc("setFade", &AnimTrail::setFade);
+    trail.addFunc("getFade", &AnimTrail::getFade);
+    trail.addFunc("setStyle", &AnimTrail::setStyle);
+    trail.addFunc("getStyle", &AnimTrail::getStyle);
+    trail.addFunc("setDrawScale", &AnimTrail::setDrawScale);
+    trail.addFunc("getDrawScaleX", &AnimTrail::getDrawScaleX);
+    trail.addFunc("getDrawScaleY", &AnimTrail::getDrawScaleY);
+    trail.addFunc("setDrawOffset", &AnimTrail::setDrawOffset);
+    trail.addFunc("getDrawOffsetX", &AnimTrail::getDrawOffsetX);
+    trail.addFunc("getDrawOffsetY", &AnimTrail::getDrawOffsetY);
+    trail.addFunc("addPoint", &AnimTrail::addPoint);
+    trail.addFunc("addPoint3", &AnimTrail::addPoint3);
+    trail.addFunc("sampleBone", &AnimTrail::sampleBone);
+    trail.addFunc("sampleBoneOffset", &AnimTrail::sampleBoneOffset);
+    trail.addFunc("clear", &AnimTrail::clear);
+    trail.addFunc("update", &AnimTrail::update);
+    trail.addFunc("getPointCount", &AnimTrail::getPointCount);
+    trail.addFunc("getPointX", &AnimTrail::getPointX);
+    trail.addFunc("getPointY", &AnimTrail::getPointY);
+    trail.addFunc("getPointZ", &AnimTrail::getPointZ);
+    trail.addFunc("getPointAge", &AnimTrail::getPointAge);
+    trail.addFunc("getPointAlpha", &AnimTrail::getPointAlpha);
+    trail.addFunc("draw", &AnimTrail::draw);
 }
 
 void Animation::expose(ssq::Class &cls) {
@@ -423,6 +465,7 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newSkeletonFromEvaFile", &Animation::newSkeletonFromEvaFile);
     cls.addFunc("newClipFromEvaFile", &Animation::newClipFromEvaFile);
     cls.addFunc("newSkinFromModel", &Animation::newSkinFromModel);
+    cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);

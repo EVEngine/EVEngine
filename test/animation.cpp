@@ -14,6 +14,7 @@
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
 #include "animation/AnimControlMath.h"
+#include "animation/AnimTrail.h"
 
 #include "common/Exception.h"
 
@@ -831,4 +832,90 @@ TEST_CASE("animation.controlMath.pdGainsCritical") {
     CHECK(c.k1 > 0.f);
     CHECK(c.k2 > 0.f);
     CHECK(c.k3 > 0.f);
+}
+
+TEST_CASE("animation.trail.recordsAndExpires") {
+    auto *anim = Animation::create();
+    std::unique_ptr<AnimTrail> trail(anim->newTrail(8));
+    REQUIRE(trail.get() != nullptr);
+    CHECK_EQ(trail->getCapacity(), 8);
+    trail->setDuration(0.2f);
+    trail->setMinDistance(0.f);
+    trail->setFade(true);
+    trail->setStyle("line");
+    trail->setColor(1.f, 0.5f, 0.2f, 1.f);
+
+    trail->addPoint(0.f, 0.f);
+    trail->addPoint(10.f, 0.f);
+    trail->addPoint(20.f, 5.f);
+    CHECK_EQ(trail->getPointCount(), 3);
+    CHECK(std::fabs(trail->getPointX(0) - 0.f) < 1e-5f);
+    CHECK(std::fabs(trail->getPointX(2) - 20.f) < 1e-5f);
+    CHECK(std::fabs(trail->getPointAlpha(2) - 1.f) < 1e-4f);
+
+    trail->update(0.1f);
+    CHECK_EQ(trail->getPointCount(), 3);
+    CHECK(trail->getPointAge(0) > 0.09f);
+    CHECK(trail->getPointAlpha(0) < 0.6f);
+
+    trail->update(0.15f);
+    CHECK_EQ(trail->getPointCount(), 0);
+
+    trail->draw(nullptr);  // no-op without Graphics
+}
+
+TEST_CASE("animation.trail.capacityAndMinDistance") {
+    std::unique_ptr<AnimTrail> trail(new AnimTrail(4));
+    trail->setDuration(0.f);  // capacity-only eviction
+    trail->setMinDistance(5.f);
+    trail->addPoint(0.f, 0.f);
+    trail->addPoint(1.f, 0.f);  // skipped (< 5)
+    CHECK_EQ(trail->getPointCount(), 1);
+    trail->addPoint(6.f, 0.f);
+    trail->addPoint(12.f, 0.f);
+    trail->addPoint(18.f, 0.f);
+    trail->addPoint(24.f, 0.f);
+    CHECK_EQ(trail->getPointCount(), 4);
+    CHECK(std::fabs(trail->getPointX(0) - 6.f) < 1e-5f);
+    CHECK(std::fabs(trail->getPointX(3) - 24.f) < 1e-5f);
+}
+
+TEST_CASE("animation.trail.sampleBonePlanes") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    sk->applyBindPose(pose.get());
+    pose->setLocalPosition(0, 3.f, 0.f, 7.f);
+    pose->setLocalPosition(1, 0.f, 2.f, 0.f);
+    pose->computeWorld(sk.get());
+
+    std::unique_ptr<AnimTrail> trail(new AnimTrail(16));
+    trail->sampleBone(pose.get(), 1, "xy");
+    CHECK_EQ(trail->getPointCount(), 1);
+    CHECK(std::fabs(trail->getPointX(0) - 3.f) < 1e-4f);
+    CHECK(std::fabs(trail->getPointY(0) - 2.f) < 1e-4f);
+
+    trail->clear();
+    trail->sampleBone(pose.get(), 1, "xz");
+    CHECK(std::fabs(trail->getPointX(0) - 3.f) < 1e-4f);
+    CHECK(std::fabs(trail->getPointY(0) - 7.f) < 1e-4f);
+
+    trail->clear();
+    trail->sampleBoneOffset(pose.get(), 1, 1.f, 0.f, 0.f, "xy");
+    CHECK(std::fabs(trail->getPointX(0) - 4.f) < 1e-4f);
+
+    bool threw = false;
+    try {
+        trail->setStyle("ribbon");
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
+
+    threw = false;
+    try {
+        trail->sampleBone(pose.get(), 1, "uvw");
+    } catch (const eve::Exception &) {
+        threw = true;
+    }
+    CHECK(threw);
 }
