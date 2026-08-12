@@ -150,6 +150,10 @@ public:
     void initWithWindow(void *nativeWindow) override;
     void present() override;
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
+    void setScreenReadbackEnabled(bool enabled) override {
+        eve::graphics::Graphics::setScreenReadbackEnabled(enabled);
+        ensurePresentCaptureHook();
+    }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
@@ -292,8 +296,8 @@ private:
     void flushToOffscreen(OffscreenCanvas *canvas);
     void drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                         std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
-                        size_t &texBufIndex);
-    vk::DescriptorSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal);
+                        size_t &texBufIndex, bool offscreen);
+    vk::DescriptorSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
     void ensureFlatNormalTexture();
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
@@ -383,7 +387,7 @@ private:
         vkb::GenericBuffer shadowUbo;
         std::unordered_map<Mesh3dSetKey, vk::DescriptorSet, Mesh3dSetKeyHash> sets;
     };
-    // Per-frame-slot UBO arenas, keyed by swapchain->current_frame so a frame
+    // Per-frame-slot UBO arenas, keyed by Present::frames_in_flight so a frame
     // never overwrites a UBO that an in-flight frame is still reading.
     struct Mesh3dFrameSlots {
         std::vector<Mesh3dUboSlot> slots;
@@ -417,12 +421,18 @@ private:
     vk::UniqueDescriptorSetLayout mesh3dClusteredSetLayoutUnique;
     vk::PipelineLayout mesh3dClusteredPipelineLayout;
     vk::Pipeline mesh3dClusteredPipeline;
-    vkb::GenericBuffer clusteredLightsBuf;
-    vkb::GenericBuffer clusteredTableBuf;
-    vkb::GenericBuffer clusteredIndicesBuf;
-    size_t clusteredLightsCap = 0;
-    size_t clusteredTableCap = 0;
-    size_t clusteredIndicesCap = 0;
+    // Per-frame clustered storage (lights / cluster table / light indices),
+    // multi-buffered so an in-flight frame's forward pass never reads storage
+    // that the next frame is overwriting.
+    struct ClusteredStorage {
+        vkb::GenericBuffer lightsBuf;
+        vkb::GenericBuffer tableBuf;
+        vkb::GenericBuffer indicesBuf;
+        size_t lightsCap = 0;
+        size_t tableCap = 0;
+        size_t indicesCap = 0;
+    };
+    std::vector<ClusteredStorage> clusteredStorages;  // per swapchain frame slot
     struct Mesh3dClusteredUboSlot {
         vkb::GenericBuffer ubo;
         vkb::GenericBuffer shadowUbo;
@@ -521,7 +531,8 @@ private:
     vk::PipelineLayout lit2dPipelineLayout;
     vk::Pipeline lit2dPipeline;
     vk::Pipeline offscreenLitPipeline;
-    vkb::GenericBuffer lighting2dUbo;
+    std::vector<vkb::GenericBuffer> lighting2dUboSlots;  // per swapchain frame slot
+    vkb::GenericBuffer offscreenLighting2dUbo;           // synchronous offscreen path
     Lighting2DUBO lighting2dFrame{};
     struct LitSetKey {
         GpuTexture *albedo = nullptr;
@@ -535,7 +546,8 @@ private:
             return std::hash<void *>()(k.albedo) ^ (std::hash<void *>()(k.normal) << 1);
         }
     };
-    std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> lit2dSets;
+    std::vector<std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash>> lit2dSets;
+    std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> offscreenLit2dSets;
     Texture *flatNormalTexture = nullptr;
 
     Color clearColor{0.1f, 0.1f, 0.12f, 1.0f};
@@ -569,17 +581,30 @@ private:
     vkb::GenericBuffer voxelUnitQuadIndices;
     bool voxelUnitQuadReady = false;
     std::unordered_map<GpuTexture *, vk::DescriptorSet> voxelRectSets;
-    // Grow-only instance buffer pool (reset index each begin3DFrame).
+    // Grow-only instance buffer pool (reset index each begin3DFrame), per
+    // swapchain frame slot for async safety.
     struct VoxelInstanceSlot {
         vkb::GenericBuffer buffer;
         size_t capacityBytes = 0;
     };
-    std::vector<VoxelInstanceSlot> voxelInstanceSlots;
-    size_t voxelInstanceDrawIndex = 0;
+    struct VoxelInstanceFrame {
+        std::vector<VoxelInstanceSlot> slots;
+        size_t drawIndex = 0;
+    };
+    std::vector<VoxelInstanceFrame> voxelInstanceFrames;  // per swapchain frame slot
 
     Frame2DBuffers &currentFrame2DBuffers();
     Mesh3dFrameSlots &currentMesh3dFrameSlots();
     Mesh3dClusteredFrameSlots &currentMesh3dClusteredFrameSlots();
+    vkb::GenericBuffer &currentLighting2dUbo();
+    std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> &currentLit2dSets();
+    ClusteredStorage &currentClusteredStorage();
+    VoxelInstanceFrame &currentVoxelInstanceFrame();
+    uint32_t frameSlotCount() const;
+    size_t currentFrameSlot() const;
+    /** Drain in-flight frames before mutating a GPU object sampled/read by them. */
+    void waitForSharedGpuResources();
+    void invalidateTextureBindings();
 };
 
 }  // namespace eve::graphics::vulkan

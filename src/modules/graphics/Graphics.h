@@ -333,7 +333,7 @@ virtual void begin3DFrame() = 0;
      * When true, each present copies the swapchain to a CPU buffer for getPixel/newImageData.
      * Default false — full-frame readback is expensive; enable only for tests / tools.
      */
-    void setScreenReadbackEnabled(bool enabled) { screenReadbackEnabled = enabled; }
+    virtual void setScreenReadbackEnabled(bool enabled) { screenReadbackEnabled = enabled; }
     bool isScreenReadbackEnabled() const { return screenReadbackEnabled; }
 
     /** Pause/resume presenting (Android background / foreground). */

@@ -103,21 +103,20 @@ Graphics::~Graphics() {
             b.memory = vk::DeviceMemory{};
         }
     };
-    destroyBuf(clusteredLightsBuf);
-    destroyBuf(clusteredTableBuf);
-    destroyBuf(clusteredIndicesBuf);
-    clusteredLightsCap = clusteredTableCap = clusteredIndicesCap = 0;
+    for (auto &st : clusteredStorages) {
+        destroyBuf(st.lightsBuf);
+        destroyBuf(st.tableBuf);
+        destroyBuf(st.indicesBuf);
+    }
+    clusteredStorages.clear();
     if (lit2dPipeline) device->destroyPipeline(lit2dPipeline);
     if (offscreenLitPipeline) device->destroyPipeline(offscreenLitPipeline);
     if (lit2dPipelineLayout) device->destroyPipelineLayout(lit2dPipelineLayout);
     lit2dSetLayoutUnique.reset();
+    for (auto &m : lit2dSets) m.clear();
     lit2dSets.clear();
-    if (lighting2dUbo.buffer) {
-        device->destroyBuffer(lighting2dUbo.buffer, device.allocation_callbacks);
-        device->freeMemory(lighting2dUbo.memory, device.allocation_callbacks);
-        lighting2dUbo.buffer = vk::Buffer{};
-        lighting2dUbo.memory = vk::DeviceMemory{};
-    }
+    offscreenLit2dSets.clear();
+    destroyBuf(offscreenLighting2dUbo);
     if (offscreenSolidPipeline) device->destroyPipeline(offscreenSolidPipeline);
     if (offscreenTexPipeline) device->destroyPipeline(offscreenTexPipeline);
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
@@ -219,6 +218,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
 }
 
 void Graphics::destroySwapchainResources() {
+    presentModel.destroy();
     presentModel = vkb::Present{};
     depthImage = vkb::DepthStencilImage{};
     // Release reused per-frame vertex buffers (GenericBuffer has no owning
@@ -232,24 +232,88 @@ void Graphics::destroySwapchainResources() {
     for (auto &fb : frame2dBuffers) release2d(fb);
     frame2dBuffers.clear();
     release2d(offscreenBuffers);
+    // Per-frame lit-2D UBOs are keyed to the in-flight slot count; release them
+    // here (slot count may change across recreation).
+    for (auto &ubo : lighting2dUboSlots) ubo.release();
+    lighting2dUboSlots.clear();
+    // Descriptor sets cached against the released UBO handles must be dropped;
+    // they live in the shared descriptor pool, so only the cache is cleared.
+    lit2dSets.clear();
+}
+
+uint32_t Graphics::frameSlotCount() const {
+    uint32_t n = presentModel.frames_in_flight;
+    if (n == 0) n = swapchain.image_count;
+    return n ? n : 1u;
+}
+
+size_t Graphics::currentFrameSlot() const {
+    const uint32_t n = frameSlotCount();
+    size_t slot = swapchain.current_frame;
+    return (n > 0 && slot >= n) ? 0 : slot;
+}
+
+void Graphics::waitForSharedGpuResources() {
+    presentModel.waitForAllFrames();
+}
+
+void Graphics::invalidateTextureBindings() {
+    for (auto &frame : mesh3dFrameSlots)
+        for (auto &slot : frame.slots) slot.sets.clear();
+    for (auto &frame : mesh3dClusteredFrameSlots)
+        for (auto &slot : frame.slots) slot.sets.clear();
+    for (auto &m : lit2dSets) m.clear();
+    offscreenLit2dSets.clear();
+    voxelRectSets.clear();
 }
 
 Graphics::Frame2DBuffers &Graphics::currentFrame2DBuffers() {
-    if (frame2dBuffers.size() != swapchain.image_count)
-        frame2dBuffers.resize(swapchain.image_count);
-    return frame2dBuffers[swapchain.current_frame];
+    const uint32_t n = frameSlotCount();
+    if (frame2dBuffers.size() != n) frame2dBuffers.resize(n);
+    return frame2dBuffers[currentFrameSlot()];
 }
 
 Graphics::Mesh3dFrameSlots &Graphics::currentMesh3dFrameSlots() {
-    if (mesh3dFrameSlots.size() != swapchain.image_count)
-        mesh3dFrameSlots.resize(swapchain.image_count);
-    return mesh3dFrameSlots[swapchain.current_frame];
+    const uint32_t n = frameSlotCount();
+    if (mesh3dFrameSlots.size() != n) mesh3dFrameSlots.resize(n);
+    return mesh3dFrameSlots[currentFrameSlot()];
 }
 
 Graphics::Mesh3dClusteredFrameSlots &Graphics::currentMesh3dClusteredFrameSlots() {
-    if (mesh3dClusteredFrameSlots.size() != swapchain.image_count)
-        mesh3dClusteredFrameSlots.resize(swapchain.image_count);
-    return mesh3dClusteredFrameSlots[swapchain.current_frame];
+    const uint32_t n = frameSlotCount();
+    if (mesh3dClusteredFrameSlots.size() != n) mesh3dClusteredFrameSlots.resize(n);
+    return mesh3dClusteredFrameSlots[currentFrameSlot()];
+}
+
+vkb::GenericBuffer &Graphics::currentLighting2dUbo() {
+    const uint32_t n = frameSlotCount();
+    if (lighting2dUboSlots.size() != n) lighting2dUboSlots.resize(n);
+    auto &ubo = lighting2dUboSlots[currentFrameSlot()];
+    // allocate() reuses the slot's buffer when it already fits (same usage/
+    // memflags, fixed sizeof(Lighting2DUBO)), so this is a no-op after first use.
+    ubo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Lighting2DUBO),
+                 vk::MemoryPropertyFlagBits::eHostVisible |
+                     vk::MemoryPropertyFlagBits::eHostCoherent);
+    return ubo;
+}
+
+std::unordered_map<Graphics::LitSetKey, vk::DescriptorSet, Graphics::LitSetKeyHash> &
+Graphics::currentLit2dSets() {
+    const uint32_t n = frameSlotCount();
+    if (lit2dSets.size() != n) lit2dSets.resize(n);
+    return lit2dSets[currentFrameSlot()];
+}
+
+Graphics::ClusteredStorage &Graphics::currentClusteredStorage() {
+    const uint32_t n = frameSlotCount();
+    if (clusteredStorages.size() != n) clusteredStorages.resize(n);
+    return clusteredStorages[currentFrameSlot()];
+}
+
+Graphics::VoxelInstanceFrame &Graphics::currentVoxelInstanceFrame() {
+    const uint32_t n = frameSlotCount();
+    if (voxelInstanceFrames.size() != n) voxelInstanceFrames.resize(n);
+    return voxelInstanceFrames[currentFrameSlot()];
 }
 
 bool Graphics::rebuildSwapchainIfNeeded() {
@@ -367,6 +431,11 @@ void Graphics::recreateSurfaceForResume() {
 }
 
 void Graphics::createSwapchainAndPipeline() {
+    // Framebuffers / command buffers alias the current swapchain images; tear
+    // them down before replacing the swapchain (destroy() waitIdles first).
+    presentModel.destroy();
+    presentModel = vkb::Present{};
+
     vkb::SwapchainBuilder swapchainBuilder{device};
     if (pixelWidth > 0 && pixelHeight > 0)
         swapchainBuilder.set_desired_extent(uint32_t(pixelWidth), uint32_t(pixelHeight));
@@ -423,6 +492,12 @@ void Graphics::createSwapchainAndPipeline() {
 
     vkb::PresentBuilder presentBuilder{device, swapchain};
     presentModel = presentBuilder.build(renderpass, depthImage.imageView());
+    // Multi-frame overlap: submit + present without waiting on this frame's
+    // fence, so the CPU can build frame N+1 while the GPU still renders frame N.
+    // Present caps frames_in_flight at 2 (independent of swapchain image count)
+    // so present-wait semaphores are not reused while WSI still holds them.
+    // Per-frame mutable GPU resources must be multi-buffered (see *FrameSlots).
+    presentModel.synchronous_frames = false;
     ensurePresentCaptureHook();
     swapchainDirty = false;
 }
@@ -438,12 +513,12 @@ void Graphics::createTexturedPipeline() {
     texSetLayout = *texSetLayoutUnique;
 
     vk::DescriptorPoolSize poolSizes[] = {
-        {vk::DescriptorType::eCombinedImageSampler, 1536},
-        {vk::DescriptorType::eUniformBuffer, 512},
-        {vk::DescriptorType::eStorageBuffer, 128},
+        {vk::DescriptorType::eCombinedImageSampler, 4096},
+        {vk::DescriptorType::eUniformBuffer, 2048},
+        {vk::DescriptorType::eStorageBuffer, 256},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.maxSets = 1024;
+    poolInfo.maxSets = 4096;
     poolInfo.poolSizeCount = 3;
     poolInfo.pPoolSizes = poolSizes;
     descriptorPool = device->createDescriptorPool(poolInfo);
@@ -575,9 +650,12 @@ void Graphics::createLit2DPipeline() {
     plInfo.pSetLayouts = &lit2dSetLayout;
     lit2dPipelineLayout = device->createPipelineLayout(plInfo);
 
-    lighting2dUbo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Lighting2DUBO),
-                           vk::MemoryPropertyFlagBits::eHostVisible |
-                               vk::MemoryPropertyFlagBits::eHostCoherent);
+    // Offscreen (synchronous) lit-2D path owns a dedicated UBO. The swapchain
+    // path's per-frame UBOs are allocated lazily in currentLighting2dUbo().
+    offscreenLighting2dUbo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer,
+                                    sizeof(Lighting2DUBO),
+                                    vk::MemoryPropertyFlagBits::eHostVisible |
+                                        vk::MemoryPropertyFlagBits::eHostCoherent);
 
     std::vector<uint32_t> vert(lit2d_vert_spv, lit2d_vert_spv + lit2d_vert_spv_count);
     std::vector<uint32_t> frag(lit2d_frag_spv, lit2d_frag_spv + lit2d_frag_spv_count);
@@ -1227,6 +1305,7 @@ void Graphics::createShadowResources() {
 }
 
 void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes) {
+    auto &st = currentClusteredStorage();
     auto ensure = [&](vkb::GenericBuffer &buf, size_t &cap, size_t need) {
         if (need == 0) need = 4;
         if (cap >= need && buf.buffer) return;
@@ -1242,12 +1321,13 @@ void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, siz
                      vk::MemoryPropertyFlagBits::eHostVisible |
                          vk::MemoryPropertyFlagBits::eHostCoherent);
         cap = alloc;
-        // Descriptor sets cache buffer handles — clear so they rebind.
-        mesh3dClusteredFrameSlots.clear();
     };
-    ensure(clusteredLightsBuf, clusteredLightsCap, lightsBytes);
-    ensure(clusteredTableBuf, clusteredTableCap, tableBytes);
-    ensure(clusteredIndicesBuf, clusteredIndicesCap, indicesBytes);
+    ensure(st.lightsBuf, st.lightsCap, lightsBytes);
+    ensure(st.tableBuf, st.tableCap, tableBytes);
+    ensure(st.indicesBuf, st.indicesCap, indicesBytes);
+    // Reallocated handles invalidate this frame's cached descriptor sets; drop
+    // them so mesh3dClusteredSetFor rebinds against the new buffers.
+    for (auto &slot : currentMesh3dClusteredFrameSlots().slots) slot.sets.clear();
 }
 
 void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {
@@ -1259,17 +1339,18 @@ void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {
         std::max(size_t(1), upload.lightIndices.size()) * sizeof(uint32_t);
     ensureClusteredBuffers(lightsBytes, tableBytes, indicesBytes);
 
+    auto &st = currentClusteredStorage();
     if (!upload.lights.empty())
-        clusteredLightsBuf.updateLocal(upload.lights.data(),
-                                       upload.lights.size() * sizeof(ClusteredLightGpu));
+        st.lightsBuf.updateLocal(upload.lights.data(),
+                                 upload.lights.size() * sizeof(ClusteredLightGpu));
     else {
         ClusteredLightGpu zero{};
-        clusteredLightsBuf.updateLocal(&zero, sizeof(zero));
+        st.lightsBuf.updateLocal(&zero, sizeof(zero));
     }
-    clusteredTableBuf.updateLocal(upload.clusterTable.data(),
-                                  upload.clusterTable.size() * sizeof(ClusterTableEntry));
-    clusteredIndicesBuf.updateLocal(upload.lightIndices.data(),
-                                    upload.lightIndices.size() * sizeof(uint32_t));
+    st.tableBuf.updateLocal(upload.clusterTable.data(),
+                            upload.clusterTable.size() * sizeof(ClusterTableEntry));
+    st.indicesBuf.updateLocal(upload.lightIndices.data(),
+                              upload.lightIndices.size() * sizeof(uint32_t));
 }
 
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
@@ -1308,6 +1389,7 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
     alloc.pSetLayouts = &mesh3dClusteredSetLayout;
     vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
 
+    auto &st = currentClusteredStorage();
     vkb::DescriptorSetUpdater updater(14, 14, 0);
     updater.beginDescriptorSet(set)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
@@ -1319,11 +1401,11 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
         .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(envTex->sampler, envTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .beginBuffers(4, 0, vk::DescriptorType::eStorageBuffer)
-        .buffer(clusteredLightsBuf.buffer, 0, vk::DeviceSize(clusteredLightsCap))
+        .buffer(st.lightsBuf.buffer, 0, vk::DeviceSize(st.lightsCap))
         .beginBuffers(5, 0, vk::DescriptorType::eStorageBuffer)
-        .buffer(clusteredTableBuf.buffer, 0, vk::DeviceSize(clusteredTableCap))
+        .buffer(st.tableBuf.buffer, 0, vk::DeviceSize(st.tableCap))
         .beginBuffers(6, 0, vk::DescriptorType::eStorageBuffer)
-        .buffer(clusteredIndicesBuf.buffer, 0, vk::DeviceSize(clusteredIndicesCap))
+        .buffer(st.indicesBuf.buffer, 0, vk::DeviceSize(st.indicesCap))
         .beginBuffers(7, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.shadowUbo.buffer, 0, sizeof(ShadowUBO))
         .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
@@ -1567,10 +1649,17 @@ void Graphics::ensureShaderOffscreenPipeline(Shader *shader) {
 Texture *Graphics::getTexture() { return nullptr; }
 
 void Graphics::ensurePresentCaptureHook() {
-    presentModel.after_render_before_present = [this](uint32_t imageIndex) {
-        if (!screenReadbackEnabled) return;
-        captureSwapchainImage(imageIndex);
-    };
+    // Only install the hook when readback is requested. drawFrame() treats a
+    // non-empty hook as "wait for this frame's fence" even when
+    // synchronous_frames is false, which would serialize every frame and erase
+    // the multi-frame overlap we rely on for async rendering.
+    if (screenReadbackEnabled) {
+        presentModel.after_render_before_present = [this](uint32_t imageIndex) {
+            captureSwapchainImage(imageIndex);
+        };
+    } else {
+        presentModel.after_render_before_present = nullptr;
+    }
 }
 
 void Graphics::captureSwapchainImage(uint32_t imageIndex) {
@@ -2031,18 +2120,14 @@ void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler
     if (!texture || !texture->gpuHandle || !initialized) return;
     for (auto &owned : ownedGpuTextures) {
         if (owned.get() != texture->gpuHandle) continue;
+        // In-flight frames may still be sampling the old sampler / descriptor.
+        waitForSharedGpuResources();
         if (owned->sampler) device->destroySampler(owned->sampler);
         owned->samplerState = sampler;
         owned->sampler = createVkSampler(sampler, owned->mipLevels);
         texture->sampler = sampler;
         if (!owned->isCube) writeCombinedImageDescriptor(owned.get());
-        // Mesh3D / lit descriptors cache sampler bindings; force rebinding by
-        // clearing per-frame set caches that reference this GpuTexture.
-        for (auto &frame : mesh3dFrameSlots)
-            for (auto &slot : frame.slots) slot.sets.clear();
-        for (auto &frame : mesh3dClusteredFrameSlots)
-            for (auto &slot : frame.slots) slot.sets.clear();
-        lit2dSets.clear();
+        invalidateTextureBindings();
         return;
     }
 }
@@ -2083,6 +2168,9 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     void *oldHandle = tex->gpuHandle;
     for (auto &owned : ownedGpuTextures) {
         if (owned.get() != oldHandle) continue;
+        // Destroying the old image/sampler while an in-flight frame still
+        // samples it is a typical TDR. Drain first, then drop cached sets.
+        waitForSharedGpuResources();
         if (owned->sampler) device->destroySampler(owned->sampler);
         owned = std::move(gpu);
         tex->gpuHandle = owned.get();
@@ -2092,11 +2180,7 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
         tex->pixelHeight = h;
         tex->mipmapCount = int(mipLevels);
         tex->sampler = info.sampler;
-        for (auto &frame : mesh3dFrameSlots)
-            for (auto &slot : frame.slots) slot.sets.clear();
-        for (auto &frame : mesh3dClusteredFrameSlots)
-            for (auto &slot : frame.slots) slot.sets.clear();
-        lit2dSets.clear();
+        invalidateTextureBindings();
         return true;
     }
 
@@ -2208,12 +2292,14 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
 }
 
-vk::DescriptorSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal) {
+vk::DescriptorSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen) {
     ASSERT(albedo != nullptr);
     ASSERT(normal != nullptr);
+    auto &sets = offscreen ? offscreenLit2dSets : currentLit2dSets();
+    vkb::GenericBuffer &ubo = offscreen ? offscreenLighting2dUbo : currentLighting2dUbo();
     LitSetKey key{albedo, normal};
-    auto it = lit2dSets.find(key);
-    if (it != lit2dSets.end()) return it->second;
+    auto it = sets.find(key);
+    if (it != sets.end()) return it->second;
 
     vk::DescriptorSetAllocateInfo alloc{};
     alloc.descriptorPool = descriptorPool;
@@ -2228,20 +2314,22 @@ vk::DescriptorSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal) 
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(normal->sampler, normal->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .beginBuffers(2, 0, vk::DescriptorType::eUniformBuffer)
-        .buffer(lighting2dUbo.buffer, 0, sizeof(Lighting2DUBO))
+        .buffer(ubo.buffer, 0, sizeof(Lighting2DUBO))
         .update(device.instance);
 
-    lit2dSets.emplace(key, set);
+    sets.emplace(key, set);
     return set;
 }
 
 void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                               std::vector<LitBatch> &batches,
-                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex) {
+                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex,
+                              bool offscreen) {
     if (!pipeline || batches.empty() || !lit2dPipelineLayout) return;
     lighting2dFrame.meta.y = float(viewW);
     lighting2dFrame.meta.z = float(viewH);
-    lighting2dUbo.updateLocal(&lighting2dFrame, sizeof(Lighting2DUBO));
+    vkb::GenericBuffer &ubo = offscreen ? offscreenLighting2dUbo : currentLighting2dUbo();
+    ubo.updateLocal(&lighting2dFrame, sizeof(Lighting2DUBO));
 
     for (auto &lb : batches) {
         if (lb.batch.empty() || !lb.albedo || !lb.albedo->gpuHandle) continue;
@@ -2262,7 +2350,7 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
         vb.allocate<TexturedVertex>(device, gpuVerts);
 
-        vk::DescriptorSet set = lit2dSetFor(albedoGpu, normalGpu);
+        vk::DescriptorSet set = lit2dSetFor(albedoGpu, normalGpu, offscreen);
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, lit2dPipelineLayout, 0, 1, &set, 0,
                               nullptr);
@@ -2492,6 +2580,11 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
     const bool needClear = canvas->takePendingClear();
     if (solid.empty() && textured.empty() && lit.empty() && !needClear) return;
 
+    // Offscreen color is a single shared image. An in-flight swapchain frame
+    // may still be sampling it (draw canvas to screen last frame), so drain
+    // those frames before transitioning it back to a color attachment.
+    waitForSharedGpuResources();
+
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
                                 canvas->colorImage().setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
@@ -2576,7 +2669,8 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
 
                                 if (offscreenLitPipeline)
                                     drawLitBatches(cb, canvas->getWidth(), canvas->getHeight(),
-                                                   offscreenLitPipeline, lit, texBufs, texBufIndex);
+                                                   offscreenLitPipeline, lit, texBufs, texBufIndex,
+                                                   true);
 
                                 cb.endRenderPass();
                                 canvas->colorImage().setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
@@ -2666,7 +2760,8 @@ void Graphics::flushToSwapchain() {
         }
     }
 
-    if (lit2dPipeline) drawLitBatches(cb, width, height, lit2dPipeline, lit, texBufs, texBufIndex);
+    if (lit2dPipeline) drawLitBatches(cb, width, height, lit2dPipeline, lit, texBufs, texBufIndex,
+                                      false);
 
     // Invalidate prior readback so a failed present cannot reuse a stale frame.
     if (screenReadbackEnabled) hasPresentedFrame = false;
@@ -2709,7 +2804,7 @@ void Graphics::begin3DFrame() {
 
     currentMesh3dFrameSlots().drawIndex = 0;
     currentMesh3dClusteredFrameSlots().drawIndex = 0;
-    voxelInstanceDrawIndex = 0;
+    currentVoxelInstanceFrame().drawIndex = 0;
     swapchainPassOpen = true;
     frameHad3D = true;
     hasPendingClear = false;
@@ -2728,17 +2823,20 @@ void Graphics::setMesh3DCameraPos(const glm::vec3 &eye) {
 }
 
 void Graphics::destroyVoxelRectResources() {
-    for (auto &slot : voxelInstanceSlots) {
-        if (slot.buffer.buffer) {
-            device->destroyBuffer(slot.buffer.buffer, device.allocation_callbacks);
-            device->freeMemory(slot.buffer.memory, device.allocation_callbacks);
-            slot.buffer.buffer = vk::Buffer{};
-            slot.buffer.memory = vk::DeviceMemory{};
+    for (auto &frame : voxelInstanceFrames) {
+        for (auto &slot : frame.slots) {
+            if (slot.buffer.buffer) {
+                device->destroyBuffer(slot.buffer.buffer, device.allocation_callbacks);
+                device->freeMemory(slot.buffer.memory, device.allocation_callbacks);
+                slot.buffer.buffer = vk::Buffer{};
+                slot.buffer.memory = vk::DeviceMemory{};
+            }
+            slot.capacityBytes = 0;
         }
-        slot.capacityBytes = 0;
+        frame.slots.clear();
+        frame.drawIndex = 0;
     }
-    voxelInstanceSlots.clear();
-    voxelInstanceDrawIndex = 0;
+    voxelInstanceFrames.clear();
     voxelRectSets.clear();
     auto destroyBuf = [&](vkb::GenericBuffer &b) {
         if (b.buffer) {
@@ -2952,9 +3050,10 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     ensureVoxelUnitQuad();
 
     const vk::DeviceSize bytes = vk::DeviceSize(count) * sizeof(uint32_t);
-    const size_t slotIndex = voxelInstanceDrawIndex++;
-    while (voxelInstanceSlots.size() <= slotIndex) voxelInstanceSlots.emplace_back();
-    auto &slot = voxelInstanceSlots[slotIndex];
+    auto &vframe = currentVoxelInstanceFrame();
+    const size_t slotIndex = vframe.drawIndex++;
+    while (vframe.slots.size() <= slotIndex) vframe.slots.emplace_back();
+    auto &slot = vframe.slots[slotIndex];
     if (slot.capacityBytes < size_t(bytes) || !slot.buffer.buffer) {
         if (slot.buffer.buffer) {
             device->destroyBuffer(slot.buffer.buffer, device.allocation_callbacks);
@@ -3033,6 +3132,12 @@ void Graphics::endShadowPass() {
     shadowPassDraws.clear();
     shadowPassCascade = -1;
 
+    // The shadow map is a single shared image sampled by the forward pass. With
+    // async frames an in-flight frame may still be sampling it, so drain those
+    // frames before overwriting. (executeImmediately below is already a
+    // synchronous stall; this only adds the in-flight-frame barrier it needs.)
+    waitForSharedGpuResources();
+
     const uint32_t size = uint32_t(ShadowConfig::kMapSize);
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
@@ -3101,6 +3206,11 @@ void Graphics::endGBufferPass() {
         if (renderControl_) renderControl_->getGBuffer()->clear();
         return;
     }
+
+    // G-buffer targets are single shared images consumed by post-processing.
+    // Drain in-flight frames before overwriting them (async frames may still be
+    // sampling the previous contents).
+    waitForSharedGpuResources();
 
     const uint32_t w = uint32_t(gbufferWidth);
     const uint32_t h = uint32_t(gbufferHeight);
@@ -3469,6 +3579,9 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     }
 
     auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    // Host-visible VBO is shared across frames. Overwriting it while an
+    // in-flight draw still reads the previous morph is a GPU page-fault / TDR.
+    waitForSharedGpuResources();
     gpu->vertices.updateLocal(verts);
     mesh->markMorphClean();
     return true;
