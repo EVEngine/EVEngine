@@ -25,10 +25,10 @@ C++ `Image` 能创建和解码 `ImageData`，但当前 `Image::expose()` 仅绑�
 | 参数 | 含义 |
 |------|------|
 | `radians` | 弧度；与 `Math.rotate2*` 同号（Y 向下时视觉为顺时针，同 LÖVE） |
-| `filter` | `"nearest"`（像素风）或 `"linear"`（双线性） |
+| `filter` | `"nearest"` / `"linear"` / `"rotsprite"`（Xenowhirl：Scale2x×3 → 偏移搜索 → 最近邻缩回） |
 | `expand` | `true` 时画布扩到容纳整图 AABB；`false` 保持原尺寸（可能裁切） |
 
-返回同格式的新 `ImageData`（调用方拥有）；源范围外采样为透明黑。
+返回同格式的新 `ImageData`（调用方拥有）；源范围外采样为透明黑。`rotsprite` 只挑选已有调色板颜色，不引入插值新色。
 
 ## 目标导向指南
 
@@ -50,7 +50,7 @@ C++ `Image` 能创建和解码 `ImageData`，但当前 `Image::expose()` 仅绑�
 
 - `getName()`：返回模块名。
 - C++ 侧的 `newImageData(...)`、`isCompressed(...)`、`newCubeFaces(...)` 和 `newVolumeLayers(...)` 当前不是脚本 API。
-- `ImageData.rotate(radians, filter, expand)`：CPU 像素旋转（经 Font 绑定的 ImageData）；`filter` 为 `"nearest"` / `"linear"`。
+- `ImageData.rotate(radians, filter, expand)`：CPU 像素旋转（经 Font 绑定的 ImageData）；`filter` 为 `"nearest"` / `"linear"` / `"rotsprite"`。
 
 ## 使用要点
 

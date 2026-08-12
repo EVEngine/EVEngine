@@ -304,3 +304,72 @@ TEST_CASE("image.rotate.bilinearAndBadFilter") {
 
     CHECK(expectException([&] { src->rotate(0.1f, "cubic", true); }));
 }
+
+TEST_CASE("image.rotate.rotspriteNinetyAndPalette") {
+    auto* module = img();
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(3, 2));
+    Colorf red{1.0f, 0.0f, 0.0f, 1.0f};
+    Colorf green{0.0f, 1.0f, 0.0f, 1.0f};
+    Colorf blue{0.0f, 0.0f, 1.0f, 1.0f};
+    src->setPixel(0, 0, blue);
+    src->setPixel(1, 0, blue);
+    src->setPixel(2, 0, red);
+    src->setPixel(0, 1, green);
+    src->setPixel(1, 1, blue);
+    src->setPixel(2, 1, blue);
+
+    std::unique_ptr<eve::image::ImageData> rotated(
+        src->rotate(float(M_PI) * 0.5f, "rotsprite", true));
+    REQUIRE(rotated.get() != nullptr);
+    CHECK_EQ(rotated->getWidth(), 2);
+    CHECK_EQ(rotated->getHeight(), 3);
+    CHECK(nearColor(rotated->getPixel(1, 2), red));
+    CHECK(nearColor(rotated->getPixel(0, 0), green));
+
+    // Only original palette colors (plus transparent empty).
+    auto isPalette = [&](const Colorf& p) {
+        if (p.a == 0.f && p.r == 0.f && p.g == 0.f && p.b == 0.f) return true;
+        return nearColor(p, red) || nearColor(p, green) || nearColor(p, blue);
+    };
+    for (int y = 0; y < rotated->getHeight(); ++y)
+        for (int x = 0; x < rotated->getWidth(); ++x)
+            CHECK(isPalette(rotated->getPixel(x, y)));
+}
+
+TEST_CASE("image.rotate.rotspriteFortyFive") {
+    auto* module = img();
+    // 8x8 plus-shaped sprite — RotSprite should keep palette and expand AABB.
+    std::unique_ptr<eve::image::ImageData> src(module->newImageData(8, 8));
+    Colorf ink{0.1f, 0.2f, 0.3f, 1.0f};
+    Colorf bg{0.9f, 0.9f, 0.85f, 1.0f};
+    for (int y = 0; y < 8; ++y)
+        for (int x = 0; x < 8; ++x)
+            src->setPixel(x, y, bg);
+    for (int i = 1; i < 7; ++i) {
+        src->setPixel(i, 3, ink);
+        src->setPixel(i, 4, ink);
+        src->setPixel(3, i, ink);
+        src->setPixel(4, i, ink);
+    }
+
+    std::unique_ptr<eve::image::ImageData> rotated(
+        src->rotate(float(M_PI) * 0.25f, "rotsprite", true));
+    REQUIRE(rotated.get() != nullptr);
+    CHECK(rotated->getWidth() >= 8);
+    CHECK(rotated->getHeight() >= 8);
+
+    int inkCount = 0;
+    int foreign = 0;
+    for (int y = 0; y < rotated->getHeight(); ++y) {
+        for (int x = 0; x < rotated->getWidth(); ++x) {
+            Colorf p = rotated->getPixel(x, y);
+            if (nearColor(p, ink))
+                ++inkCount;
+            else if (!(nearColor(p, bg) || (p.a == 0.f && p.r == 0.f && p.g == 0.f && p.b == 0.f)))
+                ++foreign;
+        }
+    }
+    CHECK(inkCount > 0);
+    // RotSprite must not invent blended colors.
+    CHECK_EQ(foreign, 0);
+}
