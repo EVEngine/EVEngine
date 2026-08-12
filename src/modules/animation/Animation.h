@@ -22,11 +22,12 @@ class MotionMatcher;
 class ControlAnim;
 class ControlPose;
 class AnimSkin;
+class AnimTrail;
 
 /**
  * Animation module — tween factory + 3D skeletal playback
  * (player / state machine / motion matching) + control-theory
- * procedural drivers + per-frame pump.
+ * procedural drivers + motion trails + per-frame pump.
  * Script: `anim <- eve.Animation();`
  *
  * Tweens own their property tracks; call `anim.update(dt)` (or `tween.update(dt)`)
@@ -36,6 +37,7 @@ class AnimSkin;
  * `AnimStateMachine`, or `MotionMatcher` (+ `MotionDatabase`).
  * Procedural: `ControlAnim` (scalar second-order/PD/spring) and
  * `ControlPose` (pose tracking with the same control laws).
+ * Trails: `AnimTrail` records samples and draws fading trajectories.
  */
 class Animation : public Module {
 public:
@@ -79,6 +81,12 @@ public:
      */
     AnimSkin *newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
                                AnimSkeleton *skeleton);
+
+    /**
+     * Motion trail / afterimage (script GC owns returned object).
+     * capacity: max retained samples (>= 2).
+     */
+    AnimTrail *newTrail(int capacity = 64);
 
     /** Advance all registered tweens. */
     void update(float dt);

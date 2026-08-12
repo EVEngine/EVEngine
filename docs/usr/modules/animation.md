@@ -2,12 +2,13 @@
 
 **脚本入口：** `eve.Animation()`
 
-支持三类能力：
+支持五类能力：
 
 1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
 2. **3D 骨骼动画播放**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
 3. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
 4. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
+5. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
 
 ## 基本用法（Tween）
 
@@ -97,6 +98,29 @@ cp.update(dt);
 local pose = cp.getPose();
 ```
 
+## 基本用法（拖尾轨迹）
+
+```squirrel
+local anim = eve.Animation();
+local trail = anim.newTrail(64);
+trail.setDuration(0.45);
+trail.setWidth(4);
+trail.setColor(1, 0.85, 0.35, 1);
+trail.setFade(true);
+trail.setStyle("line"); // 或 "points"
+trail.setMinDistance(2);
+
+// 每帧：写入采样 → update；渲染时 draw
+trail.addPoint(x, y);
+// 或从骨骼世界坐标投影（需先 pose.computeWorld(sk)）：
+// trail.sampleBone(pose, tipBone, "xy"); // plane: xy|xz|yz
+// trail.setDrawScale(40, -40); // 世界单位 → 像素
+// trail.setDrawOffset(400, 300);
+trail.update(dt);
+// eve_render:
+trail.draw(gfx);
+```
+
 ## 从 Mixamo / FBX 导入
 
 ```squirrel
@@ -132,9 +156,10 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 
 ## 对象关系与调用时机
 
-- `Animation` 拥有 Tween 注册表并统一 `update`；3D 对象由脚本持有，各自 `update(dt)`。
+- `Animation` 拥有 Tween 注册表并统一 `update`；3D 对象与 `AnimTrail` 由脚本持有，各自 `update(dt)`。
 - `AnimSkeleton` 定义骨骼层级与 bind pose；`AnimClip` 保存各骨 local TRS 关键帧。
 - `AnimPlayer` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
+- `AnimTrail`：每帧 `addPoint` / `sampleBone` 后 `update(dt)`，在 `eve_render` 调用 `draw(gfx)`。
 - Motion Matching：先 `MotionDatabase.bake()`，再周期性搜索 + 交叉淡入。
 - `ControlAnim` / `ControlPose`：每帧更新目标后调用各自的 `update(dt)`；积分器字符串为 `secondOrder` | `spring` | `pd`。
 
@@ -160,6 +185,10 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 
 用 `newControlAnim` 或 `newControlPose`，调低 `ζ`（欠阻尼）并设负的 `r` 可做预期回摆；调高 `f` 让跟踪更快。目标每帧变化时用 `setTarget` / `setTargetPose`，不要每帧 `set`（`set` 会清速度）。
 
+### 给武器挥砍或移动目标加拖尾
+
+`newTrail(capacity)`，设 `setDuration` / `setWidth` / `setColor`；每帧在目标位置 `addPoint`（2D）或 `sampleBone(pose, bone, "xy")`（骨骼），再 `update(dt)`；在 `eve_render` 调用 `draw(gfx)`。世界坐标可用 `setDrawScale` / `setDrawOffset` 映射到屏幕像素。
+
 ## 常见问题
 
 - 创建 Tween 后忘记 `start()`。
@@ -169,13 +198,14 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 - 状态机/播放器持有的 skeleton、clip 被提前销毁。
 - `ControlAnim.setIntegrator` / `ControlPose.setIntegrator` 传入未知字符串。
 - 把 `ControlAnim.set` 当每帧追目标用（会清零速度，失去动力学感）。
+- `AnimTrail.sampleBone` 前忘记 `pose.computeWorld(sk)`；或 `setStyle` / plane 字符串拼错（仅 `line|points` 与 `xy|xz|yz`）。
 
 ## API 快查
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
-- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`
+- 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`、`getWorldMatrixElement()`
@@ -186,6 +216,7 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 - `MotionMatcher`：`setDesiredVelocity()`、`setDesiredYaw()`、`setSearchInterval()`、`setBlendTime()`、`search()`、`update()`、`getPose()`、`getMatchedClipIndex()`
 - `ControlAnim`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`set()`、`setTarget()`、`setTargetVelocity()`、`impulse()`、`has()`、`get()`、`getVelocity()`、`getTarget()`、`clear()`、`remove()`、`getPropertyCount()`、`getPropertyName()`、`update()`
 - `ControlPose`：`setFrequency()`、`getFrequency()`、`setDamping()`、`getDamping()`、`setResponse()`、`getResponse()`、`setIntegrator()`、`getIntegrator()`、`setBoneWeight()`、`getBoneWeight()`、`setTargetPose()`、`snapToTarget()`、`getPose()`、`getTargetPose()`、`update()`
+- `AnimTrail`：`setCapacity()`、`getCapacity()`、`setDuration()`、`getDuration()`、`setMinDistance()`、`getMinDistance()`、`setWidth()`、`getWidth()`、`setColor()`、`getColor*()`、`setFade()`、`getFade()`、`setStyle()`、`getStyle()`、`setDrawScale()`、`getDrawScale*()`、`setDrawOffset()`、`getDrawOffset*()`、`addPoint()`、`addPoint3()`、`sampleBone()`、`sampleBoneOffset()`、`clear()`、`update()`、`getPointCount()`、`getPoint*()`、`getPointAge()`、`getPointAlpha()`、`draw()`
 
 ## 使用要点
 
