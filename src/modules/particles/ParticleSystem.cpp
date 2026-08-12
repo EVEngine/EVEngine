@@ -100,9 +100,11 @@ int64_t fileModtime(const std::string &path) {
 void ParticleSimSystem::update(float dt) {
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
 
-    auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim>();
+    auto view = ecs::View<ParticleEmitter, ParticleEmitter::Config, ParticleEmitter::Sim,
+                          ParticleEmitter::Attach, ParticleEmitter::SkinSource>();
     for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [cfg, sim] = *it;
+        auto [cfg, sim, attach, skinSrc] = *it;
+        syncEmitterSources(*cfg, *sim, *attach, *skinSrc);
         stepEmitterSim(*cfg, *sim, dt);
     }
 }

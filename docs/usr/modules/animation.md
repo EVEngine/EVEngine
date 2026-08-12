@@ -124,7 +124,8 @@ player.play(clip);
 player.update(dt);
 local pose = player.getPose();
 pose.computeWorld(sk);
-// C++：skin.skinPositions(pose, outPosXYZ)；脚本侧可读 getBindPosition* / getVertexBone
+skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
+// 也可交给粒子：emitter.setSkinSource(skin, pose) 从皮肤表面发射
 ```
 
 测试资源：`scripts/download_skinned_character.sh` 下载 Khronos **CesiumMan**（约 0.5 MB）到 `test/assets/skinned/`；CMake 选项 `EVENGINE_DOWNLOAD_SKINNED_CHARACTER`（默认 ON）会在构建 `unit_test` 时联网拉取。
@@ -178,7 +179,7 @@ pose.computeWorld(sk);
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
 - `AnimPose`：`resize()`、`copyFrom()`、`blendFrom()`、`setLocal*()`、`getLocal*()`、`computeWorld()`、`getWorld*()`、`getWorldMatrixElement()`
-- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`
+- `AnimSkin`：`getVertexCount()`、`getBoneCount()`、`getSkeletonBone()`、`getSkinBoneName()`、`getInverseBindElement()`、`getBindPosition*()`、`getVertexBone()`、`getVertexWeight()`、`updateSkinnedPositions()`、`hasSkinnedPositions()`、`getSkinnedPosition*()`
 - `AnimPlayer`：`play()`、`crossFade()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`getPose()`、`update()`
 - `AnimStateMachine`：`addState()`、`setEntry()`、`addTransition()`、`addFloatCondition()`、`addBoolCondition()`、`addTriggerCondition()`、`setExitTime()`、`setFloat()`、`setBool()`、`setTrigger()`、`getPose()`、`update()`
 - `MotionDatabase`：`addFeatureBone()`、`addFeatureBoneByName()`、`addClip()`、`bake()`、`getFrameCount()`、`getFeatureSize()`
