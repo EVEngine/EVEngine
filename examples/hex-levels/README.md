@@ -43,8 +43,8 @@ C++ 对应用例：
 
 | 文件 | 覆盖 |
 |------|------|
-| `test/hex_level_simulation.cpp` | 关卡 `01`–`20` + `pipeline.dungeonCrawl` / `fogRaid` / `torchEscort` / `catalogRaid` |
-| `test/hex_level_data.cpp` | catalog / items / loot / seeds / particles / 手搓地图 / 感知 / enable 一致性 / 装备栏 |
+| `test/hex_level_simulation.cpp` | 关卡 `01`–`25` + `pipeline.dungeonCrawl` / `fogRaid` / `torchEscort` / `catalogRaid` / `costlyFogPickup` |
+| `test/hex_level_data.cpp` | catalog / items / loot / seeds / particles / 手搓地图 / 感知 / enable / 装备 / 特征标签 / 引用完整性 |
 
 ```bash
 ./build/linux-debug/test/unit_test --testcase='^hex\.(level|data)\..*$'

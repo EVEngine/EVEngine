@@ -1146,3 +1146,263 @@ TEST_CASE("hex.data.particles.mistOnDungeon") {
     fog->stop();
     layer->setVisible(false);
 }
+
+TEST_CASE("hex.data.lootTables.itemIdsExistInItems") {
+    auto itemsDoc = loadJson("items.json");
+    auto lootDoc = loadJson("loot_tables.json");
+    REQUIRE(itemsDoc->isArray());
+    auto items = itemsDoc->array();
+    auto tables = lootDoc->object()->getObject("tables");
+    REQUIRE(items);
+    REQUIRE(tables);
+
+    std::vector<std::string> ids;
+    for (size_t i = 0; i < items->size(); ++i) {
+        auto o = items->getObject(i);
+        ids.push_back(o->getValue<std::string>("id"));
+    }
+    CHECK(ids.size() >= 12);
+
+    int refs = 0;
+    for (const char *name : {"starter", "cave", "rich", "raid", "equipment"}) {
+        auto arr = tables->getArray(name);
+        REQUIRE(arr);
+        for (size_t i = 0; i < arr->size(); ++i) {
+            const std::string itemId = arr->getObject(i)->getValue<std::string>("itemId");
+            bool found = false;
+            for (const auto &id : ids)
+                if (id == itemId) found = true;
+            CHECK(found);
+            ++refs;
+        }
+    }
+    auto gates = lootDoc->object()->getArray("perceptionGates");
+    REQUIRE(gates);
+    for (size_t i = 0; i < gates->size(); ++i) {
+        const std::string itemId = gates->getObject(i)->getValue<std::string>("itemId");
+        bool found = false;
+        for (const auto &id : ids)
+            if (id == itemId) found = true;
+        CHECK(found);
+        ++refs;
+    }
+    CHECK(refs >= 20);
+}
+
+TEST_CASE("hex.data.catalog.featureTagsCoverModules") {
+    auto doc = loadJson("catalog.json");
+    auto levels = doc->object()->getArray("levels");
+    REQUIRE(levels);
+
+    bool hasPath = false, hasFov = false, hasLight = false, hasParticles = false;
+    bool hasInventory = false, hasFlow = false, hasCell = false, hasPerc = false;
+    for (size_t i = 0; i < levels->size(); ++i) {
+        auto feats = levels->getObject(i)->getArray("features");
+        REQUIRE(feats);
+        for (size_t fi = 0; fi < feats->size(); ++fi) {
+            const std::string f = feats->getElement<std::string>(fi);
+            if (f == "pathfinding") hasPath = true;
+            if (f == "fov") hasFov = true;
+            if (f == "lighting") hasLight = true;
+            if (f == "particles") hasParticles = true;
+            if (f == "inventory") hasInventory = true;
+            if (f == "flowfield") hasFlow = true;
+            if (f == "cellcost") hasCell = true;
+            if (f == "perception") hasPerc = true;
+        }
+    }
+    CHECK(hasPath);
+    CHECK(hasFov);
+    CHECK(hasLight);
+    CHECK(hasParticles);
+    CHECK(hasInventory);
+    CHECK(hasFlow);
+    CHECK(hasCell);
+    CHECK(hasPerc);
+}
+
+TEST_CASE("hex.data.catalog.lootTableReferencesValid") {
+    auto catalog = loadJson("catalog.json");
+    auto loot = loadJson("loot_tables.json");
+    auto levels = catalog->object()->getArray("levels");
+    auto tables = loot->object()->getObject("tables");
+    REQUIRE(levels);
+    REQUIRE(tables);
+    for (size_t i = 0; i < levels->size(); ++i) {
+        auto lv = levels->getObject(i);
+        REQUIRE(lv->has("lootTable"));
+        const std::string name = lv->getValue<std::string>("lootTable");
+        CHECK(tables->has(name));
+        CHECK(tables->getArray(name)->size() >= 1);
+    }
+}
+
+TEST_CASE("hex.data.particles.configRequiredFields") {
+    auto *dm = DataModule::create();
+    const char *files[] = {"torch_fire.json", "pickup_burst.json", "ember_trail.json",
+                           "mist_fog.json"};
+    for (const char *name : files) {
+        const std::string text = readTextFile(hexDataDir() + "/particles/" + name);
+        REQUIRE(!text.empty());
+        std::string err;
+        std::unique_ptr<JsonDocument> doc(dm->decodeJson(text, &err));
+        REQUIRE(doc.get() != nullptr);
+        REQUIRE(doc->isObject());
+        auto root = doc->object();
+        CHECK(root->has("buffer"));
+        const bool hasPresetOrRate = root->has("preset") || root->has("emissionRate");
+        CHECK(hasPresetOrRate);
+        CHECK(root->getValue<int>("buffer") > 0);
+    }
+}
+
+TEST_CASE("hex.data.seedsMatrix.algorithmsRegistered") {
+    auto doc = loadJson("seeds_matrix.json");
+    auto algos = doc->object()->getArray("algorithms");
+    REQUIRE(algos);
+    GeneratorRegistry::instance().registerBuiltins();
+    for (size_t i = 0; i < algos->size(); ++i) {
+        const std::string id = algos->getObject(i)->getValue<std::string>("id");
+        Params p;
+        p.setSeed(1);
+        p.setSize(16, 12);
+        auto params = algos->getObject(i)->getObject("params");
+        if (params) {
+            if (params->has("loops")) p.setInt("loops", params->getValue<int>("loops"));
+            if (params->has("fill")) p.setFloat("fill", float(params->getValue<double>("fill")));
+            if (params->has("floorPct"))
+                p.setFloat("floorPct", float(params->getValue<double>("floorPct")));
+            if (params->has("preset"))
+                p.setString("preset", params->getValue<std::string>("preset"));
+            if (params->has("maxAttempts"))
+                p.setInt("maxAttempts", params->getValue<int>("maxAttempts"));
+        }
+        Grid2D grid;
+        std::string err;
+        CHECK(GeneratorRegistry::instance().generate(id, p, grid, err));
+        CHECK(grid.getWidth() == 16);
+        CHECK(grid.getHeight() == 12);
+    }
+}
+
+TEST_CASE("hex.data.ringMap.doorShortestVsOuter") {
+    const std::string text = readTextFile(hexDataDir() + "/maps/ring_hex.json");
+    REQUIRE(!text.empty());
+    hideLayers();
+    std::vector<MapObject> objects;
+    std::string err;
+    auto layers = loadMapText(text, &objects, &err);
+    REQUIRE(!layers.empty());
+    TileLayer *layer = layers.front();
+    CHECK_EQ(layer->getTile(4, 3), 3);  // door
+    CHECK_EQ(layer->getTile(4, 2), 1);  // inner wall north of door
+    CHECK_EQ(layer->getTile(4, 4), 1);  // inner wall south of door
+
+    auto *mapMod = Map::create();
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->blockGid(1);
+    pf->setTopology("hex");
+    CHECK(pf->isWalkable(4, 3));
+    CHECK(!pf->isWalkable(4, 2));
+    CHECK(!pf->isWalkable(4, 4));
+
+    // Horizontal path through the door cell (row 3: wall,floor,door,floor,wall).
+    CHECK(pf->isWalkable(3, 3));
+    CHECK(pf->isWalkable(5, 3));
+    Path *throughDoor = pf->findPath(3, 3, 5, 3);
+    REQUIRE(throughDoor != nullptr);
+    CHECK(throughDoor->getLength() > 0);
+    bool usesDoor = false;
+    for (int i = 0; i < throughDoor->getLength(); ++i)
+        if (throughDoor->getX(i) == 4 && throughDoor->getY(i) == 3) usesDoor = true;
+    CHECK(usesDoor);
+
+    // Outer ring still connects spawn→exit without needing the door.
+    Path *outer = pf->findPath(1, 1, 7, 5);
+    REQUIRE(outer != nullptr);
+    CHECK(outer->getLength() > 0);
+    CHECK(outer->getLength() >= throughDoor->getLength());
+
+    delete throughDoor;
+    delete outer;
+    delete pf;
+    for (TileLayer *L : layers) L->setVisible(false);
+}
+
+TEST_CASE("hex.data.items.categoriesAndTags") {
+    auto doc = loadJson("items.json");
+    auto arr = doc->array();
+    REQUIRE(arr);
+    int withTags = 0, withCategory = 0, withExtra = 0;
+    for (size_t i = 0; i < arr->size(); ++i) {
+        auto o = arr->getObject(i);
+        CHECK(o->has("id"));
+        CHECK(o->has("displayName"));
+        CHECK(o->has("maxStack"));
+        if (o->has("category")) ++withCategory;
+        if (o->has("tags") && o->getArray("tags")->size() > 0) ++withTags;
+        if (o->has("extra")) ++withExtra;
+    }
+    CHECK(withTags == int(arr->size()));
+    CHECK(withCategory == int(arr->size()));
+    CHECK(withExtra >= 8);
+}
+
+TEST_CASE("hex.data.perception.detectionMarginFromCases") {
+    auto doc = loadJson("perception_cases.json");
+    auto cases = doc->object()->getArray("cases");
+    REQUIRE(cases);
+
+    auto *mapMod = Map::create();
+    Fov *fov = mapMod->newFovSize(5, 5);
+    fov->setBlockEmpty(false);
+    fov->setTopology("hex");
+    // Positive margin should allow barely-over stealth that previously failed.
+    fov->setDetectionMargin(0.2f);
+    CHECK(std::fabs(fov->getDetectionMargin() - 0.2f) < 1e-3f);
+
+    int flipped = 0;
+    for (size_t i = 0; i < cases->size(); ++i) {
+        auto c = cases->getObject(i);
+        const float perception = float(c->getValue<double>("perception"));
+        const float stealth = float(c->getValue<double>("stealth"));
+        const bool expectNoMargin = c->getValue<bool>("expectDetect");
+        fov->clearRevealers();
+        const int id = fov->addRevealer(2, 2, 2);
+        fov->setRevealerPerception(id, perception);
+        fov->setPerceptionRadiusScale(0.f);
+        fov->compute();
+        const bool withMargin = fov->canDetect(id, 2, 2, stealth);
+        if (!expectNoMargin && stealth <= perception + 0.2f + 1e-4f) {
+            CHECK(withMargin);
+            ++flipped;
+        } else if (expectNoMargin) {
+            CHECK(withMargin);
+        }
+    }
+    CHECK(flipped >= 1);
+    delete fov;
+}
+
+TEST_CASE("hex.data.tinyMap.doorIsWalkable") {
+    const std::string text = readTextFile(hexDataDir() + "/maps/tiny_hex.json");
+    hideLayers();
+    std::vector<MapObject> objects;
+    std::string err;
+    auto layers = loadMapText(text, &objects, &err);
+    REQUIRE(!layers.empty());
+    TileLayer *layer = layers.front();
+    CHECK_EQ(layer->getTile(3, 3), 3);
+
+    auto *mapMod = Map::create();
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->blockGid(1);  // walls only — doors (gid 3) stay walkable
+    pf->setTopology("hex");
+    CHECK(pf->isWalkable(3, 3));
+    Path *through = pf->findPath(1, 1, 6, 4);
+    REQUIRE(through != nullptr);
+    CHECK(through->getLength() > 0);
+    delete through;
+    delete pf;
+    for (TileLayer *L : layers) L->setVisible(false);
+}

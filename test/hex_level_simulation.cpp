@@ -21,10 +21,16 @@
 //  18 seed reproducibility (spawn/path stable)
 //  19 corner-peek FOV toggle
 //  20 equipment loot pickup + equip slot
+//  21 hex world↔tile roundtrip sampling
+//  22 FOV explored memory clearMemory
+//  23 findGroupPath on hex topology
+//  24 FOV algorithm visibility parity smoke
+//  25 blocked-cell + syncFromLayer pathfinding
 //  pipeline.dungeonCrawl: full crawl through one seeded hex dungeon
 //  pipeline.fogRaid: FOV cone + perception gated pickup + flow escort
 //  pipeline.torchEscort: multi-revealer + light + particles along flow
 //  pipeline.catalogRaid: catalog raid loot + perception gates
+//  pipeline.costlyFogPickup: cell-cost detour + FOV pickup + particles
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -1600,6 +1606,242 @@ TEST_CASE("hex.level.pipeline.catalogRaid") {
     bag->destroy();
     ItemRegistry::clear();
     delete path;
+    delete pf;
+    delete fov;
+}
+
+TEST_CASE("hex.level.21.hexWorldTileRoundtrip") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 2121, 20, 14);
+
+    int ok = 0;
+    for (int y = 0; y < d.layer->getMapHeight(); ++y) {
+        for (int x = 0; x < d.layer->getMapWidth(); ++x) {
+            if (d.layer->getTile(x, y) == kWallGid) continue;
+            float wx = 0.f, wy = 0.f;
+            d.layer->tileToWorld(x, y, wx, wy);
+            // Sample near tile center for stable hex pick.
+            wx += kTileW * 0.5f;
+            wy += kTileH * 0.5f;
+            int tx = -1, ty = -1;
+            d.layer->worldToTile(wx, wy, tx, ty);
+            CHECK_EQ(tx, x);
+            CHECK_EQ(ty, y);
+            CHECK_EQ(d.layer->worldToTileX(wx, wy), x);
+            CHECK_EQ(d.layer->worldToTileY(wx, wy), y);
+            ++ok;
+            if (ok >= 12) break;
+        }
+        if (ok >= 12) break;
+    }
+    CHECK(ok >= 8);
+    d.layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.22.fovExploredMemoryClear") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 2222, 22, 16);
+
+    Fov *fov = mapMod->newFov(d.layer);
+    fov->blockOpaqueGid(kWallGid);
+    fov->setTopology("hex");
+    const int id = fov->addRevealer(d.spawnTx, d.spawnTy, 5);
+    fov->compute();
+    CHECK(fov->isVisible(d.spawnTx, d.spawnTy));
+    CHECK_EQ(fov->getState(d.spawnTx, d.spawnTy), std::string("visible"));
+
+    fov->setRevealerPosition(id, d.exitTx, d.exitTy);
+    fov->compute();
+    CHECK(fov->isExplored(d.spawnTx, d.spawnTy));
+    const std::string exploredState = fov->getState(d.spawnTx, d.spawnTy);
+    const bool exploredOrVisible =
+        exploredState == "explored" || exploredState == "visible";
+    CHECK(exploredOrVisible);
+
+    fov->clearMemory();
+    fov->markDirty();
+    fov->compute();
+    // After clear, spawn is unknown unless still in current FOV.
+    if (!fov->isVisible(d.spawnTx, d.spawnTy)) {
+        CHECK(!fov->isExplored(d.spawnTx, d.spawnTy));
+        CHECK_EQ(fov->getState(d.spawnTx, d.spawnTy), std::string("unknown"));
+    }
+    delete fov;
+}
+
+TEST_CASE("hex.level.23.findGroupPathHex") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 2323, 26, 18);
+
+    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+
+    Path *solo = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    REQUIRE(solo != nullptr);
+    CHECK(solo->getLength() > 0);
+
+    Path *group = pf->findGroupPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    REQUIRE(group != nullptr);
+    CHECK(group->getLength() > 0);
+    CHECK_EQ(group->getX(group->getLength() - 1), d.exitTx);
+    CHECK_EQ(group->getY(group->getLength() - 1), d.exitTy);
+    CHECK(pathWalkable(group, pf));
+
+    delete group;
+    delete solo;
+    delete pf;
+}
+
+TEST_CASE("hex.level.24.fovAlgoVisibilitySmoke") {
+    auto *mapMod = Map::create();
+    hideAllTileLayers();
+    TileLayer *layer = mapMod->newLayer(13, 13, kTileW, kTileH);
+    configureHexLayer(layer);
+    layer->fill(kFloorGid);
+    layer->setTile(6, 5, kWallGid);
+    layer->setTile(5, 6, kWallGid);
+    layer->setTile(7, 6, kWallGid);
+
+    const char *algos[] = {"shadowcast", "raycast", "permissive", "rectangle"};
+    int counts[4] = {0, 0, 0, 0};
+    for (int ai = 0; ai < 4; ++ai) {
+        Fov *fov = mapMod->newFov(layer);
+        fov->blockOpaqueGid(kWallGid);
+        fov->setBlockEmpty(false);
+        fov->setTopology("hex");
+        fov->setAlgorithm(algos[ai]);
+        CHECK_EQ(fov->getAlgorithm(), std::string(algos[ai]));
+        fov->addRevealer(6, 6, 4);
+        fov->compute();
+        CHECK(fov->isVisible(6, 6));
+        for (int y = 0; y < 13; ++y)
+            for (int x = 0; x < 13; ++x)
+                if (fov->isVisible(x, y)) ++counts[ai];
+        CHECK(counts[ai] > 1);
+        delete fov;
+    }
+    for (int ai = 0; ai < 4; ++ai) CHECK(counts[ai] >= 5);
+    layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.25.blockedCellSyncPath") {
+    auto *mapMod = Map::create();
+    hideAllTileLayers();
+    TileLayer *layer = mapMod->newLayer(8, 5, kTileW, kTileH);
+    configureHexLayer(layer);
+    layer->fill(kFloorGid);
+
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+    CHECK(pf->isWalkable(3, 2));
+
+    // setBlocked updates the cost grid immediately (pre-sync).
+    pf->setBlocked(3, 2, true);
+    CHECK(!pf->isWalkable(3, 2));
+    pf->setBlocked(3, 2, false);
+    CHECK(pf->isWalkable(3, 2));
+
+    // Persistent block via tile + syncFromLayer (survives findPath ensureSynced).
+    layer->setTile(4, 2, kWallGid);
+    pf->syncFromLayer();
+    CHECK(!pf->isWalkable(4, 2));
+    Path *after = pf->findPath(0, 2, 7, 2);
+    REQUIRE(after != nullptr);
+    CHECK(after->getLength() > 0);
+    bool steppedWall = false;
+    for (int i = 0; i < after->getLength(); ++i)
+        if (after->getX(i) == 4 && after->getY(i) == 2) steppedWall = true;
+    CHECK(!steppedWall);
+    delete after;
+    delete pf;
+    layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.pipeline.costlyFogPickup") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    auto *spatialMod = Spatial::create();
+    auto *parts = Particles::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 2525, 28, 20);
+
+    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+    Path *base = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    REQUIRE(base != nullptr);
+    REQUIRE(base->getLength() > 2);
+
+    const int paintN = std::max(1, base->getLength() / 3);
+    for (int i = 1; i < paintN; ++i)
+        pf->setCellCost(base->getX(i), base->getY(i), 9.f);
+
+    Path *path = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    REQUIRE(path != nullptr);
+    CHECK(path->getTotalCost() + 1e-3f >= base->getTotalCost());
+
+    Fov *fov = mapMod->newFov(d.layer);
+    fov->blockOpaqueGid(kWallGid);
+    fov->setTopology("hex");
+    const int hero = fov->addRevealer(d.spawnTx, d.spawnTy, 5);
+    fov->setRevealerPerception(hero, 2.f);
+
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    auto *inv = Inventory::create();
+    inv->registerItemsFromJson(
+        R"([{"id":"hex.crystal","displayName":"视野水晶","maxStack":3,"weight":0.15,"tags":["loot","fov"]}])");
+    Bag *bag = inv->newBag(6);
+
+    const int mid = path->getLength() / 2;
+    const int lootTx = path->getX(mid);
+    const int lootTy = path->getY(mid);
+    float lootWx = 0.f, lootWy = 0.f;
+    d.layer->tileToWorld(lootTx, lootTy, lootWx, lootWy);
+    lootWx += kTileW * 0.5f;
+    lootWy += kTileH * 0.5f;
+    std::unique_ptr<SpatialHash2D> hash(spatialMod->newSpatialHash2D(30.f));
+    CHECK(hash->insert(9, lootWx - 5.f, lootWy - 5.f, lootWx + 5.f, lootWy + 5.f));
+
+    ParticleEmitter *spark = parts->newEmitter(64);
+    spark->applyPreset("spark");
+    spark->setEmitterLifetime(0.35f);
+
+    bool looted = false;
+    for (int step = 0; step < path->getLength(); ++step) {
+        const int tx = path->getX(step);
+        const int ty = path->getY(step);
+        fov->setRevealerPosition(hero, tx, ty);
+        fov->compute();
+        float wx = 0.f, wy = 0.f;
+        d.layer->tileToWorld(tx, ty, wx, wy);
+        wx += kTileW * 0.5f;
+        wy += kTileH * 0.5f;
+        if (!looted && fov->canDetect(hero, lootTx, lootTy, 1.5f) &&
+            hash->queryCircle(wx, wy, 18.f) > 0) {
+            const int added = bag->addItem("hex.crystal", 1);
+            if (added > 0) {
+                looted = true;
+                hash->remove(9);
+                spark->setPosition(lootWx, lootWy);
+                spark->start();
+                spark->emit(16);
+            }
+        }
+        parts->update(1.f / 30.f);
+    }
+    CHECK(looted);
+    CHECK_EQ(bag->countItem("hex.crystal"), 1);
+
+    spark->stop();
+    bag->destroy();
+    ItemRegistry::clear();
+    delete path;
+    delete base;
     delete pf;
     delete fov;
 }
