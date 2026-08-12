@@ -239,6 +239,10 @@ void Renderable3D::setHeightTexture(Texture *texture) { meshRenderer()->heightTe
 
 void Renderable3D::setShader(Shader *shader) { meshRenderer()->shader = shader; }
 
+void Renderable3D::setHair(bool hair) { meshRenderer()->isHair = hair; }
+
+bool Renderable3D::getHair() { return meshRenderer()->isHair; }
+
 void Renderable3D::setTint(float r, float g, float b, float a) {
     auto mr = meshRenderer();
     mr->r = r;
@@ -424,13 +428,41 @@ void RenderSystem3D::render(Graphics &gfx) {
 
     if (ecs::current()->getManager<Renderable3D>() == nullptr) return;
 
+    struct DrawItem {
+        Renderable3D::Transform3D *xf;
+        Renderable3D::MeshRenderer *mr;
+        float distSq;
+    };
+    std::vector<DrawItem> opaque;
+    std::vector<DrawItem> hair;
+    opaque.reserve(64);
+    hair.reserve(16);
+
     auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [xf, mr] = *it;
         if (!mr->visible) continue;
-
         Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
         if (!camEnt) continue;
+        auto cd = camEnt->data();
+        const float dx = xf->x - cd->eyeX;
+        const float dy = xf->y - cd->eyeY;
+        const float dz = xf->z - cd->eyeZ;
+        const float distSq = dx * dx + dy * dy + dz * dz;
+        if (!mr->meshForDistance(std::sqrt(distSq))) continue;
+        DrawItem item{xf, mr, distSq};
+        if (mr->isHair)
+            hair.push_back(item);
+        else
+            opaque.push_back(item);
+    }
+
+    std::stable_sort(hair.begin(), hair.end(),
+                     [](const DrawItem &a, const DrawItem &b) { return a.distSq > b.distSq; });
+
+    auto drawOne = [&](Renderable3D::Transform3D *xf, Renderable3D::MeshRenderer *mr) {
+        Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
+        if (!camEnt) return;
         auto cd = camEnt->data();
 
         const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
@@ -438,7 +470,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         const float dy = xf->y - eye.y;
         const float dz = xf->z - eye.z;
         Mesh *drawMesh = mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz));
-        if (!drawMesh) continue;
+        if (!drawMesh) return;
 
         const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
         const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
@@ -472,7 +504,6 @@ void RenderSystem3D::render(Graphics &gfx) {
                 d.color = glm::vec4(gLightColor, 1.f);
                 dirs.push_back(d);
             }
-            // packed[0] is shadow caster when present — match its direction as primary.
             if (shadowCaster && !dirs.empty()) {
                 glm::vec3 dir(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
                 if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
@@ -499,11 +530,14 @@ void RenderSystem3D::render(Graphics &gfx) {
         const glm::mat4 model = modelFromTransform(*xf);
         const Color tint(mr->r, mr->g, mr->b, mr->a);
         if (mr->texture) eve::debug::rtBind("texture", "albedo");
-        if (mr->shader) eve::debug::rtBind("shader", "mesh");
+        if (mr->shader) eve::debug::rtBind("shader", mr->isHair ? "hair" : "mesh");
         eve::debug::rtBind("mesh", "renderable3d");
         eve::debug::rtDraw("drawMeshShader", mr->shader ? "custom" : "default");
         gfx.drawMeshShader(drawMesh, model, mr->texture, tint, mr->shader);
-    }
+    };
+
+    for (const auto &item : opaque) drawOne(item.xf, item.mr);
+    for (const auto &item : hair) drawOne(item.xf, item.mr);
 }
 
 } // namespace eve::graphics

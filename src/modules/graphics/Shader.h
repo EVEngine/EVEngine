@@ -20,6 +20,9 @@ namespace eve::graphics {
  * **3D meshes** (`newMeshShader` / `newMeshShaderFromSpv`):
  *   Vertex = MeshVertex; Frame UBO @ binding0 + albedo @ binding1 (same as mesh3d);
  *   optional push-constant data[32] for style knobs.
+ *
+ * **Hair/fur cards** (`newHairShader` / `newHairShaderFromSpv`):
+ *   Same layout as mesh shaders; pipeline uses alpha blend, no back-face cull, no depth write.
  */
 class Shader {
 public:

@@ -99,6 +99,8 @@ public:
         bool castShadow = true;
         bool receiveShadow = true;
         bool castOcclusion = true;  // volumetric occlusion (screen-space shafts)
+        /** Alpha-blended hair/fur card pass (drawn after opaque meshes, back-to-front). */
+        bool isHair = false;
         Camera3D *camera = nullptr;
 
         /**
@@ -141,6 +143,8 @@ public:
     /** Height map for parallax (R channel; white = raised). nullptr disables sampling. */
     void setHeightTexture(Texture *texture);
     void setShader(Shader *shader);
+    void setHair(bool hair);
+    bool getHair();
     void setTint(float r, float g, float b, float a = 1.f);
     void setMetallic(float metallic);
     void setRoughness(float roughness);
