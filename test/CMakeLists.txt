@@ -41,6 +41,7 @@ file(GLOB all_test_cpp
   scene.cpp
   particles.cpp
   particles_attach_skin.cpp
+  particles_dynamic_bones.cpp
   map.cpp
   map_path.cpp
   map_fov.cpp

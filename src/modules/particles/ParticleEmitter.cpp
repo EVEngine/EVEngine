@@ -5,6 +5,10 @@
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 #include "animation/AnimMath.h"
+#include "animation/SpineSkeleton.h"
+#include "animation/SpineSkeletonData.h"
+#include "ik/Skeleton2D.h"
+#include "ik/Skeleton3D.h"
 
 #include <cmath>
 #include <random>
@@ -134,6 +138,109 @@ void fillParticleMotion(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
     p.vy = std::sin(angle) * speed;
 }
 
+void clearAttachSources(ParticleEmitter::Attach &a) {
+    a.kind = ParticleEmitter::Attach::Kind::None;
+    a.pose = nullptr;
+    a.skeleton = nullptr;
+    a.spine = nullptr;
+    a.ik2d = nullptr;
+    a.ik3d = nullptr;
+    a.boneIndex = -1;
+    a.enabled = false;
+}
+
+void syncAnimPoseAttach(ParticleEmitter::Config &cfg, ParticleEmitter::Attach &attach) {
+    if (!attach.pose || attach.boneIndex < 0 || attach.boneIndex >= attach.pose->getBoneCount())
+        return;
+    const auto &w = attach.pose->world(attach.boneIndex);
+    float ox = attach.offsetX, oy = attach.offsetY, oz = attach.offsetZ;
+    float wx, wy, wz;
+    animation::Mat4::fromTRS(w).transformPoint(ox, oy, oz, wx, wy, wz);
+    projectToPlane(wx, wy, wz, attach.plane, attach.scale, cfg.x, cfg.y);
+
+    if (attach.followRotation) {
+        float fx, fy, fz;
+        quatRotateVec(w.qx, w.qy, w.qz, w.qw, 1.f, 0.f, 0.f, fx, fy, fz);
+        float ax, ay;
+        projectToPlane(fx, fy, fz, attach.plane, 1.f, ax, ay);
+        if (ax * ax + ay * ay > kEps) cfg.direction = std::atan2(ay, ax);
+    }
+}
+
+void syncSpineAttach(ParticleEmitter::Config &cfg, ParticleEmitter::Attach &attach) {
+    if (!attach.spine || attach.boneIndex < 0 || attach.boneIndex >= attach.spine->getBoneCount())
+        return;
+    float a, b, c, d;
+    attach.spine->getBoneWorldMatrix(attach.boneIndex, a, b, c, d);
+    const float wx =
+        attach.spine->getBoneWorldX(attach.boneIndex) + a * attach.offsetX + b * attach.offsetY;
+    const float wy =
+        attach.spine->getBoneWorldY(attach.boneIndex) + c * attach.offsetX + d * attach.offsetY;
+    // Spine is already 2D pixel space; scale still applies, plane ignored (xy).
+    cfg.x = wx * attach.scale;
+    cfg.y = wy * attach.scale;
+
+    if (attach.followRotation) {
+        // World rotation is degrees → particle direction radians.
+        cfg.direction = attach.spine->getBoneWorldRotation(attach.boneIndex) * (kPi / 180.f);
+    }
+}
+
+void syncIk2DAttach(ParticleEmitter::Config &cfg, ParticleEmitter::Attach &attach) {
+    if (!attach.ik2d || attach.boneIndex < 0 || attach.boneIndex >= attach.ik2d->getBoneCount())
+        return;
+    float ox = attach.offsetX;
+    float oy = attach.offsetY;
+    if (attach.followRotation || (ox != 0.f || oy != 0.f)) {
+        const float fx = attach.ik2d->getOrientationX(attach.boneIndex);
+        const float fy = attach.ik2d->getOrientationY(attach.boneIndex);
+        const float len2 = fx * fx + fy * fy;
+        if (len2 > kEps) {
+            const float inv = 1.f / std::sqrt(len2);
+            const float ux = fx * inv;
+            const float uy = fy * inv;
+            // Local +X along bone forward, +Y perpendicular.
+            const float rx = ox * ux - oy * uy;
+            const float ry = ox * uy + oy * ux;
+            ox = rx;
+            oy = ry;
+            if (attach.followRotation) cfg.direction = std::atan2(uy, ux);
+        }
+    }
+    cfg.x = (attach.ik2d->getX(attach.boneIndex) + ox) * attach.scale;
+    cfg.y = (attach.ik2d->getY(attach.boneIndex) + oy) * attach.scale;
+}
+
+void syncIk3DAttach(ParticleEmitter::Config &cfg, ParticleEmitter::Attach &attach) {
+    if (!attach.ik3d || attach.boneIndex < 0 || attach.boneIndex >= attach.ik3d->getBoneCount())
+        return;
+    float ox = attach.offsetX;
+    float oy = attach.offsetY;
+    float oz = attach.offsetZ;
+    const float fx = attach.ik3d->getOrientationX(attach.boneIndex);
+    const float fy = attach.ik3d->getOrientationY(attach.boneIndex);
+    const float fz = attach.ik3d->getOrientationZ(attach.boneIndex);
+    const float len2 = fx * fx + fy * fy + fz * fz;
+    if (len2 > kEps && (ox != 0.f || oy != 0.f || oz != 0.f || attach.followRotation)) {
+        const float inv = 1.f / std::sqrt(len2);
+        const float ux = fx * inv, uy = fy * inv, uz = fz * inv;
+        // Offset: along-bone (ox) + world remainder (oy/oz as translation extras).
+        const float wx = attach.ik3d->getX(attach.boneIndex) + ux * ox + oy;
+        const float wy = attach.ik3d->getY(attach.boneIndex) + uy * ox + oz;
+        const float wz = attach.ik3d->getZ(attach.boneIndex) + uz * ox;
+        projectToPlane(wx, wy, wz, attach.plane, attach.scale, cfg.x, cfg.y);
+        if (attach.followRotation) {
+            float ax, ay;
+            projectToPlane(ux, uy, uz, attach.plane, 1.f, ax, ay);
+            if (ax * ax + ay * ay > kEps) cfg.direction = std::atan2(ay, ax);
+        }
+        return;
+    }
+    projectToPlane(attach.ik3d->getX(attach.boneIndex) + ox, attach.ik3d->getY(attach.boneIndex) + oy,
+                   attach.ik3d->getZ(attach.boneIndex) + oz, attach.plane, attach.scale, cfg.x,
+                   cfg.y);
+}
+
 }  // namespace
 
 void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y) {
@@ -175,21 +282,23 @@ bool sampleSkinSpawn(ParticleEmitter::SkinSource &skinSrc, ParticleEmitter::Sim 
 
 void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim & /*sim*/,
                         ParticleEmitter::Attach &attach, ParticleEmitter::SkinSource &skinSrc) {
-    if (attach.enabled && attach.pose && attach.boneIndex >= 0 &&
-        attach.boneIndex < attach.pose->getBoneCount()) {
-        const auto &w = attach.pose->world(attach.boneIndex);
-        // Transform local attach offset by bone world matrix.
-        float ox = attach.offsetX, oy = attach.offsetY, oz = attach.offsetZ;
-        float wx, wy, wz;
-        animation::Mat4::fromTRS(w).transformPoint(ox, oy, oz, wx, wy, wz);
-        projectToPlane(wx, wy, wz, attach.plane, attach.scale, cfg.x, cfg.y);
-
-        if (attach.followRotation) {
-            float fx, fy, fz;
-            quatRotateVec(w.qx, w.qy, w.qz, w.qw, 1.f, 0.f, 0.f, fx, fy, fz);
-            float ax, ay;
-            projectToPlane(fx, fy, fz, attach.plane, 1.f, ax, ay);
-            if (ax * ax + ay * ay > kEps) cfg.direction = std::atan2(ay, ax);
+    if (attach.enabled) {
+        switch (attach.kind) {
+            case ParticleEmitter::Attach::Kind::AnimPose:
+                syncAnimPoseAttach(cfg, attach);
+                break;
+            case ParticleEmitter::Attach::Kind::Spine:
+                syncSpineAttach(cfg, attach);
+                break;
+            case ParticleEmitter::Attach::Kind::Ik2D:
+                syncIk2DAttach(cfg, attach);
+                break;
+            case ParticleEmitter::Attach::Kind::Ik3D:
+                syncIk3DAttach(cfg, attach);
+                break;
+            case ParticleEmitter::Attach::Kind::None:
+            default:
+                break;
         }
     }
 
@@ -505,9 +614,12 @@ std::string ParticleEmitter::getConfigPath() { return resource()->path; }
 
 void ParticleEmitter::attachToBone(animation::AnimPose *pose, int boneIndex) {
     auto a = attach();
+    clearAttachSources(*a);
+    a->kind = Attach::Kind::AnimPose;
     a->pose = pose;
     a->boneIndex = boneIndex;
     a->enabled = pose != nullptr && boneIndex >= 0;
+    if (!a->enabled) a->kind = Attach::Kind::None;
     if (a->enabled) syncAttach();
 }
 
@@ -519,6 +631,48 @@ void ParticleEmitter::attachToBoneByName(animation::AnimPose *pose,
     int idx = -1;
     if (skeleton) idx = skeleton->findBone(boneName);
     attachToBone(pose, idx);
+    // Preserve skeleton pointer for name lookups after attachToBone cleared sources.
+    attach()->skeleton = skeleton;
+}
+
+void ParticleEmitter::attachToSpineBone(animation::SpineSkeleton *spine, int boneIndex) {
+    auto a = attach();
+    clearAttachSources(*a);
+    a->kind = Attach::Kind::Spine;
+    a->spine = spine;
+    a->boneIndex = boneIndex;
+    a->enabled = spine != nullptr && boneIndex >= 0 && boneIndex < spine->getBoneCount();
+    if (!a->enabled) a->kind = Attach::Kind::None;
+    if (a->enabled) syncAttach();
+}
+
+void ParticleEmitter::attachToSpineBoneByName(animation::SpineSkeleton *spine,
+                                              const std::string &boneName) {
+    int idx = -1;
+    if (spine && spine->getData()) idx = spine->getData()->findBone(boneName);
+    attachToSpineBone(spine, idx);
+}
+
+void ParticleEmitter::attachToSkeleton2D(eve::ik::Skeleton2D *skeleton, int boneId) {
+    auto a = attach();
+    clearAttachSources(*a);
+    a->kind = Attach::Kind::Ik2D;
+    a->ik2d = skeleton;
+    a->boneIndex = boneId;
+    a->enabled = skeleton != nullptr && boneId >= 0 && boneId < skeleton->getBoneCount();
+    if (!a->enabled) a->kind = Attach::Kind::None;
+    if (a->enabled) syncAttach();
+}
+
+void ParticleEmitter::attachToSkeleton3D(eve::ik::Skeleton3D *skeleton, int boneId) {
+    auto a = attach();
+    clearAttachSources(*a);
+    a->kind = Attach::Kind::Ik3D;
+    a->ik3d = skeleton;
+    a->boneIndex = boneId;
+    a->enabled = skeleton != nullptr && boneId >= 0 && boneId < skeleton->getBoneCount();
+    if (!a->enabled) a->kind = Attach::Kind::None;
+    if (a->enabled) syncAttach();
 }
 
 void ParticleEmitter::setAttachOffset(float x, float y, float z) {
@@ -545,14 +699,27 @@ void ParticleEmitter::setFollowBoneRotation(bool enable) {
 }
 
 void ParticleEmitter::detach() {
-    auto a = attach();
-    a->enabled = false;
-    a->pose = nullptr;
-    a->boneIndex = -1;
+    clearAttachSources(*attach());
 }
 
 bool ParticleEmitter::isAttached() { return attach()->enabled; }
 int ParticleEmitter::getAttachBone() { return attach()->boneIndex; }
+
+std::string ParticleEmitter::getAttachKind() {
+    switch (attach()->kind) {
+        case Attach::Kind::AnimPose:
+            return "anim";
+        case Attach::Kind::Spine:
+            return "spine";
+        case Attach::Kind::Ik2D:
+            return "ik2d";
+        case Attach::Kind::Ik3D:
+            return "ik3d";
+        case Attach::Kind::None:
+        default:
+            return "none";
+    }
+}
 
 void ParticleEmitter::syncAttach() {
     syncEmitterSources(*config(), *sim(), *attach(), *skinSource());

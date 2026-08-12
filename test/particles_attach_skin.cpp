@@ -276,3 +276,57 @@ TEST_CASE("particles.skin.skinnedCacheReadable") {
     CHECK(std::isfinite(skin->getSkinnedPositionY(0)));
     CHECK(std::isfinite(skin->getSkinnedPositionZ(0)));
 }
+
+TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
+    // Emit while the bone is moving — particles should form a trail of spawn positions.
+    std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
+    const int root = sk->addBone("root", -1);
+    const int tip  = sk->addBone("tip", root);
+    sk->setBindPosition(tip, 1.f, 0.f, 0.f);
+
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    sk->applyBindPose(pose.get());
+
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(64);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setEmissionRate(0.f);
+    e->setAttachScale(10.f);
+    e->setAttachPlane("xy");
+    e->attachToBone(pose.get(), tip);
+    CHECK_EQ(e->getAttachKind(), std::string("anim"));
+
+    for (int frame = 0; frame < 5; ++frame) {
+        pose->setLocalPosition(root, float(frame) * 2.f, 0.f, 0.f);
+        pose->computeWorld(sk.get());
+        e->emit(1);
+        ParticleSimSystem::update(0.016f);
+    }
+    CHECK_EQ(e->getCount(), 5);
+    auto sim = e->sim();
+    // tip world x = root.x + 1 → scaled ×10; frames 0..4 → x = 10,30,50,70,90
+    CHECK(std::fabs(sim->particles[0].x - 10.f) < 1e-2f);
+    CHECK(std::fabs(sim->particles[4].x - 90.f) < 1e-2f);
+}
+
+TEST_CASE("particles.attach.yzPlaneAndDetachClearsKind") {
+    std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
+    const int root = sk->addBone("root", -1);
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    sk->applyBindPose(pose.get());
+    pose->setLocalPosition(root, 1.f, 2.f, 3.f);
+    pose->computeWorld(sk.get());
+
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(4);
+    e->setAttachPlane("yz");
+    e->setAttachScale(1.f);
+    e->attachToBone(pose.get(), root);
+    CHECK(std::fabs(e->getX() - 2.f) < 1e-3f);
+    CHECK(std::fabs(e->getY() - 3.f) < 1e-3f);
+    CHECK_EQ(e->getAttachKind(), std::string("anim"));
+    e->detach();
+    CHECK(!e->isAttached());
+    CHECK_EQ(e->getAttachKind(), std::string("none"));
+}
