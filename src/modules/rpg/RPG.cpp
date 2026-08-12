@@ -35,6 +35,8 @@ void RPG::update(float dt) {
 
     ticks_.clear();
     StatusSystem::pollTicks(ticks_);
+    changes_.clear();
+    StatusSystem::pollChanges(changes_);
     casts_.clear();
     SkillSystem::pollCastEvents(casts_);
 }
@@ -64,6 +66,43 @@ std::string RPG::getTickEventSource(int index) const {
 int RPG::getTickEventStacks(int index) const {
     if (index < 0 || size_t(index) >= ticks_.size()) return 0;
     return ticks_[size_t(index)].stacks;
+}
+
+int RPG::getStatusChangeEventCount() const { return int(changes_.size()); }
+
+RPGActor *RPG::getStatusChangeEventActor(int index) const {
+    if (index < 0 || size_t(index) >= changes_.size()) return nullptr;
+    return changes_[size_t(index)].actor;
+}
+
+int RPG::getStatusChangeEventInstanceId(int index) const {
+    if (index < 0 || size_t(index) >= changes_.size()) return 0;
+    return changes_[size_t(index)].instanceId;
+}
+
+std::string RPG::getStatusChangeEventEffectId(int index) const {
+    if (index < 0 || size_t(index) >= changes_.size()) return {};
+    return changes_[size_t(index)].effectId;
+}
+
+std::string RPG::getStatusChangeEventSource(int index) const {
+    if (index < 0 || size_t(index) >= changes_.size()) return {};
+    return changes_[size_t(index)].source;
+}
+
+std::string RPG::getStatusChangeEventAction(int index) const {
+    if (index < 0 || size_t(index) >= changes_.size()) return {};
+    return changes_[size_t(index)].action;
+}
+
+int RPG::getStatusChangeEventStacks(int index) const {
+    if (index < 0 || size_t(index) >= changes_.size()) return 0;
+    return changes_[size_t(index)].stacks;
+}
+
+std::string RPG::getStatusChangeEventReason(int index) const {
+    if (index < 0 || size_t(index) >= changes_.size()) return {};
+    return changes_[size_t(index)].reason;
 }
 
 int RPG::getCastEventCount() const { return int(casts_.size()); }
@@ -156,11 +195,31 @@ void RPG::expose(ssq::Table &table) {
     actor.addFunc("removeStatusBySource", &RPGActor::removeStatusBySource);
     actor.addFunc("removeStatusByTag", &RPGActor::removeStatusByTag);
     actor.addFunc("hasEffect", &RPGActor::hasEffect);
+    actor.addFunc("hasStatusTag", &RPGActor::hasStatusTag);
     actor.addFunc("getStatusCount", &RPGActor::getStatusCount);
     actor.addFunc("getStatusEffectId", &RPGActor::getStatusEffectId);
     actor.addFunc("getStatusStacks", &RPGActor::getStatusStacks);
     actor.addFunc("getStatusRemaining", &RPGActor::getStatusRemaining);
     actor.addFunc("getStatusInstanceId", &RPGActor::getStatusInstanceId);
+    actor.addFunc("getStatusSource", &RPGActor::getStatusSource);
+    actor.addFunc("getStatusProp", &RPGActor::getStatusProp);
+    actor.addFunc("setStatusProp", &RPGActor::setStatusProp);
+
+    actor.addFunc("applyBuff", &RPGActor::applyBuff);
+    actor.addFunc("removeBuff", &RPGActor::removeBuff);
+    actor.addFunc("removeBuffByEffect", &RPGActor::removeBuffByEffect);
+    actor.addFunc("removeBuffBySource", &RPGActor::removeBuffBySource);
+    actor.addFunc("removeBuffByTag", &RPGActor::removeBuffByTag);
+    actor.addFunc("hasBuff", &RPGActor::hasBuff);
+    actor.addFunc("hasBuffTag", &RPGActor::hasBuffTag);
+    actor.addFunc("getBuffCount", &RPGActor::getBuffCount);
+    actor.addFunc("getBuffEffectId", &RPGActor::getBuffEffectId);
+    actor.addFunc("getBuffStacks", &RPGActor::getBuffStacks);
+    actor.addFunc("getBuffRemaining", &RPGActor::getBuffRemaining);
+    actor.addFunc("getBuffInstanceId", &RPGActor::getBuffInstanceId);
+    actor.addFunc("getBuffSource", &RPGActor::getBuffSource);
+    actor.addFunc("getBuffProp", &RPGActor::getBuffProp);
+    actor.addFunc("setBuffProp", &RPGActor::setBuffProp);
 
     actor.addFunc("learnSkill", &RPGActor::learnSkill);
     actor.addFunc("knowsSkill", &RPGActor::knowsSkill);
@@ -206,6 +265,14 @@ void RPG::expose(ssq::Class &cls) {
     cls.addFunc("getTickEventEffectId", &RPG::getTickEventEffectId);
     cls.addFunc("getTickEventSource", &RPG::getTickEventSource);
     cls.addFunc("getTickEventStacks", &RPG::getTickEventStacks);
+    cls.addFunc("getStatusChangeEventCount", &RPG::getStatusChangeEventCount);
+    cls.addFunc("getStatusChangeEventActor", &RPG::getStatusChangeEventActor);
+    cls.addFunc("getStatusChangeEventInstanceId", &RPG::getStatusChangeEventInstanceId);
+    cls.addFunc("getStatusChangeEventEffectId", &RPG::getStatusChangeEventEffectId);
+    cls.addFunc("getStatusChangeEventSource", &RPG::getStatusChangeEventSource);
+    cls.addFunc("getStatusChangeEventAction", &RPG::getStatusChangeEventAction);
+    cls.addFunc("getStatusChangeEventStacks", &RPG::getStatusChangeEventStacks);
+    cls.addFunc("getStatusChangeEventReason", &RPG::getStatusChangeEventReason);
     cls.addFunc("getCastEventCount", &RPG::getCastEventCount);
     cls.addFunc("getCastEventCaster", &RPG::getCastEventCaster);
     cls.addFunc("getCastEventTarget", &RPG::getCastEventTarget);
