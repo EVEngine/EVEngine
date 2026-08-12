@@ -425,7 +425,8 @@ TEST_CASE("rpg.buff.applyConditionRejectsAndEmitsChange") {
     CHECK(StatusSystem::hasApplyCondition("blockMagic"));
 
     RPGActor *actor = RPGActor::createActor();
-    CHECK_EQ(actor->applyBuff("test.buff.immuneTarget"), -1);
+    const int rejected = actor->applyBuff("test.buff.immuneTarget");
+    CHECK_EQ(rejected, -1);
     CHECK(!actor->hasBuff("test.buff.immuneTarget"));
     CHECK_EQ(actor->getBuffCount(), 0);
 
@@ -447,12 +448,14 @@ TEST_CASE("rpg.buff.applyConditionRejectsAndEmitsChange") {
     CHECK_EQ(actor->getBuffProp(id, "iconOverride"), "ui/custom.png");
     CHECK_EQ(actor->getBuffProp(id, "missing", "n/a"), "n/a");
 
+    changes.clear();
     StatusSystem::pollChanges(changes);
     REQUIRE(changes.size() == 1);
     CHECK_EQ(changes[0].action, "apply");
     CHECK_EQ(changes[0].instanceId, id);
 
     CHECK(actor->removeBuff(id));
+    changes.clear();
     StatusSystem::pollChanges(changes);
     REQUIRE(changes.size() == 1);
     CHECK_EQ(changes[0].action, "remove");
