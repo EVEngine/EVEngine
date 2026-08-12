@@ -15,10 +15,14 @@
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/Material.h"
+#include "graphics/GBuffer.h"
+#include "graphics/RenderControl.h"
 #include <vector>
 #include <optional>
 #include <cstdint>
 #include <string>
+#include <memory>
 #include <glm/glm.hpp>
 
 struct aiMesh;
@@ -197,6 +201,28 @@ public:
     void render3D();
     void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
                              float b = 1.f);
+
+    /**
+     * Create a Material asset (shading model + textures + PBR knobs).
+     * Caller owns Material*; not tracked by Graphics.
+     */
+    Material *newMaterial();
+
+    /**
+     * Shared compilable 3D render control (features → pass list + GBuffer).
+     * Owned by Graphics; valid for the module lifetime.
+     */
+    RenderControl *getRenderControl();
+
+    /**
+     * Depth/normal(/albedo) fill pass for mid/post effects.
+     * One-shot submit (like shadow); call before begin3DFrame when enabled.
+     * After endGBufferPass, textures are available via getRenderControl()->getGBuffer().
+     */
+    virtual void beginGBufferPass(int width, int height) = 0;
+    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
+                                 float nearZ, float farZ) = 0;
+    virtual void endGBufferPass() = 0;
 
 /**
  * Begin a swapchain pass cleared for 3D (color+depth). Leaves the pass open for drawMesh
@@ -553,6 +579,7 @@ protected:
     void *presentOverlayUser_ = nullptr;
     Shader *currentShader = nullptr;
     Font *currentFont = nullptr;
+    std::unique_ptr<RenderControl> renderControl_;
 };
 
 }  // namespace eve::graphics

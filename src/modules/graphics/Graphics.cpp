@@ -11,6 +11,8 @@
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/Material.h"
+#include "graphics/RenderControl.h"
 #include "font/FontData.h"
 #include "image/ImageData.h"
 #include "common/Exception.h"
@@ -20,6 +22,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 
 namespace eve::graphics {
 
@@ -33,6 +36,17 @@ void Graphics::render3D() {
 
 void Graphics::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
     RenderSystem3D::setDirectionalLight(dx, dy, dz, r, g, b);
+}
+
+Material *Graphics::newMaterial() { return new Material(); }
+
+RenderControl *Graphics::getRenderControl() {
+    if (!renderControl_) {
+        renderControl_ = std::make_unique<RenderControl>();
+        renderControl_->attach(this);
+        renderControl_->compile();
+    }
+    return renderControl_.get();
 }
 
 void Graphics::expose(ssq::Table &table) {
@@ -179,6 +193,14 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setNormalTexture", &Renderable3D::setNormalTexture);
     ent.addFunc("setHeightTexture", &Renderable3D::setHeightTexture);
     ent.addFunc("setShader", &Renderable3D::setShader);
+    ent.addFunc("setMaterial", &Renderable3D::setMaterial);
+    ent.addFunc("getMaterial", &Renderable3D::getMaterial);
+    ent.addFunc("setPart", &Renderable3D::setPart);
+    ent.addFunc("clearParts", &Renderable3D::clearParts);
+    ent.addFunc("getPartCount", &Renderable3D::getPartCount);
+    ent.addFunc("getPartName", &Renderable3D::getPartName);
+    ent.addFunc("getPartMesh", &Renderable3D::getPartMesh);
+    ent.addFunc("getPartMaterial", &Renderable3D::getPartMaterial);
     ent.addFunc("setHair", &Renderable3D::setHair);
     ent.addFunc("getHair", &Renderable3D::getHair);
     ent.addFunc("setTint", &Renderable3D::setTint);
@@ -203,6 +225,64 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("clearMeshLod", &Renderable3D::clearMeshLod);
     ent.addFunc("getMeshLodCount", &Renderable3D::getMeshLodCount);
     ent.addFunc("getMeshLodLevelAtDistance", &Renderable3D::getMeshLodLevelAtDistance);
+
+    auto material = table.addClass<Material>(
+        "Material", std::function<Material *()>([]() -> Material * { return nullptr; }), true);
+    material.addFunc("setShadingModel", &Material::setShadingModel);
+    material.addFunc("getShadingModel", &Material::getShadingModel);
+    material.addFunc("setAlbedoTexture", &Material::setAlbedoTexture);
+    material.addFunc("getAlbedoTexture", &Material::getAlbedoTexture);
+    material.addFunc("setNormalTexture", &Material::setNormalTexture);
+    material.addFunc("getNormalTexture", &Material::getNormalTexture);
+    material.addFunc("setHeightTexture", &Material::setHeightTexture);
+    material.addFunc("getHeightTexture", &Material::getHeightTexture);
+    material.addFunc("setShader", &Material::setShader);
+    material.addFunc("getShader", &Material::getShader);
+    material.addFunc("setTint", &Material::setTint);
+    material.addFunc("setMetallic", &Material::setMetallic);
+    material.addFunc("getMetallic", &Material::getMetallic);
+    material.addFunc("setRoughness", &Material::setRoughness);
+    material.addFunc("getRoughness", &Material::getRoughness);
+    material.addFunc("setTexCellBomb", &Material::setTexCellBomb);
+    material.addFunc("setParallax", &Material::setParallax);
+    material.addFunc("setReceiveLight", &Material::setReceiveLight);
+    material.addFunc("getReceiveLight", &Material::getReceiveLight);
+    material.addFunc("setCastShadow", &Material::setCastShadow);
+    material.addFunc("getCastShadow", &Material::getCastShadow);
+    material.addFunc("setReceiveShadow", &Material::setReceiveShadow);
+    material.addFunc("getReceiveShadow", &Material::getReceiveShadow);
+    material.addFunc("setCastOcclusion", &Material::setCastOcclusion);
+    material.addFunc("getCastOcclusion", &Material::getCastOcclusion);
+    material.addFunc("setHair", &Material::setHair);
+    material.addFunc("getHair", &Material::getHair);
+    material.addFunc("hasParam", &Material::hasParam);
+    material.addFunc("setFloat", &Material::setFloat);
+    material.addFunc("getFloat", &Material::getFloat);
+
+    auto gbuffer = table.addClass<GBuffer>(
+        "GBuffer", std::function<GBuffer *()>([]() -> GBuffer * { return nullptr; }), true);
+    gbuffer.addFunc("isValid", &GBuffer::isValid);
+    gbuffer.addFunc("getWidth", &GBuffer::getWidth);
+    gbuffer.addFunc("getHeight", &GBuffer::getHeight);
+    gbuffer.addFunc("getDepthTexture", &GBuffer::getDepthTexture);
+    gbuffer.addFunc("getNormalTexture", &GBuffer::getNormalTexture);
+    gbuffer.addFunc("getAlbedoTexture", &GBuffer::getAlbedoTexture);
+    gbuffer.addFunc("hasBuffer", &GBuffer::hasBuffer);
+    gbuffer.addFunc("getBuffer", &GBuffer::getBuffer);
+
+    auto rctrl = table.addClass<RenderControl>(
+        "RenderControl", std::function<RenderControl *()>([]() -> RenderControl * { return nullptr; }),
+        true);
+    rctrl.addFunc("supports", &RenderControl::supports);
+    rctrl.addFunc("enable", &RenderControl::enable);
+    rctrl.addFunc("disable", &RenderControl::disable);
+    rctrl.addFunc("isEnabled", &RenderControl::isEnabled);
+    rctrl.addFunc("compile", &RenderControl::compile);
+    rctrl.addFunc("isCompiled", &RenderControl::isCompiled);
+    rctrl.addFunc("getPassCount", &RenderControl::getPassCount);
+    rctrl.addFunc("getPassName", &RenderControl::getPassName);
+    rctrl.addFunc("hasPass", &RenderControl::hasPass);
+    rctrl.addFunc("getGBuffer", static_cast<GBuffer *(RenderControl::*)()>(&RenderControl::getGBuffer));
 
     auto vol = table.addClass<Volumetric>(
         "Volumetric", std::function<Volumetric *()>([]() -> Volumetric * { return nullptr; }), true);
@@ -336,6 +416,8 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
+    cls.addFunc("newMaterial", &Graphics::newMaterial);
+    cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);

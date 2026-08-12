@@ -38,6 +38,8 @@
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
@@ -89,6 +91,7 @@ Graphics::~Graphics() {
     mesh3dClusteredSetLayoutUnique.reset();
     mesh3dClusteredUboSlots.clear();
     destroyShadowResources();
+    destroyGBufferResources();
     auto destroyBuf = [&](vkb::GenericBuffer &b) {
         if (b.buffer) {
             device->destroyBuffer(b.buffer, device.allocation_callbacks);
@@ -668,6 +671,335 @@ void Graphics::destroyShadowResources() {
     }
     shadowPassCascade = -1;
     shadowPassDraws.clear();
+}
+
+void Graphics::destroyGBufferResources() {
+    gbufferPassActive = false;
+    gbufferPassDraws.clear();
+    gbufferNormalTex.gpuHandle = nullptr;
+    gbufferDepthColorTex.gpuHandle = nullptr;
+    gbufferAlbedoTex.gpuHandle = nullptr;
+    if (gbufferFramebuffer) {
+        device->destroyFramebuffer(gbufferFramebuffer);
+        gbufferFramebuffer = vk::Framebuffer{};
+    }
+    auto destroyImg = [&](vk::Image &img, vk::DeviceMemory &mem, vk::ImageView &view) {
+        if (view) {
+            device->destroyImageView(view);
+            view = vk::ImageView{};
+        }
+        if (img) {
+            device->destroyImage(img);
+            img = vk::Image{};
+        }
+        if (mem) {
+            device->freeMemory(mem);
+            mem = vk::DeviceMemory{};
+        }
+    };
+    destroyImg(gbufferNormalImage, gbufferNormalMemory, gbufferNormalView);
+    destroyImg(gbufferDepthColorImage, gbufferDepthColorMemory, gbufferDepthColorView);
+    destroyImg(gbufferAlbedoImage, gbufferAlbedoMemory, gbufferAlbedoView);
+    destroyImg(gbufferDepthImage, gbufferDepthMemory, gbufferDepthView);
+    if (gbufferPipeline) {
+        device->destroyPipeline(gbufferPipeline);
+        gbufferPipeline = vk::Pipeline{};
+    }
+    if (gbufferPipelineLayout) {
+        device->destroyPipelineLayout(gbufferPipelineLayout);
+        gbufferPipelineLayout = vk::PipelineLayout{};
+    }
+    if (gbufferRenderPass) {
+        device->destroyRenderPass(gbufferRenderPass);
+        gbufferRenderPass = vk::RenderPass{};
+    }
+    if (gbufferNormalGpu.sampler) {
+        device->destroySampler(gbufferNormalGpu.sampler);
+        gbufferNormalGpu.sampler = vk::Sampler{};
+    }
+    if (gbufferDepthColorGpu.sampler) {
+        device->destroySampler(gbufferDepthColorGpu.sampler);
+        gbufferDepthColorGpu.sampler = vk::Sampler{};
+    }
+    if (gbufferAlbedoGpu.sampler) {
+        device->destroySampler(gbufferAlbedoGpu.sampler);
+        gbufferAlbedoGpu.sampler = vk::Sampler{};
+    }
+    gbufferWidth = 0;
+    gbufferHeight = 0;
+    if (renderControl_) renderControl_->getGBuffer()->clear();
+}
+
+namespace {
+
+vk::Format pickGBufferColorFormat(vkb::Device &device) {
+    (void)device;
+    return vk::Format::eR8G8B8A8Unorm;
+}
+
+void createColorTarget(vkb::Device &device, uint32_t w, uint32_t h, vk::Format format, vk::Image &image,
+                       vk::DeviceMemory &memory, vk::ImageView &view) {
+    vk::ImageCreateInfo imgInfo{};
+    imgInfo.imageType = vk::ImageType::e2D;
+    imgInfo.format = format;
+    imgInfo.extent = vk::Extent3D{w, h, 1};
+    imgInfo.mipLevels = 1;
+    imgInfo.arrayLayers = 1;
+    imgInfo.samples = vk::SampleCountFlagBits::e1;
+    imgInfo.tiling = vk::ImageTiling::eOptimal;
+    imgInfo.usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled;
+    imgInfo.initialLayout = vk::ImageLayout::eUndefined;
+    image = device->createImage(imgInfo);
+    auto memReq = device->getImageMemoryRequirements(image);
+    vk::MemoryAllocateInfo mai{};
+    mai.allocationSize = memReq.size;
+    mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
+        memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
+    memory = device->allocateMemory(mai);
+    device->bindImageMemory(image, memory, 0);
+    vk::ImageViewCreateInfo viewInfo{};
+    viewInfo.image = image;
+    viewInfo.viewType = vk::ImageViewType::e2D;
+    viewInfo.format = format;
+    viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    view = device->createImageView(viewInfo);
+}
+
+}  // namespace
+
+void Graphics::createGBufferResources(int width, int height) {
+    if (width <= 0 || height <= 0) return;
+    if (gbufferNormalImage && gbufferWidth == width && gbufferHeight == height && gbufferPipeline)
+        return;
+    destroyGBufferResources();
+
+    gbufferWidth = width;
+    gbufferHeight = height;
+    const uint32_t w = uint32_t(width);
+    const uint32_t h = uint32_t(height);
+    const vk::Format colorFmt = pickGBufferColorFormat(device);
+    const vk::Format depthFmt = vk::Format::eD32Sfloat;
+
+    createColorTarget(device, w, h, colorFmt, gbufferNormalImage, gbufferNormalMemory,
+                      gbufferNormalView);
+    createColorTarget(device, w, h, colorFmt, gbufferDepthColorImage, gbufferDepthColorMemory,
+                      gbufferDepthColorView);
+    createColorTarget(device, w, h, colorFmt, gbufferAlbedoImage, gbufferAlbedoMemory,
+                      gbufferAlbedoView);
+
+    {
+        vk::ImageCreateInfo imgInfo{};
+        imgInfo.imageType = vk::ImageType::e2D;
+        imgInfo.format = depthFmt;
+        imgInfo.extent = vk::Extent3D{w, h, 1};
+        imgInfo.mipLevels = 1;
+        imgInfo.arrayLayers = 1;
+        imgInfo.samples = vk::SampleCountFlagBits::e1;
+        imgInfo.tiling = vk::ImageTiling::eOptimal;
+        imgInfo.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
+        imgInfo.initialLayout = vk::ImageLayout::eUndefined;
+        gbufferDepthImage = device->createImage(imgInfo);
+        auto memReq = device->getImageMemoryRequirements(gbufferDepthImage);
+        vk::MemoryAllocateInfo mai{};
+        mai.allocationSize = memReq.size;
+        mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
+            memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
+        gbufferDepthMemory = device->allocateMemory(mai);
+        device->bindImageMemory(gbufferDepthImage, gbufferDepthMemory, 0);
+        vk::ImageViewCreateInfo viewInfo{};
+        viewInfo.image = gbufferDepthImage;
+        viewInfo.viewType = vk::ImageViewType::e2D;
+        viewInfo.format = depthFmt;
+        viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1};
+        gbufferDepthView = device->createImageView(viewInfo);
+    }
+
+    vk::AttachmentDescription atts[4]{};
+    for (int i = 0; i < 3; ++i) {
+        atts[i].format = colorFmt;
+        atts[i].samples = vk::SampleCountFlagBits::e1;
+        atts[i].loadOp = vk::AttachmentLoadOp::eClear;
+        atts[i].storeOp = vk::AttachmentStoreOp::eStore;
+        atts[i].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+        atts[i].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+        atts[i].initialLayout = vk::ImageLayout::eUndefined;
+        atts[i].finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    }
+    atts[3].format = depthFmt;
+    atts[3].samples = vk::SampleCountFlagBits::e1;
+    atts[3].loadOp = vk::AttachmentLoadOp::eClear;
+    atts[3].storeOp = vk::AttachmentStoreOp::eDontCare;
+    atts[3].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+    atts[3].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+    atts[3].initialLayout = vk::ImageLayout::eUndefined;
+    atts[3].finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+    vk::AttachmentReference colorRefs[3]{};
+    for (uint32_t i = 0; i < 3; ++i) {
+        colorRefs[i].attachment = i;
+        colorRefs[i].layout = vk::ImageLayout::eColorAttachmentOptimal;
+    }
+    vk::AttachmentReference depthRef{};
+    depthRef.attachment = 3;
+    depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+    vk::SubpassDescription subpass{};
+    subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+    subpass.colorAttachmentCount = 3;
+    subpass.pColorAttachments = colorRefs;
+    subpass.pDepthStencilAttachment = &depthRef;
+
+    vk::SubpassDependency deps[2]{};
+    deps[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+    deps[0].dstSubpass = 0;
+    deps[0].srcStageMask = vk::PipelineStageFlagBits::eFragmentShader;
+    deps[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                            vk::PipelineStageFlagBits::eEarlyFragmentTests;
+    deps[0].srcAccessMask = vk::AccessFlagBits::eShaderRead;
+    deps[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
+                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+    deps[1].srcSubpass = 0;
+    deps[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+    deps[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                            vk::PipelineStageFlagBits::eLateFragmentTests;
+    deps[1].dstStageMask = vk::PipelineStageFlagBits::eFragmentShader;
+    deps[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
+                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+    deps[1].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+    vk::RenderPassCreateInfo rpInfo{};
+    rpInfo.attachmentCount = 4;
+    rpInfo.pAttachments = atts;
+    rpInfo.subpassCount = 1;
+    rpInfo.pSubpasses = &subpass;
+    rpInfo.dependencyCount = 2;
+    rpInfo.pDependencies = deps;
+    gbufferRenderPass = device->createRenderPass(rpInfo);
+
+    vk::ImageView fbAtts[4] = {gbufferNormalView, gbufferDepthColorView, gbufferAlbedoView,
+                               gbufferDepthView};
+    vk::FramebufferCreateInfo fbInfo{};
+    fbInfo.renderPass = gbufferRenderPass;
+    fbInfo.attachmentCount = 4;
+    fbInfo.pAttachments = fbAtts;
+    fbInfo.width = w;
+    fbInfo.height = h;
+    fbInfo.layers = 1;
+    gbufferFramebuffer = device->createFramebuffer(fbInfo);
+
+    vk::PushConstantRange pcr{};
+    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
+    pcr.offset = 0;
+    pcr.size = sizeof(GBufferPush);
+    vk::PipelineLayoutCreateInfo plInfo{};
+    plInfo.pushConstantRangeCount = 1;
+    plInfo.pPushConstantRanges = &pcr;
+    gbufferPipelineLayout = device->createPipelineLayout(plInfo);
+
+    std::vector<uint32_t> vert(mesh3d_gbuffer_vert_spv,
+                               mesh3d_gbuffer_vert_spv + mesh3d_gbuffer_vert_spv_count);
+    std::vector<uint32_t> frag(mesh3d_gbuffer_frag_spv,
+                               mesh3d_gbuffer_frag_spv + mesh3d_gbuffer_frag_spv_count);
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+
+    vk::PipelineShaderStageCreateInfo stages[2]{};
+    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
+    stages[0].module = vertModule;
+    stages[0].pName = "main";
+    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
+    stages[1].module = fragModule;
+    stages[1].pName = "main";
+
+    auto binding = MeshVertex::getBindingDescription(0);
+    auto attrs = MeshVertex::getAttributeDescription(0);
+    vk::PipelineVertexInputStateCreateInfo vi{};
+    vi.vertexBindingDescriptionCount = 1;
+    vi.pVertexBindingDescriptions = &binding;
+    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
+    vi.pVertexAttributeDescriptions = attrs.data();
+
+    vk::PipelineInputAssemblyStateCreateInfo ia{};
+    ia.topology = vk::PrimitiveTopology::eTriangleList;
+
+    vk::PipelineViewportStateCreateInfo vp{};
+    vp.viewportCount = 1;
+    vp.scissorCount = 1;
+
+    vk::PipelineRasterizationStateCreateInfo rs{};
+    rs.polygonMode = vk::PolygonMode::eFill;
+    rs.cullMode = vk::CullModeFlagBits::eBack;
+    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.lineWidth = 1.0f;
+
+    vk::PipelineMultisampleStateCreateInfo ms{};
+    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
+
+    vk::PipelineDepthStencilStateCreateInfo ds{};
+    ds.depthTestEnable = true;
+    ds.depthWriteEnable = true;
+    ds.depthCompareOp = vk::CompareOp::eLess;
+
+    vk::PipelineColorBlendAttachmentState blendAtt{};
+    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+    blendAtt.blendEnable = false;
+    vk::PipelineColorBlendAttachmentState blendAtts[3] = {blendAtt, blendAtt, blendAtt};
+    vk::PipelineColorBlendStateCreateInfo blend{};
+    blend.attachmentCount = 3;
+    blend.pAttachments = blendAtts;
+
+    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
+    vk::PipelineDynamicStateCreateInfo dyn{};
+    dyn.dynamicStateCount = 2;
+    dyn.pDynamicStates = dynStates;
+
+    vk::GraphicsPipelineCreateInfo pci{};
+    pci.stageCount = 2;
+    pci.pStages = stages;
+    pci.pVertexInputState = &vi;
+    pci.pInputAssemblyState = &ia;
+    pci.pViewportState = &vp;
+    pci.pRasterizationState = &rs;
+    pci.pMultisampleState = &ms;
+    pci.pDepthStencilState = &ds;
+    pci.pColorBlendState = &blend;
+    pci.pDynamicState = &dyn;
+    pci.layout = gbufferPipelineLayout;
+    pci.renderPass = gbufferRenderPass;
+    pci.subpass = 0;
+    gbufferPipeline = device->createGraphicsPipeline(vk::PipelineCache{}, pci).value;
+
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
+
+    auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
+        vkb::SamplerBuilder sb;
+        gpu.sampler = sb.magFilter(vk::Filter::eNearest)
+                          .minFilter(vk::Filter::eNearest)
+                          .addressModeU(vk::SamplerAddressMode::eClampToEdge)
+                          .addressModeV(vk::SamplerAddressMode::eClampToEdge)
+                          .build(device.instance);
+        auto sets = vkb::DescriptorSetBuilder()
+                        .layout(texSetLayout)
+                        .build(device.instance, descriptorPool);
+        gpu.descriptorSet = sets[0];
+        gpu.width = width;
+        gpu.height = height;
+        vkb::DescriptorSetUpdater updater;
+        updater.beginDescriptorSet(gpu.descriptorSet)
+            .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+            .image(gpu.sampler, view, vk::ImageLayout::eShaderReadOnlyOptimal)
+            .update(device.instance);
+        tex.width = width;
+        tex.height = height;
+        tex.pixelWidth = width;
+        tex.pixelHeight = height;
+        tex.gpuHandle = &gpu;
+    };
+    makeSampleTex(gbufferNormalGpu, gbufferNormalTex, gbufferNormalView);
+    makeSampleTex(gbufferDepthColorGpu, gbufferDepthColorTex, gbufferDepthColorView);
+    makeSampleTex(gbufferAlbedoGpu, gbufferAlbedoTex, gbufferAlbedoView);
 }
 
 void Graphics::createShadowResources() {
@@ -2689,6 +3021,88 @@ void Graphics::endShadowPass() {
                                 }
                                 cb.endRenderPass();
                             });
+}
+
+void Graphics::beginGBufferPass(int width, int height) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("beginGBufferPass: graphics not initialized");
+    if (width <= 0 || height <= 0) throw Exception("beginGBufferPass: invalid size");
+    if (!texSetLayout || !descriptorPool)
+        throw Exception("beginGBufferPass: textured descriptor layout not ready");
+    createGBufferResources(width, height);
+    gbufferPassActive = true;
+    gbufferPassDraws.clear();
+}
+
+void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
+                               float farZ) {
+    if (!gbufferPassActive) throw Exception("drawMeshGBuffer: call beginGBufferPass first");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBuffer: null mesh");
+    GBufferDraw d{};
+    d.mesh = mesh;
+    d.push.mvp = mvp;
+    // Pack model rows (column-major glm → row vectors with translation in .w).
+    d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
+    d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
+    d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
+    d.push.clip = glm::vec4(nearZ, farZ, 0.f, 0.f);
+    gbufferPassDraws.push_back(d);
+}
+
+void Graphics::endGBufferPass() {
+    if (!gbufferPassActive) throw Exception("endGBufferPass: no active gbuffer pass");
+    gbufferPassActive = false;
+    const auto draws = std::move(gbufferPassDraws);
+    gbufferPassDraws.clear();
+
+    if (!gbufferPipeline || !gbufferRenderPass || !gbufferFramebuffer) {
+        if (renderControl_) renderControl_->getGBuffer()->clear();
+        return;
+    }
+
+    const uint32_t w = uint32_t(gbufferWidth);
+    const uint32_t h = uint32_t(gbufferHeight);
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                std::array<vk::ClearValue, 4> clears{};
+                                clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
+                                clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                vk::RenderPassBeginInfo rpBegin{};
+                                rpBegin.renderPass = gbufferRenderPass;
+                                rpBegin.framebuffer = gbufferFramebuffer;
+                                rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+                                rpBegin.clearValueCount = uint32_t(clears.size());
+                                rpBegin.pClearValues = clears.data();
+                                cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+
+                                vk::Viewport vp{0.f, 0.f, float(w), float(h), 0.f, 1.f};
+                                vk::Rect2D scissor{{0, 0}, {w, h}};
+                                cb.setViewport(0, 1, &vp);
+                                cb.setScissor(0, 1, &scissor);
+                                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
+
+                                for (const auto &d : draws) {
+                                    auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+                                    cb.pushConstants(gbufferPipelineLayout,
+                                                     vk::ShaderStageFlagBits::eVertex |
+                                                         vk::ShaderStageFlagBits::eFragment,
+                                                     0, sizeof(GBufferPush), &d.push);
+                                    vk::DeviceSize offset = 0;
+                                    cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
+                                    cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
+                                    cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+                                }
+                                cb.endRenderPass();
+                            });
+
+    if (renderControl_) {
+        Texture *albedo = nullptr;
+        if (renderControl_->isEnabled("gbufferAlbedo")) albedo = &gbufferAlbedoTex;
+        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &gbufferDepthColorTex,
+                                                 &gbufferNormalTex, albedo);
+    }
 }
 
 void Graphics::ensureDefaultEnvCubemap() {

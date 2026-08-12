@@ -27,6 +27,8 @@ SHADERS = [
     ("mesh3d_clustered.frag", "frag"),
     ("mesh3d_hair.vert", "vert"),
     ("mesh3d_hair.frag", "frag"),
+    ("mesh3d_gbuffer.vert", "vert"),
+    ("mesh3d_gbuffer.frag", "frag"),
 ]
 
 

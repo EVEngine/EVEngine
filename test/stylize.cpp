@@ -231,7 +231,7 @@ TEST_CASE("stylize.styles.registry") {
     CHECK(mod->supports("cartoon", "mesh"));
     CHECK(mod->supports("watercolor", "cpu"));
     CHECK(!mod->supports("watercolor", "mesh"));
-    CHECK(!mod->supports("ink", "gbuffer"));  // reserved extension point
+    CHECK(mod->supports("ink", "gbuffer"));  // depth/normal via graphics.RenderControl
     CHECK(!mod->supports("oil", "post"));
 
     CHECK_GT(mod->getStyleParamCount("pixel"), 0);

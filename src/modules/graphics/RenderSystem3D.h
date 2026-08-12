@@ -1,10 +1,13 @@
 #pragma once
 
 #include "common/ECS.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "zeroerr/assert.h"
+
+#include <string>
 
 namespace eve::graphics {
 
@@ -79,12 +82,15 @@ public:
 
     struct MeshRenderer {
         static constexpr int kMaxLodLevels = 4;
+        static constexpr int kMaxParts = Material::kMaxPartsHint;
 
         Mesh *mesh = nullptr;
         Texture *texture = nullptr;
         Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
         Texture *heightTexture = nullptr;  // nullptr → no parallax height (R = height)
         Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
+        /** Optional packed material; when set, overrides texture/shader/PBR fields below. */
+        Material *material = nullptr;
         float r = 1, g = 1, b = 1, a = 1;
         float metallic = 0.f;
         float roughness = 0.45f;
@@ -102,6 +108,13 @@ public:
         /** Alpha-blended hair/fur card pass (drawn after opaque meshes, back-to-front). */
         bool isHair = false;
         Camera3D *camera = nullptr;
+
+        /**
+         * Multi-part model slots (one mesh + material per Assimp mesh / body region).
+         * When partCount > 0, each part is drawn; otherwise `mesh` + material/fields.
+         */
+        int partCount = 0;
+        ModelPart parts[kMaxParts] = {};
 
         /**
          * Optional geometric LOD. When lodCount > 0, lodMeshes[0..lodCount) are used
@@ -127,6 +140,18 @@ public:
             while (level + 1 < lodCount && distance >= lodDistances[level]) ++level;
             return level;
         }
+
+        bool usesParts() const { return partCount > 0; }
+
+        bool effectiveHair() const {
+            if (material) return material->isTransparentHair();
+            return isHair;
+        }
+
+        bool effectiveCastShadow() const {
+            if (material) return material->getCastShadow();
+            return castShadow;
+        }
     };
 
     COMPONENT(Transform3D, transform)
@@ -143,6 +168,19 @@ public:
     /** Height map for parallax (R channel; white = raised). nullptr disables sampling. */
     void setHeightTexture(Texture *texture);
     void setShader(Shader *shader);
+    /** Attach a Material that packages shading method + surface params. */
+    void setMaterial(Material *material);
+    Material *getMaterial();
+    /**
+     * Bind a named mesh+material part (e.g. Assimp submesh / body region).
+     * index 0..kMaxParts-1. Passing nullptr mesh clears that slot and trims partCount.
+     */
+    void setPart(int index, const std::string &name, Mesh *mesh, Material *material);
+    void clearParts();
+    int getPartCount();
+    std::string getPartName(int index);
+    Mesh *getPartMesh(int index);
+    Material *getPartMaterial(int index);
     void setHair(bool hair);
     bool getHair();
     void setTint(float r, float g, float b, float a = 1.f);

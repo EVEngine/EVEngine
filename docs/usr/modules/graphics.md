@@ -42,6 +42,42 @@ C++ 侧使用 `TextureCreateInfo::withMipmaps()` / `TextureSampler::anisotropic(
 
 几何 LOD：`Renderable3D.setMeshLod(index, mesh, switchDistance)`，`RenderSystem3D` 按相机距离选择网格。
 
+### 材质（Material）与模型部件
+
+把着色方法（`pbr` / `unlit` / `hair` / `custom`）、贴图和 PBR 参数打成一个 `Material`，挂到整模或某个部件：
+
+```squirrel
+local mat = gfx.newMaterial();
+mat.setShadingModel("pbr");
+mat.setAlbedoTexture(albedo);
+mat.setNormalTexture(nrm);
+mat.setMetallic(0.2);
+mat.setRoughness(0.5);
+
+local r = Renderable3D.create();
+r.setMaterial(mat);                 // 整模
+// 或多部件：r.setPart(0, "body", bodyMesh, bodyMat);
+```
+
+### 可编译渲染控制与 GBuffer
+
+`RenderControl` 用字符串特性开关，再 `compile()` 成有序 Pass（默认：shadow → forward → hair）：
+
+```squirrel
+local rc = gfx.getRenderControl();
+rc.enable("gbuffer");      // 额外填充可采样深度/法线
+rc.enable("gbufferAlbedo");
+rc.compile();
+gfx.render3D();
+local gb = rc.getGBuffer();
+if (gb.isValid()) {
+    local depth = gb.getDepthTexture();   // R = 线性深度 0..1
+    local nrm = gb.getNormalTexture();    // RGB = 法线*0.5+0.5
+}
+```
+
+3D 前向仍启用硬件 z-buffer；GBuffer 是给 AO / 体积雾 / 风格描边等中后期用的采样目标。阴影仍走 CSM shadow map。
+
 大面积平铺 albedo（地面、墙面）若出现明显重复，可对实体调用 `setTexCellBomb(cellScale, strength, rotAmount=1)`：按 UV 划分 cell，对邻接 cell 做随机偏移/旋转并混合。`strength=0`（默认）关闭，行为与原先一致；`cellScale` 一般为 2～16。
 
 砖墙、石板等需要假深度时，用 `setHeightTexture(heightTex)` + `setParallax(scale, minLayers=8, maxLayers=32)` 开启视差遮蔽贴图（POM）。高度图取 **R 通道**（白=凸起朝向观察者）；`scale=0`（默认）关闭。典型 `scale` 为 0.02～0.08；掠射角下层数会自适应增加。
