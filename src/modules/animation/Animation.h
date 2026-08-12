@@ -23,15 +23,25 @@ class ControlAnim;
 class ControlPose;
 class AnimSkin;
 class AnimTrail;
+class SpriteSheet;
+class SpriteClip;
+class SpriteAnim;
+class SpineAtlas;
+class SpineSkeletonData;
+class SpineSkeleton;
+class SpineAnim;
 
 /**
- * Animation module — tween factory + 3D skeletal playback
- * (player / state machine / motion matching) + control-theory
+ * Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal
+ * playback (player / state machine / motion matching) + control-theory
  * procedural drivers + motion trails + per-frame pump.
  * Script: `anim <- eve.Animation();`
  *
- * Tweens own their property tracks; call `anim.update(dt)` (or `tween.update(dt)`)
- * each frame. Relative property changes use `Tween::setDelta` / `setDeltaAngle`.
+ * Tweens / SpriteAnim / SpineAnim can be advanced via `anim.update(dt)`.
+ * Relative property changes use `Tween::setDelta` / `setDeltaAngle`.
+ *
+ * 2D: `SpriteSheet` + `SpriteClip` + `SpriteAnim`; Spine region subset via
+ * `SpineAtlas` / `SpineSkeletonData` / `SpineSkeleton` / `SpineAnim`.
  *
  * 3D: build `AnimSkeleton` + `AnimClip`, then drive with `AnimPlayer`,
  * `AnimStateMachine`, or `MotionMatcher` (+ `MotionDatabase`).
@@ -47,6 +57,23 @@ public:
 
     /** Create a tween (duration in seconds). Returned pointer is owned by script GC. */
     Tween *newTween(float duration = 1.f);
+
+    /** 2D sprite-sheet animation factories (script GC owns returned objects). */
+    SpriteSheet *newSpriteSheet();
+    SpriteClip  *newSpriteClip(const std::string &name = "");
+    SpriteAnim  *newSpriteAnim();
+
+    /** Spine (region attachment subset) factories. */
+    SpineAtlas        *newSpineAtlas();
+    SpineSkeletonData *newSpineSkeletonData();
+    SpineSkeleton     *newSpineSkeleton(SpineSkeletonData *data);
+    SpineAnim         *newSpineAnim(SpineSkeleton *skeleton);
+
+    /** Load helpers (allocate + parse; false → empty object still returned? prefer nullable). */
+    SpineAtlas        *newSpineAtlasFromFile(const std::string &path);
+    SpineAtlas        *newSpineAtlasFromText(const std::string &text);
+    SpineSkeletonData *newSpineSkeletonDataFromFile(const std::string &path);
+    SpineSkeletonData *newSpineSkeletonDataFromJson(const std::string &json);
 
     /** 3D skeletal animation factories (script GC owns returned objects). */
     AnimSkeleton     *newSkeleton();
@@ -88,10 +115,12 @@ public:
      */
     AnimTrail *newTrail(int capacity = 64);
 
-    /** Advance all registered tweens. */
+    /** Advance all registered tweens, sprite anims, and spine anims. */
     void update(float dt);
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
+    int getSpriteAnimCount() const { return static_cast<int>(spriteAnims_.size()); }
+    int getSpineAnimCount() const { return static_cast<int>(spineAnims_.size()); }
     int getActiveCount() const;
 
     /** Drop finished/stopped entries from the registry (does not delete Tween objects). */
@@ -101,11 +130,19 @@ public:
 
 private:
     friend class Tween;
+    friend class SpriteAnim;
+    friend class SpineAnim;
 
     void registerTween(Tween *t);
     void unregisterTween(Tween *t);
+    void registerSpriteAnim(SpriteAnim *a);
+    void unregisterSpriteAnim(SpriteAnim *a);
+    void registerSpineAnim(SpineAnim *a);
+    void unregisterSpineAnim(SpineAnim *a);
 
-    std::vector<Tween *> tweens_;
+    std::vector<Tween *>      tweens_;
+    std::vector<SpriteAnim *> spriteAnims_;
+    std::vector<SpineAnim *>  spineAnims_;
 };
 
 }  // namespace eve::animation

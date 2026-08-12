@@ -2,13 +2,15 @@
 
 **脚本入口：** `eve.Animation()`
 
-支持五类能力：
+支持七类能力：
 
 1. **Tween**：标量/角度属性补间（delay、repeat、yoyo、缓动）
-2. **3D 骨骼动画播放**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
-3. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
-4. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
-5. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
+2. **2D 帧动画**：`SpriteSheet` + `SpriteClip` + `SpriteAnim`（sprite sheet / 图集格子）
+3. **Spine（region 子集）**：`.atlas` + skeleton JSON → `SpineAnim.collectDrawItems` 进 2D 队列
+4. **3D 骨骼动画播放**：`AnimSkeleton` + `AnimClip`，可用 `AnimPlayer`、状态机 `AnimStateMachine`、或 Motion Matching（`MotionDatabase` + `MotionMatcher`）驱动
+5. **CPU 蒙皮**：`AnimSkin` 从 `ModelData` 读取骨骼权重与 inverse-bind，按 `AnimPose` 世界矩阵做线性混合蒙皮
+6. **控制论程序动画**：`ControlAnim`（命名标量通道）与 `ControlPose`（骨骼姿态跟踪），基于二阶 LTI / 闭式阻尼弹簧 / 单位质量 PD
+7. **拖尾轨迹**：`AnimTrail` 记录采样点并绘制淡出轨迹（2D 点或骨骼世界坐标投影）
 
 ## 基本用法（Tween）
 
@@ -20,6 +22,52 @@ move.setTo("x", 200);
 move.setEase("outQuad");
 move.start();
 anim.update(dt);
+```
+
+## 基本用法（2D 帧动画）
+
+```squirrel
+local anim = eve.Animation();
+local gfx = eve.Graphics();
+local sheet = anim.newSpriteSheet();
+sheet.setGrid(4, 2, 32, 48, 0, 0, 0, 0); // cols, rows, frameW, frameH, margin, spacing, ox, oy
+
+local walk = anim.newSpriteClip("walk");
+walk.setLoop(true);
+walk.addFrame(0, 0.1);
+walk.addFrame(1, 0.1);
+walk.addFrame(2, 0.1);
+walk.addFrame(3, 0.1);
+
+local quad = gfx.newQuad(0, 0, 32, 48);
+local player = anim.newSpriteAnim();
+player.setSheet(sheet);
+player.bindQuad(quad); // 每帧自动 setViewport
+player.play(walk);
+// eve_update:
+anim.update(dt);
+// 把 quad 挂到 Renderable2D.sprite.quad 即可换帧
+```
+
+## 基本用法（Spine region）
+
+内置解析器支持 Spine `.atlas` + skeleton JSON 的 **region 附件**子集（骨骼 TRS、slot 附件切换）。Mesh / IK / path / deform 需自行接入官方 `spine-cpp` 插件。
+
+```squirrel
+local anim = eve.Animation();
+local atlas = anim.newSpineAtlasFromFile("hero.atlas");
+local data = anim.newSpineSkeletonDataFromFile("hero.json");
+local sk = anim.newSpineSkeleton(data);
+local spine = anim.newSpineAnim(sk);
+spine.setAtlas(atlas);
+spine.setPageTextureByName("hero.png", tex); // Graphics 纹理
+spine.setPosition(400, 300);
+spine.setFlipY(true); // 默认 true：Spine Y-up → 屏幕 Y-down
+spine.play("idle");
+// eve_update:
+anim.update(dt);
+// C++ / 自定义系统：spine.collectDrawItems(queue)
+// 脚本可读：spine.getDrawSlotCount / getDrawSlotX/Y/Width/Height
 ```
 
 ## 基本用法（3D 状态机）
@@ -156,7 +204,9 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 
 ## 对象关系与调用时机
 
-- `Animation` 拥有 Tween 注册表并统一 `update`；3D 对象与 `AnimTrail` 由脚本持有，各自 `update(dt)`。
+- `Animation` 拥有 Tween / SpriteAnim / SpineAnim 注册表并统一 `update`；3D 对象与 `AnimTrail` 由脚本持有，各自 `update(dt)`。
+- `SpriteSheet` 定义图集格子；`SpriteClip` 引用格子索引；`SpriteAnim` 推进时间并可 `bindQuad`。
+- `SpineAtlas` + `SpineSkeletonData` 为资源；`SpineSkeleton` 为运行时姿态；`SpineAnim` 采样动画并 `collectDrawItems`。
 - `AnimSkeleton` 定义骨骼层级与 bind pose；`AnimClip` 保存各骨 local TRS 关键帧。
 - `AnimPlayer` / `AnimStateMachine` / `MotionMatcher` / `ControlPose` 每帧写出 `AnimPose`；`AnimSkin` 用世界矩阵 + inverse-bind 做 CPU 蒙皮；渲染侧也可读取 local/world 同步调试骨骼。
 - `AnimTrail`：每帧 `addPoint` / `sampleBone` 后 `update(dt)`，在 `eve_render` 调用 `draw(gfx)`。
@@ -168,6 +218,14 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 ### 做 UI 滑入动画
 
 创建 Tween，给 `x` 设置 from/to，选择 `outQuad`，调用 `start()`；每帧 `anim.update(dt)` 后读取 `tween.get("x")` 更新 UI 位置。
+
+### 做 2D 角色走路帧动画
+
+`newSpriteSheet` + `setGrid`（或 `addFrame`），`newSpriteClip` 按序 `addFrame`，`newSpriteAnim` 绑定 `Quad` 后 `play`；把该 Quad 赋给 `Renderable2D.sprite.quad`。
+
+### 播放 Spine 角色（region）
+
+加载 `.atlas` / `.json`，`newSpineAnim`，绑定 page 纹理，每帧 `anim.update(dt)`；渲染侧调用 `collectDrawItems` 写入与地图/精灵同一 2D 队列。
 
 ### 做往返呼吸效果
 
@@ -194,6 +252,9 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 - 创建 Tween 后忘记 `start()`。
 - update 后不读取 `get(property)` 写回对象。
 - 普通标量接口插值角度导致跨 360° 绕行。
+- `SpriteAnim` 未 `setSheet` / `bindQuad` 就期望自动换帧。
+- Spine 未 `setPageTexture*` 导致 `collectDrawItems` 无贴图。
+- 期望内置 Spine 解析 mesh/IK（当前仅 region；全量请用 spine-cpp 插件）。
 - MotionMatcher 在 `bake()` 之前调用 `search`/`update`。
 - 状态机/播放器持有的 skeleton、clip 被提前销毁。
 - `ControlAnim.setIntegrator` / `ControlPose.setIntegrator` 传入未知字符串。
@@ -205,6 +266,15 @@ skin.updateSkinnedPositions(pose); // 脚本可读 getSkinnedPositionX/Y/Z(i)
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
 
 - Tween：`clearAll()`、`clearFinished()`、`evaluate()`、`get()`、`getActiveCount()`、`getDelay()`、`getDelta()`、`getDuration()`、`getEase()`、`getEasedProgress()`、`getElapsed()`、`getFrom()`、`getName()`、`getProgress()`、`getPropertyCount()`、`getPropertyName()`、`getRepeat()`、`getTo()`、`getTweenCount()`、`getYoyo()`、`has()`、`isActive()`、`isDelayed()`、`isFinished()`、`isPaused()`、`isRunning()`、`isStopped()`、`newTween()`、`pause()`、`reset()`、`resume()`、`setDelay()`、`setDelta()`、`setDeltaAngle()`、`setDuration()`、`setEase()`、`setFrom()`、`setFromAngle()`、`setRepeat()`、`setTo()`、`setToAngle()`、`setYoyo()`、`start()`、`stop()`、`update()`
+- 2D 帧动画：`newSpriteSheet()`、`newSpriteClip()`、`newSpriteAnim()`、`getSpriteAnimCount()`
+- Spine：`newSpineAtlas()`、`newSpineAtlasFromFile()`、`newSpineAtlasFromText()`、`newSpineSkeletonData()`、`newSpineSkeletonDataFromFile()`、`newSpineSkeletonDataFromJson()`、`newSpineSkeleton()`、`newSpineAnim()`、`getSpineAnimCount()`
+- `SpriteSheet`：`addFrame()`、`setGrid()`、`clear()`、`getFrameCount()`、`findFrame()`、`getFrame*()`、`applyToQuad()`
+- `SpriteClip`：`setName()`、`getName()`、`setLoop()`、`addFrame()`、`addFrameByName()`、`getDuration()`、`frameAtTime()`
+- `SpriteAnim`：`setSheet()`、`play()`、`stop()`、`pause()`、`resume()`、`setSpeed()`、`setTime()`、`setLoop()`、`bindQuad()`、`applyToQuad()`、`getSheetFrame()`、`update()`
+- `SpineAtlas`：`loadFromText()`、`loadFromFile()`、`getPage*()`、`findRegion()`、`getRegion*()`
+- `SpineSkeletonData`：`loadFromJson()`、`loadFromFile()`、`findBone()`、`findSlot()`、`findAnimation()`、`getAnimationDuration()`
+- `SpineSkeleton`：`setSkin()`、`setToSetupPose()`、`updateWorldTransform()`、`getBoneWorld*()`、`getSlotAttachmentName()`
+- `SpineAnim`：`setAtlas()`、`setPageTexture()`、`setPageTextureByName()`、`play()`、`setPosition()`、`setScale()`、`setFlipY()`、`apply()`、`update()`、`getDrawSlot*()`
 - 3D 工厂：`newSkeleton()`、`newClip()`、`newPose()`、`newPlayer()`、`newStateMachine()`、`newMotionDatabase()`、`newMotionMatcher()`、`newControlAnim()`、`newControlPose()`、`newSkinFromModel()`、`newTrail()`
 - `AnimSkeleton`：`addBone()`、`getBoneCount()`、`getBoneName()`、`findBone()`、`getParent()`、`setBindPosition()`、`setBindRotation()`、`setBindScale()`、`getBind*()`、`applyBindPose()`
 - `AnimClip`：`setName()`、`getName()`、`setDuration()`、`getDuration()`、`setLoop()`、`getLoop()`、`setSampleRate()`、`addPositionKey()`、`addRotationKey()`、`addScaleKey()`、`sample()`、`wrapTime()`
