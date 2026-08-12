@@ -18,6 +18,11 @@ bool EffectDefinition::hasTag(const std::string &tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
 }
 
+std::string EffectDefinition::getExtra(const std::string &key, const std::string &fallback) const {
+    auto it = extra.find(key);
+    return it == extra.end() ? fallback : it->second;
+}
+
 std::unordered_map<std::string, EffectDefinition> &EffectRegistry::table() {
     static std::unordered_map<std::string, EffectDefinition> t;
     return t;
@@ -52,6 +57,7 @@ EffectDefinition parseEffectObject(Poco::JSON::Object::Ptr o) {
     def.stackPolicy = asString(o->get("stackPolicy"), "none");
     def.maxStacks = asInt(o->get("maxStacks"), 1);
     def.tags = asStringArray(o, "tags");
+    def.extra = asStringMap(o, "extra");
 
     if (o->has("modifiers")) {
         try {

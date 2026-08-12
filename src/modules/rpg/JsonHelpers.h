@@ -7,6 +7,7 @@
 #include <Poco/JSON/Object.h>
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::rpg::json_helpers {
@@ -50,6 +51,21 @@ inline std::vector<std::string> asStringArray(Poco::JSON::Object::Ptr o, const c
         if (!arr) return out;
         out.reserve(arr->size());
         for (size_t i = 0; i < arr->size(); ++i) out.push_back(asString(arr->get(i)));
+    } catch (...) {
+    }
+    return out;
+}
+
+inline std::unordered_map<std::string, std::string> asStringMap(Poco::JSON::Object::Ptr o,
+                                                               const char *key) {
+    std::unordered_map<std::string, std::string> out;
+    if (!o || !o->has(key)) return out;
+    try {
+        auto child = o->getObject(key);
+        if (!child) return out;
+        std::vector<std::string> names;
+        child->getNames(names);
+        for (const auto &n : names) out[n] = asString(child->get(n));
     } catch (...) {
     }
     return out;

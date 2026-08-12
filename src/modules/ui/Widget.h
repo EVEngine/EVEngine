@@ -25,6 +25,11 @@ struct WidgetDesc {
     float maxValue = 1.f;
     float sizeX = 0.f;
     float sizeY = 0.f;
+    FlexDirection flexDirection = FlexDirection::Row;
+    FlexAlign alignItems = FlexAlign::Start;
+    FlexJustify justifyContent = FlexJustify::Start;
+    float gap = -1.f;
+    float flexGrow = 0.f;
     std::function<void()> onClick;
     std::function<void(bool)> onToggle;
     std::function<void(float)> onValue;
@@ -73,6 +78,26 @@ struct WidgetDesc {
         sizeY = h;
         return *this;
     }
+    WidgetDesc &withGap(float g) {
+        gap = g;
+        return *this;
+    }
+    WidgetDesc &withFlexDirection(FlexDirection d) {
+        flexDirection = d;
+        return *this;
+    }
+    WidgetDesc &withAlign(FlexAlign a) {
+        alignItems = a;
+        return *this;
+    }
+    WidgetDesc &withJustify(FlexJustify j) {
+        justifyContent = j;
+        return *this;
+    }
+    WidgetDesc &withFlexGrow(float g) {
+        flexGrow = g;
+        return *this;
+    }
     WidgetDesc &withClick(std::function<void()> fn) {
         onClick = std::move(fn);
         return *this;
@@ -114,6 +139,14 @@ WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children 
                             std::string id = "", bool defaultOpen = true);
 WidgetDesc child(std::string id, std::vector<WidgetDesc> children = {}, float width = 0.f,
                  float height = 120.f);
+
+/** Elastic layout container (row/column). Prefer `row` / `column` shorthands. */
+WidgetDesc flex(FlexDirection direction, std::vector<WidgetDesc> children = {},
+                std::string id = "");
+WidgetDesc row(std::vector<WidgetDesc> children = {}, std::string id = "");
+WidgetDesc column(std::vector<WidgetDesc> children = {}, std::string id = "");
+/** Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent. */
+WidgetDesc spacer(std::string id = "", float grow = 1.f);
 
 /** Conditional: include `child` only when `cond` is true (empty group otherwise). */
 WidgetDesc when(bool cond, WidgetDesc child);

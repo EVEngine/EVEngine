@@ -6,6 +6,9 @@ test/Textures/env/_src/
 test/assets/classic/sponza/
 test/assets/classic/damaged_helmet/
 test/assets/classic/.downloaded
+# Skinned character (CesiumMan) fetched by scripts/download_skinned_character.sh
+test/assets/skinned/cesium_man/
+test/assets/skinned/.downloaded
 .vscode/
 .superpowers/
 artifacts-local-test/

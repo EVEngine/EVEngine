@@ -2,6 +2,7 @@
 
 #include "common/Module.h"
 #include "procgen/Grid2D.h"
+#include "procgen/MeshBuild.h"
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
 #include "procgen/Params.h"
@@ -12,6 +13,7 @@
 namespace eve::graphics {
 class Graphics;
 class Texture;
+class Mesh;
 }  // namespace eve::graphics
 
 namespace eve::image {
@@ -24,6 +26,7 @@ namespace eve::procgen {
  * Procedural generation module.
  * Phase A: runtime maps (semantic Grid2D → TileLayer).
  * Phase B: runtime textures (ImageData / Texture).
+ * Phase C (partial): mesh recipes (Marching Cubes → MeshBuild / Mesh).
  * Script: `procgen <- eve.Procgen();`
  */
 class Procgen : public Module {
@@ -67,6 +70,17 @@ public:
     std::string getTextureRecipeId(int index) const;
     bool        hasTextureRecipe(const std::string &recipeId) const;
 
+    // --- Mesh recipes (Marching Cubes, …) ---
+    /** CPU mesh (caller owns). Recipes: mesh.marchingcubes. */
+    MeshBuild *buildMesh(const std::string &recipeId, Params *params);
+    /** Build + upload to GPU Mesh (owned by Graphics). */
+    graphics::Mesh *generateMesh(const std::string &recipeId, Params *params,
+                                 graphics::Graphics *gfx);
+
+    int         getMeshRecipeCount() const;
+    std::string getMeshRecipeId(int index) const;
+    bool        hasMeshRecipe(const std::string &recipeId) const;
+
     PaletteTable &palettes() { return palettes_; }
 
 private:
@@ -76,6 +90,7 @@ private:
     mutable std::string              lastError_;
     mutable std::vector<std::string> algorithmIdsCache_;
     mutable std::vector<std::string> textureRecipeIdsCache_;
+    mutable std::vector<std::string> meshRecipeIdsCache_;
 };
 
 }  // namespace eve::procgen

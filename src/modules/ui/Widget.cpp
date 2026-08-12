@@ -19,6 +19,11 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.maxValue = desc.maxValue;
     node.sizeX = desc.sizeX;
     node.sizeY = desc.sizeY;
+    node.flexDirection = desc.flexDirection;
+    node.alignItems = desc.alignItems;
+    node.justifyContent = desc.justifyContent;
+    node.gap = desc.gap;
+    node.flexGrow = desc.flexGrow;
     node.firstChild = -1;
     node.nextSibling = -1;
     node.handlerClick = 0;
@@ -98,6 +103,11 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.maxValue = desc.maxValue;
     n.sizeX = desc.sizeX;
     n.sizeY = desc.sizeY;
+    n.flexDirection = desc.flexDirection;
+    n.alignItems = desc.alignItems;
+    n.justifyContent = desc.justifyContent;
+    n.gap = desc.gap;
+    n.flexGrow = desc.flexGrow;
     if (!desc.id.empty()) n.id = desc.id;
 
     if (desc.onClick) {
@@ -264,6 +274,33 @@ WidgetDesc child(std::string id, std::vector<WidgetDesc> children, float width, 
     d.sizeX = width;
     d.sizeY = height;
     d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc flex(FlexDirection direction, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Flex;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = direction;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc row(std::vector<WidgetDesc> children, std::string id) {
+    return flex(FlexDirection::Row, std::move(children), std::move(id));
+}
+
+WidgetDesc column(std::vector<WidgetDesc> children, std::string id) {
+    return flex(FlexDirection::Column, std::move(children), std::move(id));
+}
+
+WidgetDesc spacer(std::string id, float grow) {
+    WidgetDesc d;
+    d.type = NodeType::Spacer;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexGrow = grow > 0.f ? grow : 1.f;
     return d;
 }
 

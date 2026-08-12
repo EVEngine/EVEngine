@@ -45,6 +45,7 @@ void Graphics::expose(ssq::Table &table) {
     texCls.addFunc("getCastOcclusion", &Texture::getCastOcclusion);
     texCls.addFunc("getWidth", &Texture::getWidth);
     texCls.addFunc("getHeight", &Texture::getHeight);
+    texCls.addFunc("getMipmapCount", &Texture::getMipmapCount);
 
     // Texture / Mesh expose occlusion flags used by volumetric light shafts.
     // (create returns null — instances come from Graphics::newTexture / newMesh*)
@@ -195,6 +196,10 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setCastOcclusion", &Renderable3D::setCastOcclusion);
     ent.addFunc("getCastOcclusion", &Renderable3D::getCastOcclusion);
     ent.addFunc("setCamera", &Renderable3D::setCamera);
+    ent.addFunc("setMeshLod", &Renderable3D::setMeshLod);
+    ent.addFunc("clearMeshLod", &Renderable3D::clearMeshLod);
+    ent.addFunc("getMeshLodCount", &Renderable3D::getMeshLodCount);
+    ent.addFunc("getMeshLodLevelAtDistance", &Renderable3D::getMeshLodLevelAtDistance);
 
     auto vol = table.addClass<Volumetric>(
         "Volumetric", std::function<Volumetric *()>([]() -> Volumetric * { return nullptr; }), true);
@@ -308,7 +313,12 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setBackgroundColor", &Graphics::setBackgroundColorRGBA);
     cls.addFunc("drawSolidRect", &Graphics::drawSolidRectRGBA);
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
-    cls.addFunc("newTexture", &Graphics::newTextureFromImageData);
+    cls.addFunc("newTexture",
+                static_cast<Texture *(Graphics::*)(image::ImageData *, bool, bool)>(
+                    &Graphics::newTextureFromImageData));
+    cls.addFunc("newTextureWithSampler", &Graphics::newTextureWithSampler);
+    cls.addFunc("setTextureSampler", &Graphics::setTextureSamplerParams);
+    cls.addFunc("getMaxAnisotropy", &Graphics::getMaxAnisotropy);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
     cls.addFunc("newMeshCylinder", &Graphics::newMeshCylinder);
     cls.addFunc("bakeMeshMorph", &Graphics::bakeMeshMorph);
@@ -384,8 +394,50 @@ Texture *Graphics::newTextureFromImageData(image::ImageData *data, bool repeatU,
     if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
     if (data->getFormat() != "RGBA8")
         throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
+    TextureCreateInfo info;
+    info.sampler.repeatU = repeatU;
+    info.sampler.repeatV = repeatV;
     return newTexture(data->getWidth(), data->getHeight(),
-                      static_cast<const uint8_t *>(data->getData()), repeatU, repeatV);
+                      static_cast<const uint8_t *>(data->getData()), info);
+}
+
+Texture *Graphics::newTextureFromImageData(image::ImageData *data, const TextureCreateInfo &info) {
+    if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
+    if (data->getFormat() != "RGBA8")
+        throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
+    return newTexture(data->getWidth(), data->getHeight(),
+                      static_cast<const uint8_t *>(data->getData()), info);
+}
+
+Texture *Graphics::newTextureWithSampler(image::ImageData *data, bool repeatU, bool repeatV,
+                                         bool generateMipmaps, float maxAnisotropy,
+                                         const std::string &filter, const std::string &mipmap,
+                                         float lodBias) {
+    TextureCreateInfo info;
+    info.generateMipmaps = generateMipmaps;
+    info.sampler.min = TextureSampler::parseFilter(filter);
+    info.sampler.mag = info.sampler.min;
+    info.sampler.mipmap = TextureSampler::parseMipmap(mipmap);
+    if (generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
+        info.sampler.mipmap = MipmapMode::Linear;
+    info.sampler.repeatU = repeatU;
+    info.sampler.repeatV = repeatV;
+    info.sampler.maxAnisotropy = maxAnisotropy;
+    info.sampler.lodBias = lodBias;
+    return newTextureFromImageData(data, info);
+}
+
+void Graphics::setTextureSamplerParams(Texture *texture, const std::string &filter,
+                                       const std::string &mipmap, float maxAnisotropy,
+                                       float lodBias) {
+    if (!texture) return;
+    TextureSampler s = texture->getSampler();
+    s.min = TextureSampler::parseFilter(filter);
+    s.mag = s.min;
+    s.mipmap = TextureSampler::parseMipmap(mipmap);
+    s.maxAnisotropy = maxAnisotropy;
+    s.lodBias = lodBias;
+    setTextureSampler(texture, s);
 }
 
 Quad *Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }

@@ -86,6 +86,7 @@ elseif(UNIX)
         asound
     )
     # OpenAL Soft may compile the sndio backend when libsndio-dev is present.
+    # GitHub Actions runners typically lack libsndio, so only link when found.
     find_library(EVENGINE_SNDIO_LIBRARY sndio)
     if(EVENGINE_SNDIO_LIBRARY)
         list(APPEND SystemLibraries sndio)
@@ -186,7 +187,8 @@ list(APPEND EVELIBS
     EVDialogue
     EVProcgen
     EVVoxel
-    EVStylize)
+    EVStylize
+    EVEditor)
 
 if(EVENGINE_BUILD_DEMO)
     list(APPEND EVELIBS EVDemo)

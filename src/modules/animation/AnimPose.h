@@ -56,8 +56,17 @@ public:
     float getWorldRotationZ(int boneIndex) const;
     float getWorldRotationW(int boneIndex) const;
 
+    /**
+     * Column-major 4x4 world matrix for boneIndex after computeWorld().
+     * elementIndex in [0, 15]. Used by CPU skinning (AnimSkin).
+     */
+    float getWorldMatrixElement(int boneIndex, int elementIndex) const;
+    /** Write 16 floats (column-major) into out16 (must not be null). */
+    void  getWorldMatrix(int boneIndex, float *out16) const;
+
     TransformTRS       &local(int boneIndex);
     const TransformTRS &local(int boneIndex) const;
+    const TransformTRS &world(int boneIndex) const;
 
 private:
     void requireBone(int boneIndex) const;

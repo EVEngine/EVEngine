@@ -115,6 +115,15 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
     md.addFunc("getMorphTargetCount", &ModelData::getMorphTargetCount);
     md.addFunc("getMorphTargetName", &ModelData::getMorphTargetName);
+    md.addFunc("hasBones", &ModelData::hasBones);
+    md.addFunc("getBoneCount", &ModelData::getBoneCount);
+    md.addFunc("getBoneName", &ModelData::getBoneName);
+    md.addFunc("getInverseBindMatrixElement", &ModelData::getInverseBindMatrixElement);
+    md.addFunc("getBoneWeightCount", &ModelData::getBoneWeightCount);
+    md.addFunc("getBoneWeightVertex", &ModelData::getBoneWeightVertex);
+    md.addFunc("getBoneWeightValue", &ModelData::getBoneWeightValue);
+    md.addFunc("getAnimationCount", &ModelData::getAnimationCount);
+    md.addFunc("getAnimationName", &ModelData::getAnimationName);
 }
 
 void Model3D::expose(ssq::Class &cls) {

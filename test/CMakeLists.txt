@@ -27,6 +27,7 @@ file(GLOB all_test_cpp
   Shadow3D.cpp
   ClassicScenes.cpp
   Volumetric.cpp
+  TextureSampler.cpp
   AmbientOcclusion.cpp
   AntiAliasing.cpp
   UISystem.cpp
@@ -36,6 +37,7 @@ file(GLOB all_test_cpp
   UIOverlaySmoke.cpp
   scene.cpp
   particles.cpp
+  particles_attach_skin.cpp
   map.cpp
   map_path.cpp
   map_fov.cpp
@@ -69,9 +71,11 @@ file(GLOB all_test_cpp
   system.cpp
   math.cpp
   spatial.cpp
+  editor.cpp
   ik.cpp
   animation.cpp
   animation_mixamo.cpp
+  animation_skinned.cpp
   tensor.cpp
   callgraph.cpp
   renderflow.cpp
@@ -198,6 +202,7 @@ set(EVELIBS
   EVSystem
   EVMath
   EVSpatial
+  EVEditor
   EVIK
   EVAnimation
   EVTensor
@@ -222,7 +227,8 @@ set(EVELIBS
   EVDialogue
   EVProcgen
   EVVoxel
-  EVStylize)
+  EVStylize
+  EVEditor)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND
@@ -259,6 +265,28 @@ if(EVENGINE_DOWNLOAD_CLASSIC_SCENES)
             bash "${_eve_classic_scenes_script}"
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     COMMENT "PRE_BUILD: download classic scenes"
+    VERBATIM)
+endif()
+
+# Free skinned character (CesiumMan, ~0.5 MB) for animation.skinned.* tests.
+# Default ON so test builds fetch the asset over the network; disable offline.
+option(EVENGINE_DOWNLOAD_SKINNED_CHARACTER
+  "Download CesiumMan skinned character for skeletal animation tests" ON)
+set(_eve_skinned_script "${CMAKE_SOURCE_DIR}/scripts/download_skinned_character.sh")
+add_custom_target(download_skinned_character
+  COMMAND ${CMAKE_COMMAND} -E env
+          "EVENGINE_SKINNED_DIR=${CMAKE_SOURCE_DIR}/test/assets/skinned"
+          bash "${_eve_skinned_script}"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  COMMENT "Downloading skinned character (CesiumMan) for animation tests"
+  VERBATIM)
+if(EVENGINE_DOWNLOAD_SKINNED_CHARACTER)
+  add_custom_command(TARGET unit_test PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E env
+            "EVENGINE_SKINNED_DIR=${CMAKE_SOURCE_DIR}/test/assets/skinned"
+            bash "${_eve_skinned_script}"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    COMMENT "PRE_BUILD: download skinned character (CesiumMan)"
     VERBATIM)
 endif()
 

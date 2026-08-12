@@ -8,8 +8,12 @@ eve_init = function() {
     ui.beginBuild();
     ui.beginWindow("Inventory", "root");
     ui.text("Theme: " + ui.getTheme(), "status");
+    ui.beginRow("actions", 8.0);
+    ui.setFlexJustify("space-between");
     ui.button("Use", "use");
+    ui.spacer("sp");
     ui.button("Toggle Theme", "theme");
+    ui.end();
     ui.end();
     ui.mountBuildAs("inv");
 };

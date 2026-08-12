@@ -256,6 +256,8 @@ sequenceDiagram
 | Tilemap | `TileLayer` 组件 + `map` 数据；`TileRenderSystem` 或合并进 RenderSystem | 图集 Texture、批四边形 |
 | 摄像机光照 | `Camera2D` + 法线纹理字段 + 第二管线 key | Batcher pipeline key 扩展 |
 | 低像素 | Sampler 最近邻 + 像素对齐字段 | Sampler 进批 key |
+| 纹理 mipmap / 各向异性 / LOD bias | `TextureCreateInfo` + `TextureSampler`；`Graphics::setTextureSampler` | VKBuilder Sampler / 多级 mip 上传 |
+| 几何 LOD | `Renderable3D::setMeshLod` 按距离选 Mesh | RenderSystem3D |
 | 简单 3D | 独立组件与 Pass，**不**进 2D Sprite 批 | depth 附件、独立管线 |
 
 

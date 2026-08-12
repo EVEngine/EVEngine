@@ -1,6 +1,6 @@
 # 声明式游戏 GUI 框架设计
 
-> 状态：B 期已完成（脚本 Component + 高级原语）；C 期 DevTools 待做。
+> 状态：B 期已完成（脚本 Component + 高级原语 + 弹性布局）；C 期 DevTools 待做。
 > 对外模型：**声明式** retained 组件树 + ECS `UIHost`（非每帧脚本命令式 ImGui）。
 > 后端：Dear ImGui（SDL 输入 + Vulkan 绘制），由 C++ `UISystem` 每帧 walk。
 > ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（`external/ECS.hpp`）。
@@ -207,10 +207,37 @@ while (id != "") {
 
 | 概念 | 含义 |
 |------|------|
-| `WidgetDesc` / builder | 可任意嵌套 Window/Text/Button/Group/SameLine |
+| `WidgetDesc` / builder | 可任意嵌套 Window/Text/Button/Group/Flex/SameLine |
 | `id` | 稳定键；`setText` / `setVisible` / 点击路由 |
 | `mount` / `mountBuild` | 声明一次；后续只改 props |
 | `onClick`（C++） / `consumeClick`（脚本） | 仅交互时处理 |
+| `row` / `column` / `spacer` | 弹性布局；`gap` / `flexGrow` / `align` / `justify` |
+
+### 4.2.1 弹性布局（Flex）
+
+```cpp
+ui->mount(window("HUD", {
+    row({
+        button("Menu", "menu"),
+        spacer(),
+        text("HP 100", "hp"),
+    }, "top").withGap(8.f).withJustify(FlexJustify::Start),
+    column({
+        text("Quest", "q"),
+        button("Track", "track").withFlexGrow(1.f),
+    }, "side").withAlign(FlexAlign::Stretch),
+}));
+```
+
+```squirrel
+ui.beginRow("top", 8.0)
+ui.setFlexJustify("space-between")
+ui.button("Menu", "menu")
+ui.spacer("sp")
+ui.text("HP 100", "hp")
+ui.end()
+```
+
 ### 4.3 C++ Component（B）
 
 ```cpp
@@ -346,6 +373,7 @@ sequenceDiagram
 - [x] 脚本侧 `class X extends eve.UIComponent { build() }`
 - [x] 高级原语：`Slider` / `Progress` / `InputText` / `CollapsingHeader` / `Child`
 - [x] `consumeChange` / `setValue` / `WantCapture*` / `setHostModal`
+- [x] 弹性布局：`Flex` / `Row` / `Column` / `Spacer`；`gap` / `flexGrow` / `align` / `justify`
 
 ### C — DevTools
 

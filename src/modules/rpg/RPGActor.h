@@ -33,7 +33,7 @@ public:
         std::unordered_map<std::string, AttributeValue> values;
     };
 
-    /** 状态（buff/debuff）运行时列表。 */
+    /** 状态（buff/debuff）运行时列表 —— ECS 组件，游戏侧常称 Buffs。 */
     struct Statuses {
         std::vector<StatusInstance> active;
         int nextInstanceId = 1;
@@ -69,18 +69,41 @@ public:
     int removeAllAttributeModifiersBySource(const std::string &source);
     double getFinalAttribute(const std::string &attribute);
 
-    // 状态（buff/debuff）
+    // 状态（buff/debuff）—— Statuses ECS 组件的薄封装
     int applyEffect(const std::string &effectId, const std::string &source = "");
     bool removeStatus(int instanceId);
     int removeStatusByEffect(const std::string &effectId);
     int removeStatusBySource(const std::string &source);
     int removeStatusByTag(const std::string &tag);
     bool hasEffect(const std::string &effectId);
+    bool hasStatusTag(const std::string &tag);
     int getStatusCount();
     std::string getStatusEffectId(int index);
     int getStatusStacks(int index);
     float getStatusRemaining(int index);
     int getStatusInstanceId(int index);
+    std::string getStatusSource(int index);
+    std::string getStatusProp(int instanceId, const std::string &key,
+                              const std::string &fallback = {});
+    bool setStatusProp(int instanceId, const std::string &key, const std::string &value);
+
+    // Buff 别名（与 Status API 等价，便于游戏侧按习惯命名）
+    int applyBuff(const std::string &effectId, const std::string &source = "");
+    bool removeBuff(int instanceId);
+    int removeBuffByEffect(const std::string &effectId);
+    int removeBuffBySource(const std::string &source);
+    int removeBuffByTag(const std::string &tag);
+    bool hasBuff(const std::string &effectId);
+    bool hasBuffTag(const std::string &tag);
+    int getBuffCount();
+    std::string getBuffEffectId(int index);
+    int getBuffStacks(int index);
+    float getBuffRemaining(int index);
+    int getBuffInstanceId(int index);
+    std::string getBuffSource(int index);
+    std::string getBuffProp(int instanceId, const std::string &key,
+                            const std::string &fallback = {});
+    bool setBuffProp(int instanceId, const std::string &key, const std::string &value);
 
     // 技能
     void learnSkill(const std::string &skillId);

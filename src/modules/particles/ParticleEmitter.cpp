@@ -1,8 +1,14 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleConfig.h"
 
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/AnimSkin.h"
+#include "animation/AnimMath.h"
+
 #include <cmath>
 #include <random>
+#include <string>
 
 namespace eve::particles {
 
@@ -14,6 +20,42 @@ float randRange(std::mt19937 &rng, float a, float b) {
     if (a == b) return a;
     std::uniform_real_distribution<float> dist(a, b);
     return dist(rng);
+}
+
+int randIndex(std::mt19937 &rng, int n) {
+    if (n <= 1) return 0;
+    std::uniform_int_distribution<int> dist(0, n - 1);
+    return dist(rng);
+}
+
+std::string normalizePlane(const std::string &plane) {
+    if (plane == "xz" || plane == "yz") return plane;
+    return "xy";
+}
+
+void projectToPlane(float x, float y, float z, const std::string &plane, float scale, float &ox,
+                    float &oy) {
+    if (plane == "xz") {
+        ox = x * scale;
+        oy = z * scale;
+    } else if (plane == "yz") {
+        ox = y * scale;
+        oy = z * scale;
+    } else {
+        ox = x * scale;
+        oy = y * scale;
+    }
+}
+
+void quatRotateVec(float qx, float qy, float qz, float qw, float vx, float vy, float vz, float &ox,
+                   float &oy, float &oz) {
+    const float ix = qw * vx + qy * vz - qz * vy;
+    const float iy = qw * vy + qz * vx - qx * vz;
+    const float iz = qw * vz + qx * vy - qy * vx;
+    const float iw = -qx * vx - qy * vy - qz * vz;
+    ox = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+    oy = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+    oz = iz * qw + iw * -qz + ix * -qy - iy * -qx;
 }
 
 void sampleEmissionOffset(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float &ox,
@@ -32,16 +74,41 @@ void sampleEmissionOffset(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &si
     }
 }
 
-}  // namespace
+void rebuildSkinCandidates(ParticleEmitter::SkinSource &src) {
+    src.candidates.clear();
+    src.candidatesDirty = false;
+    if (!src.skin || src.skin->getVertexCount() <= 0) return;
 
-void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
-    if (sim.alive >= int(sim.particles.size())) return;
+    const int n = src.skin->getVertexCount();
+    const int influences = src.skin->getInfluenceCount();
+    if (src.filterBone < 0) {
+        src.candidates.reserve(static_cast<size_t>(n));
+        for (int v = 0; v < n; ++v) src.candidates.push_back(v);
+        return;
+    }
 
-    Particle &p = sim.particles[size_t(sim.alive++)];
-    float ox = 0.f, oy = 0.f;
-    sampleEmissionOffset(cfg, sim, ox, oy);
-    p.x = cfg.x + ox;
-    p.y = cfg.y + oy;
+    src.candidates.reserve(static_cast<size_t>(n / 4 + 1));
+    for (int v = 0; v < n; ++v) {
+        float w = 0.f;
+        for (int i = 0; i < influences; ++i) {
+            if (src.skin->getVertexBone(v, i) == src.filterBone) {
+                w += src.skin->getVertexWeight(v, i);
+            }
+        }
+        if (w >= src.minWeight) src.candidates.push_back(v);
+    }
+}
+
+bool ensureSkinCache(ParticleEmitter::SkinSource &src) {
+    if (!src.enabled || !src.skin || !src.pose) return false;
+    if (src.candidatesDirty) rebuildSkinCandidates(src);
+    if (src.candidates.empty()) return false;
+    // Always refresh skinned positions from the live pose (caller must have
+    // computeWorld()'d). Cheap relative to VFX; keeps surface following animation.
+    return src.skin->updateSkinnedPositions(src.pose);
+}
+
+void fillParticleMotion(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, Particle &p) {
     p.lifetime = randRange(sim.rng, cfg.lifeMin, cfg.lifeMax);
     if (p.lifetime <= 0.f) p.lifetime = 1e-4f;
     p.life = p.lifetime;
@@ -65,6 +132,70 @@ void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
     const float speed = randRange(sim.rng, cfg.speedMin, cfg.speedMax);
     p.vx = std::cos(angle) * speed;
     p.vy = std::sin(angle) * speed;
+}
+
+}  // namespace
+
+void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y) {
+    if (sim.alive >= int(sim.particles.size())) return;
+
+    Particle &p = sim.particles[size_t(sim.alive++)];
+    float ox = 0.f, oy = 0.f;
+    sampleEmissionOffset(cfg, sim, ox, oy);
+    p.x = x + ox;
+    p.y = y + oy;
+    fillParticleMotion(cfg, sim, p);
+}
+
+void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
+    // Prefer skin surface when configured on the owning entity.
+    if (cfg.entity) {
+        auto skinComp = cfg.entity->skinSource();
+        if (skinComp->enabled) {
+            float sx = cfg.x, sy = cfg.y;
+            if (sampleSkinSpawn(*skinComp, sim, sx, sy)) {
+                spawnParticleAt(cfg, sim, sx, sy);
+                return;
+            }
+        }
+    }
+    spawnParticleAt(cfg, sim, cfg.x, cfg.y);
+}
+
+bool sampleSkinSpawn(ParticleEmitter::SkinSource &skinSrc, ParticleEmitter::Sim &sim, float &outX,
+                     float &outY) {
+    if (!ensureSkinCache(skinSrc)) return false;
+    const int vi = skinSrc.candidates[static_cast<size_t>(randIndex(sim.rng, int(skinSrc.candidates.size())))];
+    const float wx = skinSrc.skin->getSkinnedPositionX(vi);
+    const float wy = skinSrc.skin->getSkinnedPositionY(vi);
+    const float wz = skinSrc.skin->getSkinnedPositionZ(vi);
+    projectToPlane(wx, wy, wz, skinSrc.plane, skinSrc.scale, outX, outY);
+    return true;
+}
+
+void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim & /*sim*/,
+                        ParticleEmitter::Attach &attach, ParticleEmitter::SkinSource &skinSrc) {
+    if (attach.enabled && attach.pose && attach.boneIndex >= 0 &&
+        attach.boneIndex < attach.pose->getBoneCount()) {
+        const auto &w = attach.pose->world(attach.boneIndex);
+        // Transform local attach offset by bone world matrix.
+        float ox = attach.offsetX, oy = attach.offsetY, oz = attach.offsetZ;
+        float wx, wy, wz;
+        animation::Mat4::fromTRS(w).transformPoint(ox, oy, oz, wx, wy, wz);
+        projectToPlane(wx, wy, wz, attach.plane, attach.scale, cfg.x, cfg.y);
+
+        if (attach.followRotation) {
+            float fx, fy, fz;
+            quatRotateVec(w.qx, w.qy, w.qz, w.qw, 1.f, 0.f, 0.f, fx, fy, fz);
+            float ax, ay;
+            projectToPlane(fx, fy, fz, attach.plane, 1.f, ax, ay);
+            if (ax * ax + ay * ay > kEps) cfg.direction = std::atan2(ay, ax);
+        }
+    }
+
+    if (skinSrc.enabled && skinSrc.skin && skinSrc.pose) {
+        ensureSkinCache(skinSrc);
+    }
 }
 
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt) {
@@ -130,8 +261,10 @@ ParticleEmitter *ParticleEmitter::createEmitter(int bufferSize) {
     e->sim()->particles.resize(size_t(n));
     std::random_device rd;
     e->sim()->rng.seed(rd());
-    // Touch Draw so render views see a fully initialized emitter.
+    // Touch Draw / Attach / SkinSource so system views see fully initialized emitters.
     (void)e->draw();
+    (void)e->attach();
+    (void)e->skinSource();
     return e;
 }
 
@@ -369,5 +502,116 @@ bool ParticleEmitter::reloadConfig() { return reloadConfigFile(this, nullptr); }
 void ParticleEmitter::setAutoReload(bool enable) { resource()->autoReload = enable; }
 bool ParticleEmitter::getAutoReload() { return resource()->autoReload; }
 std::string ParticleEmitter::getConfigPath() { return resource()->path; }
+
+void ParticleEmitter::attachToBone(animation::AnimPose *pose, int boneIndex) {
+    auto a = attach();
+    a->pose = pose;
+    a->boneIndex = boneIndex;
+    a->enabled = pose != nullptr && boneIndex >= 0;
+    if (a->enabled) syncAttach();
+}
+
+void ParticleEmitter::attachToBoneByName(animation::AnimPose *pose,
+                                         animation::AnimSkeleton *skeleton,
+                                         const std::string &boneName) {
+    auto a = attach();
+    a->skeleton = skeleton;
+    int idx = -1;
+    if (skeleton) idx = skeleton->findBone(boneName);
+    attachToBone(pose, idx);
+}
+
+void ParticleEmitter::setAttachOffset(float x, float y, float z) {
+    auto a = attach();
+    a->offsetX = x;
+    a->offsetY = y;
+    a->offsetZ = z;
+    if (a->enabled) syncAttach();
+}
+
+void ParticleEmitter::setAttachPlane(const std::string &plane) {
+    attach()->plane = normalizePlane(plane);
+    if (attach()->enabled) syncAttach();
+}
+
+void ParticleEmitter::setAttachScale(float scale) {
+    attach()->scale = scale;
+    if (attach()->enabled) syncAttach();
+}
+
+void ParticleEmitter::setFollowBoneRotation(bool enable) {
+    attach()->followRotation = enable;
+    if (attach()->enabled) syncAttach();
+}
+
+void ParticleEmitter::detach() {
+    auto a = attach();
+    a->enabled = false;
+    a->pose = nullptr;
+    a->boneIndex = -1;
+}
+
+bool ParticleEmitter::isAttached() { return attach()->enabled; }
+int ParticleEmitter::getAttachBone() { return attach()->boneIndex; }
+
+void ParticleEmitter::syncAttach() {
+    syncEmitterSources(*config(), *sim(), *attach(), *skinSource());
+}
+
+void ParticleEmitter::setSkinSource(animation::AnimSkin *skin, animation::AnimPose *pose) {
+    auto s = skinSource();
+    s->skin = skin;
+    s->pose = pose;
+    s->enabled = skin != nullptr && pose != nullptr;
+    s->candidatesDirty = true;
+    s->lastSkinnedFrame = -1;
+}
+
+void ParticleEmitter::setSkinBoneFilter(int skeletonBoneIndex, float minWeight) {
+    auto s = skinSource();
+    s->filterBone = skeletonBoneIndex;
+    s->minWeight = minWeight < 0.f ? 0.f : minWeight;
+    s->candidatesDirty = true;
+}
+
+void ParticleEmitter::setSkinBoneFilterByName(animation::AnimSkeleton *skeleton,
+                                              const std::string &boneName, float minWeight) {
+    auto s = skinSource();
+    s->skeleton = skeleton;
+    int idx = -1;
+    if (skeleton) idx = skeleton->findBone(boneName);
+    setSkinBoneFilter(idx, minWeight);
+}
+
+void ParticleEmitter::setSkinPlane(const std::string &plane) {
+    skinSource()->plane = normalizePlane(plane);
+}
+
+void ParticleEmitter::setSkinScale(float scale) { skinSource()->scale = scale; }
+
+void ParticleEmitter::clearSkinSource() {
+    auto s = skinSource();
+    s->enabled = false;
+    s->skin = nullptr;
+    s->pose = nullptr;
+    s->filterBone = -1;
+    s->candidates.clear();
+    s->candidatesDirty = true;
+}
+
+bool ParticleEmitter::hasSkinSource() { return skinSource()->enabled; }
+
+void ParticleEmitter::emitFromSkin(int count) {
+    if (count <= 0) return;
+    auto s = skinSource();
+    if (!s->enabled) return;
+    auto c = config();
+    auto simc = sim();
+    for (int i = 0; i < count; ++i) {
+        float sx = c->x, sy = c->y;
+        if (!sampleSkinSpawn(*s, *simc, sx, sy)) break;
+        spawnParticleAt(*c, *simc, sx, sy);
+    }
+}
 
 }  // namespace eve::particles

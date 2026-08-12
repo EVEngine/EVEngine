@@ -22,6 +22,23 @@ enum class NodeType : uint8_t {
     InputText = 9,
     CollapsingHeader = 10,
     Child = 11,
+    Flex = 12,    // elastic row/column container
+    Spacer = 13,  // flexible empty space (default flexGrow=1)
+};
+
+/** Main-axis direction for Flex containers. */
+enum class FlexDirection : uint8_t { Row = 0, Column = 1 };
+
+/** Cross-axis alignment of Flex children. */
+enum class FlexAlign : uint8_t { Start = 0, Center = 1, End = 2, Stretch = 3 };
+
+/** Main-axis distribution of free space in a Flex container. */
+enum class FlexJustify : uint8_t {
+    Start = 0,
+    Center = 1,
+    End = 2,
+    SpaceBetween = 3,
+    SpaceAround = 4,
 };
 
 struct UINode {
@@ -36,8 +53,15 @@ struct UINode {
     float value = 0.f;
     float minValue = 0.f;
     float maxValue = 1.f;
-    float sizeX = 0.f;  // Child size; 0 = auto
-    float sizeY = 0.f;
+    float sizeX = 0.f;  // Child / item basis width; 0 = auto
+    float sizeY = 0.f;  // Child / item basis height; 0 = auto
+    // Flex container props (meaningful on NodeType::Flex)
+    FlexDirection flexDirection = FlexDirection::Row;
+    FlexAlign alignItems = FlexAlign::Start;
+    FlexJustify justifyContent = FlexJustify::Start;
+    float gap = -1.f;  // <0 → theme ItemSpacing on that axis
+    // Flex item props (any child inside Flex)
+    float flexGrow = 0.f;
     int firstChild = -1;
     int nextSibling = -1;
     uint32_t handlerClick = 0;   // 1-based → Tree::clickHandlers

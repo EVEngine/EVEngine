@@ -5,6 +5,8 @@
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
 #include "procgen/JsonExport.h"
+#include "procgen/MeshBuild.h"
+#include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/ColorRamp.h"
@@ -99,6 +101,7 @@ TEST_CASE("procgen.registry.builtins") {
     CHECK(GeneratorRegistry::instance().has("cave.drunkard"));
     CHECK(GeneratorRegistry::instance().has("maze.backtrack"));
     CHECK(GeneratorRegistry::instance().has("noise.terrain"));
+    CHECK(GeneratorRegistry::instance().has("wfc.simple"));
 }
 
 TEST_CASE("procgen.dungeon.bsp.reproducible") {
@@ -170,6 +173,77 @@ TEST_CASE("procgen.noise.terrain.reproducible") {
     std::set<int> kinds;
     for (uint32_t c : a.cells()) kinds.insert(int(c));
     CHECK(kinds.size() >= 2);
+}
+
+TEST_CASE("procgen.wfc.simple.reproducible") {
+    GeneratorRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(42);
+    p.setSize(24, 18);
+    p.setString("preset", "dungeon");
+    p.setInt("maxAttempts", 64);
+    Grid2D a, b;
+    std::string err;
+    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, a, err));
+    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, b, err));
+    CHECK(gridsEqual(a, b));
+    CHECK(countSemantic(a, int(Semantic::Wall)) > 0);
+    CHECK(countSemantic(a, int(Semantic::Floor)) + countSemantic(a, int(Semantic::Corridor)) > 0);
+    // Border forced to wall.
+    for (int x = 0; x < a.getWidth(); ++x) {
+        CHECK_EQ(a.getCell(x, 0), int(Semantic::Wall));
+        CHECK_EQ(a.getCell(x, a.getHeight() - 1), int(Semantic::Wall));
+    }
+}
+
+TEST_CASE("procgen.wfc.simple.terrainPreset") {
+    Params p;
+    p.setSeed(7);
+    p.setSize(16, 16);
+    p.setString("preset", "terrain");
+    Grid2D g;
+    std::string err;
+    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, g, err));
+    std::set<int> kinds;
+    for (uint32_t c : g.cells()) kinds.insert(int(c));
+    CHECK(kinds.size() >= 1);
+}
+
+TEST_CASE("procgen.mesh.marchingcubes.sphere") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    CHECK(MeshRecipeRegistry::instance().has("mesh.marchingcubes"));
+    Params p;
+    p.setSeed(1);
+    p.setInt("resolution", 20);
+    p.setString("field", "sphere");
+    p.setFloat("radius", 0.7f);
+    p.setFloat("isolevel", 0.f);
+    MeshBuild mesh;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, mesh, err));
+    CHECK(mesh.getVertexCount() > 100);
+    CHECK(mesh.getIndexCount() > 100);
+    CHECK_EQ(mesh.getIndexCount() % 3, 0);
+    // Same seed ⇒ same mesh.
+    MeshBuild mesh2;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, mesh2, err));
+    CHECK_EQ(mesh.getVertexCount(), mesh2.getVertexCount());
+    CHECK(mesh.positions() == mesh2.positions());
+    CHECK(mesh.indices() == mesh2.indices());
+}
+
+TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
+    Procgen *mod = Procgen::create();
+    Params p;
+    p.setSeed(3);
+    p.setInt("resolution", 16);
+    p.setString("field", "torus");
+    MeshBuild *m = mod->buildMesh("mesh.marchingcubes", &p);
+    REQUIRE(m != nullptr);
+    CHECK(m->getVertexCount() > 50);
+    CHECK(mod->hasMeshRecipe("mesh.marchingcubes"));
+    CHECK(mod->getMeshRecipeCount() >= 1);
+    delete m;
 }
 
 TEST_CASE("procgen.palette.applyToLayer") {
