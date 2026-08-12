@@ -20,6 +20,7 @@ file(GLOB all_test_cpp
   RenderSystem3D.cpp
   Quad.cpp
   TextureCellBomb.cpp
+  ParallaxMap.cpp
   Lighting2D.cpp
   ClusteredLighting.cpp
   IBL.cpp
@@ -36,11 +37,13 @@ file(GLOB all_test_cpp
   UIOverlaySmoke.cpp
   scene.cpp
   particles.cpp
+  particles_attach_skin.cpp
   map.cpp
   map_path.cpp
   map_fov.cpp
   rpg.cpp
   inventory.cpp
+  building.cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
@@ -69,6 +72,7 @@ file(GLOB all_test_cpp
   system.cpp
   math.cpp
   spatial.cpp
+  editor.cpp
   ik.cpp
   animation.cpp
   animation_mixamo.cpp
@@ -199,6 +203,7 @@ set(EVELIBS
   EVSystem
   EVMath
   EVSpatial
+  EVEditor
   EVIK
   EVAnimation
   EVTensor
@@ -219,11 +224,13 @@ set(EVELIBS
   EVThread
   EVRPG
   EVInventory
+  EVBuilding
   EVAvatar
   EVDialogue
   EVProcgen
   EVVoxel
-  EVStylize)
+  EVStylize
+  EVEditor)
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND

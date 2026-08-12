@@ -252,4 +252,31 @@ bool AnimSkin::skinPositionsTo(const AnimPose *pose, std::vector<float> &outPosX
     return true;
 }
 
+bool AnimSkin::updateSkinnedPositions(const AnimPose *pose) {
+    if (!pose || vertexCount_ <= 0) {
+        skinnedValid_ = false;
+        return false;
+    }
+    skinnedPos_.resize(static_cast<size_t>(vertexCount_) * 3u);
+    skinPositions(pose, skinnedPos_.data());
+    skinnedValid_ = true;
+    return true;
+}
+
+float AnimSkin::getSkinnedPositionX(int vertexIndex) const {
+    requireVertex(vertexIndex);
+    if (!skinnedValid_) throw Exception("AnimSkin.getSkinnedPositionX: call updateSkinnedPositions first");
+    return skinnedPos_[static_cast<size_t>(vertexIndex) * 3u + 0];
+}
+float AnimSkin::getSkinnedPositionY(int vertexIndex) const {
+    requireVertex(vertexIndex);
+    if (!skinnedValid_) throw Exception("AnimSkin.getSkinnedPositionY: call updateSkinnedPositions first");
+    return skinnedPos_[static_cast<size_t>(vertexIndex) * 3u + 1];
+}
+float AnimSkin::getSkinnedPositionZ(int vertexIndex) const {
+    requireVertex(vertexIndex);
+    if (!skinnedValid_) throw Exception("AnimSkin.getSkinnedPositionZ: call updateSkinnedPositions first");
+    return skinnedPos_[static_cast<size_t>(vertexIndex) * 3u + 2];
+}
+
 }  // namespace eve::animation
