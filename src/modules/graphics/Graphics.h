@@ -24,6 +24,7 @@
 #include <string>
 #include <memory>
 #include <glm/glm.hpp>
+#include <assimp/matrix4x4.h>
 
 struct aiMesh;
 
@@ -171,6 +172,13 @@ public:
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
 
     /**
+     * Like newMeshFromAssimp, but bakes an Assimp node world transform into positions
+     * and transforms normals by the inverse-transpose of the upper 3x3.
+     * Required for hierarchical glTF/FBX scenes — raw aiMesh verts are in local space.
+     */
+    virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) = 0;
+
+    /**
      * Upload a triangle mesh from packed CPU arrays. Owned by Graphics.
      * posXYZ required (vertexCount*3). nrmXYZ/uvST may be null (flat normal / zero UV).
      * indices required (indexCount, triangles).
@@ -231,7 +239,8 @@ public:
  */
 virtual void begin3DFrame() = 0;
 
-    /** viewProj used by subsequent drawMesh (mvp = viewProj * model). RH + ZO clip. */
+    /** viewProj used by subsequent drawMesh (mvp = viewProj * model).
+     *  Expect RH + ZO with Vulkan NDC Y (see perspectiveVulkanRH_ZO). */
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
 
     /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */

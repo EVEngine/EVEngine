@@ -177,12 +177,8 @@ void main() {
         Lo += shadeLight(N, V, albedo, metallic, roughness, L, radiance);
     }
 
-    // Keep a Lambert-like floor so dielectrics stay close to the old brightness.
-    float amb = max(max(ubo.ambient.r, ubo.ambient.g), ubo.ambient.b);
-    if (amb < 0.05)
-        amb = 0.22;
-    else
-        amb = max(amb, 0.12);
+    // Ambient is taken at face value — callers control fill brightness.
+    vec3 amb = ubo.ambient.rgb;
     vec3 color = albedo * amb * (1.0 - metallic) + Lo;
 
     // Specular IBL (envIntensity packed in lightColor.w). No BRDF LUT — Fresnel * env.

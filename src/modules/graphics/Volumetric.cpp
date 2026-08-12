@@ -2,6 +2,7 @@
 
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
+#include "graphics/ClipSpace.h"
 #include "graphics/Drawable.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
@@ -284,7 +285,7 @@ void Volumetric::setCamera(float eyeX, float eyeY, float eyeZ, float targetX, fl
     const glm::mat4 view =
         glm::lookAtRH(glm::vec3(eyeX, eyeY, eyeZ), glm::vec3(targetX, targetY, targetZ),
                       glm::vec3(upX, upY, upZ));
-    const glm::mat4 proj = glm::perspectiveRH_ZO(fovRad, aspectSafe, nearZ_, farZ_);
+    const glm::mat4 proj = perspectiveVulkanRH_ZO(fovRad, aspectSafe, nearZ_, farZ_);
     setInvViewProj(glm::inverse(proj * view));
     rayShader_->sendFloat("nearZ", nearZ_);
     rayShader_->sendFloat("farZ", farZ_);

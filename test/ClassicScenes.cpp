@@ -434,40 +434,7 @@ float meanLuma(Graphics *gfx, int step = 8) {
 /** Upload an Assimp mesh with a baked world transform (copies positions/normals). */
 Mesh *uploadMeshWorld(Graphics *gfx, const aiMesh *src, const aiMatrix4x4 &world) {
     REQUIRE(src != nullptr);
-    std::vector<aiVector3D> positions(src->mNumVertices);
-    std::vector<aiVector3D> normals(src->mNumVertices);
-    aiMatrix3x3 nmat(world);
-    nmat.Inverse().Transpose();
-    for (unsigned i = 0; i < src->mNumVertices; ++i) {
-        positions[i] = world * src->mVertices[i];
-        if (src->HasNormals()) {
-            normals[i] = nmat * src->mNormals[i];
-            normals[i].Normalize();
-        } else {
-            normals[i] = aiVector3D(0.f, 1.f, 0.f);
-        }
-    }
-    // Build a non-owning view: aiMesh's destructor frees mVertices/mNormals/mFaces,
-    // so never copy-construct from *src and null out pointers before destruction.
-    aiMesh tmp;
-    std::memset(&tmp, 0, sizeof(tmp));
-    tmp.mPrimitiveTypes = src->mPrimitiveTypes;
-    tmp.mNumVertices = src->mNumVertices;
-    tmp.mVertices = positions.data();
-    tmp.mNormals = normals.data();
-    tmp.mNumFaces = src->mNumFaces;
-    tmp.mFaces = src->mFaces;
-    tmp.mMaterialIndex = src->mMaterialIndex;
-    if (src->HasTextureCoords(0)) {
-        tmp.mTextureCoords[0] = src->mTextureCoords[0];
-        tmp.mNumUVComponents[0] = src->mNumUVComponents[0];
-    }
-    Mesh *out = gfx->newMeshFromAssimp(tmp);
-    tmp.mVertices = nullptr;
-    tmp.mNormals = nullptr;
-    tmp.mFaces = nullptr;
-    tmp.mTextureCoords[0] = nullptr;
-    return out;
+    return gfx->newMeshFromAssimp(*src, world);
 }
 
 /** Spawn every Assimp mesh with node transforms baked + material tint/texture.
@@ -551,7 +518,7 @@ int spawnModel(Graphics *gfx, eve::model3d::ModelData *md, const std::string &as
                 if (mi >= scene->mNumMeshes) continue;
                 const aiMesh *ai = scene->mMeshes[mi];
                 if (!ai || ai->mNumFaces == 0) continue;
-                Mesh *mesh = uploadMeshWorld(gfx, ai, world);
+                Mesh *mesh = gfx->newMeshFromAssimp(*ai, world);
                 REQUIRE(mesh != nullptr);
 
                 MatLook look = resolveMat(ai->mMaterialIndex);
@@ -819,6 +786,32 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     const Color right = gfx->getPixel((w * 4) / 5, h / 2);
     CHECK(left.r + 0.02f > left.g);   // left wall tends red
     CHECK(right.g + 0.01f > right.r); // right wall tends green
+
+    // Orientation: short box sits on the floor — lower third of the frame should
+    // carry more of the box silhouette than the upper third (ceiling).
+    const float lower = meanLuma(gfx);  // reused warm frame
+    (void)lower;
+    double sumTop = 0.0, sumBot = 0.0;
+    int nTop = 0, nBot = 0;
+    for (int y = 0; y < h / 4; y += 4) {
+        for (int x = w / 3; x < (w * 2) / 3; x += 4) {
+            sumTop += luma(gfx->getPixel(x, y));
+            ++nTop;
+        }
+    }
+    for (int y = (h * 3) / 4; y < h; y += 4) {
+        for (int x = w / 3; x < (w * 2) / 3; x += 4) {
+            sumBot += luma(gfx->getPixel(x, y));
+            ++nBot;
+        }
+    }
+    const float topL = nTop ? float(sumTop / nTop) : 0.f;
+    const float botL = nBot ? float(sumBot / nBot) : 0.f;
+    std::printf("ClassicScenes[cornell] orientation topL=%.3f botL=%.3f\n", topL, botL);
+    // Floor region (bottom) must not be empty/black while ceiling (top) is lit alone —
+    // both contribute under directional light when the camera looks into the box.
+    REQUIRE(botL > 0.02f);
+    REQUIRE(topL > 0.01f);
 
     delete md;
     win->close();

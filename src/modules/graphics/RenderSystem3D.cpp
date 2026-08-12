@@ -1,5 +1,6 @@
 #include "graphics/RenderSystem3D.h"
 #include "common/RenderTrace.h"
+#include "graphics/ClipSpace.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
@@ -171,12 +172,12 @@ void Camera3D::screenToRay(float screenX, float screenY, float viewW, float view
     const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
     const float aspect = viewW / viewH;
     const float fovRad = d->fovYDeg * 0.017453292519943295f;
-    const glm::mat4 projM = glm::perspectiveRH_ZO(fovRad, aspect, d->nearZ, d->farZ);
+    const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, d->nearZ, d->farZ);
     const glm::mat4 invVP = glm::inverse(projM * viewM);
 
-    // Screen pixel → NDC (Vulkan-style Y-down framebuffer → Y-up NDC).
+    // Screen pixel → Vulkan NDC (Y-down; matches perspectiveVulkanRH_ZO).
     const float ndcX = (screenX / viewW) * 2.f - 1.f;
-    const float ndcY = 1.f - (screenY / viewH) * 2.f;
+    const float ndcY = (screenY / viewH) * 2.f - 1.f;
     auto unproject = [&](float ndcZ) -> glm::vec3 {
         glm::vec4 w = invVP * glm::vec4(ndcX, ndcY, ndcZ, 1.f);
         if (std::fabs(w.w) < 1e-8f) return eye;
@@ -498,7 +499,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
         const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-        const glm::mat4 projM = glm::perspectiveRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
+        const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
         const glm::mat4 viewProj = projM * viewM;
         const int gw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
         const int gh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
@@ -660,7 +661,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
         const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
         const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-        const glm::mat4 projM = glm::perspectiveRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
+        const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
         gfx.setMesh3DViewProj(projM * viewM);
         gfx.setMesh3DCameraPos(eye);
         gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);

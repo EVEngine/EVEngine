@@ -1,5 +1,7 @@
 #include "graphics/Shadow.h"
 
+#include "graphics/ClipSpace.h"
+
 #include <algorithm>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,7 +13,8 @@ namespace {
 glm::mat4 cascadeVP(const glm::vec3 &lightDir, const glm::vec3 &eye, const glm::vec3 &target,
                     const glm::vec3 &up, float fovYRad, float aspect, float nearZ, float farZ) {
     const glm::mat4 view = glm::lookAtRH(eye, target, up);
-    const glm::mat4 proj = glm::perspectiveRH_ZO(fovYRad, aspect, nearZ, farZ);
+    // Match the camera projection used by RenderSystem3D so frustum corners align.
+    const glm::mat4 proj = perspectiveVulkanRH_ZO(fovYRad, aspect, nearZ, farZ);
     const glm::mat4 inv = glm::inverse(proj * view);
 
     // NDC cube corners → world

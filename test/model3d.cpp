@@ -19,7 +19,9 @@
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <assimp/material.h>
+#include <assimp/matrix4x4.h>
 #include <assimp/texture.h>
+#include <assimp/vector3.h>
 
 #include <algorithm>
 #include <cmath>
@@ -256,13 +258,25 @@ struct Bounds {
 
 Bounds boundsOf(eve::model3d::ModelData *md) {
     Bounds b;
-    for (int i = 0; i < md->getMeshCount(); ++i) {
-        const aiMesh *mesh = md->getMesh(i);
-        if (!mesh)
-            continue;
-        for (unsigned v = 0; v < mesh->mNumVertices; ++v)
-            b.expand(mesh->mVertices[v].x, mesh->mVertices[v].y, mesh->mVertices[v].z);
-    }
+    const aiScene *scene = md->getScene();
+    if (!scene || !scene->mRootNode) return b;
+    std::function<void(const aiNode *, const aiMatrix4x4 &)> walk =
+        [&](const aiNode *node, const aiMatrix4x4 &parent) {
+            const aiMatrix4x4 world = parent * node->mTransformation;
+            for (unsigned i = 0; i < node->mNumMeshes; ++i) {
+                const unsigned mi = node->mMeshes[i];
+                if (mi >= scene->mNumMeshes) continue;
+                const aiMesh *mesh = scene->mMeshes[mi];
+                if (!mesh) continue;
+                for (unsigned v = 0; v < mesh->mNumVertices; ++v) {
+                    const aiVector3D p = world * mesh->mVertices[v];
+                    b.expand(p.x, p.y, p.z);
+                }
+            }
+            for (unsigned c = 0; c < node->mNumChildren; ++c)
+                walk(node->mChildren[c], world);
+        };
+    walk(scene->mRootNode, aiMatrix4x4());
     return b;
 }
 
@@ -301,53 +315,62 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName,
     std::unordered_map<unsigned, MatLook> matCache;
 
     int spawned = 0;
-    for (int i = 0; i < md->getMeshCount(); ++i) {
-        const aiMesh *ai = md->getMesh(i);
-        if (!ai || ai->mNumFaces == 0)
-            continue;
-        Mesh *mesh = gfx->newMeshFromAssimp(*ai);
-        REQUIRE(mesh != nullptr);
-        REQUIRE_GT(mesh->indexCount, 0);
+    std::function<void(const aiNode *, const aiMatrix4x4 &)> walk =
+        [&](const aiNode *node, const aiMatrix4x4 &parent) {
+            const aiMatrix4x4 world = parent * node->mTransformation;
+            for (unsigned i = 0; i < node->mNumMeshes; ++i) {
+                const unsigned mi = node->mMeshes[i];
+                if (mi >= scene->mNumMeshes) continue;
+                const aiMesh *ai = scene->mMeshes[mi];
+                if (!ai || ai->mNumFaces == 0) continue;
+                Mesh *mesh = gfx->newMeshFromAssimp(*ai, world);
+                REQUIRE(mesh != nullptr);
+                REQUIRE_GT(mesh->indexCount, 0);
 
-        MatLook look{white, 1.f, 1.f, 1.f};
-        const unsigned matIndex = ai->mMaterialIndex;
-        auto cached = matCache.find(matIndex);
-        if (cached != matCache.end()) {
-            look = cached->second;
-        } else if (scene->mMaterials && matIndex < scene->mNumMaterials) {
-            const aiMaterial *mat = scene->mMaterials[matIndex];
-            aiColor3D kd(1.f, 1.f, 1.f);
-            mat->Get(AI_MATKEY_COLOR_DIFFUSE, kd);
+                MatLook look{white, 1.f, 1.f, 1.f};
+                const unsigned matIndex = ai->mMaterialIndex;
+                auto cached = matCache.find(matIndex);
+                if (cached != matCache.end()) {
+                    look = cached->second;
+                } else if (scene->mMaterials && matIndex < scene->mNumMaterials) {
+                    const aiMaterial *mat = scene->mMaterials[matIndex];
+                    aiColor3D kd(1.f, 1.f, 1.f);
+                    mat->Get(AI_MATKEY_COLOR_DIFFUSE, kd);
 
-            Texture *fromMat = loadAssimpDiffuseTexture(gfx, scene, mat);
-            if (fromMat) {
-                look.tex = fromMat;
-                look.tr = kd.r;
-                look.tg = kd.g;
-                look.tb = kd.b;
-            } else if (fallbackTex) {
-                look.tex = fallbackTex;
-                look.tr = look.tg = look.tb = 1.f;
-            } else {
-                look.tex = makeSolidRGB(gfx, uint8_t(std::clamp(kd.r, 0.f, 1.f) * 255.f + 0.5f),
-                                        uint8_t(std::clamp(kd.g, 0.f, 1.f) * 255.f + 0.5f),
-                                        uint8_t(std::clamp(kd.b, 0.f, 1.f) * 255.f + 0.5f));
-                look.tr = look.tg = look.tb = 1.f;
+                    Texture *fromMat = loadAssimpDiffuseTexture(gfx, scene, mat);
+                    if (fromMat) {
+                        look.tex = fromMat;
+                        look.tr = kd.r;
+                        look.tg = kd.g;
+                        look.tb = kd.b;
+                    } else if (fallbackTex) {
+                        look.tex = fallbackTex;
+                        look.tr = look.tg = look.tb = 1.f;
+                    } else {
+                        look.tex = makeSolidRGB(gfx, uint8_t(std::clamp(kd.r, 0.f, 1.f) * 255.f + 0.5f),
+                                                uint8_t(std::clamp(kd.g, 0.f, 1.f) * 255.f + 0.5f),
+                                                uint8_t(std::clamp(kd.b, 0.f, 1.f) * 255.f + 0.5f));
+                        look.tr = look.tg = look.tb = 1.f;
+                    }
+                    matCache[matIndex] = look;
+                } else if (fallbackTex) {
+                    look.tex = fallbackTex;
+                    matCache[matIndex] = look;
+                }
+
+                auto *ent = Renderable3D::create();
+                ent->meshRenderer()->mesh = mesh;
+                ent->meshRenderer()->texture = look.tex;
+                ent->meshRenderer()->shader = styleShader;
+                ent->meshRenderer()->visible = true;
+                ent->setTint(look.tr, look.tg, look.tb, 1.f);
+                ++spawned;
             }
-            matCache[matIndex] = look;
-        } else if (fallbackTex) {
-            look.tex = fallbackTex;
-            matCache[matIndex] = look;
-        }
-
-        auto *ent = Renderable3D::create();
-        ent->meshRenderer()->mesh = mesh;
-        ent->meshRenderer()->texture = look.tex;
-        ent->meshRenderer()->shader = styleShader;
-        ent->meshRenderer()->visible = true;
-        ent->setTint(look.tr, look.tg, look.tb, 1.f);
-        ++spawned;
-    }
+            for (unsigned c = 0; c < node->mNumChildren; ++c)
+                walk(node->mChildren[c], world);
+        };
+    REQUIRE(scene->mRootNode != nullptr);
+    walk(scene->mRootNode, aiMatrix4x4());
     REQUIRE(spawned >= 1);
 
     auto *cam = Camera3D::createCamera();

@@ -48,6 +48,9 @@
 #include "graphics/shaders/voxel_rect_frag_spv.inc"
 
 #include <assimp/mesh.h>
+#include <assimp/matrix3x3.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/vector3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace eve::graphics::vulkan {
@@ -555,7 +558,8 @@ void Graphics::createLit2DPipeline() {
 void Graphics::createMesh3DPipeline() {
     if (mesh3dPipeline) return;
 
-    // Right-handed view, Y-up; Vulkan clip via glm::perspectiveRH_ZO. Front face CCW, cull back.
+    // Right-handed view, Y-up world. Projection uses perspectiveVulkanRH_ZO (Y flip for
+    // Vulkan NDC), so frontFace is Clockwise while mesh winding stays CCW in object space.
     vkb::DescriptorSetLayoutBuilder layoutBuilder;
     mesh3dSetLayoutUnique =
         layoutBuilder
@@ -929,7 +933,7 @@ void Graphics::createGBufferResources(int width, int height) {
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
     rs.cullMode = vk::CullModeFlagBits::eBack;
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
 
     vk::PipelineMultisampleStateCreateInfo ms{};
@@ -1337,7 +1341,7 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
     rs.cullMode = vk::CullModeFlagBits::eBack;
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
 
     vk::PipelineMultisampleStateCreateInfo ms{};
@@ -1417,7 +1421,7 @@ vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &ver
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
     rs.cullMode = vk::CullModeFlagBits::eNone;
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
     rs.depthBiasEnable = true;
     rs.depthBiasConstantFactor = -1.5f;
@@ -2792,7 +2796,7 @@ void Graphics::createVoxelRectPipeline() {
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
     rs.cullMode = vk::CullModeFlagBits::eBack;
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
 
     vk::PipelineMultisampleStateCreateInfo ms{};
@@ -3302,6 +3306,51 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     return raw;
 }
 
+Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("newMeshFromAssimp: graphics not initialized");
+    if (mesh.mNumVertices == 0 || mesh.mNumFaces == 0)
+        throw Exception("newMeshFromAssimp: empty mesh");
+
+    std::vector<aiVector3D> positions(mesh.mNumVertices);
+    std::vector<aiVector3D> normals(mesh.mNumVertices);
+    aiMatrix3x3 nmat(worldTransform);
+    nmat.Inverse().Transpose();
+    for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+        positions[i] = worldTransform * mesh.mVertices[i];
+        if (mesh.HasNormals()) {
+            normals[i] = nmat * mesh.mNormals[i];
+            normals[i].Normalize();
+        } else {
+            normals[i] = aiVector3D(0.f, 1.f, 0.f);
+        }
+    }
+
+    // Non-owning view — do not let aiMesh destructor free borrowed pointers.
+    aiMesh tmp;
+    std::memset(&tmp, 0, sizeof(tmp));
+    tmp.mPrimitiveTypes = mesh.mPrimitiveTypes;
+    tmp.mNumVertices = mesh.mNumVertices;
+    tmp.mVertices = positions.data();
+    tmp.mNormals = normals.data();
+    tmp.mNumFaces = mesh.mNumFaces;
+    tmp.mFaces = mesh.mFaces;
+    tmp.mMaterialIndex = mesh.mMaterialIndex;
+    tmp.mNumAnimMeshes = mesh.mNumAnimMeshes;
+    tmp.mAnimMeshes = mesh.mAnimMeshes;
+    if (mesh.HasTextureCoords(0)) {
+        tmp.mTextureCoords[0] = mesh.mTextureCoords[0];
+        tmp.mNumUVComponents[0] = mesh.mNumUVComponents[0];
+    }
+    Mesh *out = newMeshFromAssimp(tmp);
+    tmp.mVertices = nullptr;
+    tmp.mNormals = nullptr;
+    tmp.mFaces = nullptr;
+    tmp.mTextureCoords[0] = nullptr;
+    tmp.mAnimMeshes = nullptr;
+    return out;
+}
+
 Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                   int vertexCount, const uint32_t *indices, int indexCount) {
     ASSERT(initialized);
@@ -3431,7 +3480,8 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     indices.reserve(size_t(slices) * size_t(stacks) * 6u);
 
     // Quads between consecutive rows. Winding must be consistent for outward
-    // faces (pipeline: frontFace CCW, cull back). Use the same winding that
+    // faces (object-space CCW; mesh pipelines use Clockwise frontFace after the
+    // Vulkan Y flip in perspectiveVulkanRH_ZO). Use the same winding that
     // closed the south pole in-game: rowA[x], rowB[x], rowA[x+1] /
     // rowA[x+1], rowB[x], rowB[x+1] — derived from ring→next with
     // (i0,i2,i1)+(i1,i2,i3) which equals (lon,lat)->(lon,lat+1)->(lon+1,lat).

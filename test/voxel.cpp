@@ -55,7 +55,8 @@ static void perspectiveRH_ZO(float fovyRad, float aspect, float zNear, float zFa
     const float f = 1.f / std::tan(fovyRad * 0.5f);
     std::memset(out, 0, sizeof(float) * 16);
     out[0] = f / aspect;
-    out[5] = f;
+    // Vulkan NDC Y-down: negate Y scale (matches perspectiveVulkanRH_ZO).
+    out[5] = -f;
     out[10] = zFar / (zNear - zFar);
     out[11] = -1.f;
     out[14] = (zFar * zNear) / (zNear - zFar);

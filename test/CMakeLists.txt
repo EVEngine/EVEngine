@@ -27,6 +27,7 @@ file(GLOB all_test_cpp
   Shadow3D.cpp
   MaterialRenderControl.cpp
   ClassicScenes.cpp
+  RenderSceneEffects.cpp
   Volumetric.cpp
   TextureSampler.cpp
   AmbientOcclusion.cpp

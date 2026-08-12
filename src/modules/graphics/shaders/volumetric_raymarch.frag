@@ -38,8 +38,8 @@ mat4 loadInvVP() {
 }
 
 vec3 reconstructWorld(mat4 invVP, vec2 uv, float depth01) {
-  // Vulkan RH + ZO: NDC z in [0,1]. 2D UV y grows downward → flip Y for NDC.
-  vec2 ndc = vec2(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0);
+  // Vulkan RH + ZO: NDC z in [0,1]. UV Y-down matches Vulkan NDC (perspectiveVulkanRH_ZO).
+  vec2 ndc = vec2(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0);
   vec4 clip = vec4(ndc, clamp(depth01, 0.0, 1.0), 1.0);
   vec4 w = invVP * clip;
   return w.xyz / max(w.w, 1e-6);
