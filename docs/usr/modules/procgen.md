@@ -64,4 +64,4 @@ local gpu = gen.generateMesh("mesh.marchingcubes", p, gfx);
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/procgen/`](../../../src/modules/procgen/)
-**相关测试：** 在 [`test/`](../../../test/) 中搜索 `procgen`。
+**相关测试：** 在 [`test/`](../../../test/) 中搜索 `procgen`；跨模块 hex 关卡见 [`test/hex_level_simulation.cpp`](../../../test/hex_level_simulation.cpp)、[`examples/hex-levels/`](../../../examples/hex-levels/)。
