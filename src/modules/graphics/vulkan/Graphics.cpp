@@ -87,12 +87,12 @@ Graphics::~Graphics() {
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
     mesh3dSetLayoutUnique.reset();
-    mesh3dUboSlots.clear();
+    mesh3dFrameSlots.clear();
     destroyVoxelRectResources();
     if (mesh3dClusteredPipeline) device->destroyPipeline(mesh3dClusteredPipeline);
     if (mesh3dClusteredPipelineLayout) device->destroyPipelineLayout(mesh3dClusteredPipelineLayout);
     mesh3dClusteredSetLayoutUnique.reset();
-    mesh3dClusteredUboSlots.clear();
+    mesh3dClusteredFrameSlots.clear();
     destroyShadowResources();
     destroyGBufferResources();
     auto destroyBuf = [&](vkb::GenericBuffer &b) {
@@ -221,6 +221,35 @@ void Graphics::initWithWindow(void *nativeWindow) {
 void Graphics::destroySwapchainResources() {
     presentModel = vkb::Present{};
     depthImage = vkb::DepthStencilImage{};
+    // Release reused per-frame vertex buffers (GenericBuffer has no owning
+    // destructor, so these must be freed explicitly). Callers hold a
+    // device-wide waitIdle before this runs.
+    auto release2d = [&](Frame2DBuffers &fb) {
+        fb.solidBuf.release();
+        for (auto &tb : fb.texBufs) tb.release();
+        fb.texBufs.clear();
+    };
+    for (auto &fb : frame2dBuffers) release2d(fb);
+    frame2dBuffers.clear();
+    release2d(offscreenBuffers);
+}
+
+Graphics::Frame2DBuffers &Graphics::currentFrame2DBuffers() {
+    if (frame2dBuffers.size() != swapchain.image_count)
+        frame2dBuffers.resize(swapchain.image_count);
+    return frame2dBuffers[swapchain.current_frame];
+}
+
+Graphics::Mesh3dFrameSlots &Graphics::currentMesh3dFrameSlots() {
+    if (mesh3dFrameSlots.size() != swapchain.image_count)
+        mesh3dFrameSlots.resize(swapchain.image_count);
+    return mesh3dFrameSlots[swapchain.current_frame];
+}
+
+Graphics::Mesh3dClusteredFrameSlots &Graphics::currentMesh3dClusteredFrameSlots() {
+    if (mesh3dClusteredFrameSlots.size() != swapchain.image_count)
+        mesh3dClusteredFrameSlots.resize(swapchain.image_count);
+    return mesh3dClusteredFrameSlots[swapchain.current_frame];
 }
 
 bool Graphics::rebuildSwapchainIfNeeded() {
@@ -591,8 +620,7 @@ void Graphics::createMesh3DPipeline() {
     mesh3dShaderPipelineLayout = device->createPipelineLayout(shaderPl);
 
     // UBO + descriptor sets are allocated lazily per draw (see mesh3dSetFor).
-    mesh3dUboSlots.clear();
-    mesh3dDrawIndex = 0;
+    mesh3dFrameSlots.clear();
 
     std::vector<uint32_t> vert(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
     std::vector<uint32_t> frag(mesh3d_frag_spv, mesh3d_frag_spv + mesh3d_frag_spv_count);
@@ -624,8 +652,7 @@ void Graphics::createMesh3DClusteredPipeline() {
     plInfo.pSetLayouts = &mesh3dClusteredSetLayout;
     mesh3dClusteredPipelineLayout = device->createPipelineLayout(plInfo);
 
-    mesh3dClusteredUboSlots.clear();
-    mesh3dClusteredDrawIndex = 0;
+    mesh3dClusteredFrameSlots.clear();
 
     std::vector<uint32_t> vert(mesh3d_clustered_vert_spv,
                                mesh3d_clustered_vert_spv + mesh3d_clustered_vert_spv_count);
@@ -1216,8 +1243,7 @@ void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, siz
                          vk::MemoryPropertyFlagBits::eHostCoherent);
         cap = alloc;
         // Descriptor sets cache buffer handles — clear so they rebind.
-        mesh3dClusteredUboSlots.clear();
-        mesh3dClusteredDrawIndex = 0;
+        mesh3dClusteredFrameSlots.clear();
     };
     ensure(clusteredLightsBuf, clusteredLightsCap, lightsBytes);
     ensure(clusteredTableBuf, clusteredTableCap, tableBytes);
@@ -1254,15 +1280,16 @@ void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload)
 
 vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
                                                   GpuTexture *envTex, GpuTexture *heightTex,
+                                                  Mesh3dClusteredFrameSlots &fslots,
                                                   size_t uboSlot) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
     ASSERT(shadowArrayView);
-    while (mesh3dClusteredUboSlots.size() <= uboSlot) {
-        mesh3dClusteredUboSlots.emplace_back();
-        auto &s = mesh3dClusteredUboSlots.back();
+    while (fslots.slots.size() <= uboSlot) {
+        fslots.slots.emplace_back();
+        auto &s = fslots.slots.back();
         s.ubo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DClusteredUBO),
                        vk::MemoryPropertyFlagBits::eHostVisible |
                            vk::MemoryPropertyFlagBits::eHostCoherent);
@@ -1270,7 +1297,7 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
                              vk::MemoryPropertyFlagBits::eHostVisible |
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
-    auto &slot = mesh3dClusteredUboSlots[uboSlot];
+    auto &slot = fslots.slots[uboSlot];
     Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex};
     auto it = slot.sets.find(key);
     if (it != slot.sets.end()) return it->second;
@@ -2011,8 +2038,10 @@ void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler
         if (!owned->isCube) writeCombinedImageDescriptor(owned.get());
         // Mesh3D / lit descriptors cache sampler bindings; force rebinding by
         // clearing per-frame set caches that reference this GpuTexture.
-        for (auto &slot : mesh3dUboSlots) slot.sets.clear();
-        for (auto &slot : mesh3dClusteredUboSlots) slot.sets.clear();
+        for (auto &frame : mesh3dFrameSlots)
+            for (auto &slot : frame.slots) slot.sets.clear();
+        for (auto &frame : mesh3dClusteredFrameSlots)
+            for (auto &slot : frame.slots) slot.sets.clear();
         lit2dSets.clear();
         return;
     }
@@ -2063,8 +2092,10 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
         tex->pixelHeight = h;
         tex->mipmapCount = int(mipLevels);
         tex->sampler = info.sampler;
-        for (auto &slot : mesh3dUboSlots) slot.sets.clear();
-        for (auto &slot : mesh3dClusteredUboSlots) slot.sets.clear();
+        for (auto &frame : mesh3dFrameSlots)
+            for (auto &slot : frame.slots) slot.sets.clear();
+        for (auto &frame : mesh3dClusteredFrameSlots)
+            for (auto &slot : frame.slots) slot.sets.clear();
         lit2dSets.clear();
         return true;
     }
@@ -2206,7 +2237,7 @@ vk::DescriptorSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal) 
 
 void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                               std::vector<LitBatch> &batches,
-                              std::vector<vkb::HostVertexBuffer> &texBufs) {
+                              std::vector<vkb::HostVertexBuffer> &texBufs, size_t &texBufIndex) {
     if (!pipeline || batches.empty() || !lit2dPipelineLayout) return;
     lighting2dFrame.meta.y = float(viewW);
     lighting2dFrame.meta.z = float(viewH);
@@ -2226,15 +2257,17 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
         gpuVerts.reserve(ndc.vertices().size());
         for (const auto &v : ndc.vertices())
             gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
-        texBufs.emplace_back();
-        texBufs.back().allocate<TexturedVertex>(device, gpuVerts);
+
+        if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
+        vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
+        vb.allocate<TexturedVertex>(device, gpuVerts);
 
         vk::DescriptorSet set = lit2dSetFor(albedoGpu, normalGpu);
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, lit2dPipelineLayout, 0, 1, &set, 0,
                               nullptr);
         vk::DeviceSize offset = 0;
-        cb.bindVertexBuffers(0, 1, texBufs.back(), &offset);
+        cb.bindVertexBuffers(0, 1, vb, &offset);
         cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
     }
 }
@@ -2481,9 +2514,9 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                 cb.setViewport(0, 1, &vp);
                                 cb.setScissor(0, 1, &scissor);
 
-                                vkb::HostVertexBuffer solidBuf;
-                                std::vector<vkb::HostVertexBuffer> texBufs;
-                                texBufs.reserve(textured.size());
+                                vkb::HostVertexBuffer &solidBuf = offscreenBuffers.solidBuf;
+                                std::vector<vkb::HostVertexBuffer> &texBufs = offscreenBuffers.texBufs;
+                                size_t texBufIndex = 0;
 
                                 if (!solid.empty() && offscreenSolidPipeline) {
                                     Batcher ndc = solid;
@@ -2509,8 +2542,10 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                         gpuVerts.reserve(ndc.vertices().size());
                                         for (const auto &v : ndc.vertices())
                                             gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
-                                        texBufs.emplace_back();
-                                        texBufs.back().allocate<TexturedVertex>(device, gpuVerts);
+
+                                        if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
+                                        vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
+                                        vb.allocate<TexturedVertex>(device, gpuVerts);
 
                                         if (tb.shader && tb.shader->gpuHandle) {
                                             ensureShaderOffscreenPipeline(tb.shader);
@@ -2534,14 +2569,14 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                                                   &gpu->descriptorSet, 0, nullptr);
                                         }
                                         vk::DeviceSize offset = 0;
-                                        cb.bindVertexBuffers(0, 1, texBufs.back(), &offset);
+                                        cb.bindVertexBuffers(0, 1, vb, &offset);
                                         cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
                                     }
                                 }
 
                                 if (offscreenLitPipeline)
                                     drawLitBatches(cb, canvas->getWidth(), canvas->getHeight(),
-                                                   offscreenLitPipeline, lit, texBufs);
+                                                   offscreenLitPipeline, lit, texBufs, texBufIndex);
 
                                 cb.endRenderPass();
                                 canvas->colorImage().setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
@@ -2576,10 +2611,12 @@ void Graphics::flushToSwapchain() {
     cb.setViewport(0, 1, &vp);
     cb.setScissor(0, 1, &scissor);
 
-    // Keep HostVertexBuffers alive until after GPU wait in drawFrame().
-    vkb::HostVertexBuffer solidBuf;
-    std::vector<vkb::HostVertexBuffer> texBufs;
-    texBufs.reserve(textured.size());
+    // Persistent per-frame-slot buffers (see currentFrame2DBuffers). Safe to
+    // overwrite: acquireForFrame() already waited this slot's fence.
+    auto &frameBufs = currentFrame2DBuffers();
+    vkb::HostVertexBuffer &solidBuf = frameBufs.solidBuf;
+    std::vector<vkb::HostVertexBuffer> &texBufs = frameBufs.texBufs;
+    size_t texBufIndex = 0;
 
     if (!solid.empty() && pipeline) {
         Batcher ndc = solid;
@@ -2606,8 +2643,9 @@ void Graphics::flushToSwapchain() {
             for (const auto &v : ndc.vertices())
                 gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
 
-            texBufs.emplace_back();
-            texBufs.back().allocate<TexturedVertex>(device, gpuVerts);
+            if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
+            vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
+            vb.allocate<TexturedVertex>(device, gpuVerts);
 
             if (tb.shader && tb.shader->gpuHandle) {
                 auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
@@ -2623,12 +2661,12 @@ void Graphics::flushToSwapchain() {
                                       &gpu->descriptorSet, 0, nullptr);
             }
             vk::DeviceSize offset = 0;
-            cb.bindVertexBuffers(0, 1, texBufs.back(), &offset);
+            cb.bindVertexBuffers(0, 1, vb, &offset);
             cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
         }
     }
 
-    if (lit2dPipeline) drawLitBatches(cb, width, height, lit2dPipeline, lit, texBufs);
+    if (lit2dPipeline) drawLitBatches(cb, width, height, lit2dPipeline, lit, texBufs, texBufIndex);
 
     // Invalidate prior readback so a failed present cannot reuse a stale frame.
     if (screenReadbackEnabled) hasPresentedFrame = false;
@@ -2669,8 +2707,8 @@ void Graphics::begin3DFrame() {
     cb.setViewport(0, 1, &vp);
     cb.setScissor(0, 1, &scissor);
 
-    mesh3dDrawIndex = 0;
-    mesh3dClusteredDrawIndex = 0;
+    currentMesh3dFrameSlots().drawIndex = 0;
+    currentMesh3dClusteredFrameSlots().drawIndex = 0;
     voxelInstanceDrawIndex = 0;
     swapchainPassOpen = true;
     frameHad3D = true;
@@ -3180,15 +3218,16 @@ void Graphics::ensureFlatHeightTexture3D() {
 }
 
 vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                         GpuTexture *heightTex, size_t uboSlot) {
+                                         GpuTexture *heightTex, Mesh3dFrameSlots &fslots,
+                                         size_t uboSlot) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
     ASSERT(shadowArrayView);
-    while (mesh3dUboSlots.size() <= uboSlot) {
-        mesh3dUboSlots.emplace_back();
-        auto &s = mesh3dUboSlots.back();
+    while (fslots.slots.size() <= uboSlot) {
+        fslots.slots.emplace_back();
+        auto &s = fslots.slots.back();
         s.ubo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DUBO),
                        vk::MemoryPropertyFlagBits::eHostVisible |
                            vk::MemoryPropertyFlagBits::eHostCoherent);
@@ -3196,7 +3235,7 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
                              vk::MemoryPropertyFlagBits::eHostVisible |
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
-    auto &slot = mesh3dUboSlots[uboSlot];
+    auto &slot = fslots.slots[uboSlot];
     Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex};
     auto it = slot.sets.find(key);
     if (it != slot.sets.end()) return it->second;
@@ -3716,10 +3755,12 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.parallax =
             glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
 
-        const size_t slot = mesh3dClusteredDrawIndex++;
-        vk::DescriptorSet set = mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, slot);
-        mesh3dClusteredUboSlots[slot].ubo.updateLocal(ubo);
-        mesh3dClusteredUboSlots[slot].shadowUbo.updateLocal(makeShadowUbo());
+        auto &cfslots = currentMesh3dClusteredFrameSlots();
+        const size_t slot = cfslots.drawIndex++;
+        vk::DescriptorSet set =
+            mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, cfslots, slot);
+        cfslots.slots[slot].ubo.updateLocal(ubo);
+        cfslots.slots[slot].shadowUbo.updateLocal(makeShadowUbo());
 
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipelineLayout, 0, 1,
@@ -3749,10 +3790,11 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.lightColor = glm::vec4(glm::vec3(mesh3dLighting.lights[0].color), envIntensity);
     }
 
-    const size_t slot = mesh3dDrawIndex++;
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, slot);
-    mesh3dUboSlots[slot].ubo.updateLocal(ubo);
-    mesh3dUboSlots[slot].shadowUbo.updateLocal(makeShadowUbo());
+    auto &fslots = currentMesh3dFrameSlots();
+    const size_t slot = fslots.drawIndex++;
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, fslots, slot);
+    fslots.slots[slot].ubo.updateLocal(ubo);
+    fslots.slots[slot].shadowUbo.updateLocal(makeShadowUbo());
 
     if (shader) {
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);

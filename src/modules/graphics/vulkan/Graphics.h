@@ -255,6 +255,8 @@ public:
     };
 
 private:
+    struct Mesh3dFrameSlots;
+    struct Mesh3dClusteredFrameSlots;
     void createSwapchainAndPipeline();
     void createTexturedPipeline();
     void createLit2DPipeline();
@@ -272,7 +274,7 @@ private:
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     vk::DescriptorSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
                                             GpuTexture *envTex, GpuTexture *heightTex,
-                                            size_t uboSlot);
+                                            Mesh3dClusteredFrameSlots &fslots, size_t uboSlot);
     void ensureOffscreenPipelines();
     void ensureShaderOffscreenPipeline(Shader *shader);
     vk::Pipeline createTexturedStylePipeline(const std::vector<uint32_t> &vert,
@@ -289,13 +291,14 @@ private:
     void flushToSwapchain();
     void flushToOffscreen(OffscreenCanvas *canvas);
     void drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
-                        std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs);
+                        std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
+                        size_t &texBufIndex);
     vk::DescriptorSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal);
     void ensureFlatNormalTexture();
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
     vk::DescriptorSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                   GpuTexture *heightTex, size_t uboSlot);
+                                   GpuTexture *heightTex, Mesh3dFrameSlots &fslots, size_t uboSlot);
     void ensureDefaultEnvCubemap();
     void ensureFlatNormalTexture3D();
     void ensureFlatHeightTexture3D();
@@ -380,8 +383,13 @@ private:
         vkb::GenericBuffer shadowUbo;
         std::unordered_map<Mesh3dSetKey, vk::DescriptorSet, Mesh3dSetKeyHash> sets;
     };
-    std::vector<Mesh3dUboSlot> mesh3dUboSlots;
-    size_t mesh3dDrawIndex = 0;
+    // Per-frame-slot UBO arenas, keyed by swapchain->current_frame so a frame
+    // never overwrites a UBO that an in-flight frame is still reading.
+    struct Mesh3dFrameSlots {
+        std::vector<Mesh3dUboSlot> slots;
+        size_t drawIndex = 0;
+    };
+    std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture *whiteTexture = nullptr;
     Texture *flatNormalTexture3D = nullptr;
     Texture *flatHeightTexture3D = nullptr;
@@ -420,8 +428,11 @@ private:
         vkb::GenericBuffer shadowUbo;
         std::unordered_map<Mesh3dSetKey, vk::DescriptorSet, Mesh3dSetKeyHash> sets;
     };
-    std::vector<Mesh3dClusteredUboSlot> mesh3dClusteredUboSlots;
-    size_t mesh3dClusteredDrawIndex = 0;
+    struct Mesh3dClusteredFrameSlots {
+        std::vector<Mesh3dClusteredUboSlot> slots;
+        size_t drawIndex = 0;
+    };
+    std::vector<Mesh3dClusteredFrameSlots> mesh3dClusteredFrameSlots;
 
     // CSM shadow map (3 cascade layers).
     vk::Image shadowImage{};
@@ -494,6 +505,17 @@ private:
 
     std::vector<LitBatch> litBatches;
 
+    // Persistent host-visible vertex buffers for 2D batching, reused across
+    // frames to avoid per-frame vkCreateBuffer/vkAllocateMemory/vkFreeMemory
+    // churn (the previous per-frame allocation also leaked, since GenericBuffer
+    // has no owning destructor).
+    struct Frame2DBuffers {
+        vkb::HostVertexBuffer solidBuf;
+        std::vector<vkb::HostVertexBuffer> texBufs;
+    };
+    std::vector<Frame2DBuffers> frame2dBuffers;  // per swapchain frame slot
+    Frame2DBuffers offscreenBuffers;             // synchronous offscreen path
+
     vk::DescriptorSetLayout lit2dSetLayout;
     vk::UniqueDescriptorSetLayout lit2dSetLayoutUnique;
     vk::PipelineLayout lit2dPipelineLayout;
@@ -554,6 +576,10 @@ private:
     };
     std::vector<VoxelInstanceSlot> voxelInstanceSlots;
     size_t voxelInstanceDrawIndex = 0;
+
+    Frame2DBuffers &currentFrame2DBuffers();
+    Mesh3dFrameSlots &currentMesh3dFrameSlots();
+    Mesh3dClusteredFrameSlots &currentMesh3dClusteredFrameSlots();
 };
 
 }  // namespace eve::graphics::vulkan
