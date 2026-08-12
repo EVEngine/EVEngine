@@ -11,7 +11,9 @@ create_module(EVSpatial spatial)
 create_module(EVIK ik)
 target_include_directories(EVIK PUBLIC ${CMAKE_SOURCE_DIR}/external/ik.hpp)
 create_module(EVAnimation animation)
+target_compile_definitions(EVAnimation PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 # AnimImporter uses Assimp headers (same install tree as model3d / medialoader).
+# Spine JSON uses Poco via data/JsonDocument; atlas/skeleton loaders use filesystem.
 target_include_directories(EVAnimation PRIVATE
   ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include
   ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include

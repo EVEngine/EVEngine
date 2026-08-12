@@ -11,6 +11,13 @@
 #include "animation/ControlPose.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
+#include "animation/SpriteAnim.h"
+#include "animation/SpriteClip.h"
+#include "animation/SpriteSheet.h"
+#include "animation/SpineAnim.h"
+#include "animation/SpineAtlas.h"
+#include "animation/SpineSkeleton.h"
+#include "animation/SpineSkeletonData.h"
 
 #include <algorithm>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -20,17 +27,89 @@ namespace eve::animation {
 Module_IMPL(Animation, new Animation());
 
 Animation::~Animation() {
-    // Tweens may outlive the module if script GC still holds them; detach.
+    // Owned players may outlive the module if script GC still holds them; detach.
     for (Tween *t : tweens_) {
         if (t) t->setOwner(nullptr);
     }
     tweens_.clear();
+    for (SpriteAnim *a : spriteAnims_) {
+        if (a) a->setOwner(nullptr);
+    }
+    spriteAnims_.clear();
+    for (SpineAnim *a : spineAnims_) {
+        if (a) a->setOwner(nullptr);
+    }
+    spineAnims_.clear();
 }
 
 Tween *Animation::newTween(float duration) {
     auto *t = new Tween(duration);
     registerTween(t);
     return t;
+}
+
+SpriteSheet *Animation::newSpriteSheet() { return new SpriteSheet(); }
+
+SpriteClip *Animation::newSpriteClip(const std::string &name) { return new SpriteClip(name); }
+
+SpriteAnim *Animation::newSpriteAnim() {
+    auto *a = new SpriteAnim();
+    registerSpriteAnim(a);
+    return a;
+}
+
+SpineAtlas *Animation::newSpineAtlas() { return new SpineAtlas(); }
+
+SpineSkeletonData *Animation::newSpineSkeletonData() { return new SpineSkeletonData(); }
+
+SpineSkeleton *Animation::newSpineSkeleton(SpineSkeletonData *data) {
+    return new SpineSkeleton(data);
+}
+
+SpineAnim *Animation::newSpineAnim(SpineSkeleton *skeleton) {
+    auto *a = new SpineAnim(skeleton);
+    registerSpineAnim(a);
+    return a;
+}
+
+SpineAtlas *Animation::newSpineAtlasFromFile(const std::string &path) {
+    auto *atlas = new SpineAtlas();
+    std::string err;
+    if (!atlas->loadFromFile(path, &err)) {
+        delete atlas;
+        return nullptr;
+    }
+    return atlas;
+}
+
+SpineAtlas *Animation::newSpineAtlasFromText(const std::string &text) {
+    auto *atlas = new SpineAtlas();
+    std::string err;
+    if (!atlas->loadFromText(text, &err)) {
+        delete atlas;
+        return nullptr;
+    }
+    return atlas;
+}
+
+SpineSkeletonData *Animation::newSpineSkeletonDataFromFile(const std::string &path) {
+    auto *data = new SpineSkeletonData();
+    std::string err;
+    if (!data->loadFromFile(path, &err)) {
+        delete data;
+        return nullptr;
+    }
+    return data;
+}
+
+SpineSkeletonData *Animation::newSpineSkeletonDataFromJson(const std::string &json) {
+    auto *data = new SpineSkeletonData();
+    std::string err;
+    if (!data->loadFromJson(json, &err)) {
+        delete data;
+        return nullptr;
+    }
+    return data;
 }
 
 AnimSkeleton *Animation::newSkeleton() { return new AnimSkeleton(); }
@@ -104,12 +183,48 @@ void Animation::unregisterTween(Tween *t) {
     if (t->owner() == this) t->setOwner(nullptr);
 }
 
+void Animation::registerSpriteAnim(SpriteAnim *a) {
+    if (!a) return;
+    a->setOwner(this);
+    if (std::find(spriteAnims_.begin(), spriteAnims_.end(), a) == spriteAnims_.end())
+        spriteAnims_.push_back(a);
+}
+
+void Animation::unregisterSpriteAnim(SpriteAnim *a) {
+    if (!a) return;
+    auto it = std::find(spriteAnims_.begin(), spriteAnims_.end(), a);
+    if (it != spriteAnims_.end()) spriteAnims_.erase(it);
+    if (a->owner() == this) a->setOwner(nullptr);
+}
+
+void Animation::registerSpineAnim(SpineAnim *a) {
+    if (!a) return;
+    a->setOwner(this);
+    if (std::find(spineAnims_.begin(), spineAnims_.end(), a) == spineAnims_.end())
+        spineAnims_.push_back(a);
+}
+
+void Animation::unregisterSpineAnim(SpineAnim *a) {
+    if (!a) return;
+    auto it = std::find(spineAnims_.begin(), spineAnims_.end(), a);
+    if (it != spineAnims_.end()) spineAnims_.erase(it);
+    if (a->owner() == this) a->setOwner(nullptr);
+}
+
 void Animation::update(float dt) {
-    // Copy pointer list: a tween destructor during update must not invalidate iteration.
-    std::vector<Tween *> snapshot = tweens_;
-    for (Tween *t : snapshot) {
+    // Copy pointer lists: destructors during update must not invalidate iteration.
+    std::vector<Tween *> tweenSnap = tweens_;
+    for (Tween *t : tweenSnap) {
         if (!t) continue;
         if (t->isActive()) t->update(dt);
+    }
+    std::vector<SpriteAnim *> spriteSnap = spriteAnims_;
+    for (SpriteAnim *a : spriteSnap) {
+        if (a && a->isPlaying()) a->update(dt);
+    }
+    std::vector<SpineAnim *> spineSnap = spineAnims_;
+    for (SpineAnim *a : spineSnap) {
+        if (a && a->isPlaying()) a->update(dt);
     }
 }
 
@@ -117,6 +232,12 @@ int Animation::getActiveCount() const {
     int n = 0;
     for (const Tween *t : tweens_) {
         if (t && t->isActive()) ++n;
+    }
+    for (const SpriteAnim *a : spriteAnims_) {
+        if (a && a->isPlaying()) ++n;
+    }
+    for (const SpineAnim *a : spineAnims_) {
+        if (a && a->isPlaying()) ++n;
     }
     return n;
 }
@@ -451,11 +572,198 @@ void Animation::expose(ssq::Table &table) {
     trail.addFunc("getPointAge", &AnimTrail::getPointAge);
     trail.addFunc("getPointAlpha", &AnimTrail::getPointAlpha);
     trail.addFunc("draw", &AnimTrail::draw);
+
+    auto sheet = table.addClass<SpriteSheet>(
+        "SpriteSheet", std::function<SpriteSheet *()>([]() -> SpriteSheet * { return nullptr; }),
+        true);
+    sheet.addFunc("addFrame", &SpriteSheet::addFrame);
+    sheet.addFunc("setGrid", &SpriteSheet::setGrid);
+    sheet.addFunc("clear", &SpriteSheet::clear);
+    sheet.addFunc("getFrameCount", &SpriteSheet::getFrameCount);
+    sheet.addFunc("findFrame", &SpriteSheet::findFrame);
+    sheet.addFunc("getFrameName", &SpriteSheet::getFrameName);
+    sheet.addFunc("getFrameX", &SpriteSheet::getFrameX);
+    sheet.addFunc("getFrameY", &SpriteSheet::getFrameY);
+    sheet.addFunc("getFrameWidth", &SpriteSheet::getFrameWidth);
+    sheet.addFunc("getFrameHeight", &SpriteSheet::getFrameHeight);
+    sheet.addFunc("applyToQuad", &SpriteSheet::applyToQuad);
+
+    auto sclip = table.addClass<SpriteClip>(
+        "SpriteClip", std::function<SpriteClip *()>([]() -> SpriteClip * { return nullptr; }),
+        true);
+    sclip.addFunc("setName", &SpriteClip::setName);
+    sclip.addFunc("getName", &SpriteClip::getName);
+    sclip.addFunc("setLoop", &SpriteClip::setLoop);
+    sclip.addFunc("getLoop", &SpriteClip::getLoop);
+    sclip.addFunc("addFrame", &SpriteClip::addFrame);
+    sclip.addFunc("addFrameByName", &SpriteClip::addFrameByName);
+    sclip.addFunc("clear", &SpriteClip::clear);
+    sclip.addFunc("getFrameCount", &SpriteClip::getFrameCount);
+    sclip.addFunc("getSheetFrame", &SpriteClip::getSheetFrame);
+    sclip.addFunc("getFrameDuration", &SpriteClip::getFrameDuration);
+    sclip.addFunc("getDuration", &SpriteClip::getDuration);
+    sclip.addFunc("frameAtTime", &SpriteClip::frameAtTime);
+    sclip.addFunc("wrapTime", &SpriteClip::wrapTime);
+
+    auto sanim = table.addClass<SpriteAnim>(
+        "SpriteAnim", std::function<SpriteAnim *()>([]() -> SpriteAnim * { return nullptr; }),
+        true);
+    sanim.addFunc("setSheet", &SpriteAnim::setSheet);
+    sanim.addFunc("getSheet", &SpriteAnim::getSheet);
+    sanim.addFunc("play", &SpriteAnim::play);
+    sanim.addFunc("stop", &SpriteAnim::stop);
+    sanim.addFunc("pause", &SpriteAnim::pause);
+    sanim.addFunc("resume", &SpriteAnim::resume);
+    sanim.addFunc("setSpeed", &SpriteAnim::setSpeed);
+    sanim.addFunc("getSpeed", &SpriteAnim::getSpeed);
+    sanim.addFunc("setTime", &SpriteAnim::setTime);
+    sanim.addFunc("getTime", &SpriteAnim::getTime);
+    sanim.addFunc("setLoop", &SpriteAnim::setLoop);
+    sanim.addFunc("getLoop", &SpriteAnim::getLoop);
+    sanim.addFunc("isPlaying", &SpriteAnim::isPlaying);
+    sanim.addFunc("isPaused", &SpriteAnim::isPaused);
+    sanim.addFunc("isFinished", &SpriteAnim::isFinished);
+    sanim.addFunc("getClip", &SpriteAnim::getClip);
+    sanim.addFunc("getClipFrame", &SpriteAnim::getClipFrame);
+    sanim.addFunc("getSheetFrame", &SpriteAnim::getSheetFrame);
+    sanim.addFunc("bindQuad", &SpriteAnim::bindQuad);
+    sanim.addFunc("unbindQuad", &SpriteAnim::unbindQuad);
+    sanim.addFunc("getBoundQuad", &SpriteAnim::getBoundQuad);
+    sanim.addFunc("applyToQuad", &SpriteAnim::applyToQuad);
+    sanim.addFunc("update", &SpriteAnim::update);
+
+    auto satlas = table.addClass<SpineAtlas>(
+        "SpineAtlas", std::function<SpineAtlas *()>([]() -> SpineAtlas * { return nullptr; }),
+        true);
+    satlas.addFunc("loadFromText",
+                   [](SpineAtlas *self, const std::string &text) -> bool {
+                       return self->loadFromText(text, nullptr);
+                   });
+    satlas.addFunc("loadFromFile",
+                   [](SpineAtlas *self, const std::string &path) -> bool {
+                       return self->loadFromFile(path, nullptr);
+                   });
+    satlas.addFunc("clear", &SpineAtlas::clear);
+    satlas.addFunc("getPageCount", &SpineAtlas::getPageCount);
+    satlas.addFunc("getPageName", &SpineAtlas::getPageName);
+    satlas.addFunc("getPageWidth", &SpineAtlas::getPageWidth);
+    satlas.addFunc("getPageHeight", &SpineAtlas::getPageHeight);
+    satlas.addFunc("getRegionCount", &SpineAtlas::getRegionCount);
+    satlas.addFunc("findRegion", &SpineAtlas::findRegion);
+    satlas.addFunc("getRegionName", &SpineAtlas::getRegionName);
+    satlas.addFunc("getRegionPage", &SpineAtlas::getRegionPage);
+    satlas.addFunc("getRegionX", &SpineAtlas::getRegionX);
+    satlas.addFunc("getRegionY", &SpineAtlas::getRegionY);
+    satlas.addFunc("getRegionWidth", &SpineAtlas::getRegionWidth);
+    satlas.addFunc("getRegionHeight", &SpineAtlas::getRegionHeight);
+    satlas.addFunc("getRegionRotate", &SpineAtlas::getRegionRotate);
+
+    auto sdata = table.addClass<SpineSkeletonData>(
+        "SpineSkeletonData",
+        std::function<SpineSkeletonData *()>([]() -> SpineSkeletonData * { return nullptr; }),
+        true);
+    sdata.addFunc("loadFromJson",
+                  [](SpineSkeletonData *self, const std::string &json) -> bool {
+                      return self->loadFromJson(json, nullptr);
+                  });
+    sdata.addFunc("loadFromFile",
+                  [](SpineSkeletonData *self, const std::string &path) -> bool {
+                      return self->loadFromFile(path, nullptr);
+                  });
+    sdata.addFunc("clear", &SpineSkeletonData::clear);
+    sdata.addFunc("getSpineVersion", &SpineSkeletonData::getSpineVersion);
+    sdata.addFunc("getBoneCount", &SpineSkeletonData::getBoneCount);
+    sdata.addFunc("findBone", &SpineSkeletonData::findBone);
+    sdata.addFunc("getBoneName", &SpineSkeletonData::getBoneName);
+    sdata.addFunc("getBoneParent", &SpineSkeletonData::getBoneParent);
+    sdata.addFunc("getSlotCount", &SpineSkeletonData::getSlotCount);
+    sdata.addFunc("findSlot", &SpineSkeletonData::findSlot);
+    sdata.addFunc("getSlotName", &SpineSkeletonData::getSlotName);
+    sdata.addFunc("getSlotBone", &SpineSkeletonData::getSlotBone);
+    sdata.addFunc("getSkinCount", &SpineSkeletonData::getSkinCount);
+    sdata.addFunc("findSkin", &SpineSkeletonData::findSkin);
+    sdata.addFunc("getSkinName", &SpineSkeletonData::getSkinName);
+    sdata.addFunc("getAnimationCount", &SpineSkeletonData::getAnimationCount);
+    sdata.addFunc("findAnimation", &SpineSkeletonData::findAnimation);
+    sdata.addFunc("getAnimationName", &SpineSkeletonData::getAnimationName);
+    sdata.addFunc("getAnimationDuration", &SpineSkeletonData::getAnimationDuration);
+
+    auto ssk = table.addClass<SpineSkeleton>(
+        "SpineSkeleton",
+        std::function<SpineSkeleton *()>([]() -> SpineSkeleton * { return nullptr; }), true);
+    ssk.addFunc("getData", &SpineSkeleton::getData);
+    ssk.addFunc("setSkin", &SpineSkeleton::setSkin);
+    ssk.addFunc("getSkin", &SpineSkeleton::getSkin);
+    ssk.addFunc("setToSetupPose", &SpineSkeleton::setToSetupPose);
+    ssk.addFunc("updateWorldTransform", &SpineSkeleton::updateWorldTransform);
+    ssk.addFunc("getBoneCount", &SpineSkeleton::getBoneCount);
+    ssk.addFunc("getBoneWorldX", &SpineSkeleton::getBoneWorldX);
+    ssk.addFunc("getBoneWorldY", &SpineSkeleton::getBoneWorldY);
+    ssk.addFunc("getBoneWorldRotation", &SpineSkeleton::getBoneWorldRotation);
+    ssk.addFunc("getSlotCount", &SpineSkeleton::getSlotCount);
+    ssk.addFunc("getSlotAttachmentName", &SpineSkeleton::getSlotAttachmentName);
+    ssk.addFunc("setSlotAttachmentName", &SpineSkeleton::setSlotAttachmentName);
+
+    auto spanim = table.addClass<SpineAnim>(
+        "SpineAnim", std::function<SpineAnim *()>([]() -> SpineAnim * { return nullptr; }), true);
+    spanim.addFunc("getSkeleton", &SpineAnim::getSkeleton);
+    spanim.addFunc("setAtlas", &SpineAnim::setAtlas);
+    spanim.addFunc("getAtlas", &SpineAnim::getAtlas);
+    spanim.addFunc("setPageTexture", &SpineAnim::setPageTexture);
+    spanim.addFunc("setPageTextureByName", &SpineAnim::setPageTextureByName);
+    spanim.addFunc("getPageTexture", &SpineAnim::getPageTexture);
+    spanim.addFunc("play", &SpineAnim::play);
+    spanim.addFunc("stop", &SpineAnim::stop);
+    spanim.addFunc("pause", &SpineAnim::pause);
+    spanim.addFunc("resume", &SpineAnim::resume);
+    spanim.addFunc("setSpeed", &SpineAnim::setSpeed);
+    spanim.addFunc("getSpeed", &SpineAnim::getSpeed);
+    spanim.addFunc("setTime", &SpineAnim::setTime);
+    spanim.addFunc("getTime", &SpineAnim::getTime);
+    spanim.addFunc("setLoop", &SpineAnim::setLoop);
+    spanim.addFunc("getLoop", &SpineAnim::getLoop);
+    spanim.addFunc("setFlipY", &SpineAnim::setFlipY);
+    spanim.addFunc("getFlipY", &SpineAnim::getFlipY);
+    spanim.addFunc("setPosition", &SpineAnim::setPosition);
+    spanim.addFunc("getX", &SpineAnim::getX);
+    spanim.addFunc("getY", &SpineAnim::getY);
+    spanim.addFunc("setScale", &SpineAnim::setScale);
+    spanim.addFunc("getScaleX", &SpineAnim::getScaleX);
+    spanim.addFunc("getScaleY", &SpineAnim::getScaleY);
+    spanim.addFunc("setLayer", &SpineAnim::setLayer);
+    spanim.addFunc("getLayer", &SpineAnim::getLayer);
+    spanim.addFunc("setColor", &SpineAnim::setColor);
+    spanim.addFunc("isPlaying", &SpineAnim::isPlaying);
+    spanim.addFunc("isPaused", &SpineAnim::isPaused);
+    spanim.addFunc("isFinished", &SpineAnim::isFinished);
+    spanim.addFunc("getAnimation", &SpineAnim::getAnimation);
+    spanim.addFunc("getAnimationDuration", &SpineAnim::getAnimationDuration);
+    spanim.addFunc("apply", &SpineAnim::apply);
+    spanim.addFunc("update", &SpineAnim::update);
+    // collectDrawItems is C++-only (shared DrawItem2D queue); scripts use getDrawSlot*.
+    spanim.addFunc("getDrawSlotCount", &SpineAnim::getDrawSlotCount);
+    spanim.addFunc("getDrawSlotX", &SpineAnim::getDrawSlotX);
+    spanim.addFunc("getDrawSlotY", &SpineAnim::getDrawSlotY);
+    spanim.addFunc("getDrawSlotWidth", &SpineAnim::getDrawSlotWidth);
+    spanim.addFunc("getDrawSlotHeight", &SpineAnim::getDrawSlotHeight);
+    spanim.addFunc("getDrawSlotRotation", &SpineAnim::getDrawSlotRotation);
+    spanim.addFunc("getDrawSlotRegion", &SpineAnim::getDrawSlotRegion);
 }
 
 void Animation::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Animation::getName);
     cls.addFunc("newTween", &Animation::newTween);
+    cls.addFunc("newSpriteSheet", &Animation::newSpriteSheet);
+    cls.addFunc("newSpriteClip", &Animation::newSpriteClip);
+    cls.addFunc("newSpriteAnim", &Animation::newSpriteAnim);
+    cls.addFunc("newSpineAtlas", &Animation::newSpineAtlas);
+    cls.addFunc("newSpineSkeletonData", &Animation::newSpineSkeletonData);
+    cls.addFunc("newSpineSkeleton", &Animation::newSpineSkeleton);
+    cls.addFunc("newSpineAnim", &Animation::newSpineAnim);
+    cls.addFunc("newSpineAtlasFromFile", &Animation::newSpineAtlasFromFile);
+    cls.addFunc("newSpineAtlasFromText", &Animation::newSpineAtlasFromText);
+    cls.addFunc("newSpineSkeletonDataFromFile", &Animation::newSpineSkeletonDataFromFile);
+    cls.addFunc("newSpineSkeletonDataFromJson", &Animation::newSpineSkeletonDataFromJson);
     cls.addFunc("newSkeleton", &Animation::newSkeleton);
     cls.addFunc("newClip", &Animation::newClip);
     cls.addFunc("newPose", &Animation::newPose);
@@ -473,6 +781,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
+    cls.addFunc("getSpriteAnimCount", &Animation::getSpriteAnimCount);
+    cls.addFunc("getSpineAnimCount", &Animation::getSpineAnimCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);
     cls.addFunc("clearFinished", &Animation::clearFinished);
     cls.addFunc("clearAll", &Animation::clearAll);

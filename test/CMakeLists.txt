@@ -78,6 +78,7 @@ file(GLOB all_test_cpp
   animation.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
+  animation_sprite_spine.cpp
   tensor.cpp
   callgraph.cpp
   renderflow.cpp
