@@ -10,6 +10,7 @@
 #include <assimp/vector3.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
@@ -29,6 +30,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "image/Image.h"
@@ -36,6 +38,7 @@
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "window/Window.h"
+#include "RenderImageAudit.h"
 
 using namespace eve::graphics;
 
@@ -309,6 +312,9 @@ enum class RenderCfg {
     DirectionalShadows,
     MultiPointLit,
     IblReflections,
+    DirAndPoint,
+    ShadowsAndIbl,
+    FullLit,
 };
 
 const char *cfgName(RenderCfg c) {
@@ -323,8 +329,19 @@ const char *cfgName(RenderCfg c) {
         return "point_lit";
     case RenderCfg::IblReflections:
         return "ibl_reflect";
+    case RenderCfg::DirAndPoint:
+        return "dir_point";
+    case RenderCfg::ShadowsAndIbl:
+        return "shadows_ibl";
+    case RenderCfg::FullLit:
+        return "full_lit";
     }
     return "unknown";
+}
+
+bool cfgUsesIbl(RenderCfg c) {
+    return c == RenderCfg::IblReflections || c == RenderCfg::ShadowsAndIbl ||
+           c == RenderCfg::FullLit;
 }
 
 struct SceneActors {
@@ -385,6 +402,34 @@ void applyConfig(SceneActors &a, RenderCfg cfg, bool polishMetals) {
             }
         }
         break;
+    case RenderCfg::DirAndPoint:
+        a.cam->setAmbient(0.04f, 0.04f, 0.05f);
+        a.sun->setEnabled(true);
+        a.sun->setCastShadow(false);
+        a.sun->setColor(1.f, 0.97f, 0.92f, 2.0f);
+        a.pointA->setEnabled(true);
+        a.pointB->setEnabled(true);
+        break;
+    case RenderCfg::ShadowsAndIbl:
+        a.cam->setAmbient(0.03f, 0.03f, 0.04f);
+        a.sun->setEnabled(true);
+        a.sun->setCastShadow(true);
+        a.sun->setShadowStrength(1.f);
+        a.sun->setColor(1.f, 0.97f, 0.92f, 2.2f);
+        a.cam->setEnvMap(a.env);
+        a.cam->setEnvIntensity(1.1f);
+        break;
+    case RenderCfg::FullLit:
+        a.cam->setAmbient(0.03f, 0.03f, 0.04f);
+        a.sun->setEnabled(true);
+        a.sun->setCastShadow(true);
+        a.sun->setShadowStrength(1.f);
+        a.sun->setColor(1.f, 0.97f, 0.92f, 2.0f);
+        a.pointA->setEnabled(true);
+        a.pointB->setEnabled(true);
+        a.cam->setEnvMap(a.env);
+        a.cam->setEnvIntensity(1.0f);
+        break;
     }
 }
 
@@ -395,27 +440,94 @@ void warmPresent(Graphics *gfx) {
     }
 }
 
-void saveFramePng(Graphics *gfx, const std::string &name) {
-    eve::image::Image::create();
-    eve::image::ImageData *frame = gfx->newImageData();
+std::string classicOutDir() {
+    return std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes";
+}
+
+void saveFramePng(Graphics * /*gfx*/, const std::string &name, eve::image::ImageData *frame) {
+    const std::string outDir = classicOutDir();
+    REQUIRE(saveImagePng(*frame, outDir + "/" + name));
+    std::printf("ClassicScenes frame: %s\n", (outDir + "/" + name).c_str());
+}
+
+/** CPU-only audit of the already-read-back snapshot. No extra present/readback. */
+void auditCapturedFrame(eve::image::ImageData *frame, Graphics *gfx, const char *sceneTag,
+                        const char *phase) {
     REQUIRE(frame != nullptr);
-    eve::filesystem::FileData *png =
-        frame->encode(medialoader::FormatHandler::ENCODED_PNG, name.c_str(), false);
-    REQUIRE(png != nullptr);
-    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes";
-    std::error_code ec;
-    std::filesystem::create_directories(outDir, ec);
-    const std::string outPath = outDir + "/" + name;
-    {
-        std::ofstream out(outPath, std::ios::binary);
-        REQUIRE(out.good());
-        out.write(static_cast<const char *>(png->getData()),
-                  static_cast<std::streamsize>(png->getSize()));
-        REQUIRE(out.good());
+    const Color c = gfx->getBackgroundColor();
+    RenderAuditConfig cfg{sceneTag, phase, "", 0};
+    // Stride 4: one pass over ~1/16 of pixels. Flicker needs a second GPU
+    // readback and is left to graphics.imageAudit.pipelineConfigs.
+    RenderAuditResult result = auditImage(*frame, cfg, RenderAuditBg{c.r, c.g, c.b}, /*step=*/4);
+    if (result.hasDefects()) {
+        const std::string outDir = classicOutDir();
+        appendAuditReport(outDir, result);
+        if (result.hasSevere()) saveAuditOverlay(*frame, result, outDir);
+        std::printf("ClassicScenes[%s] phase=%s image defects=%zu severe=%d — %s/image_audit.md\n",
+                    sceneTag, phase, result.defects.size(), int(result.hasSevere()), outDir.c_str());
     }
-    std::printf("ClassicScenes frame: %s\n", outPath.c_str());
-    delete png;
-    delete frame;
+    REQUIRE(!result.hasSevere());
+}
+
+void resetRenderControl(Graphics *gfx) {
+    RenderControl *rc = gfx->getRenderControl();
+    if (!rc) return;
+    rc->enable("depthTest");
+    rc->enable("shadow");
+    rc->enable("forward");
+    rc->enable("hair");
+    rc->enable("clustered");
+    rc->disable("gbuffer");
+    rc->compile();
+}
+
+/** Extra lighting / RenderControl snaps at the current camera. No extra fly frames. */
+void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneTag,
+                          bool polishMetals) {
+    struct Extra {
+        RenderCfg cfg;
+        const char *enableFeat;
+        const char *disableFeat;
+        const char *tag;
+    };
+    const Extra extras[] = {
+        {RenderCfg::DirAndPoint, nullptr, nullptr, "dir_point"},
+        {RenderCfg::ShadowsAndIbl, nullptr, nullptr, "shadows_ibl"},
+        {RenderCfg::FullLit, nullptr, nullptr, "full_lit"},
+        {RenderCfg::DirectionalLit, "gbuffer", nullptr, "gbuffer"},
+        {RenderCfg::DirectionalLit, "gbufferAlbedo", nullptr, "gbuffer_albedo"},
+        {RenderCfg::DirectionalShadows, nullptr, "shadow", "no_shadow_pass"},
+    };
+    RenderControl *rc = gfx->getRenderControl();
+    gfx->setScreenReadbackEnabled(false);
+    for (const auto &ex : extras) {
+        applyConfig(actors, ex.cfg, polishMetals && cfgUsesIbl(ex.cfg));
+        resetRenderControl(gfx);
+        if (ex.enableFeat && rc) {
+            rc->enable(ex.enableFeat);
+            rc->compile();
+        }
+        if (ex.disableFeat && rc) {
+            rc->disable(ex.disableFeat);
+            rc->compile();
+        }
+        std::printf("ClassicScenes[%s] extra=%s\n", sceneTag, ex.tag);
+        for (int i = 0; i < 2; ++i) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        gfx->setScreenReadbackEnabled(true);
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        eve::image::ImageData *snap = gfx->newImageData();
+        REQUIRE(snap != nullptr);
+        saveFramePng(gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
+        auditCapturedFrame(snap, gfx, sceneTag, ex.tag);
+        delete snap;
+        gfx->setScreenReadbackEnabled(false);
+    }
+    resetRenderControl(gfx);
+    gfx->setScreenReadbackEnabled(true);
 }
 
 float meanLuma(Graphics *gfx, int step = 8) {
@@ -693,7 +805,9 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
     std::vector<float> phaseLuma;
     phaseLuma.reserve(size_t(nPhases));
 
-    gfx->setScreenReadbackEnabled(true);
+    // Animation frames do not need CPU pixels. Enabling readback here would
+    // wait the GPU and copy the whole swapchain every present (~10× slower).
+    gfx->setScreenReadbackEnabled(false);
     gfx->setBackgroundColor(Color(0.08f, 0.09f, 0.11f, 1.f));
     addHud();
 
@@ -702,7 +816,7 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
     const int totalFrames = std::max(legs * framesPerLeg, nPhases * 12);
     int frame = 0;
     for (int pi = 0; pi < nPhases; ++pi) {
-        applyConfig(actors, phases[pi], polishMetalsForIbl && phases[pi] == RenderCfg::IblReflections);
+        applyConfig(actors, phases[pi], polishMetalsForIbl && cfgUsesIbl(phases[pi]));
         std::printf("ClassicScenes[%s] phase=%s\n", sceneTag, cfgName(phases[pi]));
 
         const int phaseStart = (totalFrames * pi) / nPhases;
@@ -725,17 +839,183 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
             while (SDL_PollEvent(&e)) {
                 if (e.type == SDL_QUIT) break;
             }
-            SDL_Delay(4);
             ++frame;
         }
 
+        gfx->setScreenReadbackEnabled(true);
         warmPresent(gfx);
         const float L = meanLuma(gfx);
         phaseLuma.push_back(L);
-        saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png");
+        eve::image::ImageData *snap = gfx->newImageData();
+        REQUIRE(snap != nullptr);
+        saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
+        auditCapturedFrame(snap, gfx, sceneTag, cfgName(phases[pi]));
+        delete snap;
         std::printf("ClassicScenes[%s] phase=%s meanLuma=%.4f\n", sceneTag, cfgName(phases[pi]), L);
+        gfx->setScreenReadbackEnabled(false);
     }
+    // Callers (cornell wall sampling) may read pixels after we return.
+    gfx->setScreenReadbackEnabled(true);
     return phaseLuma;
+}
+
+struct FpsResult {
+    int frames = 0;
+    double seconds = 0.0;
+    double avgFps = 0.0;
+    double minFps = 0.0;
+    double maxFps = 0.0;
+};
+
+int perfTimedFrames() {
+    const char *env = std::getenv("EVENGINE_PERF_FRAMES");
+    if (!env || !env[0]) return 120;
+    const int n = std::atoi(env);
+    return n > 8 ? n : 8;
+}
+
+FpsResult measureFps(Graphics *gfx, SceneActors &actors, const std::vector<CamKey> &path,
+                     RenderCfg cfg, bool polishMetals, int warmupFrames, int timedFrames) {
+    REQUIRE(actors.cam != nullptr);
+    REQUIRE(path.size() >= 2);
+    applyConfig(actors, cfg, polishMetals && cfgUsesIbl(cfg));
+    gfx->setScreenReadbackEnabled(false);
+
+    const int legs = int(path.size()) - 1;
+    auto renderOne = [&](int f, int total) {
+        const float tPath = (total <= 1) ? 0.f : float(f) / float(total - 1);
+        const float legF = tPath * float(legs);
+        const int leg = std::min(legs - 1, int(legF));
+        const float u = legF - float(leg);
+        applyCam(actors.cam, lerpKey(path[size_t(leg)], path[size_t(leg + 1)], u));
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+        }
+    };
+
+    for (int i = 0; i < warmupFrames; ++i) renderOne(i, warmupFrames);
+
+    using Clock = std::chrono::steady_clock;
+    double maxDt = 0.0;
+    double minDt = 1e9;
+    const auto t0 = Clock::now();
+    auto prev = t0;
+    for (int i = 0; i < timedFrames; ++i) {
+        renderOne(i, timedFrames);
+        const auto now = Clock::now();
+        const double dt = std::chrono::duration<double>(now - prev).count();
+        prev = now;
+        if (dt > maxDt) maxDt = dt;
+        if (dt > 0.0 && dt < minDt) minDt = dt;
+    }
+    const double elapsed = std::chrono::duration<double>(Clock::now() - t0).count();
+    FpsResult r;
+    r.frames = timedFrames;
+    r.seconds = elapsed;
+    r.avgFps = (elapsed > 0.0) ? double(timedFrames) / elapsed : 0.0;
+    r.minFps = (maxDt > 0.0) ? 1.0 / maxDt : 0.0;
+    r.maxFps = (minDt > 0.0 && minDt < 1e9) ? 1.0 / minDt : r.avgFps;
+    return r;
+}
+
+void printFps(const char *sceneTag, RenderCfg cfg, const FpsResult &r) {
+    std::printf("ClassicScenes.perf[%s] phase=%-12s  avg=%7.1f fps  min=%6.1f  peak=%7.1f  "
+                "(%d frames in %.3fs)\n",
+                sceneTag, cfgName(cfg), r.avgFps, r.minFps, r.maxFps, r.frames, r.seconds);
+}
+
+double benchAllConfigs(Graphics *gfx, SceneActors &actors, const std::vector<CamKey> &path,
+                       const char *sceneTag, bool polishMetals) {
+    gfx->setVSync(false);
+    gfx->setScreenReadbackEnabled(false);
+    gfx->setBackgroundColor(Color(0.08f, 0.09f, 0.11f, 1.f));
+
+    const RenderCfg phases[] = {
+        RenderCfg::AmbientOnly,   RenderCfg::DirectionalLit, RenderCfg::DirectionalShadows,
+        RenderCfg::MultiPointLit, RenderCfg::IblReflections,
+    };
+    const int warmup = 20;
+    const int timed = perfTimedFrames();
+    double bestAvg = 0.0;
+    for (RenderCfg cfg : phases) {
+        const FpsResult r = measureFps(gfx, actors, path, cfg, polishMetals, warmup, timed);
+        printFps(sceneTag, cfg, r);
+        bestAvg = std::max(bestAvg, r.avgFps);
+    }
+    std::printf("ClassicScenes.perf[%s] best_avg=%.1f fps  vsync=%d  %dx%d\n", sceneTag, bestAvg,
+                gfx->isVSync() ? 1 : 0, gfx->getWidth(), gfx->getHeight());
+    return bestAvg;
+}
+
+double benchGltfOrbitScene(Graphics *gfx, const char *relDir, const char *gltfFile, const char *tag,
+                           float defaultMetallic, float defaultRoughness, bool usePbrFactors,
+                           bool polishMetalsForIbl, float elev, float distScale, int minMeshes,
+                           int minTextures) {
+    const std::string dir = pathBesideThisSource(relDir);
+    if (!fileExists(dir + "/" + gltfFile)) {
+        std::printf("ClassicScenes.perf[%s]: skip (missing %s/%s)\n", tag, dir.c_str(), gltfFile);
+        return 0.0;
+    }
+
+    eve::model3d::ModelData *md = nullptr;
+    try {
+        resetScene3D();
+        md = loadModelFromDir(dir, gltfFile);
+        REQUIRE(md != nullptr);
+
+        SceneActors actors;
+        int texLoaded = 0;
+        REQUIRE(spawnModel(gfx, md, dir, actors, defaultMetallic, defaultRoughness, &texLoaded,
+                           usePbrFactors) >= minMeshes);
+        REQUIRE(actors.bounds.valid);
+        if (minTextures > 0) REQUIRE(texLoaded >= minTextures);
+
+        const float rad0 = std::max(1e-4f, actors.bounds.radius());
+        const float targetRad = 2.0f;
+        if (std::fabs(rad0 - targetRad) > 0.15f) {
+            const float s = targetRad / rad0;
+            const float cx = actors.bounds.centerX();
+            const float cy = actors.bounds.centerY();
+            const float cz = actors.bounds.centerZ();
+            for (auto *e : actors.ents) {
+                auto xf = e->transform();
+                xf->x = cx + (xf->x - cx) * s;
+                xf->y = cy + (xf->y - cy) * s;
+                xf->z = cz + (xf->z - cz) * s;
+                xf->sx *= s;
+                xf->sy *= s;
+                xf->sz *= s;
+            }
+            Bounds nb;
+            nb.expand(cx - targetRad, cy - targetRad, cz - targetRad);
+            nb.expand(cx + targetRad, cy + targetRad, cz + targetRad);
+            actors.bounds = nb;
+        }
+
+        std::printf("ClassicScenes.perf[%s] meshes=%zu textures=%d radius=%.3f\n", tag,
+                    actors.ents.size(), texLoaded, actors.bounds.radius());
+
+        actors.cam = Camera3D::createCamera();
+        const float rad = std::max(0.5f, actors.bounds.radius());
+        actors.cam->data()->nearZ = std::max(0.05f, rad * 0.01f);
+        actors.cam->data()->farZ = std::max(40.f, rad * 25.f);
+        actors.env = makeStudioCubemap(gfx);
+        setupLights(actors, actors.bounds);
+        actors.sun->setColor(1.f, 0.97f, 0.92f, 3.5f);
+        actors.pointA->setColor(1.f, 0.55f, 0.35f, 7.f);
+        actors.pointB->setColor(0.35f, 0.55f, 1.f, 6.5f);
+
+        auto path = makeOrbitPath(actors.bounds, elev, distScale);
+        const double best = benchAllConfigs(gfx, actors, path, tag, polishMetalsForIbl);
+        delete md;
+        return best;
+    } catch (const std::exception &ex) {
+        std::printf("ClassicScenes.perf[%s]: skip after error: %s\n", tag, ex.what());
+        delete md;
+        return 0.0;
+    }
 }
 
 void expectLightingResponse(const std::vector<float> &L) {
@@ -792,6 +1072,7 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     auto path = makeCornellPath(actors.bounds);
     auto L = flyThroughConfigs(gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
     expectLightingResponse(L);
+    snapStaticConfigGrid(gfx, actors, "cornell", /*polishMetals=*/true);
 
     // Red vs green walls should remain distinguishable under directional light.
     applyConfig(actors, RenderCfg::DirectionalLit, false);
@@ -854,6 +1135,7 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     auto path = makeOrbitPath(actors.bounds, 0.55f, 1.9f);
     auto L = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
     expectLightingResponse(L);
+    snapStaticConfigGrid(gfx, actors, "pbr_chart", /*polishMetals=*/false);
 
     // IBL phase should brighten metals relative to ambient-only.
     CHECK(L[4] > L[0] + 0.01f);
@@ -1104,5 +1386,124 @@ TEST_CASE("ClassicScenes.corset.flythroughConfigs") {
     runGltfOrbitScene("assets/classic/corset/glTF", "Corset.gltf", "corset", 0.05f, 0.5f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.85f,
                       /*minMeshes=*/1, /*minTextures=*/1);
+}
+
+TEST_CASE("ClassicScenes.perf.maxFps") {
+    double globalBest = 0.0;
+    const char *bestTag = "";
+    auto note = [&](const char *tag, double fps) {
+        if (fps > globalBest) {
+            globalBest = fps;
+            bestTag = tag;
+        }
+    };
+
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 960, 540);
+    gfx->setVSync(false);
+    gfx->setScreenReadbackEnabled(false);
+
+    auto gltf = [&](const char *relDir, const char *file, const char *tag, float met, float rough,
+                    bool pbr, bool polish, float elev, float dist, int minM, int minT) {
+        note(tag, benchGltfOrbitScene(gfx, relDir, file, tag, met, rough, pbr, polish, elev, dist,
+                                      minM, minT));
+    };
+
+    try {
+        resetScene3D();
+        SceneActors actors;
+        spawnMetalRoughnessChart(gfx, actors);
+        actors.cam = Camera3D::createCamera();
+        actors.cam->data()->nearZ = 0.05f;
+        actors.cam->data()->farZ = 40.f;
+        actors.env = makeStudioCubemap(gfx);
+        setupLights(actors, actors.bounds);
+        note("pbr_chart", benchAllConfigs(gfx, actors, makeOrbitPath(actors.bounds, 0.55f, 1.9f),
+                                          "pbr_chart", false));
+    } catch (const std::exception &ex) {
+        std::printf("ClassicScenes.perf[pbr_chart]: skip after error: %s\n", ex.what());
+    }
+
+    try {
+        const std::string dir = pathBesideThisSource("assets/classic/cornell");
+        const std::string obj = "CornellBox-Original.obj";
+        if (fileExists(dir + "/" + obj)) {
+            resetScene3D();
+            auto *md = loadModelFromDir(dir, obj);
+            SceneActors actors;
+            spawnModel(gfx, md, dir, actors, 0.02f, 0.75f);
+            actors.cam = Camera3D::createCamera();
+            actors.cam->data()->nearZ = 0.05f;
+            actors.cam->data()->farZ = 50.f;
+            actors.env = makeStudioCubemap(gfx);
+            setupLights(actors, actors.bounds);
+            note("cornell", benchAllConfigs(gfx, actors, makeCornellPath(actors.bounds), "cornell",
+                                            true));
+            delete md;
+        }
+    } catch (const std::exception &ex) {
+        std::printf("ClassicScenes.perf[cornell]: skip after error: %s\n", ex.what());
+    }
+
+    try {
+        const std::string dir = pathBesideThisSource("assets/classic/sponza/glTF");
+        if (fileExists(dir + "/Sponza.gltf")) {
+            resetScene3D();
+            auto *md = loadModelFromDir(dir, "Sponza.gltf");
+            SceneActors actors;
+            int texLoaded = 0;
+            spawnModel(gfx, md, dir, actors, 0.02f, 0.7f, &texLoaded, false);
+            actors.cam = Camera3D::createCamera();
+            const float rad = std::max(1.f, actors.bounds.radius());
+            actors.cam->data()->nearZ = std::max(0.05f, rad * 0.002f);
+            actors.cam->data()->farZ = std::max(200.f, rad * 25.f);
+            actors.env = makeStudioCubemap(gfx);
+            setupLights(actors, actors.bounds);
+            actors.sun->setDirection(0.25f, 1.f, 0.2f);
+            actors.sun->setColor(1.f, 0.98f, 0.94f, 6.f);
+            note("sponza", benchAllConfigs(gfx, actors, makeSponzaPath(actors.bounds), "sponza",
+                                           false));
+            delete md;
+        } else {
+            std::printf("ClassicScenes.perf[sponza]: skip (asset not downloaded)\n");
+        }
+    } catch (const std::exception &ex) {
+        std::printf("ClassicScenes.perf[sponza]: skip after error: %s\n", ex.what());
+    }
+
+    gltf("assets/classic/damaged_helmet/glTF", "DamagedHelmet.gltf", "helmet", 0.05f, 0.4f, false,
+         false, 0.25f, 2.1f, 1, 0);
+    gltf("assets/classic/flight_helmet/glTF", "FlightHelmet.gltf", "flight_helmet", 0.05f, 0.55f,
+         false, false, 0.35f, 1.8f, 5, 3);
+    gltf("assets/classic/boom_box/glTF", "BoomBox.gltf", "boom_box", 0.05f, 0.45f, false, false, 0.3f,
+         1.9f, 1, 0);
+    gltf("assets/classic/scifi_helmet/glTF", "SciFiHelmet.gltf", "scifi_helmet", 0.05f, 0.4f, false,
+         false, 0.25f, 1.8f, 1, 0);
+    gltf("assets/classic/metal_rough_spheres/glTF", "MetalRoughSpheres.gltf", "metal_rough_spheres",
+         0.05f, 0.5f, true, false, 0.45f, 1.7f, 1, 0);
+    gltf("assets/classic/suzanne/glTF", "Suzanne.gltf", "suzanne", 0.05f, 0.55f, false, true, 0.35f,
+         1.9f, 1, 0);
+    gltf("assets/classic/duck/glTF", "Duck.gltf", "duck", 0.02f, 0.65f, false, false, 0.45f, 1.9f, 1,
+         0);
+    gltf("assets/classic/avocado/glTF", "Avocado.gltf", "avocado", 0.02f, 0.7f, false, false, 0.35f,
+         1.9f, 1, 1);
+    gltf("assets/classic/water_bottle/glTF", "WaterBottle.gltf", "water_bottle", 0.05f, 0.35f, false,
+         false, 0.4f, 1.9f, 1, 0);
+    gltf("assets/classic/lantern/glTF", "Lantern.gltf", "lantern", 0.05f, 0.55f, false, false, 0.45f,
+         1.85f, 1, 1);
+    gltf("assets/classic/antique_camera/glTF", "AntiqueCamera.gltf", "antique_camera", 0.08f, 0.5f,
+         false, false, 0.35f, 1.9f, 1, 1);
+    gltf("assets/classic/cesium_milk_truck/glTF", "CesiumMilkTruck.gltf", "cesium_milk_truck", 0.05f,
+         0.6f, false, false, 0.4f, 2.0f, 2, 1);
+    gltf("assets/classic/barramundi_fish/glTF", "BarramundiFish.gltf", "barramundi_fish", 0.02f, 0.55f,
+         false, false, 0.3f, 1.9f, 1, 1);
+    gltf("assets/classic/corset/glTF", "Corset.gltf", "corset", 0.05f, 0.5f, false, false, 0.35f,
+         1.85f, 1, 1);
+
+    win->close();
+    std::printf("ClassicScenes.perf MAX avg fps = %.1f  (%s)  960x540 vsync=off Debug\n", globalBest,
+                bestTag);
+    REQUIRE(globalBest > 1.0);
 }
 

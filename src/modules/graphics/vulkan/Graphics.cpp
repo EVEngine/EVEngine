@@ -10,6 +10,7 @@
 #include <array>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <functional>
 #include <stdexcept>
@@ -151,10 +152,17 @@ void Graphics::initWithWindow(void *nativeWindow) {
         throw Exception("SDL_Vulkan_GetInstanceExtensions failed: %s", SDL_GetError());
 
     vkb::InstanceBuilder builder;
-    builder.require_api_version(1, 0).use_default_debug_messenger();
+    builder.require_api_version(1, 0);
 #if !defined(EVENGINE_IOS)
-    // iOS bring-up skips validation layers (need embedded layer frameworks).
-    builder.request_validation_layers();
+    // Khronos validation on every draw / descriptor update is typically 5–20×
+    // slower. Opt in with EVENGINE_VULKAN_VALIDATION=1 (any value except "0").
+    const char *vkVal = std::getenv("EVENGINE_VULKAN_VALIDATION");
+    const bool wantValidation = vkVal && vkVal[0] != '\0' && vkVal[0] != '0';
+    if (wantValidation) {
+        builder.request_validation_layers();
+        builder.use_default_debug_messenger();
+        std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
+    }
 #endif
     for (auto *name : extNames) builder.enable_extension(name);
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
@@ -316,6 +324,127 @@ Graphics::VoxelInstanceFrame &Graphics::currentVoxelInstanceFrame() {
     return voxelInstanceFrames[currentFrameSlot()];
 }
 
+Graphics::ShadowMapSlot &Graphics::currentShadowMap() {
+    ASSERT(!shadowMaps.empty());
+    return shadowMaps[currentFrameSlot() % shadowMaps.size()];
+}
+
+vk::ImageView Graphics::currentShadowArrayView() {
+    if (shadowMaps.empty()) return vk::ImageView{};
+    return currentShadowMap().arrayView;
+}
+
+Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
+    if (gbufferSlots.empty()) return nullptr;
+    return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
+}
+
+void Graphics::dropPendingOffscreenPasses() {
+    shadowPendingMask = 0;
+    for (auto &d : shadowCascadeDraws) d.clear();
+    gbufferPending = false;
+    gbufferPassDraws.clear();
+}
+
+void Graphics::recordPendingShadowPasses() {
+    if (shadowPendingMask == 0 || !shadowPipeline || shadowMaps.empty()) {
+        shadowPendingMask = 0;
+        for (auto &d : shadowCascadeDraws) d.clear();
+        return;
+    }
+    auto &slot = currentShadowMap();
+    auto &cb = presentModel.getCurrentCommandBuffer();
+    const uint32_t size = uint32_t(ShadowConfig::kMapSize);
+    vk::ClearValue clear{};
+    clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+        if ((shadowPendingMask & (1u << c)) == 0) continue;
+        vk::RenderPassBeginInfo rpBegin{};
+        rpBegin.renderPass = shadowRenderPass;
+        rpBegin.framebuffer = slot.framebuffers[c];
+        rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
+        rpBegin.clearValueCount = 1;
+        rpBegin.pClearValues = &clear;
+        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+        vk::Viewport vp{0.f, 0.f, float(size), float(size), 0.f, 1.f};
+        vk::Rect2D scissor{{0, 0}, {size, size}};
+        cb.setViewport(0, 1, &vp);
+        cb.setScissor(0, 1, &scissor);
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
+        for (const auto &d : shadowCascadeDraws[c]) {
+            if (!d.mesh || !d.mesh->gpuHandle) continue;
+            auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+            cb.pushConstants(shadowPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0,
+                             sizeof(glm::mat4), &d.mvp);
+            vk::DeviceSize offset = 0;
+            cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
+            cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
+            cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+        }
+        cb.endRenderPass();
+        shadowCascadeDraws[c].clear();
+    }
+    shadowPendingMask = 0;
+}
+
+void Graphics::recordPendingGBufferPass() {
+    if (!gbufferPending) return;
+    gbufferPending = false;
+    auto *slot = currentGBufferSlot();
+    if (!slot || !gbufferPipeline || !gbufferRenderPass || !slot->framebuffer) {
+        gbufferPassDraws.clear();
+        return;
+    }
+    auto &cb = presentModel.getCurrentCommandBuffer();
+    const uint32_t w = uint32_t(gbufferWidth);
+    const uint32_t h = uint32_t(gbufferHeight);
+    std::array<vk::ClearValue, 4> clears{};
+    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
+    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = gbufferRenderPass;
+    rpBegin.framebuffer = slot->framebuffer;
+    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+    rpBegin.clearValueCount = uint32_t(clears.size());
+    rpBegin.pClearValues = clears.data();
+    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    vk::Viewport vp{0.f, 0.f, float(w), float(h), 0.f, 1.f};
+    vk::Rect2D scissor{{0, 0}, {w, h}};
+    cb.setViewport(0, 1, &vp);
+    cb.setScissor(0, 1, &scissor);
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
+    for (const auto &d : gbufferPassDraws) {
+        if (!d.mesh || !d.mesh->gpuHandle) continue;
+        auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+        cb.pushConstants(gbufferPipelineLayout,
+                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
+                         sizeof(GBufferPush), &d.push);
+        vk::DeviceSize offset = 0;
+        cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
+        cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
+        cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+    }
+    cb.endRenderPass();
+    gbufferPassDraws.clear();
+}
+
+bool Graphics::beginSwapchainRenderPass() {
+    if (!beginPresentCommandBuffer()) {
+        dropPendingOffscreenPasses();
+        return false;
+    }
+    recordPendingShadowPasses();
+    recordPendingGBufferPass();
+    std::array<vk::ClearValue, 2> clears{};
+    clears[0].color = vk::ClearColorValue(
+        std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
+    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
+    return true;
+}
+
 bool Graphics::rebuildSwapchainIfNeeded() {
     const bool wantRecreate =
         surfaceNeedsRecreate.load() || swapchainDirty || presentModel.needs_recreate;
@@ -442,6 +571,14 @@ void Graphics::createSwapchainAndPipeline() {
     // Prefer UNORM so clear/draw Color floats match getPixel without sRGB encode.
     swapchainBuilder.set_desired_format(
         {vk::Format::eB8G8R8A8Unorm, vk::ColorSpaceKHR::eSrgbNonlinear});
+    if (vsyncEnabled) {
+        swapchainBuilder.set_desired_present_mode(vk::PresentModeKHR::eMailbox);
+        swapchainBuilder.add_fallback_present_mode(vk::PresentModeKHR::eFifo);
+    } else {
+        swapchainBuilder.set_desired_present_mode(vk::PresentModeKHR::eImmediate);
+        swapchainBuilder.add_fallback_present_mode(vk::PresentModeKHR::eMailbox);
+        swapchainBuilder.add_fallback_present_mode(vk::PresentModeKHR::eFifo);
+    }
     // Allow screen getPixel / newImageData readback after present.
     swapchainBuilder.add_image_usage_flags(vk::ImageUsageFlagBits::eTransferSrc);
     auto swapRet = swapchainBuilder.set_old_swapchain(swapchain).build();
@@ -748,31 +885,35 @@ void Graphics::destroyShadowResources() {
         device->destroyPipelineLayout(shadowPipelineLayout);
         shadowPipelineLayout = vk::PipelineLayout{};
     }
-    for (int i = 0; i < ShadowConfig::kCascades; ++i) {
-        if (shadowFramebuffers[i]) {
-            device->destroyFramebuffer(shadowFramebuffers[i]);
-            shadowFramebuffers[i] = vk::Framebuffer{};
+    auto destroySlot = [&](ShadowMapSlot &slot) {
+        for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+            if (slot.framebuffers[i]) {
+                device->destroyFramebuffer(slot.framebuffers[i]);
+                slot.framebuffers[i] = vk::Framebuffer{};
+            }
+            if (slot.layerViews[i]) {
+                device->destroyImageView(slot.layerViews[i]);
+                slot.layerViews[i] = vk::ImageView{};
+            }
         }
-        if (shadowLayerViews[i]) {
-            device->destroyImageView(shadowLayerViews[i]);
-            shadowLayerViews[i] = vk::ImageView{};
+        if (slot.arrayView) {
+            device->destroyImageView(slot.arrayView);
+            slot.arrayView = vk::ImageView{};
         }
-    }
-    if (shadowArrayView) {
-        device->destroyImageView(shadowArrayView);
-        shadowArrayView = vk::ImageView{};
-    }
+        if (slot.image) {
+            device->destroyImage(slot.image);
+            slot.image = vk::Image{};
+        }
+        if (slot.memory) {
+            device->freeMemory(slot.memory);
+            slot.memory = vk::DeviceMemory{};
+        }
+    };
+    for (auto &slot : shadowMaps) destroySlot(slot);
+    shadowMaps.clear();
     if (shadowSampler) {
         device->destroySampler(shadowSampler);
         shadowSampler = vk::Sampler{};
-    }
-    if (shadowImage) {
-        device->destroyImage(shadowImage);
-        shadowImage = vk::Image{};
-    }
-    if (shadowMemory) {
-        device->freeMemory(shadowMemory);
-        shadowMemory = vk::DeviceMemory{};
     }
     if (shadowRenderPass) {
         device->destroyRenderPass(shadowRenderPass);
@@ -780,18 +921,14 @@ void Graphics::destroyShadowResources() {
     }
     shadowPassCascade = -1;
     shadowPassDraws.clear();
+    shadowPendingMask = 0;
+    for (auto &d : shadowCascadeDraws) d.clear();
 }
 
 void Graphics::destroyGBufferResources() {
     gbufferPassActive = false;
+    gbufferPending = false;
     gbufferPassDraws.clear();
-    gbufferNormalTex.gpuHandle = nullptr;
-    gbufferDepthColorTex.gpuHandle = nullptr;
-    gbufferAlbedoTex.gpuHandle = nullptr;
-    if (gbufferFramebuffer) {
-        device->destroyFramebuffer(gbufferFramebuffer);
-        gbufferFramebuffer = vk::Framebuffer{};
-    }
     auto destroyImg = [&](vk::Image &img, vk::DeviceMemory &mem, vk::ImageView &view) {
         if (view) {
             device->destroyImageView(view);
@@ -806,10 +943,32 @@ void Graphics::destroyGBufferResources() {
             mem = vk::DeviceMemory{};
         }
     };
-    destroyImg(gbufferNormalImage, gbufferNormalMemory, gbufferNormalView);
-    destroyImg(gbufferDepthColorImage, gbufferDepthColorMemory, gbufferDepthColorView);
-    destroyImg(gbufferAlbedoImage, gbufferAlbedoMemory, gbufferAlbedoView);
-    destroyImg(gbufferDepthImage, gbufferDepthMemory, gbufferDepthView);
+    for (auto &slot : gbufferSlots) {
+        slot.normalTex.gpuHandle = nullptr;
+        slot.depthColorTex.gpuHandle = nullptr;
+        slot.albedoTex.gpuHandle = nullptr;
+        if (slot.framebuffer) {
+            device->destroyFramebuffer(slot.framebuffer);
+            slot.framebuffer = vk::Framebuffer{};
+        }
+        destroyImg(slot.normalImage, slot.normalMemory, slot.normalView);
+        destroyImg(slot.depthColorImage, slot.depthColorMemory, slot.depthColorView);
+        destroyImg(slot.albedoImage, slot.albedoMemory, slot.albedoView);
+        destroyImg(slot.depthImage, slot.depthMemory, slot.depthView);
+        if (slot.normalGpu.sampler) {
+            device->destroySampler(slot.normalGpu.sampler);
+            slot.normalGpu.sampler = vk::Sampler{};
+        }
+        if (slot.depthColorGpu.sampler) {
+            device->destroySampler(slot.depthColorGpu.sampler);
+            slot.depthColorGpu.sampler = vk::Sampler{};
+        }
+        if (slot.albedoGpu.sampler) {
+            device->destroySampler(slot.albedoGpu.sampler);
+            slot.albedoGpu.sampler = vk::Sampler{};
+        }
+    }
+    gbufferSlots.clear();
     if (gbufferPipeline) {
         device->destroyPipeline(gbufferPipeline);
         gbufferPipeline = vk::Pipeline{};
@@ -821,18 +980,6 @@ void Graphics::destroyGBufferResources() {
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
         gbufferRenderPass = vk::RenderPass{};
-    }
-    if (gbufferNormalGpu.sampler) {
-        device->destroySampler(gbufferNormalGpu.sampler);
-        gbufferNormalGpu.sampler = vk::Sampler{};
-    }
-    if (gbufferDepthColorGpu.sampler) {
-        device->destroySampler(gbufferDepthColorGpu.sampler);
-        gbufferDepthColorGpu.sampler = vk::Sampler{};
-    }
-    if (gbufferAlbedoGpu.sampler) {
-        device->destroySampler(gbufferAlbedoGpu.sampler);
-        gbufferAlbedoGpu.sampler = vk::Sampler{};
     }
     gbufferWidth = 0;
     gbufferHeight = 0;
@@ -878,7 +1025,7 @@ void createColorTarget(vkb::Device &device, uint32_t w, uint32_t h, vk::Format f
 
 void Graphics::createGBufferResources(int width, int height) {
     if (width <= 0 || height <= 0) return;
-    if (gbufferNormalImage && gbufferWidth == width && gbufferHeight == height && gbufferPipeline)
+    if (!gbufferSlots.empty() && gbufferWidth == width && gbufferHeight == height && gbufferPipeline)
         return;
     destroyGBufferResources();
 
@@ -889,14 +1036,13 @@ void Graphics::createGBufferResources(int width, int height) {
     const vk::Format colorFmt = pickGBufferColorFormat(device);
     const vk::Format depthFmt = vk::Format::eD32Sfloat;
 
-    createColorTarget(device, w, h, colorFmt, gbufferNormalImage, gbufferNormalMemory,
-                      gbufferNormalView);
-    createColorTarget(device, w, h, colorFmt, gbufferDepthColorImage, gbufferDepthColorMemory,
-                      gbufferDepthColorView);
-    createColorTarget(device, w, h, colorFmt, gbufferAlbedoImage, gbufferAlbedoMemory,
-                      gbufferAlbedoView);
-
-    {
+    auto allocSlotImages = [&](GBufferSlot &slot) {
+        createColorTarget(device, w, h, colorFmt, slot.normalImage, slot.normalMemory,
+                          slot.normalView);
+        createColorTarget(device, w, h, colorFmt, slot.depthColorImage, slot.depthColorMemory,
+                          slot.depthColorView);
+        createColorTarget(device, w, h, colorFmt, slot.albedoImage, slot.albedoMemory,
+                          slot.albedoView);
         vk::ImageCreateInfo imgInfo{};
         imgInfo.imageType = vk::ImageType::e2D;
         imgInfo.format = depthFmt;
@@ -907,21 +1053,24 @@ void Graphics::createGBufferResources(int width, int height) {
         imgInfo.tiling = vk::ImageTiling::eOptimal;
         imgInfo.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
         imgInfo.initialLayout = vk::ImageLayout::eUndefined;
-        gbufferDepthImage = device->createImage(imgInfo);
-        auto memReq = device->getImageMemoryRequirements(gbufferDepthImage);
+        slot.depthImage = device->createImage(imgInfo);
+        auto memReq = device->getImageMemoryRequirements(slot.depthImage);
         vk::MemoryAllocateInfo mai{};
         mai.allocationSize = memReq.size;
         mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
             memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
-        gbufferDepthMemory = device->allocateMemory(mai);
-        device->bindImageMemory(gbufferDepthImage, gbufferDepthMemory, 0);
+        slot.depthMemory = device->allocateMemory(mai);
+        device->bindImageMemory(slot.depthImage, slot.depthMemory, 0);
         vk::ImageViewCreateInfo viewInfo{};
-        viewInfo.image = gbufferDepthImage;
+        viewInfo.image = slot.depthImage;
         viewInfo.viewType = vk::ImageViewType::e2D;
         viewInfo.format = depthFmt;
         viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1};
-        gbufferDepthView = device->createImageView(viewInfo);
-    }
+        slot.depthView = device->createImageView(viewInfo);
+    };
+
+    gbufferSlots.resize(kAsyncResourceCopies);
+    for (auto &slot : gbufferSlots) allocSlotImages(slot);
 
     vk::AttachmentDescription atts[4]{};
     for (int i = 0; i < 3; ++i) {
@@ -985,16 +1134,18 @@ void Graphics::createGBufferResources(int width, int height) {
     rpInfo.pDependencies = deps;
     gbufferRenderPass = device->createRenderPass(rpInfo);
 
-    vk::ImageView fbAtts[4] = {gbufferNormalView, gbufferDepthColorView, gbufferAlbedoView,
-                               gbufferDepthView};
     vk::FramebufferCreateInfo fbInfo{};
     fbInfo.renderPass = gbufferRenderPass;
     fbInfo.attachmentCount = 4;
-    fbInfo.pAttachments = fbAtts;
     fbInfo.width = w;
     fbInfo.height = h;
     fbInfo.layers = 1;
-    gbufferFramebuffer = device->createFramebuffer(fbInfo);
+    for (auto &slot : gbufferSlots) {
+        vk::ImageView atts[4] = {slot.normalView, slot.depthColorView, slot.albedoView,
+                                 slot.depthView};
+        fbInfo.pAttachments = atts;
+        slot.framebuffer = device->createFramebuffer(fbInfo);
+    }
 
     vk::PushConstantRange pcr{};
     pcr.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
@@ -1106,13 +1257,15 @@ void Graphics::createGBufferResources(int width, int height) {
         tex.pixelHeight = height;
         tex.gpuHandle = &gpu;
     };
-    makeSampleTex(gbufferNormalGpu, gbufferNormalTex, gbufferNormalView);
-    makeSampleTex(gbufferDepthColorGpu, gbufferDepthColorTex, gbufferDepthColorView);
-    makeSampleTex(gbufferAlbedoGpu, gbufferAlbedoTex, gbufferAlbedoView);
+    for (auto &slot : gbufferSlots) {
+        makeSampleTex(slot.normalGpu, slot.normalTex, slot.normalView);
+        makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColorView);
+        makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedoView);
+    }
 }
 
 void Graphics::createShadowResources() {
-    if (shadowImage) return;
+    if (!shadowMaps.empty()) return;
 
     const uint32_t size = uint32_t(ShadowConfig::kMapSize);
     const uint32_t layers = uint32_t(ShadowConfig::kCascades);
@@ -1128,31 +1281,36 @@ void Graphics::createShadowResources() {
     imgInfo.usage =
         vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled;
     imgInfo.initialLayout = vk::ImageLayout::eUndefined;
-    shadowImage = device->createImage(imgInfo);
 
-    auto memReq = device->getImageMemoryRequirements(shadowImage);
-    vk::MemoryAllocateInfo mai{};
-    mai.allocationSize = memReq.size;
-    mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
-        memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
-    shadowMemory = device->allocateMemory(mai);
-    device->bindImageMemory(shadowImage, shadowMemory, 0);
+    auto allocSlot = [&](ShadowMapSlot &slot) {
+        slot.image = device->createImage(imgInfo);
+        auto memReq = device->getImageMemoryRequirements(slot.image);
+        vk::MemoryAllocateInfo mai{};
+        mai.allocationSize = memReq.size;
+        mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
+            memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
+        slot.memory = device->allocateMemory(mai);
+        device->bindImageMemory(slot.image, slot.memory, 0);
 
-    vk::ImageViewCreateInfo arrayViewInfo{};
-    arrayViewInfo.image = shadowImage;
-    arrayViewInfo.viewType = vk::ImageViewType::e2DArray;
-    arrayViewInfo.format = vk::Format::eD32Sfloat;
-    arrayViewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, layers};
-    shadowArrayView = device->createImageView(arrayViewInfo);
+        vk::ImageViewCreateInfo arrayViewInfo{};
+        arrayViewInfo.image = slot.image;
+        arrayViewInfo.viewType = vk::ImageViewType::e2DArray;
+        arrayViewInfo.format = vk::Format::eD32Sfloat;
+        arrayViewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, layers};
+        slot.arrayView = device->createImageView(arrayViewInfo);
 
-    for (uint32_t i = 0; i < layers; ++i) {
-        vk::ImageViewCreateInfo layerInfo{};
-        layerInfo.image = shadowImage;
-        layerInfo.viewType = vk::ImageViewType::e2D;
-        layerInfo.format = vk::Format::eD32Sfloat;
-        layerInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, i, 1};
-        shadowLayerViews[i] = device->createImageView(layerInfo);
-    }
+        for (uint32_t i = 0; i < layers; ++i) {
+            vk::ImageViewCreateInfo layerInfo{};
+            layerInfo.image = slot.image;
+            layerInfo.viewType = vk::ImageViewType::e2D;
+            layerInfo.format = vk::Format::eD32Sfloat;
+            layerInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, i, 1};
+            slot.layerViews[i] = device->createImageView(layerInfo);
+        }
+    };
+
+    shadowMaps.resize(kAsyncResourceCopies);
+    for (auto &slot : shadowMaps) allocSlot(slot);
 
     vkb::SamplerBuilder sb;
     shadowSampler = sb.magFilter(vk::Filter::eLinear)
@@ -1203,15 +1361,17 @@ void Graphics::createShadowResources() {
     rpInfo.pDependencies = deps;
     shadowRenderPass = device->createRenderPass(rpInfo);
 
-    for (uint32_t i = 0; i < layers; ++i) {
-        vk::FramebufferCreateInfo fbInfo{};
-        fbInfo.renderPass = shadowRenderPass;
-        fbInfo.attachmentCount = 1;
-        fbInfo.pAttachments = &shadowLayerViews[i];
-        fbInfo.width = size;
-        fbInfo.height = size;
-        fbInfo.layers = 1;
-        shadowFramebuffers[i] = device->createFramebuffer(fbInfo);
+    for (auto &slot : shadowMaps) {
+        for (uint32_t i = 0; i < layers; ++i) {
+            vk::FramebufferCreateInfo fbInfo{};
+            fbInfo.renderPass = shadowRenderPass;
+            fbInfo.attachmentCount = 1;
+            fbInfo.pAttachments = &slot.layerViews[i];
+            fbInfo.width = size;
+            fbInfo.height = size;
+            fbInfo.layers = 1;
+            slot.framebuffers[i] = device->createFramebuffer(fbInfo);
+        }
     }
 
     vk::PushConstantRange pcr{};
@@ -1297,11 +1457,25 @@ void Graphics::createShadowResources() {
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
-    // Clear all cascade layers so the array is in SHADER_READ_ONLY before first sample.
-    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-        beginShadowPass(c);
-        endShadowPass();
-    }
+    // Clear every ping-pong copy so sampling before the first real shadow pass
+    // sees SHADER_READ_ONLY rather than UNDEFINED.
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                vk::ClearValue clear{};
+                                clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                for (auto &slot : shadowMaps) {
+                                    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+                                        vk::RenderPassBeginInfo rpBegin{};
+                                        rpBegin.renderPass = shadowRenderPass;
+                                        rpBegin.framebuffer = slot.framebuffers[c];
+                                        rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
+                                        rpBegin.clearValueCount = 1;
+                                        rpBegin.pClearValues = &clear;
+                                        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+                                        cb.endRenderPass();
+                                    }
+                                }
+                            });
 }
 
 void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes) {
@@ -1367,7 +1541,7 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
-    ASSERT(shadowArrayView);
+    ASSERT(currentShadowArrayView());
     while (fslots.slots.size() <= uboSlot) {
         fslots.slots.emplace_back();
         auto &s = fslots.slots.back();
@@ -1409,7 +1583,7 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
         .beginBuffers(7, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.shadowUbo.buffer, 0, sizeof(ShadowUBO))
         .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(shadowSampler, shadowArrayView, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(shadowSampler, currentShadowArrayView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(heightTex->sampler, heightTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .update(device.instance);
@@ -2687,15 +2861,10 @@ void Graphics::flushToSwapchain() {
 
     const bool continue3D = swapchainPassOpen;
     if (!continue3D) {
-        if (!beginPresentCommandBuffer()) {
+        if (!beginSwapchainRenderPass()) {
             hasPendingClear = false;
             return;
         }
-        std::array<vk::ClearValue, 2> clears{};
-        clears[0].color = vk::ClearColorValue(
-            std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
-        clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-        presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
         swapchainPassOpen = true;
     }
 
@@ -2787,14 +2956,8 @@ void Graphics::begin3DFrame() {
     if (swapchainPassOpen) throw Exception("begin3DFrame: swapchain pass already open");
     // Soft-fail like flushToSwapchain: on Android/iOS the surface may still be
     // settling after orientation change; throwing would abort the whole script.
-    if (!beginPresentCommandBuffer())
+    if (!beginSwapchainRenderPass())
         return;
-
-    std::array<vk::ClearValue, 2> clears{};
-    clears[0].color = vk::ClearColorValue(
-        std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
-    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
 
     auto &cb = presentModel.getCurrentCommandBuffer();
     vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
@@ -3128,46 +3291,13 @@ void Graphics::endShadowPass() {
         return;
     }
     const int cascade = shadowPassCascade;
-    const auto draws = std::move(shadowPassDraws);
+    shadowCascadeDraws[cascade] = std::move(shadowPassDraws);
     shadowPassDraws.clear();
     shadowPassCascade = -1;
-
-    // The shadow map is a single shared image sampled by the forward pass. With
-    // async frames an in-flight frame may still be sampling it, so drain those
-    // frames before overwriting. (executeImmediately below is already a
-    // synchronous stall; this only adds the in-flight-frame barrier it needs.)
-    waitForSharedGpuResources();
-
-    const uint32_t size = uint32_t(ShadowConfig::kMapSize);
-    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
-                            [&](vk::CommandBuffer cb) {
-                                vk::ClearValue clear{};
-                                clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-                                vk::RenderPassBeginInfo rpBegin{};
-                                rpBegin.renderPass = shadowRenderPass;
-                                rpBegin.framebuffer = shadowFramebuffers[cascade];
-                                rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
-                                rpBegin.clearValueCount = 1;
-                                rpBegin.pClearValues = &clear;
-                                cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-
-                                vk::Viewport vp{0.f, 0.f, float(size), float(size), 0.f, 1.f};
-                                vk::Rect2D scissor{{0, 0}, {size, size}};
-                                cb.setViewport(0, 1, &vp);
-                                cb.setScissor(0, 1, &scissor);
-                                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
-
-                                for (const auto &d : draws) {
-                                    auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-                                    cb.pushConstants(shadowPipelineLayout, vk::ShaderStageFlagBits::eVertex,
-                                                     0, sizeof(glm::mat4), &d.mvp);
-                                    vk::DeviceSize offset = 0;
-                                    cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
-                                    cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
-                                    cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
-                                }
-                                cb.endRenderPass();
-                            });
+    shadowPendingMask |= (1u << cascade);
+    // GPU work is recorded into the swapchain command buffer in
+    // beginSwapchainRenderPass() so it shares the frame's submit and uses the
+    // ping-pong copy for this frame slot.
 }
 
 void Graphics::beginGBufferPass(int width, int height) {
@@ -3199,61 +3329,21 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
 void Graphics::endGBufferPass() {
     if (!gbufferPassActive) throw Exception("endGBufferPass: no active gbuffer pass");
     gbufferPassActive = false;
-    const auto draws = std::move(gbufferPassDraws);
-    gbufferPassDraws.clear();
 
-    if (!gbufferPipeline || !gbufferRenderPass || !gbufferFramebuffer) {
+    auto *slot = currentGBufferSlot();
+    if (!gbufferPipeline || !gbufferRenderPass || !slot || !slot->framebuffer) {
+        gbufferPassDraws.clear();
+        gbufferPending = false;
         if (renderControl_) renderControl_->getGBuffer()->clear();
         return;
     }
 
-    // G-buffer targets are single shared images consumed by post-processing.
-    // Drain in-flight frames before overwriting them (async frames may still be
-    // sampling the previous contents).
-    waitForSharedGpuResources();
-
-    const uint32_t w = uint32_t(gbufferWidth);
-    const uint32_t h = uint32_t(gbufferHeight);
-    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
-                            [&](vk::CommandBuffer cb) {
-                                std::array<vk::ClearValue, 4> clears{};
-                                clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-                                clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-                                vk::RenderPassBeginInfo rpBegin{};
-                                rpBegin.renderPass = gbufferRenderPass;
-                                rpBegin.framebuffer = gbufferFramebuffer;
-                                rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
-                                rpBegin.clearValueCount = uint32_t(clears.size());
-                                rpBegin.pClearValues = clears.data();
-                                cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-
-                                vk::Viewport vp{0.f, 0.f, float(w), float(h), 0.f, 1.f};
-                                vk::Rect2D scissor{{0, 0}, {w, h}};
-                                cb.setViewport(0, 1, &vp);
-                                cb.setScissor(0, 1, &scissor);
-                                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
-
-                                for (const auto &d : draws) {
-                                    auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-                                    cb.pushConstants(gbufferPipelineLayout,
-                                                     vk::ShaderStageFlagBits::eVertex |
-                                                         vk::ShaderStageFlagBits::eFragment,
-                                                     0, sizeof(GBufferPush), &d.push);
-                                    vk::DeviceSize offset = 0;
-                                    cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
-                                    cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
-                                    cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
-                                }
-                                cb.endRenderPass();
-                            });
-
+    gbufferPending = true;
     if (renderControl_) {
         Texture *albedo = nullptr;
-        if (renderControl_->isEnabled("gbufferAlbedo")) albedo = &gbufferAlbedoTex;
-        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &gbufferDepthColorTex,
-                                                 &gbufferNormalTex, albedo);
+        if (renderControl_->isEnabled("gbufferAlbedo")) albedo = &slot->albedoTex;
+        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex,
+                                                 &slot->normalTex, albedo);
     }
 }
 
@@ -3334,7 +3424,7 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
     ASSERT(heightTex != nullptr);
-    ASSERT(shadowArrayView);
+    ASSERT(currentShadowArrayView());
     while (fslots.slots.size() <= uboSlot) {
         fslots.slots.emplace_back();
         auto &s = fslots.slots.back();
@@ -3369,7 +3459,7 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
         .beginBuffers(4, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.shadowUbo.buffer, 0, sizeof(ShadowUBO))
         .beginImages(5, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(shadowSampler, shadowArrayView, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(shadowSampler, currentShadowArrayView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .beginImages(6, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(heightTex->sampler, heightTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .update(device.instance);

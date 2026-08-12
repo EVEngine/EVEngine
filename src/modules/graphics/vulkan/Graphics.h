@@ -154,6 +154,11 @@ public:
         eve::graphics::Graphics::setScreenReadbackEnabled(enabled);
         ensurePresentCaptureHook();
     }
+    void setVSync(bool enabled) override {
+        if (vsyncEnabled == enabled) return;
+        eve::graphics::Graphics::setVSync(enabled);
+        markSwapchainDirty();
+    }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
@@ -274,6 +279,11 @@ private:
     void destroyShadowResources();
     void createGBufferResources(int width, int height);
     void destroyGBufferResources();
+    void recordPendingShadowPasses();
+    void recordPendingGBufferPass();
+    void dropPendingOffscreenPasses();
+    /** acquire + record deferred shadow/gbuffer + begin swapchain RP. */
+    bool beginSwapchainRenderPass();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     vk::DescriptorSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
@@ -444,12 +454,18 @@ private:
     };
     std::vector<Mesh3dClusteredFrameSlots> mesh3dClusteredFrameSlots;
 
-    // CSM shadow map (3 cascade layers).
-    vk::Image shadowImage{};
-    vk::DeviceMemory shadowMemory{};
-    vk::ImageView shadowArrayView{};
-    vk::ImageView shadowLayerViews[ShadowConfig::kCascades]{};
-    vk::Framebuffer shadowFramebuffers[ShadowConfig::kCascades]{};
+    // Ping-pong copies so frame N+1 can write while frame N still samples.
+    static constexpr uint32_t kAsyncResourceCopies = 2;
+
+    // CSM shadow map (3 cascade layers), one array per in-flight slot.
+    struct ShadowMapSlot {
+        vk::Image image{};
+        vk::DeviceMemory memory{};
+        vk::ImageView arrayView{};
+        vk::ImageView layerViews[ShadowConfig::kCascades]{};
+        vk::Framebuffer framebuffers[ShadowConfig::kCascades]{};
+    };
+    std::vector<ShadowMapSlot> shadowMaps;
     vk::Sampler shadowSampler{};
     vk::RenderPass shadowRenderPass{};
     vk::PipelineLayout shadowPipelineLayout{};
@@ -460,6 +476,10 @@ private:
         glm::mat4 mvp{1.f};
     };
     std::vector<ShadowDraw> shadowPassDraws;
+    std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
+    uint32_t shadowPendingMask = 0;
+    ShadowMapSlot &currentShadowMap();
+    vk::ImageView currentShadowArrayView();
 
     // Screen-space G-buffer (normal / linear-depth / albedo + HW depth).
     struct GBufferPush {
@@ -474,32 +494,37 @@ private:
         Mesh *mesh = nullptr;
         GBufferPush push{};
     };
+    struct GBufferSlot {
+        vk::Image normalImage{};
+        vk::DeviceMemory normalMemory{};
+        vk::ImageView normalView{};
+        vk::Image depthColorImage{};
+        vk::DeviceMemory depthColorMemory{};
+        vk::ImageView depthColorView{};
+        vk::Image albedoImage{};
+        vk::DeviceMemory albedoMemory{};
+        vk::ImageView albedoView{};
+        vk::Image depthImage{};
+        vk::DeviceMemory depthMemory{};
+        vk::ImageView depthView{};
+        vk::Framebuffer framebuffer{};
+        GpuTexture normalGpu{};
+        GpuTexture depthColorGpu{};
+        GpuTexture albedoGpu{};
+        Texture normalTex{};
+        Texture depthColorTex{};
+        Texture albedoTex{};
+    };
     int gbufferWidth = 0;
     int gbufferHeight = 0;
-    vk::Image gbufferNormalImage{};
-    vk::DeviceMemory gbufferNormalMemory{};
-    vk::ImageView gbufferNormalView{};
-    vk::Image gbufferDepthColorImage{};
-    vk::DeviceMemory gbufferDepthColorMemory{};
-    vk::ImageView gbufferDepthColorView{};
-    vk::Image gbufferAlbedoImage{};
-    vk::DeviceMemory gbufferAlbedoMemory{};
-    vk::ImageView gbufferAlbedoView{};
-    vk::Image gbufferDepthImage{};
-    vk::DeviceMemory gbufferDepthMemory{};
-    vk::ImageView gbufferDepthView{};
-    vk::Framebuffer gbufferFramebuffer{};
+    std::vector<GBufferSlot> gbufferSlots;
     vk::RenderPass gbufferRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
-    GpuTexture gbufferNormalGpu{};
-    GpuTexture gbufferDepthColorGpu{};
-    GpuTexture gbufferAlbedoGpu{};
-    Texture gbufferNormalTex{};
-    Texture gbufferDepthColorTex{};
-    Texture gbufferAlbedoTex{};
     bool gbufferPassActive = false;
+    bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
+    GBufferSlot *currentGBufferSlot();
 
     vkb::Present presentModel;
     vkb::DepthStencilImage depthImage;

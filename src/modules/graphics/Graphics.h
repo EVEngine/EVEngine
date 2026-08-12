@@ -312,8 +312,9 @@ virtual void begin3DFrame() = 0;
     virtual void setMesh3DShadowReceive(bool receive) = 0;
 
     /**
-     * Depth-only shadow pass for one cascade layer (0..2). Uses a one-shot submit;
-     * call before begin3DFrame.
+     * Depth-only shadow pass for one cascade layer (0..2). Draws are recorded
+     * into the next begin3DFrame command buffer (ping-pong map per frame slot).
+     * Call before begin3DFrame.
      */
     virtual void beginShadowPass(int cascadeIndex) = 0;
     virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
@@ -335,6 +336,13 @@ virtual void begin3DFrame() = 0;
      */
     virtual void setScreenReadbackEnabled(bool enabled) { screenReadbackEnabled = enabled; }
     bool isScreenReadbackEnabled() const { return screenReadbackEnabled; }
+
+    /**
+     * Prefer uncapped present (IMMEDIATE/MAILBOX) when false, vsync (MAILBOX/FIFO)
+     * when true. Takes effect on the next swapchain recreate.
+     */
+    virtual void setVSync(bool enabled) { vsyncEnabled = enabled; }
+    bool isVSync() const { return vsyncEnabled; }
 
     /** Pause/resume presenting (Android background / foreground). */
     void setActive(bool active) {
@@ -583,6 +591,7 @@ protected:
     Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
     bool frameHad3D = false;
     bool screenReadbackEnabled = false;
+    bool vsyncEnabled = true;
     bool graphicsActive = true;
     PresentOverlayFn presentOverlayFn_ = nullptr;
     void *presentOverlayUser_ = nullptr;
