@@ -41,7 +41,7 @@ public:
     int getSkillDefinitionCount();
 
     // ---- 帧调度 ----
-    /** 推进 StatusSystem / SkillSystem，并刷新本帧的 tick / cast 事件缓存。 */
+    /** 推进 StatusSystem / SkillSystem，并刷新本帧的 tick / change / cast 事件缓存。 */
     void update(float dt);
 
     // 周期状态 tick 事件（上一次 update() 产生的，供脚本轮询）
@@ -51,6 +51,16 @@ public:
     std::string getTickEventEffectId(int index) const;
     std::string getTickEventSource(int index) const;
     int getTickEventStacks(int index) const;
+
+    // 状态生命周期变更事件（apply/refresh/extend/stack/remove/expire/reject）
+    int getStatusChangeEventCount() const;
+    RPGActor *getStatusChangeEventActor(int index) const;
+    int getStatusChangeEventInstanceId(int index) const;
+    std::string getStatusChangeEventEffectId(int index) const;
+    std::string getStatusChangeEventSource(int index) const;
+    std::string getStatusChangeEventAction(int index) const;
+    int getStatusChangeEventStacks(int index) const;
+    std::string getStatusChangeEventReason(int index) const;
 
     // 技能释放结算事件
     int getCastEventCount() const;
@@ -72,6 +82,7 @@ public:
 
 private:
     std::vector<StatusTickEvent> ticks_;
+    std::vector<StatusChangeEvent> changes_;
     std::vector<SkillCastEvent> casts_;
 };
 

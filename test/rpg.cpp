@@ -165,6 +165,25 @@ TEST_CASE("rpg.effect.loadFromJsonArray") {
     EffectRegistry::remove("test.effect.json.b");
 }
 
+TEST_CASE("rpg.effect.loadFromJsonExtraAndGetExtra") {
+    const char *json = R"({
+        "id":"test.effect.extra","durationPolicy":"duration","duration":3,
+        "tags":["buff"],
+        "extra":{"icon":"ui/power.png","vfx":"fx.glow"}
+    })";
+    std::string err;
+    CHECK_EQ(EffectRegistry::loadFromJson(json, &err), 1);
+    CHECK(err.empty());
+
+    const EffectDefinition *def = EffectRegistry::find("test.effect.extra");
+    REQUIRE(def != nullptr);
+    CHECK_EQ(def->getExtra("icon"), "ui/power.png");
+    CHECK_EQ(def->getExtra("vfx"), "fx.glow");
+    CHECK_EQ(def->getExtra("missing", "fallback"), "fallback");
+
+    EffectRegistry::remove("test.effect.extra");
+}
+
 // ---------------------------------------------------------------------------
 // StatusSystem: instant / duration / stacking / periodic ticks
 // ---------------------------------------------------------------------------
@@ -380,6 +399,162 @@ TEST_CASE("rpg.status.removeByTagAndBySource") {
     actor->release();
     EffectRegistry::remove("test.status.tagA");
     EffectRegistry::remove("test.status.tagB");
+}
+
+TEST_CASE("rpg.buff.applyConditionRejectsAndEmitsChange") {
+    // Drain any leftover change events from prior cases.
+    std::vector<StatusChangeEvent> drain;
+    StatusSystem::pollChanges(drain);
+
+    EffectDefinition buff;
+    buff.id = "test.buff.immuneTarget";
+    buff.durationPolicy = "duration";
+    buff.duration = 5.f;
+    buff.tags = {"buff", "magic"};
+    EffectRegistry::registerEffect(buff);
+
+    StatusSystem::registerApplyCondition("blockMagic",
+                                         [](RPGActor *, const EffectDefinition &def,
+                                            const std::string &, std::string &reason) {
+                                             if (def.hasTag("magic")) {
+                                                 reason = "immune:magic";
+                                                 return false;
+                                             }
+                                             return true;
+                                         });
+    CHECK(StatusSystem::hasApplyCondition("blockMagic"));
+
+    RPGActor *actor = RPGActor::createActor();
+    CHECK_EQ(actor->applyBuff("test.buff.immuneTarget"), -1);
+    CHECK(!actor->hasBuff("test.buff.immuneTarget"));
+    CHECK_EQ(actor->getBuffCount(), 0);
+
+    std::vector<StatusChangeEvent> changes;
+    StatusSystem::pollChanges(changes);
+    REQUIRE(changes.size() == 1);
+    CHECK_EQ(changes[0].action, "reject");
+    CHECK_EQ(changes[0].effectId, "test.buff.immuneTarget");
+    CHECK_EQ(changes[0].reason, "immune:magic");
+
+    StatusSystem::unregisterApplyCondition("blockMagic");
+    int id = actor->applyBuff("test.buff.immuneTarget", "caster");
+    CHECK(id > 0);
+    CHECK(actor->hasBuff("test.buff.immuneTarget"));
+    CHECK(actor->hasBuffTag("buff"));
+    CHECK_EQ(actor->getBuffSource(0), "caster");
+
+    actor->setBuffProp(id, "iconOverride", "ui/custom.png");
+    CHECK_EQ(actor->getBuffProp(id, "iconOverride"), "ui/custom.png");
+    CHECK_EQ(actor->getBuffProp(id, "missing", "n/a"), "n/a");
+
+    StatusSystem::pollChanges(changes);
+    REQUIRE(changes.size() == 1);
+    CHECK_EQ(changes[0].action, "apply");
+    CHECK_EQ(changes[0].instanceId, id);
+
+    CHECK(actor->removeBuff(id));
+    StatusSystem::pollChanges(changes);
+    REQUIRE(changes.size() == 1);
+    CHECK_EQ(changes[0].action, "remove");
+
+    actor->release();
+    EffectRegistry::remove("test.buff.immuneTarget");
+    StatusSystem::clearApplyConditions();
+}
+
+TEST_CASE("rpg.buff.customStackPolicyAndLifecycleHook") {
+    std::vector<StatusChangeEvent> drain;
+    StatusSystem::pollChanges(drain);
+
+    EffectDefinition def;
+    def.id = "test.buff.customStack";
+    def.durationPolicy = "duration";
+    def.duration = 2.f;
+    def.stackPolicy = "additiveDuration";
+    def.modifiers.push_back({"attack", "add", 3.0, 0});
+    EffectRegistry::registerEffect(def);
+
+    StatusSystem::registerStackPolicy(
+        "additiveDuration",
+        [](RPGActor *, StatusInstance &existing, const EffectDefinition &effect,
+           const std::string &) {
+            // Each re-apply adds duration and one stack, uncapped for the test.
+            existing.stacks += 1;
+            if (existing.remaining >= 0.f) existing.remaining += effect.duration;
+            return existing.instanceId;
+        });
+    CHECK(StatusSystem::hasStackPolicy("additiveDuration"));
+
+    int hookCalls = 0;
+    std::string lastAction;
+    StatusSystem::registerLifecycleHook("counter", [&](const StatusChangeEvent &ev) {
+        ++hookCalls;
+        lastAction = ev.action;
+    });
+
+    RPGActor *actor = RPGActor::createActor();
+    actor->setBaseAttribute("attack", 10.0);
+
+    int id1 = actor->applyBuff("test.buff.customStack");
+    CHECK(id1 > 0);
+    CHECK_EQ(actor->getFinalAttribute("attack"), 13.0);
+    CHECK_EQ(hookCalls, 1);
+    CHECK_EQ(lastAction, "apply");
+
+    int id2 = actor->applyBuff("test.buff.customStack");
+    CHECK_EQ(id2, id1);
+    CHECK_EQ(actor->getBuffStacks(0), 2);
+    CHECK(approxEq(actor->getBuffRemaining(0), 4.0, 1e-4));
+    CHECK_EQ(actor->getFinalAttribute("attack"), 16.0);  // 3 * 2 stacks
+    CHECK_EQ(lastAction, "stack");
+
+    StatusSystem::update(4.1f);
+    CHECK_EQ(actor->getBuffCount(), 0);
+    CHECK_EQ(actor->getFinalAttribute("attack"), 10.0);
+    CHECK_EQ(lastAction, "expire");
+
+    std::vector<StatusChangeEvent> changes;
+    StatusSystem::pollChanges(changes);
+    CHECK(changes.size() >= 3);
+    CHECK_EQ(changes.back().action, "expire");
+
+    actor->release();
+    EffectRegistry::remove("test.buff.customStack");
+    StatusSystem::clearStackPolicies();
+    StatusSystem::clearLifecycleHooks();
+}
+
+TEST_CASE("rpg.buff.facadeStatusChangeEvents") {
+    std::vector<StatusChangeEvent> drain;
+    StatusSystem::pollChanges(drain);
+
+    RPG *rpg = RPG::create();
+    rpg->clearEffectDefinitions();
+    CHECK_EQ(rpg->registerEffectsFromJson(R"([
+        {"id":"buff.facade","durationPolicy":"duration","duration":0.5,
+         "stackPolicy":"refresh","tags":["buff"],
+         "extra":{"icon":"ui/buff.png"}}
+    ])"),
+             1);
+
+    RPGActor *actor = rpg->newActor();
+    int id = actor->applyBuff("buff.facade");
+    CHECK(id > 0);
+
+    // apply happens before update; changes are polled inside update().
+    rpg->update(0.f);
+    CHECK_EQ(rpg->getStatusChangeEventCount(), 1);
+    CHECK_EQ(rpg->getStatusChangeEventAction(0), "apply");
+    CHECK_EQ(rpg->getStatusChangeEventEffectId(0), "buff.facade");
+    CHECK_EQ(rpg->getStatusChangeEventInstanceId(0), id);
+
+    rpg->update(0.6f);
+    CHECK_EQ(rpg->getStatusChangeEventCount(), 1);
+    CHECK_EQ(rpg->getStatusChangeEventAction(0), "expire");
+    CHECK_EQ(actor->getBuffCount(), 0);
+
+    actor->release();
+    rpg->clearEffectDefinitions();
 }
 
 // ---------------------------------------------------------------------------

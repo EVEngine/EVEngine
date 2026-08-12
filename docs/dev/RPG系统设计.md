@@ -33,8 +33,12 @@
 | 系统 | 扩展点 | 谁来注册 | 覆盖场景 |
 |------|--------|----------|----------|
 | 属性 | `AttributeSystem::registerOp(name, fn)` | C++ | 内置 add/mulAdd/mulMul/override/clampMin/clampMax 之外的自定义运算 |
-| 状态 | `EffectDefinition`（数据） | C++ 或 JSON | 新增效果无需改代码 |
-| 状态 | 周期效果只产生 tick 事件，不直接改属性 | 调用方（脚本/C++） | 让 DOT/HOT 可以完整走结算流水线而非被硬编码为直接扣血 |
+| 状态/Buff | `EffectDefinition`（数据） | C++ 或 JSON | 新增效果无需改代码 |
+| 状态/Buff | `EffectDefinition::extra` / `StatusInstance::props` | C++ 或 JSON | 图标/VFX/脚本钩子等自定义字段无需扩结构体 |
+| 状态/Buff | `StatusSystem::registerApplyCondition(name, fn)` | C++ | 免疫/抗性/互斥等"能否施加"判断 |
+| 状态/Buff | `StatusSystem::registerStackPolicy(name, fn)` | C++ | 内置 none/refresh/extend/stack 之外的自定义叠加 |
+| 状态/Buff | `StatusSystem::registerLifecycleHook(name, fn)` | C++ | 施加/刷新/叠层/移除/到期时的副作用（UI、成就、VFX） |
+| 状态/Buff | 周期效果只产生 tick 事件，不直接改属性 | 调用方（脚本/C++） | 让 DOT/HOT 可以完整走结算流水线而非被硬编码为直接扣血 |
 | 技能 | `SkillSystem::registerCastCondition(name, fn)` | C++ | 引擎不内置"沉默/眩晕"等互斥概念，由游戏自定义判断逻辑 |
 | 技能 | `SkillDefinition::extra`（string→string） | C++ 或 JSON | 任意自定义附加数据（动画名、特效……）无需扩结构体 |
 | 结算 | `SettlementPipeline::registerStage(pipeline, stage, priority, fn)` | C++ | 伤害/治疗/命中率等公式完全可换、可插入新阶段 |
@@ -91,25 +95,41 @@ AttributeValue    { base, modifiers[], cached, dirty }
 4. 其余按 `priority` 升序依次处理：`override`（直接赋值）、`clampMin`/`clampMax`、
    或自定义 op（`AttributeSystem::registerOp` 注册的 `f(current, value)`）
 
-### 效果 / 状态（`Effect.h` / `StatusTypes.h` / `StatusSystem.h`）
+### 效果 / 状态 / Buff（`Effect.h` / `StatusTypes.h` / `StatusSystem.h`）
 
 ```text
 EffectDefinition {
   id, durationPolicy(instant|duration|infinite), duration, period,
-  stackPolicy(none|refresh|extend|stack), maxStacks, modifiers[], tags[]
+  stackPolicy(none|refresh|extend|stack|<custom>), maxStacks,
+  modifiers[], tags[], extra{}
 }
-StatusInstance { instanceId, effectId, source, stacks, remaining, periodAccum, appliedModifiers[] }
+StatusInstance {
+  instanceId, effectId, source, stacks, remaining, periodAccum,
+  appliedModifiers[], props{}
+}
+StatusChangeEvent {
+  actor, instanceId, effectId, source,
+  action(apply|refresh|extend|stack|remove|expire|reject), stacks, reason
+}
 ```
 
+ECS 组件 `RPGActor::Statuses` 即运行时 Buff 列表。脚本/游戏侧可用 `applyBuff` /
+`hasBuff` / `removeBuff*` 等与 `applyEffect` / `hasEffect` / `removeStatus*` 等价的别名。
+
 - `durationPolicy == "instant"`：立即把 `modifiers[].value` 当增量写入属性 base，
-  不产生状态实例（`StatusSystem::apply` 返回 `0`）。
+  不产生状态实例（`StatusSystem::apply` 返回 `0`），并产生 `action="apply"` 变更事件。
 - `period <= 0`（duration/infinite 的普通增益/减益）：`apply` 时把 modifiers 转成
   `AttributeSystem` 修改器写入，`remove`/到期时精确撤销。
 - `period > 0`（周期效果，如 DOT/HOT）：**不**自动改属性，`StatusSystem::update`
   每满一个周期产生一个 `StatusTickEvent`（携带 actor / effectId / stacks），
   由上层决定如何处理（直接改值，或走 `Settlement` 完整结算护甲/抗性/暴击）。
 - `stackPolicy`："none" 拒绝重复施加；"refresh" 重置剩余时间；"extend" 累加剩余时间；
-  "stack" 增加层数（受 `maxStacks` 限制）并按新层数重新写入修改器（`value * stacks`）。
+  "stack" 增加层数（受 `maxStacks` 限制）并按新层数重新写入修改器（`value * stacks`）；
+  其它字符串走 `registerStackPolicy` 自定义策略（未注册则按 "none" 拒绝）。
+- `registerApplyCondition`：施加前全部条件 AND；任一失败返回 -1 并产生
+  `action="reject"`（`reason` 为条件名或条件写入的说明）。
+- `registerLifecycleHook`：每次 `StatusChangeEvent` 入队后同步回调，适合 UI/成就/VFX。
+- `extra`（定义侧）与 `props`（实例侧）互补：模板数据进 JSON；运行时 UI 覆盖等写 props。
 
 ### 技能（`Skill.h` / `SkillTypes.h` / `SkillSystem.h`）
 
@@ -141,6 +161,7 @@ enable/disable、调整已注册阶段的优先级，但不能新增原生阶段
 - 帧调度：`rpg.update(dt)` 驱动 `StatusSystem`/`SkillSystem`，并刷新本帧事件缓存
 - 事件轮询（push/poll 风格，与 `event` 模块一致）：
   `getTickEventCount/Actor/InstanceId/EffectId/Source/Stacks`、
+  `getStatusChangeEventCount/Actor/InstanceId/EffectId/Source/Action/Stacks/Reason`、
   `getCastEventCount/Caster/Target/SkillId`
 - 结算：`newSettlementContext()` → `SettlementContext`，`runSettlement(pipeline, ctx)`，
   以及 stage 的 enable/priority/remove 内省接口
@@ -166,11 +187,12 @@ enable/disable、调整已注册阶段的优先级，但不能新增原生阶段
 ## 测试
 
 `test/rpg.cpp`：属性纯函数计算（各 op / 自定义 op / 优先级）、`AttributeSystem` 的
-增删查与缓存失效、`EffectRegistry` 的注册与 JSON 加载、`StatusSystem` 的
-instant/duration/infinite/周期 tick/四种叠加策略、`SkillSystem` 的
+增删查与缓存失效、`EffectRegistry` 的注册与 JSON 加载（含 `extra`）、`StatusSystem` 的
+instant/duration/infinite/周期 tick/四种叠加策略、施加条件拒绝、自定义 stackPolicy、
+生命周期钩子与变更事件、Buff API 别名、`SkillSystem` 的
 学习/冷却/消耗/读条/取消/自定义施法条件、`SettlementPipeline` 的优先级执行/取消/
 开关/内省，以及一个贯穿 `RPG` facade 的端到端用例（JSON 注册技能与效果 →
-释放技能 → 命中目标产生持续伤害 tick 事件）。
+释放技能 → 命中目标产生持续伤害 tick 事件；以及 facade 侧 status change 事件轮询）。
 
 ## 非目标（v1）
 

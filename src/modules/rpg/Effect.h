@@ -8,9 +8,12 @@
 // 灵活性/可定制点：
 //  - 完全数据驱动：C++ 侧 registerEffect() 或脚本侧 loadFromJson() 均可定义新效果，
 //    无需修改引擎代码；effect id、属性名、tag、op 全部是字符串。
-//  - durationPolicy / stackPolicy 同样是字符串，方便未来扩展新策略而不破坏 ABI。
+//  - durationPolicy / stackPolicy 同样是字符串，方便未来扩展新策略而不破坏 ABI；
+//    未知 stackPolicy 可走 StatusSystem::registerStackPolicy 注册的自定义策略。
 //  - period > 0 的周期效果不会自动改属性，而是产生 tick 事件交给上层处理，
 //    从而可以让周期伤害/治疗完整走 Settlement 结算流水线（见 Settlement.h）。
+//  - extra 字段是任意 string→string 自定义数据（图标、VFX、脚本钩子名……），
+//    无需为每个新效果特性修改引擎结构体。
 
 #include <string>
 #include <unordered_map>
@@ -36,7 +39,10 @@ struct EffectDefinition {
     /** > 0 时为周期效果：每隔 period 秒产生一次 StatusTickEvent。 */
     float period = 0.f;
 
-    /** "none" | "refresh" | "extend" | "stack"（未知值按 "none" 处理）。 */
+    /**
+     * "none" | "refresh" | "extend" | "stack"，或 StatusSystem::registerStackPolicy 注册的名字。
+     * 未知且未注册时按 "none" 处理。
+     */
     std::string stackPolicy = "none";
     int maxStacks = 1;
 
@@ -45,7 +51,11 @@ struct EffectDefinition {
 
     std::vector<std::string> tags;
 
+    /** 游戏自定义附加数据（图标路径、特效名、脚本钩子……）。 */
+    std::unordered_map<std::string, std::string> extra;
+
     bool hasTag(const std::string &tag) const;
+    std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
 /** 全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。 */
@@ -64,7 +74,8 @@ public:
      *   "id": "poison", "durationPolicy": "duration", "duration": 5,
      *   "period": 1, "stackPolicy": "stack", "maxStacks": 5,
      *   "modifiers": [{"attribute":"health","op":"add","value":-5}],
-     *   "tags": ["debuff", "poison"]
+     *   "tags": ["debuff", "poison"],
+     *   "extra": {"icon": "ui/poison.png", "vfx": "fx.poison"}
      * }
      */
     static int loadFromJson(const std::string &json, std::string *error = nullptr);

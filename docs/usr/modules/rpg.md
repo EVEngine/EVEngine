@@ -2,7 +2,10 @@
 
 **脚本入口：** `eve.RPG()`
 
-组合属性、效果、状态、技能、施法与伤害结算。
+组合属性、效果、状态（Buff）、技能、施法与伤害结算。
+
+ECS 组件 `RPGActor::Statuses` 保存运行时 buff/debuff 实例；可用 `applyBuff` /
+`hasBuff` / `removeBuff*` 等别名，与 `applyEffect` / `hasEffect` / `removeStatus*` 等价。
 
 ## 基本用法
 
@@ -12,11 +15,30 @@ local actor = rpg.newActor();
 actor.setBaseAttribute("hp", 100);
 actor.setBaseAttribute("attack", 12);
 print(actor.getFinalAttribute("hp") + "\n");
+
+// 注册效果后施加 buff（JSON 可带 extra 自定义字段）
+rpg.registerEffectsFromJson(@"[
+  {""id"":""buff.power"",""durationPolicy"":""duration"",""duration"":5.0,
+   ""stackPolicy"":""refresh"",
+   ""modifiers"":[{""attribute"":""attack"",""op"":""add"",""value"":5.0}],
+   ""tags"":[""buff""],""extra"":{""icon"":""ui/power.png""}}
+]");
+local id = actor.applyBuff("buff.power", "potion");
+actor.setBuffProp(id, "uiTint", "#ffaa00");
 ```
 
 ## 对象关系与调用时机
 
 `RPG` 保存 effect/skill 定义和结算 pipeline；`RPGActor` 保存属性、状态、已学技能、冷却和施法状态。JSON 是定义，Actor 是运行时实例，事件队列负责把结算连接到表现。
+
+每帧 `rpg.update(dt)` 后可轮询：
+
+- tick 事件（DOT/HOT）：`getTickEvent*`
+- 状态变更（apply/refresh/stack/remove/expire/reject）：`getStatusChangeEvent*`
+- 施法结算：`getCastEvent*`
+
+C++ 扩展点：`StatusSystem::registerApplyCondition` / `registerStackPolicy` /
+`registerLifecycleHook`（免疫、自定义叠层、UI 钩子）。
 
 ## 目标导向指南
 

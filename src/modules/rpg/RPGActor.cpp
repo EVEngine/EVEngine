@@ -107,6 +107,8 @@ int RPGActor::removeStatusByTag(const std::string &tag) {
 
 bool RPGActor::hasEffect(const std::string &effectId) { return StatusSystem::hasEffect(this, effectId); }
 
+bool RPGActor::hasStatusTag(const std::string &tag) { return StatusSystem::hasTag(this, tag); }
+
 int RPGActor::getStatusCount() { return StatusSystem::getActiveCount(this); }
 
 std::string RPGActor::getStatusEffectId(int index) {
@@ -118,6 +120,58 @@ int RPGActor::getStatusStacks(int index) { return StatusSystem::getActiveStacks(
 float RPGActor::getStatusRemaining(int index) { return StatusSystem::getActiveRemaining(this, index); }
 
 int RPGActor::getStatusInstanceId(int index) { return StatusSystem::getActiveInstanceId(this, index); }
+
+std::string RPGActor::getStatusSource(int index) { return StatusSystem::getActiveSource(this, index); }
+
+std::string RPGActor::getStatusProp(int instanceId, const std::string &key,
+                                     const std::string &fallback) {
+    return StatusSystem::getProp(this, instanceId, key, fallback);
+}
+
+bool RPGActor::setStatusProp(int instanceId, const std::string &key, const std::string &value) {
+    return StatusSystem::setProp(this, instanceId, key, value);
+}
+
+int RPGActor::applyBuff(const std::string &effectId, const std::string &source) {
+    return applyEffect(effectId, source);
+}
+
+bool RPGActor::removeBuff(int instanceId) { return removeStatus(instanceId); }
+
+int RPGActor::removeBuffByEffect(const std::string &effectId) {
+    return removeStatusByEffect(effectId);
+}
+
+int RPGActor::removeBuffBySource(const std::string &source) {
+    return removeStatusBySource(source);
+}
+
+int RPGActor::removeBuffByTag(const std::string &tag) { return removeStatusByTag(tag); }
+
+bool RPGActor::hasBuff(const std::string &effectId) { return hasEffect(effectId); }
+
+bool RPGActor::hasBuffTag(const std::string &tag) { return hasStatusTag(tag); }
+
+int RPGActor::getBuffCount() { return getStatusCount(); }
+
+std::string RPGActor::getBuffEffectId(int index) { return getStatusEffectId(index); }
+
+int RPGActor::getBuffStacks(int index) { return getStatusStacks(index); }
+
+float RPGActor::getBuffRemaining(int index) { return getStatusRemaining(index); }
+
+int RPGActor::getBuffInstanceId(int index) { return getStatusInstanceId(index); }
+
+std::string RPGActor::getBuffSource(int index) { return getStatusSource(index); }
+
+std::string RPGActor::getBuffProp(int instanceId, const std::string &key,
+                                   const std::string &fallback) {
+    return getStatusProp(instanceId, key, fallback);
+}
+
+bool RPGActor::setBuffProp(int instanceId, const std::string &key, const std::string &value) {
+    return setStatusProp(instanceId, key, value);
+}
 
 // ---- Skills ----
 
