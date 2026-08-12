@@ -27,7 +27,19 @@
         "pathfinding",
         "hex"
       ],
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 0,
+        "enabled": false
+      },
+      "enable": {
+        "path": true,
+        "fov": false,
+        "light": false,
+        "pickup": false,
+        "particles": false
+      }
     },
     {
       "id": 2,
@@ -49,7 +61,14 @@
         "algorithm": "shadowcast",
         "radius": 6
       },
-      "lootTable": "cave"
+      "lootTable": "cave",
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": false,
+        "pickup": false,
+        "particles": false
+      }
     },
     {
       "id": 3,
@@ -73,7 +92,18 @@
           2.2
         ]
       },
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": false,
+        "particles": false
+      }
     },
     {
       "id": 4,
@@ -88,7 +118,18 @@
         "inventory",
         "hex"
       ],
-      "lootTable": "rich"
+      "lootTable": "rich",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": false
+      }
     },
     {
       "id": 5,
@@ -106,7 +147,18 @@
         "torch_fire",
         "pickup_burst"
       ],
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": true
+      }
     },
     {
       "id": 6,
@@ -122,7 +174,19 @@
         "hex"
       ],
       "swarmStarts": 4,
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": true,
+        "flow": true
+      }
     },
     {
       "id": 7,
@@ -141,7 +205,19 @@
         "cost": 8.0,
         "stripWidth": 4
       },
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": false,
+        "cellcost": true
+      }
     },
     {
       "id": 8,
@@ -164,9 +240,18 @@
         "algorithm": "shadowcast",
         "heroRadius": 4,
         "heroPerception": 2.0,
-        "torchRadius": 3
+        "torchRadius": 3,
+        "perceptionScale": 1.0
       },
-      "lootTable": "cave"
+      "lootTable": "cave",
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": false,
+        "perception": true
+      }
     },
     {
       "id": 9,
@@ -187,7 +272,19 @@
         "permissive",
         "rectangle"
       ],
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 6
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": false,
+        "mask": true
+      }
     },
     {
       "id": 0,
@@ -212,7 +309,39 @@
         "torch_fire",
         "pickup_burst",
         "ember_trail"
-      ]
+      ],
+      "fov": {
+        "algorithm": "shadowcast",
+        "heroRadius": 5,
+        "heroPerception": 2.0,
+        "torchRadius": 3,
+        "perceptionScale": 1.0
+      },
+      "light": {
+        "type": "point",
+        "radius": 160,
+        "color": [
+          1.0,
+          0.78,
+          0.45,
+          2.0
+        ]
+      },
+      "cellCost": {
+        "cost": 8.0,
+        "stripWidth": 4
+      },
+      "swarmStarts": 4,
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": true,
+        "flow": true,
+        "cellcost": true,
+        "perception": true
+      }
     },
     {
       "id": 10,
@@ -226,7 +355,21 @@
         "camera",
         "hex"
       ],
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "camera": {
+        "zoom": 1.2
+      },
+      "fov": {
+        "algorithm": "raycast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "camera": true
+      }
     },
     {
       "id": 11,
@@ -240,7 +383,16 @@
         "dualgrid",
         "hex"
       ],
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 4
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "dualgrid": true
+      }
     },
     {
       "id": 12,
@@ -255,7 +407,17 @@
         "maze",
         "hex"
       ],
-      "lootTable": "cave"
+      "lootTable": "cave",
+      "params": {},
+      "fov": {
+        "algorithm": "permissive",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "pickup": true
+      }
     },
     {
       "id": 13,
@@ -270,7 +432,17 @@
         "cull",
         "hex"
       ],
-      "lootTable": "starter"
+      "lootTable": "starter",
+      "fov": {
+        "algorithm": "rectangle",
+        "radius": 7
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "cull": true,
+        "pickup": true
+      }
     },
     {
       "id": 14,
@@ -287,7 +459,23 @@
       "lootTable": "starter",
       "light": {
         "type": "multi",
-        "count": 3
+        "count": 3,
+        "radius": 120,
+        "color": [
+          0.85,
+          0.9,
+          1.0,
+          1.8
+        ]
+      },
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true
       }
     },
     {
@@ -309,7 +497,19 @@
         "ember_trail",
         "mist_fog"
       ],
-      "lootTable": "equipment"
+      "lootTable": "equipment",
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 5
+      },
+      "enable": {
+        "path": true,
+        "fov": true,
+        "light": true,
+        "pickup": true,
+        "particles": true,
+        "stash": true
+      }
     }
   ]
 }

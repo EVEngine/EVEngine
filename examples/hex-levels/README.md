@@ -50,11 +50,25 @@ C++ 对应用例：
 ./build/linux-debug/test/unit_test --testcase='^hex\.(level|data)\..*$'
 ```
 
-## 测试数据（`data/`）
+## 关卡启动配置
+
+每个关卡从 `data/catalog.json`（示例侧镜像为 `data/fixtures.nut`）读取独立启动配置：
+
+| 字段 | 作用 |
+|------|------|
+| `seed` / `algorithm` / `params` | 程序化生成 |
+| `width` / `height` | 地图尺寸 |
+| `lootTable` | 掉落表 |
+| `fov` | 算法 / 半径 / 感知 |
+| `light` | 点光半径与颜色 |
+| `cellCost` | 绕路代价条带 |
+| `enable.*` | 功能开关（path/fov/light/pickup/particles/flow…） |
+
+切换数字键会重新应用该关配置；`R` 仅递增种子并保留当前关其它设置。
 
 | 资源 | 用途 |
 |------|------|
-| `catalog.json` | 关卡目录（种子 / 尺寸 / 算法 / 特性标签） |
+| `catalog.json` | 关卡目录（种子 / 尺寸 / 算法 / FOV·光照·代价·enable 启动配置） |
 | `items.json` | 物品定义（示例与单测共用） |
 | `loot_tables.json` | 掉落表与感知门控 |
 | `seeds_matrix.json` | 种子 × 算法连通性冒烟 |

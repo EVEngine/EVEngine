@@ -54,6 +54,15 @@ if (!("mudCells" in getroottable())) mudCells <- [];
 if (!("fixturesLoaded" in getroottable())) fixturesLoaded <- false;
 if (!("activeLootTable" in getroottable())) activeLootTable <- "starter";
 if (!("lastCatalogLevel" in getroottable())) lastCatalogLevel <- -1;
+if (!("levelCfg" in getroottable())) levelCfg <- null;
+if (!("featureOn" in getroottable())) featureOn <- {};
+if (!("fovRadius" in getroottable())) fovRadius <- 6;
+if (!("heroPerception" in getroottable())) heroPerception <- 0.0;
+if (!("perceptionScale" in getroottable())) perceptionScale <- 0.0;
+if (!("torchFovRadius" in getroottable())) torchFovRadius <- 3;
+if (!("cellCostValue" in getroottable())) cellCostValue <- 8.0;
+if (!("cellCostStrip" in getroottable())) cellCostStrip <- 4;
+if (!("swarmStarts" in getroottable())) swarmStarts <- 4;
 
 TILE_W <- 48.0;
 TILE_H <- 28.0;
@@ -102,6 +111,90 @@ function ensureFixtures() {
     } catch (e) {
         pushLog("fixtures.nut 加载失败: " + e);
         fixturesLoaded = false;
+    }
+}
+
+function featureEnabled(name, fallback = false) {
+    if (name in featureOn) return featureOn[name];
+    return fallback;
+}
+
+function applyLevelBootConfig() {
+    featureOn = {};
+    levelCfg = null;
+    fovRadius = 6;
+    heroPerception = 0.0;
+    perceptionScale = 0.0;
+    torchFovRadius = 3;
+    cellCostValue = 8.0;
+    cellCostStrip = 4;
+    swarmStarts = 4;
+    activeLootTable = "starter";
+
+    if (!fixturesLoaded || !(level in LEVEL_CATALOG)) return;
+    local meta = LEVEL_CATALOG[level];
+    levelCfg = meta;
+    if (lastCatalogLevel != level) {
+        seed = meta.seed;
+        algo = meta.algo;
+        lastCatalogLevel = level;
+    }
+    MAP_W = meta.w;
+    MAP_H = meta.h;
+    activeLootTable = meta.loot;
+
+    if ("enable" in meta) {
+        foreach (k, v in meta.enable)
+            featureOn[k] <- v;
+    }
+    if ("fov" in meta) {
+        local f = meta.fov;
+        if ("algorithm" in f) fovAlgo = f.algorithm;
+        if ("radius" in f) fovRadius = f.radius;
+        if ("heroRadius" in f) fovRadius = f.heroRadius;
+        if ("heroPerception" in f) heroPerception = f.heroPerception;
+        if ("torchRadius" in f) torchFovRadius = f.torchRadius;
+        if ("perceptionScale" in f) perceptionScale = f.perceptionScale;
+        if (("enabled" in f) && !f.enabled)
+            featureOn.fov <- false;
+    }
+    if ("light" in meta && torchLight != null) {
+        local L = meta.light;
+        if ("radius" in L) torchLight.setRadius(L.radius);
+        if ("color" in L && L.color.len() >= 4)
+            torchLight.setColor(L.color[0], L.color[1], L.color[2], L.color[3]);
+        if (("type" in L) && L.type == "point")
+            torchLight.setType("point");
+    }
+    if ("cellCost" in meta) {
+        cellCostValue = meta.cellCost.cost;
+        cellCostStrip = meta.cellCost.stripWidth;
+        featureOn.cellcost <- true;
+    }
+    if ("swarmStarts" in meta) {
+        swarmStarts = meta.swarmStarts;
+        featureOn.flow <- true;
+    }
+}
+
+function applyProcgenParams(p) {
+    if (levelCfg != null && ("params" in levelCfg)) {
+        local pr = levelCfg.params;
+        if ("loops" in pr) p.setInt("loops", pr.loops);
+        if ("fill" in pr) p.setFloat("fill", pr.fill);
+        if ("floorPct" in pr) p.setFloat("floorPct", pr.floorPct);
+        if ("preset" in pr) p.setString("preset", pr.preset);
+        if ("maxAttempts" in pr) p.setInt("maxAttempts", pr.maxAttempts);
+        return;
+    }
+    if (algo == "cave.cellular") {
+        p.setInt("loops", 4);
+        p.setFloat("fill", 0.45);
+    } else if (algo == "cave.drunkard") {
+        p.setFloat("floorPct", 0.42);
+    } else if (algo == "wfc.simple") {
+        p.setString("preset", "dungeon");
+        p.setInt("maxAttempts", 64);
     }
 }
 
@@ -233,7 +326,7 @@ function rebuildPath() {
     if (path != null)
         pathLen = path.getLength();
 
-    if (level == 0 || level == 6) {
+    if (featureEnabled("flow", level == 0 || level == 6)) {
         local field = pf.buildFlowField(exitTx, exitTy);
         if (field != null) {
             local starts = [
@@ -242,12 +335,16 @@ function rebuildPath() {
                 [spawnTx, spawnTy + 1],
                 [spawnTx - 1, spawnTy]
             ];
+            local n = 0;
             foreach (s in starts) {
+                if (n >= swarmStarts) break;
                 if (!pf.isWalkable(s[0], s[1])) continue;
                 if (!field.isReachable(s[0], s[1])) continue;
                 local fp = pf.followFlow(field, s[0], s[1]);
-                if (fp != null && fp.getLength() > 0)
+                if (fp != null && fp.getLength() > 0) {
                     flowPaths.push(fp);
+                    n += 1;
+                }
             }
         }
     }
@@ -256,7 +353,7 @@ function rebuildPath() {
 function refreshFov() {
     visibleCount = 0;
     exploredCount = 0;
-    if (fov == null || level == 1) return;
+    if (fov == null || !featureEnabled("fov", level != 1)) return;
     if (revealerId >= 0)
         fov.setRevealerPosition(revealerId, playerTx, playerTy);
     fov.compute();
@@ -285,7 +382,7 @@ function syncHeroVisuals() {
     if (cam != null)
         cam.setPosition(pos.x, pos.y);
 
-    local lightOn = (level == 0 || level >= 3);
+    local lightOn = featureEnabled("light", level == 0 || level >= 3);
     if (torchLight != null) {
         torchLight.setPosition(pos.x + 4.0, pos.y - 2.0);
         torchLight.setEnabled(lightOn);
@@ -294,7 +391,7 @@ function syncHeroVisuals() {
         else
             cam.setAmbient(0.16, 0.16, 0.20);
     }
-    local fxOn = (level == 0 || level >= 5);
+    local fxOn = featureEnabled("particles", level == 0 || level >= 5);
     if (torchFx != null) {
         torchFx.setPosition(pos.x + 4.0, pos.y - 6.0);
         if (fxOn) {
@@ -309,21 +406,7 @@ function regenerate() {
     ensureEntities();
     bindPalette();
     clearLoot();
-
-    // Apply catalog size/loot always; seed/algo only when the level changes.
-    if (fixturesLoaded && (level in LEVEL_CATALOG)) {
-        local meta = LEVEL_CATALOG[level];
-        if (lastCatalogLevel != level) {
-            seed = meta.seed;
-            algo = meta.algo;
-            lastCatalogLevel = level;
-        }
-        MAP_W = meta.w;
-        MAP_H = meta.h;
-        activeLootTable = meta.loot;
-    } else {
-        activeLootTable = "starter";
-    }
+    applyLevelBootConfig();
 
     if (layer == null) {
         layer = map.newLayer(MAP_W, MAP_H, TILE_W, TILE_H);
@@ -339,15 +422,7 @@ function regenerate() {
     local p = procgen.newParams();
     p.setSeed(seed);
     p.setSize(MAP_W, MAP_H);
-    if (algo == "cave.cellular") {
-        p.setInt("loops", 4);
-        p.setFloat("fill", 0.45);
-    } else if (algo == "cave.drunkard") {
-        p.setFloat("floorPct", 0.42);
-    } else if (algo == "wfc.simple") {
-        p.setString("preset", "dungeon");
-        p.setInt("maxAttempts", 64);
-    }
+    applyProcgenParams(p);
 
     local out = procgen.newOutput();
     out.setTarget("tilelayer");
@@ -423,14 +498,15 @@ function regenerate() {
     pf.setTopology("auto");
 
     mudCells = [];
-    if (level == 0 || level == 7) {
-        // Paint a costly strip near spawn for detour demos.
+    if (featureEnabled("cellcost", level == 0 || level == 7)) {
+        local half = cellCostStrip / 2;
+        if (half < 1) half = 1;
         local y = spawnTy - 1;
         while (y <= spawnTy + 1) {
             local x = spawnTx + 2;
-            while (x <= spawnTx + 5) {
+            while (x <= spawnTx + 1 + cellCostStrip) {
                 if (pf.isWalkable(x, y)) {
-                    pf.setCellCost(x, y, 8.0);
+                    pf.setCellCost(x, y, cellCostValue);
                     mudCells.push({ tx = x, ty = y });
                 }
                 x += 1;
@@ -444,14 +520,20 @@ function regenerate() {
     fov.setBlockEmpty(false);
     fov.setTopology("auto");
     fov.setAlgorithm(fovAlgo);
-    if (level == 0 || level == 8) {
-        fov.setPerceptionRadiusScale(1.0);
-        revealerId = fov.addRevealer(playerTx, playerTy, 4);
-        fov.setRevealerPerception(revealerId, 2.0);
-        torchRevealerId = fov.addRevealer(exitTx, exitTy, 3);
+    torchRevealerId = -1;
+    if (featureEnabled("fov", level != 1)) {
+        local radius = fovRadius;
+        if (radius < 1) radius = 1;
+        if (featureEnabled("perception", level == 0 || level == 8)) {
+            fov.setPerceptionRadiusScale(perceptionScale);
+            revealerId = fov.addRevealer(playerTx, playerTy, radius);
+            fov.setRevealerPerception(revealerId, heroPerception);
+            torchRevealerId = fov.addRevealer(exitTx, exitTy, torchFovRadius);
+        } else {
+            revealerId = fov.addRevealer(playerTx, playerTy, radius);
+        }
     } else {
-        revealerId = fov.addRevealer(playerTx, playerTy, 6);
-        torchRevealerId = -1;
+        revealerId = -1;
     }
 
     rebuildPath();
@@ -485,10 +567,12 @@ function regenerate() {
     refreshFov();
     syncHeroVisuals();
 
-    local lname = (level in LEVEL_NAMES) ? LEVEL_NAMES[level] : ("L" + level);
+    local lname = (levelCfg != null && ("name" in levelCfg)) ? levelCfg.name :
+                  ((level in LEVEL_NAMES) ? LEVEL_NAMES[level] : ("L" + level));
     status = lname + " | " + algo + " seed=" + seed + " path=" + pathLen +
-             " topo=" + pf.getTopology() + " fov=" + fovAlgo;
-    pushLog("进入关卡: " + lname);
+             " topo=" + pf.getTopology() + " fov=" + fovAlgo + " r=" + fovRadius +
+             " loot=" + activeLootTable;
+    pushLog("进入关卡: " + lname + " [" + ((levelCfg != null) ? levelCfg.key : ("L" + level)) + "]");
 }
 
 function tryMove(dx, dy) {
@@ -498,7 +582,7 @@ function tryMove(dx, dy) {
     playerTx = nx;
     playerTy = ny;
     rebuildPath();
-    if (level == 0 || level >= 2) refreshFov();
+    if (level == 0 || featureEnabled("fov", level >= 2)) refreshFov();
     syncHeroVisuals();
     if (playerTx == exitTx && playerTy == exitTy) {
         pushLog("到达出口！按 R 换种子，或 N 下一关。");
@@ -508,8 +592,8 @@ function tryMove(dx, dy) {
 }
 
 function tryPickup() {
-    if (level != 0 && level < 4) {
-        pushLog("本关未启用拾取（切到 4 / 0 / 5）。");
+    if (!featureEnabled("pickup", level == 0 || level >= 4)) {
+        pushLog("本关未启用拾取（切到启用 pickup 的关卡）。");
         return;
     }
     local pos = {};
@@ -531,7 +615,7 @@ function tryPickup() {
                     L.taken = true;
                     hash.remove(L.id);
                     pushLog("拾取 " + L.itemId);
-                    if (level == 0 || level >= 5) {
+                    if (featureEnabled("particles", level == 0 || level >= 5)) {
                         sparkFx.setPosition(L.wx, L.wy);
                         sparkFx.reset();
                         sparkFx.setEmitterLifetime(0.25);
@@ -650,7 +734,7 @@ eve_update = function(dt) {
         if (moved) moveCd = 0.12;
     }
 
-    if (level == 0 || level >= 5)
+    if (featureEnabled("particles", level == 0 || level >= 5))
         particles.update(dt);
     map.update(dt);
     refreshHud();

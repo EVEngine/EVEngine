@@ -18,6 +18,7 @@
 #include "map/TileConfig.h"
 #include "map/TileLayer.h"
 #include "map/TileOrientation.h"
+#include "graphics/Light.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
 #include "procgen/GeneratorRegistry.h"
@@ -552,4 +553,210 @@ TEST_CASE("hex.data.catalog.driveLevelGeneration") {
         ++generated;
     }
     CHECK_EQ(generated, int(levels->size()));
+}
+
+TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
+    // Start every catalog level with its own boot config and assert the
+    // applied FOV / light / cell-cost / loot / algo settings actually differ
+    // where the catalog says they should.
+    auto catalog = loadJson("catalog.json");
+    auto lootDoc = loadJson("loot_tables.json");
+    auto levels = catalog->object()->getArray("levels");
+    auto tables = lootDoc->object()->getObject("tables");
+    REQUIRE(levels);
+    REQUIRE(tables);
+
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    GeneratorRegistry::instance().registerBuiltins();
+    gen->setPaletteGid("hex_boot", "wall", 1);
+    gen->setPaletteGid("hex_boot", "floor", 2);
+    gen->setPaletteGid("hex_boot", "corridor", 2);
+    gen->setPaletteGid("hex_boot", "door", 3);
+
+    std::vector<uint32_t> seenSeeds;
+    std::vector<std::string> seenKeys;
+    int booted = 0;
+
+    for (size_t i = 0; i < levels->size(); ++i) {
+        auto lv = levels->getObject(i);
+        REQUIRE(lv);
+        const int id = lv->getValue<int>("id");
+        const std::string key = lv->getValue<std::string>("key");
+        const uint32_t seed = uint32_t(lv->getValue<int>("seed"));
+        const int w = lv->getValue<int>("width");
+        const int h = lv->getValue<int>("height");
+        const std::string algo = lv->getValue<std::string>("algorithm");
+        const std::string lootTable =
+            lv->has("lootTable") ? lv->getValue<std::string>("lootTable") : "starter";
+
+        CHECK(!key.empty());
+        CHECK(tables->has(lootTable));
+        for (uint32_t s : seenSeeds) CHECK(s != seed);
+        for (const auto &k : seenKeys) CHECK(k != key);
+        seenSeeds.push_back(seed);
+        seenKeys.push_back(key);
+
+        hideLayers();
+        TileLayer *layer = mapMod->newLayer(w, h, 64.f, 32.f);
+        {
+            auto c = layer->config();
+            c->orientation = MapOrientation::Hexagonal;
+            c->hexSideLength = 16.f;
+            c->staggerAxis = StaggerAxis::Y;
+            c->staggerIndex = StaggerIndex::Odd;
+        }
+
+        Params p;
+        p.setSeed(seed);
+        p.setSize(w, h);
+        if (auto params = lv->getObject("params")) {
+            if (params->has("loops")) p.setInt("loops", params->getValue<int>("loops"));
+            if (params->has("fill")) p.setFloat("fill", float(params->getValue<double>("fill")));
+            if (params->has("floorPct"))
+                p.setFloat("floorPct", float(params->getValue<double>("floorPct")));
+            if (params->has("preset"))
+                p.setString("preset", params->getValue<std::string>("preset"));
+            if (params->has("maxAttempts"))
+                p.setInt("maxAttempts", params->getValue<int>("maxAttempts"));
+        }
+
+        Grid2D grid;
+        std::string err;
+        REQUIRE(GeneratorRegistry::instance().generate(algo, p, grid, err));
+        REQUIRE(gen->applyToLayer(&grid, "hex_boot", layer));
+        CHECK(countWalkable(grid) >= 1);
+
+        Pathfinder *pf = mapMod->newPathfinder(layer);
+        pf->blockGid(1);
+        pf->setTopology("auto");
+        CHECK_EQ(pf->getTopology(), std::string("hex"));
+
+        // Apply cell-cost boot config when present.
+        if (auto cc = lv->getObject("cellCost")) {
+            const float cost = float(cc->getValue<double>("cost"));
+            const int strip = cc->getValue<int>("stripWidth");
+            CHECK(cost > 1.f);
+            CHECK(strip >= 1);
+            int painted = 0;
+            for (int y = 1; y < h - 1; ++y) {
+                for (int x = 2; x < 2 + strip && x < w - 1; ++x) {
+                    if (!pf->isWalkable(x, y)) continue;
+                    pf->setCellCost(x, y, cost);
+                    CHECK(std::fabs(pf->getCellCost(x, y) - cost) < 1e-3f);
+                    ++painted;
+                }
+            }
+            CHECK(painted >= 1);
+        }
+
+        // Apply FOV boot config when present / enabled.
+        auto enable = lv->getObject("enable");
+        const bool fovOn = !enable || !enable->has("fov") || enable->getValue<bool>("fov");
+        if (fovOn) {
+            Fov *fov = mapMod->newFov(layer);
+            fov->blockOpaqueGid(1);
+            fov->setBlockEmpty(false);
+            fov->setTopology("auto");
+            auto fovCfg = lv->getObject("fov");
+            std::string fovAlgo = "shadowcast";
+            int radius = 6;
+            float perception = 0.f;
+            float scale = 0.f;
+            int torchRadius = 0;
+            if (fovCfg) {
+                if (fovCfg->has("algorithm"))
+                    fovAlgo = fovCfg->getValue<std::string>("algorithm");
+                if (fovCfg->has("radius")) radius = fovCfg->getValue<int>("radius");
+                if (fovCfg->has("heroRadius")) radius = fovCfg->getValue<int>("heroRadius");
+                if (fovCfg->has("heroPerception"))
+                    perception = float(fovCfg->getValue<double>("heroPerception"));
+                if (fovCfg->has("perceptionScale"))
+                    scale = float(fovCfg->getValue<double>("perceptionScale"));
+                if (fovCfg->has("torchRadius")) torchRadius = fovCfg->getValue<int>("torchRadius");
+                if (fovCfg->has("enabled") && !fovCfg->getValue<bool>("enabled")) {
+                    delete fov;
+                    delete pf;
+                    layer->setVisible(false);
+                    ++booted;
+                    continue;
+                }
+            }
+            if (radius < 1) radius = 1;
+            fov->setAlgorithm(fovAlgo);
+            CHECK_EQ(fov->getAlgorithm(), fovAlgo);
+            fov->setPerceptionRadiusScale(scale);
+            const int hero = fov->addRevealer(w / 2, h / 2, radius);
+            fov->setRevealerPerception(hero, perception);
+            CHECK(std::fabs(fov->getRevealerPerception(hero) - perception) < 1e-3f);
+            const int expectEff = radius + int(std::floor(perception * scale));
+            CHECK_EQ(fov->getEffectiveRadius(hero), expectEff);
+            if (torchRadius > 0) {
+                const int torch = fov->addRevealer(1, 1, torchRadius);
+                CHECK_EQ(fov->getEffectiveRadius(torch), torchRadius);
+                CHECK_EQ(fov->getRevealerCount(), 2);
+            } else {
+                CHECK_EQ(fov->getRevealerCount(), 1);
+            }
+            fov->compute();
+            delete fov;
+        }
+
+        // Apply light boot config when present.
+        if (auto light = lv->getObject("light")) {
+            auto *lamp = eve::graphics::Light2D::createLight("point");
+            const float radius = light->has("radius")
+                                     ? float(light->getValue<double>("radius"))
+                                     : 120.f;
+            lamp->setRadius(radius);
+            CHECK(std::fabs(lamp->getRadius() - radius) < 1e-3f);
+            if (light->has("count")) CHECK(light->getValue<int>("count") >= 1);
+            lamp->setEnabled(false);
+        }
+
+        // Level-specific feature tags should be non-empty and include hex.
+        auto features = lv->getArray("features");
+        REQUIRE(features);
+        CHECK(features->size() >= 1);
+        bool hasHex = false;
+        for (size_t fi = 0; fi < features->size(); ++fi) {
+            if (features->getElement<std::string>(fi) == "hex") hasHex = true;
+        }
+        CHECK(hasHex);
+
+        // Spot-check a few known distinct boot profiles.
+        if (id == 2) {
+            CHECK_EQ(algo, std::string("cave.cellular"));
+            CHECK_EQ(lootTable, std::string("cave"));
+            auto fovCfg = lv->getObject("fov");
+            REQUIRE(fovCfg);
+            CHECK_EQ(fovCfg->getValue<int>("radius"), 6);
+        } else if (id == 3) {
+            auto light = lv->getObject("light");
+            REQUIRE(light);
+            CHECK(std::fabs(float(light->getValue<double>("radius")) - 140.f) < 1e-3f);
+        } else if (id == 7) {
+            auto cc = lv->getObject("cellCost");
+            REQUIRE(cc);
+            CHECK(std::fabs(float(cc->getValue<double>("cost")) - 8.f) < 1e-3f);
+        } else if (id == 8) {
+            auto fovCfg = lv->getObject("fov");
+            REQUIRE(fovCfg);
+            CHECK_EQ(fovCfg->getValue<int>("heroRadius"), 4);
+            CHECK(std::fabs(float(fovCfg->getValue<double>("heroPerception")) - 2.f) < 1e-3f);
+        } else if (id == 15) {
+            CHECK_EQ(lootTable, std::string("equipment"));
+            auto parts = lv->getArray("particles");
+            REQUIRE(parts);
+            CHECK(parts->size() >= 3);
+        }
+
+        delete pf;
+        layer->setVisible(false);
+        ++booted;
+        (void)id;
+    }
+
+    CHECK_EQ(booted, int(levels->size()));
+    CHECK(booted >= 16);
 }
