@@ -57,6 +57,7 @@ timer <- eve.Timer();
 system <- eve.System();
 math <- eve.Math();
 spatial <- eve.Spatial();
+editor <- eve.Editor();
 tf <- eve.TF();
 ui <- eve.UI();
 scene <- eve.Scene();

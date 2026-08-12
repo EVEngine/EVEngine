@@ -103,6 +103,7 @@ target_include_directories(EVProcgen BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/
 target_include_directories(EVProcgen PUBLIC ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
 create_module(EVVoxel voxel)
 create_module(EVStylize stylize)
+create_module(EVEditor editor)
 if(EVENGINE_BUILD_DEMO)
     create_module(EVDemo demo)
 endif()

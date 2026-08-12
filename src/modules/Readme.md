@@ -58,6 +58,14 @@
     代码：`src/modules/spatial/`
     设计：`docs/dev/空间索引模块设计.md`
 
+6b1a. 编辑器构件 - editor（`eve.Editor`）
+    不内置完整 3D/地图编辑器；提供可组装构件：
+    TransformGizmo / GizmoManager（平移旋转缩放/包围盒操作框）
+    TileBuffer + Brush（地图笔刷：paint/erase/fill/line/rect/stamp）
+    EditorToolbar / Inspector / Dock / History（快速搭编辑器壳）
+    代码：`src/modules/editor/`
+    设计：`docs/dev/编辑器模块设计.md`
+
 6b1b. 体素渲染 - voxel（`eve.Voxel`）
     32³ chunk、贪婪矩形合并、32-bit 打包实例、六向缓冲、视锥/距离/朝向裁剪
     `newWorld` / `selectVisible` / `drawVisible`；`Graphics::drawVoxelFaceInstances`
