@@ -53,6 +53,7 @@ file(GLOB all_test_cpp
   procgen.cpp
   stylize.cpp
   voxel.cpp
+  voxel_render.cpp
   gpgpu.cpp
   box2d.cpp
   box3d.cpp

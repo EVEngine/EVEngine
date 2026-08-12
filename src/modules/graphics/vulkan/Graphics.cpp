@@ -3152,7 +3152,7 @@ void Graphics::ensureVoxelUnitQuad() {
                                 vk::MemoryPropertyFlagBits::eHostVisible |
                                     vk::MemoryPropertyFlagBits::eHostCoherent);
     voxelUnitQuadVerts.updateLocal(corners, sizeof(corners));
-    const uint32_t indices[6] = {0, 1, 2, 0, 2, 3};
+    const uint32_t indices[6] = {0, 2, 1, 0, 3, 2};
     voxelUnitQuadIndices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer, sizeof(indices),
                                   vk::MemoryPropertyFlagBits::eHostVisible |
                                       vk::MemoryPropertyFlagBits::eHostCoherent);
