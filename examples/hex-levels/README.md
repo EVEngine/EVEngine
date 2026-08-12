@@ -43,8 +43,8 @@ C++ 对应用例：
 
 | 文件 | 覆盖 |
 |------|------|
-| `01`–`20` | 寻路 / FOV / 光照 / 拾取 / 粒子 / Flow / 代价 / 感知 / FoW / 相机 / DualGrid / 变体 / 裁剪 / 多光 / 仓库 / 朝向锥 / Flow+代价 / 种子复现 / 拐角窥视 / 装备 |
-| `pipeline.*` | dungeonCrawl / fogRaid / torchEscort / catalogRaid |
+| `test/hex_level_simulation.cpp` | 关卡 `01`–`20` + `pipeline.dungeonCrawl` / `fogRaid` / `torchEscort` / `catalogRaid` |
+| `test/hex_level_data.cpp` | catalog / items / loot / seeds / particles / 手搓地图 / 感知 / enable 一致性 / 装备栏 |
 
 ```bash
 ./build/linux-debug/test/unit_test --testcase='^hex\.(level|data)\..*$'
