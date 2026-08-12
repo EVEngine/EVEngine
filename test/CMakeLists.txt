@@ -41,6 +41,7 @@ file(GLOB all_test_cpp
   map_fov.cpp
   rpg.cpp
   inventory.cpp
+  building.cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
@@ -219,6 +220,7 @@ set(EVELIBS
   EVThread
   EVRPG
   EVInventory
+  EVBuilding
   EVAvatar
   EVDialogue
   EVProcgen
