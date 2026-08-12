@@ -23,8 +23,13 @@
 #include "filesystem/Filesystem.h"
 #include "medialoader/image/pixelformat.h"
 
+#include "common/Exception.h"
+
 #include <algorithm>  // min/max
+#include <cmath>
 #include <cstring>    // memcpy
+#include <limits>
+#include <vector>
 
 using namespace medialoader;
 
@@ -495,6 +500,471 @@ Colorf ImageData::getPixel(int x, int y) const {
     Colorf c;
     getPixel(x, y, c);
     return c;
+}
+
+namespace {
+
+enum class RotateFilter {
+	Nearest,
+	Linear,
+	RotSprite,
+};
+
+RotateFilter parseRotateFilter(const std::string &name) {
+	if (name == "nearest" || name == "Nearest" || name == "NEAREST")
+		return RotateFilter::Nearest;
+	if (name == "linear" || name == "Linear" || name == "LINEAR" ||
+	    name == "bilinear" || name == "Bilinear" || name == "BILINEAR")
+		return RotateFilter::Linear;
+	if (name == "rotsprite" || name == "RotSprite" || name == "ROTSPRITE" ||
+	    name == "rotSprite")
+		return RotateFilter::RotSprite;
+	throw eve::Exception(
+	    "Unsupported ImageData rotate filter '%s' (use \"nearest\", \"linear\", or \"rotsprite\")",
+	    name.c_str());
+}
+
+void rotatePoint(float dx, float dy, float c, float s, float &ox, float &oy) {
+	// Same convention as Math::rotate2X/Y.
+	ox = dx * c - dy * s;
+	oy = dx * s + dy * c;
+}
+
+void inverseRotatePoint(float dx, float dy, float c, float s, float &ox, float &oy) {
+	// Inverse of Math::rotate2*: apply -angle (cos'=c, sin'=-s).
+	ox = dx * c + dy * s;
+	oy = -dx * s + dy * c;
+}
+
+bool colorExact(const Colorf &a, const Colorf &b) {
+	return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
+}
+
+// RotSprite's modified Scale2x treats "similar" pixels as matches (not only identical).
+bool colorSimilar(const Colorf &a, const Colorf &b) {
+	const float dr = std::fabs(a.r - b.r);
+	const float dg = std::fabs(a.g - b.g);
+	const float db = std::fabs(a.b - b.b);
+	const float da = std::fabs(a.a - b.a);
+	return (dr + dg + db + da) <= (40.f / 255.f);
+}
+
+float colorDistSq(const Colorf &a, const Colorf &b) {
+	const float dr = a.r - b.r;
+	const float dg = a.g - b.g;
+	const float db = a.b - b.b;
+	const float da = a.a - b.a;
+	return dr * dr + dg * dg + db * db + da * da;
+}
+
+Colorf sampleNearest(const ImageData *src, float sx, float sy) {
+	const int rx = (int)std::floor(sx + 0.5f);
+	const int ry = (int)std::floor(sy + 0.5f);
+	if (!src->inside(rx, ry))
+		return Colorf{0.f, 0.f, 0.f, 0.f};
+	return src->getPixel(rx, ry);
+}
+
+Colorf sampleBilinear(const ImageData *src, float sx, float sy) {
+	const int x0 = (int)std::floor(sx);
+	const int y0 = (int)std::floor(sy);
+	const int x1 = x0 + 1;
+	const int y1 = y0 + 1;
+	const float fx = sx - (float)x0;
+	const float fy = sy - (float)y0;
+	const float ifx = 1.f - fx;
+	const float ify = 1.f - fy;
+
+	auto sampleOrZero = [&](int x, int y) -> Colorf {
+		if (!src->inside(x, y))
+			return Colorf{0.f, 0.f, 0.f, 0.f};
+		return src->getPixel(x, y);
+	};
+
+	const Colorf c00 = sampleOrZero(x0, y0);
+	const Colorf c10 = sampleOrZero(x1, y0);
+	const Colorf c01 = sampleOrZero(x0, y1);
+	const Colorf c11 = sampleOrZero(x1, y1);
+
+	const float w00 = ifx * ify;
+	const float w10 = fx * ify;
+	const float w01 = ifx * fy;
+	const float w11 = fx * fy;
+
+	Colorf out;
+	out.r = w00 * c00.r + w10 * c10.r + w01 * c01.r + w11 * c11.r;
+	out.g = w00 * c00.g + w10 * c10.g + w01 * c01.g + w11 * c11.g;
+	out.b = w00 * c00.b + w10 * c10.b + w01 * c01.b + w11 * c11.b;
+	out.a = w00 * c00.a + w10 * c10.a + w01 * c01.a + w11 * c11.a;
+	return out;
+}
+
+void computeRotatedSize(int srcW, int srcH, float c, float s, bool expand, int &dstW, int &dstH,
+                        float &dstCx, float &dstCy) {
+	const float srcCx = srcW * 0.5f;
+	const float srcCy = srcH * 0.5f;
+	if (!expand) {
+		dstW = srcW;
+		dstH = srcH;
+		dstCx = srcCx;
+		dstCy = srcCy;
+		return;
+	}
+	const float corners[4][2] = {
+	    {-srcCx, -srcCy},
+	    {srcW - srcCx, -srcCy},
+	    {-srcCx, srcH - srcCy},
+	    {srcW - srcCx, srcH - srcCy},
+	};
+	float minX = 0.f, maxX = 0.f, minY = 0.f, maxY = 0.f;
+	for (int i = 0; i < 4; ++i) {
+		float ox, oy;
+		rotatePoint(corners[i][0], corners[i][1], c, s, ox, oy);
+		if (i == 0) {
+			minX = maxX = ox;
+			minY = maxY = oy;
+		} else {
+			minX = std::min(minX, ox);
+			maxX = std::max(maxX, ox);
+			minY = std::min(minY, oy);
+			maxY = std::max(maxY, oy);
+		}
+	}
+	dstW = std::max(1, (int)std::ceil(maxX - minX));
+	dstH = std::max(1, (int)std::ceil(maxY - minY));
+	dstCx = dstW * 0.5f;
+	dstCy = dstH * 0.5f;
+}
+
+struct PixelBuffer {
+	int w = 0;
+	int h = 0;
+	std::vector<Colorf> px;
+
+	Colorf get(int x, int y) const { return px[(size_t)y * (size_t)w + (size_t)x]; }
+	void set(int x, int y, const Colorf &c) { px[(size_t)y * (size_t)w + (size_t)x] = c; }
+	bool inside(int x, int y) const { return x >= 0 && y >= 0 && x < w && y < h; }
+};
+
+PixelBuffer bufferFromImage(const ImageData *img) {
+	PixelBuffer b;
+	b.w = img->getWidth();
+	b.h = img->getHeight();
+	b.px.resize((size_t)b.w * (size_t)b.h);
+	for (int y = 0; y < b.h; ++y)
+		for (int x = 0; x < b.w; ++x)
+			b.set(x, y, img->getPixel(x, y));
+	return b;
+}
+
+ImageData *imageFromBuffer(const PixelBuffer &b, const std::string &format) {
+	ImageData *dst = new ImageData(b.w, b.h, format);
+	for (int y = 0; y < b.h; ++y)
+		for (int x = 0; x < b.w; ++x) {
+			const Colorf &c = b.get(x, y);
+			if (c.a != 0.f || c.r != 0.f || c.g != 0.f || c.b != 0.f)
+				dst->setPixel(x, y, c);
+		}
+	return dst;
+}
+
+void scale2xBlock(Colorf center, Colorf up, Colorf left, Colorf down, Colorf right, Colorf &a,
+                  Colorf &b, Colorf &c, Colorf &d) {
+	// Classic Scale2x / EPX rules, with RotSprite-style similarity.
+	a = (colorSimilar(left, up) && !colorSimilar(left, down) && !colorSimilar(up, right)) ? up
+	                                                                                     : center;
+	b = (colorSimilar(up, right) && !colorSimilar(up, left) && !colorSimilar(right, down)) ? right
+	                                                                                      : center;
+	c = (colorSimilar(down, left) && !colorSimilar(down, right) && !colorSimilar(left, up)) ? left
+	                                                                                       : center;
+	d = (colorSimilar(right, down) && !colorSimilar(right, up) && !colorSimilar(down, left))
+	        ? down
+	        : center;
+}
+
+PixelBuffer scale2x(const PixelBuffer &src) {
+	PixelBuffer dst;
+	dst.w = src.w * 2;
+	dst.h = src.h * 2;
+	dst.px.assign((size_t)dst.w * (size_t)dst.h, Colorf{0.f, 0.f, 0.f, 0.f});
+
+	auto at = [&](int x, int y) -> Colorf {
+		x = std::clamp(x, 0, src.w - 1);
+		y = std::clamp(y, 0, src.h - 1);
+		return src.get(x, y);
+	};
+
+	for (int y = 0; y < src.h; ++y) {
+		for (int x = 0; x < src.w; ++x) {
+			const Colorf E = at(x, y);
+			const Colorf B = at(x, y - 1);
+			const Colorf D = at(x - 1, y);
+			const Colorf H = at(x, y + 1);
+			const Colorf F = at(x + 1, y);
+			Colorf p00, p10, p01, p11;
+			scale2xBlock(E, B, D, H, F, p00, p10, p01, p11);
+			const int dx = x * 2;
+			const int dy = y * 2;
+			dst.set(dx, dy, p00);
+			dst.set(dx + 1, dy, p10);
+			dst.set(dx, dy + 1, p01);
+			dst.set(dx + 1, dy + 1, p11);
+		}
+	}
+	return dst;
+}
+
+PixelBuffer upscaleRotSprite(const PixelBuffer &src) {
+	// 2× → 4× → 8×
+	PixelBuffer s2 = scale2x(src);
+	PixelBuffer s4 = scale2x(s2);
+	return scale2x(s4);
+}
+
+void findBestOffset(const PixelBuffer &hi, float radians, int scale, int &bestOx, int &bestOy) {
+	const float c = std::cos(radians);
+	const float s = std::sin(radians);
+	const float srcCx = hi.w * 0.5f;
+	const float srcCy = hi.h * 0.5f;
+
+	int outW = 0, outH = 0;
+	float outCx = 0.f, outCy = 0.f;
+	// Score on the expanded low-res AABB mapped into hi-res by *scale.
+	computeRotatedSize(hi.w / scale, hi.h / scale, c, s, true, outW, outH, outCx, outCy);
+
+	bestOx = 0;
+	bestOy = 0;
+	double bestScore = std::numeric_limits<double>::infinity();
+
+	for (int oy = 0; oy < scale; ++oy) {
+		for (int ox = 0; ox < scale; ++ox) {
+			double score = 0.0;
+			for (int yt = 0; yt < outH; ++yt) {
+				const float dy = ((float)yt + 0.5f) - outCy;
+				for (int xt = 0; xt < outW; ++xt) {
+					const float dx = ((float)xt + 0.5f) - outCx;
+					float relX, relY;
+					inverseRotatePoint(dx * (float)scale, dy * (float)scale, c, s, relX, relY);
+					const int sx = (int)std::floor(relX + srcCx + (float)ox);
+					const int sy = (int)std::floor(relY + srcCy + (float)oy);
+					if (!hi.inside(sx, sy))
+						continue;
+					const Colorf p = hi.get(sx, sy);
+					if (hi.inside(sx + 1, sy))
+						score += (double)colorDistSq(p, hi.get(sx + 1, sy));
+					if (hi.inside(sx, sy + 1))
+						score += (double)colorDistSq(p, hi.get(sx, sy + 1));
+				}
+			}
+			if (score < bestScore) {
+				bestScore = score;
+				bestOx = ox;
+				bestOy = oy;
+			}
+		}
+	}
+}
+
+PixelBuffer rotateExact90(const PixelBuffer &src, int turnsClockwise) {
+	turnsClockwise = ((turnsClockwise % 4) + 4) % 4;
+	if (turnsClockwise == 0)
+		return src;
+	PixelBuffer cur = src;
+	for (int t = 0; t < turnsClockwise; ++t) {
+		PixelBuffer next;
+		next.w = cur.h;
+		next.h = cur.w;
+		next.px.resize((size_t)next.w * (size_t)next.h);
+		for (int y = 0; y < cur.h; ++y)
+			for (int x = 0; x < cur.w; ++x)
+				next.set(cur.h - 1 - y, x, cur.get(x, y));
+		cur = std::move(next);
+	}
+	return cur;
+}
+
+void restoreSinglePixelDetails(PixelBuffer &dst, const PixelBuffer &orig, float radians) {
+	const float c = std::cos(radians);
+	const float s = std::sin(radians);
+	const float srcCx = orig.w * 0.5f;
+	const float srcCy = orig.h * 0.5f;
+	const float dstCx = dst.w * 0.5f;
+	const float dstCy = dst.h * 0.5f;
+
+	PixelBuffer copy = dst;
+	for (int y = 0; y < dst.h; ++y) {
+		for (int x = 0; x < dst.w; ++x) {
+			const Colorf p = copy.get(x, y);
+			int same = 0;
+			const int nxs[4] = {x - 1, x + 1, x, x};
+			const int nys[4] = {y, y, y - 1, y + 1};
+			for (int i = 0; i < 4; ++i) {
+				if (!copy.inside(nxs[i], nys[i]))
+					continue;
+				if (colorExact(copy.get(nxs[i], nys[i]), p))
+					++same;
+			}
+			if (same < 3)
+				continue;
+
+			const float dx = ((float)x + 0.5f) - dstCx;
+			const float dy = ((float)y + 0.5f) - dstCy;
+			float relX, relY;
+			inverseRotatePoint(dx, dy, c, s, relX, relY);
+			const int sx = (int)std::floor(relX + srcCx);
+			const int sy = (int)std::floor(relY + srcCy);
+			if (!orig.inside(sx, sy))
+				continue;
+			const Colorf srcPix = orig.get(sx, sy);
+			if (!colorExact(srcPix, p))
+				dst.set(x, y, srcPix);
+		}
+	}
+}
+
+ImageData *rotateRotSprite(const ImageData *src, float radians, bool expand) {
+	PixelBuffer orig = bufferFromImage(src);
+
+	// Normalize angle to [0, 2π).
+	const float twoPi = 6.28318530717958647692f;
+	float ang = std::fmod(radians, twoPi);
+	if (ang < 0.f)
+		ang += twoPi;
+
+	// Exact quarter turns: no upscale needed.
+	const float halfPi = 1.57079632679489661923f;
+	const float pi = 3.14159265358979323846f;
+	const float eps = 1e-4f;
+	auto nearMul = [&](float target) {
+		return std::fabs(ang - target) < eps || std::fabs(ang - target - twoPi) < eps;
+	};
+	if (nearMul(0.f)) {
+		if (!expand)
+			return src->clone();
+		return imageFromBuffer(orig, src->getFormat());
+	}
+	if (nearMul(halfPi) || nearMul(pi) || nearMul(halfPi * 3.f)) {
+		int turns = 1;
+		if (nearMul(pi))
+			turns = 2;
+		else if (nearMul(halfPi * 3.f))
+			turns = 3;
+		PixelBuffer rotated = rotateExact90(orig, turns);
+		if (!expand) {
+			// Center the exact rotation into the original canvas.
+			PixelBuffer canvas;
+			canvas.w = orig.w;
+			canvas.h = orig.h;
+			canvas.px.assign((size_t)canvas.w * (size_t)canvas.h, Colorf{0.f, 0.f, 0.f, 0.f});
+			const int ox = (canvas.w - rotated.w) / 2;
+			const int oy = (canvas.h - rotated.h) / 2;
+			for (int y = 0; y < rotated.h; ++y)
+				for (int x = 0; x < rotated.w; ++x) {
+					const int dx = x + ox;
+					const int dy = y + oy;
+					if (canvas.inside(dx, dy))
+						canvas.set(dx, dy, rotated.get(x, y));
+				}
+			return imageFromBuffer(canvas, src->getFormat());
+		}
+		return imageFromBuffer(rotated, src->getFormat());
+	}
+
+	constexpr int kScale = 8;
+	PixelBuffer hi = upscaleRotSprite(orig);
+
+	int bestOx = 0, bestOy = 0;
+	findBestOffset(hi, ang, kScale, bestOx, bestOy);
+
+	const float c = std::cos(ang);
+	const float s = std::sin(ang);
+	int dstW = 0, dstH = 0;
+	float dstCx = 0.f, dstCy = 0.f;
+	computeRotatedSize(orig.w, orig.h, c, s, expand, dstW, dstH, dstCx, dstCy);
+
+	const float hiCx = hi.w * 0.5f;
+	const float hiCy = hi.h * 0.5f;
+
+	PixelBuffer out;
+	out.w = dstW;
+	out.h = dstH;
+	out.px.assign((size_t)out.w * (size_t)out.h, Colorf{0.f, 0.f, 0.f, 0.f});
+
+	for (int yt = 0; yt < dstH; ++yt) {
+		const float dy = ((float)yt + 0.5f) - dstCy;
+		for (int xt = 0; xt < dstW; ++xt) {
+			const float dx = ((float)xt + 0.5f) - dstCx;
+			float relX, relY;
+			inverseRotatePoint(dx * (float)kScale, dy * (float)kScale, c, s, relX, relY);
+			const int sx = (int)std::floor(relX + hiCx + (float)bestOx);
+			const int sy = (int)std::floor(relY + hiCy + (float)bestOy);
+			if (hi.inside(sx, sy))
+				out.set(xt, yt, hi.get(sx, sy));
+		}
+	}
+
+	restoreSinglePixelDetails(out, orig, ang);
+	return imageFromBuffer(out, src->getFormat());
+}
+
+} // namespace
+
+ImageData *ImageData::rotate(float radians, std::string filter, bool expand) const {
+	if (pixelGetFunction == nullptr || pixelSetFunction == nullptr)
+		throw eve::Exception("Unhandled pixel format %s in ImageData::rotate", format.c_str());
+
+	const RotateFilter mode = parseRotateFilter(filter);
+	if (mode == RotateFilter::RotSprite)
+		return rotateRotSprite(this, radians, expand);
+
+	const float srcW = (float)width;
+	const float srcH = (float)height;
+	const float srcCx = srcW * 0.5f;
+	const float srcCy = srcH * 0.5f;
+
+	const float c = std::cos(radians);
+	const float s = std::sin(radians);
+
+	int dstW = width;
+	int dstH = height;
+	float dstCx = srcCx;
+	float dstCy = srcCy;
+	computeRotatedSize(width, height, c, s, expand, dstW, dstH, dstCx, dstCy);
+
+	ImageData *dst = nullptr;
+	try {
+		dst = new ImageData(dstW, dstH, format);
+	} catch (std::bad_alloc &) {
+		throw eve::Exception("Out of memory");
+	}
+
+	// Near-identity: copy when angle is ~0 and canvas unchanged.
+	if (!expand && std::fabs(radians) < 1e-7f) {
+		std::memcpy(dst->getData(), data, getSize());
+		return dst;
+	}
+
+	for (int yt = 0; yt < dstH; ++yt) {
+		const float dy = ((float)yt + 0.5f) - dstCy;
+		for (int xt = 0; xt < dstW; ++xt) {
+			const float dx = ((float)xt + 0.5f) - dstCx;
+			float relX, relY;
+			inverseRotatePoint(dx, dy, c, s, relX, relY);
+			const float sx = relX + srcCx - 0.5f;
+			const float sy = relY + srcCy - 0.5f;
+
+			Colorf color;
+			if (mode == RotateFilter::Nearest)
+				color = sampleNearest(this, sx, sy);
+			else
+				color = sampleBilinear(this, sx, sy);
+
+			if (color.a != 0.f || color.r != 0.f || color.g != 0.f || color.b != 0.f)
+				dst->setPixel(xt, yt, color);
+		}
+	}
+
+	return dst;
 }
 
 union Row {
