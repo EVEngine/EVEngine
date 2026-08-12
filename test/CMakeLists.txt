@@ -36,6 +36,7 @@ file(GLOB all_test_cpp
   UIOverlaySmoke.cpp
   scene.cpp
   particles.cpp
+  particles_attach_skin.cpp
   map.cpp
   map_path.cpp
   map_fov.cpp

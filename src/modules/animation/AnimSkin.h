@@ -64,6 +64,20 @@ public:
      */
     bool skinPositionsTo(const AnimPose *pose, std::vector<float> &outPosXYZ) const;
 
+    /**
+     * Skin into an internal cache readable via getSkinnedPosition*.
+     * Returns false if pose is null or there are no vertices.
+     */
+    bool updateSkinnedPositions(const AnimPose *pose);
+
+    /** True after a successful updateSkinnedPositions(). */
+    bool hasSkinnedPositions() const { return skinnedValid_; }
+
+    /** Cached skinned position component (requires updateSkinnedPositions). */
+    float getSkinnedPositionX(int vertexIndex) const;
+    float getSkinnedPositionY(int vertexIndex) const;
+    float getSkinnedPositionZ(int vertexIndex) const;
+
     /** Bind-pose (unskinned) position component for vertex v (0..vertexCount-1). */
     float getBindPositionX(int vertexIndex) const;
     float getBindPositionY(int vertexIndex) const;
@@ -88,6 +102,8 @@ private:
     std::vector<int>         skeletonBone_;  // skin joint → skeleton bone
     std::vector<std::string> skinBoneNames_;
     std::vector<Mat4>        inverseBind_;
+    std::vector<float>       skinnedPos_;    // xyz packed cache
+    bool                     skinnedValid_ = false;
 };
 
 }  // namespace eve::animation

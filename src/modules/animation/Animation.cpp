@@ -269,6 +269,11 @@ void Animation::expose(ssq::Table &table) {
     skin.addFunc("getBindPositionZ", &AnimSkin::getBindPositionZ);
     skin.addFunc("getVertexBone", &AnimSkin::getVertexBone);
     skin.addFunc("getVertexWeight", &AnimSkin::getVertexWeight);
+    skin.addFunc("updateSkinnedPositions", &AnimSkin::updateSkinnedPositions);
+    skin.addFunc("hasSkinnedPositions", &AnimSkin::hasSkinnedPositions);
+    skin.addFunc("getSkinnedPositionX", &AnimSkin::getSkinnedPositionX);
+    skin.addFunc("getSkinnedPositionY", &AnimSkin::getSkinnedPositionY);
+    skin.addFunc("getSkinnedPositionZ", &AnimSkin::getSkinnedPositionZ);
 
     auto player = table.addClass<AnimPlayer>(
         "AnimPlayer", std::function<AnimPlayer *()>([]() -> AnimPlayer * { return nullptr; }),

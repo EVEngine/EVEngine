@@ -15,6 +15,12 @@ class Camera2D;
 class Canvas;
 }
 
+namespace eve::animation {
+class AnimPose;
+class AnimSkeleton;
+class AnimSkin;
+}
+
 namespace eve::particles {
 
 /** Single live particle (CPU simulation). */
@@ -101,10 +107,51 @@ public:
         bool autoReload = true;
     };
 
+    /**
+     * Optional bone attachment. When enabled, syncAttach() writes Config.x/y
+     * (and optionally direction) from AnimPose world transforms each frame.
+     * Particles remain 2D; bone XYZ is projected via plane + scale.
+     */
+    struct Attach {
+        animation::AnimPose *pose = nullptr;
+        animation::AnimSkeleton *skeleton = nullptr;  // optional (name lookup)
+        int boneIndex = -1;
+        float offsetX = 0.f;
+        float offsetY = 0.f;
+        float offsetZ = 0.f;
+        /** "xy" | "xz" | "yz" — axes mapped to particle plane. */
+        std::string plane = "xy";
+        float scale = 1.f;
+        bool followRotation = false;
+        bool enabled = false;
+    };
+
+    /**
+     * Optional skinned-mesh surface source. When enabled, newly spawned
+     * particles sample random (optionally bone-filtered) skinned vertices.
+     */
+    struct SkinSource {
+        animation::AnimSkin *skin = nullptr;
+        animation::AnimPose *pose = nullptr;
+        animation::AnimSkeleton *skeleton = nullptr;  // optional (name filter)
+        int filterBone = -1;                          // skeleton bone index, -1 = all
+        float minWeight = 0.f;
+        /** "xy" | "xz" | "yz" */
+        std::string plane = "xy";
+        float scale = 1.f;
+        bool enabled = false;
+        /** Vertex indices eligible for sampling (rebuilt when filter changes). */
+        std::vector<int> candidates;
+        bool candidatesDirty = true;
+        int lastSkinnedFrame = -1;
+    };
+
     COMPONENT(Config, config)
     COMPONENT(Sim, sim)
     COMPONENT(Draw, draw)
     COMPONENT(Resource, resource)
+    COMPONENT(Attach, attach)
+    COMPONENT(SkinSource, skinSource)
 
     static ParticleEmitter *createEmitter(int bufferSize = 1000);
 
@@ -186,9 +233,41 @@ public:
     void setAutoReload(bool enable);
     bool getAutoReload();
     std::string getConfigPath();
+
+    // --- Bone attachment ---
+    void attachToBone(animation::AnimPose *pose, int boneIndex);
+    void attachToBoneByName(animation::AnimPose *pose, animation::AnimSkeleton *skeleton,
+                            const std::string &boneName);
+    void setAttachOffset(float x, float y, float z);
+    void setAttachPlane(const std::string &plane);
+    void setAttachScale(float scale);
+    void setFollowBoneRotation(bool enable);
+    void detach();
+    bool isAttached();
+    int getAttachBone();
+    /** Sync Config.x/y (and direction) from the attached bone. Also called by ParticleSimSystem. */
+    void syncAttach();
+
+    // --- Skinned mesh surface emission ---
+    void setSkinSource(animation::AnimSkin *skin, animation::AnimPose *pose);
+    void setSkinBoneFilter(int skeletonBoneIndex, float minWeight = 0.f);
+    void setSkinBoneFilterByName(animation::AnimSkeleton *skeleton, const std::string &boneName,
+                                 float minWeight = 0.f);
+    void setSkinPlane(const std::string &plane);
+    void setSkinScale(float scale);
+    void clearSkinSource();
+    bool hasSkinSource();
+    /** Burst-emit `count` particles from the current skinned surface. */
+    void emitFromSkin(int count);
 };
 
 void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
+void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
+/** Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource. */
+void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
+                        ParticleEmitter::Attach &attach, ParticleEmitter::SkinSource &skinSrc);
+bool sampleSkinSpawn(ParticleEmitter::SkinSource &skinSrc, ParticleEmitter::Sim &sim, float &outX,
+                     float &outY);
 
 }  // namespace eve::particles
