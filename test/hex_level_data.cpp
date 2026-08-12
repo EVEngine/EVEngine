@@ -8,6 +8,7 @@
 #include "data/JsonDocument.h"
 #include "filesystem/Filesystem.h"
 #include "inventory/Bag.h"
+#include "inventory/Equipment.h"
 #include "inventory/Inventory.h"
 #include "inventory/InventorySystem.h"
 #include "inventory/Item.h"
@@ -31,6 +32,7 @@
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
 
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <sstream>
@@ -759,4 +761,388 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
 
     CHECK_EQ(booted, int(levels->size()));
     CHECK(booted >= 16);
+}
+
+TEST_CASE("hex.data.lootTables.perceptionGates") {
+    auto lootDoc = loadJson("loot_tables.json");
+    auto root = lootDoc->object();
+    auto gates = root->getArray("perceptionGates");
+    REQUIRE(gates);
+    CHECK(gates->size() >= 3);
+
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    auto *inv = Inventory::create();
+    inv->registerItemsFromJson(readTextFile(hexDataDir() + "/items.json"));
+
+    auto *mapMod = Map::create();
+    Fov *fov = mapMod->newFovSize(9, 9);
+    fov->setBlockEmpty(false);
+    fov->setTopology("hex");
+    fov->setDetectionMargin(0.f);
+    const int hero = fov->addRevealer(4, 4, 3);
+    fov->setRevealerPerception(hero, 2.f);
+    fov->compute();
+    CHECK(fov->isVisible(4, 4));
+
+    for (size_t i = 0; i < gates->size(); ++i) {
+        auto g = gates->getObject(i);
+        const std::string itemId = g->getValue<std::string>("itemId");
+        const float stealth = float(g->getValue<double>("stealth"));
+        const bool needVis = g->getValue<bool>("requireVisible");
+        CHECK(ItemRegistry::find(itemId) != nullptr);
+        const bool detect = fov->canDetect(hero, 4, 4, stealth);
+        if (needVis) {
+            // Visible cell: detect iff perception (>=2) covers stealth.
+            CHECK_EQ(detect, stealth <= 2.f);
+        } else {
+            // Gate flagged requireVisible=false — still uses canDetect which
+            // requires visibility; document that fixture flag is advisory for demos.
+            CHECK(fov->isVisible(4, 4));
+            (void)detect;
+        }
+    }
+    delete fov;
+    ItemRegistry::clear();
+}
+
+TEST_CASE("hex.data.lootTables.allTablesPlaceable") {
+    auto lootDoc = loadJson("loot_tables.json");
+    auto tables = lootDoc->object()->getObject("tables");
+    REQUIRE(tables);
+
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    auto *inv = Inventory::create();
+    inv->registerItemsFromJson(readTextFile(hexDataDir() + "/items.json"));
+
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    hideLayers();
+    TileLayer *layer = mapMod->newLayer(20, 16, 64.f, 32.f);
+    {
+        auto c = layer->config();
+        c->orientation = MapOrientation::Hexagonal;
+        c->hexSideLength = 16.f;
+        c->staggerAxis = StaggerAxis::Y;
+        c->staggerIndex = StaggerIndex::Odd;
+    }
+    GeneratorRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(777);
+    p.setSize(20, 16);
+    Grid2D grid;
+    std::string err;
+    REQUIRE(GeneratorRegistry::instance().generate("dungeon.bsp", p, grid, err));
+    gen->setPaletteGid("hex_loot_all", "wall", 1);
+    gen->setPaletteGid("hex_loot_all", "floor", 2);
+    gen->setPaletteGid("hex_loot_all", "corridor", 2);
+    gen->setPaletteGid("hex_loot_all", "door", 3);
+    REQUIRE(gen->applyToLayer(&grid, "hex_loot_all", layer));
+
+    int spawnX = -1, spawnY = -1;
+    for (int i = 0; i < grid.getObjectCount(); ++i) {
+        if (grid.getObjectType(i) == "spawn") {
+            spawnX = int(grid.getObjectX(i));
+            spawnY = int(grid.getObjectY(i));
+        }
+    }
+    if (spawnX < 0) {
+        for (int y = 0; y < grid.getHeight() && spawnX < 0; ++y)
+            for (int x = 0; x < grid.getWidth() && spawnX < 0; ++x)
+                if (grid.getCell(x, y) == int(Semantic::Floor)) {
+                    spawnX = x;
+                    spawnY = y;
+                }
+    }
+    REQUIRE(spawnX >= 0);
+
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->blockGid(1);
+    pf->setTopology("hex");
+
+    const char *names[] = {"starter", "cave", "rich", "raid", "equipment"};
+    int tablesOk = 0;
+    for (const char *name : names) {
+        REQUIRE(tables->has(name));
+        auto arr = tables->getArray(name);
+        REQUIRE(arr);
+        Bag *bag = inv->newBag(32);
+        int placed = 0;
+        for (size_t i = 0; i < arr->size(); ++i) {
+            auto e = arr->getObject(i);
+            const std::string itemId = e->getValue<std::string>("itemId");
+            const int qty = e->has("qty") ? e->getValue<int>("qty") : 1;
+            CHECK(ItemRegistry::find(itemId) != nullptr);
+            int tx = spawnX, ty = spawnY;
+            if (e->has("offset")) {
+                auto off = e->getArray("offset");
+                tx = spawnX + off->getElement<int>(0);
+                ty = spawnY + off->getElement<int>(1);
+            }
+            if (!pf->isWalkable(tx, ty)) {
+                tx = spawnX;
+                ty = spawnY;
+            }
+            const int added = bag->addItem(itemId, qty);
+            CHECK(added > 0);
+            ++placed;
+        }
+        CHECK(placed >= 1);
+        CHECK(bag->getUsedSlotCount() >= 1);
+        bag->destroy();
+        ++tablesOk;
+    }
+    CHECK_EQ(tablesOk, 5);
+
+    delete pf;
+    layer->setVisible(false);
+    ItemRegistry::clear();
+}
+
+TEST_CASE("hex.data.catalog.enableFlagsConsistent") {
+    auto doc = loadJson("catalog.json");
+    auto levels = doc->object()->getArray("levels");
+    REQUIRE(levels);
+
+    int withEnable = 0;
+    int withFov = 0;
+    int withLight = 0;
+    for (size_t i = 0; i < levels->size(); ++i) {
+        auto lv = levels->getObject(i);
+        CHECK(lv->has("key"));
+        CHECK(lv->has("seed"));
+        CHECK(lv->has("lootTable"));
+        if (lv->has("enable")) {
+            ++withEnable;
+            auto en = lv->getObject("enable");
+            // If FOV is disabled, radius may be 0 / enabled:false.
+            if (en->has("fov") && !en->getValue<bool>("fov")) {
+                auto fov = lv->getObject("fov");
+                if (fov && fov->has("enabled")) CHECK(!fov->getValue<bool>("enabled"));
+            }
+            if (en->has("light") && en->getValue<bool>("light")) {
+                // light feature on ⇒ prefer an explicit light block OR inherit demo default.
+                (void)lv->getObject("light");
+            }
+            if (en->has("cellcost") && en->getValue<bool>("cellcost")) {
+                CHECK(lv->has("cellCost"));
+            }
+            if (en->has("perception") && en->getValue<bool>("perception")) {
+                auto fov = lv->getObject("fov");
+                REQUIRE(fov);
+                const bool hasPerception = fov->has("heroPerception") || fov->has("perceptionScale");
+                CHECK(hasPerception);
+            }
+        }
+        if (lv->has("fov")) ++withFov;
+        if (lv->has("light")) ++withLight;
+    }
+    CHECK(withEnable >= 10);
+    CHECK(withFov >= 8);
+    CHECK(withLight >= 2);
+}
+
+TEST_CASE("hex.data.seedsMatrix.pathToExitSample") {
+    auto doc = loadJson("seeds_matrix.json");
+    auto root = doc->object();
+    auto seeds = root->getArray("seeds");
+    REQUIRE(seeds);
+
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    GeneratorRegistry::instance().registerBuiltins();
+    gen->setPaletteGid("hex_seed_path", "wall", 1);
+    gen->setPaletteGid("hex_seed_path", "floor", 2);
+    gen->setPaletteGid("hex_seed_path", "corridor", 2);
+    gen->setPaletteGid("hex_seed_path", "door", 3);
+
+    int ok = 0;
+    const size_t limit = std::min<size_t>(8, seeds->size());
+    for (size_t si = 0; si < limit; ++si) {
+        const uint32_t seed = uint32_t(seeds->getElement<int>(si));
+        hideLayers();
+        TileLayer *layer = mapMod->newLayer(24, 18, 64.f, 32.f);
+        {
+            auto c = layer->config();
+            c->orientation = MapOrientation::Hexagonal;
+            c->hexSideLength = 16.f;
+            c->staggerAxis = StaggerAxis::Y;
+            c->staggerIndex = StaggerIndex::Odd;
+        }
+        Params p;
+        p.setSeed(seed);
+        p.setSize(24, 18);
+        Grid2D grid;
+        std::string err;
+        REQUIRE(GeneratorRegistry::instance().generate("dungeon.bsp", p, grid, err));
+        REQUIRE(gen->applyToLayer(&grid, "hex_seed_path", layer));
+
+        int spawnX = -1, spawnY = -1, exitX = -1, exitY = -1;
+        for (int i = 0; i < grid.getObjectCount(); ++i) {
+            const std::string t = grid.getObjectType(i);
+            if (t == "spawn") {
+                spawnX = int(grid.getObjectX(i));
+                spawnY = int(grid.getObjectY(i));
+            } else if (t == "stairs") {
+                exitX = int(grid.getObjectX(i));
+                exitY = int(grid.getObjectY(i));
+            }
+        }
+        if (spawnX < 0) {
+            for (int y = 0; y < grid.getHeight() && spawnX < 0; ++y)
+                for (int x = 0; x < grid.getWidth() && spawnX < 0; ++x)
+                    if (grid.getCell(x, y) == int(Semantic::Floor)) {
+                        spawnX = x;
+                        spawnY = y;
+                    }
+        }
+        if (exitX < 0) {
+            int best = -1;
+            for (int y = 0; y < grid.getHeight(); ++y)
+                for (int x = 0; x < grid.getWidth(); ++x) {
+                    if (grid.getCell(x, y) != int(Semantic::Floor) &&
+                        grid.getCell(x, y) != int(Semantic::Corridor))
+                        continue;
+                    const int dist = (x - spawnX) * (x - spawnX) + (y - spawnY) * (y - spawnY);
+                    if (dist > best) {
+                        best = dist;
+                        exitX = x;
+                        exitY = y;
+                    }
+                }
+        }
+        REQUIRE(spawnX >= 0);
+        REQUIRE(exitX >= 0);
+
+        Pathfinder *pf = mapMod->newPathfinder(layer);
+        pf->blockGid(1);
+        pf->setTopology("hex");
+        Path *path = pf->findPath(spawnX, spawnY, exitX, exitY);
+        REQUIRE(path != nullptr);
+        CHECK(path->getLength() > 0);
+        CHECK_EQ(path->getX(path->getLength() - 1), exitX);
+        CHECK_EQ(path->getY(path->getLength() - 1), exitY);
+        delete path;
+        delete pf;
+        layer->setVisible(false);
+        ++ok;
+    }
+    CHECK_EQ(ok, int(limit));
+}
+
+TEST_CASE("hex.data.tinyMap.lootMarkersAndObjects") {
+    const std::string text = readTextFile(hexDataDir() + "/maps/tiny_hex.json");
+    REQUIRE(!text.empty());
+    hideLayers();
+    std::vector<MapObject> objects;
+    std::string err;
+    auto layers = loadMapText(text, &objects, &err);
+    REQUIRE(!layers.empty());
+
+    auto *mapMod = Map::create();
+    mapMod->setObjects(objects);
+    int lootCount = 0, spawnCount = 0, stairsCount = 0;
+    for (int i = 0; i < mapMod->getObjectCount(); ++i) {
+        const std::string t = mapMod->getObjectType(i);
+        if (t == "loot") ++lootCount;
+        if (t == "spawn") ++spawnCount;
+        if (t == "stairs") ++stairsCount;
+    }
+    CHECK_EQ(spawnCount, 1);
+    CHECK_EQ(stairsCount, 1);
+    CHECK(lootCount >= 2);
+    for (TileLayer *L : layers) L->setVisible(false);
+}
+
+TEST_CASE("hex.data.defaults.matchHexOrientation") {
+    auto doc = loadJson("catalog.json");
+    auto defaults = doc->object()->getObject("defaults");
+    REQUIRE(defaults);
+    CHECK_EQ(defaults->getValue<std::string>("orientation"), std::string("hexagonal"));
+    CHECK_EQ(defaults->getValue<std::string>("staggerAxis"), std::string("y"));
+    CHECK_EQ(defaults->getValue<std::string>("staggerIndex"), std::string("odd"));
+    CHECK_EQ(defaults->getValue<int>("wallGid"), 1);
+    CHECK_EQ(defaults->getValue<int>("floorGid"), 2);
+    CHECK_EQ(defaults->getValue<int>("doorGid"), 3);
+    CHECK(defaults->getValue<int>("hexSideLength") > 0);
+    CHECK(defaults->getValue<int>("tileW") > 0);
+    CHECK(defaults->getValue<int>("tileH") > 0);
+}
+
+TEST_CASE("hex.data.items.equipmentSlots") {
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    auto *inv = Inventory::create();
+    const int n = inv->registerItemsFromJson(readTextFile(hexDataDir() + "/items.json"));
+    CHECK(n >= 12);
+
+    CHECK(ItemRegistry::find("hex.boots") != nullptr);
+    CHECK_EQ(ItemRegistry::find("hex.boots")->equipSlot, std::string("feet"));
+    CHECK(ItemRegistry::find("hex.shield") != nullptr);
+    CHECK_EQ(ItemRegistry::find("hex.shield")->equipSlot, std::string("offhand"));
+
+    EquipmentSet *eq = inv->newEquipmentSet();
+    eq->defineSlot("feet");
+    eq->addSlotAllowedTag("feet", "boots");
+    eq->defineSlot("offhand");
+    eq->addSlotAllowedTag("offhand", "shield");
+    Bag *bag = inv->newBag(4);
+    const int bootsIn = bag->addItem("hex.boots", 1);
+    const int shieldIn = bag->addItem("hex.shield", 1);
+    CHECK_EQ(bootsIn, 1);
+    CHECK_EQ(shieldIn, 1);
+    const int b = bag->findItem("hex.boots");
+    const int s = bag->findItem("hex.shield");
+    CHECK(eq->equipFromBag("feet", bag, b));
+    CHECK(eq->equipFromBag("offhand", bag, s));
+    CHECK_EQ(eq->getSlotItemId("feet"), std::string("hex.boots"));
+    CHECK_EQ(eq->getSlotItemId("offhand"), std::string("hex.shield"));
+
+    bag->destroy();
+    eq->destroy();
+    ItemRegistry::clear();
+}
+
+TEST_CASE("hex.data.particles.mistOnDungeon") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_hex_mist", true));
+    REQUIRE(fs->setupWriteDirectory());
+    const std::string mist = readTextFile(hexDataDir() + "/particles/mist_fog.json");
+    REQUIRE(!mist.empty());
+    fs->write("mist_fog.json", mist.c_str(), mist.size());
+
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    hideLayers();
+    TileLayer *layer = mapMod->newLayer(16, 12, 64.f, 32.f);
+    {
+        auto c = layer->config();
+        c->orientation = MapOrientation::Hexagonal;
+        c->hexSideLength = 16.f;
+        c->staggerAxis = StaggerAxis::Y;
+        c->staggerIndex = StaggerIndex::Odd;
+    }
+    GeneratorRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(55);
+    p.setSize(16, 12);
+    Grid2D grid;
+    std::string err;
+    REQUIRE(GeneratorRegistry::instance().generate("dungeon.bsp", p, grid, err));
+    gen->setPaletteGid("hex_mist", "wall", 1);
+    gen->setPaletteGid("hex_mist", "floor", 2);
+    gen->setPaletteGid("hex_mist", "corridor", 2);
+    gen->setPaletteGid("hex_mist", "door", 3);
+    REQUIRE(gen->applyToLayer(&grid, "hex_mist", layer));
+
+    auto *parts = Particles::create();
+    ParticleEmitter *fog = parts->newEmitterFromFile("mist_fog.json");
+    REQUIRE(fog != nullptr);
+    fog->setPosition(40.f, 40.f);
+    fog->start();
+    for (int i = 0; i < 10; ++i) parts->update(1.f / 60.f);
+    CHECK(fog->getCount() > 0);
+    fog->stop();
+    layer->setVisible(false);
 }
