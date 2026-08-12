@@ -1532,3 +1532,257 @@ TEST_CASE("voxel.module.meshVoxels_keeps_distinct_textures") {
     CHECK(saw11);
     CHECK(saw22);
 }
+
+TEST_CASE("voxel.greedy.single_voxel_exactly_six_1x1") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    chunk->set(10, 11, 12, 4);
+    chunk->remesh();
+    CHECK_EQ(chunk->totalRectCount(), 6);
+    for (int i = 0; i < faceDirCount(); ++i) {
+        CHECK_EQ(chunk->faceRectCount(FaceDir(i)), 1);
+        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].width(), 1);
+        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].height(), 1);
+        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].tex(), 4);
+        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].x(), 10);
+        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].y(), 11);
+        CHECK_EQ(chunk->faceRects(FaceDir(i))[0].z(), 12);
+    }
+}
+
+TEST_CASE("voxel.greedy.eight_corners_of_chunk") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    const int corners[8][3] = {{0, 0, 0}, {31, 0, 0}, {0, 31, 0}, {31, 31, 0},
+                               {0, 0, 31}, {31, 0, 31}, {0, 31, 31}, {31, 31, 31}};
+    for (int i = 0; i < 8; ++i) chunk->set(corners[i][0], corners[i][1], corners[i][2], 1);
+    chunk->remesh();
+    CHECK_EQ(chunk->totalRectCount(), 8 * 6);
+}
+
+TEST_CASE("voxel.greedy.adjacent_same_tex_merges_width") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    chunk->set(0, 0, 0, 2);
+    chunk->set(1, 0, 0, 2);
+    chunk->remesh();
+    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 1);
+    CHECK_EQ(chunk->faceRects(FaceDir::PosY)[0].width(), 2);
+    CHECK_EQ(chunk->faceRects(FaceDir::PosY)[0].height(), 1);
+}
+
+TEST_CASE("voxel.greedy.vertical_stack_merges_side_height") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    for (int y = 0; y < 5; ++y) chunk->set(0, y, 0, 3);
+    chunk->remesh();
+    CHECK_EQ(chunk->faceRectCount(FaceDir::PosX), 1);
+    CHECK_EQ(chunk->faceRects(FaceDir::PosX)[0].width(), 1);   // along Z
+    CHECK_EQ(chunk->faceRects(FaceDir::PosX)[0].height(), 5);  // along Y
+}
+
+TEST_CASE("voxel.greedy.diagonal_plane_no_side_merge") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    for (int i = 0; i < 8; ++i) chunk->set(i, 0, i, 1);
+    chunk->remesh();
+    CHECK_EQ(chunk->faceRectCount(FaceDir::PosY), 8);
+    for (const auto &r : chunk->faceRects(FaceDir::PosY)) {
+        CHECK_EQ(r.width(), 1);
+        CHECK_EQ(r.height(), 1);
+    }
+}
+
+TEST_CASE("voxel.greedy.fill_then_carve_layer") {
+    std::unique_ptr<Chunk> chunk(new Chunk(0, 0, 0));
+    chunk->fill(1);
+    chunk->remesh();
+    CHECK_EQ(chunk->totalRectCount(), 6);
+    for (int z = 0; z < 32; ++z)
+        for (int x = 0; x < 32; ++x) chunk->set(x, 16, z, 0);
+    chunk->remesh();
+    // Split solid → two slabs → more than 6 outer faces.
+    CHECK(chunk->totalRectCount() > 6);
+    CHECK(chunk->faceRectCount(FaceDir::PosY) >= 2);
+}
+
+TEST_CASE("voxel.world.selectVisible_replaces_previous") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    world->getOrCreateChunk(0, 0, 0)->fill(1);
+    world->getOrCreateChunk(10, 0, 0)->fill(1);
+    world->remeshDirty();
+    float view[16], proj[16], vp[16];
+    lookAtRH(16.f, 16.f, 48.f, 16.f, 16.f, 16.f, 0, 1, 0, view);
+    perspectiveRH_ZO(60.f * 3.14159265f / 180.f, 1.f, 0.1f, 200.f, proj);
+    mul4(proj, view, vp);
+    world->selectVisible(vp, 16.f, 16.f, 48.f, 80.f, true);
+    const int first = world->getVisibleChunkCount();
+    CHECK(first >= 1);
+    bool sawOrigin = false;
+    for (int i = 0; i < world->getVisibleChunkCount(); ++i) {
+        int cx, cy, cz;
+        world->getVisibleChunkCoord(i, cx, cy, cz);
+        if (cx == 0 && cy == 0 && cz == 0) sawOrigin = true;
+    }
+    CHECK(sawOrigin);
+
+    // Move eye near far chunk only (cx=10 → center x=336).
+    lookAtRH(336.f, 16.f, 48.f, 336.f, 16.f, 16.f, 0, 1, 0, view);
+    mul4(proj, view, vp);
+    world->selectVisible(vp, 336.f, 16.f, 48.f, 80.f, true);
+    CHECK(world->getVisibleChunkCount() >= 1);
+    bool sawFar = false, stillOrigin = false;
+    for (int i = 0; i < world->getVisibleChunkCount(); ++i) {
+        int cx, cy, cz;
+        world->getVisibleChunkCoord(i, cx, cy, cz);
+        if (cx == 10) sawFar = true;
+        if (cx == 0 && cy == 0 && cz == 0) stillOrigin = true;
+    }
+    CHECK(sawFar);
+    CHECK(!stillOrigin);
+}
+
+TEST_CASE("voxel.world.eye_on_posY_keeps_posY_drops_negY") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    world->getOrCreateChunk(0, 0, 0)->fill(1);
+    world->remeshDirty();
+    float view[16], proj[16], vp[16];
+    lookAtRH(16.f, 80.f, 16.f, 16.f, 16.f, 16.f, 0, 0, -1, view);
+    perspectiveRH_ZO(60.f * 3.14159265f / 180.f, 1.f, 0.1f, 200.f, proj);
+    mul4(proj, view, vp);
+    world->selectVisible(vp, 16.f, 80.f, 16.f, 200.f, true);
+    bool sawPosY = false, sawNegY = false;
+    for (int i = 0; i < world->getVisibleBatchCount(); ++i) {
+        if (world->getVisibleBatch(i).dir == FaceDir::PosY) sawPosY = true;
+        if (world->getVisibleBatch(i).dir == FaceDir::NegY) sawNegY = true;
+    }
+    CHECK(sawPosY);
+    CHECK(!sawNegY);
+}
+
+TEST_CASE("voxel.world.remeshDirty_zero_when_clean") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    world->setVoxel(0, 0, 0, 1);
+    CHECK_EQ(world->remeshDirty(), 1);
+    CHECK_EQ(world->remeshDirty(), 0);
+    CHECK_EQ(world->remeshDirty(), 0);
+}
+
+TEST_CASE("voxel.world.setVoxel_marks_dirty_and_creates") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    CHECK_EQ(world->getChunkCount(), 0);
+    world->setVoxel(40, 5, -3, 6);
+    CHECK(world->hasChunk(1, 0, -1));
+    CHECK(world->getChunk(1, 0, -1)->isDirty());
+    CHECK_EQ(int(world->getVoxel(40, 5, -3)), 6);
+}
+
+TEST_CASE("voxel.frustum.rejects_above_and_far") {
+    float view[16], proj[16], vp[16];
+    lookAtRH(0.f, 0.f, 5.f, 0.f, 0.f, 0.f, 0, 1, 0, view);
+    perspectiveRH_ZO(50.f * 3.14159265f / 180.f, 1.f, 0.5f, 20.f, proj);
+    mul4(proj, view, vp);
+    const Frustum f = Frustum::fromViewProjColumnMajor(vp);
+    CHECK(!f.intersectsAABB(-1.f, 500.f, -1.f, 1.f, 501.f, 1.f));
+    CHECK(!f.intersectsAABB(-1.f, -1.f, -500.f, 1.f, 1.f, -400.f));  // behind / far past
+    CHECK(f.intersectsAABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
+}
+
+TEST_CASE("voxel.decode.negZ_extent_and_winding") {
+    const PackedRect r = PackedRect::pack(1, 2, 3, 4, 5, 6);
+    const DecodedRect q = decodePackedRect(r, FaceDir::NegZ, 0, 0, 0);
+    for (int i = 0; i < 4; ++i) CHECK_EQ(q.corners[i][2], 3.f);
+    float minX = q.corners[0][0], maxX = q.corners[0][0];
+    float minY = q.corners[0][1], maxY = q.corners[0][1];
+    for (int i = 1; i < 4; ++i) {
+        minX = std::min(minX, q.corners[i][0]);
+        maxX = std::max(maxX, q.corners[i][0]);
+        minY = std::min(minY, q.corners[i][1]);
+        maxY = std::max(maxY, q.corners[i][1]);
+    }
+    CHECK_EQ(minX, 1.f);
+    CHECK_EQ(maxX, 5.f);
+    CHECK_EQ(minY, 2.f);
+    CHECK_EQ(maxY, 7.f);
+    CHECK(decodedWindingMatchesNormal(q));
+    CHECK(decodedSecondTriangleMatchesNormal(q));
+}
+
+TEST_CASE("voxel.decode.negative_chunk_origin") {
+    const PackedRect r = PackedRect::pack(0, 0, 0, 1, 1, 1);
+    const DecodedRect q = decodePackedRect(r, FaceDir::PosX, -32.f, -64.f, -96.f);
+    for (int i = 0; i < 4; ++i) {
+        CHECK_EQ(q.corners[i][0], -31.f);  // originX + x+1
+    }
+    CHECK_EQ(q.corners[0][1], -64.f);
+    CHECK_EQ(q.corners[0][2], -96.f);
+}
+
+TEST_CASE("voxel.module.pack_unpack_roundtrip_api") {
+    auto *mod = Voxel::create();
+    const uint32_t bits = mod->packRect(7, 8, 9, 3, 5, 42);
+    CHECK_EQ(mod->unpackRectX(bits), 7);
+    CHECK_EQ(mod->unpackRectY(bits), 8);
+    CHECK_EQ(mod->unpackRectZ(bits), 9);
+    CHECK_EQ(mod->unpackRectWidth(bits), 3);
+    CHECK_EQ(mod->unpackRectHeight(bits), 5);
+    CHECK_EQ(mod->unpackRectTex(bits), 42);
+}
+
+TEST_CASE("voxel.chunk.fill_dirty_clear_dirty") {
+    std::unique_ptr<Chunk> chunk(new Chunk(1, 2, 3));
+    chunk->remesh();
+    CHECK(!chunk->isDirty());
+    chunk->fill(9);
+    CHECK(chunk->isDirty());
+    chunk->remesh();
+    CHECK(!chunk->isDirty());
+    chunk->clear();
+    CHECK(chunk->isDirty());
+    chunk->ensureMeshed();
+    CHECK_EQ(chunk->totalRectCount(), 0);
+}
+
+TEST_CASE("voxel.world.visible_chunk_coords_consistent") {
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    world->getOrCreateChunk(-1, 0, 2)->fill(1);
+    world->getOrCreateChunk(0, 0, 0)->fill(1);
+    world->remeshDirty();
+    float view[16], proj[16], vp[16];
+    lookAtRH(0.f, 16.f, 100.f, 0.f, 16.f, 0.f, 0, 1, 0, view);
+    perspectiveRH_ZO(70.f * 3.14159265f / 180.f, 1.f, 0.1f, 400.f, proj);
+    mul4(proj, view, vp);
+    world->selectVisible(vp, 0.f, 16.f, 100.f, 400.f, false);
+    CHECK(world->getVisibleChunkCount() >= 1);
+    for (int i = 0; i < world->getVisibleChunkCount(); ++i) {
+        int cx, cy, cz;
+        world->getVisibleChunkCoord(i, cx, cy, cz);
+        CHECK(world->hasChunk(cx, cy, cz));
+    }
+}
+
+TEST_CASE("voxel.pack.masks_oob_inputs") {
+    // Values outside bit-field width are masked, not rejected.
+    const PackedRect r = PackedRect::pack(100, -1, 64, 40, -3, 200);
+    CHECK(r.x() >= 0);
+    CHECK(r.x() <= 31);
+    CHECK(r.y() >= 0);
+    CHECK(r.y() <= 31);
+    CHECK(r.z() >= 0);
+    CHECK(r.z() <= 31);
+    CHECK(r.tex() >= 0);
+    CHECK(r.tex() <= 127);
+}
+
+TEST_CASE("voxel.greedy.shell_vs_solid_rect_delta") {
+    std::unique_ptr<Chunk> solid(new Chunk(0, 0, 0));
+    solid->fill(1);
+    solid->remesh();
+    CHECK_EQ(solid->totalRectCount(), 6);
+
+    std::unique_ptr<Chunk> shell(new Chunk(0, 0, 0));
+    for (int z = 0; z < 32; ++z)
+        for (int y = 0; y < 32; ++y)
+            for (int x = 0; x < 32; ++x) {
+                const bool border = (x == 0 || x == 31 || y == 0 || y == 31 || z == 0 || z == 31);
+                if (border) shell->set(x, y, z, 1);
+            }
+    shell->remesh();
+    // Hollow shell has inner faces too.
+    CHECK(shell->totalRectCount() > solid->totalRectCount());
+}
