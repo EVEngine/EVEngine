@@ -218,6 +218,9 @@ virtual void begin3DFrame() = 0;
     /** Optional normal map for the next drawMesh / drawMeshShader (nullptr = flat). */
     virtual void setMesh3DNormalTexture(Texture *normal) = 0;
 
+    /** Optional height map for parallax (R channel; nullptr = flat / off). */
+    virtual void setMesh3DHeightTexture(Texture *height) = 0;
+
     /** Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
 
@@ -227,6 +230,13 @@ virtual void begin3DFrame() = 0;
      * rotAmount: 0..1 per-cell rotation scale (default 1).
      */
     virtual void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) = 0;
+
+    /**
+     * Parallax occlusion mapping for the next default mesh draw.
+     * scale: UV displacement strength (0=off). Typical 0.02..0.08.
+     * minLayers / maxLayers: adaptive POM ray-march steps (more when glancing).
+     */
+    virtual void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) = 0;
 
     /** Per-frame ambient + up to 8 lights packed into Mesh3DUBO. */
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;

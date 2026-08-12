@@ -176,6 +176,7 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("setMesh", &Renderable3D::setMesh);
     ent.addFunc("setTexture", &Renderable3D::setTexture);
     ent.addFunc("setNormalTexture", &Renderable3D::setNormalTexture);
+    ent.addFunc("setHeightTexture", &Renderable3D::setHeightTexture);
     ent.addFunc("setShader", &Renderable3D::setShader);
     ent.addFunc("setTint", &Renderable3D::setTint);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
@@ -184,6 +185,10 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("getTexCellBombScale", &Renderable3D::getTexCellBombScale);
     ent.addFunc("getTexCellBombStrength", &Renderable3D::getTexCellBombStrength);
     ent.addFunc("getTexCellBombRotation", &Renderable3D::getTexCellBombRotation);
+    ent.addFunc("setParallax", &Renderable3D::setParallax);
+    ent.addFunc("getParallaxScale", &Renderable3D::getParallaxScale);
+    ent.addFunc("getParallaxMinLayers", &Renderable3D::getParallaxMinLayers);
+    ent.addFunc("getParallaxMaxLayers", &Renderable3D::getParallaxMaxLayers);
     ent.addFunc("setVisible", &Renderable3D::setVisible);
     ent.addFunc("setReceiveLight", &Renderable3D::setReceiveLight);
     ent.addFunc("setCastShadow", &Renderable3D::setCastShadow);

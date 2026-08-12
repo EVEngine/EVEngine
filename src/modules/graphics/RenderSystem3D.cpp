@@ -235,6 +235,8 @@ void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = text
 
 void Renderable3D::setNormalTexture(Texture *texture) { meshRenderer()->normalTexture = texture; }
 
+void Renderable3D::setHeightTexture(Texture *texture) { meshRenderer()->heightTexture = texture; }
+
 void Renderable3D::setShader(Shader *shader) { meshRenderer()->shader = shader; }
 
 void Renderable3D::setTint(float r, float g, float b, float a) {
@@ -261,6 +263,22 @@ float Renderable3D::getTexCellBombScale() { return meshRenderer()->texBombScale;
 float Renderable3D::getTexCellBombStrength() { return meshRenderer()->texBombStrength; }
 
 float Renderable3D::getTexCellBombRotation() { return meshRenderer()->texBombRot; }
+
+void Renderable3D::setParallax(float scale, float minLayers, float maxLayers) {
+    auto mr = meshRenderer();
+    mr->parallaxScale = scale < 0.f ? 0.f : (scale > 0.25f ? 0.25f : scale);
+    float minL = minLayers < 1.f ? 1.f : minLayers;
+    float maxL = maxLayers < minL ? minL : maxLayers;
+    if (maxL > 64.f) maxL = 64.f;
+    mr->parallaxMinLayers = minL;
+    mr->parallaxMaxLayers = maxL;
+}
+
+float Renderable3D::getParallaxScale() { return meshRenderer()->parallaxScale; }
+
+float Renderable3D::getParallaxMinLayers() { return meshRenderer()->parallaxMinLayers; }
+
+float Renderable3D::getParallaxMaxLayers() { return meshRenderer()->parallaxMaxLayers; }
 
 void Renderable3D::setVisible(bool visible) { meshRenderer()->visible = visible; }
 
@@ -432,6 +450,8 @@ void RenderSystem3D::render(Graphics &gfx) {
         gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
         gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
         gfx.setMesh3DNormalTexture(mr->normalTexture);
+        gfx.setMesh3DHeightTexture(mr->heightTexture);
+        gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers, mr->parallaxMaxLayers);
         gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
         gfx.setMesh3DShadowReceive(mr->receiveShadow);
 
