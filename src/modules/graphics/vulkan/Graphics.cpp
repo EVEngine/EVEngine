@@ -3155,7 +3155,14 @@ void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
     if (pack.count > 0) {
         mesh3dFrameUbo.lightDir =
             glm::vec4(glm::vec3(pack.lights[0].posRadius), float(pack.count));
-        mesh3dFrameUbo.lightColor = glm::vec4(glm::vec3(pack.lights[0].color), 1.f);
+        // Preserve .w (envIntensity) filled by setMesh3DEnv.
+        mesh3dFrameUbo.lightColor =
+            glm::vec4(glm::vec3(pack.lights[0].color), mesh3dFrameUbo.lightColor.w);
+    } else {
+        // count==0 must zero the legacy primary slot — the shader always shades it.
+        mesh3dFrameUbo.lightDir = glm::vec4(0.f, 1.f, 0.f, 0.f);
+        mesh3dFrameUbo.lightColor =
+            glm::vec4(0.f, 0.f, 0.f, mesh3dFrameUbo.lightColor.w);
     }
 }
 

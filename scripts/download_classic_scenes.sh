@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Download large classic graphics test scenes into test/assets/classic/.
 # Small scenes (e.g. Cornell Box) are committed under that tree; this script
-# fetches Crytek Sponza and DamagedHelmet (Khronos glTF Sample Assets).
+# fetches Khronos glTF Sample Assets used by ClassicScenes.* tests.
 #
 # Usage:
 #   scripts/download_classic_scenes.sh
@@ -84,16 +84,44 @@ PY
 
 mkdir -p "$OUT_ROOT"
 
-# Crytek Sponza (~53 MB) — atrium lighting / shadow / GI torture test.
+# Large atrium — lighting / shadow / GI torture test.
 download_model_gltf "Sponza" "sponza"
 
-# DamagedHelmet (~4 MB) — Khronos PBR / reflection showcase.
+# Compact PBR / reflection showcases.
 download_model_gltf "DamagedHelmet" "damaged_helmet"
+download_model_gltf "SciFiHelmet" "scifi_helmet"
+download_model_gltf "FlightHelmet" "flight_helmet"
+download_model_gltf "BoomBox" "boom_box"
+
+# Material / orientation / silhouette fixtures.
+download_model_gltf "MetalRoughSpheres" "metal_rough_spheres"
+download_model_gltf "Suzanne" "suzanne"
+download_model_gltf "Duck" "duck"
+download_model_gltf "Avocado" "avocado"
+download_model_gltf "WaterBottle" "water_bottle"
+download_model_gltf "Lantern" "lantern"
+download_model_gltf "AntiqueCamera" "antique_camera"
+download_model_gltf "CesiumMilkTruck" "cesium_milk_truck"
+download_model_gltf "BarramundiFish" "barramundi_fish"
+download_model_gltf "Corset" "corset"
 
 cat >"$OUT_ROOT/.downloaded" <<EOF
 sponza
 damaged_helmet
+scifi_helmet
+flight_helmet
+boom_box
+metal_rough_spheres
+suzanne
+duck
+avocado
+water_bottle
+lantern
+antique_camera
+cesium_milk_truck
+barramundi_fish
+corset
 EOF
 
 echo "Classic scenes installed under $OUT_ROOT"
-du -sh "$OUT_ROOT/sponza" "$OUT_ROOT/damaged_helmet" 2>/dev/null || true
+du -sh "$OUT_ROOT"/* 2>/dev/null || true

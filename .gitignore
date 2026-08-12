@@ -5,6 +5,19 @@ test/Textures/env/_src/
 # Large classic scenes fetched by scripts/download_classic_scenes.sh
 test/assets/classic/sponza/
 test/assets/classic/damaged_helmet/
+test/assets/classic/scifi_helmet/
+test/assets/classic/flight_helmet/
+test/assets/classic/boom_box/
+test/assets/classic/metal_rough_spheres/
+test/assets/classic/suzanne/
+test/assets/classic/duck/
+test/assets/classic/avocado/
+test/assets/classic/water_bottle/
+test/assets/classic/lantern/
+test/assets/classic/antique_camera/
+test/assets/classic/cesium_milk_truck/
+test/assets/classic/barramundi_fish/
+test/assets/classic/corset/
 test/assets/classic/.downloaded
 # Skinned character: CesiumMan glTF is committed under test/assets/skinned/cesium_man/
 # (see ATTRIBUTION.md). Re-run scripts/download_skinned_character.sh to refresh.

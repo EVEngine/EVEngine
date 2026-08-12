@@ -422,7 +422,8 @@ log/ios:
 
 test: test/$(PLATFORM)-debug
 
-# Fetch large classic render scenes (Sponza / DamagedHelmet) for ClassicScenes.* tests.
+# Fetch large classic render scenes for ClassicScenes.* tests
+# (Sponza, DamagedHelmet, FlightHelmet, BoomBox, WaterBottle, Corset, …).
 # Cornell Box is committed under test/assets/classic/cornell/.
 download-classic-scenes:
 	bash scripts/download_classic_scenes.sh
