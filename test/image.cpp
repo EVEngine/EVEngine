@@ -247,10 +247,11 @@ TEST_CASE("image.rotate.ninetyDegreesNearest") {
     }
     CHECK_EQ(redCount, 1);
     CHECK_EQ(greenCount, 1);
-    // Clockwise 90°: former top-right becomes bottom-ish; former bottom-left becomes top-ish.
-    CHECK(redY > greenY);
-    (void)redX;
-    (void)greenX;
+    // Clockwise 90° with pixel-center sampling: (2,0) → (1,2), (0,1) → (0,0).
+    CHECK_EQ(redX, 1);
+    CHECK_EQ(redY, 2);
+    CHECK_EQ(greenX, 0);
+    CHECK_EQ(greenY, 0);
 }
 
 TEST_CASE("image.rotate.identityAndExpandFalse") {
