@@ -252,12 +252,13 @@ TEST_CASE("editor.factories") {
     std::unique_ptr<EditorInspector> i(ed->newInspector());
     std::unique_ptr<EditorDock> d(ed->newDock());
     std::unique_ptr<EditorHistory> h(ed->newHistory());
-    CHECK(g);
-    CHECK(m);
+    // zeroerr CHECK copies the expression for printing — use raw pointers, not unique_ptr.
+    CHECK(g.get() != nullptr);
+    CHECK(m.get() != nullptr);
     CHECK_EQ(b->getWidth(), 2);
-    CHECK(br);
-    CHECK(t);
-    CHECK(i);
-    CHECK(d);
-    CHECK(h);
+    CHECK(br.get() != nullptr);
+    CHECK(t.get() != nullptr);
+    CHECK(i.get() != nullptr);
+    CHECK(d.get() != nullptr);
+    CHECK(h.get() != nullptr);
 }
