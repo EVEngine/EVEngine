@@ -92,6 +92,7 @@ struct Mesh3DUBO {
     Light3DGpu lights[Lighting3DPack::kMaxLights]{};
     // Appended: custom shaders that only read the prefix stay valid (buffer may be larger).
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f}; // x=cellScale, y=strength (0=off), z=rotAmount
+    glm::vec4 parallax{0.f, 8.f, 32.f, 0.f}; // x=scale (0=off), y=minLayers, z=maxLayers
 };
 
 struct Mesh3DClusteredUBO {
@@ -106,6 +107,7 @@ struct Mesh3DClusteredUBO {
     glm::vec4 gridInfo{16.f, 9.f, 24.f, 0.f};
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f}; // x=cellScale, y=strength (0=off), z=rotAmount
+    glm::vec4 parallax{0.f, 8.f, 32.f, 0.f}; // x=scale (0=off), y=minLayers, z=maxLayers
 };
 
 struct GpuTexture {
@@ -199,8 +201,10 @@ public:
                                 float originZ, const std::string &faceDir, Texture *atlas,
                                 int tilesPerRow = 16) override;
     void setMesh3DNormalTexture(Texture *normal) override;
+    void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DMaterial(float metallic, float roughness) override;
     void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
+    void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
     void setMesh3DLighting(const Lighting3DPack &pack) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
@@ -259,7 +263,8 @@ private:
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     vk::DescriptorSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
-                                            GpuTexture *envTex, size_t uboSlot);
+                                            GpuTexture *envTex, GpuTexture *heightTex,
+                                            size_t uboSlot);
     void ensureOffscreenPipelines();
     void ensureShaderOffscreenPipeline(Shader *shader);
     vk::Pipeline createTexturedStylePipeline(const std::vector<uint32_t> &vert,
@@ -282,9 +287,10 @@ private:
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
     vk::DescriptorSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                   size_t uboSlot);
+                                   GpuTexture *heightTex, size_t uboSlot);
     void ensureDefaultEnvCubemap();
     void ensureFlatNormalTexture3D();
+    void ensureFlatHeightTexture3D();
     vk::Sampler createVkSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
     void writeCombinedImageDescriptor(GpuTexture *gpu);
     /** Rebuild surface/swapchain when dirty. Returns false if surface not ready. */
@@ -348,15 +354,17 @@ private:
         GpuTexture *albedo = nullptr;
         GpuTexture *normal = nullptr;
         GpuTexture *env = nullptr;
+        GpuTexture *height = nullptr;
         bool operator==(const Mesh3dSetKey &o) const {
-            return albedo == o.albedo && normal == o.normal && env == o.env;
+            return albedo == o.albedo && normal == o.normal && env == o.env && height == o.height;
         }
     };
     struct Mesh3dSetKeyHash {
         size_t operator()(const Mesh3dSetKey &k) const {
             return std::hash<GpuTexture *>()(k.albedo) ^
                    (std::hash<GpuTexture *>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture *>()(k.env) << 2);
+                   (std::hash<GpuTexture *>()(k.env) << 2) ^
+                   (std::hash<GpuTexture *>()(k.height) << 3);
         }
     };
     struct Mesh3dUboSlot {
@@ -368,8 +376,10 @@ private:
     size_t mesh3dDrawIndex = 0;
     Texture *whiteTexture = nullptr;
     Texture *flatNormalTexture3D = nullptr;
+    Texture *flatHeightTexture3D = nullptr;
     Texture *defaultEnvCubemap = nullptr;
     Texture *mesh3dNormalTexture = nullptr;
+    Texture *mesh3dHeightTexture = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
     float mesh3dMetallic = 0.f;
@@ -377,6 +387,9 @@ private:
     float mesh3dTexBombScale = 4.f;
     float mesh3dTexBombStrength = 0.f;
     float mesh3dTexBombRot = 1.f;
+    float mesh3dParallaxScale = 0.f;
+    float mesh3dParallaxMinLayers = 8.f;
+    float mesh3dParallaxMaxLayers = 32.f;
     Lighting3DPack mesh3dLighting{};
     ShadowUpload mesh3dShadows{};
     bool mesh3dShadowReceive = true;

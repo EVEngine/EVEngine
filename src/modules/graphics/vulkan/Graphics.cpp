@@ -563,6 +563,7 @@ void Graphics::createMesh3DPipeline() {
             .image(3, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .buffer(4, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, 1)
             .image(5, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
@@ -607,6 +608,7 @@ void Graphics::createMesh3DClusteredPipeline() {
             .buffer(6, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eFragment, 1)
             .buffer(7, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, 1)
             .image(8, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(9, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dClusteredSetLayout = *mesh3dClusteredSetLayoutUnique;
 
@@ -915,10 +917,12 @@ void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload)
 }
 
 vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
-                                                  GpuTexture *envTex, size_t uboSlot) {
+                                                  GpuTexture *envTex, GpuTexture *heightTex,
+                                                  size_t uboSlot) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
+    ASSERT(heightTex != nullptr);
     ASSERT(shadowArrayView);
     while (mesh3dClusteredUboSlots.size() <= uboSlot) {
         mesh3dClusteredUboSlots.emplace_back();
@@ -931,7 +935,7 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
     auto &slot = mesh3dClusteredUboSlots[uboSlot];
-    Mesh3dSetKey key{gpuTex, normalTex, envTex};
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex};
     auto it = slot.sets.find(key);
     if (it != slot.sets.end()) return it->second;
 
@@ -941,7 +945,7 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
     alloc.pSetLayouts = &mesh3dClusteredSetLayout;
     vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
 
-    vkb::DescriptorSetUpdater updater(12, 12, 0);
+    vkb::DescriptorSetUpdater updater(14, 14, 0);
     updater.beginDescriptorSet(set)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.ubo.buffer, 0, sizeof(Mesh3DClusteredUBO))
@@ -961,6 +965,8 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
         .buffer(slot.shadowUbo.buffer, 0, sizeof(ShadowUBO))
         .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(shadowSampler, shadowArrayView, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(heightTex->sampler, heightTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .update(device.instance);
 
     slot.sets.emplace(key, set);
@@ -2613,6 +2619,8 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
 
 void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = normal; }
 
+void Graphics::setMesh3DHeightTexture(Texture *height) { mesh3dHeightTexture = height; }
+
 void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
     mesh3dEnvTexture = cube;
     mesh3dEnvIntensity = intensity < 0.f ? 0.f : intensity;
@@ -2711,6 +2719,17 @@ void Graphics::setMesh3DTexCellBomb(float cellScale, float strength, float rotAm
         glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
 }
 
+void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) {
+    mesh3dParallaxScale = scale < 0.f ? 0.f : (scale > 0.25f ? 0.25f : scale);
+    float minL = minLayers < 1.f ? 1.f : minLayers;
+    float maxL = maxLayers < minL ? minL : maxLayers;
+    if (maxL > 64.f) maxL = 64.f;
+    mesh3dParallaxMinLayers = minL;
+    mesh3dParallaxMaxLayers = maxL;
+    mesh3dFrameUbo.parallax =
+        glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+}
+
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
     mesh3dLighting = pack;
     mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);
@@ -2728,11 +2747,19 @@ void Graphics::ensureFlatNormalTexture3D() {
     flatNormalTexture3D = newTexture(1, 1, px);
 }
 
+void Graphics::ensureFlatHeightTexture3D() {
+    if (flatHeightTexture3D) return;
+    // Mid-gray height: no relief when scale>0 without a real height map.
+    const uint8_t px[4] = {128, 128, 128, 255};
+    flatHeightTexture3D = newTexture(1, 1, px);
+}
+
 vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                         size_t uboSlot) {
+                                         GpuTexture *heightTex, size_t uboSlot) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
+    ASSERT(heightTex != nullptr);
     ASSERT(shadowArrayView);
     while (mesh3dUboSlots.size() <= uboSlot) {
         mesh3dUboSlots.emplace_back();
@@ -2745,7 +2772,7 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
     auto &slot = mesh3dUboSlots[uboSlot];
-    Mesh3dSetKey key{gpuTex, normalTex, envTex};
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex};
     auto it = slot.sets.find(key);
     if (it != slot.sets.end()) return it->second;
 
@@ -2755,7 +2782,7 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
     alloc.pSetLayouts = &mesh3dSetLayout;
     vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
 
-    vkb::DescriptorSetUpdater updater(10, 10, 0);
+    vkb::DescriptorSetUpdater updater(12, 12, 0);
     updater.beginDescriptorSet(set)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.ubo.buffer, 0, sizeof(Mesh3DUBO))
@@ -2769,6 +2796,8 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
         .buffer(slot.shadowUbo.buffer, 0, sizeof(ShadowUBO))
         .beginImages(5, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(shadowSampler, shadowArrayView, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .beginImages(6, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(heightTex->sampler, heightTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .update(device.instance);
 
     slot.sets.emplace(key, set);
@@ -3175,6 +3204,11 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!ntex || !ntex->gpuHandle) throw Exception("drawMesh: missing normal texture");
     auto *gpuNormal = static_cast<GpuTexture *>(ntex->gpuHandle);
 
+    ensureFlatHeightTexture3D();
+    Texture *htex = mesh3dHeightTexture ? mesh3dHeightTexture : flatHeightTexture3D;
+    if (!htex || !htex->gpuHandle) throw Exception("drawMesh: missing height texture");
+    auto *gpuHeight = static_cast<GpuTexture *>(htex->gpuHandle);
+
     ensureDefaultEnvCubemap();
     Texture *envTex = mesh3dEnvTexture ? mesh3dEnvTexture : defaultEnvCubemap;
     if (!envTex || !envTex->gpuHandle) throw Exception("drawMesh: missing env cubemap");
@@ -3208,9 +3242,11 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.gridInfo = mesh3dClustered.gridInfo;
         ubo.clipInfo = mesh3dClustered.clipInfo;
         ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+        ubo.parallax =
+            glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
 
         const size_t slot = mesh3dClusteredDrawIndex++;
-        vk::DescriptorSet set = mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, slot);
+        vk::DescriptorSet set = mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, slot);
         mesh3dClusteredUboSlots[slot].ubo.updateLocal(ubo);
         mesh3dClusteredUboSlots[slot].shadowUbo.updateLocal(makeShadowUbo());
 
@@ -3234,6 +3270,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = envIntensity;
     ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+    ubo.parallax =
+        glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     if (lightCount > 0) {
         ubo.lightDir = glm::vec4(glm::vec3(mesh3dLighting.lights[0].posRadius), float(lightCount));
@@ -3241,7 +3279,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     }
 
     const size_t slot = mesh3dDrawIndex++;
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, slot);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, slot);
     mesh3dUboSlots[slot].ubo.updateLocal(ubo);
     mesh3dUboSlots[slot].shadowUbo.updateLocal(makeShadowUbo());
 

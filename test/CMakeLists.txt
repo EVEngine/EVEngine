@@ -20,6 +20,7 @@ file(GLOB all_test_cpp
   RenderSystem3D.cpp
   Quad.cpp
   TextureCellBomb.cpp
+  ParallaxMap.cpp
   Lighting2D.cpp
   ClusteredLighting.cpp
   IBL.cpp
@@ -42,6 +43,7 @@ file(GLOB all_test_cpp
   map_fov.cpp
   rpg.cpp
   inventory.cpp
+  building.cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
@@ -222,6 +224,7 @@ set(EVELIBS
   EVThread
   EVRPG
   EVInventory
+  EVBuilding
   EVAvatar
   EVDialogue
   EVProcgen

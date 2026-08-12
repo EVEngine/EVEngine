@@ -2,6 +2,7 @@
 
 #extension GL_GOOGLE_include_directive : enable
 #include "tex_cell_bomb.glsl"
+#include "parallax_map.glsl"
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -22,6 +23,7 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 gridInfo;    // tilesX, tilesY, slices, pointCount
     vec4 clipInfo;    // near, far, screenW, screenH
     vec4 texBomb;     // x = cellScale, y = strength (0=off), z = rotAmount, w unused
+    vec4 parallax;    // x = scale (0=off), y = minLayers, z = maxLayers, w unused
 } ubo;
 
 struct Light3D {
@@ -32,6 +34,7 @@ struct Light3D {
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
 layout(set = 0, binding = 2) uniform sampler2D normalSampler;
 layout(set = 0, binding = 3) uniform samplerCube envSampler;
+layout(set = 0, binding = 9) uniform sampler2D heightSampler;
 
 layout(std430, set = 0, binding = 4) readonly buffer LightBuffer {
     Light3D lights[];
@@ -155,17 +158,20 @@ void main() {
     float bombScale = ubo.texBomb.x;
     float bombStrength = ubo.texBomb.y;
     float bombRot = ubo.texBomb.z;
-    vec4 base = textureCellBomb(albedoSampler, vUV, bombScale, bombStrength, bombRot) * vTint;
+    vec3 Ngeom = normalize(vNormal);
+    vec3 V = normalize(vCameraPos - vWorldPos);
+    vec2 uv = parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V, ubo.parallax.x,
+                               ubo.parallax.y, ubo.parallax.z);
+
+    vec4 base = textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot) * vTint;
     vec3 albedo = base.rgb;
     float metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     float roughness = clamp(ubo.cameraPos.w, 0.04, 1.0);
 
-    vec3 N = normalize(vNormal);
-    vec3 nSample = textureCellBomb(normalSampler, vUV, bombScale, bombStrength, bombRot).xyz;
+    vec3 N = Ngeom;
+    vec3 nSample = textureCellBomb(normalSampler, uv, bombScale, bombStrength, bombRot).xyz;
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
-        N = applyNormalMap(N, nSample, vWorldPos, vUV);
-
-    vec3 V = normalize(vCameraPos - vWorldPos);
+        N = applyNormalMap(N, nSample, vWorldPos, uv);
     vec3 Lo = vec3(0.0);
     float shadowVis = sampleShadowPCF(vWorldPos, max(-vViewPos.z, 0.0));
 

@@ -25,6 +25,24 @@ need_cmd() {
 need_cmd curl
 need_cmd python3
 
+CURL_OPTS=(--retry 5 --retry-delay 2 --retry-all-errors --connect-timeout 30)
+# Prefer system CA bundle (avoids flaky "self-signed certificate" on some CI runners).
+for _ca in /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt; do
+  if [ -f "$_ca" ]; then
+    CURL_OPTS+=(--cacert "$_ca")
+    break
+  fi
+done
+
+# Vendored in-repo for CI/offline builds; skip network when complete.
+if [ -f "$OUT_ROOT/.downloaded" ] &&
+   [ -f "$OUT_ROOT/cesium_man/glTF/CesiumMan.gltf" ] &&
+   [ -f "$OUT_ROOT/cesium_man/glTF/CesiumMan_data.bin" ] &&
+   [ -f "$OUT_ROOT/cesium_man/glTF/CesiumMan_img0.jpg" ]; then
+  echo "Skinned character already present under $OUT_ROOT (skip download)"
+  exit 0
+fi
+
 download_model_gltf() {
   local model="$1"
   local dest="$OUT_ROOT/$2/glTF"
@@ -35,7 +53,7 @@ download_model_gltf() {
   mkdir -p "$dest"
   echo "==> Listing $model via GitHub API"
   listing_file="$(mktemp)"
-  curl -fsSL "$api_url" -o "$listing_file"
+  curl "${CURL_OPTS[@]}" -fsSL "$api_url" -o "$listing_file"
   listing_json="$listing_file"
 
   python3 - "$dest" "$BASE_RAW/$model/glTF" "$listing_json" <<'PY'
