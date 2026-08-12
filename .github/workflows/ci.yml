@@ -95,6 +95,8 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build win32 debug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
       - name: Run win32 unit tests
@@ -145,6 +147,8 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build macosx debug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
 
       - name: Run macosx unit tests
@@ -200,6 +204,8 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make build/linux-debug JOBS="$(nproc)"
 
       - name: Run linux unit tests

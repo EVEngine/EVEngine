@@ -35,7 +35,12 @@ download_model_gltf() {
   mkdir -p "$dest"
   echo "==> Listing $model via GitHub API"
   listing_file="$(mktemp)"
-  curl -fsSL "$api_url" -o "$listing_file"
+  # GitHub API rejects anonymous requests without User-Agent; CI may 403 without a token.
+  curl_args=(-fsSL -H "User-Agent: evengine-skinned-character" -H "Accept: application/vnd.github+json")
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    curl_args+=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+  fi
+  curl "${curl_args[@]}" "$api_url" -o "$listing_file"
   listing_json="$listing_file"
 
   python3 - "$dest" "$BASE_RAW/$model/glTF" "$listing_json" <<'PY'
