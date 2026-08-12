@@ -644,3 +644,235 @@ TEST_CASE("voxel.render.editRemeshChangesPixels") {
     Color filled = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     CHECK(luma(filled) > luma(empty) + 0.03f);
 }
+
+TEST_CASE("voxel.render.emptyWorldDrawVisible") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 200, 150);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    Texture *atlas = makeSolid(gfx, 255, 255, 255);
+    const glm::vec3 eye(0.f, 0.f, 5.f);
+    const glm::vec3 target(0.f, 0.f, 0.f);
+    renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 100.f, true);
+    CHECK_EQ(world->getVisibleBatchCount(), 0);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) < 0.25f);
+}
+
+TEST_CASE("voxel.render.negFaceDirAliases") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 240, 180);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    // Camera on -Z looking toward origin → see NegZ? Actually looking +Z direction from -Z.
+    // Eye at z=-4 looking at z=0.5 → see -Z face of voxel at origin (plane z=0).
+    const glm::vec3 eye(0.5f, 0.5f, -4.f);
+    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0, 1, 0));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(50.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+
+    uint32_t packed = PackedRect::pack(0, 0, 0, 1, 1, 1).bits;
+    Texture *atlas = makeSolid(gfx, 180, 90, 40);
+
+    for (const char *name : {"negZ", "-z"}) {
+        gfx->setBackgroundColor(Color(0.04f, 0.05f, 0.06f, 1.f));
+        gfx->begin3DFrame();
+        if (gfx->had3DThisFrame()) {
+            gfx->setMesh3DViewProj(vp);
+            gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, name, atlas, 1);
+        }
+        RenderSystem::render(*gfx);
+        Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        CHECK(luma(mid) > 0.04f);
+    }
+}
+
+TEST_CASE("voxel.render.manyChunksBatched") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    for (int cx = 0; cx < 3; ++cx)
+        for (int cz = 0; cz < 3; ++cz) {
+            for (int y = 0; y < 2; ++y)
+                for (int x = 0; x < 2; ++x)
+                    for (int z = 0; z < 2; ++z)
+                        world->setVoxel(cx * 32 + x + 8, y, cz * 32 + z + 8, 1);
+        }
+    world->remeshDirty();
+    CHECK_EQ(world->getChunkCount(), 9);
+
+    Texture *atlas = makeSolid(gfx, 120, 160, 200);
+    const glm::vec3 eye(48.f, 20.f, 120.f);
+    const glm::vec3 target(48.f, 1.f, 48.f);
+    renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 300.f, true);
+    CHECK(world->getVisibleChunkCount() >= 3);
+    CHECK(world->getVisibleBatchCount() >= 3);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.04f);
+}
+
+TEST_CASE("voxel.render.singleFaceManualDraw") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 256, 192);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    // Large +Z quad covering much of the view.
+    uint32_t packed = PackedRect::pack(0, 0, 0, 8, 8, 1).bits;
+    Texture *atlas = makeSolid(gfx, 50, 200, 80);
+
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::vec3 eye(4.f, 4.f, 20.f);
+    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(4.f, 4.f, 1.f), glm::vec3(0, 1, 0));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(45.f), aspect, 0.1f, 100.f);
+    const glm::mat4 vp = proj * view;
+
+    gfx->setBackgroundColor(Color(0.05f, 0.05f, 0.07f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        gfx->drawVoxelFaceInstances(&packed, 1, 0.f, 0.f, 0.f, "posZ", atlas, 1);
+    }
+    RenderSystem::render(*gfx);
+
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(mid.g > mid.r);
+    CHECK(mid.g > 0.08f);
+
+    // Corners of screen may still be background depending on FOV; center must be lit.
+    Color corner = gfx->getPixel(2, 2);
+    CHECK(luma(mid) > luma(corner));
+}
+
+TEST_CASE("voxel.render.tilesPerRowBlueTile") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    uint8_t px[16] = {
+        200, 40, 40, 255, 40, 200, 40, 255, 40, 40, 220, 255, 200, 200, 40, 255,
+    };
+    Texture *atlas = gfx->newTexture(2, 2, px);
+
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    // tex id 2 → blue (row1,col0)
+    for (int z = 0; z < 4; ++z)
+        for (int y = 0; y < 4; ++y)
+            for (int x = 0; x < 4; ++x) world->setVoxel(x, y, z, 2);
+    world->remeshDirty();
+
+    const glm::vec3 eye(2.f, 2.f, 12.f);
+    renderVoxelFrame(gfx, world.get(), atlas, 2, eye, glm::vec3(2.f, 2.f, 2.f), 100.f, true);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(mid.b > mid.r);
+    CHECK(mid.b > mid.g);
+    CHECK(mid.b > 0.1f);
+}
+
+TEST_CASE("voxel.render.instanceCountGrowth") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 240, 180);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    Texture *atlas = makeSolid(gfx, 200, 200, 210);
+    const float aspect =
+        float(std::max(1, gfx->getPixelWidth())) / float(std::max(1, gfx->getPixelHeight()));
+    const glm::vec3 eye(8.f, 8.f, 40.f);
+    const glm::mat4 view = glm::lookAtRH(eye, glm::vec3(8.f, 0.f, 8.f), glm::vec3(0, 1, 0));
+    const glm::mat4 proj = glm::perspectiveRH_ZO(glm::radians(50.f), aspect, 0.1f, 200.f);
+    const glm::mat4 vp = proj * view;
+
+    // Grow instance buffer across draws in one frame: 1, then many.
+    std::vector<uint32_t> many;
+    many.reserve(64);
+    for (int z = 0; z < 8; ++z)
+        for (int x = 0; x < 8; ++x)
+            many.push_back(PackedRect::pack(x, 0, z, 1, 1, 1).bits);
+
+    gfx->setBackgroundColor(Color(0.05f, 0.06f, 0.08f, 1.f));
+    gfx->begin3DFrame();
+    if (gfx->had3DThisFrame()) {
+        gfx->setMesh3DViewProj(vp);
+        uint32_t one = many[0];
+        gfx->drawVoxelFaceInstances(&one, 1, 0.f, 0.f, 0.f, "posY", atlas, 1);
+        gfx->drawVoxelFaceInstances(many.data(), int(many.size()), 0.f, 0.f, 0.f, "posY", atlas, 1);
+    }
+    RenderSystem::render(*gfx);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.04f);
+}
+
+TEST_CASE("voxel.render.posXWallFromSide") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    for (int z = 0; z < 8; ++z)
+        for (int y = 0; y < 8; ++y) world->setVoxel(0, y, z, 1);
+    world->remeshDirty();
+    Texture *atlas = makeSolid(gfx, 230, 120, 50);
+
+    const glm::vec3 eye(12.f, 4.f, 4.f);
+    const glm::vec3 target(0.f, 4.f, 4.f);
+    renderVoxelFrame(gfx, world.get(), atlas, 1, eye, target, 100.f, true);
+
+    bool sawPosX = false;
+    for (int i = 0; i < world->getVisibleBatchCount(); ++i)
+        if (world->getVisibleBatch(i).dir == FaceDir::PosX) sawPosX = true;
+    CHECK(sawPosX);
+
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(mid.r > 0.1f);
+}
+
+TEST_CASE("voxel.render.clearColorWhenCulled") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 240, 180);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    std::unique_ptr<VoxelWorld> world(new VoxelWorld());
+    world->getOrCreateChunk(0, 0, 0)->fill(1);
+    world->remeshDirty();
+    Texture *atlas = makeSolid(gfx, 255, 255, 255);
+
+    // Camera behind looking away from chunk.
+    const glm::vec3 eye(16.f, 16.f, 16.f);
+    const glm::vec3 target(16.f, 16.f, 100.f);  // look +Z, chunk is around same place but...
+    // Better: put eye far and look opposite.
+    renderVoxelFrame(gfx, world.get(), atlas, 1, glm::vec3(-40.f, 16.f, 16.f),
+                     glm::vec3(-80.f, 16.f, 16.f), 200.f, true);
+    // Chunk at origin not in front of camera looking toward -X further.
+    CHECK_EQ(world->getVisibleChunkCount(), 0);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) < 0.22f);
+}
