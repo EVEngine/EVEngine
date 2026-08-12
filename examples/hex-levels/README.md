@@ -37,26 +37,30 @@ make run/linux-debug GAME=examples/hex-levels
 | T | 切换 FOV 算法（shadowcast → raycast → permissive → rectangle） |
 | F / G / H | BSP / Cellular / WFC 算法 |
 
-## 自动化测试（17 用例）
+## 自动化测试
 
-C++ 对应用例在 `test/hex_level_simulation.cpp`：
+C++ 对应用例：
 
-| 用例 | 覆盖 |
+| 文件 | 覆盖 |
 |------|------|
-| `01`–`05` | 寻路 / FOV / 光照 / 拾取 / 粒子 |
-| `06` | Flow Field 群体 |
-| `07` | 格子代价绕路 |
-| `08` | 多观察者 + 感知 / 隐身 |
-| `09` | FoW mask + 算法切换 |
-| `10` | Camera2D 屏幕↔世界↔hex 拾取 |
-| `11` | Dual-grid（六角逻辑层） |
-| `12` | cave / maze / wfc / drunkard 变体 |
-| `13` | QuadTree 视口裁剪 |
-| `14` | 点光 + 方向光 |
-| `15` | 粒子生命周期 + 背包→仓库转移 |
-| `pipeline.dungeonCrawl` | 综合爬塔 |
-| `pipeline.fogRaid` | 感知门控拾取 + Flow 护送 |
+| `test/hex_level_simulation.cpp` | 关卡 01–15 + dungeonCrawl / fogRaid 管线 |
+| `test/hex_level_data.cpp` | 夹具 JSON：catalog / items / loot / seeds / particles / 手搓地图 / 感知用例 |
 
 ```bash
-./build/linux-debug/test/unit_test --testcase='^hex\.level\..*$'
+./build/linux-debug/test/unit_test --testcase='^hex\.(level|data)\..*$'
 ```
+
+## 测试数据（`data/`）
+
+| 资源 | 用途 |
+|------|------|
+| `catalog.json` | 关卡目录（种子 / 尺寸 / 算法 / 特性标签） |
+| `items.json` | 物品定义（示例与单测共用） |
+| `loot_tables.json` | 掉落表与感知门控 |
+| `seeds_matrix.json` | 种子 × 算法连通性冒烟 |
+| `perception_cases.json` | FOV 感知数值用例 |
+| `maps/*.json` | 手搓六角地图 |
+| `particles/*.json` | 粒子发射器配置 |
+| `fixtures.nut` | 示例脚本加载的 catalog / loot 镜像 |
+
+示例启动时会读取 `data/items.json` 与 `data/particles/*.json`，并用 `fixtures.nut` 按关卡放置掉落。

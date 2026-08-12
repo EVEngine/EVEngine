@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "perception": 0.0,
+      "stealth": 0.0,
+      "expectDetect": true,
+      "note": "zero vs zero"
+    },
+    {
+      "perception": 2.0,
+      "stealth": 1.0,
+      "expectDetect": true,
+      "note": "comfortable margin"
+    },
+    {
+      "perception": 2.0,
+      "stealth": 2.0,
+      "expectDetect": true,
+      "note": "exact match"
+    },
+    {
+      "perception": 2.0,
+      "stealth": 2.1,
+      "expectDetect": false,
+      "note": "just over"
+    },
+    {
+      "perception": 1.0,
+      "stealth": 3.0,
+      "expectDetect": false,
+      "note": "hidden"
+    },
+    {
+      "perception": 5.0,
+      "stealth": 4.5,
+      "expectDetect": true,
+      "note": "high both"
+    },
+    {
+      "perception": 0.5,
+      "stealth": 0.5,
+      "expectDetect": true,
+      "note": "fractional equal"
+    },
+    {
+      "perception": 0.5,
+      "stealth": 0.6,
+      "expectDetect": false,
+      "note": "fractional fail"
+    },
+    {
+      "perception": 10.0,
+      "stealth": 9.9,
+      "expectDetect": true,
+      "note": "high equalish"
+    },
+    {
+      "perception": 10.0,
+      "stealth": 10.1,
+      "expectDetect": false,
+      "note": "high fail"
+    },
+    {
+      "perception": 0.0,
+      "stealth": 0.01,
+      "expectDetect": false,
+      "note": "near zero fail"
+    }
+  ],
+  "radiusScaleCases": [
+    {
+      "baseRadius": 3,
+      "perception": 2.0,
+      "scale": 1.0,
+      "expectEffective": 5
+    },
+    {
+      "baseRadius": 4,
+      "perception": 2.0,
+      "scale": 0.5,
+      "expectEffective": 5
+    },
+    {
+      "baseRadius": 2,
+      "perception": 3.0,
+      "scale": 0.0,
+      "expectEffective": 2
+    },
+    {
+      "baseRadius": 6,
+      "perception": 1.5,
+      "scale": 2.0,
+      "expectEffective": 9
+    },
+    {
+      "baseRadius": 5,
+      "perception": 4.0,
+      "scale": 1.0,
+      "expectEffective": 9
+    },
+    {
+      "baseRadius": 1,
+      "perception": 0.0,
+      "scale": 5.0,
+      "expectEffective": 1
+    }
+  ]
+}

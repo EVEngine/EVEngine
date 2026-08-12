@@ -51,6 +51,9 @@ if (!("flowPaths" in getroottable())) flowPaths <- [];
 if (!("fovAlgo" in getroottable())) fovAlgo <- "shadowcast";
 if (!("torchRevealerId" in getroottable())) torchRevealerId <- -1;
 if (!("mudCells" in getroottable())) mudCells <- [];
+if (!("fixturesLoaded" in getroottable())) fixturesLoaded <- false;
+if (!("activeLootTable" in getroottable())) activeLootTable <- "starter";
+if (!("lastCatalogLevel" in getroottable())) lastCatalogLevel <- -1;
 
 TILE_W <- 48.0;
 TILE_H <- 28.0;
@@ -79,6 +82,27 @@ function pushLog(text) {
     logLines.push(text);
     while (logLines.len() > 6)
         logLines.remove(0);
+}
+
+function readTextFile(path) {
+    local handle = file(path, "r");
+    local content = "";
+    local n = handle.len();
+    for (local i = 0; i < n; i++)
+        content += handle.readn('b').tochar();
+    handle.close();
+    return content;
+}
+
+function ensureFixtures() {
+    if (fixturesLoaded) return;
+    try {
+        dofile("data/fixtures.nut");
+        fixturesLoaded = true;
+    } catch (e) {
+        pushLog("fixtures.nut 加载失败: " + e);
+        fixturesLoaded = false;
+    }
 }
 
 function keyPressed(name) {
@@ -112,16 +136,27 @@ function bindPalette() {
 }
 
 function ensureEntities() {
+    ensureFixtures();
     if (inv == null) inv = eve.Inventory();
     if (bag == null) {
-        inv.registerItemsFromJson(@"[
-          {""id"":""hex.potion"",""displayName"":""六角药水"",""maxStack"":10,""weight"":0.2,""tags"":[""loot"",""potion""]},
-          {""id"":""hex.key"",""displayName"":""黄铜钥匙"",""maxStack"":1,""weight"":0.1,""tags"":[""loot"",""key""]},
-          {""id"":""hex.gem"",""displayName"":""地牢宝石"",""maxStack"":5,""weight"":0.05,""tags"":[""loot"",""gem""]}
-        ]");
-        bag = inv.newBag(16);
+        local itemsJson = null;
+        try {
+            itemsJson = readTextFile("data/items.json");
+        } catch (e) {
+            itemsJson = null;
+            pushLog("items.json 读取失败，使用内嵌定义");
+        }
+        if (itemsJson != null && itemsJson.len() > 2)
+            inv.registerItemsFromJson(itemsJson);
+        else
+            inv.registerItemsFromJson(@"[
+              {""id"":""hex.potion"",""displayName"":""六角药水"",""maxStack"":10,""weight"":0.2,""tags"":[""loot"",""potion""]},
+              {""id"":""hex.key"",""displayName"":""黄铜钥匙"",""maxStack"":1,""weight"":0.1,""tags"":[""loot"",""key""]},
+              {""id"":""hex.gem"",""displayName"":""地牢宝石"",""maxStack"":5,""weight"":0.05,""tags"":[""loot"",""gem""]}
+            ]");
+        bag = inv.newBag(24);
         bag.setId("hex.player");
-        bag.setMaxWeight(50.0);
+        bag.setMaxWeight(80.0);
     }
     if (hash == null) hash = spatial.newSpatialHash2D(40.0);
     if (cam == null) {
@@ -138,14 +173,28 @@ function ensureEntities() {
         torchLight.setEnabled(false);
     }
     if (torchFx == null) {
-        torchFx = particles.newEmitter(192);
-        torchFx.applyPreset("fire");
-        torchFx.setParticleSize(6.0, 6.0);
+        try {
+            torchFx = particles.newEmitterFromFile("data/particles/torch_fire.json");
+        } catch (e) {
+            torchFx = null;
+        }
+        if (torchFx == null) {
+            torchFx = particles.newEmitter(192);
+            torchFx.applyPreset("fire");
+            torchFx.setParticleSize(6.0, 6.0);
+        }
     }
     if (sparkFx == null) {
-        sparkFx = particles.newEmitter(96);
-        sparkFx.applyPreset("spark");
-        sparkFx.setEmitterLifetime(0.3);
+        try {
+            sparkFx = particles.newEmitterFromFile("data/particles/pickup_burst.json");
+        } catch (e) {
+            sparkFx = null;
+        }
+        if (sparkFx == null) {
+            sparkFx = particles.newEmitter(96);
+            sparkFx.applyPreset("spark");
+            sparkFx.setEmitterLife(0.3);
+        }
     }
 }
 
@@ -260,6 +309,21 @@ function regenerate() {
     ensureEntities();
     bindPalette();
     clearLoot();
+
+    // Apply catalog size/loot always; seed/algo only when the level changes.
+    if (fixturesLoaded && (level in LEVEL_CATALOG)) {
+        local meta = LEVEL_CATALOG[level];
+        if (lastCatalogLevel != level) {
+            seed = meta.seed;
+            algo = meta.algo;
+            lastCatalogLevel = level;
+        }
+        MAP_W = meta.w;
+        MAP_H = meta.h;
+        activeLootTable = meta.loot;
+    } else {
+        activeLootTable = "starter";
+    }
 
     if (layer == null) {
         layer = map.newLayer(MAP_W, MAP_H, TILE_W, TILE_H);
@@ -392,12 +456,28 @@ function regenerate() {
 
     rebuildPath();
     local lootId = 1;
-    placeLootNear(spawnTx + 1, spawnTy, "hex.potion", lootId); lootId += 1;
-    placeLootNear(spawnTx, spawnTy + 1, "hex.key", lootId); lootId += 1;
-    placeLootNear(spawnTx - 1, spawnTy, "hex.potion", lootId); lootId += 1;
-    if (path != null && path.getLength() > 4) {
-        local mid = path.getLength() / 2;
-        placeLootNear(path.getX(mid), path.getY(mid), "hex.gem", lootId);
+    local tableName = activeLootTable;
+    if (fixturesLoaded && (tableName in LOOT_TABLES)) {
+        local entries = LOOT_TABLES[tableName];
+        foreach (e in entries) {
+            local tx = spawnTx + e.ox;
+            local ty = spawnTy + e.oy;
+            if (("pathMid" in e) && e.pathMid && path != null && path.getLength() > 4) {
+                local mid = path.getLength() / 2;
+                tx = path.getX(mid);
+                ty = path.getY(mid);
+            }
+            placeLootNear(tx, ty, e.itemId, lootId);
+            lootId += 1;
+        }
+    } else {
+        placeLootNear(spawnTx + 1, spawnTy, "hex.potion", lootId); lootId += 1;
+        placeLootNear(spawnTx, spawnTy + 1, "hex.key", lootId); lootId += 1;
+        placeLootNear(spawnTx - 1, spawnTy, "hex.potion", lootId); lootId += 1;
+        if (path != null && path.getLength() > 4) {
+            local mid = path.getLength() / 2;
+            placeLootNear(path.getX(mid), path.getY(mid), "hex.gem", lootId);
+        }
     }
 
     if (bag != null) bag.clear();
@@ -498,7 +578,8 @@ function refreshHud() {
                "  路径长 " + pathLen + "  掉落 " + loot.len());
     local bagText = "背包: 药水x" + bag.countItem("hex.potion") +
                     " 钥匙x" + bag.countItem("hex.key") +
-                    " 宝石x" + bag.countItem("hex.gem");
+                    " 宝石x" + bag.countItem("hex.gem") +
+                    " 币x" + bag.countItem("hex.coin");
     ui.setText("bag", bagText);
     local log = "";
     foreach (line in logLines) {

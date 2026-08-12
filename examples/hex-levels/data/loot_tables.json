@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "tables": {
+    "starter": [
+      {
+        "itemId": "hex.potion",
+        "offset": [
+          1,
+          0
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.key",
+        "offset": [
+          0,
+          1
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.coin",
+        "offset": [
+          -1,
+          0
+        ],
+        "qty": 5
+      }
+    ],
+    "cave": [
+      {
+        "itemId": "hex.ore",
+        "offset": [
+          1,
+          0
+        ],
+        "qty": 3
+      },
+      {
+        "itemId": "hex.crystal",
+        "offset": [
+          0,
+          1
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.ration",
+        "offset": [
+          -1,
+          1
+        ],
+        "qty": 2
+      },
+      {
+        "itemId": "hex.torch",
+        "offset": [
+          1,
+          -1
+        ],
+        "qty": 1
+      }
+    ],
+    "rich": [
+      {
+        "itemId": "hex.potion",
+        "offset": [
+          1,
+          0
+        ],
+        "qty": 2
+      },
+      {
+        "itemId": "hex.key",
+        "offset": [
+          0,
+          1
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.gem",
+        "offset": [
+          -1,
+          0
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.coin",
+        "offset": [
+          1,
+          1
+        ],
+        "qty": 12
+      },
+      {
+        "itemId": "hex.map_fragment",
+        "offset": [
+          -1,
+          -1
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.boots",
+        "offset": [
+          2,
+          0
+        ],
+        "qty": 1
+      }
+    ],
+    "raid": [
+      {
+        "itemId": "hex.relic",
+        "pathMid": true,
+        "qty": 1
+      },
+      {
+        "itemId": "hex.gem",
+        "offset": [
+          2,
+          0
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.potion",
+        "offset": [
+          0,
+          2
+        ],
+        "qty": 2
+      },
+      {
+        "itemId": "hex.torch",
+        "offset": [
+          -2,
+          0
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.coin",
+        "offset": [
+          1,
+          -1
+        ],
+        "qty": 20
+      },
+      {
+        "itemId": "hex.crystal",
+        "offset": [
+          -1,
+          1
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.scroll",
+        "offset": [
+          2,
+          1
+        ],
+        "qty": 1
+      }
+    ],
+    "equipment": [
+      {
+        "itemId": "hex.boots",
+        "offset": [
+          1,
+          0
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.shield",
+        "offset": [
+          0,
+          1
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.scroll",
+        "offset": [
+          -1,
+          0
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.bomb",
+        "offset": [
+          1,
+          1
+        ],
+        "qty": 1
+      },
+      {
+        "itemId": "hex.coin",
+        "offset": [
+          -1,
+          1
+        ],
+        "qty": 8
+      }
+    ]
+  },
+  "perceptionGates": [
+    {
+      "itemId": "hex.relic",
+      "stealth": 0.5,
+      "requireVisible": true
+    },
+    {
+      "itemId": "hex.crystal",
+      "stealth": 1.5,
+      "requireVisible": true
+    },
+    {
+      "itemId": "hex.gem",
+      "stealth": 0.0,
+      "requireVisible": false
+    }
+  ]
+}

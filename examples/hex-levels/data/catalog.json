@@ -1,0 +1,315 @@
+{
+  "version": 1,
+  "description": "Hex level catalog for engine QA — seeds, sizes, algorithms, feature tags",
+  "defaults": {
+    "tileW": 48,
+    "tileH": 28,
+    "hexSideLength": 14,
+    "orientation": "hexagonal",
+    "staggerAxis": "y",
+    "staggerIndex": "odd",
+    "wallGid": 1,
+    "floorGid": 2,
+    "doorGid": 3,
+    "palette": "hex_levels"
+  },
+  "levels": [
+    {
+      "id": 1,
+      "key": "procgen_path",
+      "name": "程序化寻路",
+      "seed": 42,
+      "width": 32,
+      "height": 24,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "procgen",
+        "pathfinding",
+        "hex"
+      ],
+      "lootTable": "starter"
+    },
+    {
+      "id": 2,
+      "key": "dynamic_fov",
+      "name": "动态视野",
+      "seed": 7,
+      "width": 28,
+      "height": 20,
+      "algorithm": "cave.cellular",
+      "params": {
+        "loops": 4,
+        "fill": 0.45
+      },
+      "features": [
+        "fov",
+        "hex"
+      ],
+      "fov": {
+        "algorithm": "shadowcast",
+        "radius": 6
+      },
+      "lootTable": "cave"
+    },
+    {
+      "id": 3,
+      "key": "dynamic_light",
+      "name": "动态光照",
+      "seed": 99,
+      "width": 24,
+      "height": 18,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "lighting",
+        "hex"
+      ],
+      "light": {
+        "type": "point",
+        "radius": 140,
+        "color": [
+          1.0,
+          0.75,
+          0.45,
+          2.2
+        ]
+      },
+      "lootTable": "starter"
+    },
+    {
+      "id": 4,
+      "key": "pickup_collision",
+      "name": "拾取碰撞",
+      "seed": 123,
+      "width": 24,
+      "height": 18,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "spatial",
+        "inventory",
+        "hex"
+      ],
+      "lootTable": "rich"
+    },
+    {
+      "id": 5,
+      "key": "particles",
+      "name": "粒子系统",
+      "seed": 55,
+      "width": 20,
+      "height": 16,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "particles",
+        "hex"
+      ],
+      "particles": [
+        "torch_fire",
+        "pickup_burst"
+      ],
+      "lootTable": "starter"
+    },
+    {
+      "id": 6,
+      "key": "flow_field_swarm",
+      "name": "Flow Field 群体",
+      "seed": 606,
+      "width": 28,
+      "height": 22,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "flowfield",
+        "pathfinding",
+        "hex"
+      ],
+      "swarmStarts": 4,
+      "lootTable": "starter"
+    },
+    {
+      "id": 7,
+      "key": "cell_cost_detour",
+      "name": "格子代价绕路",
+      "seed": 707,
+      "width": 26,
+      "height": 18,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "pathfinding",
+        "cellcost",
+        "hex"
+      ],
+      "cellCost": {
+        "cost": 8.0,
+        "stripWidth": 4
+      },
+      "lootTable": "starter"
+    },
+    {
+      "id": 8,
+      "key": "multi_revealer",
+      "name": "多观察者感知",
+      "seed": 808,
+      "width": 24,
+      "height": 18,
+      "algorithm": "cave.cellular",
+      "params": {
+        "loops": 4,
+        "fill": 0.45
+      },
+      "features": [
+        "fov",
+        "perception",
+        "hex"
+      ],
+      "fov": {
+        "algorithm": "shadowcast",
+        "heroRadius": 4,
+        "heroPerception": 2.0,
+        "torchRadius": 3
+      },
+      "lootTable": "cave"
+    },
+    {
+      "id": 9,
+      "key": "fow_mask",
+      "name": "FoW 遮罩算法",
+      "seed": 909,
+      "width": 20,
+      "height": 16,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "fov",
+        "mask",
+        "hex"
+      ],
+      "fovAlgorithms": [
+        "shadowcast",
+        "raycast",
+        "permissive",
+        "rectangle"
+      ],
+      "lootTable": "starter"
+    },
+    {
+      "id": 0,
+      "key": "pipeline_full",
+      "name": "综合通关",
+      "seed": 20260812,
+      "width": 36,
+      "height": 28,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "procgen",
+        "pathfinding",
+        "fov",
+        "lighting",
+        "spatial",
+        "inventory",
+        "particles",
+        "hex"
+      ],
+      "lootTable": "raid",
+      "particles": [
+        "torch_fire",
+        "pickup_burst",
+        "ember_trail"
+      ]
+    },
+    {
+      "id": 10,
+      "key": "camera_pick",
+      "name": "相机拾取",
+      "seed": 1010,
+      "width": 22,
+      "height": 16,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "camera",
+        "hex"
+      ],
+      "lootTable": "starter"
+    },
+    {
+      "id": 11,
+      "key": "dual_grid",
+      "name": "双网格六角",
+      "seed": 1111,
+      "width": 20,
+      "height": 16,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "dualgrid",
+        "hex"
+      ],
+      "lootTable": "starter"
+    },
+    {
+      "id": 12,
+      "key": "procgen_variants",
+      "name": "程序化变体",
+      "seed": 1212,
+      "width": 24,
+      "height": 18,
+      "algorithm": "maze.backtrack",
+      "features": [
+        "procgen",
+        "maze",
+        "hex"
+      ],
+      "lootTable": "cave"
+    },
+    {
+      "id": 13,
+      "key": "quadtree_cull",
+      "name": "四叉树裁剪",
+      "seed": 1313,
+      "width": 32,
+      "height": 24,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "spatial",
+        "cull",
+        "hex"
+      ],
+      "lootTable": "starter"
+    },
+    {
+      "id": 14,
+      "key": "multi_light",
+      "name": "多光源",
+      "seed": 1414,
+      "width": 24,
+      "height": 18,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "lighting",
+        "hex"
+      ],
+      "lootTable": "starter",
+      "light": {
+        "type": "multi",
+        "count": 3
+      }
+    },
+    {
+      "id": 15,
+      "key": "particle_stash",
+      "name": "粒子与仓库",
+      "seed": 1515,
+      "width": 22,
+      "height": 16,
+      "algorithm": "dungeon.bsp",
+      "features": [
+        "particles",
+        "inventory",
+        "hex"
+      ],
+      "particles": [
+        "torch_fire",
+        "pickup_burst",
+        "ember_trail",
+        "mist_fog"
+      ],
+      "lootTable": "equipment"
+    }
+  ]
+}

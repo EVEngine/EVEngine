@@ -47,6 +47,7 @@ file(GLOB all_test_cpp
   rpg.cpp
   rpg_simulation.cpp
   hex_level_simulation.cpp
+  hex_level_data.cpp
   inventory.cpp
   building.cpp
   avatar.cpp

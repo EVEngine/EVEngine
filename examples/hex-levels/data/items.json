@@ -1,0 +1,237 @@
+[
+  {
+    "id": "hex.potion",
+    "displayName": "六角药水",
+    "maxStack": 10,
+    "weight": 0.2,
+    "volume": 0.1,
+    "category": "consumable",
+    "tags": [
+      "loot",
+      "potion",
+      "consumable"
+    ],
+    "extra": {
+      "heal": "25",
+      "rarity": "common"
+    }
+  },
+  {
+    "id": "hex.key",
+    "displayName": "黄铜钥匙",
+    "maxStack": 1,
+    "weight": 0.1,
+    "volume": 0.05,
+    "category": "key",
+    "tags": [
+      "loot",
+      "key"
+    ],
+    "extra": {
+      "rarity": "uncommon"
+    }
+  },
+  {
+    "id": "hex.gem",
+    "displayName": "地牢宝石",
+    "maxStack": 5,
+    "weight": 0.05,
+    "volume": 0.02,
+    "category": "treasure",
+    "tags": [
+      "loot",
+      "gem",
+      "treasure"
+    ],
+    "extra": {
+      "value": "50",
+      "rarity": "rare"
+    }
+  },
+  {
+    "id": "hex.ore",
+    "displayName": "星铁矿",
+    "maxStack": 20,
+    "weight": 1.0,
+    "volume": 0.3,
+    "category": "material",
+    "tags": [
+      "loot",
+      "material",
+      "ore"
+    ],
+    "extra": {
+      "rarity": "common"
+    }
+  },
+  {
+    "id": "hex.relic",
+    "displayName": "迷雾圣物",
+    "maxStack": 1,
+    "weight": 0.5,
+    "volume": 0.2,
+    "category": "quest",
+    "tags": [
+      "loot",
+      "quest",
+      "relic"
+    ],
+    "extra": {
+      "stealth": "0.5",
+      "rarity": "legendary"
+    }
+  },
+  {
+    "id": "hex.torch",
+    "displayName": "树脂火把",
+    "maxStack": 5,
+    "weight": 0.4,
+    "volume": 0.15,
+    "category": "tool",
+    "tags": [
+      "loot",
+      "tool",
+      "light"
+    ],
+    "extra": {
+      "lightRadius": "120",
+      "rarity": "common"
+    }
+  },
+  {
+    "id": "hex.map_fragment",
+    "displayName": "地图残页",
+    "maxStack": 9,
+    "weight": 0.05,
+    "volume": 0.01,
+    "category": "quest",
+    "tags": [
+      "loot",
+      "quest",
+      "map"
+    ],
+    "extra": {
+      "rarity": "uncommon"
+    }
+  },
+  {
+    "id": "hex.ration",
+    "displayName": "干粮",
+    "maxStack": 15,
+    "weight": 0.3,
+    "volume": 0.2,
+    "category": "consumable",
+    "tags": [
+      "loot",
+      "food",
+      "consumable"
+    ],
+    "extra": {
+      "stamina": "10",
+      "rarity": "common"
+    }
+  },
+  {
+    "id": "hex.crystal",
+    "displayName": "视野水晶",
+    "maxStack": 3,
+    "weight": 0.15,
+    "volume": 0.08,
+    "category": "tool",
+    "tags": [
+      "loot",
+      "tool",
+      "fov"
+    ],
+    "extra": {
+      "fovBonus": "2",
+      "rarity": "rare"
+    }
+  },
+  {
+    "id": "hex.coin",
+    "displayName": "六角币",
+    "maxStack": 99,
+    "weight": 0.01,
+    "volume": 0.01,
+    "category": "currency",
+    "tags": [
+      "loot",
+      "currency"
+    ],
+    "extra": {
+      "value": "1",
+      "rarity": "common"
+    }
+  },
+  {
+    "id": "hex.scroll",
+    "displayName": "迷雾卷轴",
+    "maxStack": 5,
+    "weight": 0.1,
+    "volume": 0.05,
+    "category": "consumable",
+    "tags": [
+      "loot",
+      "scroll",
+      "consumable"
+    ],
+    "extra": {
+      "fovReveal": "3",
+      "rarity": "uncommon"
+    }
+  },
+  {
+    "id": "hex.boots",
+    "displayName": "疾行靴",
+    "maxStack": 1,
+    "weight": 0.8,
+    "volume": 0.4,
+    "category": "equip",
+    "equipSlot": "feet",
+    "tags": [
+      "loot",
+      "equip",
+      "boots"
+    ],
+    "extra": {
+      "speed": "1.2",
+      "rarity": "rare"
+    }
+  },
+  {
+    "id": "hex.shield",
+    "displayName": "六角盾",
+    "maxStack": 1,
+    "weight": 2.0,
+    "volume": 0.8,
+    "category": "equip",
+    "equipSlot": "offhand",
+    "tags": [
+      "loot",
+      "equip",
+      "shield"
+    ],
+    "extra": {
+      "block": "5",
+      "rarity": "uncommon"
+    }
+  },
+  {
+    "id": "hex.bomb",
+    "displayName": "爆破药包",
+    "maxStack": 3,
+    "weight": 0.6,
+    "volume": 0.25,
+    "category": "consumable",
+    "tags": [
+      "loot",
+      "bomb",
+      "consumable"
+    ],
+    "extra": {
+      "damage": "40",
+      "rarity": "rare"
+    }
+  }
+]
