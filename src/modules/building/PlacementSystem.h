@@ -63,6 +63,7 @@ public:
     /** 成功返回 instanceId；失败返回 0。 */
     static int placeAt(PlacementWorld *world, const std::string &buildingId, int cellX, int cellY,
                        float rotationDeg = 0.f);
+    /** 先吸附再放置；free/自定义 snap 会保留吸附后的世界坐标。 */
     static int placeAtWorld(PlacementWorld *world, const std::string &buildingId, float worldX,
                             float worldY, float rotationDeg = 0.f);
     static int placeGhost(PlacementWorld *world, Ghost *ghost);

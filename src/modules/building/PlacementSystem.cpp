@@ -494,9 +494,18 @@ int PlacementSystem::placeAt(PlacementWorld *world, const std::string &buildingI
 
 int PlacementSystem::placeAtWorld(PlacementWorld *world, const std::string &buildingId,
                                   float worldX, float worldY, float rotationDeg) {
+    ensureBuiltins();
     if (!world) return 0;
     const SnapResult s = snap(*world, buildingId, worldX, worldY);
-    return placeAt(world, buildingId, s.cellX, s.cellY, rotationDeg);
+    const int id = placeAt(world, buildingId, s.cellX, s.cellY, rotationDeg);
+    if (id <= 0) return 0;
+    // Preserve free / custom snap world pose (cell placement alone snaps to cell origin).
+    auto it = world->buildings().find(id);
+    if (it != world->buildings().end()) {
+        it->second.worldX = s.worldX;
+        it->second.worldY = s.worldY;
+    }
+    return id;
 }
 
 int PlacementSystem::placeGhost(PlacementWorld *world, Ghost *ghost) {
