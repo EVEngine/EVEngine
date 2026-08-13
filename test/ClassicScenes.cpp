@@ -671,7 +671,9 @@ int spawnModel(Graphics *gfx, eve::model3d::ModelData *md, const std::string &as
                 if (fromMat->getWidth() > 1 || fromMat->getHeight() > 1) {
                     REQUIRE(fromMat->getMipmapCount() > 1);
                     REQUIRE(fromMat->getSampler().maxAnisotropy > 1.f);
-                    REQUIRE(fromMat->getSampler().mipmap == MipmapMode::Linear);
+                    // Cast enums: zeroerr cannot stream MipmapMode for REQUIRE diagnostics.
+                    REQUIRE(static_cast<int>(fromMat->getSampler().mipmap) ==
+                            static_cast<int>(MipmapMode::Linear));
                 }
                 look.tex = fromMat;
                 look.tr = kd.r;
