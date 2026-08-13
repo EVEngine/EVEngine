@@ -151,4 +151,5 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 
 **源码：** [`src/modules/map/`](../../../src/modules/map/)
 **设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)
-**相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)、[`test/map_fov.cpp`](../../../test/map_fov.cpp)
+**相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)、[`test/map_fov.cpp`](../../../test/map_fov.cpp)、[`test/hex_level_simulation.cpp`](../../../test/hex_level_simulation.cpp)、[`test/hex_level_data.cpp`](../../../test/hex_level_data.cpp)
+**示例：** [`examples/hex-levels/`](../../../examples/hex-levels/)

@@ -1,0 +1,22 @@
+{
+  "buffer": 160,
+  "preset": "smoke",
+  "emissionRate": 28,
+  "particleLifetime": [1.2, 2.8],
+  "emitterLife": -1,
+  "direction": -1.5708,
+  "spread": 1.8,
+  "speed": [4, 22],
+  "linearAcceleration": [-6, -8, 6, 4],
+  "emissionArea": { "type": "ellipse", "x": 48, "y": 20 },
+  "particleSize": [14, 14],
+  "sizes": [0.8, 1.6],
+  "sizeVariation": 0.35,
+  "spin": [-0.4, 0.4],
+  "colorStart": [0.55, 0.65, 0.8, 0.35],
+  "colorEnd": [0.35, 0.4, 0.55, 0.0],
+  "layer": 4,
+  "visible": true,
+  "autoStart": false,
+  "autoReload": true
+}
