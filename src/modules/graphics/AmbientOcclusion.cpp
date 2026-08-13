@@ -11,6 +11,7 @@
 #include "graphics/shaders/ao_gtao_frag_spv.inc"
 #include "graphics/shaders/ao_blur_frag_spv.inc"
 #include "graphics/shaders/ao_overlay_frag_spv.inc"
+#include "graphics/shaders/ao_from_depth_frag_spv.inc"
 
 #include <algorithm>
 #include <cmath>
@@ -129,6 +130,29 @@ Shader *createOverlayShader(Graphics *gfx) {
     return sh;
 }
 
+Shader *createFromDepthShader(Graphics *gfx) {
+    if (!gfx) throw eve::Exception("AmbientOcclusion: null graphics");
+    std::vector<uint32_t> frag(ao_from_depth_frag_spv,
+                               ao_from_depth_frag_spv + ao_from_depth_frag_spv_count);
+    Shader *sh = gfx->newShaderFromSpv({}, frag);
+    if (!sh || !sh->gpuHandle)
+        throw eve::Exception("AmbientOcclusion: failed to create from-depth shader");
+    declareComputeCommon(sh, false);
+    sh->sendMatrix("invViewProj", glm::mat4(1.f));
+    sh->sendFloat("nearZ", 0.1f);
+    sh->sendFloat("farZ", 100.f);
+    sh->sendFloat("radius", 0.75f);
+    sh->sendFloat("bias", 0.025f);
+    sh->sendFloat("intensity", 0.55f);
+    sh->sendFloat("power", 1.35f);
+    sh->sendFloat("sampleCount", 16.f);
+    sh->sendFloat("texelW", 1.f / 256.f);
+    sh->sendFloat("texelH", 1.f / 256.f);
+    sh->declareFloat("hasNormal");
+    sh->sendFloat("hasNormal", 0.f);
+    return sh;
+}
+
 }  // namespace
 
 AmbientOcclusion::AmbientOcclusion(Graphics *gfx) : gfx_(gfx) {
@@ -137,6 +161,7 @@ AmbientOcclusion::AmbientOcclusion(Graphics *gfx) : gfx_(gfx) {
     gtaoShader_ = createGtaoShader(gfx);
     blurShader_ = createBlurShader(gfx);
     overlayShader_ = createOverlayShader(gfx);
+    fromDepthShader_ = createFromDepthShader(gfx);
     applyQualityDefaults();
 }
 
@@ -207,6 +232,7 @@ void AmbientOcclusion::setInvViewProj(const glm::mat4 &invViewProj) {
     ssaoShader_->sendMatrix("invViewProj", invViewProj_);
     hbaoShader_->sendMatrix("invViewProj", invViewProj_);
     gtaoShader_->sendMatrix("invViewProj", invViewProj_);
+    if (fromDepthShader_) fromDepthShader_->sendMatrix("invViewProj", invViewProj_);
 }
 
 void AmbientOcclusion::setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY,
@@ -227,6 +253,10 @@ void AmbientOcclusion::setCamera(float eyeX, float eyeY, float eyeZ, float targe
     hbaoShader_->sendFloat("farZ", farZ_);
     gtaoShader_->sendFloat("nearZ", nearZ_);
     gtaoShader_->sendFloat("farZ", farZ_);
+    if (fromDepthShader_) {
+        fromDepthShader_->sendFloat("nearZ", nearZ_);
+        fromDepthShader_->sendFloat("farZ", farZ_);
+    }
 }
 
 void AmbientOcclusion::setRadius(float radius) {
@@ -275,6 +305,7 @@ void AmbientOcclusion::setFloat(const std::string &name, float value) {
     if (gtaoShader_ && gtaoShader_->hasUniform(name)) gtaoShader_->sendFloat(name, value);
     if (blurShader_ && blurShader_->hasUniform(name)) blurShader_->sendFloat(name, value);
     if (overlayShader_ && overlayShader_->hasUniform(name)) overlayShader_->sendFloat(name, value);
+    if (fromDepthShader_ && fromDepthShader_->hasUniform(name)) fromDepthShader_->sendFloat(name, value);
 }
 
 float AmbientOcclusion::getFloat(const std::string &name) const {
@@ -391,6 +422,37 @@ void AmbientOcclusion::applyOverlayTo(Graphics *gfx, Texture *aoMap, Canvas *des
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     applyOverlay(gfx, aoMap);
+    gfx->setCanvas(prev == gfx ? nullptr : prev);
+}
+
+void AmbientOcclusion::applyFromDepth(Graphics *gfx, Texture *hwDepth) {
+    applyFromGBuffer(gfx, hwDepth, nullptr);
+}
+
+void AmbientOcclusion::applyFromGBuffer(Graphics *gfx, Texture *hwDepth, Texture *worldNormal) {
+    if (!gfx) throw eve::Exception("AmbientOcclusion.applyFromGBuffer: null graphics");
+    if (!hwDepth) throw eve::Exception("AmbientOcclusion.applyFromGBuffer: null hwDepth");
+    if (!fromDepthShader_) throw eve::Exception("AmbientOcclusion.applyFromGBuffer: missing shader");
+    fromDepthShader_->sendFloat("hasNormal", worldNormal ? 1.f : 0.f);
+    uploadComputeCommon(fromDepthShader_, hwDepth->getWidth(), hwDepth->getHeight());
+    if (worldNormal) {
+        const float dw =
+            gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
+        const float dh =
+            gfx->getCanvas() ? float(gfx->getCanvas()->getHeight()) : float(gfx->getHeight());
+        gfx->drawTexturedRectShaderDepth(hwDepth, worldNormal, fromDepthShader_, 0.f, 0.f, dw, dh,
+                                         Color(1.f, 1.f, 1.f, 1.f));
+    } else {
+        drawFullscreen(gfx, hwDepth, fromDepthShader_);
+    }
+}
+
+void AmbientOcclusion::applyFromDepthTo(Graphics *gfx, Texture *linearDepth, Canvas *dest) {
+    if (!gfx) throw eve::Exception("AmbientOcclusion.applyFromDepthTo: null graphics");
+    if (!dest) throw eve::Exception("AmbientOcclusion.applyFromDepthTo: null dest");
+    Canvas *prev = gfx->getCanvas();
+    gfx->setCanvas(dest);
+    applyFromDepth(gfx, linearDepth);
     gfx->setCanvas(prev == gfx ? nullptr : prev);
 }
 

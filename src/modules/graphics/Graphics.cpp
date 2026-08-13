@@ -11,6 +11,7 @@
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Material.h"
 #include "graphics/RenderControl.h"
 #include "font/FontData.h"
@@ -265,6 +266,7 @@ void Graphics::expose(ssq::Table &table) {
     gbuffer.addFunc("getWidth", &GBuffer::getWidth);
     gbuffer.addFunc("getHeight", &GBuffer::getHeight);
     gbuffer.addFunc("getDepthTexture", &GBuffer::getDepthTexture);
+    gbuffer.addFunc("getHwDepthTexture", &GBuffer::getHwDepthTexture);
     gbuffer.addFunc("getNormalTexture", &GBuffer::getNormalTexture);
     gbuffer.addFunc("getAlbedoTexture", &GBuffer::getAlbedoTexture);
     gbuffer.addFunc("hasBuffer", &GBuffer::hasBuffer);
@@ -358,12 +360,37 @@ void Graphics::expose(ssq::Table &table) {
     ao.addFunc("blurTo", &AmbientOcclusion::blurTo);
     ao.addFunc("applyOverlay", &AmbientOcclusion::applyOverlay);
     ao.addFunc("applyOverlayTo", &AmbientOcclusion::applyOverlayTo);
+    ao.addFunc("applyFromDepth", &AmbientOcclusion::applyFromDepth);
+    ao.addFunc("applyFromDepthTo", &AmbientOcclusion::applyFromDepthTo);
+    ao.addFunc("applyFromGBuffer", &AmbientOcclusion::applyFromGBuffer);
     ao.addFunc("getShader", &AmbientOcclusion::getShader);
     ao.addFunc("getSsaoShader", &AmbientOcclusion::getSsaoShader);
     ao.addFunc("getHbaoShader", &AmbientOcclusion::getHbaoShader);
     ao.addFunc("getGtaoShader", &AmbientOcclusion::getGtaoShader);
     ao.addFunc("getBlurShader", &AmbientOcclusion::getBlurShader);
     ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
+    ao.addFunc("getFromDepthShader", &AmbientOcclusion::getFromDepthShader);
+
+    auto gi = table.addClass<GlobalIllumination>(
+        "GlobalIllumination",
+        std::function<GlobalIllumination *()>([]() -> GlobalIllumination * { return nullptr; }), true);
+    gi.addFunc("setQuality", &GlobalIllumination::setQuality);
+    gi.addFunc("getQuality", &GlobalIllumination::getQuality);
+    gi.addFunc("setCamera", &GlobalIllumination::setCamera);
+    gi.addFunc("setRadius", &GlobalIllumination::setRadius);
+    gi.addFunc("setIntensity", &GlobalIllumination::setIntensity);
+    gi.addFunc("setLightDirection", &GlobalIllumination::setLightDirection);
+    gi.addFunc("setLightColor", &GlobalIllumination::setLightColor);
+    gi.addFunc("getRadius", &GlobalIllumination::getRadius);
+    gi.addFunc("getIntensity", &GlobalIllumination::getIntensity);
+    gi.addFunc("hasParam", &GlobalIllumination::hasParam);
+    gi.addFunc("setFloat", &GlobalIllumination::setFloat);
+    gi.addFunc("getFloat", &GlobalIllumination::getFloat);
+    gi.addFunc("getSampleCount", &GlobalIllumination::getSampleCount);
+    gi.addFunc("applyFromDepth", &GlobalIllumination::applyFromDepth);
+    gi.addFunc("applyFromDepthTo", &GlobalIllumination::applyFromDepthTo);
+    gi.addFunc("applyFromScene", &GlobalIllumination::applyFromScene);
+    gi.addFunc("getShader", &GlobalIllumination::getShader);
 
     auto aa = table.addClass<AntiAliasing>(
         "AntiAliasing", std::function<AntiAliasing *()>([]() -> AntiAliasing * { return nullptr; }),
@@ -418,9 +445,11 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
+    cls.addFunc("getSceneColorTexture", &Graphics::getSceneColorTexture);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
+    cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
     cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
     cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
     cls.addFunc("drawOcclusionTexture", &Graphics::drawOcclusionTexture);
@@ -438,6 +467,23 @@ void Graphics::setShader() { currentShader = nullptr; }
 Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
 
 AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
+
+GlobalIllumination *Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
+
+AmbientOcclusion *Graphics::pipelineAmbientOcclusion() {
+    if (!pipelineAO_) pipelineAO_ = std::make_unique<AmbientOcclusion>(this);
+    return pipelineAO_.get();
+}
+
+GlobalIllumination *Graphics::pipelineGlobalIllumination() {
+    if (!pipelineGI_) pipelineGI_ = std::make_unique<GlobalIllumination>(this);
+    return pipelineGI_.get();
+}
+
+AntiAliasing *Graphics::pipelineAntiAliasing() {
+    if (!pipelineAA_) pipelineAA_ = std::make_unique<AntiAliasing>(this);
+    return pipelineAA_.get();
+}
 
 AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 

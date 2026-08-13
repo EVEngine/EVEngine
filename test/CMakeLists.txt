@@ -33,6 +33,7 @@ file(GLOB all_test_cpp
   TextureSampler.cpp
   AmbientOcclusion.cpp
   AntiAliasing.cpp
+  GlobalIllumination.cpp
   UISystem.cpp
   UIBuilder.cpp
   UIPhaseB.cpp

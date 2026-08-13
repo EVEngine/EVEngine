@@ -94,6 +94,17 @@ public:
     void applyOverlayTo(Graphics *gfx, Texture *aoMap, Canvas *dest);
 
     /**
+     * One-pass SSAO overlay for the 3D swapchain path.
+     * Samples hardware D32 (Vulkan NDC z in .r) and darkens the already-drawn
+     * scene. Optional worldNormal is GBuffer RGB = n*0.5+0.5; null reconstructs
+     * from depth. Call after forward draws while the swapchain pass is still open.
+     * Canvas compute() still uses 8-bit linear depth in R.
+     */
+    void applyFromDepth(Graphics *gfx, Texture *hwDepth);
+    void applyFromDepthTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
+    void applyFromGBuffer(Graphics *gfx, Texture *hwDepth, Texture *worldNormal);
+
+    /**
      * Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
      * Owned by Graphics (same convention as Volumetric).
      */
@@ -106,6 +117,7 @@ public:
     Shader *getGtaoShader() const { return gtaoShader_; }
     Shader *getBlurShader() const { return blurShader_; }
     Shader *getOverlayShader() const { return overlayShader_; }
+    Shader *getFromDepthShader() const { return fromDepthShader_; }
 
 private:
     void applyQualityDefaults();
@@ -119,6 +131,7 @@ private:
     Shader *gtaoShader_ = nullptr;
     Shader *blurShader_ = nullptr;
     Shader *overlayShader_ = nullptr;
+    Shader *fromDepthShader_ = nullptr;
     std::string quality_ = "medium";
     std::string mode_ = "ssao";
     float downscale_ = 2.f;

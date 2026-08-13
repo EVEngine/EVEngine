@@ -3,12 +3,14 @@
 #extension GL_GOOGLE_include_directive : enable
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
+#include "tonemap.glsl"
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
 layout(location = 2) in vec4 vTint;
 layout(location = 3) in vec3 vWorldPos;
 layout(location = 4) in vec3 vCameraPos;
+layout(location = 5) in vec3 vViewPos;
 
 struct Light3D {
     vec4 posRadius; // xyz = point OR dir; w = radius (0 => directional)
@@ -26,6 +28,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     Light3D lights[8];
     vec4 texBomb;           // x = cellScale, y = strength (0=off), z = rotAmount, w unused
     vec4 parallax;          // x = scale (0=off), y = minLayers, z = maxLayers, w unused
+    mat4 view;
+    vec4 clipInfo;          // x = near, y = far
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
@@ -70,19 +74,29 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
 
 vec3 applyNormalMap(vec3 N, vec3 mapSample, vec3 worldPos, vec2 uv) {
     vec3 mapN = mapSample * 2.0 - 1.0;
-    if (abs(mapN.x) < 0.1 && abs(mapN.y) < 0.1 && mapN.z > 0.85)
+    if (length(mapN.xy) < 0.04 && mapN.z > 0.85)
         return normalize(N);
     vec3 dp1 = dFdx(worldPos);
     vec3 dp2 = dFdy(worldPos);
     vec2 duv1 = dFdx(uv);
     vec2 duv2 = dFdy(uv);
-    if (abs(duv1.x * duv2.y - duv2.x * duv1.y) < 1e-8)
+    float det = duv1.x * duv2.y - duv2.x * duv1.y;
+    if (abs(det) < 1e-6)
         return normalize(N);
-    vec3 T = normalize(cross(dp2, N) * duv1.x + cross(N, dp1) * duv2.x);
-    vec3 B = normalize(cross(dp2, N) * duv1.y + cross(N, dp1) * duv2.y);
-    if (length(T) < 1e-4 || length(B) < 1e-4)
-        return normalize(N);
-    return normalize(mat3(T, B, normalize(N)) * mapN);
+    float invDet = 1.0 / det;
+    vec3 T = (dp1 * duv2.y - dp2 * duv1.y) * invDet;
+    vec3 B = (dp2 * duv1.x - dp1 * duv2.x) * invDet;
+    N = normalize(N);
+    T = T - N * dot(N, T);
+    float tLen = length(T);
+    float bLen = length(B);
+    if (tLen < 1e-4 || bLen < 1e-4)
+        return N;
+    T /= tLen;
+    B = normalize(B - N * dot(N, B) - T * dot(T, B));
+    if (abs(dot(T, B)) > 0.35)
+        return N;
+    return normalize(mat3(T, B, N) * mapN);
 }
 
 vec3 shadeLight(vec3 N, vec3 V, vec3 albedo, float metallic, float roughness, vec3 L, vec3 radiance) {
@@ -101,7 +115,7 @@ vec3 shadeLight(vec3 N, vec3 V, vec3 albedo, float metallic, float roughness, ve
     return (kD * albedo * diffuse + specular * NdotL) * radiance;
 }
 
-float sampleShadowPCF(vec3 worldPos, float viewDepth) {
+float sampleShadowPCF(vec3 worldPos, float viewDepth, float nDotL) {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4)
         return 1.0;
 
@@ -116,7 +130,7 @@ float sampleShadowPCF(vec3 worldPos, float viewDepth) {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0)
         return 1.0;
 
-    float bias = shadow.bias.x;
+    float bias = shadow.bias.x * (1.0 + (1.0 - clamp(nDotL, 0.0, 1.0)) * 2.0);
     vec2 texel = 1.0 / vec2(textureSize(shadowMap, 0).xy);
     float sum = 0.0;
     for (int y = -1; y <= 1; ++y) {
@@ -126,7 +140,9 @@ float sampleShadowPCF(vec3 worldPos, float viewDepth) {
         }
     }
     float vis = sum / 9.0;
-    return mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
+    vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
+    // No GI: keep a little unshadowed fill so umbra doesn't crush to black.
+    return mix(0.18, 1.0, vis);
 }
 
 void main() {
@@ -135,10 +151,16 @@ void main() {
     float bombRot = ubo.texBomb.z;
     vec3 Ngeom = normalize(vNormal);
     vec3 V = normalize(vCameraPos - vWorldPos);
+    // Two-sided: orient toward the camera. gl_FrontFacing follows pipeline
+    // frontFace/winding and flips floors dark when Assimp winding disagrees.
+    if (dot(Ngeom, V) < 0.0)
+        Ngeom = -Ngeom;
     vec2 uv = parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V, ubo.parallax.x,
                                ubo.parallax.y, ubo.parallax.z);
 
     vec4 base = textureCellBomb(albedoSampler, uv, bombScale, bombStrength, bombRot) * vTint;
+    if (base.a < 0.5)
+        discard;
     vec3 albedo = base.rgb;
     float metallic = clamp(ubo.ambient.w, 0.0, 1.0);
     float roughness = clamp(ubo.cameraPos.w, 0.04, 1.0);
@@ -149,12 +171,16 @@ void main() {
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
     vec3 Lo = vec3(0.0);
-    float viewDepth = length(vCameraPos - vWorldPos);
-    float shadowVis = sampleShadowPCF(vWorldPos, viewDepth);
+    // Splits are camera-forward distances (view-space +Z), not euclidean length.
+    float viewDepth = max(-vViewPos.z, 0.0);
+    vec3 primaryL = normalize(ubo.lightDirIntensity.xyz);
+    float shadowVis = sampleShadowPCF(vWorldPos, viewDepth, max(dot(N, primaryL), 0.0));
 
-    // Primary directional light (legacy slot) — receives CSM.
-    Lo += shadeLight(N, V, albedo, metallic, roughness,
-                     normalize(ubo.lightDirIntensity.xyz), ubo.lightColor.rgb) * shadowVis;
+    // Primary directional (legacy slot). Packing zeros lightColor when no dir exists
+    // so a point in lights[0] is never treated as a sun direction.
+    if (length(ubo.lightColor.rgb) > 1e-6) {
+        Lo += shadeLight(N, V, albedo, metallic, roughness, primaryL, ubo.lightColor.rgb) * shadowVis;
+    }
 
     for (int i = 0; i < 8; ++i) {
         if (i >= count) break;
@@ -163,7 +189,7 @@ void main() {
         vec3 L;
         if (Lgt.posRadius.w <= 0.0) {
             L = normalize(Lgt.posRadius.xyz);
-            if (length(L - normalize(ubo.lightDirIntensity.xyz)) < 1e-3)
+            if (length(L - primaryL) < 1e-3)
                 continue;
             // Additional dir lights are unshadowed.
         } else {
@@ -177,9 +203,15 @@ void main() {
         Lo += shadeLight(N, V, albedo, metallic, roughness, L, radiance);
     }
 
-    // Ambient is taken at face value — callers control fill brightness.
-    vec3 amb = ubo.ambient.rgb;
-    vec3 color = albedo * amb * (1.0 - metallic) + Lo;
+    // Hemispheric GI: sky vs ground bounce, plus a cheap wrap fill into umbra.
+    float hemi = clamp(N.y * 0.5 + 0.5, 0.0, 1.0);
+    vec3 skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
+    vec3 gndIrr = ubo.ambient.rgb * vec3(0.72, 0.62, 0.52);
+    vec3 irr = mix(gndIrr, skyIrr, hemi);
+    vec3 gi = albedo * irr * (1.0 - metallic);
+    float wrap = max(dot(N, primaryL) * 0.5 + 0.5, 0.0);
+    gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
+    vec3 color = gi + Lo;
 
     // Specular IBL (envIntensity packed in lightColor.w). No BRDF LUT — Fresnel * env.
     float envIntensity = ubo.lightColor.w;
@@ -192,8 +224,14 @@ void main() {
         color += envSpec * F;
         // Cheap diffuse IBL for dielectrics (sample along N at a blurry lod).
         vec3 irr = textureLod(envSampler, N, 5.0).rgb * envIntensity;
-        color += albedo * irr * (1.0 - metallic) * (1.0 - F) * 0.35;
+        color += albedo * irr * (1.0 - metallic) * (1.0 - F) * 0.45;
     }
 
-    outColor = vec4(color, base.a);
+    color = tonemapPeak(color);
+
+    float nearZ = max(ubo.clipInfo.x, 1e-4);
+    float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    float viewZ = max(-vViewPos.z, 0.0);
+    float linear01 = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    outColor = vec4(color, linear01);
 }
