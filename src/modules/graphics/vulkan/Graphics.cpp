@@ -3273,6 +3273,8 @@ void Graphics::begin3DFrame() {
     recordPendingShadowPasses();
     recordPendingGBufferPass();
 
+    // 3D pass clears with backgroundColor (setBackgroundColor), not a stale 2D clear.
+    clearColor = backgroundColor;
     createSceneColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
     if (!beginSceneColorRenderPass())
         beginSwapchainColorPass();
@@ -3412,8 +3414,14 @@ void Graphics::createVoxelRectPipeline() {
 
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
+    // Unit-quad indices 0-2-1 / 0-3-2 are object-space CCW for outward faces.
+    // perspectiveVulkanRH_ZO flips clip Y, so those faces are CCW in the
+    // framebuffer — CounterClockwise frontFace keeps them. Clockwise + Back
+    // (the mesh-pipeline convention) culls every submitted face after the Y
+    // flip; CPU 6-dir cull already dropped the true back faces, so the frame
+    // collapses to a 1px silhouette.
     rs.cullMode = vk::CullModeFlagBits::eBack;
-    rs.frontFace = vk::FrontFace::eClockwise;
+    rs.frontFace = vk::FrontFace::eCounterClockwise;
     rs.lineWidth = 1.0f;
 
     vk::PipelineMultisampleStateCreateInfo ms{};
