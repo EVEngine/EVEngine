@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "description": "Seed × algorithm matrix for reproducibility and path-connectivity smoke",
+  "sizes": [
+    {
+      "width": 16,
+      "height": 12
+    },
+    {
+      "width": 24,
+      "height": 18
+    },
+    {
+      "width": 32,
+      "height": 24
+    }
+  ],
+  "algorithms": [
+    {
+      "id": "dungeon.bsp",
+      "params": {}
+    },
+    {
+      "id": "cave.cellular",
+      "params": {
+        "loops": 4,
+        "fill": 0.45
+      }
+    },
+    {
+      "id": "cave.drunkard",
+      "params": {
+        "floorPct": 0.42
+      }
+    },
+    {
+      "id": "maze.backtrack",
+      "params": {}
+    },
+    {
+      "id": "wfc.simple",
+      "params": {
+        "preset": "dungeon",
+        "maxAttempts": 64
+      }
+    }
+  ],
+  "seeds": [
+    1,
+    7,
+    13,
+    42,
+    55,
+    99,
+    123,
+    256,
+    512,
+    777,
+    808,
+    909,
+    1024,
+    1337,
+    2024,
+    4096,
+    8192,
+    16384,
+    20260812,
+    31415926,
+    27182818,
+    123456789,
+    111,
+    222,
+    333,
+    444,
+    555,
+    666,
+    888,
+    999,
+    1010,
+    2020,
+    3030,
+    4040,
+    5050,
+    6060,
+    7070,
+    8080,
+    9090
+  ],
+  "expectations": {
+    "minWalkable": 8,
+    "requireSpawnWalkable": true,
+    "preferPathToExit": true
+  }
+}

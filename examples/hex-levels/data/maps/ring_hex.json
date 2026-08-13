@@ -1,0 +1,40 @@
+{
+  "width": 9,
+  "height": 7,
+  "tilewidth": 64,
+  "tileheight": 32,
+  "orientation": "hexagonal",
+  "staggeraxis": "y",
+  "staggerindex": "odd",
+  "hexsidelength": 16,
+  "origin": [0, 0],
+  "layers": [
+    {
+      "type": "tilelayer",
+      "name": "ground",
+      "width": 9,
+      "height": 7,
+      "layer": 0,
+      "data": [
+        1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 2, 2, 2, 2, 2, 2, 2, 1,
+        1, 2, 1, 1, 1, 1, 1, 2, 1,
+        1, 2, 1, 2, 3, 2, 1, 2, 1,
+        1, 2, 1, 1, 1, 1, 1, 2, 1,
+        1, 2, 2, 2, 2, 2, 2, 2, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1
+      ]
+    },
+    {
+      "type": "objectgroup",
+      "name": "markers",
+      "objects": [
+        { "name": "spawn", "type": "spawn", "x": 1, "y": 1, "width": 0, "height": 0 },
+        { "name": "stairs", "type": "stairs", "x": 7, "y": 5, "width": 0, "height": 0 },
+        { "name": "center_door", "type": "door", "x": 4, "y": 3, "width": 0, "height": 0 },
+        { "name": "loot_n", "type": "loot", "x": 4, "y": 1, "width": 0, "height": 0 },
+        { "name": "loot_s", "type": "loot", "x": 4, "y": 5, "width": 0, "height": 0 }
+      ]
+    }
+  ]
+}

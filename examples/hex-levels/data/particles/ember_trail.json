@@ -1,0 +1,21 @@
+{
+  "buffer": 128,
+  "preset": "spark",
+  "emissionRate": 35,
+  "particleLifetime": [0.25, 0.7],
+  "emitterLife": -1,
+  "direction": -1.2,
+  "spread": 0.9,
+  "speed": [15, 55],
+  "linearAcceleration": [-8, -20, 8, 10],
+  "emissionArea": { "type": "rect", "x": 6, "y": 6 },
+  "particleSize": [3, 3],
+  "sizes": [1.0, 0.2],
+  "sizeVariation": 0.4,
+  "colorStart": [0.95, 0.55, 1.0, 0.9],
+  "colorEnd": [0.4, 0.1, 0.8, 0.0],
+  "layer": 5,
+  "visible": true,
+  "autoStart": false,
+  "autoReload": true
+}
