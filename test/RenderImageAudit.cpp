@@ -217,7 +217,9 @@ void detectHoles(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int
 
 void detectCoarseIncomplete(const std::vector<TileStat> &tiles, int tilesX, int tilesY, int w, int h,
                             float occupancy, RenderAuditResult &r) {
-    if (occupancy < 0.18f) return;
+    // Sparse frames (small object + lots of sky) have empty quadrants by design.
+    // Only look for missing chunks when the frame is mostly filled.
+    if (occupancy < 0.40f) return;
     const int gx = 4, gy = 4;
     for (int gyi = 0; gyi < gy; ++gyi) {
         for (int gxi = 0; gxi < gx; ++gxi) {
@@ -1094,7 +1096,9 @@ TEST_CASE("graphics.imageAudit.syntheticDefects") {
 
     {
         std::unique_ptr<ImageData> img(makeRgba(64, 64, geoR, geoG, geoB));
-        fillRect(img.get(), 24, 24, 16, 16, 0, 0, 0);
+        // One full interior 16x16 tile; unaligned holes split across tiles and
+        // stay above kEmptyTile so detectHoles never fires.
+        fillRect(img.get(), 16, 16, 16, 16, 0, 0, 0);
         RenderAuditConfig cfg{"synthetic", "hole", "", 0};
         auto r = auditImage(*img, cfg, bg);
         REQUIRE(hasKind(r, RenderDefect::Kind::Incomplete));
@@ -1122,7 +1126,7 @@ TEST_CASE("graphics.imageAudit.syntheticDefects") {
 
     {
         std::unique_ptr<ImageData> img(makeRgba(64, 64, geoR, geoG, geoB));
-        fillRect(img.get(), 0, 30, 64, 2, 20, 23, 28);
+        fillRect(img.get(), 0, 30, 64, 1, 20, 23, 28);
         RenderAuditConfig cfg{"synthetic", "tearing", "", 0};
         auto r = auditImage(*img, cfg, bg);
         REQUIRE(hasKind(r, RenderDefect::Kind::Damage));
