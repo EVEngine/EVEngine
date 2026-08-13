@@ -101,7 +101,7 @@ TEST_CASE("hex.data.catalog.loadsLevels") {
     CHECK_EQ(root->getValue<int>("version"), 1);
     auto levels = root->getArray("levels");
     REQUIRE(levels);
-    CHECK(levels->size() >= 16);
+    CHECK(levels->size() >= 31);
 
     int foundPipeline = 0;
     for (size_t i = 0; i < levels->size(); ++i) {
@@ -751,6 +751,18 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
             auto parts = lv->getArray("particles");
             REQUIRE(parts);
             CHECK(parts->size() >= 3);
+        } else if (id == 26) {
+            CHECK_EQ(algo, std::string("cave.drunkard"));
+        } else if (id == 27) {
+            CHECK_EQ(algo, std::string("maze.backtrack"));
+        } else if (id == 28) {
+            CHECK_EQ(algo, std::string("wfc.simple"));
+        } else if (id == 30) {
+            CHECK_EQ(lootTable, std::string("raid"));
+            auto en = lv->getObject("enable");
+            REQUIRE(en);
+            CHECK(en->getValue<bool>("perception"));
+            CHECK(en->getValue<bool>("flow"));
         }
 
         delete pf;
@@ -760,7 +772,20 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
     }
 
     CHECK_EQ(booted, int(levels->size()));
-    CHECK(booted >= 16);
+    CHECK(booted >= 31);
+}
+
+TEST_CASE("hex.data.catalog.newLevels16to30Present") {
+    auto doc = loadJson("catalog.json");
+    auto levels = doc->object()->getArray("levels");
+    REQUIRE(levels);
+    std::vector<int> want = {16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
+    for (int id : want) {
+        bool found = false;
+        for (size_t i = 0; i < levels->size(); ++i)
+            if (levels->getObject(i)->getValue<int>("id") == id) found = true;
+        CHECK(found);
+    }
 }
 
 TEST_CASE("hex.data.lootTables.perceptionGates") {

@@ -12,8 +12,8 @@
 //   8 多观察者 + 感知检测
 //   9 FoW 遮罩强度 / 算法切换
 //
-// 关卡可独立切换；数字键 1–9 选关，0 为综合通关模式。
-// 操作：WASD / 方向键移动  E 拾取  R 重生成  N 下一关  T 切换 FOV 算法
+// 关卡可独立切换；数字键 1–9 / 0 快速选关，N/B 或 ]/[ 循环全部 catalog 关卡。
+// 操作：WASD / 方向键移动  E 拾取  R 重生成  N 下一关  B 上一关  T 切换 FOV 算法
 // 运行： make run/<platform>-debug GAME=examples/hex-levels
 // ============================================================================
 
@@ -63,6 +63,11 @@ if (!("torchFovRadius" in getroottable())) torchFovRadius <- 3;
 if (!("cellCostValue" in getroottable())) cellCostValue <- 8.0;
 if (!("cellCostStrip" in getroottable())) cellCostStrip <- 4;
 if (!("swarmStarts" in getroottable())) swarmStarts <- 4;
+if (!("levelIdIndex" in getroottable())) levelIdIndex <- 0;
+if (!("facingDeg" in getroottable())) facingDeg <- 0.0;
+if (!("facingHalf" in getroottable())) facingHalf <- 0.0;
+if (!("cornerPeekOn" in getroottable())) cornerPeekOn <- false;
+if (!("camZoom" in getroottable())) camZoom <- 1.0;
 
 TILE_W <- 48.0;
 TILE_H <- 28.0;
@@ -84,7 +89,28 @@ LEVEL_NAMES <- {
     [6] = "Flow Field 群体",
     [7] = "格子代价绕路",
     [8] = "多观察者感知",
-    [9] = "FoW 遮罩算法"
+    [9] = "FoW 遮罩算法",
+    [10] = "相机拾取",
+    [11] = "双网格六角",
+    [12] = "程序化变体",
+    [13] = "四叉树裁剪",
+    [14] = "多光源",
+    [15] = "粒子与仓库",
+    [16] = "朝向锥视野",
+    [17] = "Flow+代价绕路",
+    [18] = "种子复现",
+    [19] = "拐角窥视",
+    [20] = "装备掉落",
+    [21] = "世界拾格",
+    [22] = "探索记忆清除",
+    [23] = "群体寻路",
+    [24] = "FOV 算法画廊",
+    [25] = "动态阻挡",
+    [26] = "醉汉洞穴",
+    [27] = "六角迷宫",
+    [28] = "WFC 地牢",
+    [29] = "迷雾粒子",
+    [30] = "突袭综合"
 };
 
 function pushLog(text) {
@@ -129,6 +155,10 @@ function applyLevelBootConfig() {
     cellCostValue = 8.0;
     cellCostStrip = 4;
     swarmStarts = 4;
+    facingDeg = 0.0;
+    facingHalf = 0.0;
+    cornerPeekOn = false;
+    camZoom = 1.0;
     activeLootTable = "starter";
 
     if (!fixturesLoaded || !(level in LEVEL_CATALOG)) return;
@@ -155,8 +185,18 @@ function applyLevelBootConfig() {
         if ("heroPerception" in f) heroPerception = f.heroPerception;
         if ("torchRadius" in f) torchFovRadius = f.torchRadius;
         if ("perceptionScale" in f) perceptionScale = f.perceptionScale;
+        if ("facingDeg" in f) facingDeg = f.facingDeg;
+        if ("halfAngle" in f) facingHalf = f.halfAngle;
+        if ("cornerPeek" in f) cornerPeekOn = f.cornerPeek;
         if (("enabled" in f) && !f.enabled)
             featureOn.fov <- false;
+    }
+    if ("camera" in meta && ("zoom" in meta.camera)) {
+        camZoom = meta.camera.zoom;
+        if (cam != null) cam.setZoom(camZoom);
+    } else if (cam != null) {
+        cam.setZoom(1.0);
+        camZoom = 1.0;
     }
     if ("light" in meta && torchLight != null) {
         local L = meta.light;
@@ -524,7 +564,8 @@ function regenerate() {
     if (featureEnabled("fov", level != 1)) {
         local radius = fovRadius;
         if (radius < 1) radius = 1;
-        if (featureEnabled("perception", level == 0 || level == 8)) {
+        fov.setCornerPeek(cornerPeekOn);
+        if (featureEnabled("perception", level == 0 || level == 8 || level == 30)) {
             fov.setPerceptionRadiusScale(perceptionScale);
             revealerId = fov.addRevealer(playerTx, playerTy, radius);
             fov.setRevealerPerception(revealerId, heroPerception);
@@ -532,6 +573,8 @@ function regenerate() {
         } else {
             revealerId = fov.addRevealer(playerTx, playerTy, radius);
         }
+        if (featureEnabled("facing", false) && facingHalf > 0.0 && revealerId >= 0)
+            fov.setRevealerFacing(revealerId, facingDeg, facingHalf);
     } else {
         revealerId = -1;
     }
@@ -569,9 +612,9 @@ function regenerate() {
 
     local lname = (levelCfg != null && ("name" in levelCfg)) ? levelCfg.name :
                   ((level in LEVEL_NAMES) ? LEVEL_NAMES[level] : ("L" + level));
-    status = lname + " | " + algo + " seed=" + seed + " path=" + pathLen +
-             " topo=" + pf.getTopology() + " fov=" + fovAlgo + " r=" + fovRadius +
-             " loot=" + activeLootTable;
+    status = "L" + level + " " + lname + " | " + algo + " seed=" + seed +
+             " path=" + pathLen + " topo=" + pf.getTopology() +
+             " fov=" + fovAlgo + " r=" + fovRadius + " loot=" + activeLootTable;
     pushLog("进入关卡: " + lname + " [" + ((levelCfg != null) ? levelCfg.key : ("L" + level)) + "]");
 }
 
@@ -641,7 +684,7 @@ function buildUi() {
     ui.text("", "stats");
     ui.text("", "bag");
     ui.separator("sep");
-    ui.text("[1-9]关卡 [0]综合 [N]下一关 [R]重生成", "help1");
+    ui.text("[1-9/0]快选 [N/]/下一关 [B/[ ]上一关 [R]重生", "help1");
     ui.text("[WASD]移动 [E]拾取 [T]FOV算法 [F/G/H]生成", "help2");
     ui.text("", "log");
     ui.end();
@@ -673,8 +716,40 @@ function refreshHud() {
     ui.setText("log", log);
 }
 
+function syncLevelIdIndex() {
+    levelIdIndex = 0;
+    if (!fixturesLoaded || !("LEVEL_IDS" in getroottable())) return;
+    local i = 0;
+    while (i < LEVEL_IDS.len()) {
+        if (LEVEL_IDS[i] == level) {
+            levelIdIndex = i;
+            return;
+        }
+        i += 1;
+    }
+}
+
 function nextLevel() {
-    level = (level + 1) % 10;
+    ensureFixtures();
+    if (fixturesLoaded && ("LEVEL_IDS" in getroottable()) && LEVEL_IDS.len() > 0) {
+        syncLevelIdIndex();
+        levelIdIndex = (levelIdIndex + 1) % LEVEL_IDS.len();
+        level = LEVEL_IDS[levelIdIndex];
+    } else {
+        level = (level + 1) % 10;
+    }
+    regenerate();
+}
+
+function prevLevel() {
+    ensureFixtures();
+    if (fixturesLoaded && ("LEVEL_IDS" in getroottable()) && LEVEL_IDS.len() > 0) {
+        syncLevelIdIndex();
+        levelIdIndex = (levelIdIndex - 1 + LEVEL_IDS.len()) % LEVEL_IDS.len();
+        level = LEVEL_IDS[levelIdIndex];
+    } else {
+        level = (level + 9) % 10;
+    }
     regenerate();
 }
 
@@ -702,7 +777,8 @@ eve_update = function(dt) {
     if (keyPressed("8")) { level = 8; regenerate(); }
     if (keyPressed("9")) { level = 9; regenerate(); }
     if (keyPressed("0")) { level = 0; regenerate(); }
-    if (keyPressed("n") || keyPressed("N")) nextLevel();
+    if (keyPressed("n") || keyPressed("N") || keyPressed("]")) nextLevel();
+    if (keyPressed("b") || keyPressed("B") || keyPressed("[")) prevLevel();
     if (keyPressed("r") || keyPressed("R")) {
         seed += 1;
         regenerate();
@@ -744,8 +820,8 @@ eve_render = function() {
     gfx.clear();
     map.render(gfx);
 
-    // Mud / high-cost cells (level 7).
-    if (level == 0 || level == 7) {
+    // Mud / high-cost cells.
+    if (featureEnabled("cellcost", level == 0 || level == 7)) {
         foreach (m in mudCells) {
             local wx = layer.tileToWorldX(m.tx, m.ty);
             local wy = layer.tileToWorldY(m.tx, m.ty);
@@ -755,7 +831,7 @@ eve_render = function() {
     }
 
     // A* path breadcrumbs.
-    if ((level == 0 || level == 1 || level == 7) && path != null) {
+    if ((featureEnabled("path", true)) && (level == 0 || level == 1 || level == 7 || level == 17 || level == 18 || level == 25 || level == 27) && path != null) {
         local i = 0;
         while (i < path.getLength()) {
             local tx = path.getX(i);
@@ -768,8 +844,8 @@ eve_render = function() {
         }
     }
 
-    // Flow-field swarm paths (level 6).
-    if ((level == 0 || level == 6) && flowPaths.len() > 0) {
+    // Flow-field swarm paths.
+    if (featureEnabled("flow", level == 0 || level == 6 || level == 17 || level == 23 || level == 30) && flowPaths.len() > 0) {
         foreach (fp in flowPaths) {
             local i = 0;
             while (i < fp.getLength()) {
@@ -782,8 +858,8 @@ eve_render = function() {
         }
     }
 
-    // FoW overlay — level 9 uses mask byte intensity.
-    if ((level == 0 || level >= 2) && fov != null) {
+    // FoW overlay — mask intensity when mask feature is on.
+    if (featureEnabled("fov", level == 0 || level >= 2) && fov != null) {
         local y = 0;
         while (y < layer.getMapHeight()) {
             local x = 0;
@@ -793,7 +869,7 @@ eve_render = function() {
                 if (!vis) {
                     local wx = layer.tileToWorldX(x, y);
                     local wy = layer.tileToWorldY(x, y);
-                    if (level == 9) {
+                    if (featureEnabled("mask", level == 9 || level == 22 || level == 24)) {
                         local mb = fov.getMaskByte(x, y).tofloat();
                         local a = 1.0 - (mb / 255.0);
                         if (a < 0.2) a = 0.2;
@@ -811,10 +887,10 @@ eve_render = function() {
     }
 
     // Loot markers.
-    if (level == 0 || level >= 4) {
+    if (featureEnabled("pickup", level == 0 || level >= 4)) {
         foreach (L in loot) {
             if (L.taken) continue;
-            if ((level == 0 || level >= 2) && fov != null && !fov.isVisible(L.tx, L.ty))
+            if (featureEnabled("fov", level == 0 || level >= 2) && fov != null && !fov.isVisible(L.tx, L.ty))
                 continue;
             gfx.drawSolidRect(L.wx - 5.0, L.wy - 5.0, 10.0, 10.0, 0.95, 0.35, 0.85, 1.0);
         }
@@ -823,7 +899,7 @@ eve_render = function() {
     // Exit marker.
     local ex = layer.tileToWorldX(exitTx, exitTy);
     local ey = layer.tileToWorldY(exitTx, exitTy);
-    if (level == 1 || level >= 3 || level == 0 ||
+    if (level == 1 || featureEnabled("light", level >= 3) || level == 0 ||
         (fov != null && fov.isExplored(exitTx, exitTy)))
         gfx.drawSolidRect(ex + TILE_W * 0.25, ey + TILE_H * 0.25,
                           TILE_W * 0.5, TILE_H * 0.5, 0.25, 0.9, 0.4, 0.85);
@@ -831,19 +907,19 @@ eve_render = function() {
     // Hero + torch glow.
     local pos = {};
     playerWorldCenter(pos);
-    if (level == 0 || level == 3 || level >= 8) {
+    if (featureEnabled("light", level == 0 || level == 3 || level >= 8)) {
         gfx.drawSolidRect(pos.x - 40.0, pos.y - 40.0, 80.0, 80.0, 1.0, 0.7, 0.35, 0.12);
         gfx.drawSolidRect(pos.x - 22.0, pos.y - 22.0, 44.0, 44.0, 1.0, 0.85, 0.45, 0.18);
     }
-    // Static exit torch for multi-revealer level.
-    if ((level == 0 || level == 8) && torchRevealerId >= 0) {
+    // Static exit torch for multi-revealer levels.
+    if (featureEnabled("perception", level == 0 || level == 8 || level == 30) && torchRevealerId >= 0) {
         local txw = layer.tileToWorldX(exitTx, exitTy) + TILE_W * 0.5;
         local tyw = layer.tileToWorldY(exitTx, exitTy) + TILE_H * 0.5;
         gfx.drawSolidRect(txw - 16.0, tyw - 16.0, 32.0, 32.0, 0.4, 0.7, 1.0, 0.22);
     }
     gfx.drawSolidRect(pos.x - 9.0, pos.y - 9.0, 18.0, 18.0, 0.95, 0.85, 0.35, 1.0);
 
-    if (level == 0 || level == 5 || level >= 8)
+    if (featureEnabled("particles", level == 0 || level == 5 || level >= 8))
         particles.render(gfx);
 
     ui.beginFrameAndRender();

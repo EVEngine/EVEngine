@@ -26,6 +26,11 @@
 //  23 findGroupPath on hex topology
 //  24 FOV algorithm visibility parity smoke
 //  25 blocked-cell + syncFromLayer pathfinding
+//  26 drunkard cave hex
+//  27 maze.backtrack hex path
+//  28 wfc.simple dungeon hex
+//  29 mist particle + cool light scene
+//  30 raid combo (flow + cost + fov + pickup + particles)
 //  pipeline.dungeonCrawl: full crawl through one seeded hex dungeon
 //  pipeline.fogRaid: FOV cone + perception gated pickup + flow escort
 //  pipeline.torchEscort: multi-revealer + light + particles along flow
@@ -1844,4 +1849,221 @@ TEST_CASE("hex.level.pipeline.costlyFogPickup") {
     delete base;
     delete pf;
     delete fov;
+}
+
+TEST_CASE("hex.level.26.drunkardCaveHex") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    hideAllTileLayers();
+    TileLayer *layer = mapMod->newLayer(30, 22, kTileW, kTileH);
+    configureHexLayer(layer);
+    GeneratorRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(2626);
+    p.setSize(30, 22);
+    p.setFloat("floorPct", 0.42f);
+    Grid2D grid;
+    std::string err;
+    REQUIRE(GeneratorRegistry::instance().generate("cave.drunkard", p, grid, err));
+    gen->setPaletteGid("hex_drunk", "wall", kWallGid);
+    gen->setPaletteGid("hex_drunk", "floor", kFloorGid);
+    gen->setPaletteGid("hex_drunk", "corridor", kFloorGid);
+    gen->setPaletteGid("hex_drunk", "door", kDoorGid);
+    REQUIRE(gen->applyToLayer(&grid, "hex_drunk", layer));
+
+    int floors = 0;
+    for (uint32_t c : grid.cells())
+        if (c == Semantic::Floor || c == Semantic::Corridor) ++floors;
+    CHECK(floors >= 8);
+
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("auto");
+    CHECK_EQ(pf->getTopology(), std::string("hex"));
+    int sx = -1, sy = -1;
+    REQUIRE(findWalkable(grid, sx, sy));
+    CHECK(pf->isWalkable(sx, sy));
+    delete pf;
+    layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.27.mazeHexPath") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 2727, 28, 22, "maze.backtrack");
+    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+    Path *path = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    REQUIRE(path != nullptr);
+    CHECK(path->getLength() > 0);
+    CHECK(pathWalkable(path, pf));
+    delete path;
+    delete pf;
+}
+
+TEST_CASE("hex.level.28.wfcDungeonHex") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    hideAllTileLayers();
+    TileLayer *layer = mapMod->newLayer(24, 18, kTileW, kTileH);
+    configureHexLayer(layer);
+    GeneratorRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(2828);
+    p.setSize(24, 18);
+    p.setString("preset", "dungeon");
+    p.setInt("maxAttempts", 64);
+    Grid2D grid;
+    std::string err;
+    const bool ok = GeneratorRegistry::instance().generate("wfc.simple", p, grid, err);
+    CHECK(ok);
+    if (ok) {
+        gen->setPaletteGid("hex_wfc", "wall", kWallGid);
+        gen->setPaletteGid("hex_wfc", "floor", kFloorGid);
+        gen->setPaletteGid("hex_wfc", "corridor", kFloorGid);
+        gen->setPaletteGid("hex_wfc", "door", kDoorGid);
+        REQUIRE(gen->applyToLayer(&grid, "hex_wfc", layer));
+        Pathfinder *pf = mapMod->newPathfinder(layer);
+        pf->blockGid(kWallGid);
+        pf->setTopology("hex");
+        int sx = -1, sy = -1;
+        if (findWalkable(grid, sx, sy)) CHECK(pf->isWalkable(sx, sy));
+        delete pf;
+    }
+    layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.29.mistParticleScene") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    auto *parts = Particles::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 2929, 24, 18);
+
+    float wx = 0.f, wy = 0.f;
+    d.layer->tileToWorld(d.spawnTx, d.spawnTy, wx, wy);
+
+    ParticleEmitter *mist = parts->newEmitter(160);
+    mist->applyPreset("smoke");
+    mist->setEmissionRate(28.f);
+    mist->setPosition(wx, wy);
+    mist->start();
+
+    ParticleEmitter *ember = parts->newEmitter(96);
+    ember->applyPreset("spark");
+    ember->setPosition(wx + 8.f, wy - 4.f);
+    ember->start();
+
+    for (int i = 0; i < 12; ++i) parts->update(1.f / 60.f);
+    CHECK(mist->getCount() > 0);
+    CHECK(ember->getCount() > 0);
+
+    auto *lamp = Light2D::createLight("point");
+    lamp->setRadius(110.f);
+    lamp->setColor(0.6f, 0.7f, 0.95f, 1.4f);
+    lamp->setPosition(wx, wy);
+    lamp->setEnabled(true);
+    CHECK(approxEq(lamp->getRadius(), 110.f));
+
+    mist->stop();
+    ember->stop();
+    lamp->setEnabled(false);
+    d.layer->setVisible(false);
+}
+
+TEST_CASE("hex.level.30.raidComboPipeline") {
+    auto *mapMod = Map::create();
+    auto *gen = Procgen::create();
+    auto *spatialMod = Spatial::create();
+    auto *parts = Particles::create();
+    HexDungeon d = buildHexDungeon(mapMod, gen, 3030, 32, 24);
+
+    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    pf->blockGid(kWallGid);
+    pf->setTopology("hex");
+    Path *path = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    REQUIRE(path != nullptr);
+    REQUIRE(path->getLength() > 2);
+
+    // Cost strip near spawn.
+    for (int x = d.spawnTx + 2; x <= d.spawnTx + 4; ++x)
+        for (int y = d.spawnTy - 1; y <= d.spawnTy + 1; ++y)
+            if (pf->isWalkable(x, y)) pf->setCellCost(x, y, 8.f);
+
+    FlowField *field = pf->buildFlowField(d.exitTx, d.exitTy);
+    REQUIRE(field != nullptr);
+    Path *flow = pf->followFlow(field, d.spawnTx, d.spawnTy);
+    REQUIRE(flow != nullptr);
+
+    Fov *fov = mapMod->newFov(d.layer);
+    fov->blockOpaqueGid(kWallGid);
+    fov->setTopology("hex");
+    fov->setPerceptionRadiusScale(1.f);
+    const int hero = fov->addRevealer(d.spawnTx, d.spawnTy, 5);
+    fov->setRevealerPerception(hero, 2.f);
+    const int torch = fov->addRevealer(d.exitTx, d.exitTy, 3);
+
+    ItemRegistry::clear();
+    InventorySystem::ensureBuiltins();
+    auto *inv = Inventory::create();
+    inv->registerItemsFromJson(R"([
+      {"id":"hex.relic","maxStack":1,"weight":0.5,"tags":["quest"]},
+      {"id":"hex.potion","maxStack":10,"weight":0.2,"tags":["potion"]},
+      {"id":"hex.coin","maxStack":99,"weight":0.01,"tags":["currency"]}
+    ])");
+    Bag *bag = inv->newBag(12);
+
+    const int mid = path->getLength() / 2;
+    float lx = 0.f, ly = 0.f;
+    d.layer->tileToWorld(path->getX(mid), path->getY(mid), lx, ly);
+    lx += kTileW * 0.5f;
+    ly += kTileH * 0.5f;
+    std::unique_ptr<SpatialHash2D> hash(spatialMod->newSpatialHash2D(32.f));
+    CHECK(hash->insert(1, lx - 6.f, ly - 6.f, lx + 6.f, ly + 6.f));
+
+    ParticleEmitter *fire = parts->newEmitter(96);
+    fire->applyPreset("fire");
+    fire->start();
+
+    auto *lamp = Light2D::createLight("point");
+    lamp->setRadius(160.f);
+    lamp->setEnabled(true);
+
+    bool looted = false;
+    for (int step = 0; step < path->getLength(); ++step) {
+        const int tx = path->getX(step);
+        const int ty = path->getY(step);
+        fov->setRevealerPosition(hero, tx, ty);
+        fov->compute();
+        float wx = 0.f, wy = 0.f;
+        d.layer->tileToWorld(tx, ty, wx, wy);
+        lamp->setPosition(wx, wy);
+        fire->setPosition(wx + 4.f, wy - 4.f);
+        parts->update(1.f / 30.f);
+        if (!looted && fov->canDetect(hero, path->getX(mid), path->getY(mid), 0.5f)) {
+            float cx = wx + kTileW * 0.5f, cy = wy + kTileH * 0.5f;
+            if (hash->queryCircle(cx, cy, 20.f) > 0) {
+                const int added = bag->addItem("hex.relic", 1);
+                if (added > 0) {
+                    looted = true;
+                    hash->remove(1);
+                }
+            }
+        }
+    }
+    CHECK(looted);
+    CHECK_EQ(bag->countItem("hex.relic"), 1);
+    CHECK_EQ(fov->getRevealerCount(), 2);
+    CHECK(flow->getLength() > 0);
+
+    fire->stop();
+    lamp->setEnabled(false);
+    bag->destroy();
+    ItemRegistry::clear();
+    delete flow;
+    delete field;
+    delete path;
+    delete pf;
+    delete fov;
+    (void)torch;
 }
