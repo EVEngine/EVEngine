@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <system_error>
 #include <utility>
 
 namespace eve {
@@ -24,7 +25,12 @@ ThreadPool::ThreadPool(int workerCount) {
         workers_.emplace_back([this] { workerMain(); });
 }
 
-ThreadPool::~ThreadPool() { stop(); }
+ThreadPool::~ThreadPool() {
+    try {
+        stop();
+    } catch (...) {
+    }
+}
 
 int ThreadPool::getWorkerCount() const { return workerCount_; }
 
@@ -103,9 +109,22 @@ void ThreadPool::stop() {
         stopping_ = true;
     }
     cv_.notify_all();
+    const auto self = std::this_thread::get_id();
     for (auto &w : workers_) {
-        if (w.joinable())
+        if (!w.joinable())
+            continue;
+        // MSVC throws std::system_error(resource_deadlock_would_occur) if this
+        // thread is a worker (stop from a task / TLS teardown).
+        if (w.get_id() == self) {
+            w.detach();
+            continue;
+        }
+        try {
             w.join();
+        } catch (const std::system_error &) {
+            if (w.joinable())
+                w.detach();
+        }
     }
     workers_.clear();
 }
