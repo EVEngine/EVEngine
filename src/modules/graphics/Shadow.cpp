@@ -11,7 +11,8 @@ namespace eve::graphics {
 namespace {
 
 glm::mat4 cascadeVP(const glm::vec3 &lightDir, const glm::vec3 &eye, const glm::vec3 &target,
-                    const glm::vec3 &up, float fovYRad, float aspect, float nearZ, float farZ) {
+                    const glm::vec3 &up, float fovYRad, float aspect, float nearZ, float farZ,
+                    float *texelWorldOut) {
     const glm::mat4 view = glm::lookAtRH(eye, target, up);
     // Match the camera projection used by RenderSystem3D so frustum corners align.
     const glm::mat4 proj = perspectiveVulkanRH_ZO(fovYRad, aspect, nearZ, farZ);
@@ -57,8 +58,21 @@ glm::mat4 cascadeVP(const glm::vec3 &lightDir, const glm::vec3 &eye, const glm::
     minB.z -= zPad;
     maxB.z += zPad;
 
+    const float mapSize = float(ShadowConfig::kMapSize);
+    const float extentX = std::max(maxB.x - minB.x, 1e-3f);
+    const float extentY = std::max(maxB.y - minB.y, 1e-3f);
+    const float texelWorld = std::max(extentX, extentY) / mapSize;
+    if (texelWorldOut) *texelWorldOut = texelWorld;
+
+    // Snap ortho bounds to texel-sized increments so cascades don't swim as the camera moves.
+    auto snap = [&](float v) { return std::floor(v / texelWorld) * texelWorld; };
+    minB.x = snap(minB.x);
+    minB.y = snap(minB.y);
+    maxB.x = snap(maxB.x) + texelWorld;
+    maxB.y = snap(maxB.y) + texelWorld;
+
     const glm::mat4 lightProj =
-        glm::orthoRH_ZO(minB.x, maxB.x, minB.y, maxB.y, -maxB.z, -minB.z);
+        orthoVulkanRH_ZO(minB.x, maxB.x, minB.y, maxB.y, -maxB.z, -minB.z);
     return lightProj * lightView;
 }
 
@@ -70,7 +84,8 @@ ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const g
     ShadowUpload out{};
     out.active = true;
     const float n = std::max(nearZ, 1e-3f);
-    const float f = std::max(farZ, n + 1e-2f);
+    const float fCam = std::max(farZ, n + 1e-2f);
+    const float f = std::min(fCam, std::max(n + 1e-2f, ShadowConfig::kMaxDistance));
     const float ratio = f / n;
     float splits[ShadowConfig::kCascades + 1];
     splits[0] = n;
@@ -81,12 +96,20 @@ ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const g
         splits[i] = ShadowConfig::kSplitLambda * logS + (1.f - ShadowConfig::kSplitLambda) * uniS;
     }
 
+    float maxTexelWorld = 0.f;
     for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+        float texelWorld = 0.f;
         out.ubo.lightVP[i] =
-            cascadeVP(lightDirTowardSurface, eye, target, up, fovYRad, aspect, splits[i], splits[i + 1]);
+            cascadeVP(lightDirTowardSurface, eye, target, up, fovYRad, aspect, splits[i],
+                      splits[i + 1], &texelWorld);
+        maxTexelWorld = std::max(maxTexelWorld, texelWorld);
     }
     out.ubo.splits = glm::vec4(splits[1], splits[2], splits[3], std::max(0.f, strength));
-    out.ubo.bias = glm::vec4(std::max(0.f, bias), 1.f, 1.f, 0.f);
+    // Depth-compare bias in NDC. Scale with world texel size so large cascades don't acne
+    // while Cornell-sized frustums keep a small constant.
+    const float scaledBias =
+        std::max(std::max(0.f, bias), 0.0008f + maxTexelWorld * 0.02f);
+    out.ubo.bias = glm::vec4(scaledBias, 1.f, 1.f, 0.f);
     return out;
 }
 

@@ -48,7 +48,10 @@ OffscreenCanvas::OffscreenCanvas(Graphics *owner, int width, int height)
     updater.beginDescriptorSet(sampleGpu.descriptorSet)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(sampleGpu.sampler, color.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(sampleGpu.sampler, color.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
         .update(device.instance);
+    sampleGpu.viewOverride = color.imageView();
 
     sampleTexture.width = width;
     sampleTexture.height = height;

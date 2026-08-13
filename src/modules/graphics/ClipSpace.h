@@ -23,5 +23,14 @@ inline glm::mat4 perspectiveVulkanRH_ZO(float fovyRad, float aspect, float zNear
     return p;
 }
 
+/** Matching Y-flip for directional shadow ortho so clip space matches the
+ *  camera (and mesh pipelines' Clockwise frontFace). */
+inline glm::mat4 orthoVulkanRH_ZO(float left, float right, float bottom, float top, float zNear,
+                                  float zFar) {
+    glm::mat4 p = glm::orthoRH_ZO(left, right, bottom, top, zNear, zFar);
+    p[1][1] *= -1.f;
+    return p;
+}
+
 }  // namespace graphics
 }  // namespace eve

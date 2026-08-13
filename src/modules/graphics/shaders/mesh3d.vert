@@ -18,6 +18,10 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 cameraPos;         // xyz = eye; w = roughness
     vec4 ambient;
     Light3D lights[8];
+    vec4 texBomb;
+    vec4 parallax;
+    mat4 view;
+    vec4 clipInfo; // near, far
 } ubo;
 
 layout(location = 0) out vec3 vNormal;
@@ -25,11 +29,13 @@ layout(location = 1) out vec2 vUV;
 layout(location = 2) out vec4 vTint;
 layout(location = 3) out vec3 vWorldPos;
 layout(location = 4) out vec3 vCameraPos;
+layout(location = 5) out vec3 vViewPos;
 
 void main() {
     gl_Position = ubo.mvp * vec4(inPos, 1.0);
     vec4 world = ubo.model * vec4(inPos, 1.0);
     vWorldPos = world.xyz;
+    vViewPos = (ubo.view * world).xyz;
     mat3 normalMat = mat3(ubo.model);
     vNormal = normalize(normalMat * inNormal);
     vUV = inUV;
