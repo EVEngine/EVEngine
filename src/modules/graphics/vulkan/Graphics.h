@@ -117,7 +117,7 @@ struct GpuTexture {
     vkb::TextureImageCube cubeImage;
     bool isCube = false;
     vk::Sampler sampler;
-    vk::DescriptorSet descriptorSet;
+    vkb::BoundSet descriptorSet;
     vk::ImageView viewOverride{};
     int width = 0;
     int height = 0;
@@ -258,7 +258,7 @@ public:
     vk::CommandPool getUploadPool() const { return uploadPool; }
     vk::DescriptorSetLayout getTexSetLayout() const { return texSetLayout; }
     vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
-    vk::RenderPass getOffscreenRenderPass() const { return offscreenRenderPass; }
+    const vkb::BuiltRenderPass &getOffscreenRenderPass() const { return offscreenRenderPass; }
     vk::RenderPass getSwapchainRenderPass() const { return renderpass; }
     vkb::Instance &getInstance() { return inst; }
     vkb::Swapchain &getSwapchain() { return swapchain; }
@@ -284,7 +284,7 @@ private:
     void createVoxelRectPipeline();
     void destroyVoxelRectResources();
     void ensureVoxelUnitQuad();
-    vk::DescriptorSet voxelRectSetFor(GpuTexture *gpuTex);
+    vkb::BoundSet voxelRectSetFor(GpuTexture *gpuTex);
     void createShadowResources();
     void destroyShadowResources();
     void createGBufferResources(int width, int height);
@@ -303,14 +303,14 @@ private:
     void queueSceneColorResolve();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
-    vk::DescriptorSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
-                                            GpuTexture *envTex, GpuTexture *heightTex,
-                                            Mesh3dClusteredFrameSlots &fslots, size_t uboSlot);
+    vkb::BoundSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
+                                       GpuTexture *envTex, GpuTexture *heightTex,
+                                       Mesh3dClusteredFrameSlots &fslots, size_t uboSlot);
     void ensureOffscreenPipelines();
     void ensureShaderOffscreenPipeline(Shader *shader);
     vk::Pipeline createTexturedStylePipeline(const std::vector<uint32_t> &vert,
                                              const std::vector<uint32_t> &frag,
-                                             vk::RenderPass rp, vk::PipelineLayout layout);
+                                             const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout);
     vk::Pipeline createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
                                            const std::vector<uint32_t> &frag,
                                            vk::PipelineLayout layout);
@@ -324,13 +324,13 @@ private:
     void drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                         std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
                         size_t &texBufIndex, bool offscreen);
-    vk::DescriptorSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
-    vk::DescriptorSet post2SetFor(GpuTexture *color, GpuTexture *depth);
+    vkb::BoundSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
+    vkb::BoundSet post2SetFor(GpuTexture *color, GpuTexture *depth);
     void ensureFlatNormalTexture();
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
-    vk::DescriptorSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                   GpuTexture *heightTex, Mesh3dFrameSlots &fslots, size_t uboSlot);
+    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
+                              GpuTexture *heightTex, Mesh3dFrameSlots &fslots, size_t uboSlot);
     void ensureDefaultEnvCubemap();
     void ensureFlatNormalTexture3D();
     void ensureFlatHeightTexture3D();
@@ -368,7 +368,7 @@ private:
     vkb::Instance inst;
     vkb::Device device;
     vkb::Swapchain swapchain;
-    vk::RenderPass renderpass;
+    vkb::BuiltRenderPass renderpass;
 
     vk::Pipeline pipeline;
     vk::PipelineLayout pipelineLayout;
@@ -381,7 +381,7 @@ private:
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
 
-    vk::RenderPass offscreenRenderPass;
+    vkb::BuiltRenderPass offscreenRenderPass;
     vk::Pipeline offscreenSolidPipeline;
     vk::Pipeline offscreenTexPipeline;
 
@@ -413,7 +413,7 @@ private:
     struct Mesh3dUboSlot {
         vkb::GenericBuffer ubo;
         vkb::GenericBuffer shadowUbo;
-        std::unordered_map<Mesh3dSetKey, vk::DescriptorSet, Mesh3dSetKeyHash> sets;
+        std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
     };
     // Per-frame-slot UBO arenas, keyed by Present::frames_in_flight so a frame
     // never overwrites a UBO that an in-flight frame is still reading.
@@ -464,7 +464,7 @@ private:
     struct Mesh3dClusteredUboSlot {
         vkb::GenericBuffer ubo;
         vkb::GenericBuffer shadowUbo;
-        std::unordered_map<Mesh3dSetKey, vk::DescriptorSet, Mesh3dSetKeyHash> sets;
+        std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
     };
     struct Mesh3dClusteredFrameSlots {
         std::vector<Mesh3dClusteredUboSlot> slots;
@@ -477,15 +477,12 @@ private:
 
     // CSM shadow map (3 cascade layers), one array per in-flight slot.
     struct ShadowMapSlot {
-        vk::Image image{};
-        vk::DeviceMemory memory{};
-        vk::ImageView arrayView{};
-        vk::ImageView layerViews[ShadowConfig::kCascades]{};
+        vkb::DepthArrayImage image;
         vk::Framebuffer framebuffers[ShadowConfig::kCascades]{};
     };
     std::vector<ShadowMapSlot> shadowMaps;
-    vk::Sampler shadowSampler{};
-    vk::RenderPass shadowRenderPass{};
+    vkb::DepthSampler shadowSampler{};
+    vkb::BuiltRenderPass shadowRenderPass{};
     vk::PipelineLayout shadowPipelineLayout{};
     vk::Pipeline shadowPipeline{};
     int shadowPassCascade = -1;
@@ -514,18 +511,10 @@ private:
         GBufferPush push{};
     };
     struct GBufferSlot {
-        vk::Image normalImage{};
-        vk::DeviceMemory normalMemory{};
-        vk::ImageView normalView{};
-        vk::Image depthColorImage{};
-        vk::DeviceMemory depthColorMemory{};
-        vk::ImageView depthColorView{};
-        vk::Image albedoImage{};
-        vk::DeviceMemory albedoMemory{};
-        vk::ImageView albedoView{};
-        vk::Image depthImage{};
-        vk::DeviceMemory depthMemory{};
-        vk::ImageView depthView{};
+        vkb::ColorTarget normal;
+        vkb::ColorTarget depthColor;
+        vkb::ColorTarget albedo;
+        vkb::DepthTarget depth;
         vk::Framebuffer framebuffer{};
         GpuTexture normalGpu{};
         GpuTexture depthColorGpu{};
@@ -539,7 +528,7 @@ private:
     int gbufferWidth = 0;
     int gbufferHeight = 0;
     std::vector<GBufferSlot> gbufferSlots;
-    vk::RenderPass gbufferRenderPass{};
+    vkb::BuiltRenderPass gbufferRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
     bool gbufferPassActive = false;
@@ -548,12 +537,8 @@ private:
     GBufferSlot *currentGBufferSlot();
 
     struct SceneColorSlot {
-        vk::Image colorImage{};
-        vk::DeviceMemory colorMemory{};
-        vk::ImageView colorView{};
-        vk::Image depthImage{};
-        vk::DeviceMemory depthMemory{};
-        vk::ImageView depthView{};
+        vkb::ColorTarget color;
+        vkb::DepthTarget depth;
         vk::Framebuffer framebuffer{};
         GpuTexture colorGpu{};
         Texture colorTex{};
@@ -562,11 +547,13 @@ private:
     int sceneColorHeight = 0;
     vk::Format sceneColorFormat = vk::Format::eUndefined;
     std::vector<SceneColorSlot> sceneColorSlots;
-    vk::RenderPass sceneColorRenderPass{};
+    vkb::BuiltRenderPass sceneColorRenderPass{};
     bool sceneColorPassOpen = false;
     SceneColorSlot *currentSceneColorSlot();
 
     vkb::Present presentModel;
+    vkb::RecordingCmd presentRecording;
+    vkb::InRenderPass swapchainPass;
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
 
@@ -582,9 +569,7 @@ private:
     std::vector<LitBatch> litBatches;
 
     // Persistent host-visible vertex buffers for 2D batching, reused across
-    // frames to avoid per-frame vkCreateBuffer/vkAllocateMemory/vkFreeMemory
-    // churn (the previous per-frame allocation also leaked, since GenericBuffer
-    // has no owning destructor).
+    // frames. GenericBuffer now owns the Vulkan handles.
     struct Frame2DBuffers {
         vkb::HostVertexBuffer solidBuf;
         std::vector<vkb::HostVertexBuffer> texBufs;
@@ -612,9 +597,9 @@ private:
             return std::hash<void *>()(k.albedo) ^ (std::hash<void *>()(k.normal) << 1);
         }
     };
-    std::vector<std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash>> lit2dSets;
-    std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> offscreenLit2dSets;
-    std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> post2Sets;
+    std::vector<std::unordered_map<LitSetKey, vkb::BoundSet, LitSetKeyHash>> lit2dSets;
+    std::unordered_map<LitSetKey, vkb::BoundSet, LitSetKeyHash> offscreenLit2dSets;
+    std::unordered_map<LitSetKey, vkb::BoundSet, LitSetKeyHash> post2Sets;
     Texture *flatNormalTexture = nullptr;
 
     Color clearColor{0.1f, 0.1f, 0.12f, 1.0f};
@@ -647,7 +632,7 @@ private:
     vkb::GenericBuffer voxelUnitQuadVerts;
     vkb::GenericBuffer voxelUnitQuadIndices;
     bool voxelUnitQuadReady = false;
-    std::unordered_map<GpuTexture *, vk::DescriptorSet> voxelRectSets;
+    std::unordered_map<GpuTexture *, vkb::BoundSet> voxelRectSets;
     // Grow-only instance buffer pool (reset index each begin3DFrame), per
     // swapchain frame slot for async safety.
     struct VoxelInstanceSlot {
@@ -664,11 +649,13 @@ private:
     Mesh3dFrameSlots &currentMesh3dFrameSlots();
     Mesh3dClusteredFrameSlots &currentMesh3dClusteredFrameSlots();
     vkb::GenericBuffer &currentLighting2dUbo();
-    std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> &currentLit2dSets();
+    std::unordered_map<LitSetKey, vkb::BoundSet, LitSetKeyHash> &currentLit2dSets();
     ClusteredStorage &currentClusteredStorage();
     VoxelInstanceFrame &currentVoxelInstanceFrame();
     uint32_t frameSlotCount() const;
     size_t currentFrameSlot() const;
+    vk::CommandBuffer &currentPresentCb();
+    vkb::FrameSlot frameToken() const;
     /** Drain in-flight frames before mutating a GPU object sampled/read by them. */
     void waitForSharedGpuResources();
     void invalidateTextureBindings();

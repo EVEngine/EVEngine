@@ -90,7 +90,7 @@ GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
     vkb::GenericBuffer tmp(device, flags, b->size_, mem);
     b->buffer_ = tmp.buffer;
     b->memory_ = tmp.memory;
-    // tmp destructor would double-free if GenericBuffer had one — it doesn't; we own handles.
+    tmp.detach();
     return b;
 }
 

@@ -44,14 +44,11 @@ void VulkanGpuBuffer::uploadBytes(const void *src, uint64_t nbytes, uint64_t dst
     using pfb = vk::MemoryPropertyFlagBits;
     vkb::GenericBuffer staging(*device_, buf::eTransferSrc, nbytes,
                                pfb::eHostVisible | pfb::eHostCoherent);
-    staging.updateLocal(src, nbytes);
+    staging.updateLocal(vkb::FrameSlot::gpuIdle(), src, nbytes);
     vkb::executeImmediately(device_->instance, pool, queue, [&](vk::CommandBuffer cb) {
         vk::BufferCopy bc{0, vk::DeviceSize(dstOffset), vk::DeviceSize(nbytes)};
         cb.copyBuffer(staging.buffer, buffer_, bc);
     });
-    // GenericBuffer::release only destroys buffer — free staging memory too.
-    (*device_)->destroyBuffer(staging.buffer, device_->allocation_callbacks);
-    (*device_)->freeMemory(staging.memory, device_->allocation_callbacks);
 }
 
 void VulkanGpuBuffer::downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffset) const {
@@ -83,8 +80,6 @@ void VulkanGpuBuffer::downloadBytes(void *dst, uint64_t nbytes, uint64_t srcOffs
     void *ptr = (*device_)->mapMemory(staging.memory, 0, nbytes, vk::MemoryMapFlags{});
     std::memcpy(dst, ptr, size_t(nbytes));
     (*device_)->unmapMemory(staging.memory);
-    (*device_)->destroyBuffer(staging.buffer, device_->allocation_callbacks);
-    (*device_)->freeMemory(staging.memory, device_->allocation_callbacks);
 }
 
 void VulkanGpuBuffer::writeData(data::ByteData *data, int dstOffset) {

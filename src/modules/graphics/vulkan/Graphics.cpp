@@ -98,14 +98,7 @@ Graphics::~Graphics() {
     destroyShadowResources();
     destroyGBufferResources();
     destroySceneColorResources();
-    auto destroyBuf = [&](vkb::GenericBuffer &b) {
-        if (b.buffer) {
-            device->destroyBuffer(b.buffer, device.allocation_callbacks);
-            device->freeMemory(b.memory, device.allocation_callbacks);
-            b.buffer = vk::Buffer{};
-            b.memory = vk::DeviceMemory{};
-        }
-    };
+    auto destroyBuf = [&](vkb::GenericBuffer &b) { b.release(); };
     for (auto &st : clusteredStorages) {
         destroyBuf(st.lightsBuf);
         destroyBuf(st.tableBuf);
@@ -186,7 +179,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
         throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
     surface = rawSurface;
 
-    vkb::PhysicalDeviceSelector selector{inst};
+    auto selector = inst.selectPhysicalDevice();
     selector.set_surface(surface).set_minimum_version(1, 0);
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
     selector.add_required_extension("VK_KHR_portability_subset");
@@ -202,8 +195,9 @@ void Graphics::initWithWindow(void *nativeWindow) {
             maxSamplerAnisotropy = 1.f;
         }
     }
-    vkb::DeviceBuilder deviceBuilder{phys};
+    vkb::DeviceBuilder deviceBuilder = phys.createDevice();
     device = deviceBuilder.build();
+    maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
 
     uploadPool = device.createCommandPool();
 
@@ -228,12 +222,13 @@ void Graphics::initWithWindow(void *nativeWindow) {
 }
 
 void Graphics::destroySwapchainResources() {
+    presentRecording = {};
+    swapchainPass = {};
     presentModel.destroy();
     presentModel = vkb::Present{};
     depthImage = vkb::DepthStencilImage{};
-    // Release reused per-frame vertex buffers (GenericBuffer has no owning
-    // destructor, so these must be freed explicitly). Callers hold a
-    // device-wide waitIdle before this runs.
+    // Release reused per-frame vertex buffers. Callers hold a device-wide
+    // waitIdle before this runs.
     auto release2d = [&](Frame2DBuffers &fb) {
         fb.solidBuf.release();
         for (auto &tb : fb.texBufs) tb.release();
@@ -259,8 +254,19 @@ uint32_t Graphics::frameSlotCount() const {
 
 size_t Graphics::currentFrameSlot() const {
     const uint32_t n = frameSlotCount();
-    size_t slot = swapchain.current_frame;
+    size_t slot = presentRecording ? presentRecording.slot().index : swapchain.current_frame;
     return (n > 0 && slot >= n) ? 0 : slot;
+}
+
+vk::CommandBuffer &Graphics::currentPresentCb() {
+    if (swapchainPass)
+        return swapchainPass.commandBuffer();
+    return presentRecording.commandBuffer();
+}
+
+vkb::FrameSlot Graphics::frameToken() const {
+    if (presentRecording) return presentRecording.slot();
+    return vkb::FrameSlot::gpuIdle();
 }
 
 void Graphics::waitForSharedGpuResources() {
@@ -302,13 +308,13 @@ vkb::GenericBuffer &Graphics::currentLighting2dUbo() {
     auto &ubo = lighting2dUboSlots[currentFrameSlot()];
     // allocate() reuses the slot's buffer when it already fits (same usage/
     // memflags, fixed sizeof(Lighting2DUBO)), so this is a no-op after first use.
-    ubo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Lighting2DUBO),
+    ubo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Lighting2DUBO),
                  vk::MemoryPropertyFlagBits::eHostVisible |
                      vk::MemoryPropertyFlagBits::eHostCoherent);
     return ubo;
 }
 
-std::unordered_map<Graphics::LitSetKey, vk::DescriptorSet, Graphics::LitSetKeyHash> &
+std::unordered_map<Graphics::LitSetKey, vkb::BoundSet, Graphics::LitSetKeyHash> &
 Graphics::currentLit2dSets() {
     const uint32_t n = frameSlotCount();
     if (lit2dSets.size() != n) lit2dSets.resize(n);
@@ -334,7 +340,7 @@ Graphics::ShadowMapSlot &Graphics::currentShadowMap() {
 
 vk::ImageView Graphics::currentShadowArrayView() {
     if (shadowMaps.empty()) return vk::ImageView{};
-    return currentShadowMap().arrayView;
+    return currentShadowMap().image.arrayView();
 }
 
 Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
@@ -367,7 +373,8 @@ void Graphics::recordPendingShadowPasses() {
         return;
     }
     auto &slot = currentShadowMap();
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
+    slot.image.beginDepthAttachment();
     const uint32_t size = uint32_t(ShadowConfig::kMapSize);
     vk::ClearValue clear{};
     clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
@@ -398,6 +405,7 @@ void Graphics::recordPendingShadowPasses() {
         cb.endRenderPass();
         shadowCascadeDraws[c].clear();
     }
+    slot.image.endSampledLayout();
     shadowPendingMask = 0;
 }
 
@@ -409,7 +417,7 @@ void Graphics::recordPendingGBufferPass() {
         gbufferPassDraws.clear();
         return;
     }
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
     const uint32_t w = uint32_t(gbufferWidth);
     const uint32_t h = uint32_t(gbufferHeight);
     std::array<vk::ClearValue, 4> clears{};
@@ -423,6 +431,10 @@ void Graphics::recordPendingGBufferPass() {
     rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
     rpBegin.clearValueCount = uint32_t(clears.size());
     rpBegin.pClearValues = clears.data();
+    slot->normal.beginColorAttachment();
+    slot->depthColor.beginColorAttachment();
+    slot->albedo.beginColorAttachment();
+    slot->depth.beginDepthAttachment();
     cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     vk::Viewport vp{0.f, 0.f, float(w), float(h), 0.f, 1.f};
     vk::Rect2D scissor{{0, 0}, {w, h}};
@@ -436,7 +448,7 @@ void Graphics::recordPendingGBufferPass() {
         if (alb && alb->gpuHandle && texSetLayout) {
             auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
-                                  &gpuTex->descriptorSet, 0, nullptr);
+                                  gpuTex->descriptorSet.ptr(), 0, nullptr);
         }
         cb.pushConstants(gbufferPipelineLayout,
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
@@ -448,6 +460,12 @@ void Graphics::recordPendingGBufferPass() {
     }
     cb.endRenderPass();
     gbufferPassDraws.clear();
+    if (slot) {
+        slot->normal.endSampledLayout();
+        slot->depthColor.endSampledLayout();
+        slot->albedo.endSampledLayout();
+        slot->depth.endSampledLayout();
+    }
 }
 
 bool Graphics::beginSwapchainRenderPass() {
@@ -466,7 +484,7 @@ void Graphics::beginSwapchainColorPass() {
     clears[0].color = vk::ClearColorValue(
         std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
     clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
+    swapchainPass = presentRecording.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
 }
 
 bool Graphics::rebuildSwapchainIfNeeded() {
@@ -491,8 +509,8 @@ bool Graphics::rebuildSwapchainIfNeeded() {
 bool Graphics::beginPresentCommandBuffer() {
     for (int attempt = 0; attempt < 3; ++attempt) {
         if (!rebuildSwapchainIfNeeded()) return false;
-        presentModel.begin();
-        if (presentModel.has_acquired_image) return true;
+        presentRecording = presentModel.begin();
+        if (presentRecording) return true;
         // Acquire failed without beginning the CB (see Present::begin). Rebuild once.
         if (presentModel.needs_recreate) {
             presentModel.needs_recreate = false;
@@ -586,10 +604,12 @@ void Graphics::recreateSurfaceForResume() {
 void Graphics::createSwapchainAndPipeline() {
     // Framebuffers / command buffers alias the current swapchain images; tear
     // them down before replacing the swapchain (destroy() waitIdles first).
+    presentRecording = {};
+    swapchainPass = {};
     presentModel.destroy();
     presentModel = vkb::Present{};
 
-    vkb::SwapchainBuilder swapchainBuilder{device};
+    vkb::SwapchainBuilder swapchainBuilder = device.createSwapchain();
     if (pixelWidth > 0 && pixelHeight > 0)
         swapchainBuilder.set_desired_extent(uint32_t(pixelWidth), uint32_t(pixelHeight));
     // Prefer UNORM so clear/draw Color floats match getPixel without sRGB encode.
@@ -640,8 +660,9 @@ void Graphics::createSwapchainAndPipeline() {
         vk::PipelineLayoutCreateInfo layoutInfo{};
         pipelineLayout = device->createPipelineLayout(layoutInfo);
 
-        vkb::PipelineBuilder pipelineBuilder{device, swapchain};
+        vkb::PipelineBuilder pipelineBuilder = device.createPipeline(swapchain);
         pipeline = pipelineBuilder.useClassicPipeline(vert, frag)
+                       .setPipelineLayout(pipelineLayout)
                        .setVertexInputState(vkb::VertexInputStateBuilder()
                                                 .addInputBinding<ColorVertex>()
                                                 .addAttributeDescription<ColorVertex>())
@@ -651,8 +672,7 @@ void Graphics::createSwapchainAndPipeline() {
                        .build(renderpass);
     }
 
-    vkb::PresentBuilder presentBuilder{device, swapchain};
-    presentModel = presentBuilder.build(renderpass, depthImage.imageView());
+    presentModel = device.createPresent(swapchain).build(renderpass, depthImage.imageView());
     // Multi-frame overlap: submit + present without waiting on this frame's
     // fence, so the CPU can build frame N+1 while the GPU still renders frame N.
     // Present caps frames_in_flight at 2 (independent of swapchain image count)
@@ -711,89 +731,26 @@ void Graphics::createTexturedPipeline() {
 
 vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &vert,
                                                    const std::vector<uint32_t> &frag,
-                                                   vk::RenderPass rp, vk::PipelineLayout layout) {
-    vk::ShaderModule vertModule =
-        vkb::PipelineBuilder::createShaderModule(device.instance, vert);
-    vk::ShaderModule fragModule =
-        vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-
-    vk::PipelineShaderStageCreateInfo stages[2]{};
-    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    stages[0].module = vertModule;
-    stages[0].pName = "main";
-    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    stages[1].module = fragModule;
-    stages[1].pName = "main";
-
-    auto binding = TexturedVertex::getBindingDescription(0);
-    auto attrs = TexturedVertex::getAttributeDescription(0);
-    vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 1;
-    vi.pVertexBindingDescriptions = &binding;
-    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
-    vi.pVertexAttributeDescriptions = attrs.data();
-
-    vk::PipelineInputAssemblyStateCreateInfo ia{};
-    ia.topology = vk::PrimitiveTopology::eTriangleList;
-
-    vk::PipelineViewportStateCreateInfo vp{};
-    vp.viewportCount = 1;
-    vp.scissorCount = 1;
-
-    vk::PipelineRasterizationStateCreateInfo rs{};
-    rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eNone;
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
-    rs.lineWidth = 1.0f;
-
-    vk::PipelineMultisampleStateCreateInfo ms{};
-    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
-
-    vk::PipelineDepthStencilStateCreateInfo ds{};
-    ds.depthTestEnable = false;
-    ds.depthWriteEnable = false;
-
-    vk::PipelineColorBlendAttachmentState blendAtt{};
-    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-    blendAtt.blendEnable = true;
-    blendAtt.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
-    blendAtt.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    blendAtt.colorBlendOp = vk::BlendOp::eAdd;
-    blendAtt.srcAlphaBlendFactor = vk::BlendFactor::eOne;
-    blendAtt.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    blendAtt.alphaBlendOp = vk::BlendOp::eAdd;
-
-    vk::PipelineColorBlendStateCreateInfo blend{};
-    blend.attachmentCount = 1;
-    blend.pAttachments = &blendAtt;
-
-    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-    vk::PipelineDynamicStateCreateInfo dyn{};
-    dyn.dynamicStateCount = 2;
-    dyn.pDynamicStates = dynStates;
-
-    vk::GraphicsPipelineCreateInfo pci{};
-    pci.stageCount = 2;
-    pci.pStages = stages;
-    pci.pVertexInputState = &vi;
-    pci.pInputAssemblyState = &ia;
-    pci.pViewportState = &vp;
-    pci.pRasterizationState = &rs;
-    pci.pMultisampleState = &ms;
-    pci.pDepthStencilState = &ds;
-    pci.pColorBlendState = &blend;
-    pci.pDynamicState = &dyn;
-    pci.layout = layout;
-    pci.renderPass = rp;
-    pci.subpass = 0;
-
-    auto result = device->createGraphicsPipeline(nullptr, pci);
+                                                   const vkb::BuiltRenderPass &rp,
+                                                   vk::PipelineLayout layout) {
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+    vk::Pipeline pipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(layout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<TexturedVertex>()
+                                     .addAttributeDescription<TexturedVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eCounterClockwise)
+            .setDepthStencil(false, false)
+            .setAlphaBlending(1)
+            .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
-    if (result.result != vk::Result::eSuccess)
-        throw Exception("failed to create textured-style pipeline");
-    return result.value;
+    return pipeline;
 }
 
 void Graphics::createLit2DPipeline() {
@@ -815,7 +772,7 @@ void Graphics::createLit2DPipeline() {
 
     // Offscreen (synchronous) lit-2D path owns a dedicated UBO. The swapchain
     // path's per-frame UBOs are allocated lazily in currentLighting2dUbo().
-    offscreenLighting2dUbo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer,
+    offscreenLighting2dUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer,
                                     sizeof(Lighting2DUBO),
                                     vk::MemoryPropertyFlagBits::eHostVisible |
                                         vk::MemoryPropertyFlagBits::eHostCoherent);
@@ -911,39 +868,22 @@ void Graphics::destroyShadowResources() {
         device->destroyPipelineLayout(shadowPipelineLayout);
         shadowPipelineLayout = vk::PipelineLayout{};
     }
-    auto destroySlot = [&](ShadowMapSlot &slot) {
+    for (auto &slot : shadowMaps) {
         for (int i = 0; i < ShadowConfig::kCascades; ++i) {
             if (slot.framebuffers[i]) {
                 device->destroyFramebuffer(slot.framebuffers[i]);
                 slot.framebuffers[i] = vk::Framebuffer{};
             }
-            if (slot.layerViews[i]) {
-                device->destroyImageView(slot.layerViews[i]);
-                slot.layerViews[i] = vk::ImageView{};
-            }
         }
-        if (slot.arrayView) {
-            device->destroyImageView(slot.arrayView);
-            slot.arrayView = vk::ImageView{};
-        }
-        if (slot.image) {
-            device->destroyImage(slot.image);
-            slot.image = vk::Image{};
-        }
-        if (slot.memory) {
-            device->freeMemory(slot.memory);
-            slot.memory = vk::DeviceMemory{};
-        }
-    };
-    for (auto &slot : shadowMaps) destroySlot(slot);
+    }
     shadowMaps.clear();
     if (shadowSampler) {
         device->destroySampler(shadowSampler);
-        shadowSampler = vk::Sampler{};
+        shadowSampler = {};
     }
     if (shadowRenderPass) {
         device->destroyRenderPass(shadowRenderPass);
-        shadowRenderPass = vk::RenderPass{};
+        shadowRenderPass = {};
     }
     shadowPassCascade = -1;
     shadowPassDraws.clear();
@@ -955,20 +895,6 @@ void Graphics::destroyGBufferResources() {
     gbufferPassActive = false;
     gbufferPending = false;
     gbufferPassDraws.clear();
-    auto destroyImg = [&](vk::Image &img, vk::DeviceMemory &mem, vk::ImageView &view) {
-        if (view) {
-            device->destroyImageView(view);
-            view = vk::ImageView{};
-        }
-        if (img) {
-            device->destroyImage(img);
-            img = vk::Image{};
-        }
-        if (mem) {
-            device->freeMemory(mem);
-            mem = vk::DeviceMemory{};
-        }
-    };
     for (auto &slot : gbufferSlots) {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
@@ -978,10 +904,6 @@ void Graphics::destroyGBufferResources() {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
         }
-        destroyImg(slot.normalImage, slot.normalMemory, slot.normalView);
-        destroyImg(slot.depthColorImage, slot.depthColorMemory, slot.depthColorView);
-        destroyImg(slot.albedoImage, slot.albedoMemory, slot.albedoView);
-        destroyImg(slot.depthImage, slot.depthMemory, slot.depthView);
         if (slot.normalGpu.sampler) {
             device->destroySampler(slot.normalGpu.sampler);
             slot.normalGpu.sampler = vk::Sampler{};
@@ -1011,7 +933,7 @@ void Graphics::destroyGBufferResources() {
     }
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
-        gbufferRenderPass = vk::RenderPass{};
+        gbufferRenderPass = {};
     }
     gbufferWidth = 0;
     gbufferHeight = 0;
@@ -1020,28 +942,12 @@ void Graphics::destroyGBufferResources() {
 
 void Graphics::destroySceneColorResources() {
     sceneColorPassOpen = false;
-    auto destroyImg = [&](vk::Image &img, vk::DeviceMemory &mem, vk::ImageView &view) {
-        if (view) {
-            device->destroyImageView(view);
-            view = vk::ImageView{};
-        }
-        if (img) {
-            device->destroyImage(img);
-            img = vk::Image{};
-        }
-        if (mem) {
-            device->freeMemory(mem);
-            mem = vk::DeviceMemory{};
-        }
-    };
     for (auto &slot : sceneColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
         }
-        destroyImg(slot.colorImage, slot.colorMemory, slot.colorView);
-        destroyImg(slot.depthImage, slot.depthMemory, slot.depthView);
         if (slot.colorGpu.sampler) {
             device->destroySampler(slot.colorGpu.sampler);
             slot.colorGpu.sampler = vk::Sampler{};
@@ -1051,7 +957,7 @@ void Graphics::destroySceneColorResources() {
     post2Sets.clear();
     if (sceneColorRenderPass) {
         device->destroyRenderPass(sceneColorRenderPass);
-        sceneColorRenderPass = vk::RenderPass{};
+        sceneColorRenderPass = {};
     }
     sceneColorWidth = 0;
     sceneColorHeight = 0;
@@ -1063,63 +969,6 @@ namespace {
 vk::Format pickGBufferColorFormat(vkb::Device &device) {
     (void)device;
     return vk::Format::eR8G8B8A8Unorm;
-}
-
-void createColorTarget(vkb::Device &device, uint32_t w, uint32_t h, vk::Format format, vk::Image &image,
-                       vk::DeviceMemory &memory, vk::ImageView &view) {
-    vk::ImageCreateInfo imgInfo{};
-    imgInfo.imageType = vk::ImageType::e2D;
-    imgInfo.format = format;
-    imgInfo.extent = vk::Extent3D{w, h, 1};
-    imgInfo.mipLevels = 1;
-    imgInfo.arrayLayers = 1;
-    imgInfo.samples = vk::SampleCountFlagBits::e1;
-    imgInfo.tiling = vk::ImageTiling::eOptimal;
-    imgInfo.usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled;
-    imgInfo.initialLayout = vk::ImageLayout::eUndefined;
-    image = device->createImage(imgInfo);
-    auto memReq = device->getImageMemoryRequirements(image);
-    vk::MemoryAllocateInfo mai{};
-    mai.allocationSize = memReq.size;
-    mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
-        memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
-    memory = device->allocateMemory(mai);
-    device->bindImageMemory(image, memory, 0);
-    vk::ImageViewCreateInfo viewInfo{};
-    viewInfo.image = image;
-    viewInfo.viewType = vk::ImageViewType::e2D;
-    viewInfo.format = format;
-    viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
-    view = device->createImageView(viewInfo);
-}
-
-void createDepthTarget(vkb::Device &device, uint32_t w, uint32_t h, vk::Format format, vk::Image &image,
-                       vk::DeviceMemory &memory, vk::ImageView &view, bool sampled = false) {
-    vk::ImageCreateInfo imgInfo{};
-    imgInfo.imageType = vk::ImageType::e2D;
-    imgInfo.format = format;
-    imgInfo.extent = vk::Extent3D{w, h, 1};
-    imgInfo.mipLevels = 1;
-    imgInfo.arrayLayers = 1;
-    imgInfo.samples = vk::SampleCountFlagBits::e1;
-    imgInfo.tiling = vk::ImageTiling::eOptimal;
-    imgInfo.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
-    if (sampled) imgInfo.usage |= vk::ImageUsageFlagBits::eSampled;
-    imgInfo.initialLayout = vk::ImageLayout::eUndefined;
-    image = device->createImage(imgInfo);
-    auto memReq = device->getImageMemoryRequirements(image);
-    vk::MemoryAllocateInfo mai{};
-    mai.allocationSize = memReq.size;
-    mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
-        memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
-    memory = device->allocateMemory(mai);
-    device->bindImageMemory(image, memory, 0);
-    vk::ImageViewCreateInfo viewInfo{};
-    viewInfo.image = image;
-    viewInfo.viewType = vk::ImageViewType::e2D;
-    viewInfo.format = format;
-    viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1};
-    view = device->createImageView(viewInfo);
 }
 
 }  // namespace
@@ -1137,105 +986,43 @@ void Graphics::createGBufferResources(int width, int height) {
     const vk::Format colorFmt = pickGBufferColorFormat(device);
     const vk::Format depthFmt = vk::Format::eD32Sfloat;
 
-    auto allocSlotImages = [&](GBufferSlot &slot) {
-        createColorTarget(device, w, h, colorFmt, slot.normalImage, slot.normalMemory,
-                          slot.normalView);
-        createColorTarget(device, w, h, colorFmt, slot.depthColorImage, slot.depthColorMemory,
-                          slot.depthColorView);
-        createColorTarget(device, w, h, colorFmt, slot.albedoImage, slot.albedoMemory,
-                          slot.albedoView);
-        createDepthTarget(device, w, h, depthFmt, slot.depthImage, slot.depthMemory, slot.depthView,
-                          true);
-    };
-
     gbufferSlots.resize(kAsyncResourceCopies);
-    for (auto &slot : gbufferSlots) allocSlotImages(slot);
-
-    vk::AttachmentDescription atts[4]{};
-    for (int i = 0; i < 3; ++i) {
-        atts[i].format = colorFmt;
-        atts[i].samples = vk::SampleCountFlagBits::e1;
-        atts[i].loadOp = vk::AttachmentLoadOp::eClear;
-        atts[i].storeOp = vk::AttachmentStoreOp::eStore;
-        atts[i].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-        atts[i].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-        atts[i].initialLayout = vk::ImageLayout::eUndefined;
-        atts[i].finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-    }
-    atts[3].format = depthFmt;
-    atts[3].samples = vk::SampleCountFlagBits::e1;
-    atts[3].loadOp = vk::AttachmentLoadOp::eClear;
-    atts[3].storeOp = vk::AttachmentStoreOp::eStore;
-    atts[3].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-    atts[3].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-    atts[3].initialLayout = vk::ImageLayout::eUndefined;
-    atts[3].finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-
-    vk::AttachmentReference colorRefs[3]{};
-    for (uint32_t i = 0; i < 3; ++i) {
-        colorRefs[i].attachment = i;
-        colorRefs[i].layout = vk::ImageLayout::eColorAttachmentOptimal;
-    }
-    vk::AttachmentReference depthRef{};
-    depthRef.attachment = 3;
-    depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-
-    vk::SubpassDescription subpass{};
-    subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
-    subpass.colorAttachmentCount = 3;
-    subpass.pColorAttachments = colorRefs;
-    subpass.pDepthStencilAttachment = &depthRef;
-
-    vk::SubpassDependency deps[2]{};
-    deps[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-    deps[0].dstSubpass = 0;
-    deps[0].srcStageMask = vk::PipelineStageFlagBits::eFragmentShader;
-    deps[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                            vk::PipelineStageFlagBits::eEarlyFragmentTests;
-    deps[0].srcAccessMask = vk::AccessFlagBits::eShaderRead;
-    deps[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
-                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-    deps[1].srcSubpass = 0;
-    deps[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-    deps[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                            vk::PipelineStageFlagBits::eLateFragmentTests;
-    deps[1].dstStageMask = vk::PipelineStageFlagBits::eFragmentShader;
-    deps[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
-                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-    deps[1].dstAccessMask = vk::AccessFlagBits::eShaderRead;
-
-    vk::RenderPassCreateInfo rpInfo{};
-    rpInfo.attachmentCount = 4;
-    rpInfo.pAttachments = atts;
-    rpInfo.subpassCount = 1;
-    rpInfo.pSubpasses = &subpass;
-    rpInfo.dependencyCount = 2;
-    rpInfo.pDependencies = deps;
-    gbufferRenderPass = device->createRenderPass(rpInfo);
-
-    vk::FramebufferCreateInfo fbInfo{};
-    fbInfo.renderPass = gbufferRenderPass;
-    fbInfo.attachmentCount = 4;
-    fbInfo.width = w;
-    fbInfo.height = h;
-    fbInfo.layers = 1;
     for (auto &slot : gbufferSlots) {
-        vk::ImageView atts[4] = {slot.normalView, slot.depthColorView, slot.albedoView,
-                                 slot.depthView};
-        fbInfo.pAttachments = atts;
-        slot.framebuffer = device->createFramebuffer(fbInfo);
+        slot.normal = device.createColorTarget(w, h, colorFmt);
+        slot.depthColor = device.createColorTarget(w, h, colorFmt);
+        slot.albedo = device.createColorTarget(w, h, colorFmt);
+        slot.depth = device.createDepthTarget(w, h, depthFmt, true);
     }
 
-    vk::PushConstantRange pcr{};
-    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
-    pcr.offset = 0;
-    pcr.size = sizeof(GBufferPush);
-    vk::PipelineLayoutCreateInfo plInfo{};
-    plInfo.setLayoutCount = texSetLayout ? 1u : 0u;
-    plInfo.pSetLayouts = texSetLayout ? &texSetLayout : nullptr;
-    plInfo.pushConstantRangeCount = 1;
-    plInfo.pPushConstantRanges = &pcr;
-    gbufferPipelineLayout = device->createPipelineLayout(plInfo);
+    auto gbufferPass =
+        device.createRenderPass()
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
+            .addSampledDepthAttachment(depthFmt)
+            .addSubpass(vkb::SubpassBuilder()
+                            .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(1, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(2, vk::ImageLayout::eColorAttachmentOptimal)
+                            .setDepthStencilAttachment(
+                                3, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+            .addExternalShaderReadDependencies()
+            .build();
+    gbufferRenderPass = gbufferPass;
+
+    for (auto &slot : gbufferSlots) {
+        slot.framebuffer = gbufferPass.createFramebuffer(
+            device, w, h,
+            {slot.normal.asAttachment(), slot.depthColor.asAttachment(), slot.albedo.asAttachment(),
+             slot.depth.asAttachment()});
+    }
+
+    auto layoutBuilder = device.createPipelineLayout();
+    if (texSetLayout) layoutBuilder.set(texSetLayout);
+    gbufferPipelineLayout =
+        layoutBuilder
+            .push<GBufferPush>(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment)
+            .build();
 
     std::vector<uint32_t> vert(mesh3d_gbuffer_vert_spv,
                                mesh3d_gbuffer_vert_spv + mesh3d_gbuffer_vert_spv_count);
@@ -1243,88 +1030,26 @@ void Graphics::createGBufferResources(int width, int height) {
                                mesh3d_gbuffer_frag_spv + mesh3d_gbuffer_frag_spv_count);
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-
-    vk::PipelineShaderStageCreateInfo stages[2]{};
-    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    stages[0].module = vertModule;
-    stages[0].pName = "main";
-    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    stages[1].module = fragModule;
-    stages[1].pName = "main";
-
-    auto binding = MeshVertex::getBindingDescription(0);
-    auto attrs = MeshVertex::getAttributeDescription(0);
-    vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 1;
-    vi.pVertexBindingDescriptions = &binding;
-    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
-    vi.pVertexAttributeDescriptions = attrs.data();
-
-    vk::PipelineInputAssemblyStateCreateInfo ia{};
-    ia.topology = vk::PrimitiveTopology::eTriangleList;
-
-    vk::PipelineViewportStateCreateInfo vp{};
-    vp.viewportCount = 1;
-    vp.scissorCount = 1;
-
-    vk::PipelineRasterizationStateCreateInfo rs{};
-    rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eNone;
-    rs.frontFace = vk::FrontFace::eClockwise;
-    rs.lineWidth = 1.0f;
-
-    vk::PipelineMultisampleStateCreateInfo ms{};
-    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
-
-    vk::PipelineDepthStencilStateCreateInfo ds{};
-    ds.depthTestEnable = true;
-    ds.depthWriteEnable = true;
-    ds.depthCompareOp = vk::CompareOp::eLess;
-
-    vk::PipelineColorBlendAttachmentState blendAtt{};
-    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-    blendAtt.blendEnable = false;
-    vk::PipelineColorBlendAttachmentState blendAtts[3] = {blendAtt, blendAtt, blendAtt};
-    vk::PipelineColorBlendStateCreateInfo blend{};
-    blend.attachmentCount = 3;
-    blend.pAttachments = blendAtts;
-
-    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-    vk::PipelineDynamicStateCreateInfo dyn{};
-    dyn.dynamicStateCount = 2;
-    dyn.pDynamicStates = dynStates;
-
-    vk::GraphicsPipelineCreateInfo pci{};
-    pci.stageCount = 2;
-    pci.pStages = stages;
-    pci.pVertexInputState = &vi;
-    pci.pInputAssemblyState = &ia;
-    pci.pViewportState = &vp;
-    pci.pRasterizationState = &rs;
-    pci.pMultisampleState = &ms;
-    pci.pDepthStencilState = &ds;
-    pci.pColorBlendState = &blend;
-    pci.pDynamicState = &dyn;
-    pci.layout = gbufferPipelineLayout;
-    pci.renderPass = gbufferRenderPass;
-    pci.subpass = 0;
-    gbufferPipeline = device->createGraphicsPipeline(vk::PipelineCache{}, pci).value;
-
+    gbufferPipeline = device.createPipeline()
+                          .useClassicPipeline(vertModule, fragModule)
+                          .setPipelineLayout(gbufferPipelineLayout)
+                          .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                   .addInputBinding<MeshVertex>()
+                                                   .addAttributeDescription<MeshVertex>())
+                          .setDynamicStatesViewportScissor()
+                          .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                         vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+                          .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
         vkb::SamplerBuilder sb;
-        gpu.sampler = sb.magFilter(vk::Filter::eNearest)
-                          .minFilter(vk::Filter::eNearest)
-                          .addressModeU(vk::SamplerAddressMode::eClampToEdge)
-                          .addressModeV(vk::SamplerAddressMode::eClampToEdge)
-                          .build(device.instance);
+        gpu.sampler = sb.nearestClamp().build(device);
         auto sets = vkb::DescriptorSetBuilder()
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
-        gpu.descriptorSet = sets[0];
+        gpu.descriptorSet = vkb::BoundSet{sets[0]};
         gpu.width = width;
         gpu.height = height;
         gpu.viewOverride = view;
@@ -1336,10 +1061,10 @@ void Graphics::createGBufferResources(int width, int height) {
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : gbufferSlots) {
-        makeSampleTex(slot.normalGpu, slot.normalTex, slot.normalView);
-        makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColorView);
-        makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedoView);
-        makeSampleTex(slot.depthGpu, slot.depthTex, slot.depthView);
+        makeSampleTex(slot.normalGpu, slot.normalTex, slot.normal.imageView());
+        makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColor.imageView());
+        makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedo.imageView());
+        makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
     }
 }
 
@@ -1362,78 +1087,26 @@ void Graphics::createSceneColorResources(int width, int height) {
 
     sceneColorSlots.resize(kAsyncResourceCopies);
     for (auto &slot : sceneColorSlots) {
-        createColorTarget(device, w, h, colorFmt, slot.colorImage, slot.colorMemory, slot.colorView);
-        createDepthTarget(device, w, h, depthFmt, slot.depthImage, slot.depthMemory, slot.depthView);
+        slot.color = device.createColorTarget(w, h, colorFmt);
+        slot.depth = device.createDepthTarget(w, h, depthFmt, false);
     }
 
-    vk::AttachmentDescription atts[2]{};
-    atts[0].format = colorFmt;
-    atts[0].samples = vk::SampleCountFlagBits::e1;
-    atts[0].loadOp = vk::AttachmentLoadOp::eClear;
-    atts[0].storeOp = vk::AttachmentStoreOp::eStore;
-    atts[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-    atts[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-    atts[0].initialLayout = vk::ImageLayout::eUndefined;
-    atts[0].finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-    atts[1].format = depthFmt;
-    atts[1].samples = vk::SampleCountFlagBits::e1;
-    atts[1].loadOp = vk::AttachmentLoadOp::eClear;
-    atts[1].storeOp = vk::AttachmentStoreOp::eDontCare;
-    atts[1].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-    atts[1].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-    atts[1].initialLayout = vk::ImageLayout::eUndefined;
-    atts[1].finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+    auto scenePass =
+        device.createRenderPass()
+            .addSampledColorAttachment(colorFmt)
+            .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
+                                vk::AttachmentStoreOp::eDontCare)
+            .addSubpass(vkb::SubpassBuilder()
+                            .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                            .setDepthStencilAttachment(
+                                1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+            .addExternalShaderReadDependencies()
+            .build();
+    sceneColorRenderPass = scenePass;
 
-    vk::AttachmentReference colorRef{};
-    colorRef.attachment = 0;
-    colorRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
-    vk::AttachmentReference depthRef{};
-    depthRef.attachment = 1;
-    depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-
-    vk::SubpassDescription subpass{};
-    subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
-    subpass.colorAttachmentCount = 1;
-    subpass.pColorAttachments = &colorRef;
-    subpass.pDepthStencilAttachment = &depthRef;
-
-    vk::SubpassDependency deps[2]{};
-    deps[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-    deps[0].dstSubpass = 0;
-    deps[0].srcStageMask = vk::PipelineStageFlagBits::eFragmentShader;
-    deps[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                            vk::PipelineStageFlagBits::eEarlyFragmentTests;
-    deps[0].srcAccessMask = vk::AccessFlagBits::eShaderRead;
-    deps[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
-                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-    deps[1].srcSubpass = 0;
-    deps[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-    deps[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                            vk::PipelineStageFlagBits::eLateFragmentTests;
-    deps[1].dstStageMask = vk::PipelineStageFlagBits::eFragmentShader;
-    deps[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
-                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-    deps[1].dstAccessMask = vk::AccessFlagBits::eShaderRead;
-
-    vk::RenderPassCreateInfo rpInfo{};
-    rpInfo.attachmentCount = 2;
-    rpInfo.pAttachments = atts;
-    rpInfo.subpassCount = 1;
-    rpInfo.pSubpasses = &subpass;
-    rpInfo.dependencyCount = 2;
-    rpInfo.pDependencies = deps;
-    sceneColorRenderPass = device->createRenderPass(rpInfo);
-
-    vk::FramebufferCreateInfo fbInfo{};
-    fbInfo.renderPass = sceneColorRenderPass;
-    fbInfo.attachmentCount = 2;
-    fbInfo.width = w;
-    fbInfo.height = h;
-    fbInfo.layers = 1;
     for (auto &slot : sceneColorSlots) {
-        vk::ImageView views[2] = {slot.colorView, slot.depthView};
-        fbInfo.pAttachments = views;
-        slot.framebuffer = device->createFramebuffer(fbInfo);
+        slot.framebuffer = scenePass.createFramebuffer(
+            device, w, h, {slot.color.asAttachment(), slot.depth.asAttachment()});
     }
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
@@ -1442,11 +1115,11 @@ void Graphics::createSceneColorResources(int width, int height) {
                           .minFilter(vk::Filter::eLinear)
                           .addressModeU(vk::SamplerAddressMode::eClampToEdge)
                           .addressModeV(vk::SamplerAddressMode::eClampToEdge)
-                          .build(device.instance);
+                          .build(device);
         auto sets = vkb::DescriptorSetBuilder()
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
-        gpu.descriptorSet = sets[0];
+        gpu.descriptorSet = vkb::BoundSet{sets[0]};
         gpu.width = width;
         gpu.height = height;
         gpu.viewOverride = view;
@@ -1457,13 +1130,13 @@ void Graphics::createSceneColorResources(int width, int height) {
         tex.pixelHeight = height;
         tex.gpuHandle = &gpu;
     };
-    for (auto &slot : sceneColorSlots) makeSampleTex(slot.colorGpu, slot.colorTex, slot.colorView);
+    for (auto &slot : sceneColorSlots) makeSampleTex(slot.colorGpu, slot.colorTex, slot.color.imageView());
 }
 
 bool Graphics::beginSceneColorRenderPass() {
     auto *slot = currentSceneColorSlot();
     if (!slot || !sceneColorRenderPass || !slot->framebuffer) return false;
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
     std::array<vk::ClearValue, 2> clears{};
     // A=1 marks sky / far plane so SSGI skips uncleared pixels.
     clears[0].color = vk::ClearColorValue(
@@ -1475,6 +1148,8 @@ bool Graphics::beginSceneColorRenderPass() {
     rpBegin.renderArea = vk::Rect2D{{0, 0}, {uint32_t(sceneColorWidth), uint32_t(sceneColorHeight)}};
     rpBegin.clearValueCount = 2;
     rpBegin.pClearValues = clears.data();
+    slot->color.beginColorAttachment();
+    slot->depth.beginDepthAttachment();
     cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     sceneColorPassOpen = true;
     return true;
@@ -1482,9 +1157,11 @@ bool Graphics::beginSceneColorRenderPass() {
 
 void Graphics::endSceneColorRenderPass() {
     if (!sceneColorPassOpen) return;
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
     cb.endRenderPass();
     sceneColorPassOpen = false;
+    if (auto *slot = currentSceneColorSlot())
+        slot->color.endSampledLayout();
 }
 
 void Graphics::queueSceneColorResolve() {
@@ -1515,120 +1192,35 @@ void Graphics::createShadowResources() {
     const uint32_t size = uint32_t(ShadowConfig::kMapSize);
     const uint32_t layers = uint32_t(ShadowConfig::kCascades);
 
-    vk::ImageCreateInfo imgInfo{};
-    imgInfo.imageType = vk::ImageType::e2D;
-    imgInfo.format = vk::Format::eD32Sfloat;
-    imgInfo.extent = vk::Extent3D{size, size, 1};
-    imgInfo.mipLevels = 1;
-    imgInfo.arrayLayers = layers;
-    imgInfo.samples = vk::SampleCountFlagBits::e1;
-    imgInfo.tiling = vk::ImageTiling::eOptimal;
-    imgInfo.usage =
-        vk::ImageUsageFlagBits::eDepthStencilAttachment | vk::ImageUsageFlagBits::eSampled;
-    imgInfo.initialLayout = vk::ImageLayout::eUndefined;
-
-    auto allocSlot = [&](ShadowMapSlot &slot) {
-        slot.image = device->createImage(imgInfo);
-        auto memReq = device->getImageMemoryRequirements(slot.image);
-        vk::MemoryAllocateInfo mai{};
-        mai.allocationSize = memReq.size;
-        mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
-            memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
-        slot.memory = device->allocateMemory(mai);
-        device->bindImageMemory(slot.image, slot.memory, 0);
-
-        vk::ImageViewCreateInfo arrayViewInfo{};
-        arrayViewInfo.image = slot.image;
-        arrayViewInfo.viewType = vk::ImageViewType::e2DArray;
-        arrayViewInfo.format = vk::Format::eD32Sfloat;
-        arrayViewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, layers};
-        slot.arrayView = device->createImageView(arrayViewInfo);
-
-        for (uint32_t i = 0; i < layers; ++i) {
-            vk::ImageViewCreateInfo layerInfo{};
-            layerInfo.image = slot.image;
-            layerInfo.viewType = vk::ImageViewType::e2D;
-            layerInfo.format = vk::Format::eD32Sfloat;
-            layerInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, i, 1};
-            slot.layerViews[i] = device->createImageView(layerInfo);
-        }
-    };
-
     shadowMaps.resize(kAsyncResourceCopies);
-    for (auto &slot : shadowMaps) allocSlot(slot);
+    for (auto &slot : shadowMaps)
+        slot.image = device.createDepthArray(size, size, layers, vk::Format::eD32Sfloat);
 
     vkb::SamplerBuilder sb;
     // Manual depth compare in the shader — linear filtering of raw D32 is not a
     // valid PCF and produces large false-shadow regions on some GPUs.
-    shadowSampler = sb.magFilter(vk::Filter::eNearest)
-                        .minFilter(vk::Filter::eNearest)
-                        .addressModeU(vk::SamplerAddressMode::eClampToEdge)
-                        .addressModeV(vk::SamplerAddressMode::eClampToEdge)
-                        .addressModeW(vk::SamplerAddressMode::eClampToEdge)
-                        .build(device.instance);
+    shadowSampler = sb.nearestClamp().buildDepth(device);
 
-    vk::AttachmentDescription depthAtt{};
-    depthAtt.format = vk::Format::eD32Sfloat;
-    depthAtt.samples = vk::SampleCountFlagBits::e1;
-    depthAtt.loadOp = vk::AttachmentLoadOp::eClear;
-    depthAtt.storeOp = vk::AttachmentStoreOp::eStore;
-    depthAtt.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-    depthAtt.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-    depthAtt.initialLayout = vk::ImageLayout::eUndefined;
-    depthAtt.finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-
-    vk::AttachmentReference depthRef{};
-    depthRef.attachment = 0;
-    depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-
-    vk::SubpassDescription subpass{};
-    subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
-    subpass.pDepthStencilAttachment = &depthRef;
-
-    vk::SubpassDependency deps[2]{};
-    deps[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-    deps[0].dstSubpass = 0;
-    deps[0].srcStageMask = vk::PipelineStageFlagBits::eFragmentShader;
-    deps[0].dstStageMask = vk::PipelineStageFlagBits::eEarlyFragmentTests;
-    deps[0].srcAccessMask = vk::AccessFlagBits::eShaderRead;
-    deps[0].dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-    deps[1].srcSubpass = 0;
-    deps[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-    deps[1].srcStageMask = vk::PipelineStageFlagBits::eLateFragmentTests;
-    deps[1].dstStageMask = vk::PipelineStageFlagBits::eFragmentShader;
-    deps[1].srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-    deps[1].dstAccessMask = vk::AccessFlagBits::eShaderRead;
-
-    vk::RenderPassCreateInfo rpInfo{};
-    rpInfo.attachmentCount = 1;
-    rpInfo.pAttachments = &depthAtt;
-    rpInfo.subpassCount = 1;
-    rpInfo.pSubpasses = &subpass;
-    rpInfo.dependencyCount = 2;
-    rpInfo.pDependencies = deps;
-    shadowRenderPass = device->createRenderPass(rpInfo);
+    auto shadowPass =
+        device.createRenderPass()
+            .addSampledDepthAttachment(vk::Format::eD32Sfloat)
+            .addSubpass(vkb::SubpassBuilder().setDepthStencilAttachment(
+                0, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+            .addExternalShaderReadDependencies()
+            .build();
+    shadowRenderPass = shadowPass;
 
     for (auto &slot : shadowMaps) {
         for (uint32_t i = 0; i < layers; ++i) {
-            vk::FramebufferCreateInfo fbInfo{};
-            fbInfo.renderPass = shadowRenderPass;
-            fbInfo.attachmentCount = 1;
-            fbInfo.pAttachments = &slot.layerViews[i];
-            fbInfo.width = size;
-            fbInfo.height = size;
-            fbInfo.layers = 1;
-            slot.framebuffers[i] = device->createFramebuffer(fbInfo);
+            slot.framebuffers[i] = shadowPass.createFramebuffer(
+                device, size, size, {slot.image.layerAttachment(i)});
         }
     }
 
-    vk::PushConstantRange pcr{};
-    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex;
-    pcr.offset = 0;
-    pcr.size = sizeof(glm::mat4);
-    vk::PipelineLayoutCreateInfo plInfo{};
-    plInfo.pushConstantRangeCount = 1;
-    plInfo.pPushConstantRanges = &pcr;
-    shadowPipelineLayout = device->createPipelineLayout(plInfo);
+    shadowPipelineLayout =
+        device.createPipelineLayout()
+            .push<glm::mat4>(vk::ShaderStageFlagBits::eVertex)
+            .build();
 
     std::vector<uint32_t> vert(mesh3d_shadow_vert_spv,
                                mesh3d_shadow_vert_spv + mesh3d_shadow_vert_spv_count);
@@ -1636,74 +1228,18 @@ void Graphics::createShadowResources() {
                                mesh3d_shadow_frag_spv + mesh3d_shadow_frag_spv_count);
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-
-    vk::PipelineShaderStageCreateInfo stages[2]{};
-    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    stages[0].module = vertModule;
-    stages[0].pName = "main";
-    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    stages[1].module = fragModule;
-    stages[1].pName = "main";
-
-    auto binding = MeshVertex::getBindingDescription(0);
-    auto attrs = MeshVertex::getAttributeDescription(0);
-    vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 1;
-    vi.pVertexBindingDescriptions = &binding;
-    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
-    vi.pVertexAttributeDescriptions = attrs.data();
-
-    vk::PipelineInputAssemblyStateCreateInfo ia{};
-    ia.topology = vk::PrimitiveTopology::eTriangleList;
-
-    vk::PipelineViewportStateCreateInfo vp{};
-    vp.viewportCount = 1;
-    vp.scissorCount = 1;
-
-    vk::PipelineRasterizationStateCreateInfo rs{};
-    rs.polygonMode = vk::PolygonMode::eFill;
-    // Same Clockwise frontFace as mesh pipelines (Vulkan Y-flip in orthoVulkanRH_ZO).
-    // Cull light-facing faces so the depth map stores backs and receivers don't
-    // self-shadow the whole atrium.
-    rs.cullMode = vk::CullModeFlagBits::eFront;
-    rs.frontFace = vk::FrontFace::eClockwise;
-    rs.lineWidth = 1.0f;
-    rs.depthBiasEnable = VK_TRUE;
-    rs.depthBiasConstantFactor = 1.25f;
-    rs.depthBiasSlopeFactor = 1.75f;
-
-    vk::PipelineMultisampleStateCreateInfo ms{};
-    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
-
-    vk::PipelineDepthStencilStateCreateInfo ds{};
-    ds.depthTestEnable = true;
-    ds.depthWriteEnable = true;
-    ds.depthCompareOp = vk::CompareOp::eLess;
-
-    vk::PipelineColorBlendStateCreateInfo blend{};
-    blend.attachmentCount = 0;
-
-    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-    vk::PipelineDynamicStateCreateInfo dyn{};
-    dyn.dynamicStateCount = 2;
-    dyn.pDynamicStates = dynStates;
-
-    vk::GraphicsPipelineCreateInfo pci{};
-    pci.stageCount = 2;
-    pci.pStages = stages;
-    pci.pVertexInputState = &vi;
-    pci.pInputAssemblyState = &ia;
-    pci.pViewportState = &vp;
-    pci.pRasterizationState = &rs;
-    pci.pMultisampleState = &ms;
-    pci.pDepthStencilState = &ds;
-    pci.pColorBlendState = &blend;
-    pci.pDynamicState = &dyn;
-    pci.layout = shadowPipelineLayout;
-    pci.renderPass = shadowRenderPass;
-    pci.subpass = 0;
-    shadowPipeline = device->createGraphicsPipeline(vk::PipelineCache{}, pci).value;
-
+    shadowPipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(shadowPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eFront,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(1.25f, 1.75f)
+            .build(shadowPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
@@ -1714,6 +1250,7 @@ void Graphics::createShadowResources() {
                                 vk::ClearValue clear{};
                                 clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
                                 for (auto &slot : shadowMaps) {
+                                    slot.image.beginDepthAttachment();
                                     for (int c = 0; c < ShadowConfig::kCascades; ++c) {
                                         vk::RenderPassBeginInfo rpBegin{};
                                         rpBegin.renderPass = shadowRenderPass;
@@ -1724,6 +1261,7 @@ void Graphics::createShadowResources() {
                                         cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
                                         cb.endRenderPass();
                                     }
+                                    slot.image.endSampledLayout();
                                 }
                             });
 }
@@ -1733,15 +1271,10 @@ void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, siz
     auto ensure = [&](vkb::GenericBuffer &buf, size_t &cap, size_t need) {
         if (need == 0) need = 4;
         if (cap >= need && buf.buffer) return;
-        if (buf.buffer) {
-            device->destroyBuffer(buf.buffer, device.allocation_callbacks);
-            device->freeMemory(buf.memory, device.allocation_callbacks);
-            buf.buffer = vk::Buffer{};
-            buf.memory = vk::DeviceMemory{};
-        }
+        buf.release();
         // Grow with some slack.
         size_t alloc = std::max(need, cap ? cap * 2 : need);
-        buf.allocate(device, vk::BufferUsageFlagBits::eStorageBuffer, vk::DeviceSize(alloc),
+        buf.allocate(frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer, vk::DeviceSize(alloc),
                      vk::MemoryPropertyFlagBits::eHostVisible |
                          vk::MemoryPropertyFlagBits::eHostCoherent);
         cap = alloc;
@@ -1765,15 +1298,15 @@ void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {
 
     auto &st = currentClusteredStorage();
     if (!upload.lights.empty())
-        st.lightsBuf.updateLocal(upload.lights.data(),
+        st.lightsBuf.updateLocal(frameToken(), upload.lights.data(),
                                  upload.lights.size() * sizeof(ClusteredLightGpu));
     else {
         ClusteredLightGpu zero{};
-        st.lightsBuf.updateLocal(&zero, sizeof(zero));
+        st.lightsBuf.updateLocal(frameToken(), &zero, sizeof(zero));
     }
-    st.tableBuf.updateLocal(upload.clusterTable.data(),
+    st.tableBuf.updateLocal(frameToken(), upload.clusterTable.data(),
                             upload.clusterTable.size() * sizeof(ClusterTableEntry));
-    st.indicesBuf.updateLocal(upload.lightIndices.data(),
+    st.indicesBuf.updateLocal(frameToken(), upload.lightIndices.data(),
                               upload.lightIndices.size() * sizeof(uint32_t));
 }
 
@@ -1783,10 +1316,10 @@ void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload)
     if (upload.active) uploadClusteredLighting(upload);
 }
 
-vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
-                                                  GpuTexture *envTex, GpuTexture *heightTex,
-                                                  Mesh3dClusteredFrameSlots &fslots,
-                                                  size_t uboSlot) {
+vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
+                                              GpuTexture *envTex, GpuTexture *heightTex,
+                                              Mesh3dClusteredFrameSlots &fslots,
+                                              size_t uboSlot) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
@@ -1795,10 +1328,10 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
     while (fslots.slots.size() <= uboSlot) {
         fslots.slots.emplace_back();
         auto &s = fslots.slots.back();
-        s.ubo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DClusteredUBO),
+        s.ubo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DClusteredUBO),
                        vk::MemoryPropertyFlagBits::eHostVisible |
                            vk::MemoryPropertyFlagBits::eHostCoherent);
-        s.shadowUbo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(ShadowUBO),
+        s.shadowUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(ShadowUBO),
                              vk::MemoryPropertyFlagBits::eHostVisible |
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
@@ -1811,19 +1344,19 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
     alloc.descriptorPool = descriptorPool;
     alloc.descriptorSetCount = 1;
     alloc.pSetLayouts = &mesh3dClusteredSetLayout;
-    vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
     auto &st = currentClusteredStorage();
     vkb::DescriptorSetUpdater updater(14, 14, 0);
-    updater.beginDescriptorSet(set)
+    updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.ubo.buffer, 0, sizeof(Mesh3DClusteredUBO))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpuTex->sampler, gpuTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(normalTex->sampler, normalTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(normalTex->sampler, normalTex->imageView()))
         .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(envTex->sampler, envTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(envTex->sampler, envTex->imageView()))
         .beginBuffers(4, 0, vk::DescriptorType::eStorageBuffer)
         .buffer(st.lightsBuf.buffer, 0, vk::DeviceSize(st.lightsCap))
         .beginBuffers(5, 0, vk::DescriptorType::eStorageBuffer)
@@ -1833,13 +1366,14 @@ vk::DescriptorSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture
         .beginBuffers(7, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.shadowUbo.buffer, 0, sizeof(ShadowUBO))
         .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(shadowSampler, currentShadowArrayView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(heightTex->sampler, heightTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(heightTex->sampler, heightTex->imageView()))
         .update(device.instance);
 
-    slot.sets.emplace(key, set);
-    return set;
+    vkb::BoundSet bound = std::move(unbound).publish();
+    slot.sets.emplace(key, bound);
+    return bound;
 }
 
 vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
@@ -1847,81 +1381,22 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
                                                  vk::PipelineLayout layout) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-
-    vk::PipelineShaderStageCreateInfo stages[2]{};
-    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    stages[0].module = vertModule;
-    stages[0].pName = "main";
-    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    stages[1].module = fragModule;
-    stages[1].pName = "main";
-
-    auto binding = MeshVertex::getBindingDescription(0);
-    auto attrs = MeshVertex::getAttributeDescription(0);
-    vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 1;
-    vi.pVertexBindingDescriptions = &binding;
-    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
-    vi.pVertexAttributeDescriptions = attrs.data();
-
-    vk::PipelineInputAssemblyStateCreateInfo ia{};
-    ia.topology = vk::PrimitiveTopology::eTriangleList;
-
-    vk::PipelineViewportStateCreateInfo vp{};
-    vp.viewportCount = 1;
-    vp.scissorCount = 1;
-
-    vk::PipelineRasterizationStateCreateInfo rs{};
-    rs.polygonMode = vk::PolygonMode::eFill;
-    // Architecture (Sponza banners, plant cards, mirrored-node winding) is often
-    // two-sided. A single triangle is rasterized once; Less depth avoids z-fight.
-    rs.cullMode = vk::CullModeFlagBits::eNone;
-    rs.frontFace = vk::FrontFace::eClockwise;
-    rs.lineWidth = 1.0f;
-
-    vk::PipelineMultisampleStateCreateInfo ms{};
-    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
-
-    vk::PipelineDepthStencilStateCreateInfo ds{};
-    ds.depthTestEnable = true;
-    ds.depthWriteEnable = true;
-    ds.depthCompareOp = vk::CompareOp::eLess;
-
-    vk::PipelineColorBlendAttachmentState blendAtt{};
-    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-    blendAtt.blendEnable = false;
-
-    vk::PipelineColorBlendStateCreateInfo blend{};
-    blend.attachmentCount = 1;
-    blend.pAttachments = &blendAtt;
-
-    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-    vk::PipelineDynamicStateCreateInfo dyn{};
-    dyn.dynamicStateCount = 2;
-    dyn.pDynamicStates = dynStates;
-
-    vk::GraphicsPipelineCreateInfo pci{};
-    pci.stageCount = 2;
-    pci.pStages = stages;
-    pci.pVertexInputState = &vi;
-    pci.pInputAssemblyState = &ia;
-    pci.pViewportState = &vp;
-    pci.pRasterizationState = &rs;
-    pci.pMultisampleState = &ms;
-    pci.pDepthStencilState = &ds;
-    pci.pColorBlendState = &blend;
-    pci.pDynamicState = &dyn;
-    pci.layout = layout;
-    pci.renderPass = renderpass;
-    pci.subpass = 0;
-
-    auto result = device->createGraphicsPipeline(nullptr, pci);
+    vk::Pipeline pipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(layout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setDepthStencil(true, true, vk::CompareOp::eLess)
+            .setColorAttachmentCount(1)
+            .build(renderpass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
-    if (result.result != vk::Result::eSuccess)
-        throw Exception("failed to create mesh3d-style pipeline");
-    return result.value;
+    return pipeline;
 }
 
 vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
@@ -1929,114 +1404,41 @@ vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &ver
                                                 vk::PipelineLayout layout) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-
-    vk::PipelineShaderStageCreateInfo stages[2]{};
-    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    stages[0].module = vertModule;
-    stages[0].pName = "main";
-    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    stages[1].module = fragModule;
-    stages[1].pName = "main";
-
-    auto binding = MeshVertex::getBindingDescription(0);
-    auto attrs = MeshVertex::getAttributeDescription(0);
-    vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 1;
-    vi.pVertexBindingDescriptions = &binding;
-    vi.vertexAttributeDescriptionCount = uint32_t(attrs.size());
-    vi.pVertexAttributeDescriptions = attrs.data();
-
-    vk::PipelineInputAssemblyStateCreateInfo ia{};
-    ia.topology = vk::PrimitiveTopology::eTriangleList;
-
-    vk::PipelineViewportStateCreateInfo vp{};
-    vp.viewportCount = 1;
-    vp.scissorCount = 1;
-
-    vk::PipelineRasterizationStateCreateInfo rs{};
-    rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eNone;
-    rs.frontFace = vk::FrontFace::eClockwise;
-    rs.lineWidth = 1.0f;
-    rs.depthBiasEnable = true;
-    rs.depthBiasConstantFactor = -1.5f;
-    rs.depthBiasSlopeFactor = -1.0f;
-
-    vk::PipelineMultisampleStateCreateInfo ms{};
-    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
-
-    vk::PipelineDepthStencilStateCreateInfo ds{};
-    ds.depthTestEnable = true;
-    ds.depthWriteEnable = false;
-    ds.depthCompareOp = vk::CompareOp::eLess;
-
-    vk::PipelineColorBlendAttachmentState blendAtt{};
-    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-    blendAtt.blendEnable = true;
-    blendAtt.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
-    blendAtt.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    blendAtt.colorBlendOp = vk::BlendOp::eAdd;
-    blendAtt.srcAlphaBlendFactor = vk::BlendFactor::eOne;
-    blendAtt.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-    blendAtt.alphaBlendOp = vk::BlendOp::eAdd;
-
-    vk::PipelineColorBlendStateCreateInfo blend{};
-    blend.attachmentCount = 1;
-    blend.pAttachments = &blendAtt;
-
-    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-    vk::PipelineDynamicStateCreateInfo dyn{};
-    dyn.dynamicStateCount = 2;
-    dyn.pDynamicStates = dynStates;
-
-    vk::GraphicsPipelineCreateInfo pci{};
-    pci.stageCount = 2;
-    pci.pStages = stages;
-    pci.pVertexInputState = &vi;
-    pci.pInputAssemblyState = &ia;
-    pci.pViewportState = &vp;
-    pci.pRasterizationState = &rs;
-    pci.pMultisampleState = &ms;
-    pci.pDepthStencilState = &ds;
-    pci.pColorBlendState = &blend;
-    pci.pDynamicState = &dyn;
-    pci.layout = layout;
-    pci.renderPass = renderpass;
-    pci.subpass = 0;
-
-    auto result = device->createGraphicsPipeline(nullptr, pci);
+    vk::Pipeline pipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(layout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(-1.5f, -1.0f)
+            .setDepthStencil(true, false, vk::CompareOp::eLess)
+            .setAlphaBlending(1)
+            .build(renderpass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
-    if (result.result != vk::Result::eSuccess)
-        throw Exception("failed to create mesh3d hair pipeline");
-    return result.value;
+    return pipeline;
 }
 
 void Graphics::ensureOffscreenPipelines() {
     if (offscreenRenderPass) return;
 
-    vkb::RenderPassBuilder rpBuilder{device};
-    vk::AttachmentDescription ad{};
-    ad.format = vk::Format::eR8G8B8A8Unorm;
-    ad.samples = vk::SampleCountFlagBits::e1;
-    ad.loadOp = vk::AttachmentLoadOp::eClear;
-    ad.storeOp = vk::AttachmentStoreOp::eStore;
-    ad.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-    ad.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-    ad.initialLayout = vk::ImageLayout::eUndefined;
-    ad.finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    vkb::RenderPassBuilder rpBuilder = device.createRenderPass();
     offscreenRenderPass =
-        rpBuilder.addAttachment(ad)
+        rpBuilder.addSampledColorAttachment(vk::Format::eR8G8B8A8Unorm)
             .addSubpass(vkb::SubpassBuilder().addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal))
             .addDependency(VK_SUBPASS_EXTERNAL, 0)
             .build();
 
     std::vector<uint32_t> vert(color_vert_spv, color_vert_spv + color_vert_spv_count);
     std::vector<uint32_t> frag(color_frag_spv, color_frag_spv + color_frag_spv_count);
-    vkb::PipelineBuilder solidBuilder{device, swapchain};
+    vkb::PipelineBuilder solidBuilder = device.createPipeline();
     offscreenSolidPipeline =
         solidBuilder.useClassicPipeline(vert, frag)
+            .setPipelineLayout(pipelineLayout)
             .setVertexInputState(vkb::VertexInputStateBuilder()
                                      .addInputBinding<ColorVertex>()
                                      .addAttributeDescription<ColorVertex>())
@@ -2392,20 +1794,22 @@ vk::Sampler Graphics::createVkSampler(const TextureSampler &sampler, uint32_t mi
         .maxAnisotropy(aniso)
         .minLod(useMips ? sampler.minLod : 0.f)
         .maxLod(maxLod)
-        .build(device.instance);
+        .build(device);
 }
 
 void Graphics::writeCombinedImageDescriptor(GpuTexture *gpu) {
     if (!gpu || !gpu->descriptorSet || !gpu->sampler) return;
     vk::ImageView view = gpu->imageView();
     if (!view) return;
+    vkb::UnboundSet unbound = vkb::UnboundSet::reopenAfterIdle(gpu->descriptorSet);
     vkb::DescriptorSetUpdater updater;
-    updater.beginDescriptorSet(gpu->descriptorSet)
+    updater.beginDescriptorSet(unbound)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpu->sampler, view, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(gpu->sampler, view))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpu->sampler, view, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(gpu->sampler, view))
         .update(device.instance);
+    gpu->descriptorSet = std::move(unbound).publish();
 }
 
 Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, bool repeatU, bool repeatV) {
@@ -2443,7 +1847,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
-    gpu->descriptorSet = sets[0];
+    gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
 
     auto tex = std::make_unique<Texture>();
@@ -2592,7 +1996,7 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
-    gpu->descriptorSet = sets[0];
+    gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
 
     void *oldHandle = tex->gpuHandle;
@@ -2740,7 +2144,7 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
 }
 
-vk::DescriptorSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen) {
+vkb::BoundSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen) {
     ASSERT(albedo != nullptr);
     ASSERT(normal != nullptr);
     auto &sets = offscreen ? offscreenLit2dSets : currentLit2dSets();
@@ -2753,23 +2157,24 @@ vk::DescriptorSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, 
     alloc.descriptorPool = descriptorPool;
     alloc.descriptorSetCount = 1;
     alloc.pSetLayouts = &lit2dSetLayout;
-    vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
     vkb::DescriptorSetUpdater updater;
-    updater.beginDescriptorSet(set)
+    updater.beginDescriptorSet(unbound)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(albedo->sampler, albedo->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(albedo->sampler, albedo->image.imageView()))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(normal->sampler, normal->image.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(normal->sampler, normal->image.imageView()))
         .beginBuffers(2, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(ubo.buffer, 0, sizeof(Lighting2DUBO))
         .update(device.instance);
 
-    sets.emplace(key, set);
-    return set;
+    vkb::BoundSet bound = std::move(unbound).publish();
+    sets.emplace(key, bound);
+    return bound;
 }
 
-vk::DescriptorSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
+vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
     if (!color || !color->sampler) return {};
     vk::ImageView colorView = color->imageView();
     if (!colorView) return {};
@@ -2779,16 +2184,17 @@ vk::DescriptorSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
     if (it != post2Sets.end()) return it->second;
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
-    vk::DescriptorSet set = sets[0];
+    vkb::UnboundSet unbound{sets[0]};
     vkb::DescriptorSetUpdater updater;
-    updater.beginDescriptorSet(set)
+    updater.beginDescriptorSet(unbound)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(color->sampler, colorView, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(color->sampler, colorView))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(depth->sampler, depth->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(depth->sampler, depth->imageView()))
         .update(device.instance);
-    post2Sets.emplace(key, set);
-    return set;
+    vkb::BoundSet bound = std::move(unbound).publish();
+    post2Sets.emplace(key, bound);
+    return bound;
 }
 
 void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
@@ -2799,7 +2205,7 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
     lighting2dFrame.meta.y = float(viewW);
     lighting2dFrame.meta.z = float(viewH);
     vkb::GenericBuffer &ubo = offscreen ? offscreenLighting2dUbo : currentLighting2dUbo();
-    ubo.updateLocal(&lighting2dFrame, sizeof(Lighting2DUBO));
+    ubo.updateLocal(frameToken(), &lighting2dFrame, sizeof(Lighting2DUBO));
 
     for (auto &lb : batches) {
         if (lb.batch.empty() || !lb.albedo || !lb.albedo->gpuHandle) continue;
@@ -2818,7 +2224,7 @@ void Graphics::drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pi
 
         if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
-        vb.allocate<TexturedVertex>(device, gpuVerts);
+        vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
         vk::DescriptorSet set = lit2dSetFor(albedoGpu, normalGpu, offscreen);
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
@@ -3068,6 +2474,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     vk::Extent2D{uint32_t(canvas->getWidth()), uint32_t(canvas->getHeight())};
                                 rpBegin.clearValueCount = 1;
                                 rpBegin.pClearValues = &cv;
+                                canvas->colorImage().beginColorAttachment();
                                 cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
 
                                 vk::Viewport vp{0.f, 0.f, float(canvas->getWidth()), float(canvas->getHeight()),
@@ -3088,7 +2495,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     gpuVerts.reserve(ndc.vertices().size());
                                     for (const auto &v : ndc.vertices())
                                         gpuVerts.push_back(ColorVertex{v.pos, v.color});
-                                    solidBuf.allocate<ColorVertex>(device, gpuVerts);
+                                    solidBuf.allocate<ColorVertex>(frameToken(), device, gpuVerts);
                                     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, offscreenSolidPipeline);
                                     vk::DeviceSize offset = 0;
                                     cb.bindVertexBuffers(0, 1, solidBuf, &offset);
@@ -3114,7 +2521,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
 
                                         if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
                                         vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
-                                        vb.allocate<TexturedVertex>(device, gpuVerts);
+                                        vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
                                         if (tb.shader && tb.shader->gpuHandle) {
                                             ensureShaderOffscreenPipeline(tb.shader);
@@ -3149,7 +2556,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                                    true);
 
                                 cb.endRenderPass();
-                                canvas->colorImage().setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+                                canvas->colorImage().endSampledLayout();
                             });
 }
 
@@ -3175,7 +2582,7 @@ void Graphics::flushToSwapchain() {
     texturedBatches.clear();
     litBatches.clear();
 
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
     vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
     vk::Rect2D scissor{{0, 0}, swapchain.extent};
     cb.setViewport(0, 1, &vp);
@@ -3195,7 +2602,7 @@ void Graphics::flushToSwapchain() {
         gpuVerts.reserve(ndc.vertices().size());
         for (const auto &v : ndc.vertices())
             gpuVerts.push_back(ColorVertex{v.pos, v.color});
-        solidBuf.allocate<ColorVertex>(device, gpuVerts);
+        solidBuf.allocate<ColorVertex>(frameToken(), device, gpuVerts);
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         vk::DeviceSize offset = 0;
         cb.bindVertexBuffers(0, 1, solidBuf, &offset);
@@ -3220,7 +2627,7 @@ void Graphics::flushToSwapchain() {
 
             if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
             vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
-            vb.allocate<TexturedVertex>(device, gpuVerts);
+            vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
 
             if (tb.shader && tb.shader->gpuHandle) {
                 auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
@@ -3252,9 +2659,10 @@ void Graphics::flushToSwapchain() {
         presentOverlayFn_(presentOverlayUser_, raw);
     }
 
-    presentModel.endRenderPass();
-    presentModel.end();
-    presentModel.drawFrame();
+    presentRecording = swapchainPass.endRenderPass();
+    swapchainPass = {};
+    presentRecording.end().submitAndPresent();
+    presentRecording = {};
     // hasPresentedFrame set by capture hook during drawFrame
     hasPendingClear = false;
     swapchainPassOpen = false;
@@ -3279,7 +2687,7 @@ void Graphics::begin3DFrame() {
     if (!beginSceneColorRenderPass())
         beginSwapchainColorPass();
 
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
     vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
     vk::Rect2D scissor{{0, 0}, swapchain.extent};
     cb.setViewport(0, 1, &vp);
@@ -3308,12 +2716,7 @@ void Graphics::setMesh3DCameraPos(const glm::vec3 &eye) {
 void Graphics::destroyVoxelRectResources() {
     for (auto &frame : voxelInstanceFrames) {
         for (auto &slot : frame.slots) {
-            if (slot.buffer.buffer) {
-                device->destroyBuffer(slot.buffer.buffer, device.allocation_callbacks);
-                device->freeMemory(slot.buffer.memory, device.allocation_callbacks);
-                slot.buffer.buffer = vk::Buffer{};
-                slot.buffer.memory = vk::DeviceMemory{};
-            }
+            slot.buffer.release();
             slot.capacityBytes = 0;
         }
         frame.slots.clear();
@@ -3321,14 +2724,7 @@ void Graphics::destroyVoxelRectResources() {
     }
     voxelInstanceFrames.clear();
     voxelRectSets.clear();
-    auto destroyBuf = [&](vkb::GenericBuffer &b) {
-        if (b.buffer) {
-            device->destroyBuffer(b.buffer, device.allocation_callbacks);
-            device->freeMemory(b.memory, device.allocation_callbacks);
-            b.buffer = vk::Buffer{};
-            b.memory = vk::DeviceMemory{};
-        }
-    };
+    auto destroyBuf = [&](vkb::GenericBuffer &b) { b.release(); };
     if (voxelUnitQuadReady) {
         destroyBuf(voxelUnitQuadVerts);
         destroyBuf(voxelUnitQuadIndices);
@@ -3373,14 +2769,6 @@ void Graphics::createVoxelRectPipeline() {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
 
-    vk::PipelineShaderStageCreateInfo stages[2]{};
-    stages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    stages[0].module = vertModule;
-    stages[0].pName = "main";
-    stages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    stages[1].module = fragModule;
-    stages[1].pName = "main";
-
     vk::VertexInputBindingDescription bindings[2]{};
     bindings[0].binding = 0;
     bindings[0].stride = sizeof(glm::vec2);
@@ -3405,68 +2793,24 @@ void Graphics::createVoxelRectPipeline() {
     vi.vertexAttributeDescriptionCount = 2;
     vi.pVertexAttributeDescriptions = attrs;
 
-    vk::PipelineInputAssemblyStateCreateInfo ia{};
-    ia.topology = vk::PrimitiveTopology::eTriangleList;
-
-    vk::PipelineViewportStateCreateInfo vp{};
-    vp.viewportCount = 1;
-    vp.scissorCount = 1;
-
-    vk::PipelineRasterizationStateCreateInfo rs{};
-    rs.polygonMode = vk::PolygonMode::eFill;
     // Unit-quad indices 0-2-1 / 0-3-2 are object-space CCW for outward faces.
     // perspectiveVulkanRH_ZO flips clip Y, so those faces are CCW in the
     // framebuffer — CounterClockwise frontFace keeps them. Clockwise + Back
     // (the mesh-pipeline convention) culls every submitted face after the Y
     // flip; CPU 6-dir cull already dropped the true back faces, so the frame
     // collapses to a 1px silhouette.
-    rs.cullMode = vk::CullModeFlagBits::eBack;
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
-    rs.lineWidth = 1.0f;
-
-    vk::PipelineMultisampleStateCreateInfo ms{};
-    ms.rasterizationSamples = vk::SampleCountFlagBits::e1;
-
-    vk::PipelineDepthStencilStateCreateInfo ds{};
-    ds.depthTestEnable = true;
-    ds.depthWriteEnable = true;
-    ds.depthCompareOp = vk::CompareOp::eLess;
-
-    vk::PipelineColorBlendAttachmentState blendAtt{};
-    blendAtt.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                              vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
-    blendAtt.blendEnable = false;
-
-    vk::PipelineColorBlendStateCreateInfo blend{};
-    blend.attachmentCount = 1;
-    blend.pAttachments = &blendAtt;
-
-    vk::DynamicState dynStates[] = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
-    vk::PipelineDynamicStateCreateInfo dyn{};
-    dyn.dynamicStateCount = 2;
-    dyn.pDynamicStates = dynStates;
-
-    vk::GraphicsPipelineCreateInfo pci{};
-    pci.stageCount = 2;
-    pci.pStages = stages;
-    pci.pVertexInputState = &vi;
-    pci.pInputAssemblyState = &ia;
-    pci.pViewportState = &vp;
-    pci.pRasterizationState = &rs;
-    pci.pMultisampleState = &ms;
-    pci.pDepthStencilState = &ds;
-    pci.pColorBlendState = &blend;
-    pci.pDynamicState = &dyn;
-    pci.layout = voxelRectPipelineLayout;
-    pci.renderPass = renderpass;
-    pci.subpass = 0;
-
-    auto result = device->createGraphicsPipeline(nullptr, pci);
+    voxelRectPipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(voxelRectPipelineLayout)
+            .setVertexInputState(vi)
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
+                           vk::FrontFace::eCounterClockwise)
+            .setDepthStencil(true, true, vk::CompareOp::eLess)
+            .build(renderpass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
-    if (result.result != vk::Result::eSuccess)
-        throw Exception("failed to create voxel rect pipeline");
-    voxelRectPipeline = result.value;
 
     ensureVoxelUnitQuad();
 }
@@ -3474,19 +2818,19 @@ void Graphics::createVoxelRectPipeline() {
 void Graphics::ensureVoxelUnitQuad() {
     if (voxelUnitQuadReady) return;
     const float corners[8] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    voxelUnitQuadVerts.allocate(device, vk::BufferUsageFlagBits::eVertexBuffer, sizeof(corners),
+    voxelUnitQuadVerts.allocate(frameToken(), device, vk::BufferUsageFlagBits::eVertexBuffer, sizeof(corners),
                                 vk::MemoryPropertyFlagBits::eHostVisible |
                                     vk::MemoryPropertyFlagBits::eHostCoherent);
-    voxelUnitQuadVerts.updateLocal(corners, sizeof(corners));
+    voxelUnitQuadVerts.updateLocal(frameToken(), corners, sizeof(corners));
     const uint32_t indices[6] = {0, 2, 1, 0, 3, 2};
-    voxelUnitQuadIndices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer, sizeof(indices),
+    voxelUnitQuadIndices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer, sizeof(indices),
                                   vk::MemoryPropertyFlagBits::eHostVisible |
                                       vk::MemoryPropertyFlagBits::eHostCoherent);
-    voxelUnitQuadIndices.updateLocal(indices, sizeof(indices));
+    voxelUnitQuadIndices.updateLocal(frameToken(), indices, sizeof(indices));
     voxelUnitQuadReady = true;
 }
 
-vk::DescriptorSet Graphics::voxelRectSetFor(GpuTexture *gpuTex) {
+vkb::BoundSet Graphics::voxelRectSetFor(GpuTexture *gpuTex) {
     ASSERT(gpuTex != nullptr);
     auto it = voxelRectSets.find(gpuTex);
     if (it != voxelRectSets.end()) return it->second;
@@ -3495,16 +2839,17 @@ vk::DescriptorSet Graphics::voxelRectSetFor(GpuTexture *gpuTex) {
     alloc.descriptorPool = descriptorPool;
     alloc.descriptorSetCount = 1;
     alloc.pSetLayouts = &voxelRectSetLayout;
-    vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
     vkb::DescriptorSetUpdater updater(4, 4, 0);
-    updater.beginDescriptorSet(set)
+    updater.beginDescriptorSet(unbound)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpuTex->sampler, gpuTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .update(device.instance);
 
-    voxelRectSets.emplace(gpuTex, set);
-    return set;
+    vkb::BoundSet bound = std::move(unbound).publish();
+    voxelRectSets.emplace(gpuTex, bound);
+    return bound;
 }
 
 void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
@@ -3544,19 +2889,13 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     while (vframe.slots.size() <= slotIndex) vframe.slots.emplace_back();
     auto &slot = vframe.slots[slotIndex];
     if (slot.capacityBytes < size_t(bytes) || !slot.buffer.buffer) {
-        if (slot.buffer.buffer) {
-            device->destroyBuffer(slot.buffer.buffer, device.allocation_callbacks);
-            device->freeMemory(slot.buffer.memory, device.allocation_callbacks);
-            slot.buffer.buffer = vk::Buffer{};
-            slot.buffer.memory = vk::DeviceMemory{};
-        }
         const size_t alloc = std::max(size_t(bytes), slot.capacityBytes ? slot.capacityBytes * 2 : size_t(bytes));
-        slot.buffer.allocate(device, vk::BufferUsageFlagBits::eVertexBuffer, vk::DeviceSize(alloc),
+        slot.buffer.allocate(frameToken(), device, vk::BufferUsageFlagBits::eVertexBuffer, vk::DeviceSize(alloc),
                              vk::MemoryPropertyFlagBits::eHostVisible |
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
         slot.capacityBytes = alloc;
     }
-    slot.buffer.updateLocal(packed, size_t(bytes));
+    slot.buffer.updateLocal(frameToken(), packed, size_t(bytes));
 
     VoxelRectPC pc{};
     pc.viewProj = mesh3dFrameUbo.mvp;
@@ -3564,7 +2903,7 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     pc.atlasInfo = glm::vec4(float(std::max(1, tilesPerRow)), 0.f, 0.f, 0.f);
     pc.tint = mesh3dFrameUbo.tint;
 
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
     vk::DescriptorSet set = voxelRectSetFor(gpuTex);
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, voxelRectPipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, voxelRectPipelineLayout, 0, 1, &set, 0,
@@ -3756,9 +3095,9 @@ void Graphics::ensureFlatHeightTexture3D() {
     flatHeightTexture3D = newTexture(1, 1, px);
 }
 
-vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                         GpuTexture *heightTex, Mesh3dFrameSlots &fslots,
-                                         size_t uboSlot) {
+vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
+                                     GpuTexture *heightTex, Mesh3dFrameSlots &fslots,
+                                     size_t uboSlot) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
@@ -3767,10 +3106,10 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
     while (fslots.slots.size() <= uboSlot) {
         fslots.slots.emplace_back();
         auto &s = fslots.slots.back();
-        s.ubo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DUBO),
+        s.ubo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Mesh3DUBO),
                        vk::MemoryPropertyFlagBits::eHostVisible |
                            vk::MemoryPropertyFlagBits::eHostCoherent);
-        s.shadowUbo.allocate(device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(ShadowUBO),
+        s.shadowUbo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(ShadowUBO),
                              vk::MemoryPropertyFlagBits::eHostVisible |
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
@@ -3783,28 +3122,29 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
     alloc.descriptorPool = descriptorPool;
     alloc.descriptorSetCount = 1;
     alloc.pSetLayouts = &mesh3dSetLayout;
-    vk::DescriptorSet set = device->allocateDescriptorSets(alloc).front();
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
     vkb::DescriptorSetUpdater updater(12, 12, 0);
-    updater.beginDescriptorSet(set)
+    updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.ubo.buffer, 0, sizeof(Mesh3DUBO))
         .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpuTex->sampler, gpuTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
         .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(normalTex->sampler, normalTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(normalTex->sampler, normalTex->imageView()))
         .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(envTex->sampler, envTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(envTex->sampler, envTex->imageView()))
         .beginBuffers(4, 0, vk::DescriptorType::eUniformBuffer)
         .buffer(slot.shadowUbo.buffer, 0, sizeof(ShadowUBO))
         .beginImages(5, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(shadowSampler, currentShadowArrayView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(6, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(heightTex->sampler, heightTex->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(vkb::SampledImage::forLaterSample(heightTex->sampler, heightTex->imageView()))
         .update(device.instance);
 
-    slot.sets.emplace(key, set);
-    return set;
+    vkb::BoundSet bound = std::move(unbound).publish();
+    slot.sets.emplace(key, bound);
+    return bound;
 }
 
 void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) {
@@ -3871,12 +3211,12 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     if (indices.empty()) throw Exception("newMeshFromAssimp: no triangle faces");
 
     auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(device, verts);
-    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
+    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
                           indices.size() * sizeof(uint32_t),
                           vk::MemoryPropertyFlagBits::eHostVisible |
                               vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(indices.data(), indices.size() * sizeof(uint32_t));
+    gpu->indices.updateLocal(frameToken(), indices.data(), indices.size() * sizeof(uint32_t));
     gpu->indexCount = uint32_t(indices.size());
 
     auto handle = std::make_unique<Mesh>();
@@ -4005,12 +3345,12 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     }
 
     auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(device, verts);
-    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
+    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
                           idx.size() * sizeof(uint32_t),
                           vk::MemoryPropertyFlagBits::eHostVisible |
                               vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(idx.data(), idx.size() * sizeof(uint32_t));
+    gpu->indices.updateLocal(frameToken(), idx.data(), idx.size() * sizeof(uint32_t));
     gpu->indexCount = uint32_t(idx.size());
 
     auto handle = std::make_unique<Mesh>();
@@ -4051,7 +3391,7 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     // Host-visible VBO is shared across frames. Overwriting it while an
     // in-flight draw still reads the previous morph is a GPU page-fault / TDR.
     waitForSharedGpuResources();
-    gpu->vertices.updateLocal(verts);
+    gpu->vertices.updateLocal(vkb::FrameSlot::gpuIdle(), verts);
     mesh->markMorphClean();
     return true;
 }
@@ -4132,12 +3472,12 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     }
 
     auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(device, verts);
-    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
+    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
                           indices.size() * sizeof(uint32_t),
                           vk::MemoryPropertyFlagBits::eHostVisible |
                               vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(indices.data(), indices.size() * sizeof(uint32_t));
+    gpu->indices.updateLocal(frameToken(), indices.data(), indices.size() * sizeof(uint32_t));
     gpu->indexCount = uint32_t(indices.size());
 
     auto handle = std::make_unique<Mesh>();
@@ -4250,12 +3590,12 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
     }
 
     auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(device, verts);
-    gpu->indices.allocate(device, vk::BufferUsageFlagBits::eIndexBuffer,
+    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
+    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
                           indices.size() * sizeof(uint32_t),
                           vk::MemoryPropertyFlagBits::eHostVisible |
                               vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(indices.data(), indices.size() * sizeof(uint32_t));
+    gpu->indices.updateLocal(frameToken(), indices.data(), indices.size() * sizeof(uint32_t));
     gpu->indexCount = uint32_t(indices.size());
 
     auto handle = std::make_unique<Mesh>();
@@ -4309,7 +3649,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     const float envIntensity = (mesh3dEnvTexture && mesh3dEnvIntensity > 0.f) ? mesh3dEnvIntensity : 0.f;
 
     const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline;
-    auto &cb = presentModel.getCurrentCommandBuffer();
+    auto &cb = currentPresentCb();
 
     auto makeShadowUbo = [&]() {
         ShadowUBO s = mesh3dShadows.ubo;
@@ -4341,8 +3681,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         const size_t slot = cfslots.drawIndex++;
         vk::DescriptorSet set =
             mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, cfslots, slot);
-        cfslots.slots[slot].ubo.updateLocal(ubo);
-        cfslots.slots[slot].shadowUbo.updateLocal(makeShadowUbo());
+        cfslots.slots[slot].ubo.updateLocal(frameToken(), ubo);
+        cfslots.slots[slot].shadowUbo.updateLocal(frameToken(), makeShadowUbo());
 
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipelineLayout, 0, 1,
@@ -4388,8 +3728,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     auto &fslots = currentMesh3dFrameSlots();
     const size_t slot = fslots.drawIndex++;
     vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, fslots, slot);
-    fslots.slots[slot].ubo.updateLocal(ubo);
-    fslots.slots[slot].shadowUbo.updateLocal(makeShadowUbo());
+    fslots.slots[slot].ubo.updateLocal(frameToken(), ubo);
+    fslots.slots[slot].shadowUbo.updateLocal(frameToken(), makeShadowUbo());
 
     if (shader) {
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);

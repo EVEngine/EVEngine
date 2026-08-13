@@ -2,6 +2,9 @@
 create_module(EVFileSystem filesystem)
 target_compile_definitions(EVFileSystem PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVGraphics graphics)
+# Header-only VKBuilder: prefer the source tree over a stale third-party install.
+target_include_directories(EVGraphics BEFORE PUBLIC
+  ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
 create_module(EVWindow window)
 create_module(EVEvent event)
 create_module(EVTimer timer)
@@ -64,6 +67,8 @@ target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
 create_module(EVUI ui)
 target_link_libraries(EVUI PUBLIC eve_imgui)
 target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
+target_include_directories(EVUI BEFORE PUBLIC
+  ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
 
 create_module(EVScene scene)
 
@@ -83,6 +88,8 @@ target_link_libraries(EVPhysics PUBLIC box3d::box3d)
 create_module(EVMap map)
 target_compile_definitions(EVMap PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVGpgpu gpgpu)
+target_include_directories(EVGpgpu BEFORE PRIVATE
+  ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
 create_module(EVModel3D model3d)
 create_module(EVFont font)
 # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).

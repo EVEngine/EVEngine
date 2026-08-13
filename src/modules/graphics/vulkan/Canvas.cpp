@@ -18,40 +18,34 @@ OffscreenCanvas::OffscreenCanvas(Graphics *owner, int width, int height)
     if (width <= 0 || height <= 0) throw Exception("OffscreenCanvas: invalid size");
 
     auto &device = owner->getDevice();
-    color = vkb::ColorAttachmentImage(device, uint32_t(width), uint32_t(height));
+    color = device.createColorTarget(uint32_t(width), uint32_t(height));
 
-    vk::ImageView attachment = color.imageView();
-    vk::FramebufferCreateInfo fbInfo{};
-    fbInfo.renderPass = owner->getOffscreenRenderPass();
-    fbInfo.attachmentCount = 1;
-    fbInfo.pAttachments = &attachment;
-    fbInfo.width = uint32_t(width);
-    fbInfo.height = uint32_t(height);
-    fbInfo.layers = 1;
-    fb = device->createFramebuffer(fbInfo);
+    fb = owner->getOffscreenRenderPass().createFramebuffer(
+        device, uint32_t(width), uint32_t(height), {color.asAttachment()});
 
     vkb::SamplerBuilder sb;
     sampleGpu.sampler = sb.magFilter(vk::Filter::eNearest)
                             .minFilter(vk::Filter::eNearest)
                             .addressModeU(vk::SamplerAddressMode::eClampToEdge)
                             .addressModeV(vk::SamplerAddressMode::eClampToEdge)
-                            .build(device.instance);
+                            .build(device);
 
     auto sets = vkb::DescriptorSetBuilder()
                     .layout(owner->getTexSetLayout())
                     .build(device.instance, owner->getDescriptorPool());
-    sampleGpu.descriptorSet = sets[0];
     sampleGpu.width = width;
     sampleGpu.height = height;
-
-    vkb::DescriptorSetUpdater updater;
-    updater.beginDescriptorSet(sampleGpu.descriptorSet)
-        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(sampleGpu.sampler, color.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
-        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(sampleGpu.sampler, color.imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
-        .update(device.instance);
     sampleGpu.viewOverride = color.imageView();
+
+    vkb::UnboundSet unbound{sets[0]};
+    vkb::DescriptorSetUpdater updater;
+    updater.beginDescriptorSet(unbound)
+        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(sampleGpu.sampler, color.imageView()))
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(sampleGpu.sampler, color.imageView()))
+        .update(device.instance);
+    sampleGpu.descriptorSet = std::move(unbound).publish();
 
     sampleTexture.width = width;
     sampleTexture.height = height;
