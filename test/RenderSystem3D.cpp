@@ -114,7 +114,7 @@ static Texture *makeChecker(Graphics *gfx, int size, int cell) {
             px[i + 3] = 255;
         }
     }
-    return gfx->newTexture(size, size, px.data());
+    return gfx->newTexture(size, size, px.data(), TextureCreateInfo::withMipmaps(true));
 }
 
 static Texture *makeSolidGray(Graphics *gfx, uint8_t g) {
@@ -142,7 +142,10 @@ static Texture *makeMotif(Graphics *gfx, int size) {
             px[i + 3] = 255;
         }
     }
-    return gfx->newTexture(size, size, px.data(), true, true);
+    TextureCreateInfo info = TextureCreateInfo::withMipmaps(true);
+    info.sampler.repeatU = true;
+    info.sampler.repeatV = true;
+    return gfx->newTexture(size, size, px.data(), info);
 }
 
 // Graphics/ECS are process-wide singletons — hide leftovers from earlier cases.
