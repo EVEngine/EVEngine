@@ -101,6 +101,10 @@ void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
         vkb::GenericBuffer tmp(device, buf::eStorageBuffer | buf::eTransferDst, 4, pfb::eDeviceLocal);
         dummyBuffer_ = tmp.buffer;
         dummyMemory_ = tmp.memory;
+        // Without detach(), tmp's destructor frees the handles, leaving the
+        // dummy SSBO dangling: descriptor writes reference a destroyed buffer
+        // (crashes MoltenVK) and ~VulkanComputeShader double-frees it.
+        tmp.detach();
     }
 
     std::array<vk::DescriptorBufferInfo, kMaxBindings> infos{};
