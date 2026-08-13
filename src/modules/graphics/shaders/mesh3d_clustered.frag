@@ -3,6 +3,7 @@
 #extension GL_GOOGLE_include_directive : enable
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
+#include "tonemap.glsl"
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -144,7 +145,8 @@ float sampleShadowPCF(vec3 worldPos, float viewDepth, float nDotL) {
             sum += (depth - bias > closest) ? 0.0 : 1.0;
         }
     }
-    return mix(1.0, sum / 9.0, clamp(shadow.splits.w, 0.0, 1.0));
+    float vis = mix(1.0, sum / 9.0, clamp(shadow.splits.w, 0.0, 1.0));
+    return mix(0.18, 1.0, vis);
 }
 
 uint clusterIndex() {
@@ -169,9 +171,9 @@ void main() {
     float bombStrength = ubo.texBomb.y;
     float bombRot = ubo.texBomb.z;
     vec3 Ngeom = normalize(vNormal);
-    if (!gl_FrontFacing)
-        Ngeom = -Ngeom;
     vec3 V = normalize(vCameraPos - vWorldPos);
+    if (dot(Ngeom, V) < 0.0)
+        Ngeom = -Ngeom;
     vec2 uv = parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V, ubo.parallax.x,
                                ubo.parallax.y, ubo.parallax.z);
 
@@ -225,11 +227,10 @@ void main() {
         vec3 F = fresnelSchlick(max(dot(N, V), 0.0), F0);
         color += envSpec * F;
         vec3 irr = textureLod(envSampler, N, 5.0).rgb * envIntensity;
-        color += albedo * irr * (1.0 - metallic) * (1.0 - F) * 0.35;
+        color += albedo * irr * (1.0 - metallic) * (1.0 - F) * 0.45;
     }
 
-    float peak = max(color.r, max(color.g, color.b));
-    color *= 1.0 / max(peak, 1.0);
+    color = tonemapPeak(color);
 
     outColor = vec4(color, base.a);
 }

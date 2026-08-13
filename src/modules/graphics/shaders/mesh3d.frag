@@ -3,6 +3,7 @@
 #extension GL_GOOGLE_include_directive : enable
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
+#include "tonemap.glsl"
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -138,7 +139,9 @@ float sampleShadowPCF(vec3 worldPos, float viewDepth, float nDotL) {
         }
     }
     float vis = sum / 9.0;
-    return mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
+    vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
+    // No GI: keep a little unshadowed fill so umbra doesn't crush to black.
+    return mix(0.18, 1.0, vis);
 }
 
 void main() {
@@ -146,9 +149,11 @@ void main() {
     float bombStrength = ubo.texBomb.y;
     float bombRot = ubo.texBomb.z;
     vec3 Ngeom = normalize(vNormal);
-    if (!gl_FrontFacing)
-        Ngeom = -Ngeom;
     vec3 V = normalize(vCameraPos - vWorldPos);
+    // Two-sided: orient toward the camera. gl_FrontFacing follows pipeline
+    // frontFace/winding and flips floors dark when Assimp winding disagrees.
+    if (dot(Ngeom, V) < 0.0)
+        Ngeom = -Ngeom;
     vec2 uv = parallaxMappedUV(heightSampler, vUV, Ngeom, vWorldPos, V, ubo.parallax.x,
                                ubo.parallax.y, ubo.parallax.z);
 
@@ -213,12 +218,10 @@ void main() {
         color += envSpec * F;
         // Cheap diffuse IBL for dielectrics (sample along N at a blurry lod).
         vec3 irr = textureLod(envSampler, N, 5.0).rgb * envIntensity;
-        color += albedo * irr * (1.0 - metallic) * (1.0 - F) * 0.35;
+        color += albedo * irr * (1.0 - metallic) * (1.0 - F) * 0.45;
     }
 
-    // Keep mid-tones linear; compress only HDR peaks into SDR swapchain range.
-    float peak = max(color.r, max(color.g, color.b));
-    color *= 1.0 / max(peak, 1.0);
+    color = tonemapPeak(color);
 
     outColor = vec4(color, base.a);
 }

@@ -1313,8 +1313,10 @@ void Graphics::createShadowResources() {
     for (auto &slot : shadowMaps) allocSlot(slot);
 
     vkb::SamplerBuilder sb;
-    shadowSampler = sb.magFilter(vk::Filter::eLinear)
-                        .minFilter(vk::Filter::eLinear)
+    // Manual depth compare in the shader — linear filtering of raw D32 is not a
+    // valid PCF and produces large false-shadow regions on some GPUs.
+    shadowSampler = sb.magFilter(vk::Filter::eNearest)
+                        .minFilter(vk::Filter::eNearest)
                         .addressModeU(vk::SamplerAddressMode::eClampToEdge)
                         .addressModeV(vk::SamplerAddressMode::eClampToEdge)
                         .addressModeW(vk::SamplerAddressMode::eClampToEdge)
@@ -1415,8 +1417,11 @@ void Graphics::createShadowResources() {
 
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eFront;  // reduce shadow acne
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    // Same Clockwise frontFace as mesh pipelines (Vulkan Y-flip in orthoVulkanRH_ZO).
+    // Cull light-facing faces so the depth map stores backs and receivers don't
+    // self-shadow the whole atrium.
+    rs.cullMode = vk::CullModeFlagBits::eFront;
+    rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
     rs.depthBiasEnable = VK_TRUE;
     rs.depthBiasConstantFactor = 1.25f;

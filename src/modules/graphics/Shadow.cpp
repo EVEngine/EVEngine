@@ -72,7 +72,7 @@ glm::mat4 cascadeVP(const glm::vec3 &lightDir, const glm::vec3 &eye, const glm::
     maxB.y = snap(maxB.y) + texelWorld;
 
     const glm::mat4 lightProj =
-        glm::orthoRH_ZO(minB.x, maxB.x, minB.y, maxB.y, -maxB.z, -minB.z);
+        orthoVulkanRH_ZO(minB.x, maxB.x, minB.y, maxB.y, -maxB.z, -minB.z);
     return lightProj * lightView;
 }
 
