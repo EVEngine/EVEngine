@@ -69,9 +69,9 @@ if (!("facingHalf" in getroottable())) facingHalf <- 0.0;
 if (!("cornerPeekOn" in getroottable())) cornerPeekOn <- false;
 if (!("camZoom" in getroottable())) camZoom <- 1.0;
 
-TILE_W <- 48.0;
-TILE_H <- 28.0;
-HEX_SIDE <- 14.0;
+TILE_W <- 55.0;
+TILE_H <- 57.0;
+HEX_SIDE <- 28.5;
 MAP_W <- 36;
 MAP_H <- 26;
 WALL_GID <- 1;
@@ -251,12 +251,23 @@ function keyDown(name) {
 }
 
 function configureHex(layerRef) {
-    // TileLayer orientation via Tiled-compatible JSON globals.
+    // Pointy-top hex projection + Kenney CC0 atlas (falls back to solid GIDs if missing).
     layerRef.applyConfig(@"{" +
         "\"orientation\":\"hexagonal\"," +
         "\"staggeraxis\":\"y\"," +
         "\"staggerindex\":\"odd\"," +
-        "\"hexsidelength\":" + HEX_SIDE +
+        "\"hexsidelength\":" + HEX_SIDE + "," +
+        "\"tilewidth\":" + TILE_W + "," +
+        "\"tileheight\":" + TILE_H + "," +
+        "\"tileset\":{" +
+            "\"image\":\"data/tiles/kenney_hex.png\"," +
+            "\"firstgid\":1," +
+            "\"columns\":4," +
+            "\"tilewidth\":55," +
+            "\"tileheight\":57," +
+            "\"margin\":0," +
+            "\"spacing\":1" +
+        "}" +
         "}");
 }
 

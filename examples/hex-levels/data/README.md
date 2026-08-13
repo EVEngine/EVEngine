@@ -9,3 +9,4 @@ Canonical data for `examples/hex-levels` and `test/hex_level_data.cpp`.
 | `maps/tiny_hex.json` | Handcrafted hexagonal map with spawn/exit/loot |
 | `maps/ring_hex.json` | Outer-ring corridor + center door path case |
 | `particles/*.json` | Torch / pickup burst / ember / mist emitter configs |
+| `tiles/kenney_hex.png` | Kenney CC0 pointy-top hex atlas (wall / floor / door / dirt) |

@@ -30,7 +30,7 @@
 //  27 maze.backtrack hex path
 //  28 wfc.simple dungeon hex
 //  29 mist particle + cool light scene
-//  30 raid combo (flow + cost + fov + pickup + particles)
+//  30 raid combo (flow + cost + fov + pickup + particles + windowed preview)
 //  pipeline.dungeonCrawl: full crawl through one seeded hex dungeon
 //  pipeline.fogRaid: FOV cone + perception gated pickup + flow escort
 //  pipeline.torchEscort: multi-revealer + light + particles along flow
@@ -40,11 +40,13 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "RenderImageAudit.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/Texture.h"
+#include "image/ImageData.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/Inventory.h"
@@ -70,10 +72,14 @@
 #include "spatial/QuadTree.h"
 #include "spatial/Spatial.h"
 #include "spatial/SpatialHash2D.h"
+#include "window/Window.h"
+#include "filesystem/Filesystem.h"
 
+#include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <utility>
@@ -138,6 +144,29 @@ bool findWalkable(const Grid2D &g, int &ox, int &oy) {
         }
     }
     return false;
+}
+
+bool findFarthestWalkable(const Grid2D &g, int sx, int sy, int &ox, int &oy) {
+    int bestX = sx, bestY = sy, bestD = -1;
+    for (int y = 0; y < g.getHeight(); ++y) {
+        for (int x = 0; x < g.getWidth(); ++x) {
+            const int c = g.getCell(x, y);
+            if (c != int(Semantic::Floor) && c != int(Semantic::Corridor) &&
+                c != int(Semantic::Door))
+                continue;
+            const int dx = x - sx;
+            const int dy = y - sy;
+            const int dist = dx * dx + dy * dy;
+            if (dist > bestD) {
+                bestD = dist;
+                bestX = x;
+                bestY = y;
+            }
+        }
+    }
+    ox = bestX;
+    oy = bestY;
+    return bestD >= 0;
 }
 
 HexDungeon buildHexDungeon(Map *mapMod, Procgen *gen, uint32_t seed, int w, int h,
@@ -206,6 +235,249 @@ bool pathWalkable(Path *path, Pathfinder *pf) {
     return true;
 }
 
+Texture *makeSolidTex(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b) {
+    uint8_t px[4] = {r, g, b, 255};
+    return gfx->newTexture(1, 1, px);
+}
+
+void hideLeftover2DCameras() {
+    if (ecs::current()->getManager<Camera2D>() == nullptr) return;
+    auto view = ecs::View<Camera2D, Camera2D::Data>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [data] = *it;
+        data->active = false;
+    }
+}
+
+void hideLeftoverSprites() {
+    if (ecs::current()->getManager<Renderable2D>() == nullptr) return;
+    auto view = ecs::View<Renderable2D, Renderable2D::Sprite>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [sp] = *it;
+        sp->visible = false;
+    }
+}
+
+void hideLeftoverEmitters() {
+    if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return;
+    auto view = ecs::View<ParticleEmitter, ParticleEmitter::Draw>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [draw] = *it;
+        draw->visible = false;
+    }
+}
+
+constexpr float kKenneyTileW = 55.f;
+constexpr float kKenneyTileH = 57.f;
+constexpr float kKenneyHexSide = 28.5f;
+
+bool bindKenneyHexTileset(Graphics *gfx, TileLayer *layer) {
+    auto *fs = eve::filesystem::Filesystem::create();
+    if (!fs || !gfx || !layer) return false;
+    fs->setIdentity("ev_ut_hex_kenney", true);
+    fs->setupWriteDirectory();
+    const std::string dir = std::string(EVENGINE_SOURCE_DIR) + "/examples/hex-levels/data/tiles";
+    fs->allowMountingForPath(dir);
+    if (!fs->mount(dir, "", false)) return false;
+    Texture *tex = gfx->newTextureFromFile("kenney_hex.png");
+    if (!tex) return false;
+    layer->setTileSize(kKenneyTileW, kKenneyTileH);
+    layer->config()->hexSideLength = kKenneyHexSide;
+    layer->setTilesetTileSize(int(kKenneyTileW), int(kKenneyTileH));
+    layer->setTileset(tex, 1, 4, 0, 1);
+    return true;
+}
+
+struct HexPreview {
+    const char *title = "hex preview";
+    const char *pngName = "preview.png";
+    Path *path = nullptr;
+    ParticleEmitter *fire = nullptr;
+    Light2D *lamp = nullptr;
+    int lootTx = -1;
+    int lootTy = -1;
+    int frames = 40;
+};
+
+/** Windowed follow-cam playback: Kenney hex tiles + hero + torch + fire. */
+void previewHex(Map *mapMod, TileLayer *layer, int spawnTx, int spawnTy, int exitTx, int exitTy,
+                const HexPreview &opt) {
+    if (!mapMod || !layer) return;
+    hideLeftover2DCameras();
+    hideLeftoverSprites();
+    hideLeftoverEmitters();
+    hideAllTileLayers();
+    layer->setVisible(true);
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings ws;
+    ws.width = 960;
+    ws.height = 540;
+    ws.centered = true;
+    REQUIRE(win->setWindowSettings(ws));
+    win->setWindowTitle(opt.title ? opt.title : "hex preview");
+    gfx->setScreenReadbackEnabled(true);
+
+    const Color sky(0.05f, 0.06f, 0.09f, 1.f);
+    gfx->setBackgroundColor(sky);
+    REQUIRE(bindKenneyHexTileset(gfx, layer));
+    const float tw = layer->getTileWidth();
+    const float th = layer->getTileHeight();
+
+    Path *ownedPath = nullptr;
+    Pathfinder *ownedPf = nullptr;
+    Path *path = opt.path;
+    if ((!path || path->getLength() <= 0) && spawnTx >= 0 && exitTx >= 0) {
+        ownedPf = mapMod->newPathfinder(layer);
+        ownedPf->blockGid(kWallGid);
+        ownedPf->setTopology("hex");
+        ownedPath = ownedPf->findPath(spawnTx, spawnTy, exitTx, exitTy);
+        path = ownedPath;
+    }
+
+    ParticleEmitter *fire = opt.fire;
+    if (!fire) {
+        auto *parts = Particles::create();
+        fire = parts->newEmitter(96);
+        fire->applyPreset("fire");
+    }
+    Light2D *lamp = opt.lamp;
+    if (!lamp) lamp = Light2D::createLight("point");
+
+    auto *cam = Camera2D::createCamera();
+    cam->data()->active = true;
+    cam->data()->zoom = 1.15f;
+    cam->setAmbient(0.12f, 0.11f, 0.14f);
+    layer->setCamera(cam);
+
+    Texture *heroTex = makeSolidTex(gfx, 255, 220, 80);
+    Texture *lootTex = makeSolidTex(gfx, 240, 70, 200);
+    Texture *exitTex = makeSolidTex(gfx, 70, 220, 230);
+    REQUIRE(heroTex != nullptr);
+    REQUIRE(lootTex != nullptr);
+    REQUIRE(exitTex != nullptr);
+
+    auto *hero = Renderable2D::create();
+    hero->sprite()->texture = heroTex;
+    hero->sprite()->width = 22.f;
+    hero->sprite()->height = 22.f;
+    hero->sprite()->visible = true;
+    hero->sprite()->layer = 20;
+    hero->sprite()->camera = cam;
+    hero->sprite()->receiveLight = true;
+
+    auto *lootMark = Renderable2D::create();
+    lootMark->sprite()->texture = lootTex;
+    lootMark->sprite()->width = 14.f;
+    lootMark->sprite()->height = 14.f;
+    lootMark->sprite()->layer = 18;
+    lootMark->sprite()->camera = cam;
+    lootMark->sprite()->receiveLight = true;
+    if (opt.lootTx >= 0) {
+        float lootWx = 0.f, lootWy = 0.f;
+        layer->tileToWorld(opt.lootTx, opt.lootTy, lootWx, lootWy);
+        lootMark->transform()->x = lootWx + tw * 0.25f;
+        lootMark->transform()->y = lootWy + th * 0.15f;
+        lootMark->sprite()->visible = true;
+    } else {
+        lootMark->sprite()->visible = false;
+    }
+
+    auto *exitMark = Renderable2D::create();
+    exitMark->sprite()->texture = exitTex;
+    exitMark->sprite()->width = 16.f;
+    exitMark->sprite()->height = 16.f;
+    exitMark->sprite()->layer = 18;
+    exitMark->sprite()->camera = cam;
+    exitMark->sprite()->receiveLight = true;
+    if (exitTx >= 0) {
+        float exitWx = 0.f, exitWy = 0.f;
+        layer->tileToWorld(exitTx, exitTy, exitWx, exitWy);
+        exitMark->transform()->x = exitWx + tw * 0.2f;
+        exitMark->transform()->y = exitWy + th * 0.1f;
+        exitMark->sprite()->visible = true;
+    } else {
+        exitMark->sprite()->visible = false;
+    }
+
+    lamp->setColor(1.f, 0.72f, 0.42f, 2.4f);
+    lamp->setRadius(180.f);
+    lamp->setEnabled(true);
+    fire->setCamera(cam);
+    fire->setVisible(true);
+    fire->start();
+
+    const int n = (path && path->getLength() > 0) ? path->getLength() : 1;
+    const int holdTx = spawnTx >= 0 ? spawnTx : 0;
+    const int holdTy = spawnTy >= 0 ? spawnTy : 0;
+    const int frames = std::clamp(opt.frames, 16, 60);
+    bool quit = false;
+    for (int f = 0; f < frames && !quit; ++f) {
+        const int step = (n <= 1) ? 0 : f * (n - 1) / std::max(1, frames - 1);
+        float wx = 0.f, wy = 0.f;
+        if (path && path->getLength() > 0)
+            layer->tileToWorld(path->getX(step), path->getY(step), wx, wy);
+        else
+            layer->tileToWorld(holdTx, holdTy, wx, wy);
+        wx += tw * 0.35f;
+        wy += th * 0.35f;
+        cam->data()->x = wx;
+        cam->data()->y = wy;
+        hero->transform()->x = wx - 11.f;
+        hero->transform()->y = wy - 11.f;
+        lamp->setPosition(wx, wy);
+        fire->setPosition(wx + 4.f, wy - 6.f);
+        if (opt.lootTx >= 0 && n > 1 && step >= n / 2) lootMark->sprite()->visible = false;
+        ParticleSimSystem::update(1.f / 30.f);
+
+        gfx->clearScreen();
+        mapMod->render(gfx);
+        ParticleRenderSystem::render(gfx);
+        gfx->present();
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) quit = true;
+        }
+        SDL_Delay(16);
+    }
+
+    const int w = gfx->getWidth();
+    const int h = gfx->getHeight();
+    Color mid = gfx->getPixel(w / 2, h / 2);
+    const float luma = (mid.r + mid.g + mid.b) / 3.f;
+    CHECK(luma > 0.04f);
+
+    std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+    REQUIRE(img.get() != nullptr);
+    const std::string dir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out/hex_levels";
+    std::error_code ec;
+    std::filesystem::create_directories(dir, ec);
+    const char *png = opt.pngName ? opt.pngName : "preview.png";
+    REQUIRE(saveImagePng(*img, dir + "/" + png));
+
+    hero->sprite()->visible = false;
+    lootMark->sprite()->visible = false;
+    exitMark->sprite()->visible = false;
+    fire->setVisible(false);
+    fire->stop();
+    lamp->setEnabled(false);
+    cam->data()->active = false;
+    layer->setCamera(nullptr);
+    layer->setVisible(false);
+    win->close();
+    delete ownedPath;
+    delete ownedPf;
+}
+
+void previewHex(Map *mapMod, const HexDungeon &d, const HexPreview &opt) {
+    previewHex(mapMod, d.layer, d.spawnTx, d.spawnTy, d.exitTx, d.exitTy, opt);
+}
+
 }  // namespace
 
 TEST_CASE("hex.level.01.procgenPath") {
@@ -260,6 +532,11 @@ TEST_CASE("hex.level.01.procgenPath") {
     CHECK(group->getLength() > 0);
     CHECK_EQ(group->getX(group->getLength() - 1), d.exitTx);
     CHECK_EQ(group->getY(group->getLength() - 1), d.exitTy);
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.01 procgen path",
+                          .pngName = "01_procgenPath.png",
+                          .path = path});
 
     delete group;
     delete field;
@@ -319,6 +596,11 @@ TEST_CASE("hex.level.02.dynamicFov") {
     CHECK(wallFov->isVisible(1, 2));
     CHECK(wallFov->isVisible(4, 2));
     CHECK(!wallFov->isVisible(7, 2));
+
+    previewHex(mapMod, layer, spawnTx, spawnTy, 10, 2,
+               HexPreview{.title = "hex.level.02 dynamic fov",
+                          .pngName = "02_dynamicFov.png",
+                          .path = path});
 
     delete wallFov;
     delete path;
@@ -417,6 +699,13 @@ TEST_CASE("hex.level.03.dynamicLight") {
     exitMarker->sprite()->visible = false;
     torch->setEnabled(false);
     cam->data()->active = false;
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.03 dynamic light",
+                          .pngName = "03_dynamicLight.png",
+                          .path = path,
+                          .lamp = torch});
+
     d.layer->setVisible(false);
 
     delete path;
@@ -527,6 +816,9 @@ TEST_CASE("hex.level.04.pickupCollision") {
     const int again = hash->queryCircle(playerWx, playerWy, 14.f);
     CHECK_EQ(again, 0);
 
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.04 pickup", .pngName = "04_pickupCollision.png"});
+
     bag->destroy();
     ItemRegistry::clear();
     delete pf;
@@ -569,6 +861,11 @@ TEST_CASE("hex.level.05.particles") {
     sparkFx->start();
     sparkFx->emit(24);
     CHECK(sparkFx->getCount() > 0);
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.05 particles",
+                          .pngName = "05_particles.png",
+                          .fire = torchFx});
 
     torchFx->stop();
     sparkFx->stop();
@@ -754,6 +1051,13 @@ TEST_CASE("hex.level.06.flowFieldSwarm") {
         CHECK_EQ(g->getX(g->getLength() - 1), d.exitTx);
         delete g;
     }
+    Path *swarmPath = pf->followFlow(field, d.spawnTx, d.spawnTy);
+    REQUIRE(swarmPath != nullptr);
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.06 flow swarm",
+                          .pngName = "06_flowFieldSwarm.png",
+                          .path = swarmPath});
+    delete swarmPath;
     delete field;
     delete pf;
 }
@@ -787,6 +1091,11 @@ TEST_CASE("hex.level.07.cellCostDetour") {
     REQUIRE(forced != nullptr);
     CHECK(cheap->getTotalCost() <= forced->getTotalCost() + 1e-3f);
     (void)steppedOnCostly;
+
+    previewHex(mapMod, layer, 0, 2, 8, 2,
+               HexPreview{.title = "hex.level.07 cell cost",
+                          .pngName = "07_cellCostDetour.png",
+                          .path = cheap});
 
     delete forced;
     delete cheap;
@@ -827,6 +1136,10 @@ TEST_CASE("hex.level.08.multiRevealerPerception") {
     fov->setRevealerPosition(hero, d.spawnTx, d.spawnTy);
     fov->compute();
     CHECK(fov->isVisible(d.spawnTx, d.spawnTy));
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.08 perception",
+                          .pngName = "08_multiRevealerPerception.png"});
 
     delete fov;
 }
@@ -874,6 +1187,9 @@ TEST_CASE("hex.level.09.fowMaskAndAlgos") {
     fov->compute();
     CHECK(fov->isVisible(d.exitTx, d.exitTy));
 
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.09 fow mask", .pngName = "09_fowMaskAndAlgos.png"});
+
     delete fov;
 }
 
@@ -920,6 +1236,9 @@ TEST_CASE("hex.level.10.cameraPick") {
     CHECK_EQ(ptx, d.exitTx);
     CHECK_EQ(pty, d.exitTy);
 
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.10 camera pick", .pngName = "10_cameraPick.png"});
+
     cam->data()->active = false;
 }
 
@@ -957,6 +1276,9 @@ TEST_CASE("hex.level.11.dualGridHex") {
     const bool hasOffset = std::fabs(ox) > 0.f || std::fabs(oy) > 0.f;
     CHECK(hasOffset);
 
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.11 dual grid", .pngName = "11_dualGridHex.png"});
+
     logic->setVisible(false);
     display->setVisible(false);
 }
@@ -980,6 +1302,12 @@ TEST_CASE("hex.level.12.procgenVariants") {
         if (path->getLength() > 0) {
             CHECK_EQ(path->getX(path->getLength() - 1), d.exitTx);
             CHECK(pathWalkable(path, pf));
+        }
+        if (std::string(algo) == "cave.drunkard") {
+            previewHex(mapMod, d,
+                       HexPreview{.title = "hex.level.12 procgen variants",
+                                  .pngName = "12_procgenVariants.png",
+                                  .path = path});
         }
         delete path;
         delete pf;
@@ -1043,6 +1371,8 @@ TEST_CASE("hex.level.13.spatialCull") {
         // May be zero if no marker on exit cell; still a valid cull API exercise.
         CHECK(farHit >= 0);
     }
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.13 spatial cull", .pngName = "13_spatialCull.png"});
     delete pf;
 }
 
@@ -1098,6 +1428,12 @@ TEST_CASE("hex.level.14.multiLight") {
     moon->setEnabled(false);
     hero->sprite()->visible = false;
     cam->data()->active = false;
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.14 multi light",
+                          .pngName = "14_multiLight.png",
+                          .lamp = torch});
+
     d.layer->setVisible(false);
 }
 
@@ -1156,6 +1492,11 @@ TEST_CASE("hex.level.15.particleStashTransfer") {
     CHECK_EQ(moved, 3);
     CHECK_EQ(bag->countItem("hex.ore"), 2);
     CHECK_EQ(stash->countItem("hex.ore"), 3);
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.15 particle stash",
+                          .pngName = "15_particleStashTransfer.png",
+                          .fire = fire});
 
     fire->stop();
     smoke->stop();
@@ -1283,6 +1624,10 @@ TEST_CASE("hex.level.16.facingConeFov") {
             if (fov->isVisible(x, y)) ++omni;
     CHECK(omni > eastVisible);
 
+    previewHex(mapMod, layer, 5, 5, 9, 5,
+               HexPreview{.title = "hex.level.16 facing cone",
+                          .pngName = "16_facingConeFov.png"});
+
     delete fov;
     layer->setVisible(false);
 }
@@ -1326,6 +1671,11 @@ TEST_CASE("hex.level.17.flowPlusCellCost") {
     CHECK_EQ(flow->getX(flow->getLength() - 1), exitTx);
     CHECK_EQ(flow->getY(flow->getLength() - 1), exitTy);
 
+    previewHex(mapMod, layer, spawnTx, spawnTy, exitTx, exitTy,
+               HexPreview{.title = "hex.level.17 flow plus cell cost",
+                          .pngName = "17_flowPlusCellCost.png",
+                          .path = detour});
+
     delete flow;
     delete field;
     delete detour;
@@ -1364,6 +1714,11 @@ TEST_CASE("hex.level.18.seedReproducible") {
     REQUIRE(pa != nullptr);
     REQUIRE(pb != nullptr);
     CHECK_EQ(pa->getLength(), pb->getLength());
+
+    previewHex(mapMod, a,
+               HexPreview{.title = "hex.level.18 seed reproducible",
+                          .pngName = "18_seedReproducible.png",
+                          .path = pa});
 
     delete pa;
     delete pb;
@@ -1404,6 +1759,10 @@ TEST_CASE("hex.level.19.cornerPeekToggle") {
     CHECK(fov->isVisible(1, 1));
     (void)peekOff;
     (void)peekOn;
+
+    previewHex(mapMod, layer, 1, 1, 5, 5,
+               HexPreview{.title = "hex.level.19 corner peek",
+                          .pngName = "19_cornerPeekToggle.png"});
 
     delete fov;
     layer->setVisible(false);
@@ -1459,6 +1818,10 @@ TEST_CASE("hex.level.20.equipmentLootEquip") {
 
     CHECK(eq->unequipToBag("feet", bag));
     CHECK_EQ(bag->countItem("hex.boots"), 1);
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.20 equipment loot",
+                          .pngName = "20_equipmentLootEquip.png"});
 
     bag->destroy();
     eq->destroy();
@@ -1656,6 +2019,11 @@ TEST_CASE("hex.level.21.hexWorldTileRoundtrip") {
         if (ok >= 12) break;
     }
     CHECK(ok >= 8);
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.21 world tile roundtrip",
+                          .pngName = "21_hexWorldTileRoundtrip.png"});
+
     d.layer->setVisible(false);
 }
 
@@ -1688,6 +2056,11 @@ TEST_CASE("hex.level.22.fovExploredMemoryClear") {
         CHECK(!fov->isExplored(d.spawnTx, d.spawnTy));
         CHECK_EQ(fov->getState(d.spawnTx, d.spawnTy), std::string("unknown"));
     }
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.22 fov explored memory",
+                          .pngName = "22_fovExploredMemoryClear.png"});
+
     delete fov;
 }
 
@@ -1710,6 +2083,11 @@ TEST_CASE("hex.level.23.findGroupPathHex") {
     CHECK_EQ(group->getX(group->getLength() - 1), d.exitTx);
     CHECK_EQ(group->getY(group->getLength() - 1), d.exitTy);
     CHECK(pathWalkable(group, pf));
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.23 find group path",
+                          .pngName = "23_findGroupPathHex.png",
+                          .path = solo});
 
     delete group;
     delete solo;
@@ -1745,6 +2123,11 @@ TEST_CASE("hex.level.24.fovAlgoVisibilitySmoke") {
         delete fov;
     }
     for (int ai = 0; ai < 4; ++ai) CHECK(counts[ai] >= 5);
+
+    previewHex(mapMod, layer, 6, 6, 11, 11,
+               HexPreview{.title = "hex.level.24 fov algo smoke",
+                          .pngName = "24_fovAlgoVisibilitySmoke.png"});
+
     layer->setVisible(false);
 }
 
@@ -1777,6 +2160,12 @@ TEST_CASE("hex.level.25.blockedCellSyncPath") {
     for (int i = 0; i < after->getLength(); ++i)
         if (after->getX(i) == 4 && after->getY(i) == 2) steppedWall = true;
     CHECK(!steppedWall);
+
+    previewHex(mapMod, layer, 0, 2, 7, 2,
+               HexPreview{.title = "hex.level.25 blocked cell sync",
+                          .pngName = "25_blockedCellSyncPath.png",
+                          .path = after});
+
     delete after;
     delete pf;
     layer->setVisible(false);
@@ -1898,6 +2287,11 @@ TEST_CASE("hex.level.26.drunkardCaveHex") {
     int sx = -1, sy = -1;
     REQUIRE(findWalkable(grid, sx, sy));
     CHECK(pf->isWalkable(sx, sy));
+    int ex = sx, ey = sy;
+    findFarthestWalkable(grid, sx, sy, ex, ey);
+    previewHex(mapMod, layer, sx, sy, ex, ey,
+               HexPreview{.title = "hex.level.26 drunkard cave",
+                          .pngName = "26_drunkardCaveHex.png"});
     delete pf;
     layer->setVisible(false);
 }
@@ -1913,6 +2307,12 @@ TEST_CASE("hex.level.27.mazeHexPath") {
     REQUIRE(path != nullptr);
     CHECK(path->getLength() > 0);
     CHECK(pathWalkable(path, pf));
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.27 maze hex",
+                          .pngName = "27_mazeHexPath.png",
+                          .path = path});
+
     delete path;
     delete pf;
 }
@@ -1943,7 +2343,14 @@ TEST_CASE("hex.level.28.wfcDungeonHex") {
         pf->blockGid(kWallGid);
         pf->setTopology("hex");
         int sx = -1, sy = -1;
-        if (findWalkable(grid, sx, sy)) CHECK(pf->isWalkable(sx, sy));
+        if (findWalkable(grid, sx, sy)) {
+            CHECK(pf->isWalkable(sx, sy));
+            int ex = sx, ey = sy;
+            findFarthestWalkable(grid, sx, sy, ex, ey);
+            previewHex(mapMod, layer, sx, sy, ex, ey,
+                       HexPreview{.title = "hex.level.28 wfc dungeon",
+                                  .pngName = "28_wfcDungeonHex.png"});
+        }
         delete pf;
     }
     layer->setVisible(false);
@@ -1979,6 +2386,12 @@ TEST_CASE("hex.level.29.mistParticleScene") {
     lamp->setPosition(wx, wy);
     lamp->setEnabled(true);
     CHECK(approxEq(lamp->getRadius(), 110.f));
+
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.29 mist particle",
+                          .pngName = "29_mistParticleScene.png",
+                          .fire = mist,
+                          .lamp = lamp});
 
     mist->stop();
     ember->stop();
@@ -2071,8 +2484,15 @@ TEST_CASE("hex.level.30.raidComboPipeline") {
     CHECK_EQ(fov->getRevealerCount(), 2);
     CHECK(flow->getLength() > 0);
 
-    fire->stop();
-    lamp->setEnabled(false);
+    previewHex(mapMod, d,
+               HexPreview{.title = "hex.level.30 raid combo",
+                          .pngName = "30_raid_combo.png",
+                          .path = path,
+                          .fire = fire,
+                          .lamp = lamp,
+                          .lootTx = path->getX(mid),
+                          .lootTy = path->getY(mid)});
+
     bag->destroy();
     ItemRegistry::clear();
     delete flow;

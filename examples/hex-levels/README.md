@@ -70,4 +70,5 @@ make run/linux-debug GAME=examples/hex-levels
 | `perception_cases.json` | FOV 感知数值用例 |
 | `maps/*.json` | 手搓六角地图 |
 | `particles/*.json` | 粒子发射器配置 |
+| `tiles/kenney_hex.png` | Kenney CC0 尖顶六边形图集（墙/地/门） |
 | `fixtures.nut` | 示例脚本加载的 catalog / loot 镜像 |
