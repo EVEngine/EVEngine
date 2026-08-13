@@ -276,3 +276,158 @@ TEST_CASE("particles.skin.skinnedCacheReadable") {
     CHECK(std::isfinite(skin->getSkinnedPositionY(0)));
     CHECK(std::isfinite(skin->getSkinnedPositionZ(0)));
 }
+
+TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
+    // Emit while the bone is moving — particles should form a trail of spawn positions.
+    std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
+    const int root = sk->addBone("root", -1);
+    const int tip  = sk->addBone("tip", root);
+    sk->setBindPosition(tip, 1.f, 0.f, 0.f);
+
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    sk->applyBindPose(pose.get());
+
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(64);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setEmissionRate(0.f);
+    e->setAttachScale(10.f);
+    e->setAttachPlane("xy");
+    e->attachToBone(pose.get(), tip);
+    CHECK_EQ(e->getAttachKind(), std::string("anim"));
+
+    for (int frame = 0; frame < 5; ++frame) {
+        pose->setLocalPosition(root, float(frame) * 2.f, 0.f, 0.f);
+        pose->computeWorld(sk.get());
+        e->emit(1);
+        ParticleSimSystem::update(0.016f);
+    }
+    CHECK_EQ(e->getCount(), 5);
+    auto sim = e->sim();
+    // tip world x = root.x + 1 → scaled ×10; frames 0..4 → x = 10,30,50,70,90
+    CHECK(std::fabs(sim->particles[0].x - 10.f) < 1e-2f);
+    CHECK(std::fabs(sim->particles[4].x - 90.f) < 1e-2f);
+}
+
+TEST_CASE("particles.attach.yzPlaneAndDetachClearsKind") {
+    std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
+    const int root = sk->addBone("root", -1);
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    sk->applyBindPose(pose.get());
+    pose->setLocalPosition(root, 1.f, 2.f, 3.f);
+    pose->computeWorld(sk.get());
+
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(4);
+    e->setAttachPlane("yz");
+    e->setAttachScale(1.f);
+    e->attachToBone(pose.get(), root);
+    CHECK(std::fabs(e->getX() - 2.f) < 1e-3f);
+    CHECK(std::fabs(e->getY() - 3.f) < 1e-3f);
+    CHECK_EQ(e->getAttachKind(), std::string("anim"));
+    e->detach();
+    CHECK(!e->isAttached());
+    CHECK_EQ(e->getAttachKind(), std::string("none"));
+}
+
+TEST_CASE("particles.attach.clipSampleMovesEmitter") {
+    if (!ensureSkinnedAssets()) return;
+
+    std::unique_ptr<eve::model3d::ModelData> model(
+        loadCesiumMan("ev_ut_particles_attach_clip"));
+    REQUIRE(model.get() != nullptr);
+    std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
+    REQUIRE(skeleton.get() != nullptr);
+    std::unique_ptr<AnimClip> clip(
+        AnimImporter::loadClipFromModel(model.get(), skeleton.get(), 0));
+    REQUIRE(clip.get() != nullptr);
+    REQUIRE(clip->getDuration() > 0.1f);
+
+    // Prefer a named limb bone; fall back to last bone.
+    int bone = skeleton->findBone("Left_arm");
+    if (bone < 0) bone = skeleton->findBone("LeftArm");
+    if (bone < 0) bone = skeleton->getBoneCount() - 1;
+    REQUIRE(bone >= 0);
+
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(64);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setAttachScale(50.f);
+    e->setAttachPlane("xy");
+    e->attachToBone(pose.get(), bone);
+    CHECK_EQ(e->getAttachKind(), std::string("anim"));
+
+    float minX = 1e9f, maxX = -1e9f, minY = 1e9f, maxY = -1e9f;
+    for (int i = 0; i < 8; ++i) {
+        const float t = clip->getDuration() * (float(i) / 7.f);
+        clip->sample(t, pose.get(), skeleton.get());
+        pose->computeWorld(skeleton.get());
+        e->emit(1);
+        ParticleSimSystem::update(0.016f);
+        const auto &p = e->sim()->particles[size_t(e->getCount() - 1)];
+        minX = std::min(minX, p.x);
+        maxX = std::max(maxX, p.x);
+        minY = std::min(minY, p.y);
+        maxY = std::max(maxY, p.y);
+    }
+    CHECK_EQ(e->getCount(), 8);
+    // Animated bone should move enough that spawn positions spread out.
+    CHECK_GT(maxX - minX + maxY - minY, 1.f);
+}
+
+TEST_CASE("particles.skin.emptyBoneFilterFallsBack") {
+    if (!ensureSkinnedAssets()) return;
+
+    std::unique_ptr<eve::model3d::ModelData> model(
+        loadCesiumMan("ev_ut_particles_skin_empty_filter"));
+    REQUIRE(model.get() != nullptr);
+    const int meshIndex = findFirstSkinnedMesh(model.get());
+    REQUIRE(meshIndex >= 0);
+    std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
+    std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    skeleton->applyBindPose(pose.get());
+    pose->computeWorld(skeleton.get());
+
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(32);
+    e->setParticleLifetime(1.f, 1.f);
+    e->setSpeed(0.f, 0.f);
+    e->setPosition(12.f, 34.f);
+    e->setSkinScale(1.f);
+    e->setSkinSource(skin.get(), pose.get());
+    // Impossible weight threshold → no candidates → spawn falls back to Config.x/y.
+    e->setSkinBoneFilter(0, 2.f);
+    e->emitFromSkin(5);
+    // emitFromSkin breaks when sample fails, so count may be 0.
+    CHECK_LE(e->getCount(), 5);
+
+    e->reset();
+    e->setEmissionRate(100.f);
+    e->start();
+    ParticleSimSystem::update(0.05f);
+    CHECK_GE(e->getCount(), 4);
+    // Fallback spawn at emitter position.
+    CHECK(std::fabs(e->sim()->particles[0].x - 12.f) < 1e-2f);
+    CHECK(std::fabs(e->sim()->particles[0].y - 34.f) < 1e-2f);
+}
+
+TEST_CASE("particles.attach.followRotationOffKeepsDirection") {
+    std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
+    const int root = sk->addBone("root", -1);
+    std::unique_ptr<AnimPose> pose(new AnimPose());
+    sk->applyBindPose(pose.get());
+    const float half = 0.70710678f;
+    pose->setLocalRotation(root, 0.f, 0.f, half, half);
+    pose->computeWorld(sk.get());
+
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(4);
+    e->setDirection(0.25f);
+    e->setFollowBoneRotation(false);
+    e->attachToBone(pose.get(), root);
+    CHECK(std::fabs(e->getDirection() - 0.25f) < 1e-4f);
+}

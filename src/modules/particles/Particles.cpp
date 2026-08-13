@@ -150,6 +150,10 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("getConfigPath", &ParticleEmitter::getConfigPath);
     em.addFunc("attachToBone", &ParticleEmitter::attachToBone);
     em.addFunc("attachToBoneByName", &ParticleEmitter::attachToBoneByName);
+    em.addFunc("attachToSpineBone", &ParticleEmitter::attachToSpineBone);
+    em.addFunc("attachToSpineBoneByName", &ParticleEmitter::attachToSpineBoneByName);
+    em.addFunc("attachToSkeleton2D", &ParticleEmitter::attachToSkeleton2D);
+    em.addFunc("attachToSkeleton3D", &ParticleEmitter::attachToSkeleton3D);
     em.addFunc("setAttachOffset", &ParticleEmitter::setAttachOffset);
     em.addFunc("setAttachPlane", &ParticleEmitter::setAttachPlane);
     em.addFunc("setAttachScale", &ParticleEmitter::setAttachScale);
@@ -157,6 +161,7 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("detach", &ParticleEmitter::detach);
     em.addFunc("isAttached", &ParticleEmitter::isAttached);
     em.addFunc("getAttachBone", &ParticleEmitter::getAttachBone);
+    em.addFunc("getAttachKind", &ParticleEmitter::getAttachKind);
     em.addFunc("syncAttach", &ParticleEmitter::syncAttach);
     em.addFunc("setSkinSource", &ParticleEmitter::setSkinSource);
     em.addFunc("setSkinBoneFilter", &ParticleEmitter::setSkinBoneFilter);

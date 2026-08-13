@@ -157,6 +157,15 @@ float SpineSkeleton::getBoneWorldScaleY(int index) const {
     return bones_[static_cast<size_t>(index)].worldSY;
 }
 
+void SpineSkeleton::getBoneWorldMatrix(int index, float &a, float &b, float &c, float &d) const {
+    checkBone(index);
+    const BonePose &p = bones_[static_cast<size_t>(index)];
+    a = p.a;
+    b = p.b;
+    c = p.c;
+    d = p.d;
+}
+
 std::string SpineSkeleton::getSlotAttachmentName(int slotIndex) const {
     checkSlot(slotIndex);
     return slotAttachments_[static_cast<size_t>(slotIndex)];

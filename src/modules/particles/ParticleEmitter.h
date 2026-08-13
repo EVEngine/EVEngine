@@ -19,6 +19,12 @@ namespace eve::animation {
 class AnimPose;
 class AnimSkeleton;
 class AnimSkin;
+class SpineSkeleton;
+}
+
+namespace eve::ik {
+class Skeleton2D;
+class Skeleton3D;
 }
 
 namespace eve::particles {
@@ -109,17 +115,28 @@ public:
 
     /**
      * Optional bone attachment. When enabled, syncAttach() writes Config.x/y
-     * (and optionally direction) from AnimPose world transforms each frame.
-     * Particles remain 2D; bone XYZ is projected via plane + scale.
+     * (and optionally direction) from a live skeleton each frame.
+     * Particles remain 2D; 3D bone XYZ is projected via plane + scale.
+     *
+     * Supported sources (mutually exclusive):
+     * - AnimPose + bone index (3D skeletal animation)
+     * - SpineSkeleton + bone index (2D Spine)
+     * - IK Skeleton2D / Skeleton3D + bone id (FABRIK chains)
      */
     struct Attach {
+        enum class Kind { None, AnimPose, Spine, Ik2D, Ik3D };
+
+        Kind kind = Kind::None;
         animation::AnimPose *pose = nullptr;
         animation::AnimSkeleton *skeleton = nullptr;  // optional (name lookup)
+        animation::SpineSkeleton *spine = nullptr;
+        eve::ik::Skeleton2D *ik2d = nullptr;
+        eve::ik::Skeleton3D *ik3d = nullptr;
         int boneIndex = -1;
         float offsetX = 0.f;
         float offsetY = 0.f;
         float offsetZ = 0.f;
-        /** "xy" | "xz" | "yz" — axes mapped to particle plane. */
+        /** "xy" | "xz" | "yz" — axes mapped to particle plane (3D sources). */
         std::string plane = "xy";
         float scale = 1.f;
         bool followRotation = false;
@@ -234,10 +251,14 @@ public:
     bool getAutoReload();
     std::string getConfigPath();
 
-    // --- Bone attachment ---
+    // --- Bone attachment (3D AnimPose / 2D Spine / IK 2D·3D) ---
     void attachToBone(animation::AnimPose *pose, int boneIndex);
     void attachToBoneByName(animation::AnimPose *pose, animation::AnimSkeleton *skeleton,
                             const std::string &boneName);
+    void attachToSpineBone(animation::SpineSkeleton *spine, int boneIndex);
+    void attachToSpineBoneByName(animation::SpineSkeleton *spine, const std::string &boneName);
+    void attachToSkeleton2D(eve::ik::Skeleton2D *skeleton, int boneId);
+    void attachToSkeleton3D(eve::ik::Skeleton3D *skeleton, int boneId);
     void setAttachOffset(float x, float y, float z);
     void setAttachPlane(const std::string &plane);
     void setAttachScale(float scale);
@@ -245,6 +266,8 @@ public:
     void detach();
     bool isAttached();
     int getAttachBone();
+    /** "none" | "anim" | "spine" | "ik2d" | "ik3d" */
+    std::string getAttachKind();
     /** Sync Config.x/y (and direction) from the attached bone. Also called by ParticleSimSystem. */
     void syncAttach();
 

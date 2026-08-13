@@ -17,7 +17,14 @@ particles.render(gfx);
 
 ## 绑定到动态骨骼
 
-粒子仍是 2D；骨骼世界坐标经 `plane`（`xy`/`xz`/`yz`）与 `scale` 投影到发射平面。每帧 `particles.update` 会自动 `syncAttach`。
+粒子仍是 2D。支持多种运行时骨骼源；每帧 `particles.update` 会自动 `syncAttach`。
+
+| 源 | API | 说明 |
+|----|-----|------|
+| 3D `AnimPose` | `attachToBone` / `attachToBoneByName` | 骨骼世界坐标经 `plane`（`xy`/`xz`/`yz`）与 `scale` 投影 |
+| 2D Spine | `attachToSpineBone` / `attachToSpineBoneByName` | 像素空间；`scale` 仍生效，`plane` 忽略 |
+| IK `Skeleton2D` | `attachToSkeleton2D` | FABRIK 链骨位置（像素/世界单位 × `scale`） |
+| IK `Skeleton3D` | `attachToSkeleton3D` | 3D 骨位置经 `plane`+`scale` 投影 |
 
 ```squirrel
 local anim = eve.Animation();
@@ -32,7 +39,28 @@ spark.attachToBoneByName(pose, sk, "LeftHand");
 spark.start();
 ```
 
-`detach()` 解除绑定；也可手动 `syncAttach()`。
+Spine（2D）示例：
+
+```squirrel
+local spine = anim.newSpineSkeleton(data);
+spine.updateWorldTransform();
+local dust = particles.newEmitter(64);
+dust.attachToSpineBoneByName(spine, "hand");
+dust.start();
+```
+
+IK 2D/3D 示例：
+
+```squirrel
+local ik = eve.IK();
+local sk2 = ik.newSkeleton2D();
+// … createBone / solve …
+local tipFx = particles.newEmitter(32);
+tipFx.attachToSkeleton2D(sk2, tipBoneId);
+tipFx.setFollowBoneRotation(true);
+```
+
+`detach()` 解除绑定；`getAttachKind()` 返回 `"anim"` / `"spine"` / `"ik2d"` / `"ik3d"` / `"none"`；也可手动 `syncAttach()`。
 
 ## 蒙皮表面发射（人物皮肤粒子）
 
@@ -80,14 +108,14 @@ aura.emitFromSkin(80);
 - buffer 太小导致高发射率粒子被覆盖。
 - 只 render 不 update，粒子静止。
 - 无限 emitter 离开场景后未 stop/回收。
-- 骨骼绑定后位置不对：检查是否先 `pose.computeWorld(sk)`，以及 `plane`/`scale` 是否匹配相机投影。
+- 骨骼绑定后位置不对：检查是否先更新姿态（`pose.computeWorld(sk)` / `spine.updateWorldTransform()` / IK `forwardKinematics`/`solve`），以及 `plane`/`scale` 是否匹配相机投影。
 - 蒙皮表面无粒子：确认 `setSkinSource` 与 `hasBones` 网格，且过滤器未把候选顶点剔光。
 
 ## API 快查
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`clearSkinSource()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAutoReload()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`
+- `applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`clearSkinSource()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoReload()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`
 - `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`
 - `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
 - `hasSkinSource()`、`isActive()`、`isAttached()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEmitter()`、`newEmitterFromFile()`
@@ -104,4 +132,4 @@ aura.emitFromSkin(80);
 - 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/particles/`](../../../src/modules/particles/)
-**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)。
+**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
