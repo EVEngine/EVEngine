@@ -2,6 +2,7 @@
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/Light.h"
+#include "graphics/AntiAliasing.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -96,6 +97,7 @@ Graphics::~Graphics() {
     mesh3dClusteredFrameSlots.clear();
     destroyShadowResources();
     destroyGBufferResources();
+    destroySceneColorResources();
     auto destroyBuf = [&](vkb::GenericBuffer &b) {
         if (b.buffer) {
             device->destroyBuffer(b.buffer, device.allocation_callbacks);
@@ -272,6 +274,7 @@ void Graphics::invalidateTextureBindings() {
         for (auto &slot : frame.slots) slot.sets.clear();
     for (auto &m : lit2dSets) m.clear();
     offscreenLit2dSets.clear();
+    post2Sets.clear();
     voxelRectSets.clear();
 }
 
@@ -337,6 +340,17 @@ vk::ImageView Graphics::currentShadowArrayView() {
 Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     if (gbufferSlots.empty()) return nullptr;
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
+}
+
+Graphics::SceneColorSlot *Graphics::currentSceneColorSlot() {
+    if (sceneColorSlots.empty()) return nullptr;
+    return &sceneColorSlots[currentFrameSlot() % sceneColorSlots.size()];
+}
+
+Texture *Graphics::getSceneColorTexture() {
+    auto *slot = currentSceneColorSlot();
+    if (!slot || !slot->colorTex.gpuHandle) return nullptr;
+    return &slot->colorTex;
 }
 
 void Graphics::dropPendingOffscreenPasses() {
@@ -418,6 +432,12 @@ void Graphics::recordPendingGBufferPass() {
     for (const auto &d : gbufferPassDraws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+        Texture *alb = d.albedo ? d.albedo : whiteTexture;
+        if (alb && alb->gpuHandle && texSetLayout) {
+            auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
+                                  &gpuTex->descriptorSet, 0, nullptr);
+        }
         cb.pushConstants(gbufferPipelineLayout,
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          sizeof(GBufferPush), &d.push);
@@ -437,12 +457,16 @@ bool Graphics::beginSwapchainRenderPass() {
     }
     recordPendingShadowPasses();
     recordPendingGBufferPass();
+    beginSwapchainColorPass();
+    return true;
+}
+
+void Graphics::beginSwapchainColorPass() {
     std::array<vk::ClearValue, 2> clears{};
     clears[0].color = vk::ClearColorValue(
         std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, clearColor.a});
     clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
     presentModel.beginRenderPass(renderpass, clears.data(), uint32_t(clears.size()));
-    return true;
 }
 
 bool Graphics::rebuildSwapchainIfNeeded() {
@@ -646,11 +670,13 @@ void Graphics::createTexturedPipeline() {
     texSetLayoutUnique = layoutBuilder
                              .image(0, vk::DescriptorType::eCombinedImageSampler,
                                     vk::ShaderStageFlagBits::eFragment, 1)
+                             .image(1, vk::DescriptorType::eCombinedImageSampler,
+                                    vk::ShaderStageFlagBits::eFragment, 1)
                              .createUnique(device.instance);
     texSetLayout = *texSetLayoutUnique;
 
     vk::DescriptorPoolSize poolSizes[] = {
-        {vk::DescriptorType::eCombinedImageSampler, 4096},
+        {vk::DescriptorType::eCombinedImageSampler, 8192},
         {vk::DescriptorType::eUniformBuffer, 2048},
         {vk::DescriptorType::eStorageBuffer, 256},
     };
@@ -947,6 +973,7 @@ void Graphics::destroyGBufferResources() {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
         slot.albedoTex.gpuHandle = nullptr;
+        slot.depthTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
@@ -967,8 +994,13 @@ void Graphics::destroyGBufferResources() {
             device->destroySampler(slot.albedoGpu.sampler);
             slot.albedoGpu.sampler = vk::Sampler{};
         }
+        if (slot.depthGpu.sampler) {
+            device->destroySampler(slot.depthGpu.sampler);
+            slot.depthGpu.sampler = vk::Sampler{};
+        }
     }
     gbufferSlots.clear();
+    post2Sets.clear();
     if (gbufferPipeline) {
         device->destroyPipeline(gbufferPipeline);
         gbufferPipeline = vk::Pipeline{};
@@ -984,6 +1016,46 @@ void Graphics::destroyGBufferResources() {
     gbufferWidth = 0;
     gbufferHeight = 0;
     if (renderControl_) renderControl_->getGBuffer()->clear();
+}
+
+void Graphics::destroySceneColorResources() {
+    sceneColorPassOpen = false;
+    auto destroyImg = [&](vk::Image &img, vk::DeviceMemory &mem, vk::ImageView &view) {
+        if (view) {
+            device->destroyImageView(view);
+            view = vk::ImageView{};
+        }
+        if (img) {
+            device->destroyImage(img);
+            img = vk::Image{};
+        }
+        if (mem) {
+            device->freeMemory(mem);
+            mem = vk::DeviceMemory{};
+        }
+    };
+    for (auto &slot : sceneColorSlots) {
+        slot.colorTex.gpuHandle = nullptr;
+        if (slot.framebuffer) {
+            device->destroyFramebuffer(slot.framebuffer);
+            slot.framebuffer = vk::Framebuffer{};
+        }
+        destroyImg(slot.colorImage, slot.colorMemory, slot.colorView);
+        destroyImg(slot.depthImage, slot.depthMemory, slot.depthView);
+        if (slot.colorGpu.sampler) {
+            device->destroySampler(slot.colorGpu.sampler);
+            slot.colorGpu.sampler = vk::Sampler{};
+        }
+    }
+    sceneColorSlots.clear();
+    post2Sets.clear();
+    if (sceneColorRenderPass) {
+        device->destroyRenderPass(sceneColorRenderPass);
+        sceneColorRenderPass = vk::RenderPass{};
+    }
+    sceneColorWidth = 0;
+    sceneColorHeight = 0;
+    sceneColorFormat = vk::Format::eUndefined;
 }
 
 namespace {
@@ -1021,6 +1093,35 @@ void createColorTarget(vkb::Device &device, uint32_t w, uint32_t h, vk::Format f
     view = device->createImageView(viewInfo);
 }
 
+void createDepthTarget(vkb::Device &device, uint32_t w, uint32_t h, vk::Format format, vk::Image &image,
+                       vk::DeviceMemory &memory, vk::ImageView &view, bool sampled = false) {
+    vk::ImageCreateInfo imgInfo{};
+    imgInfo.imageType = vk::ImageType::e2D;
+    imgInfo.format = format;
+    imgInfo.extent = vk::Extent3D{w, h, 1};
+    imgInfo.mipLevels = 1;
+    imgInfo.arrayLayers = 1;
+    imgInfo.samples = vk::SampleCountFlagBits::e1;
+    imgInfo.tiling = vk::ImageTiling::eOptimal;
+    imgInfo.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
+    if (sampled) imgInfo.usage |= vk::ImageUsageFlagBits::eSampled;
+    imgInfo.initialLayout = vk::ImageLayout::eUndefined;
+    image = device->createImage(imgInfo);
+    auto memReq = device->getImageMemoryRequirements(image);
+    vk::MemoryAllocateInfo mai{};
+    mai.allocationSize = memReq.size;
+    mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
+        memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
+    memory = device->allocateMemory(mai);
+    device->bindImageMemory(image, memory, 0);
+    vk::ImageViewCreateInfo viewInfo{};
+    viewInfo.image = image;
+    viewInfo.viewType = vk::ImageViewType::e2D;
+    viewInfo.format = format;
+    viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1};
+    view = device->createImageView(viewInfo);
+}
+
 }  // namespace
 
 void Graphics::createGBufferResources(int width, int height) {
@@ -1043,30 +1144,8 @@ void Graphics::createGBufferResources(int width, int height) {
                           slot.depthColorView);
         createColorTarget(device, w, h, colorFmt, slot.albedoImage, slot.albedoMemory,
                           slot.albedoView);
-        vk::ImageCreateInfo imgInfo{};
-        imgInfo.imageType = vk::ImageType::e2D;
-        imgInfo.format = depthFmt;
-        imgInfo.extent = vk::Extent3D{w, h, 1};
-        imgInfo.mipLevels = 1;
-        imgInfo.arrayLayers = 1;
-        imgInfo.samples = vk::SampleCountFlagBits::e1;
-        imgInfo.tiling = vk::ImageTiling::eOptimal;
-        imgInfo.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
-        imgInfo.initialLayout = vk::ImageLayout::eUndefined;
-        slot.depthImage = device->createImage(imgInfo);
-        auto memReq = device->getImageMemoryRequirements(slot.depthImage);
-        vk::MemoryAllocateInfo mai{};
-        mai.allocationSize = memReq.size;
-        mai.memoryTypeIndex = device.physical_device.findMemoryTypeIndex(
-            memReq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
-        slot.depthMemory = device->allocateMemory(mai);
-        device->bindImageMemory(slot.depthImage, slot.depthMemory, 0);
-        vk::ImageViewCreateInfo viewInfo{};
-        viewInfo.image = slot.depthImage;
-        viewInfo.viewType = vk::ImageViewType::e2D;
-        viewInfo.format = depthFmt;
-        viewInfo.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1};
-        slot.depthView = device->createImageView(viewInfo);
+        createDepthTarget(device, w, h, depthFmt, slot.depthImage, slot.depthMemory, slot.depthView,
+                          true);
     };
 
     gbufferSlots.resize(kAsyncResourceCopies);
@@ -1086,11 +1165,11 @@ void Graphics::createGBufferResources(int width, int height) {
     atts[3].format = depthFmt;
     atts[3].samples = vk::SampleCountFlagBits::e1;
     atts[3].loadOp = vk::AttachmentLoadOp::eClear;
-    atts[3].storeOp = vk::AttachmentStoreOp::eDontCare;
+    atts[3].storeOp = vk::AttachmentStoreOp::eStore;
     atts[3].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
     atts[3].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
     atts[3].initialLayout = vk::ImageLayout::eUndefined;
-    atts[3].finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+    atts[3].finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
     vk::AttachmentReference colorRefs[3]{};
     for (uint32_t i = 0; i < 3; ++i) {
@@ -1152,6 +1231,8 @@ void Graphics::createGBufferResources(int width, int height) {
     pcr.offset = 0;
     pcr.size = sizeof(GBufferPush);
     vk::PipelineLayoutCreateInfo plInfo{};
+    plInfo.setLayoutCount = texSetLayout ? 1u : 0u;
+    plInfo.pSetLayouts = texSetLayout ? &texSetLayout : nullptr;
     plInfo.pushConstantRangeCount = 1;
     plInfo.pPushConstantRanges = &pcr;
     gbufferPipelineLayout = device->createPipelineLayout(plInfo);
@@ -1188,7 +1269,7 @@ void Graphics::createGBufferResources(int width, int height) {
 
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eBack;
+    rs.cullMode = vk::CullModeFlagBits::eNone;
     rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
 
@@ -1246,11 +1327,8 @@ void Graphics::createGBufferResources(int width, int height) {
         gpu.descriptorSet = sets[0];
         gpu.width = width;
         gpu.height = height;
-        vkb::DescriptorSetUpdater updater;
-        updater.beginDescriptorSet(gpu.descriptorSet)
-            .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-            .image(gpu.sampler, view, vk::ImageLayout::eShaderReadOnlyOptimal)
-            .update(device.instance);
+        gpu.viewOverride = view;
+        writeCombinedImageDescriptor(&gpu);
         tex.width = width;
         tex.height = height;
         tex.pixelWidth = width;
@@ -1261,7 +1339,174 @@ void Graphics::createGBufferResources(int width, int height) {
         makeSampleTex(slot.normalGpu, slot.normalTex, slot.normalView);
         makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColorView);
         makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedoView);
+        makeSampleTex(slot.depthGpu, slot.depthTex, slot.depthView);
     }
+}
+
+void Graphics::createSceneColorResources(int width, int height) {
+    if (width <= 0 || height <= 0) return;
+    if (!texSetLayout || !descriptorPool) return;
+    const vk::Format colorFmt = swapchain.image_format;
+    if (colorFmt == vk::Format::eUndefined) return;
+    if (!sceneColorSlots.empty() && sceneColorWidth == width && sceneColorHeight == height &&
+        sceneColorFormat == colorFmt && sceneColorRenderPass)
+        return;
+    destroySceneColorResources();
+
+    sceneColorWidth = width;
+    sceneColorHeight = height;
+    sceneColorFormat = colorFmt;
+    const uint32_t w = uint32_t(width);
+    const uint32_t h = uint32_t(height);
+    const vk::Format depthFmt = depthFormat;
+
+    sceneColorSlots.resize(kAsyncResourceCopies);
+    for (auto &slot : sceneColorSlots) {
+        createColorTarget(device, w, h, colorFmt, slot.colorImage, slot.colorMemory, slot.colorView);
+        createDepthTarget(device, w, h, depthFmt, slot.depthImage, slot.depthMemory, slot.depthView);
+    }
+
+    vk::AttachmentDescription atts[2]{};
+    atts[0].format = colorFmt;
+    atts[0].samples = vk::SampleCountFlagBits::e1;
+    atts[0].loadOp = vk::AttachmentLoadOp::eClear;
+    atts[0].storeOp = vk::AttachmentStoreOp::eStore;
+    atts[0].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+    atts[0].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+    atts[0].initialLayout = vk::ImageLayout::eUndefined;
+    atts[0].finalLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    atts[1].format = depthFmt;
+    atts[1].samples = vk::SampleCountFlagBits::e1;
+    atts[1].loadOp = vk::AttachmentLoadOp::eClear;
+    atts[1].storeOp = vk::AttachmentStoreOp::eDontCare;
+    atts[1].stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+    atts[1].stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+    atts[1].initialLayout = vk::ImageLayout::eUndefined;
+    atts[1].finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+    vk::AttachmentReference colorRef{};
+    colorRef.attachment = 0;
+    colorRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
+    vk::AttachmentReference depthRef{};
+    depthRef.attachment = 1;
+    depthRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+
+    vk::SubpassDescription subpass{};
+    subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorRef;
+    subpass.pDepthStencilAttachment = &depthRef;
+
+    vk::SubpassDependency deps[2]{};
+    deps[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+    deps[0].dstSubpass = 0;
+    deps[0].srcStageMask = vk::PipelineStageFlagBits::eFragmentShader;
+    deps[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                            vk::PipelineStageFlagBits::eEarlyFragmentTests;
+    deps[0].srcAccessMask = vk::AccessFlagBits::eShaderRead;
+    deps[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
+                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+    deps[1].srcSubpass = 0;
+    deps[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+    deps[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                            vk::PipelineStageFlagBits::eLateFragmentTests;
+    deps[1].dstStageMask = vk::PipelineStageFlagBits::eFragmentShader;
+    deps[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
+                              vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+    deps[1].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+    vk::RenderPassCreateInfo rpInfo{};
+    rpInfo.attachmentCount = 2;
+    rpInfo.pAttachments = atts;
+    rpInfo.subpassCount = 1;
+    rpInfo.pSubpasses = &subpass;
+    rpInfo.dependencyCount = 2;
+    rpInfo.pDependencies = deps;
+    sceneColorRenderPass = device->createRenderPass(rpInfo);
+
+    vk::FramebufferCreateInfo fbInfo{};
+    fbInfo.renderPass = sceneColorRenderPass;
+    fbInfo.attachmentCount = 2;
+    fbInfo.width = w;
+    fbInfo.height = h;
+    fbInfo.layers = 1;
+    for (auto &slot : sceneColorSlots) {
+        vk::ImageView views[2] = {slot.colorView, slot.depthView};
+        fbInfo.pAttachments = views;
+        slot.framebuffer = device->createFramebuffer(fbInfo);
+    }
+
+    auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
+        vkb::SamplerBuilder sb;
+        gpu.sampler = sb.magFilter(vk::Filter::eLinear)
+                          .minFilter(vk::Filter::eLinear)
+                          .addressModeU(vk::SamplerAddressMode::eClampToEdge)
+                          .addressModeV(vk::SamplerAddressMode::eClampToEdge)
+                          .build(device.instance);
+        auto sets = vkb::DescriptorSetBuilder()
+                        .layout(texSetLayout)
+                        .build(device.instance, descriptorPool);
+        gpu.descriptorSet = sets[0];
+        gpu.width = width;
+        gpu.height = height;
+        gpu.viewOverride = view;
+        writeCombinedImageDescriptor(&gpu);
+        tex.width = width;
+        tex.height = height;
+        tex.pixelWidth = width;
+        tex.pixelHeight = height;
+        tex.gpuHandle = &gpu;
+    };
+    for (auto &slot : sceneColorSlots) makeSampleTex(slot.colorGpu, slot.colorTex, slot.colorView);
+}
+
+bool Graphics::beginSceneColorRenderPass() {
+    auto *slot = currentSceneColorSlot();
+    if (!slot || !sceneColorRenderPass || !slot->framebuffer) return false;
+    auto &cb = presentModel.getCurrentCommandBuffer();
+    std::array<vk::ClearValue, 2> clears{};
+    // A=1 marks sky / far plane so SSGI skips uncleared pixels.
+    clears[0].color = vk::ClearColorValue(
+        std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
+    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = sceneColorRenderPass;
+    rpBegin.framebuffer = slot->framebuffer;
+    rpBegin.renderArea = vk::Rect2D{{0, 0}, {uint32_t(sceneColorWidth), uint32_t(sceneColorHeight)}};
+    rpBegin.clearValueCount = 2;
+    rpBegin.pClearValues = clears.data();
+    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    sceneColorPassOpen = true;
+    return true;
+}
+
+void Graphics::endSceneColorRenderPass() {
+    if (!sceneColorPassOpen) return;
+    auto &cb = presentModel.getCurrentCommandBuffer();
+    cb.endRenderPass();
+    sceneColorPassOpen = false;
+}
+
+void Graphics::queueSceneColorResolve() {
+    Texture *src = getSceneColorTexture();
+    if (!src || !src->gpuHandle) return;
+    AntiAliasing *aa = pipelineAntiAliasing();
+    aa->setMode("fxaa");
+    const bool doAA = !renderControl_ || renderControl_->isEnabled("aa");
+    if (doAA) {
+        aa->setQuality("medium");
+    } else {
+        aa->setFloat("edgeThreshold", 1.f);
+        aa->setFloat("edgeThresholdMin", 1.f);
+        aa->setFloat("subpix", 0.f);
+    }
+    aa->prepareSource(src);
+    Shader *sh = aa->getShader();
+    if (!sh) return;
+    TexturedBatch resolve{src, nullptr, sh, Batcher{}};
+    resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), Color(1.f, 1.f, 1.f, 1.f),
+                                  0.f, 0.f, 1.f, 1.f);
+    texturedBatches.insert(texturedBatches.begin(), std::move(resolve));
 }
 
 void Graphics::createShadowResources() {
@@ -1313,8 +1558,10 @@ void Graphics::createShadowResources() {
     for (auto &slot : shadowMaps) allocSlot(slot);
 
     vkb::SamplerBuilder sb;
-    shadowSampler = sb.magFilter(vk::Filter::eLinear)
-                        .minFilter(vk::Filter::eLinear)
+    // Manual depth compare in the shader — linear filtering of raw D32 is not a
+    // valid PCF and produces large false-shadow regions on some GPUs.
+    shadowSampler = sb.magFilter(vk::Filter::eNearest)
+                        .minFilter(vk::Filter::eNearest)
                         .addressModeU(vk::SamplerAddressMode::eClampToEdge)
                         .addressModeV(vk::SamplerAddressMode::eClampToEdge)
                         .addressModeW(vk::SamplerAddressMode::eClampToEdge)
@@ -1415,8 +1662,11 @@ void Graphics::createShadowResources() {
 
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eFront;  // reduce shadow acne
-    rs.frontFace = vk::FrontFace::eCounterClockwise;
+    // Same Clockwise frontFace as mesh pipelines (Vulkan Y-flip in orthoVulkanRH_ZO).
+    // Cull light-facing faces so the depth map stores backs and receivers don't
+    // self-shadow the whole atrium.
+    rs.cullMode = vk::CullModeFlagBits::eFront;
+    rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
     rs.depthBiasEnable = VK_TRUE;
     rs.depthBiasConstantFactor = 1.25f;
@@ -1623,7 +1873,9 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
 
     vk::PipelineRasterizationStateCreateInfo rs{};
     rs.polygonMode = vk::PolygonMode::eFill;
-    rs.cullMode = vk::CullModeFlagBits::eBack;
+    // Architecture (Sponza banners, plant cards, mirrored-node winding) is often
+    // two-sided. A single triangle is rasterized once; Less depth avoids z-fight.
+    rs.cullMode = vk::CullModeFlagBits::eNone;
     rs.frontFace = vk::FrontFace::eClockwise;
     rs.lineWidth = 1.0f;
 
@@ -2144,11 +2396,15 @@ vk::Sampler Graphics::createVkSampler(const TextureSampler &sampler, uint32_t mi
 }
 
 void Graphics::writeCombinedImageDescriptor(GpuTexture *gpu) {
-    if (!gpu || !gpu->descriptorSet) return;
+    if (!gpu || !gpu->descriptorSet || !gpu->sampler) return;
+    vk::ImageView view = gpu->imageView();
+    if (!view) return;
     vkb::DescriptorSetUpdater updater;
     updater.beginDescriptorSet(gpu->descriptorSet)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
-        .image(gpu->sampler, gpu->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .image(gpu->sampler, view, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(gpu->sampler, view, vk::ImageLayout::eShaderReadOnlyOptimal)
         .update(device.instance);
 }
 
@@ -2436,10 +2692,28 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         return;
     }
     if (texturedBatches.empty() || texturedBatches.back().texture != texture ||
+        texturedBatches.back().depth != nullptr ||
         texturedBatches.back().shader != shader) {
-        texturedBatches.push_back(TexturedBatch{texture, shader, Batcher{}});
+        texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
+}
+
+void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
+                                           float y, float w, float h, const Color &tint) {
+    if (!color) {
+        drawSolidRect(x, y, w, h, tint);
+        return;
+    }
+    if (!depth) {
+        drawTexturedRectShader(color, shader, x, y, w, h, tint);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != color ||
+        texturedBatches.back().depth != depth || texturedBatches.back().shader != shader) {
+        texturedBatches.push_back(TexturedBatch{color, depth, shader, Batcher{}});
+    }
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
 }
 
 void Graphics::setLighting2D(const Lighting2DUBO &ubo) { lighting2dFrame = ubo; }
@@ -2492,6 +2766,28 @@ vk::DescriptorSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, 
         .update(device.instance);
 
     sets.emplace(key, set);
+    return set;
+}
+
+vk::DescriptorSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
+    if (!color || !color->sampler) return {};
+    vk::ImageView colorView = color->imageView();
+    if (!colorView) return {};
+    if (!depth || !depth->sampler || !depth->imageView()) depth = color;
+    LitSetKey key{color, depth};
+    auto it = post2Sets.find(key);
+    if (it != post2Sets.end()) return it->second;
+
+    auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
+    vk::DescriptorSet set = sets[0];
+    vkb::DescriptorSetUpdater updater;
+    updater.beginDescriptorSet(set)
+        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(color->sampler, colorView, vk::ImageLayout::eShaderReadOnlyOptimal)
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(depth->sampler, depth->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal)
+        .update(device.instance);
+    post2Sets.emplace(key, set);
     return set;
 }
 
@@ -2803,6 +3099,12 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                     for (auto &tb : textured) {
                                         if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) continue;
                                         auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
+                                        vk::DescriptorSet texSet = gpu->descriptorSet;
+                                        if (tb.depth && tb.depth->gpuHandle) {
+                                            auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
+                                            if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu))
+                                                texSet = combo;
+                                        }
                                         Batcher ndc = tb.batch;
                                         ndc.toNDC(canvas->getWidth(), canvas->getHeight());
                                         std::vector<TexturedVertex> gpuVerts;
@@ -2822,7 +3124,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                                             gs->offscreenPipeline);
                                             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                                                   shaderPipelineLayout, 0, 1,
-                                                                  &gpu->descriptorSet, 0, nullptr);
+                                                                  &texSet, 0, nullptr);
                                             cb.pushConstants(shaderPipelineLayout,
                                                              vk::ShaderStageFlagBits::eVertex |
                                                                  vk::ShaderStageFlagBits::eFragment,
@@ -2833,7 +3135,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                                             offscreenTexPipeline);
                                             cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                                                   texPipelineLayout, 0, 1,
-                                                                  &gpu->descriptorSet, 0, nullptr);
+                                                                  &texSet, 0, nullptr);
                                         }
                                         vk::DeviceSize offset = 0;
                                         cb.bindVertexBuffers(0, 1, vb, &offset);
@@ -2852,21 +3154,26 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
 }
 
 void Graphics::flushToSwapchain() {
-    Batcher solid = solidBatch;
-    auto textured = std::move(texturedBatches);
-    auto lit = std::move(litBatches);
-    solidBatch.clear();
-    texturedBatches.clear();
-    litBatches.clear();
-
     const bool continue3D = swapchainPassOpen;
-    if (!continue3D) {
+    if (sceneColorPassOpen) {
+        endSceneColorRenderPass();
+        queueSceneColorResolve();
+        beginSwapchainColorPass();
+        swapchainPassOpen = true;
+    } else if (!continue3D) {
         if (!beginSwapchainRenderPass()) {
             hasPendingClear = false;
             return;
         }
         swapchainPassOpen = true;
     }
+
+    Batcher solid = solidBatch;
+    auto textured = std::move(texturedBatches);
+    auto lit = std::move(litBatches);
+    solidBatch.clear();
+    texturedBatches.clear();
+    litBatches.clear();
 
     auto &cb = presentModel.getCurrentCommandBuffer();
     vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
@@ -2899,6 +3206,11 @@ void Graphics::flushToSwapchain() {
         for (auto &tb : textured) {
             if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) continue;
             auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
+            vk::DescriptorSet texSet = gpu->descriptorSet;
+            if (tb.depth && tb.depth->gpuHandle) {
+                auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
+                if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu)) texSet = combo;
+            }
             Batcher ndc = tb.batch;
             ndc.toNDC(width, height);
             std::vector<TexturedVertex> gpuVerts;
@@ -2914,14 +3226,14 @@ void Graphics::flushToSwapchain() {
                 auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
                 cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
                 cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
-                                      &gpu->descriptorSet, 0, nullptr);
+                                      &texSet, 0, nullptr);
                 cb.pushConstants(shaderPipelineLayout,
                                  vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                                  Shader::kPushConstantBytes, tb.shader->pushConstantData());
             } else {
                 cb.bindPipeline(vk::PipelineBindPoint::eGraphics, texPipeline);
                 cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
-                                      &gpu->descriptorSet, 0, nullptr);
+                                      &texSet, 0, nullptr);
             }
             vk::DeviceSize offset = 0;
             cb.bindVertexBuffers(0, 1, vb, &offset);
@@ -2956,8 +3268,14 @@ void Graphics::begin3DFrame() {
     if (swapchainPassOpen) throw Exception("begin3DFrame: swapchain pass already open");
     // Soft-fail like flushToSwapchain: on Android/iOS the surface may still be
     // settling after orientation change; throwing would abort the whole script.
-    if (!beginSwapchainRenderPass())
+    if (!beginPresentCommandBuffer())
         return;
+    recordPendingShadowPasses();
+    recordPendingGBufferPass();
+
+    createSceneColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
+    if (!beginSceneColorRenderPass())
+        beginSwapchainColorPass();
 
     auto &cb = presentModel.getCurrentCommandBuffer();
     vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
@@ -3312,17 +3630,22 @@ void Graphics::beginGBufferPass(int width, int height) {
 }
 
 void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                               float farZ) {
+                               float farZ, Texture *albedo, float tintR, float tintG, float tintB) {
     if (!gbufferPassActive) throw Exception("drawMeshGBuffer: call beginGBufferPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBuffer: null mesh");
     GBufferDraw d{};
     d.mesh = mesh;
+    d.albedo = albedo;
     d.push.mvp = mvp;
     // Pack model rows (column-major glm → row vectors with translation in .w).
     d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
     d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
     d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
-    d.push.clip = glm::vec4(nearZ, farZ, 0.f, 0.f);
+    auto u8 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
+    };
+    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16) | (255u << 24);
+    d.push.clip = glm::vec4(nearZ, farZ, glm::uintBitsToFloat(packedTint), 0.f);
     gbufferPassDraws.push_back(d);
 }
 
@@ -3340,10 +3663,9 @@ void Graphics::endGBufferPass() {
 
     gbufferPending = true;
     if (renderControl_) {
-        Texture *albedo = nullptr;
-        if (renderControl_->isEnabled("gbufferAlbedo")) albedo = &slot->albedoTex;
+        Texture *albedo = &slot->albedoTex;
         renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex,
-                                                 &slot->normalTex, albedo);
+                                                 &slot->normalTex, albedo, &slot->depthTex);
     }
 }
 
@@ -3389,16 +3711,25 @@ void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) 
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
     mesh3dLighting = pack;
     mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);
-    mesh3dFrameUbo.lightDir.w = float(pack.count);
-    if (pack.count > 0) {
-        mesh3dFrameUbo.lightDir =
-            glm::vec4(glm::vec3(pack.lights[0].posRadius), float(pack.count));
-        // Preserve .w (envIntensity) filled by setMesh3DEnv.
+    const int n = std::max(0, std::min(pack.count, Lighting3DPack::kMaxLights));
+    mesh3dFrameUbo.lightDir.w = float(n);
+    int dirI = -1;
+    for (int i = 0; i < n; ++i) {
+        if (pack.lights[i].posRadius.w <= 0.f) {
+            dirI = i;
+            break;
+        }
+    }
+    if (dirI >= 0) {
+        glm::vec3 d(pack.lights[dirI].posRadius);
+        if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+        else d = glm::normalize(d);
+        mesh3dFrameUbo.lightDir = glm::vec4(d, float(n));
         mesh3dFrameUbo.lightColor =
-            glm::vec4(glm::vec3(pack.lights[0].color), mesh3dFrameUbo.lightColor.w);
+            glm::vec4(glm::vec3(pack.lights[dirI].color), mesh3dFrameUbo.lightColor.w);
     } else {
-        // count==0 must zero the legacy primary slot — the shader always shades it.
-        mesh3dFrameUbo.lightDir = glm::vec4(0.f, 1.f, 0.f, 0.f);
+        // No directional: zero the legacy primary slot. mesh3d.frag always shades it.
+        mesh3dFrameUbo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(n));
         mesh3dFrameUbo.lightColor =
             glm::vec4(0.f, 0.f, 0.f, mesh3dFrameUbo.lightColor.w);
     }
@@ -3470,6 +3801,18 @@ vk::DescriptorSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalT
 
 void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) {
     mesh3dFrameUbo.mvp = viewProj;
+}
+
+void Graphics::setMesh3DView(const glm::mat4 &view) {
+    mesh3dFrameUbo.view = view;
+}
+
+void Graphics::setMesh3DClip(float nearZ, float farZ) {
+    const float n = nearZ > 1e-4f ? nearZ : 0.1f;
+    const float f = farZ > n ? farZ : n + 1.f;
+    mesh3dFrameUbo.clipInfo = glm::vec4(n, f, mesh3dFrameUbo.clipInfo.z, mesh3dFrameUbo.clipInfo.w);
+    mesh3dClustered.clipInfo.x = n;
+    mesh3dClustered.clipInfo.y = f;
 }
 
 Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
@@ -3561,7 +3904,11 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     std::vector<aiVector3D> positions(mesh.mNumVertices);
     std::vector<aiVector3D> normals(mesh.mNumVertices);
     aiMatrix3x3 nmat(worldTransform);
-    nmat.Inverse().Transpose();
+    const float ndet = nmat.Determinant();
+    if (std::fabs(ndet) > 1e-8f) {
+        nmat.Inverse();
+        nmat.Transpose();
+    }
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
         positions[i] = worldTransform * mesh.mVertices[i];
         if (mesh.HasNormals()) {
@@ -3569,6 +3916,30 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
             normals[i].Normalize();
         } else {
             normals[i] = aiVector3D(0.f, 1.f, 0.f);
+        }
+    }
+
+    // Negative determinant mirrors the mesh: winding flips while inverse-transpose
+    // keeps normals consistent, so back-face cull would hide the visible side.
+    const bool flipWinding = worldTransform.Determinant() < 0.f;
+    std::vector<aiFace> flippedFaces;
+    std::vector<unsigned> flippedIdx;
+    if (flipWinding) {
+        flippedFaces.resize(mesh.mNumFaces);
+        flippedIdx.resize(size_t(mesh.mNumFaces) * 3u);
+        for (unsigned f = 0; f < mesh.mNumFaces; ++f) {
+            const aiFace &src = mesh.mFaces[f];
+            aiFace &dst = flippedFaces[f];
+            dst.mNumIndices = src.mNumIndices;
+            if (src.mNumIndices == 3 && src.mIndices) {
+                unsigned *idx = flippedIdx.data() + size_t(f) * 3u;
+                idx[0] = src.mIndices[0];
+                idx[1] = src.mIndices[2];
+                idx[2] = src.mIndices[1];
+                dst.mIndices = idx;
+            } else {
+                dst.mIndices = src.mIndices;
+            }
         }
     }
 
@@ -3580,7 +3951,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     tmp.mVertices = positions.data();
     tmp.mNormals = normals.data();
     tmp.mNumFaces = mesh.mNumFaces;
-    tmp.mFaces = mesh.mFaces;
+    tmp.mFaces = flipWinding ? flippedFaces.data() : mesh.mFaces;
     tmp.mMaterialIndex = mesh.mMaterialIndex;
     tmp.mNumAnimMeshes = mesh.mNumAnimMeshes;
     tmp.mAnimMeshes = mesh.mAnimMeshes;
@@ -3988,9 +4359,22 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ubo.parallax =
         glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
-    if (lightCount > 0) {
-        ubo.lightDir = glm::vec4(glm::vec3(mesh3dLighting.lights[0].posRadius), float(lightCount));
-        ubo.lightColor = glm::vec4(glm::vec3(mesh3dLighting.lights[0].color), envIntensity);
+    int dirI = -1;
+    for (int i = 0; i < lightCount; ++i) {
+        if (mesh3dLighting.lights[i].posRadius.w <= 0.f) {
+            dirI = i;
+            break;
+        }
+    }
+    if (dirI >= 0) {
+        glm::vec3 d(mesh3dLighting.lights[dirI].posRadius);
+        if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+        else d = glm::normalize(d);
+        ubo.lightDir = glm::vec4(d, float(lightCount));
+        ubo.lightColor = glm::vec4(glm::vec3(mesh3dLighting.lights[dirI].color), envIntensity);
+    } else {
+        ubo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(lightCount));
+        ubo.lightColor = glm::vec4(0.f, 0.f, 0.f, envIntensity);
     }
 
     auto &fslots = currentMesh3dFrameSlots();

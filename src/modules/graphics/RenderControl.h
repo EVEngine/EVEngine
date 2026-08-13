@@ -20,11 +20,17 @@ class Graphics;
  * Built-in features:
  *   "depthTest"     — HW z-buffer on forward/gbuffer draws (default on)
  *   "shadow"        — directional CSM shadow pass (default on)
- *   "gbuffer"       — fill sampleable depth + normal buffers (default off)
- *   "gbufferAlbedo" — also write albedo into GBuffer (implies gbuffer)
+ *   "gbuffer"       — fill sampleable depth + normal buffers (on when ao/gi)
+ *   "gbufferAlbedo" — also write albedo into GBuffer (implies gbuffer; on when gi)
  *   "forward"       — lit forward / clustered mesh draws (default on)
  *   "hair"          — transparent hair pass after opaque (default on)
  *   "clustered"     — prefer clustered forward when light count > 8 (default on)
+ *   "ao"            — screen-space AO overlay after FXAA resolve (implies gbuffer; default on)
+ *   "gi"            — enables gbufferAlbedo; mesh hemispheric GI (fullscreen SSGI is not auto-applied)
+ *   "aa"            — FXAA resolve of the 3D scene color into the swapchain (default on)
+ *
+ * 3D draws into a sampleable scene color target (not the swapchain). Present
+ * resolves that target (FXAA when "aa" is on), then composites AO/HUD.
  *
  * compile() is idempotent; enable/disable mark the control dirty until the
  * next compile(). RenderSystem3D auto-compiles when dirty.

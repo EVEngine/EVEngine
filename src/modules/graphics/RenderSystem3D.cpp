@@ -7,6 +7,7 @@
 #include "graphics/Shadow.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Material.h"
+#include "graphics/AmbientOcclusion.h"
 
 #include <algorithm>
 #include <cmath>
@@ -64,6 +65,16 @@ void collectLights3D(std::vector<PackedLight3D> &out, size_t maxCount) {
         return a.data->intensity > b.data->intensity;
     });
     if (out.size() > maxCount) out.resize(maxCount);
+}
+
+/** mesh3d.frag always shades lights[0] as the primary directional. Keep a real
+ *  directional in slot 0 whenever one exists (points stay in the remaining slots). */
+void promoteDirectional(std::vector<PackedLight3D> &packed) {
+    for (size_t i = 0; i < packed.size(); ++i) {
+        if (packed[i].isPoint) continue;
+        if (i != 0) std::swap(packed[0], packed[i]);
+        return;
+    }
 }
 
 Lighting3DPack packLights3D(const std::vector<PackedLight3D> &lights, const Camera3D::Data *cam) {
@@ -419,6 +430,7 @@ void RenderSystem3D::render(Graphics &gfx) {
 
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
+    promoteDirectional(packed);
     Light3D::Data *shadowCaster = doShadow ? findShadowCasterDir(packed) : nullptr;
     prioritizeShadowCaster(packed, shadowCaster);
 
@@ -511,24 +523,34 @@ void RenderSystem3D::render(Graphics &gfx) {
             if (!mr->visible) continue;
             const glm::mat4 model = modelFromTransform(*xf);
             const glm::mat4 mvp = viewProj * model;
-            auto emit = [&](Mesh *drawMesh, Material *mat) {
+            auto emit = [&](Mesh *drawMesh, Material *mat, Texture *albedo, float tr, float tg,
+                            float tb) {
                 if (!drawMesh) return;
                 if (mat && mat->isTransparentHair()) return;
                 if (!mat && mr->isHair) return;
                 eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
-                gfx.drawMeshGBuffer(drawMesh, mvp, model, cd->nearZ, cd->farZ);
+                gfx.drawMeshGBuffer(drawMesh, mvp, model, cd->nearZ, cd->farZ, albedo, tr, tg, tb);
             };
             if (mr->usesParts()) {
                 for (int p = 0; p < mr->partCount; ++p) {
                     Material *mat = mr->parts[p].material ? mr->parts[p].material : mr->material;
-                    emit(mr->parts[p].mesh, mat);
+                    Texture *alb = mat ? mat->getAlbedoTexture() : mr->texture;
+                    float tr = mat ? mat->getTintR() : mr->r;
+                    float tg = mat ? mat->getTintG() : mr->g;
+                    float tb = mat ? mat->getTintB() : mr->b;
+                    emit(mr->parts[p].mesh, mat, alb, tr, tg, tb);
                 }
             } else {
                 if (mr->effectiveHair()) continue;
                 const float dx = xf->x - eye.x;
                 const float dy = xf->y - eye.y;
                 const float dz = xf->z - eye.z;
-                emit(mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz)), mr->material);
+                Texture *alb = mr->material ? mr->material->getAlbedoTexture() : mr->texture;
+                float tr = mr->material ? mr->material->getTintR() : mr->r;
+                float tg = mr->material ? mr->material->getTintG() : mr->g;
+                float tb = mr->material ? mr->material->getTintB() : mr->b;
+                emit(mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz)), mr->material, alb, tr,
+                     tg, tb);
             }
         }
         gfx.endGBufferPass();
@@ -663,6 +685,8 @@ void RenderSystem3D::render(Graphics &gfx) {
         const float fovRad = cd->fovYDeg * 0.017453292519943295f;
         const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
         gfx.setMesh3DViewProj(projM * viewM);
+        gfx.setMesh3DView(viewM);
+        gfx.setMesh3DClip(cd->nearZ, cd->farZ);
         gfx.setMesh3DCameraPos(eye);
         gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
 
@@ -697,6 +721,30 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
     if (doHair) {
         for (const auto &item : hair) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
+    }
+
+    const bool doAO = rc->isEnabled("ao");
+    if (doAO && defaultCam && gfx.had3DThisFrame()) {
+        GBuffer *gb = rc->getGBuffer();
+        if (gb && gb->isValid()) {
+            auto cd = defaultCam->data();
+            const float aspectSafe = aspect > 1e-4f ? aspect : 1.f;
+            auto bindCam = [&](auto *fx) {
+                fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY, cd->targetZ,
+                              cd->upX, cd->upY, cd->upZ, cd->fovYDeg, aspectSafe, cd->nearZ, cd->farZ);
+            };
+            AmbientOcclusion *ao = gfx.pipelineAmbientOcclusion();
+            ao->setQuality("medium");
+            ao->setIntensity(0.16f);
+            ao->setPower(1.1f);
+            ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
+            bindCam(ao);
+            if (Texture *depth = gb->getHwDepthTexture())
+                ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            // Fullscreen SSGI from lit scene color reprints nearby props
+            // (curtains, planters) onto the floor as multiple swimming ghosts.
+            // Mesh shaders still add hemispheric sky/ground + wrap fill.
+        }
     }
 }
 

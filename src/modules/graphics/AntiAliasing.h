@@ -61,6 +61,9 @@ public:
     void applyCanvas(Graphics *gfx, Canvas *source);
     void applyCanvasTo(Graphics *gfx, Canvas *source, Canvas *dest);
 
+    /** Upload texel uniforms from `source` without drawing (3D scene-color resolve). */
+    void prepareSource(Texture *source);
+
     Shader *getFxaaShader() const { return fxaa_; }
     Shader *getSmaaShader() const { return smaa_; }
     Shader *getSsaaShader() const { return ssaa_; }

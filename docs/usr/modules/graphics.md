@@ -71,12 +71,15 @@ rc.compile();
 gfx.render3D();
 local gb = rc.getGBuffer();
 if (gb.isValid()) {
-    local depth = gb.getDepthTexture();   // R = 线性深度 0..1
-    local nrm = gb.getNormalTexture();    // RGB = 法线*0.5+0.5
+    local depth = gb.getDepthTexture();     // RGBA8，R = 线性深度 0..1（Canvas / 体积雾）
+    local hwDepth = gb.getHwDepthTexture(); // D32，.r = Vulkan NDC z（3D AO / GI）
+    local nrm = gb.getNormalTexture();      // RGB = 法线*0.5+0.5
 }
 ```
 
 3D 前向仍启用硬件 z-buffer；GBuffer 是给 AO / 体积雾 / 风格描边等中后期用的采样目标。阴影仍走 CSM shadow map。
+
+一帧里各 buffer 谁写谁读、对应函数和 shader，见开发文档 [`3D渲染管线.md`](../../dev/3D渲染管线.md)。
 
 大面积平铺 albedo（地面、墙面）若出现明显重复，可对实体调用 `setTexCellBomb(cellScale, strength, rotAmount=1)`：按 UV 划分 cell，对邻接 cell 做随机偏移/旋转并混合。`strength=0`（默认）关闭，行为与原先一致；`cellScale` 一般为 2～16。
 
@@ -121,7 +124,21 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 3. 可选 `blur` / `blurTo`（双边）
 4. `applyOverlay` 以黑 + `alpha=(1-ao)*intensity` 叠到已有场景
 
+3D 默认路径：`RenderControl` 特性 `"ao"`（默认开）会在 forward 之后对 GBuffer 的 D32 + 法线做 `applyFromGBuffer`，不必手动建 Canvas。Canvas 上的 `compute` 仍用 8-bit 线性深度。
+
 细节见 [`环境光遮蔽模块设计.md`](../../dev/环境光遮蔽模块设计.md)。
+
+### 屏幕空间全局光照（SSGI）
+
+`gi <- gfx.newGlobalIllumination()`。`setQuality` 控制采样数与半径；`setLightDirection` / `setLightColor` 提供反弹用的太阳光。
+
+3D 默认路径：`RenderControl` 特性 `"gi"` 仍默认开（mesh 半球天空/地面 + wrap fill）。fullscreen `applyFromScene` 不会自动叠到 3D 回读：从 lit scene color 采样会把帘子/花盆印到地面上形成游走鬼影。需要时仍可手动 `applyFromScene` / `applyFromDepth`。Canvas 测试仍可用打包的 `applyFromDepth`（A=线性深度）。
+
+```squirrel
+local rc = gfx.getRenderControl();
+rc.enable("gi");   // 默认已开
+rc.compile();
+```
 
 ### 经典抗锯齿（FXAA / SMAA / SSAA / NFAA）
 
@@ -132,7 +149,9 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 - **ssaa**：超采样 Resolve（先画到 `resolutionFor` 尺寸的 Canvas）
 - **nfaa**：沿亮度梯度切向的 Normal Filter AA
 
-典型流程：场景 → Canvas → `aa.applyCanvas` / `applyCanvasTo` → 屏幕。细节见 [`抗锯齿模块设计.md`](../../dev/抗锯齿模块设计.md)。
+典型流程：场景 → Canvas → `aa.applyCanvas` / `applyCanvasTo` → 屏幕。
+
+3D 默认路径：`begin3DFrame` 画到可采样的 scene color，present 时按 `RenderControl "aa"`（默认开）做 FXAA resolve 再叠 AO/HUD。手动 Canvas 路径仍然可用。细节见 [`抗锯齿模块设计.md`](../../dev/抗锯齿模块设计.md)。
 
 ### 2D 屏幕拾取
 
@@ -159,7 +178,7 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newAntiAliasing()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setHeightTexture()`、`setPosition()`、`setRadius()`
@@ -167,7 +186,8 @@ hair.setCastShadow(false)  // 发片通常不参与阴影投射
 - `setTarget()`、`setTexCellBomb()`、`getTexCellBombScale()`、`getTexCellBombStrength()`、`getTexCellBombRotation()`、`setParallax()`、`getParallaxScale()`、`getParallaxMinLayers()`、`getParallaxMaxLayers()`、`setTexture()`、`setTint()`、`setType()`、`setUp()`、`setViewport()`、`setVisible()`、`setVolumetric()`、`setVolumetricIntensity()`、`setYaw()`
 - `setZoom()`、`worldToScreenX()`、`worldToScreenY()`、`Texture.getMipmapCount()`
 - `Volumetric`：`setQuality`、`setMode`、`scatter`、`applyFromScene`、`rayMarch`、`applyFog`、`setFogHeight`、`setFogStart`、`setFogEnd`、`setCamera`、`setLightDirection`、`setDensity` 等
-- `AmbientOcclusion`：`setQuality`、`setMode`、`setCamera`、`setRadius`、`setBias`、`setIntensity`、`setPower`、`compute`、`blur`、`applyOverlay`、`resolutionFor` 等
+- `AmbientOcclusion`：`setQuality`、`setMode`、`setCamera`、`setRadius`、`setBias`、`setIntensity`、`setPower`、`compute`、`blur`、`applyOverlay`、`applyFromDepth`、`resolutionFor` 等
+- `GlobalIllumination`：`setQuality`、`setCamera`、`setRadius`、`setIntensity`、`setLightDirection`、`setLightColor`、`applyFromDepth`、`getSampleCount` 等
 - `AntiAliasing`：`setQuality`、`setMode`、`apply`、`applyTo`、`applyCanvas`、`applyCanvasTo`、`suggestScale`、`resolutionFor`、`setFloat`、`getFloat` 等
 
 ## 使用要点

@@ -38,6 +38,9 @@ TEST_CASE("material.shadingModelAndParams") {
 TEST_CASE("renderControl.compileFeaturesToPasses") {
     RenderControl rc;
     CHECK(rc.supports("gbuffer"));
+    CHECK(rc.supports("ao"));
+    CHECK(rc.supports("gi"));
+    CHECK(rc.supports("aa"));
     CHECK(rc.supports("shadow"));
     CHECK(!rc.supports("deferred"));
 
@@ -46,7 +49,19 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.hasPass("shadow"));
     CHECK(rc.hasPass("forward"));
     CHECK(rc.hasPass("hair"));
+    CHECK(rc.hasPass("gbuffer"));
+    CHECK(rc.isEnabled("ao"));
+    CHECK(rc.isEnabled("gi"));
+    CHECK(rc.isEnabled("aa"));
+
+    rc.disable("ao");
+    rc.disable("gi");
+    rc.disable("gbuffer");
+    CHECK(rc.isDirty());
+    rc.compile();
     CHECK(!rc.hasPass("gbuffer"));
+    CHECK(!rc.isEnabled("ao"));
+    CHECK(!rc.isEnabled("gi"));
 
     rc.enable("gbuffer");
     CHECK(rc.isDirty());
@@ -116,7 +131,14 @@ TEST_CASE("gbuffer.bufferQueries") {
     CHECK(gb.hasBuffer("normal"));
     CHECK(gb.hasBuffer("albedo"));
     CHECK(gb.getBuffer("depth") == &depth);
+    CHECK(!gb.hasBuffer("hwDepth"));
     CHECK(gb.getBuffer("missing") == nullptr);
+
+    Texture hw;
+    gb.setTargets(128, 96, &depth, &normal, &albedo, &hw);
+    CHECK(gb.hasBuffer("hwDepth"));
+    CHECK(gb.getHwDepthTexture() == &hw);
+    CHECK(gb.getBuffer("hwDepth") == &hw);
 
     gb.clear();
     CHECK(!gb.isValid());

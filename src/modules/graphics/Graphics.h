@@ -15,6 +15,7 @@
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
 #include "graphics/RenderControl.h"
@@ -154,6 +155,16 @@ public:
                                           const Color &color) = 0;
 
     /**
+     * Fullscreen/post draw sampling `color` at binding 0 and `depth` at binding 1
+     * (hardware D32, .r = Vulkan NDC z). depth may be null → color is bound twice.
+     */
+    virtual void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
+                                             float y, float w, float h, const Color &tint) {
+        drawTexturedRectShader(color, shader, x, y, w, h, tint);
+        (void)depth;
+    }
+
+    /**
      * Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
      * normal may be null → treated as flat (0.5,0.5,1) only if a default normal tex exists.
      */
@@ -229,19 +240,34 @@ public:
      */
     virtual void beginGBufferPass(int width, int height) = 0;
     virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                 float nearZ, float farZ) = 0;
+                                 float nearZ, float farZ, Texture *albedo = nullptr,
+                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f) = 0;
     virtual void endGBufferPass() = 0;
 
-/**
- * Begin a swapchain pass cleared for 3D (color+depth). Leaves the pass open for drawMesh
- * and a following RenderSystem::render (2D). Does not present.
- * Soft-fails (no throw) when the swapchain cannot be acquired yet — check had3DThisFrame().
- */
-virtual void begin3DFrame() = 0;
+    /**
+     * Begin a 3D frame: shadow/gbuffer (if pending) then a sampleable scene color
+     * pass (color+depth). Leaves the pass open for drawMesh and a following
+     * RenderSystem::render (2D). Does not present. flushToSwapchain resolves the
+     * scene color (FXAA when "aa" is on) into the swapchain, then draws 2D overlays.
+     * Soft-fails (no throw) when the swapchain cannot be acquired yet — check had3DThisFrame().
+     */
+    virtual void begin3DFrame() = 0;
 
     /** viewProj used by subsequent drawMesh (mvp = viewProj * model).
      *  Expect RH + ZO with Vulkan NDC Y (see perspectiveVulkanRH_ZO). */
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
+
+    /** Camera view matrix for subsequent drawMesh (view-space depth / CSM select). */
+    virtual void setMesh3DView(const glm::mat4 &view) = 0;
+
+    /** Near/far used to pack linear depth into scene color A (SSGI). */
+    virtual void setMesh3DClip(float nearZ, float farZ) = 0;
+
+    /**
+     * Sampleable 3D color target for the current frame (RGB = lit, A = linear depth).
+     * Valid after begin3DFrame until present; nullptr when 3D did not run offscreen.
+     */
+    virtual Texture *getSceneColorTexture() { return nullptr; }
 
     /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
@@ -461,6 +487,20 @@ virtual void begin3DFrame() = 0;
     AmbientOcclusion *newAmbientOcclusion();
 
     /**
+     * Screen-space single-bounce GI. Caller owns GlobalIllumination*;
+     * its Shaders are owned by Graphics.
+     */
+    GlobalIllumination *newGlobalIllumination();
+
+    /**
+     * Pipeline-owned AO / GI / AA used by RenderSystem3D when features
+     * "ao" / "gi" / "aa" are enabled. Created on first use; Graphics owns them.
+     */
+    AmbientOcclusion *pipelineAmbientOcclusion();
+    GlobalIllumination *pipelineGlobalIllumination();
+    AntiAliasing *pipelineAntiAliasing();
+
+    /**
      * Classic image-space AA (FXAA / SMAA / SSAA / NFAA). Caller owns AntiAliasing*;
      * its Shaders are owned by Graphics.
      */
@@ -598,6 +638,9 @@ protected:
     Shader *currentShader = nullptr;
     Font *currentFont = nullptr;
     std::unique_ptr<RenderControl> renderControl_;
+    std::unique_ptr<AmbientOcclusion> pipelineAO_;
+    std::unique_ptr<GlobalIllumination> pipelineGI_;
+    std::unique_ptr<AntiAliasing> pipelineAA_;
 };
 
 }  // namespace eve::graphics

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile graphics ambient-occlusion GLSL fragments to SPIR-V C++ include arrays."""
+"""Compile graphics global-illumination GLSL fragments to SPIR-V C++ include arrays."""
 
 from __future__ import annotations
 
@@ -12,12 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 
 FRAGS = [
-    "ao_ssao.frag",
-    "ao_hbao.frag",
-    "ao_gtao.frag",
-    "ao_blur.frag",
-    "ao_overlay.frag",
-    "ao_from_depth.frag",
+    "gi_ssgi.frag",
 ]
 
 
