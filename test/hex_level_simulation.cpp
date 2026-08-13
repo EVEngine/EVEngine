@@ -268,11 +268,16 @@ TEST_CASE("hex.level.01.procgenPath") {
 }
 
 TEST_CASE("hex.level.02.dynamicFov") {
+    // Handcrafted open hex strip: procgen spawn↔exit connectivity is not
+    // portable across libstdc++/libc++ (uniform_int_distribution differs), and
+    // cave.cellular can place spawn/stairs in disconnected components.
     auto *mapMod = Map::create();
-    auto *gen = Procgen::create();
-    HexDungeon d = buildHexDungeon(mapMod, gen, 7, 28, 20, "cave.cellular");
+    hideAllTileLayers();
+    TileLayer *layer = mapMod->newLayer(12, 5, kTileW, kTileH);
+    configureHexLayer(layer);
+    layer->fill(kFloorGid);
 
-    Fov *fov = mapMod->newFov(d.layer);
+    Fov *fov = mapMod->newFov(layer);
     REQUIRE(fov != nullptr);
     fov->blockOpaqueGid(kWallGid);
     fov->setBlockEmpty(false);
@@ -281,16 +286,17 @@ TEST_CASE("hex.level.02.dynamicFov") {
     fov->setAlgorithm("shadowcast");
     fov->setRadiusMetric("euclidean");
 
-    const int id = fov->addRevealer(d.spawnTx, d.spawnTy, 6);
+    const int spawnTx = 1, spawnTy = 2;
+    const int id = fov->addRevealer(spawnTx, spawnTy, 6);
     fov->compute();
-    CHECK(fov->isVisible(d.spawnTx, d.spawnTy));
-    CHECK(fov->isExplored(d.spawnTx, d.spawnTy));
+    CHECK(fov->isVisible(spawnTx, spawnTy));
+    CHECK(fov->isExplored(spawnTx, spawnTy));
 
     // Move along A* path; memory should retain explored cells after leaving.
-    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    Pathfinder *pf = mapMod->newPathfinder(layer);
     pf->blockGid(kWallGid);
     pf->setTopology("hex");
-    Path *path = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    Path *path = pf->findPath(spawnTx, spawnTy, 10, 2);
     REQUIRE(path != nullptr);
     REQUIRE(path->getLength() > 1);
 
@@ -300,7 +306,7 @@ TEST_CASE("hex.level.02.dynamicFov") {
     fov->setRevealerPosition(id, midX, midY);
     fov->compute();
     CHECK(fov->isVisible(midX, midY));
-    CHECK(fov->isExplored(d.spawnTx, d.spawnTy));  // memory
+    CHECK(fov->isExplored(spawnTx, spawnTy));  // memory
 
     // Opaque wall should cast a shadow along cube line when present.
     Fov *wallFov = mapMod->newFovSize(9, 5);
@@ -318,6 +324,7 @@ TEST_CASE("hex.level.02.dynamicFov") {
     delete path;
     delete pf;
     delete fov;
+    layer->setVisible(false);
 }
 
 TEST_CASE("hex.level.03.dynamicLight") {
@@ -1281,15 +1288,22 @@ TEST_CASE("hex.level.16.facingConeFov") {
 }
 
 TEST_CASE("hex.level.17.flowPlusCellCost") {
+    // Handcrafted open field: BSP spawn/stairs path length is not stable across
+    // standard-library RNGs (macOS libc++ vs Linux libstdc++).
     auto *mapMod = Map::create();
-    auto *gen = Procgen::create();
-    HexDungeon d = buildHexDungeon(mapMod, gen, 1717, 26, 18);
+    hideAllTileLayers();
+    TileLayer *layer = mapMod->newLayer(14, 8, kTileW, kTileH);
+    configureHexLayer(layer);
+    layer->fill(kFloorGid);
 
-    Pathfinder *pf = mapMod->newPathfinder(d.layer);
+    const int spawnTx = 1, spawnTy = 4;
+    const int exitTx = 12, exitTy = 4;
+
+    Pathfinder *pf = mapMod->newPathfinder(layer);
     pf->blockGid(kWallGid);
     pf->setTopology("hex");
 
-    Path *baseline = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    Path *baseline = pf->findPath(spawnTx, spawnTy, exitTx, exitTy);
     REQUIRE(baseline != nullptr);
     REQUIRE(baseline->getLength() > 2);
     const float baseCost = baseline->getTotalCost();
@@ -1299,24 +1313,25 @@ TEST_CASE("hex.level.17.flowPlusCellCost") {
     for (int i = 1; i < paintUntil; ++i)
         pf->setCellCost(baseline->getX(i), baseline->getY(i), 10.f);
 
-    Path *detour = pf->findPath(d.spawnTx, d.spawnTy, d.exitTx, d.exitTy);
+    Path *detour = pf->findPath(spawnTx, spawnTy, exitTx, exitTy);
     REQUIRE(detour != nullptr);
     CHECK(detour->getLength() > 0);
     CHECK(detour->getTotalCost() + 1e-3f >= baseCost);
 
-    FlowField *field = pf->buildFlowField(d.exitTx, d.exitTy);
+    FlowField *field = pf->buildFlowField(exitTx, exitTy);
     REQUIRE(field != nullptr);
-    CHECK(field->isReachable(d.spawnTx, d.spawnTy));
-    Path *flow = pf->followFlow(field, d.spawnTx, d.spawnTy);
+    CHECK(field->isReachable(spawnTx, spawnTy));
+    Path *flow = pf->followFlow(field, spawnTx, spawnTy);
     REQUIRE(flow != nullptr);
-    CHECK_EQ(flow->getX(flow->getLength() - 1), d.exitTx);
-    CHECK_EQ(flow->getY(flow->getLength() - 1), d.exitTy);
+    CHECK_EQ(flow->getX(flow->getLength() - 1), exitTx);
+    CHECK_EQ(flow->getY(flow->getLength() - 1), exitTy);
 
     delete flow;
     delete field;
     delete detour;
     delete baseline;
     delete pf;
+    layer->setVisible(false);
 }
 
 TEST_CASE("hex.level.18.seedReproducible") {
