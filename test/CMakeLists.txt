@@ -55,6 +55,7 @@ file(GLOB all_test_cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
+  procgen_simulation.cpp
   stylize.cpp
   voxel.cpp
   gpgpu.cpp
