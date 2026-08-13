@@ -57,6 +57,141 @@
 
 namespace eve::graphics::vulkan {
 
+namespace {
+
+constexpr auto kHostVisibleCoherent = vk::MemoryPropertyFlagBits::eHostVisible |
+                                      vk::MemoryPropertyFlagBits::eHostCoherent;
+
+template <typename T, size_t N>
+std::vector<T> embeddedSpirv(const T (&words)[N]) {
+    return {words, words + N};
+}
+
+template <typename Slots>
+auto &currentSlot(Slots &slots, size_t slotCount, size_t slotIndex) {
+    if (slots.size() != slotCount) slots.resize(slotCount);
+    return slots[slotIndex];
+}
+
+template <typename FrameBuffers>
+void releaseFrame2dBuffers(FrameBuffers &buffers) {
+    buffers.solidBuf.release();
+    for (auto &buffer : buffers.texBufs) buffer.release();
+    buffers.texBufs.clear();
+}
+
+void setViewportAndScissor(vk::CommandBuffer cb, uint32_t width, uint32_t height) {
+    const vk::Viewport viewport{0.f, 0.f, float(width), float(height), 0.f, 1.f};
+    const vk::Rect2D scissor{{0, 0}, {width, height}};
+    cb.setViewport(0, 1, &viewport);
+    cb.setScissor(0, 1, &scissor);
+}
+
+vk::PipelineLayout createPipelineLayout(vkb::Device &device,
+                                        vk::DescriptorSetLayout setLayout = {},
+                                        const vk::PushConstantRange *pushConstant = nullptr) {
+    vk::PipelineLayoutCreateInfo info{};
+    if (setLayout) {
+        info.setLayoutCount = 1;
+        info.pSetLayouts = &setLayout;
+    }
+    if (pushConstant) {
+        info.pushConstantRangeCount = 1;
+        info.pPushConstantRanges = pushConstant;
+    }
+    return device->createPipelineLayout(info);
+}
+
+vk::PushConstantRange pushConstantRange(vk::ShaderStageFlags stages, uint32_t size) {
+    vk::PushConstantRange range{};
+    range.stageFlags = stages;
+    range.size = size;
+    return range;
+}
+
+void destroySampler(vkb::Device &device, vk::Sampler &sampler) {
+    if (!sampler) return;
+    device->destroySampler(sampler);
+    sampler = vk::Sampler{};
+}
+
+void destroyPipeline(vkb::Device &device, vk::Pipeline &pipeline) {
+    if (!pipeline) return;
+    device->destroyPipeline(pipeline);
+    pipeline = vk::Pipeline{};
+}
+
+void destroyPipelineLayout(vkb::Device &device, vk::PipelineLayout &layout) {
+    if (!layout) return;
+    device->destroyPipelineLayout(layout);
+    layout = vk::PipelineLayout{};
+}
+
+void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh) {
+    const vk::DeviceSize offset = 0;
+    cb.bindVertexBuffers(0, 1, mesh.vertices, &offset);
+    cb.bindIndexBuffer(mesh.indices.buffer, 0, vk::IndexType::eUint32);
+    cb.drawIndexed(mesh.indexCount, 1, 0, 0, 0);
+}
+
+std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame,
+                                       const std::vector<MeshVertex> &vertices,
+                                       const std::vector<uint32_t> &indices) {
+    auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertices.allocate<MeshVertex>(frame, device, vertices);
+    gpu->indices.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
+                          indices.size() * sizeof(uint32_t), kHostVisibleCoherent);
+    gpu->indices.updateLocal(frame, indices.data(), indices.size() * sizeof(uint32_t));
+    gpu->indexCount = uint32_t(indices.size());
+    return gpu;
+}
+
+std::unique_ptr<Mesh> makeMeshHandle(GpuMesh &gpu) {
+    auto mesh = std::make_unique<Mesh>();
+    mesh->indexCount = int(gpu.indexCount);
+    mesh->gpuHandle = &gpu;
+    return mesh;
+}
+
+vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
+                                      vk::PipelineLayout layout) {
+    return device.createPipeline()
+        .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
+        .setPipelineLayout(layout)
+        .setVertexInputState(vkb::VertexInputStateBuilder()
+                                 .addInputBinding<ColorVertex>()
+                                 .addAttributeDescription<ColorVertex>())
+        .setDynamicStatesViewportScissor()
+        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                       vk::FrontFace::eCounterClockwise)
+        .build(renderPass);
+}
+
+class ShaderModulePair {
+public:
+    ShaderModulePair(vkb::Device &device, const std::vector<uint32_t> &vert,
+                     const std::vector<uint32_t> &frag)
+        : device(device),
+          vert(vkb::PipelineBuilder::createShaderModule(device.instance, vert)),
+          frag(vkb::PipelineBuilder::createShaderModule(device.instance, frag)) {}
+
+    ~ShaderModulePair() {
+        device->destroyShaderModule(vert);
+        device->destroyShaderModule(frag);
+    }
+
+    ShaderModulePair(const ShaderModulePair &) = delete;
+    ShaderModulePair &operator=(const ShaderModulePair &) = delete;
+
+    vkb::Device &device;
+    vk::ShaderModule vert;
+    vk::ShaderModule frag;
+};
+
+}  // namespace
+
+// --- Backend lifecycle and frame orchestration --------------------------------
+
 std::string Graphics::getBackendName() const { return "vulkan"; }
 
 Graphics::~Graphics() {
@@ -229,14 +364,9 @@ void Graphics::destroySwapchainResources() {
     depthImage = vkb::DepthStencilImage{};
     // Release reused per-frame vertex buffers. Callers hold a device-wide
     // waitIdle before this runs.
-    auto release2d = [&](Frame2DBuffers &fb) {
-        fb.solidBuf.release();
-        for (auto &tb : fb.texBufs) tb.release();
-        fb.texBufs.clear();
-    };
-    for (auto &fb : frame2dBuffers) release2d(fb);
+    for (auto &fb : frame2dBuffers) releaseFrame2dBuffers(fb);
     frame2dBuffers.clear();
-    release2d(offscreenBuffers);
+    releaseFrame2dBuffers(offscreenBuffers);
     // Per-frame lit-2D UBOs are keyed to the in-flight slot count; release them
     // here (slot count may change across recreation).
     for (auto &ubo : lighting2dUboSlots) ubo.release();
@@ -285,27 +415,19 @@ void Graphics::invalidateTextureBindings() {
 }
 
 Graphics::Frame2DBuffers &Graphics::currentFrame2DBuffers() {
-    const uint32_t n = frameSlotCount();
-    if (frame2dBuffers.size() != n) frame2dBuffers.resize(n);
-    return frame2dBuffers[currentFrameSlot()];
+    return currentSlot(frame2dBuffers, frameSlotCount(), currentFrameSlot());
 }
 
 Graphics::Mesh3dFrameSlots &Graphics::currentMesh3dFrameSlots() {
-    const uint32_t n = frameSlotCount();
-    if (mesh3dFrameSlots.size() != n) mesh3dFrameSlots.resize(n);
-    return mesh3dFrameSlots[currentFrameSlot()];
+    return currentSlot(mesh3dFrameSlots, frameSlotCount(), currentFrameSlot());
 }
 
 Graphics::Mesh3dClusteredFrameSlots &Graphics::currentMesh3dClusteredFrameSlots() {
-    const uint32_t n = frameSlotCount();
-    if (mesh3dClusteredFrameSlots.size() != n) mesh3dClusteredFrameSlots.resize(n);
-    return mesh3dClusteredFrameSlots[currentFrameSlot()];
+    return currentSlot(mesh3dClusteredFrameSlots, frameSlotCount(), currentFrameSlot());
 }
 
 vkb::GenericBuffer &Graphics::currentLighting2dUbo() {
-    const uint32_t n = frameSlotCount();
-    if (lighting2dUboSlots.size() != n) lighting2dUboSlots.resize(n);
-    auto &ubo = lighting2dUboSlots[currentFrameSlot()];
+    auto &ubo = currentSlot(lighting2dUboSlots, frameSlotCount(), currentFrameSlot());
     // allocate() reuses the slot's buffer when it already fits (same usage/
     // memflags, fixed sizeof(Lighting2DUBO)), so this is a no-op after first use.
     ubo.allocate(frameToken(), device, vk::BufferUsageFlagBits::eUniformBuffer, sizeof(Lighting2DUBO),
@@ -316,21 +438,15 @@ vkb::GenericBuffer &Graphics::currentLighting2dUbo() {
 
 std::unordered_map<Graphics::LitSetKey, vkb::BoundSet, Graphics::LitSetKeyHash> &
 Graphics::currentLit2dSets() {
-    const uint32_t n = frameSlotCount();
-    if (lit2dSets.size() != n) lit2dSets.resize(n);
-    return lit2dSets[currentFrameSlot()];
+    return currentSlot(lit2dSets, frameSlotCount(), currentFrameSlot());
 }
 
 Graphics::ClusteredStorage &Graphics::currentClusteredStorage() {
-    const uint32_t n = frameSlotCount();
-    if (clusteredStorages.size() != n) clusteredStorages.resize(n);
-    return clusteredStorages[currentFrameSlot()];
+    return currentSlot(clusteredStorages, frameSlotCount(), currentFrameSlot());
 }
 
 Graphics::VoxelInstanceFrame &Graphics::currentVoxelInstanceFrame() {
-    const uint32_t n = frameSlotCount();
-    if (voxelInstanceFrames.size() != n) voxelInstanceFrames.resize(n);
-    return voxelInstanceFrames[currentFrameSlot()];
+    return currentSlot(voxelInstanceFrames, frameSlotCount(), currentFrameSlot());
 }
 
 Graphics::ShadowMapSlot &Graphics::currentShadowMap() {
@@ -387,20 +503,14 @@ void Graphics::recordPendingShadowPasses() {
         rpBegin.clearValueCount = 1;
         rpBegin.pClearValues = &clear;
         cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-        vk::Viewport vp{0.f, 0.f, float(size), float(size), 0.f, 1.f};
-        vk::Rect2D scissor{{0, 0}, {size, size}};
-        cb.setViewport(0, 1, &vp);
-        cb.setScissor(0, 1, &scissor);
+        setViewportAndScissor(cb, size, size);
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
         for (const auto &d : shadowCascadeDraws[c]) {
             if (!d.mesh || !d.mesh->gpuHandle) continue;
             auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
             cb.pushConstants(shadowPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0,
                              sizeof(glm::mat4), &d.mvp);
-            vk::DeviceSize offset = 0;
-            cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
-            cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
-            cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+            drawIndexedMesh(cb, *gpuMesh);
         }
         cb.endRenderPass();
         shadowCascadeDraws[c].clear();
@@ -436,10 +546,7 @@ void Graphics::recordPendingGBufferPass() {
     slot->albedo.beginColorAttachment();
     slot->depth.beginDepthAttachment();
     cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-    vk::Viewport vp{0.f, 0.f, float(w), float(h), 0.f, 1.f};
-    vk::Rect2D scissor{{0, 0}, {w, h}};
-    cb.setViewport(0, 1, &vp);
-    cb.setScissor(0, 1, &scissor);
+    setViewportAndScissor(cb, w, h);
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
     for (const auto &d : gbufferPassDraws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
@@ -453,10 +560,7 @@ void Graphics::recordPendingGBufferPass() {
         cb.pushConstants(gbufferPipelineLayout,
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          sizeof(GBufferPush), &d.push);
-        vk::DeviceSize offset = 0;
-        cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
-        cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
-        cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+        drawIndexedMesh(cb, *gpuMesh);
     }
     cb.endRenderPass();
     gbufferPassDraws.clear();
@@ -601,6 +705,8 @@ void Graphics::recreateSurfaceForResume() {
     swapchainDirty = true;
 }
 
+// --- Swapchain and graphics pipelines -----------------------------------------
+
 void Graphics::createSwapchainAndPipeline() {
     // Framebuffers / command buffers alias the current swapchain images; tear
     // them down before replacing the swapchain (destroy() waitIdles first).
@@ -654,22 +760,8 @@ void Graphics::createSwapchainAndPipeline() {
     }
 
     if (!pipeline) {
-        std::vector<uint32_t> vert(color_vert_spv, color_vert_spv + color_vert_spv_count);
-        std::vector<uint32_t> frag(color_frag_spv, color_frag_spv + color_frag_spv_count);
-
-        vk::PipelineLayoutCreateInfo layoutInfo{};
-        pipelineLayout = device->createPipelineLayout(layoutInfo);
-
-        vkb::PipelineBuilder pipelineBuilder = device.createPipeline(swapchain);
-        pipeline = pipelineBuilder.useClassicPipeline(vert, frag)
-                       .setPipelineLayout(pipelineLayout)
-                       .setVertexInputState(vkb::VertexInputStateBuilder()
-                                                .addInputBinding<ColorVertex>()
-                                                .addAttributeDescription<ColorVertex>())
-                       .setDynamicStatesViewportScissor()
-                       .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
-                                      vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
-                       .build(renderpass);
+        pipelineLayout = createPipelineLayout(device);
+        pipeline = createSolidColorPipeline(device, renderpass, pipelineLayout);
     }
 
     presentModel = device.createPresent(swapchain).build(renderpass, depthImage.imageView());
@@ -706,24 +798,14 @@ void Graphics::createTexturedPipeline() {
     poolInfo.pPoolSizes = poolSizes;
     descriptorPool = device->createDescriptorPool(poolInfo);
 
-    vk::PipelineLayoutCreateInfo plInfo{};
-    plInfo.setLayoutCount = 1;
-    plInfo.pSetLayouts = &texSetLayout;
-    texPipelineLayout = device->createPipelineLayout(plInfo);
+    texPipelineLayout = createPipelineLayout(device, texSetLayout);
+    const auto pcr =
+        pushConstantRange(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                          Shader::kPushConstantBytes);
+    shaderPipelineLayout = createPipelineLayout(device, texSetLayout, &pcr);
 
-    vk::PushConstantRange pcr{};
-    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
-    pcr.offset = 0;
-    pcr.size = Shader::kPushConstantBytes;
-    vk::PipelineLayoutCreateInfo shaderPlInfo{};
-    shaderPlInfo.setLayoutCount = 1;
-    shaderPlInfo.pSetLayouts = &texSetLayout;
-    shaderPlInfo.pushConstantRangeCount = 1;
-    shaderPlInfo.pPushConstantRanges = &pcr;
-    shaderPipelineLayout = device->createPipelineLayout(shaderPlInfo);
-
-    std::vector<uint32_t> vert(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);
-    std::vector<uint32_t> frag(textured_frag_spv, textured_frag_spv + textured_frag_spv_count);
+    auto vert = embeddedSpirv(textured_vert_spv);
+    auto frag = embeddedSpirv(textured_frag_spv);
     texPipeline = createTexturedStylePipeline(vert, frag, renderpass, texPipelineLayout);
 
     createLit2DPipeline();
@@ -733,11 +815,10 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
                                                    const std::vector<uint32_t> &frag,
                                                    const vkb::BuiltRenderPass &rp,
                                                    vk::PipelineLayout layout) {
-    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
-    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    vk::Pipeline pipeline =
+    ShaderModulePair modules(device, vert, frag);
+    return
         device.createPipeline()
-            .useClassicPipeline(vertModule, fragModule)
+            .useClassicPipeline(modules.vert, modules.frag)
             .setPipelineLayout(layout)
             .setVertexInputState(vkb::VertexInputStateBuilder()
                                      .addInputBinding<TexturedVertex>()
@@ -748,9 +829,6 @@ vk::Pipeline Graphics::createTexturedStylePipeline(const std::vector<uint32_t> &
             .setDepthStencil(false, false)
             .setAlphaBlending(1)
             .build(rp);
-    device->destroyShaderModule(vertModule);
-    device->destroyShaderModule(fragModule);
-    return pipeline;
 }
 
 void Graphics::createLit2DPipeline() {
@@ -765,10 +843,7 @@ void Graphics::createLit2DPipeline() {
             .createUnique(device.instance);
     lit2dSetLayout = *lit2dSetLayoutUnique;
 
-    vk::PipelineLayoutCreateInfo plInfo{};
-    plInfo.setLayoutCount = 1;
-    plInfo.pSetLayouts = &lit2dSetLayout;
-    lit2dPipelineLayout = device->createPipelineLayout(plInfo);
+    lit2dPipelineLayout = createPipelineLayout(device, lit2dSetLayout);
 
     // Offscreen (synchronous) lit-2D path owns a dedicated UBO. The swapchain
     // path's per-frame UBOs are allocated lazily in currentLighting2dUbo().
@@ -777,8 +852,8 @@ void Graphics::createLit2DPipeline() {
                                     vk::MemoryPropertyFlagBits::eHostVisible |
                                         vk::MemoryPropertyFlagBits::eHostCoherent);
 
-    std::vector<uint32_t> vert(lit2d_vert_spv, lit2d_vert_spv + lit2d_vert_spv_count);
-    std::vector<uint32_t> frag(lit2d_frag_spv, lit2d_frag_spv + lit2d_frag_spv_count);
+    auto vert = embeddedSpirv(lit2d_vert_spv);
+    auto frag = embeddedSpirv(lit2d_frag_spv);
     lit2dPipeline = createTexturedStylePipeline(vert, frag, renderpass, lit2dPipelineLayout);
 }
 
@@ -801,27 +876,17 @@ void Graphics::createMesh3DPipeline() {
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
-    vk::PipelineLayoutCreateInfo plInfo{};
-    plInfo.setLayoutCount = 1;
-    plInfo.pSetLayouts = &mesh3dSetLayout;
-    mesh3dPipelineLayout = device->createPipelineLayout(plInfo);
-
-    vk::PushConstantRange pcr{};
-    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
-    pcr.offset = 0;
-    pcr.size = Shader::kPushConstantBytes;
-    vk::PipelineLayoutCreateInfo shaderPl{};
-    shaderPl.setLayoutCount = 1;
-    shaderPl.pSetLayouts = &mesh3dSetLayout;
-    shaderPl.pushConstantRangeCount = 1;
-    shaderPl.pPushConstantRanges = &pcr;
-    mesh3dShaderPipelineLayout = device->createPipelineLayout(shaderPl);
+    mesh3dPipelineLayout = createPipelineLayout(device, mesh3dSetLayout);
+    const auto pcr =
+        pushConstantRange(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                          Shader::kPushConstantBytes);
+    mesh3dShaderPipelineLayout = createPipelineLayout(device, mesh3dSetLayout, &pcr);
 
     // UBO + descriptor sets are allocated lazily per draw (see mesh3dSetFor).
     mesh3dFrameSlots.clear();
 
-    std::vector<uint32_t> vert(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
-    std::vector<uint32_t> frag(mesh3d_frag_spv, mesh3d_frag_spv + mesh3d_frag_spv_count);
+    auto vert = embeddedSpirv(mesh3d_vert_spv);
+    auto frag = embeddedSpirv(mesh3d_frag_spv);
     mesh3dPipeline = createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout);
 }
 
@@ -845,29 +910,18 @@ void Graphics::createMesh3DClusteredPipeline() {
             .createUnique(device.instance);
     mesh3dClusteredSetLayout = *mesh3dClusteredSetLayoutUnique;
 
-    vk::PipelineLayoutCreateInfo plInfo{};
-    plInfo.setLayoutCount = 1;
-    plInfo.pSetLayouts = &mesh3dClusteredSetLayout;
-    mesh3dClusteredPipelineLayout = device->createPipelineLayout(plInfo);
+    mesh3dClusteredPipelineLayout = createPipelineLayout(device, mesh3dClusteredSetLayout);
 
     mesh3dClusteredFrameSlots.clear();
 
-    std::vector<uint32_t> vert(mesh3d_clustered_vert_spv,
-                               mesh3d_clustered_vert_spv + mesh3d_clustered_vert_spv_count);
-    std::vector<uint32_t> frag(mesh3d_clustered_frag_spv,
-                               mesh3d_clustered_frag_spv + mesh3d_clustered_frag_spv_count);
+    auto vert = embeddedSpirv(mesh3d_clustered_vert_spv);
+    auto frag = embeddedSpirv(mesh3d_clustered_frag_spv);
     mesh3dClusteredPipeline = createMesh3DStylePipeline(vert, frag, mesh3dClusteredPipelineLayout);
 }
 
 void Graphics::destroyShadowResources() {
-    if (shadowPipeline) {
-        device->destroyPipeline(shadowPipeline);
-        shadowPipeline = vk::Pipeline{};
-    }
-    if (shadowPipelineLayout) {
-        device->destroyPipelineLayout(shadowPipelineLayout);
-        shadowPipelineLayout = vk::PipelineLayout{};
-    }
+    destroyPipeline(device, shadowPipeline);
+    destroyPipelineLayout(device, shadowPipelineLayout);
     for (auto &slot : shadowMaps) {
         for (int i = 0; i < ShadowConfig::kCascades; ++i) {
             if (slot.framebuffers[i]) {
@@ -904,33 +958,15 @@ void Graphics::destroyGBufferResources() {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
         }
-        if (slot.normalGpu.sampler) {
-            device->destroySampler(slot.normalGpu.sampler);
-            slot.normalGpu.sampler = vk::Sampler{};
-        }
-        if (slot.depthColorGpu.sampler) {
-            device->destroySampler(slot.depthColorGpu.sampler);
-            slot.depthColorGpu.sampler = vk::Sampler{};
-        }
-        if (slot.albedoGpu.sampler) {
-            device->destroySampler(slot.albedoGpu.sampler);
-            slot.albedoGpu.sampler = vk::Sampler{};
-        }
-        if (slot.depthGpu.sampler) {
-            device->destroySampler(slot.depthGpu.sampler);
-            slot.depthGpu.sampler = vk::Sampler{};
-        }
+        destroySampler(device, slot.normalGpu.sampler);
+        destroySampler(device, slot.depthColorGpu.sampler);
+        destroySampler(device, slot.albedoGpu.sampler);
+        destroySampler(device, slot.depthGpu.sampler);
     }
     gbufferSlots.clear();
     post2Sets.clear();
-    if (gbufferPipeline) {
-        device->destroyPipeline(gbufferPipeline);
-        gbufferPipeline = vk::Pipeline{};
-    }
-    if (gbufferPipelineLayout) {
-        device->destroyPipelineLayout(gbufferPipelineLayout);
-        gbufferPipelineLayout = vk::PipelineLayout{};
-    }
+    destroyPipeline(device, gbufferPipeline);
+    destroyPipelineLayout(device, gbufferPipelineLayout);
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
         gbufferRenderPass = {};
@@ -948,10 +984,7 @@ void Graphics::destroySceneColorResources() {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
         }
-        if (slot.colorGpu.sampler) {
-            device->destroySampler(slot.colorGpu.sampler);
-            slot.colorGpu.sampler = vk::Sampler{};
-        }
+        destroySampler(device, slot.colorGpu.sampler);
     }
     sceneColorSlots.clear();
     post2Sets.clear();
@@ -1433,29 +1466,18 @@ void Graphics::ensureOffscreenPipelines() {
             .addDependency(VK_SUBPASS_EXTERNAL, 0)
             .build();
 
-    std::vector<uint32_t> vert(color_vert_spv, color_vert_spv + color_vert_spv_count);
-    std::vector<uint32_t> frag(color_frag_spv, color_frag_spv + color_frag_spv_count);
-    vkb::PipelineBuilder solidBuilder = device.createPipeline();
     offscreenSolidPipeline =
-        solidBuilder.useClassicPipeline(vert, frag)
-            .setPipelineLayout(pipelineLayout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<ColorVertex>()
-                                     .addAttributeDescription<ColorVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
-                           vk::FrontFace::eCounterClockwise)
-            .build(offscreenRenderPass);
+        createSolidColorPipeline(device, offscreenRenderPass, pipelineLayout);
 
     // Textured offscreen pipeline mirrors createTexturedPipeline but with offscreen RP.
-    std::vector<uint32_t> tvert(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);
-    std::vector<uint32_t> tfrag(textured_frag_spv, textured_frag_spv + textured_frag_spv_count);
+    auto tvert = embeddedSpirv(textured_vert_spv);
+    auto tfrag = embeddedSpirv(textured_frag_spv);
     offscreenTexPipeline =
         createTexturedStylePipeline(tvert, tfrag, offscreenRenderPass, texPipelineLayout);
 
     if (lit2dPipelineLayout) {
-        std::vector<uint32_t> lvert(lit2d_vert_spv, lit2d_vert_spv + lit2d_vert_spv_count);
-        std::vector<uint32_t> lfrag(lit2d_frag_spv, lit2d_frag_spv + lit2d_frag_spv_count);
+        auto lvert = embeddedSpirv(lit2d_vert_spv);
+        auto lfrag = embeddedSpirv(lit2d_frag_spv);
         offscreenLitPipeline =
             createTexturedStylePipeline(lvert, lfrag, offscreenRenderPass, lit2dPipelineLayout);
     }
@@ -2477,12 +2499,8 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                 canvas->colorImage().beginColorAttachment();
                                 cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
 
-                                vk::Viewport vp{0.f, 0.f, float(canvas->getWidth()), float(canvas->getHeight()),
-                                                0.f, 1.f};
-                                vk::Rect2D scissor{{0, 0},
-                                                   {uint32_t(canvas->getWidth()), uint32_t(canvas->getHeight())}};
-                                cb.setViewport(0, 1, &vp);
-                                cb.setScissor(0, 1, &scissor);
+                                setViewportAndScissor(cb, uint32_t(canvas->getWidth()),
+                                                      uint32_t(canvas->getHeight()));
 
                                 vkb::HostVertexBuffer &solidBuf = offscreenBuffers.solidBuf;
                                 std::vector<vkb::HostVertexBuffer> &texBufs = offscreenBuffers.texBufs;
@@ -2583,10 +2601,7 @@ void Graphics::flushToSwapchain() {
     litBatches.clear();
 
     auto &cb = currentPresentCb();
-    vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
-    vk::Rect2D scissor{{0, 0}, swapchain.extent};
-    cb.setViewport(0, 1, &vp);
-    cb.setScissor(0, 1, &scissor);
+    setViewportAndScissor(cb, swapchain.extent.width, swapchain.extent.height);
 
     // Persistent per-frame-slot buffers (see currentFrame2DBuffers). Safe to
     // overwrite: acquireForFrame() already waited this slot's fence.
@@ -2688,10 +2703,7 @@ void Graphics::begin3DFrame() {
         beginSwapchainColorPass();
 
     auto &cb = currentPresentCb();
-    vk::Viewport vp{0.f, 0.f, float(swapchain.extent.width), float(swapchain.extent.height), 0.f, 1.f};
-    vk::Rect2D scissor{{0, 0}, swapchain.extent};
-    cb.setViewport(0, 1, &vp);
-    cb.setScissor(0, 1, &scissor);
+    setViewportAndScissor(cb, swapchain.extent.width, swapchain.extent.height);
 
     currentMesh3dFrameSlots().drawIndex = 0;
     currentMesh3dClusteredFrameSlots().drawIndex = 0;
@@ -2752,22 +2764,12 @@ void Graphics::createVoxelRectPipeline() {
             .createUnique(device.instance);
     voxelRectSetLayout = *voxelRectSetLayoutUnique;
 
-    vk::PushConstantRange pcr{};
-    pcr.stageFlags = vk::ShaderStageFlagBits::eVertex;
-    pcr.offset = 0;
-    pcr.size = sizeof(VoxelRectPC);
+    const auto pcr = pushConstantRange(vk::ShaderStageFlagBits::eVertex, sizeof(VoxelRectPC));
+    voxelRectPipelineLayout = createPipelineLayout(device, voxelRectSetLayout, &pcr);
 
-    vk::PipelineLayoutCreateInfo plInfo{};
-    plInfo.setLayoutCount = 1;
-    plInfo.pSetLayouts = &voxelRectSetLayout;
-    plInfo.pushConstantRangeCount = 1;
-    plInfo.pPushConstantRanges = &pcr;
-    voxelRectPipelineLayout = device->createPipelineLayout(plInfo);
-
-    std::vector<uint32_t> vert(voxel_rect_vert_spv, voxel_rect_vert_spv + voxel_rect_vert_spv_count);
-    std::vector<uint32_t> frag(voxel_rect_frag_spv, voxel_rect_frag_spv + voxel_rect_frag_spv_count);
-    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
-    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+    auto vert = embeddedSpirv(voxel_rect_vert_spv);
+    auto frag = embeddedSpirv(voxel_rect_frag_spv);
+    ShaderModulePair modules(device, vert, frag);
 
     vk::VertexInputBindingDescription bindings[2]{};
     bindings[0].binding = 0;
@@ -2801,7 +2803,7 @@ void Graphics::createVoxelRectPipeline() {
     // collapses to a 1px silhouette.
     voxelRectPipeline =
         device.createPipeline()
-            .useClassicPipeline(vertModule, fragModule)
+            .useClassicPipeline(modules.vert, modules.frag)
             .setPipelineLayout(voxelRectPipelineLayout)
             .setVertexInputState(vi)
             .setDynamicStatesViewportScissor()
@@ -2809,8 +2811,6 @@ void Graphics::createVoxelRectPipeline() {
                            vk::FrontFace::eCounterClockwise)
             .setDepthStencil(true, true, vk::CompareOp::eLess)
             .build(renderpass);
-    device->destroyShaderModule(vertModule);
-    device->destroyShaderModule(fragModule);
 
     ensureVoxelUnitQuad();
 }
@@ -3163,6 +3163,8 @@ void Graphics::setMesh3DClip(float nearZ, float farZ) {
     mesh3dClustered.clipInfo.y = f;
 }
 
+// --- Mesh creation and drawing ------------------------------------------------
+
 Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     ASSERT(initialized);
     if (!initialized) throw Exception("newMeshFromAssimp: graphics not initialized");
@@ -3210,18 +3212,8 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     }
     if (indices.empty()) throw Exception("newMeshFromAssimp: no triangle faces");
 
-    auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
-    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
-                          indices.size() * sizeof(uint32_t),
-                          vk::MemoryPropertyFlagBits::eHostVisible |
-                              vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(frameToken(), indices.data(), indices.size() * sizeof(uint32_t));
-    gpu->indexCount = uint32_t(indices.size());
-
-    auto handle = std::make_unique<Mesh>();
-    handle->indexCount = int(gpu->indexCount);
-    handle->gpuHandle = gpu.get();
+    auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
+    auto handle = makeMeshHandle(*gpu);
     handle->initMorphBase(int(mesh.mNumVertices), basePos.data(), baseNrm.data(), baseUv.data());
     // Assimp morph targets (VRM / glTF blend shapes often land here).
     for (unsigned m = 0; m < mesh.mNumAnimMeshes; ++m) {
@@ -3344,18 +3336,8 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
         if (int(id) >= vertexCount) throw Exception("newMeshFromArrays: index out of range");
     }
 
-    auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
-    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
-                          idx.size() * sizeof(uint32_t),
-                          vk::MemoryPropertyFlagBits::eHostVisible |
-                              vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(frameToken(), idx.data(), idx.size() * sizeof(uint32_t));
-    gpu->indexCount = uint32_t(idx.size());
-
-    auto handle = std::make_unique<Mesh>();
-    handle->indexCount = int(gpu->indexCount);
-    handle->gpuHandle = gpu.get();
+    auto gpu = uploadGpuMesh(device, frameToken(), verts, idx);
+    auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
@@ -3471,18 +3453,8 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
         }
     }
 
-    auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
-    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
-                          indices.size() * sizeof(uint32_t),
-                          vk::MemoryPropertyFlagBits::eHostVisible |
-                              vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(frameToken(), indices.data(), indices.size() * sizeof(uint32_t));
-    gpu->indexCount = uint32_t(indices.size());
-
-    auto handle = std::make_unique<Mesh>();
-    handle->indexCount = int(gpu->indexCount);
-    handle->gpuHandle = gpu.get();
+    auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
+    auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
@@ -3589,18 +3561,8 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
         }
     }
 
-    auto gpu = std::make_unique<GpuMesh>();
-    gpu->vertices.allocate<MeshVertex>(frameToken(), device, verts);
-    gpu->indices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer,
-                          indices.size() * sizeof(uint32_t),
-                          vk::MemoryPropertyFlagBits::eHostVisible |
-                              vk::MemoryPropertyFlagBits::eHostCoherent);
-    gpu->indices.updateLocal(frameToken(), indices.data(), indices.size() * sizeof(uint32_t));
-    gpu->indexCount = uint32_t(indices.size());
-
-    auto handle = std::make_unique<Mesh>();
-    handle->indexCount = int(gpu->indexCount);
-    handle->gpuHandle = gpu.get();
+    auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
+    auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
@@ -3687,10 +3649,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipelineLayout, 0, 1,
                               &set, 0, nullptr);
-        vk::DeviceSize offset = 0;
-        cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
-        cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
-        cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+        drawIndexedMesh(cb, *gpuMesh);
         return;
     }
 
@@ -3744,10 +3703,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 0,
                               nullptr);
     }
-    vk::DeviceSize offset = 0;
-    cb.bindVertexBuffers(0, 1, gpuMesh->vertices, &offset);
-    cb.bindIndexBuffer(gpuMesh->indices.buffer, 0, vk::IndexType::eUint32);
-    cb.drawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
+    drawIndexedMesh(cb, *gpuMesh);
 }
 
 void Graphics::present() {
