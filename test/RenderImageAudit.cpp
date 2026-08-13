@@ -852,7 +852,11 @@ Texture *makeChecker(Graphics *gfx, int w, int h, bool repeat = false) {
             px[i + 3] = 255;
         }
     }
-    return gfx->newTexture(w, h, px.data(), repeat, repeat);
+    // Studio / classic-style 3D audits: mipmaps + anisotropy (engine default stays off).
+    TextureCreateInfo info = TextureCreateInfo::withMipmaps(true);
+    info.sampler.repeatU = repeat;
+    info.sampler.repeatV = repeat;
+    return gfx->newTexture(w, h, px.data(), info);
 }
 
 struct CloseWin {
@@ -2168,10 +2172,21 @@ TEST_CASE("graphics.imageAudit.textureSources") {
     const std::string texDir = pathBesideThisSource("Textures");
     fs->allowMountingForPath(texDir);
     REQUIRE(fs->mount(texDir, "", false));
-    Texture *diff = gfx->newTextureFromFile("Rock1_Diffuse.png");
-    Texture *nrm = gfx->newTextureFromFile("Rock_Normal.png");
+    std::unique_ptr<eve::filesystem::FileData> diffFile(fs->read("Rock1_Diffuse.png"));
+    std::unique_ptr<eve::filesystem::FileData> nrmFile(fs->read("Rock_Normal.png"));
+    REQUIRE(diffFile != nullptr);
+    REQUIRE(nrmFile != nullptr);
+    auto *imgMod = eve::image::Image::create();
+    std::unique_ptr<ImageData> diffImg(imgMod->newImageData(diffFile.get()));
+    std::unique_ptr<ImageData> nrmImg(imgMod->newImageData(nrmFile.get()));
+    REQUIRE(diffImg != nullptr);
+    REQUIRE(nrmImg != nullptr);
+    Texture *diff = gfx->newTexture(diffImg.get(), TextureCreateInfo::withMipmaps(true));
+    Texture *nrm = gfx->newTexture(nrmImg.get(), TextureCreateInfo::withMipmaps(true));
     REQUIRE(diff != nullptr);
     REQUIRE(nrm != nullptr);
+    REQUIRE(diff->getMipmapCount() > 1);
+    REQUIRE(diff->getSampler().maxAnisotropy > 1.f);
     studio.subject->setTexture(diff);
     studio.subject->setNormalTexture(nrm);
     auditGpuFrame(gfx, "texsrc", "file_rock", bg);

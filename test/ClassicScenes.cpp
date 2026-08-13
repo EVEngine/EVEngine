@@ -155,7 +155,8 @@ Texture *makeStudioCubemap(Graphics *gfx, int face = 16) {
 
 Texture *textureFromImageData(Graphics *gfx, eve::image::ImageData *img) {
     if (!img) return nullptr;
-    return gfx->newTexture(img);
+    // Classic flythroughs need mipmaps + anisotropy; engine defaults stay off for pixel-art paths.
+    return gfx->newTexture(img, TextureCreateInfo::withMipmaps(true));
 }
 
 Texture *loadAssimpDiffuseTexture(Graphics *gfx, const aiScene *scene, const aiMaterial *mat,
@@ -667,6 +668,11 @@ int spawnModel(Graphics *gfx, eve::model3d::ModelData *md, const std::string &as
             }
             Texture *fromMat = loadAssimpDiffuseTexture(gfx, scene, mat, assetDir);
             if (fromMat) {
+                if (fromMat->getWidth() > 1 || fromMat->getHeight() > 1) {
+                    REQUIRE(fromMat->getMipmapCount() > 1);
+                    REQUIRE(fromMat->getSampler().maxAnisotropy > 1.f);
+                    REQUIRE(fromMat->getSampler().mipmap == MipmapMode::Linear);
+                }
                 look.tex = fromMat;
                 look.tr = kd.r;
                 look.tg = kd.g;
