@@ -2174,13 +2174,13 @@ TEST_CASE("graphics.imageAudit.textureSources") {
     REQUIRE(fs->mount(texDir, "", false));
     std::unique_ptr<eve::filesystem::FileData> diffFile(fs->read("Rock1_Diffuse.png"));
     std::unique_ptr<eve::filesystem::FileData> nrmFile(fs->read("Rock_Normal.png"));
-    REQUIRE(diffFile != nullptr);
-    REQUIRE(nrmFile != nullptr);
+    REQUIRE(diffFile.get() != nullptr);
+    REQUIRE(nrmFile.get() != nullptr);
     auto *imgMod = eve::image::Image::create();
     std::unique_ptr<ImageData> diffImg(imgMod->newImageData(diffFile.get()));
     std::unique_ptr<ImageData> nrmImg(imgMod->newImageData(nrmFile.get()));
-    REQUIRE(diffImg != nullptr);
-    REQUIRE(nrmImg != nullptr);
+    REQUIRE(diffImg.get() != nullptr);
+    REQUIRE(nrmImg.get() != nullptr);
     Texture *diff = gfx->newTexture(diffImg.get(), TextureCreateInfo::withMipmaps(true));
     Texture *nrm = gfx->newTexture(nrmImg.get(), TextureCreateInfo::withMipmaps(true));
     REQUIRE(diff != nullptr);
