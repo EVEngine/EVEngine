@@ -7,8 +7,11 @@
 #include <sys/syslimits.h>
 
 #include <cstdlib>
+#include <cstring>
 #include <string>
 #include <vector>
+
+#include "image/ImageData.h"
 
 namespace eve {
 namespace macosx {
@@ -67,6 +70,44 @@ void requestAttention(bool continuous) {
         NSRequestUserAttentionType type =
             continuous ? NSCriticalRequest : NSInformationalRequest;
         [app requestUserAttention:type];
+    }
+}
+
+void setIcon(image::ImageData *image) {
+    if (image == nullptr)
+        return;
+
+    @autoreleasepool {
+        const int w = image->getWidth();
+        const int h = image->getHeight();
+        if (w <= 0 || h <= 0)
+            return;
+
+        NSBitmapImageRep *rep = [[NSBitmapImageRep alloc]
+            initWithBitmapDataPlanes:nullptr
+                          pixelsWide:w
+                          pixelsHigh:h
+                       bitsPerSample:8
+                     samplesPerPixel:4
+                            hasAlpha:YES
+                            isPlanar:NO
+                      colorSpaceName:NSDeviceRGBColorSpace
+                         bytesPerRow:w * 4
+                        bitsPerPixel:32];
+        if (rep == nil)
+            return;
+
+        memcpy([rep bitmapData], image->getData(), static_cast<size_t>(w) * h * 4);
+
+        NSImage *nsimage = [[NSImage alloc] initWithSize:NSMakeSize(w, h)];
+        [nsimage addRepresentation:rep];
+        [rep release];
+
+        NSApplication *app = [NSApplication sharedApplication];
+        if (app != nil)
+            [app setApplicationIconImage:nsimage];
+
+        [nsimage release];
     }
 }
 

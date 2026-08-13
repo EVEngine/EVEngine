@@ -3,6 +3,11 @@
 
 namespace eve
 {
+namespace image
+{
+class ImageData;
+}
+
 namespace macosx
 {
 
@@ -28,6 +33,11 @@ std::string getExecutablePath();
  * Bounce the dock icon, if the app isn't in the foreground.
  **/
 void requestAttention(bool continuous);
+
+/**
+ * Set the application (Dock) icon. The ImageData must be in RGBA8 format.
+ **/
+void setIcon(image::ImageData *image);
 
 } // macosx
 } // eve

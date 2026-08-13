@@ -11,6 +11,7 @@
 #include "common/Exception.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
+#include "image/ImageData.h"
 
 #ifdef EVENGINE_ANDROID
 #include "android/android.h"
@@ -142,7 +143,7 @@ bool Window::setWindowSettings(WindowSettings f) {
     if (!createWindowAndContext(x, y, f.width, f.height, sdlflags, f.msaa, f.stencil, f.depth)) return false;
 
     // Make sure the window keeps any previously set icon.
-    // setIcon(icon.get());
+    if (icon) setIcon(icon);
 
     // Make sure the mouse keeps its previous grab setting.
     // setMouseGrab(mouseGrabbed);
@@ -468,6 +469,67 @@ void Window::requestAttention(bool continuous) {
     SDL_FlashWindow(window, continuous ? SDL_FLASH_UNTIL_FOCUSED : SDL_FLASH_BRIEFLY);
 #endif
 #endif
+}
+
+bool Window::setIcon(image::ImageData *image_data) {
+    if (!image_data)
+        return false;
+
+    // SDL_SetWindowIcon expects tightly packed 32-bit RGBA pixels. Normalize
+    // any other ImageData pixel format to RGBA8 first.
+    image::ImageData *rgba      = image_data;
+    image::ImageData *converted = nullptr;
+    if (image_data->getFormat() != "RGBA8") {
+        const int w = image_data->getWidth();
+        const int h = image_data->getHeight();
+        converted   = new image::ImageData(w, h, "RGBA8");
+        for (int y = 0; y < h; ++y)
+            for (int x = 0; x < w; ++x)
+                converted->setPixel(x, y, image_data->getPixel(x, y));
+        rgba = converted;
+    }
+
+    const int w = rgba->getWidth();
+    const int h = rgba->getHeight();
+
+    // ImageData stores RGBA8 channels in memory as [R, G, B, A].
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    const Uint32 rmask = 0xFF000000;
+    const Uint32 gmask = 0x00FF0000;
+    const Uint32 bmask = 0x0000FF00;
+    const Uint32 amask = 0x000000FF;
+#else
+    const Uint32 rmask = 0x000000FF;
+    const Uint32 gmask = 0x0000FF00;
+    const Uint32 bmask = 0x00FF0000;
+    const Uint32 amask = 0xFF000000;
+#endif
+
+    SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(rgba->getData(), w, h, 32, w * 4,
+                                                    rmask, gmask, bmask, amask);
+    if (!surface) {
+        delete converted;
+        throw Exception("Could not create window icon surface: %s", SDL_GetError());
+    }
+
+    if (window)
+        SDL_SetWindowIcon(window, surface);
+
+    SDL_FreeSurface(surface);
+
+    icon = image_data;
+
+#ifdef EVENGINE_MACOSX
+    // SDL only updates the titlebar/mini window icon on macOS; refresh the Dock icon too.
+    eve::macosx::setIcon(rgba);
+#endif
+
+    delete converted;
+    return true;
+}
+
+image::ImageData *Window::getIcon() const {
+    return icon;
 }
 
 bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowflags, int msaa, bool stencil, int depth) {

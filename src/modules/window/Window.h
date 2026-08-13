@@ -3,13 +3,16 @@
 #include <string>
 #include <vector>
 
-#include "common/Math.h"
 #include "common/Module.h"
 
 namespace eve {
 
 namespace graphics {
 class Graphics;
+}
+
+namespace image {
+class ImageData;
 }
 
 namespace window {
@@ -120,14 +123,14 @@ public:
     virtual int  showMessageBoxData(const MessageBoxData& data) = 0;
     virtual void requestAttention(bool continuous) = 0;
 
+    virtual bool              setIcon(image::ImageData *image_data) = 0;
+    virtual image::ImageData *getIcon() const                       = 0;
+
     // --- not yet implemented (kept as drafts) ---
 
     // virtual bool onSizeChanged(int width, int height) = 0;
 
     // virtual Rect getSafeArea() const = 0;
-
-    // // virtual bool setIcon(image::ImageData *image_data) = 0;
-    // // virtual image::ImageData *getIcon() = 0;
 
     // virtual void setDisplaySleepEnabled(bool enable) = 0;
     // virtual bool isDisplaySleepEnabled() const = 0;

@@ -72,6 +72,9 @@ public:
     int  showMessageBoxData(const MessageBoxData& data) override;
     void requestAttention(bool continuous) override;
 
+    bool              setIcon(image::ImageData *image_data) override;
+    image::ImageData *getIcon() const override;
+
     /** Used by event backend on resize to refresh drawable size / viewport. */
     void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);
 
@@ -84,6 +87,8 @@ private:
     WindowSettings settings;
 
     std::string title;
+
+    image::ImageData *icon = nullptr;
 
     int windowWidth  = 800;
     int windowHeight = 600;

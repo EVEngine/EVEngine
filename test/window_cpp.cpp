@@ -4,6 +4,7 @@
 #include "zeroerr/unittest.h"
 
 #include "graphics/Graphics.h"
+#include "image/ImageData.h"
 #include "window/Window.h"
 
 namespace {
@@ -297,6 +298,36 @@ TEST_CASE("window.requestAttentionNoCrash") {
     win->requestAttention(true);
     win->close();
     win->requestAttention(false);
+}
+
+TEST_CASE("window.setAndGetIcon") {
+    eve::window::Window* win = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    openWindow(win, gfx, 320, 240);
+
+    // Window borrows the ImageData pointer, so it must outlive the window.
+    static eve::image::ImageData icon(32, 32, "RGBA8");
+    for (int y = 0; y < 32; ++y)
+        for (int x = 0; x < 32; ++x)
+            icon.setPixel(x, y, eve::image::ImageData::Colorf{1.0f, 0.0f, 0.0f, 1.0f});
+
+    CHECK(win->getIcon() == nullptr);
+    CHECK(win->setIcon(&icon));
+    CHECK(win->getIcon() == &icon);
+
+    // Recreating the window (e.g. via setWindowSettings) must re-apply the icon.
+    WindowSettings s = makeSettings(320, 240);
+    REQUIRE(win->setWindowSettings(s));
+    CHECK(win->getHandle() != nullptr);
+    CHECK(win->getIcon() == &icon);
+
+    win->close();
+}
+
+TEST_CASE("window.setIconNullFails") {
+    auto* win = eve::window::Window::create();
+    REQUIRE(win != nullptr);
+    CHECK(!win->setIcon(nullptr));
 }
 
 TEST_CASE("window.showMessageBoxOptional") {
