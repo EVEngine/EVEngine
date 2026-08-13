@@ -29,6 +29,7 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 texBomb;           // x = cellScale, y = strength (0=off), z = rotAmount, w unused
     vec4 parallax;          // x = scale (0=off), y = minLayers, z = maxLayers, w unused
     mat4 view;
+    vec4 clipInfo;          // x = near, y = far
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
@@ -202,10 +203,15 @@ void main() {
         Lo += shadeLight(N, V, albedo, metallic, roughness, L, radiance);
     }
 
-    // Hemispheric ambient so floors/upward faces stay readable in large interiors.
+    // Hemispheric GI: sky vs ground bounce, plus a cheap wrap fill into umbra.
     float hemi = clamp(N.y * 0.5 + 0.5, 0.0, 1.0);
-    vec3 amb = ubo.ambient.rgb * mix(0.7, 1.25, hemi);
-    vec3 color = albedo * amb * (1.0 - metallic) + Lo;
+    vec3 skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
+    vec3 gndIrr = ubo.ambient.rgb * vec3(0.72, 0.62, 0.52);
+    vec3 irr = mix(gndIrr, skyIrr, hemi);
+    vec3 gi = albedo * irr * (1.0 - metallic);
+    float wrap = max(dot(N, primaryL) * 0.5 + 0.5, 0.0);
+    gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic);
+    vec3 color = gi + Lo;
 
     // Specular IBL (envIntensity packed in lightColor.w). No BRDF LUT — Fresnel * env.
     float envIntensity = ubo.lightColor.w;
@@ -223,5 +229,9 @@ void main() {
 
     color = tonemapPeak(color);
 
-    outColor = vec4(color, base.a);
+    float nearZ = max(ubo.clipInfo.x, 1e-4);
+    float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    float viewZ = max(-vViewPos.z, 0.0);
+    float linear01 = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    outColor = vec4(color, linear01);
 }

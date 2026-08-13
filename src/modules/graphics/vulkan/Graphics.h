@@ -94,6 +94,7 @@ struct Mesh3DUBO {
     glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f}; // x=cellScale, y=strength (0=off), z=rotAmount
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f}; // x=scale (0=off), y=minLayers, z=maxLayers
     glm::mat4 view{1.f};                     // camera view (CSM / view-space depth)
+    glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f}; // x=near, y=far (linear depth in scene color A)
 };
 
 struct Mesh3DClusteredUBO {
@@ -117,12 +118,14 @@ struct GpuTexture {
     bool isCube = false;
     vk::Sampler sampler;
     vk::DescriptorSet descriptorSet;
+    vk::ImageView viewOverride{};
     int width = 0;
     int height = 0;
     uint32_t mipLevels = 1;
     TextureSampler samplerState{};
 
     vk::ImageView imageView() const {
+        if (viewOverride) return viewOverride;
         return isCube ? cubeImage.imageView() : image.imageView();
     }
 };
@@ -184,6 +187,8 @@ public:
     void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
                                   float h, float u0, float v0, float u1, float v1,
                                   const Color &color) override;
+    void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
+                                     float w, float h, const Color &tint) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
                                float u0, float v0, float u1, float v1, const Color &color) override;
     void setLighting2D(const Lighting2DUBO &ubo) override;
@@ -206,6 +211,8 @@ public:
     void begin3DFrame() override;
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
     void setMesh3DView(const glm::mat4 &view) override;
+    void setMesh3DClip(float nearZ, float farZ) override;
+    Texture *getSceneColorTexture() override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
@@ -230,7 +237,8 @@ public:
 
     void beginGBufferPass(int width, int height) override;
     void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                         float farZ) override;
+                         float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
+                         float tintB = 1.f) override;
     void endGBufferPass() override;
 
     Canvas *newCanvas(int width, int height) override;
@@ -281,11 +289,18 @@ private:
     void destroyShadowResources();
     void createGBufferResources(int width, int height);
     void destroyGBufferResources();
+    void createSceneColorResources(int width, int height);
+    void destroySceneColorResources();
     void recordPendingShadowPasses();
     void recordPendingGBufferPass();
     void dropPendingOffscreenPasses();
     /** acquire + record deferred shadow/gbuffer + begin swapchain RP. */
     bool beginSwapchainRenderPass();
+    /** Begin the swapchain color+depth RP on an already-acquired present CB. */
+    void beginSwapchainColorPass();
+    bool beginSceneColorRenderPass();
+    void endSceneColorRenderPass();
+    void queueSceneColorResolve();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     vk::DescriptorSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
@@ -310,6 +325,7 @@ private:
                         std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
                         size_t &texBufIndex, bool offscreen);
     vk::DescriptorSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
+    vk::DescriptorSet post2SetFor(GpuTexture *color, GpuTexture *depth);
     void ensureFlatNormalTexture();
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
@@ -494,6 +510,7 @@ private:
     static_assert(sizeof(GBufferPush) == 128, "GBuffer push constants must be 128 bytes");
     struct GBufferDraw {
         Mesh *mesh = nullptr;
+        Texture *albedo = nullptr;
         GBufferPush push{};
     };
     struct GBufferSlot {
@@ -513,9 +530,11 @@ private:
         GpuTexture normalGpu{};
         GpuTexture depthColorGpu{};
         GpuTexture albedoGpu{};
+        GpuTexture depthGpu{};
         Texture normalTex{};
         Texture depthColorTex{};
         Texture albedoTex{};
+        Texture depthTex{};
     };
     int gbufferWidth = 0;
     int gbufferHeight = 0;
@@ -528,6 +547,25 @@ private:
     std::vector<GBufferDraw> gbufferPassDraws;
     GBufferSlot *currentGBufferSlot();
 
+    struct SceneColorSlot {
+        vk::Image colorImage{};
+        vk::DeviceMemory colorMemory{};
+        vk::ImageView colorView{};
+        vk::Image depthImage{};
+        vk::DeviceMemory depthMemory{};
+        vk::ImageView depthView{};
+        vk::Framebuffer framebuffer{};
+        GpuTexture colorGpu{};
+        Texture colorTex{};
+    };
+    int sceneColorWidth = 0;
+    int sceneColorHeight = 0;
+    vk::Format sceneColorFormat = vk::Format::eUndefined;
+    std::vector<SceneColorSlot> sceneColorSlots;
+    vk::RenderPass sceneColorRenderPass{};
+    bool sceneColorPassOpen = false;
+    SceneColorSlot *currentSceneColorSlot();
+
     vkb::Present presentModel;
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
@@ -535,6 +573,7 @@ private:
     Batcher solidBatch;
     struct TexturedBatch {
         Texture *texture = nullptr;
+        Texture *depth = nullptr;
         Shader *shader = nullptr;
         Batcher batch;
     };
@@ -575,6 +614,7 @@ private:
     };
     std::vector<std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash>> lit2dSets;
     std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> offscreenLit2dSets;
+    std::unordered_map<LitSetKey, vk::DescriptorSet, LitSetKeyHash> post2Sets;
     Texture *flatNormalTexture = nullptr;
 
     Color clearColor{0.1f, 0.1f, 0.12f, 1.0f};

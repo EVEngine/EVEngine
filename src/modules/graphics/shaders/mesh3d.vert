@@ -21,6 +21,7 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 texBomb;
     vec4 parallax;
     mat4 view;
+    vec4 clipInfo; // near, far
 } ubo;
 
 layout(location = 0) out vec3 vNormal;

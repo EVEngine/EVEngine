@@ -37,6 +37,8 @@
 #include "image/ImageData.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
+#include "system/System.h"
+#include "timer/Timer.h"
 #include "window/Window.h"
 #include "RenderImageAudit.h"
 
@@ -464,6 +466,33 @@ void warmPresent(Graphics *gfx) {
     }
 }
 
+/** Hold the live view at `hz` so lighting/AO/GI can be inspected. Perf benches skip this. */
+void paceViewFrame(eve::timer::Timer *timer, float frameStart, float hz) {
+    if (!timer) return;
+    const float budget = 1.f / std::max(hz, 1.f);
+    const float remain = budget - (timer->getTime() - frameStart);
+    if (remain < 0.001f) return;
+    eve::system::System::create()->sleepMilliseconds(int(remain * 1000.f + 0.5f));
+}
+
+float viewSecondsPerPhase() {
+    const char *env = std::getenv("EVENGINE_VIEW_SECONDS");
+    if (env && env[0]) {
+        const float s = float(std::atof(env));
+        return s > 0.2f ? s : 0.2f;
+    }
+    return 4.f;
+}
+
+float viewHz() {
+    const char *env = std::getenv("EVENGINE_VIEW_HZ");
+    if (env && env[0]) {
+        const float h = float(std::atof(env));
+        return h > 1.f ? h : 1.f;
+    }
+    return 30.f;
+}
+
 std::string classicOutDir() {
     return std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes";
 }
@@ -504,7 +533,9 @@ void resetRenderControl(Graphics *gfx) {
     rc->enable("forward");
     rc->enable("hair");
     rc->enable("clustered");
-    rc->disable("gbuffer");
+    rc->enable("ao");
+    rc->enable("gi");
+    rc->enable("aa");
     rc->compile();
 }
 
@@ -822,7 +853,7 @@ std::vector<CamKey> makeSponzaPath(const Bounds &b) {
  */
 std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
                                      const std::vector<CamKey> &path, const char *sceneTag,
-                                     bool polishMetalsForIbl, int framesPerLeg = 36) {
+                                     bool polishMetalsForIbl) {
     REQUIRE(actors.cam != nullptr);
     REQUIRE(path.size() >= 2);
     REQUIRE(actors.env != nullptr);
@@ -841,24 +872,35 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
     gfx->setBackgroundColor(Color(0.14f, 0.15f, 0.17f, 1.f));
     addHud();
 
-    // Distribute path progress across phases so each config is seen in flight.
+    auto *timer = eve::timer::Timer::create();
+    const float hz = viewHz();
+    const float secPerPhase = viewSecondsPerPhase();
+    const float totalSec = float(nPhases) * secPerPhase;
     const int legs = int(path.size()) - 1;
-    const int totalFrames = std::max(legs * framesPerLeg, nPhases * 12);
+    const float tFly0 = timer->getTime();
+    std::printf("ClassicScenes[%s] view %.1fs/phase @ %.0f Hz (set EVENGINE_VIEW_SECONDS to change)\n",
+                sceneTag, secPerPhase, hz);
+
     int frame = 0;
     for (int pi = 0; pi < nPhases; ++pi) {
         applyConfig(actors, phases[pi], polishMetalsForIbl && cfgUsesIbl(phases[pi]));
         std::printf("ClassicScenes[%s] phase=%s\n", sceneTag, cfgName(phases[pi]));
 
-        const int phaseStart = (totalFrames * pi) / nPhases;
-        const int phaseEnd = (totalFrames * (pi + 1)) / nPhases;
-        for (int f = phaseStart; f < phaseEnd; ++f) {
-            const float tPath = (totalFrames <= 1) ? 0.f : float(f) / float(totalFrames - 1);
+        const float phaseEnd = float(pi + 1) * secPerPhase;
+        const float tPhase0 = timer->getTime();
+        int nFrames = 0;
+        const int frameCap = std::max(8, int(hz * secPerPhase) * 4);
+        while (nFrames < frameCap) {
+            const float now = timer->getTime();
+            const float elapsed = now - tFly0;
+            if (elapsed >= phaseEnd && nFrames >= 2) break;
+
+            const float tPath = totalSec > 1e-4f ? std::min(elapsed / totalSec, 1.f) : 0.f;
             const float legF = tPath * float(legs);
             const int leg = std::min(legs - 1, int(legF));
             const float u = legF - float(leg);
             applyCam(actors.cam, lerpKey(path[size_t(leg)], path[size_t(leg + 1)], u));
 
-            // Mild yaw on chart spheres so IBL / lighting reads in motion.
             if (std::string(sceneTag) == "pbr_chart") {
                 for (auto *e : actors.ents) e->transform()->yaw = float(frame) * 0.03f;
             }
@@ -869,8 +911,14 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors,
             while (SDL_PollEvent(&e)) {
                 if (e.type == SDL_QUIT) break;
             }
+            paceViewFrame(timer, now, hz);
+            ++nFrames;
             ++frame;
         }
+        const float phaseDt = timer->getTime() - tPhase0;
+        std::printf("ClassicScenes[%s] phase=%s  view %d frames in %.2fs (%.1f fps)\n", sceneTag,
+                    cfgName(phases[pi]), nFrames, phaseDt,
+                    phaseDt > 1e-4f ? float(nFrames) / phaseDt : 0.f);
 
         // Snapshot a front-on / path-start key so charts and interiors stay
         // readable. The fly still covers the full path for live viewing.
@@ -1228,8 +1276,7 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     actors.pointB->setRadius(rad * 1.2f);
 
     auto path = makeSponzaPath(actors.bounds);
-    auto L = flyThroughConfigs(gfx, actors, path, "sponza", /*polishMetalsForIbl=*/false,
-                               /*framesPerLeg=*/12);
+    auto L = flyThroughConfigs(gfx, actors, path, "sponza", /*polishMetalsForIbl=*/false);
     expectLightingResponse(L);
 
     // Shadows should not black out the whole atrium vs plain directional.
@@ -1319,7 +1366,7 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
         actors.pointB->setColor(0.35f, 0.55f, 1.f, 6.5f);
 
         auto path = makeOrbitPath(actors.bounds, elev, distScale);
-        auto L = flyThroughConfigs(gfx, actors, path, tag, polishMetalsForIbl, /*framesPerLeg=*/12);
+        auto L = flyThroughConfigs(gfx, actors, path, tag, polishMetalsForIbl);
         expectLightingResponse(L);
 
         delete md;

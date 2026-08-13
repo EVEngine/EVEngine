@@ -250,6 +250,8 @@ void AntiAliasing::drawFullscreen(Graphics *gfx, Texture *source, Shader *shader
     gfx->drawTexturedRectShader(source, shader, 0.f, 0.f, dw, dh, glm::vec4(1.f, 1.f, 1.f, 1.f));
 }
 
+void AntiAliasing::prepareSource(Texture *source) { uploadScreenUniforms(source); }
+
 void AntiAliasing::apply(Graphics *gfx, Texture *source) {
     drawFullscreen(gfx, source, shaderForMode());
 }
