@@ -1,12 +1,14 @@
 #pragma once
 
 #include "voxel/Chunk.h"
+#include "voxel/CubeTypeRegistry.h"
 #include "voxel/FaceDir.h"
 #include "voxel/Frustum.h"
 #include "voxel/VoxelPack.h"
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -32,6 +34,7 @@ struct DrawBatch {
 class VoxelWorld {
 public:
     VoxelWorld() = default;
+    explicit VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
 
     Chunk *getOrCreateChunk(int cx, int cy, int cz);
     Chunk *getChunk(int cx, int cy, int cz);
@@ -73,6 +76,20 @@ public:
     uint8_t getVoxel(int wx, int wy, int wz) const;
     void setVoxel(int wx, int wy, int wz, uint8_t texId);
 
+    /**
+     * 按方块名 + orientation(0..3) 设置体素；内部解析为具体类型 id 后写 Chunk。
+     * 未注册的名字按空气(0)处理。
+     */
+    void setVoxelByName(int wx, int wy, int wz, const std::string &name, int orientation = 0);
+
+    /** 该体素所属方块类型名（未注册或空气返回空串）。 */
+    std::string getCubeTypeName(int wx, int wy, int wz) const;
+    /** 该体素在某面方向上的纹理 id（faceDir 如 "posX"/"+y"/"negZ"）。 */
+    uint8_t getCubeTypeTex(int wx, int wy, int wz, const std::string &faceDir) const;
+
+    /** 本世界持有的方块类型注册表（副本）。 */
+    const CubeTypeRegistry &cubeTypes() const { return types_; }
+
 private:
     static uint64_t key(int cx, int cy, int cz) {
         const uint64_t ux = uint64_t(uint32_t(cx) & 0x1FFFFFu);
@@ -94,6 +111,7 @@ private:
     std::unordered_map<uint64_t, std::unique_ptr<Chunk>> chunks_;
     std::vector<DrawBatch> visible_;
     std::vector<uint64_t> visibleChunkKeys_;
+    CubeTypeRegistry types_;
 };
 
 }  // namespace eve::voxel

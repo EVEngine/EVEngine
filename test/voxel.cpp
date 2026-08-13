@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "voxel/Chunk.h"
+#include "voxel/CubeTypeRegistry.h"
 #include "voxel/FaceDir.h"
 #include "voxel/Frustum.h"
 #include "voxel/GreedyMesher.h"
@@ -80,17 +81,25 @@ TEST_CASE("voxel.module.name") {
     CHECK_EQ(mod->getName(), std::string("Voxel"));
     CHECK_EQ(Voxel::create(), mod);
     CHECK_EQ(mod->getChunkSize(), 32);
+    CubeTypeRegistry *types = mod->newCubeTypes();
+    REQUIRE(types != nullptr);
+    CHECK_EQ(types->count(), 0);
+    CHECK_EQ(types->variantCount(), 0);
+    delete types;
+    VoxelWorld *world = mod->newWorld();
+    REQUIRE(world != nullptr);
+    CHECK_EQ(world->getChunkCount(), 0);
+    delete world;
 }
 
 TEST_CASE("voxel.pack.roundtrip") {
-    Voxel *mod = Voxel::create();
-    const uint32_t bits = mod->packRect(3, 7, 11, 5, 9, 42);
-    CHECK_EQ(mod->unpackRectX(bits), 3);
-    CHECK_EQ(mod->unpackRectY(bits), 7);
-    CHECK_EQ(mod->unpackRectZ(bits), 11);
-    CHECK_EQ(mod->unpackRectWidth(bits), 5);
-    CHECK_EQ(mod->unpackRectHeight(bits), 9);
-    CHECK_EQ(mod->unpackRectTex(bits), 42);
+    const uint32_t bits = PackedRect::pack(3, 7, 11, 5, 9, 42).bits;
+    CHECK_EQ(PackedRect{bits}.x(), 3);
+    CHECK_EQ(PackedRect{bits}.y(), 7);
+    CHECK_EQ(PackedRect{bits}.z(), 11);
+    CHECK_EQ(PackedRect{bits}.width(), 5);
+    CHECK_EQ(PackedRect{bits}.height(), 9);
+    CHECK_EQ(PackedRect{bits}.tex(), 42);
 
     const uint32_t full = PackedRect::pack(31, 31, 31, 32, 32, 127).bits;
     CHECK_EQ(PackedRect{full}.x(), 31);
@@ -673,21 +682,19 @@ TEST_CASE("voxel.decode.chunk_origin_offsets_corners") {
     }
 }
 
-TEST_CASE("voxel.module.meshVoxels_api") {
-    Voxel *mod = Voxel::create();
+TEST_CASE("voxel.mesher.meshChunk_single_voxel") {
     std::vector<uint8_t> voxels(size_t(32 * 32 * 32), 0);
     voxels[size_t(2 + 3 * 32 + 4 * 32 * 32)] = 7;
-    mod->meshVoxels(voxels.data(), int(voxels.size()));
-    CHECK_EQ(mod->getMeshFaceCount("posX"), 1);
-    CHECK_EQ(mod->getMeshFaceCount("negX"), 1);
-    CHECK_EQ(mod->getMeshFaceCount("+y"), 1);
-    const uint32_t bits = mod->getMeshFacePacked("posZ", 0);
+    std::vector<PackedRect> faces[6];
+    GreedyMesher::meshChunk(voxels.data(), faces);
+    CHECK_EQ(int(faces[int(FaceDir::PosX)].size()), 1);
+    CHECK_EQ(int(faces[int(FaceDir::NegX)].size()), 1);
+    CHECK_EQ(int(faces[int(FaceDir::PosY)].size()), 1);
+    const uint32_t bits = faces[int(FaceDir::PosZ)][0].bits;
     CHECK_EQ(PackedRect{bits}.tex(), 7);
     CHECK_EQ(PackedRect{bits}.x(), 2);
     CHECK_EQ(PackedRect{bits}.y(), 3);
     CHECK_EQ(PackedRect{bits}.z(), 4);
-    CHECK_EQ(mod->getMeshFaceCount("nope"), 0);
-    CHECK_EQ(mod->getMeshFacePacked("posX", 99), 0u);
 }
 
 TEST_CASE("voxel.greedy.checkerboard_same_tex_still_many_faces") {
@@ -882,35 +889,45 @@ TEST_CASE("voxel.world.air_get_missing_chunk") {
     CHECK(!world->hasChunk(0, 0, 0));
 }
 
-TEST_CASE("voxel.module.meshVoxels_throws_on_short_buffer") {
-    Voxel *mod = Voxel::create();
-    uint8_t tiny[16] = {};
-    bool threw = false;
-    try {
-        mod->meshVoxels(tiny, 16);
-    } catch (...) {
-        threw = true;
-    }
-    CHECK(threw);
-    threw = false;
-    try {
-        mod->meshVoxels(nullptr, 32 * 32 * 32);
-    } catch (...) {
-        threw = true;
-    }
-    CHECK(threw);
+TEST_CASE("voxel.registry.add_and_lookup") {
+    CubeTypeRegistry reg;
+    CubeType grass;
+    grass.name = "grass";
+    grass.faceTex[0] = 1;
+    grass.faceTex[1] = 1;
+    grass.faceTex[2] = 2;
+    grass.faceTex[3] = 3;
+    grass.faceTex[4] = 1;
+    grass.faceTex[5] = 1;
+    const uint8_t gid = reg.add(grass);
+    CHECK(gid >= 1);
+    CHECK_EQ(reg.count(), 1);
+    CHECK_EQ(reg.variantCount(), 1);
+
+    const CubeType *t = reg.find("grass");
+    REQUIRE(t != nullptr);
+    CHECK_EQ(t->id, gid);
+    CHECK_EQ(int(t->faceTex[2]), 2);
+    CHECK(!t->directional);
+
+    CHECK(reg.find("nope") == nullptr);
+    CHECK(reg.find(0) == nullptr);
+    CHECK(reg.find(uint8_t(200)) == nullptr);
+
+    reg.clear();
+    CHECK_EQ(reg.count(), 0);
+    CHECK_EQ(reg.variantCount(), 0);
 }
 
 TEST_CASE("voxel.module.pack_clamps_via_mask") {
-    Voxel *mod = Voxel::create();
     // Values beyond 5-bit are masked (x=33 → 1).
-    const uint32_t bits = mod->packRect(33, 40, 50, 40, 50, 200);
-    CHECK_EQ(mod->unpackRectX(bits), 1);    // 33 & 31
-    CHECK_EQ(mod->unpackRectY(bits), 8);    // 40 & 31
-    CHECK_EQ(mod->unpackRectZ(bits), 18);   // 50 & 31
-    CHECK_EQ(mod->unpackRectWidth(bits), 8);   // (40-1)&31 + 1 = 8? (39&31)+1 = 8
-    CHECK_EQ(mod->unpackRectHeight(bits), 18); // (49&31)+1 = 18
-    CHECK_EQ(mod->unpackRectTex(bits), 72);    // 200 & 127
+    const uint32_t bits = PackedRect::pack(33, 40, 50, 40, 50, 200).bits;
+    CHECK_EQ(PackedRect{bits}.x(), 1);    // 33 & 31
+    CHECK_EQ(PackedRect{bits}.y(), 8);    // 40 & 31
+    CHECK_EQ(PackedRect{bits}.z(), 18);   // 50 & 31
+    CHECK_EQ(PackedRect{bits}.width(), 8);   // (40-1)&31 + 1 = 8
+    CHECK_EQ(PackedRect{bits}.height(), 18); // (49&31)+1 = 18
+    CHECK_EQ(PackedRect{bits}.tex(), 72);    // 200 & 127
 }
 
 TEST_CASE("voxel.decode.uv_tilesPerRow_one") {
@@ -1267,18 +1284,16 @@ TEST_CASE("voxel.world.set_air_clears_and_remeshes") {
     CHECK_EQ(int(world->getVoxel(2, 2, 2)), 0);
 }
 
-TEST_CASE("voxel.module.getMeshFacePacked_oob_and_bad_name") {
-    auto *mod = Voxel::create();
+TEST_CASE("voxel.module.meshChunk_multi_textures") {
     uint8_t voxels[32 * 32 * 32];
     std::memset(voxels, 0, sizeof(voxels));
     voxels[0] = 1;
-    mod->meshVoxels(voxels, int(sizeof(voxels)));
-    CHECK_EQ(mod->getMeshFacePacked("nope", 0), 0u);
-    CHECK_EQ(mod->getMeshFacePacked("posY", -1), 0u);
-    CHECK_EQ(mod->getMeshFacePacked("posY", 999), 0u);
-    CHECK(mod->getMeshFacePacked("posY", 0) != 0u);
-    CHECK_EQ(mod->getMeshFaceCount("nope"), 0);
-    CHECK_EQ(mod->getChunkSize(), 32);
+    std::vector<PackedRect> faces[6];
+    GreedyMesher::meshChunk(voxels, faces);
+    for (int i = 0; i < faceDirCount(); ++i) {
+        CHECK_EQ(int(faces[i].size()), 1);
+        CHECK_EQ(faces[i][0].tex(), 1);
+    }
 }
 
 TEST_CASE("voxel.decode.uv_corners_monotonic_in_tile") {
@@ -1512,21 +1527,21 @@ TEST_CASE("voxel.pack.tex_field_isolates_from_xyz") {
     }
 }
 
-TEST_CASE("voxel.module.meshVoxels_keeps_distinct_textures") {
-    auto *mod = Voxel::create();
+TEST_CASE("voxel.module.meshChunk_keeps_distinct_textures") {
     uint8_t voxels[32 * 32 * 32];
     std::memset(voxels, 0, sizeof(voxels));
     voxels[0] = 3;
     voxels[1] = 11;
     voxels[2] = 22;
-    mod->meshVoxels(voxels, int(sizeof(voxels)));
-    CHECK_EQ(mod->getMeshFaceCount("posY"), 3);
+    std::vector<PackedRect> faces[6];
+    GreedyMesher::meshChunk(voxels, faces);
+    const auto &top = faces[int(FaceDir::PosY)];
+    CHECK_EQ(int(top.size()), 3);
     bool saw3 = false, saw11 = false, saw22 = false;
-    for (int i = 0; i < mod->getMeshFaceCount("posY"); ++i) {
-        const int t = PackedRect{mod->getMeshFacePacked("posY", i)}.tex();
-        if (t == 3) saw3 = true;
-        if (t == 11) saw11 = true;
-        if (t == 22) saw22 = true;
+    for (const auto &r : top) {
+        if (r.tex() == 3) saw3 = true;
+        if (r.tex() == 11) saw11 = true;
+        if (r.tex() == 22) saw22 = true;
     }
     CHECK(saw3);
     CHECK(saw11);
@@ -1714,14 +1729,13 @@ TEST_CASE("voxel.decode.negative_chunk_origin") {
 }
 
 TEST_CASE("voxel.module.pack_unpack_roundtrip_api") {
-    auto *mod = Voxel::create();
-    const uint32_t bits = mod->packRect(7, 8, 9, 3, 5, 42);
-    CHECK_EQ(mod->unpackRectX(bits), 7);
-    CHECK_EQ(mod->unpackRectY(bits), 8);
-    CHECK_EQ(mod->unpackRectZ(bits), 9);
-    CHECK_EQ(mod->unpackRectWidth(bits), 3);
-    CHECK_EQ(mod->unpackRectHeight(bits), 5);
-    CHECK_EQ(mod->unpackRectTex(bits), 42);
+    const uint32_t bits = PackedRect::pack(7, 8, 9, 3, 5, 42).bits;
+    CHECK_EQ(PackedRect{bits}.x(), 7);
+    CHECK_EQ(PackedRect{bits}.y(), 8);
+    CHECK_EQ(PackedRect{bits}.z(), 9);
+    CHECK_EQ(PackedRect{bits}.width(), 3);
+    CHECK_EQ(PackedRect{bits}.height(), 5);
+    CHECK_EQ(PackedRect{bits}.tex(), 42);
 }
 
 TEST_CASE("voxel.chunk.fill_dirty_clear_dirty") {
@@ -1949,19 +1963,25 @@ TEST_CASE("voxel.frustum.tiny_aabb_on_axis") {
     CHECK(!f.intersectsAABB(100.f, -0.01f, -0.01f, 101.f, 0.01f, 0.01f));
 }
 
-TEST_CASE("voxel.module.newChunk_and_newWorld") {
+TEST_CASE("voxel.module.newCubeTypes_and_newWorld") {
     auto *mod = Voxel::create();
-    Chunk *c = mod->newChunk(2, -1, 3);
-    REQUIRE(c != nullptr);
-    CHECK_EQ(c->cx(), 2);
-    CHECK_EQ(c->cy(), -1);
-    CHECK_EQ(c->cz(), 3);
-    delete c;
-    VoxelWorld *w = mod->newWorld();
+    CubeTypeRegistry *types = mod->newCubeTypes();
+    REQUIRE(types != nullptr);
+    types->loadFromJson("[{\"name\":\"stone\",\"faceTex\":[9,9,9,9,9,9]}]");
+    CHECK_EQ(types->count(), 1);
+
+    VoxelWorld *w = mod->newWorld(types);
     REQUIRE(w != nullptr);
-    w->setVoxel(0, 0, 0, 1);
+    w->setVoxelByName(0, 0, 0, "stone");
     CHECK(w->hasChunk(0, 0, 0));
+    CHECK_EQ(w->getCubeTypeName(0, 0, 0), std::string("stone"));
     delete w;
+
+    VoxelWorld *empty = mod->newWorld();
+    REQUIRE(empty != nullptr);
+    CHECK_EQ(empty->getChunkCount(), 0);
+    delete empty;
+    delete types;
 }
 
 TEST_CASE("voxel.greedy.border_only_x0_plane") {
@@ -1974,3 +1994,122 @@ TEST_CASE("voxel.greedy.border_only_x0_plane") {
     CHECK_EQ(chunk->faceRects(FaceDir::NegX)[0].height(), 32);
     CHECK_EQ(chunk->faceRectCount(FaceDir::PosX), 1);
 }
+
+TEST_CASE("voxel.registry.loadFromJson") {
+    CubeTypeRegistry reg;
+    const int n = reg.loadFromJson(
+        R"([
+            {"name":"grass","faceTex":[1,1,2,3,1,1]},
+            {"name":"furnace","faceTex":[4,4,4,4,5,4],"directional":true,"composeGroup":"furnace"}
+        ])");
+    CHECK_EQ(n, 2);
+    CHECK_EQ(reg.count(), 2);
+    // furnace 方向性展开成 4 个变体
+    CHECK_EQ(reg.variantCount(), 5);  // grass + 4 furnace variants
+
+    const CubeType *grass = reg.find("grass");
+    REQUIRE(grass != nullptr);
+    CHECK(!grass->directional);
+    CHECK_EQ(int(grass->faceTex[2]), 2);
+
+    const CubeType *furnace = reg.find("furnace");
+    REQUIRE(furnace != nullptr);
+    CHECK(furnace->directional);
+    CHECK_EQ(furnace->composeGroup, std::string("furnace"));
+
+    std::string err;
+    CHECK_EQ(reg.loadFromJson("not json", &err), 0);
+    CHECK(!err.empty());
+}
+
+TEST_CASE("voxel.registry.directional_variants_rotate_faces") {
+    CubeTypeRegistry reg;
+    CubeType furnace;
+    furnace.name = "furnace";
+    // 前脸在 +X（id=4），其它面 id=1，顶/底 ±Y 分别 5/6
+    furnace.faceTex[0] = 4;  // PosX
+    furnace.faceTex[1] = 1;  // NegX
+    furnace.faceTex[2] = 5;  // PosY
+    furnace.faceTex[3] = 6;  // NegY
+    furnace.faceTex[4] = 1;  // PosZ
+    furnace.faceTex[5] = 1;  // NegZ
+    furnace.directional = true;
+    const uint8_t base = reg.add(furnace);
+    CHECK(base >= 1);
+    CHECK_EQ(reg.variantCount(), 4);
+
+    // 0 度变体：+X = 前脸
+    CHECK_EQ(int(reg.find(base)->faceTex[0]), 4);
+    // 90 度变体：前脸转到 +Z（绕 Y：+X→-Z→-X→+Z，因此 +X 的纹理会出现在 90° 变体的 -Z，
+    // 而 +Z 由 -X 转来 = 1）。这里校验 variantId + resolveFaceTex 的一致性。
+    const uint8_t v90 = reg.variantId("furnace", 1);
+    CHECK_EQ(int(v90), int(base + 1));
+    // 顶/底不随绕 Y 旋转变化
+    CHECK_EQ(int(reg.find(v90)->faceTex[2]), 5);
+    CHECK_EQ(int(reg.find(v90)->faceTex[3]), 6);
+
+    // resolveFaceTex：未注册 id 退化为 id 本身
+    CHECK_EQ(int(resolveFaceTex(reg, 200, FaceDir::PosX)), 200);
+    // 已注册：按变体面纹理解析
+    CHECK_EQ(int(resolveFaceTex(reg, base, FaceDir::PosX)), 4);
+    CHECK_EQ(int(resolveFaceTex(reg, base, FaceDir::PosY)), 5);
+}
+
+TEST_CASE("voxel.world.registry_resolves_per_face_tex") {
+    CubeTypeRegistry reg;
+    CubeType grass;
+    grass.name = "grass";
+    grass.faceTex[0] = 1;
+    grass.faceTex[1] = 1;
+    grass.faceTex[2] = 2;  // 顶
+    grass.faceTex[3] = 3;  // 底
+    grass.faceTex[4] = 1;
+    grass.faceTex[5] = 1;
+    reg.add(grass);
+
+    VoxelWorld world(reg);
+    world.setVoxelByName(4, 5, 6, "grass");
+    world.remeshDirty();
+
+    Chunk *c = world.getChunk(0, 0, 0);
+    REQUIRE(c != nullptr);
+    // 顶面纹理解析为 2，其它面为 1
+    CHECK_EQ(c->faceRects(FaceDir::PosY)[0].tex(), 2);
+    CHECK_EQ(c->faceRects(FaceDir::NegY)[0].tex(), 3);
+    CHECK_EQ(c->faceRects(FaceDir::PosX)[0].tex(), 1);
+
+    CHECK_EQ(world.getCubeTypeName(4, 5, 6), std::string("grass"));
+    CHECK_EQ(int(world.getCubeTypeTex(4, 5, 6, "posY")), 2);
+    CHECK_EQ(int(world.getCubeTypeTex(4, 5, 6, "posX")), 1);
+}
+
+TEST_CASE("voxel.registry.faceTex_zero_is_valid_tile") {
+    CubeTypeRegistry reg;
+    CubeType t;
+    t.name = "zeroTop";
+    t.faceTex[2] = 0;  // 顶面纹理 0（合法图集 tile）
+    for (int i = 0; i < 6; ++i)
+        if (i != 2) t.faceTex[i] = 1;
+    reg.add(t);
+
+    VoxelWorld world(reg);
+    world.setVoxelByName(0, 0, 0, "zeroTop");
+    world.remeshDirty();
+    Chunk *c = world.getChunk(0, 0, 0);
+    REQUIRE(c != nullptr);
+    CHECK_EQ(c->faceRects(FaceDir::PosY)[0].tex(), 0);
+    CHECK_EQ(c->faceRectCount(FaceDir::PosY), 1);
+}
+
+TEST_CASE("voxel.world.empty_registry_keeps_id_as_tex") {
+    // 空注册表：类型 id 即纹理 id，行为与旧语义一致。
+    VoxelWorld world;
+    world.setVoxel(1, 2, 3, 7);
+    world.remeshDirty();
+    Chunk *c = world.getChunk(0, 0, 0);
+    REQUIRE(c != nullptr);
+    CHECK_EQ(c->faceRects(FaceDir::PosY)[0].tex(), 7);
+    CHECK_EQ(world.getCubeTypeName(1, 2, 3), std::string(""));
+    CHECK_EQ(int(world.getCubeTypeTex(1, 2, 3, "posY")), 7);
+}
+

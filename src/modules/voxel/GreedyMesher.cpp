@@ -9,12 +9,12 @@ uint8_t GreedyMesher::at(const uint8_t *v, int x, int y, int z) {
     return v[x + y * kChunkSize + z * kChunkSize * kChunkSize];
 }
 
-void GreedyMesher::greedy2D(uint16_t mask[kChunkSize][kChunkSize], FaceDir dir, int slice,
+void GreedyMesher::greedy2D(int mask[kChunkSize][kChunkSize], FaceDir dir, int slice,
                             std::vector<PackedRect> &out) {
     for (int v = 0; v < kChunkSize; ++v) {
         for (int u = 0; u < kChunkSize;) {
-            const uint16_t tex = mask[v][u];
-            if (tex == 0) {
+            const int tex = mask[v][u];
+            if (tex < 0) {  // 空
                 ++u;
                 continue;
             }
@@ -35,7 +35,7 @@ void GreedyMesher::greedy2D(uint16_t mask[kChunkSize][kChunkSize], FaceDir dir, 
             }
 
             for (int dv = 0; dv < h; ++dv)
-                for (int du = 0; du < w; ++du) mask[v + dv][u + du] = 0;
+                for (int du = 0; du < w; ++du) mask[v + dv][u + du] = -1;
 
             int x = 0, y = 0, z = 0;
             int rw = w, rh = h;
@@ -66,17 +66,19 @@ void GreedyMesher::greedy2D(uint16_t mask[kChunkSize][kChunkSize], FaceDir dir, 
                     rh = h;  // along Y
                     break;
             }
-            out.push_back(PackedRect::pack(x, y, z, rw, rh, int(tex)));
+            out.push_back(PackedRect::pack(x, y, z, rw, rh, tex));
             u += w;
         }
     }
 }
 
-void GreedyMesher::meshFace(const uint8_t *voxels, FaceDir dir, std::vector<PackedRect> &out) {
-    uint16_t mask[kChunkSize][kChunkSize];
+void GreedyMesher::meshFace(const uint8_t *voxels, FaceDir dir, std::vector<PackedRect> &out,
+                            const CubeTypeRegistry &types) {
+    int mask[kChunkSize][kChunkSize];
 
     for (int s = 0; s < kChunkSize; ++s) {
-        std::memset(mask, 0, sizeof(mask));
+        for (int a = 0; a < kChunkSize; ++a)
+            for (int b = 0; b < kChunkSize; ++b) mask[a][b] = -1;
 
         for (int a = 0; a < kChunkSize; ++a) {
             for (int b = 0; b < kChunkSize; ++b) {
@@ -151,7 +153,7 @@ void GreedyMesher::meshFace(const uint8_t *voxels, FaceDir dir, std::vector<Pack
                 const uint8_t id = at(voxels, x, y, z);
                 if (!isSolid(id)) continue;
                 if (isSolid(at(voxels, nx, ny, nz))) continue;
-                mask[v][u] = uint16_t(id);
+                mask[v][u] = int(resolveFaceTex(types, id, dir));
             }
         }
 
@@ -159,10 +161,11 @@ void GreedyMesher::meshFace(const uint8_t *voxels, FaceDir dir, std::vector<Pack
     }
 }
 
-void GreedyMesher::meshChunk(const uint8_t *voxels, std::vector<PackedRect> outFaces[6]) {
+void GreedyMesher::meshChunk(const uint8_t *voxels, std::vector<PackedRect> outFaces[6],
+                             const CubeTypeRegistry &types) {
     for (int i = 0; i < faceDirCount(); ++i) {
         outFaces[i].clear();
-        meshFace(voxels, FaceDir(i), outFaces[i]);
+        meshFace(voxels, FaceDir(i), outFaces[i], types);
     }
 }
 

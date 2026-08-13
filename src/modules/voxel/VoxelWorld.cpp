@@ -43,7 +43,7 @@ int VoxelWorld::remeshDirty() {
     int n = 0;
     for (auto &kv : chunks_) {
         if (kv.second->isDirty()) {
-            kv.second->remesh();
+            kv.second->remesh(types_);
             ++n;
         }
     }
@@ -61,7 +61,7 @@ void VoxelWorld::selectVisible(const float *viewProj16, float eyeX, float eyeY, 
 
     for (auto &kv : chunks_) {
         Chunk *chunk = kv.second.get();
-        chunk->ensureMeshed();
+        chunk->ensureMeshed(types_);
 
         float minX, minY, minZ, maxX, maxY, maxZ;
         chunk->worldAABB(minX, minY, minZ, maxX, maxY, maxZ);
@@ -148,6 +148,25 @@ void VoxelWorld::setVoxel(int wx, int wy, int wz, uint8_t texId) {
     const int cz = floorDiv(wz);
     Chunk *c = getOrCreateChunk(cx, cy, cz);
     c->set(wx - cx * kChunkSize, wy - cy * kChunkSize, wz - cz * kChunkSize, texId);
+}
+
+void VoxelWorld::setVoxelByName(int wx, int wy, int wz, const std::string &name, int orientation) {
+    const CubeType *t = types_.find(name);
+    uint8_t id = 0;
+    if (t) id = types_.variantId(name, orientation);
+    setVoxel(wx, wy, wz, id);
+}
+
+std::string VoxelWorld::getCubeTypeName(int wx, int wy, int wz) const {
+    const CubeType *t = types_.find(getVoxel(wx, wy, wz));
+    return t ? t->name : std::string{};
+}
+
+uint8_t VoxelWorld::getCubeTypeTex(int wx, int wy, int wz, const std::string &faceDir) const {
+    FaceDir d;
+    if (!faceDirFromName(faceDir, d)) return 0;
+    const uint8_t id = getVoxel(wx, wy, wz);
+    return resolveFaceTex(types_, id, d);
 }
 
 }  // namespace eve::voxel

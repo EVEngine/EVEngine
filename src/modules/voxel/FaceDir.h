@@ -66,6 +66,21 @@ inline bool faceDirFromName(const std::string &name, FaceDir &out) {
     return false;
 }
 
+/**
+ * 绕 Y 轴旋转一个面方向 `quarterTurns` 个 90°（右手定则：+X → -Z → -X → +Z）。
+ * 仅影响 4 个水平面（±X/±Z），±Y 顶/底保持不变。
+ * 供方向性方块在注册各面纹理时旋转使用。
+ */
+inline FaceDir rotateFaceY(FaceDir dir, int quarterTurns) {
+    if (dir == FaceDir::PosY || dir == FaceDir::NegY) return dir;
+    static const FaceDir cycle[4] = {FaceDir::PosX, FaceDir::NegZ, FaceDir::NegX, FaceDir::PosZ};
+    const int t = quarterTurns & 3;
+    for (int i = 0; i < 4; ++i) {
+        if (cycle[i] == dir) return cycle[(i + t) & 3];
+    }
+    return dir;
+}
+
 /** Outward unit normal for the face. */
 inline void faceNormal(FaceDir d, float &nx, float &ny, float &nz) {
     nx = ny = nz = 0.f;

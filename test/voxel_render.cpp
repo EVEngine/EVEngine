@@ -18,6 +18,7 @@
 #include "graphics/RenderSystem3D.h"
 #include "image/ImageData.h"
 #include "voxel/Chunk.h"
+#include "voxel/CubeTypeRegistry.h"
 #include "voxel/FaceDir.h"
 #include "voxel/Voxel.h"
 #include "voxel/VoxelPack.h"
@@ -2630,3 +2631,46 @@ TEST_CASE("voxel.render.sceneWalledTown") {
     CHECK(luma(mid) > 0.06f);
     saveVoxelScenePng(gfx, "walled_town");
 }
+
+TEST_CASE("voxel.render.registryMultiFaceTex") {
+    hideLeftover3D();
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    tinyHud(gfx);
+    gfx->setScreenReadbackEnabled(true);
+
+    // grass：顶面绿色 tile(1)，其余面红色 tile(0)；方向性炉子：前脸蓝色 tile(2)
+    CubeTypeRegistry reg;
+    CubeType grass;
+    grass.name = "grass";
+    for (int i = 0; i < 6; ++i) grass.faceTex[i] = 0;
+    grass.faceTex[2] = 1;  // 顶 = green
+    reg.add(grass);
+
+    CubeType furnace;
+    furnace.name = "furnace";
+    for (int i = 0; i < 6; ++i) furnace.faceTex[i] = 0;
+    furnace.faceTex[0] = 2;  // +X = blue
+    furnace.directional = true;
+    reg.add(furnace);
+
+    VoxelWorld world(reg);
+    for (int z = 0; z < 3; ++z)
+        for (int y = 0; y < 3; ++y)
+            for (int x = 0; x < 3; ++x) world.setVoxelByName(x, y, z, "grass");
+    world.remeshDirty();
+    Chunk *c = world.getChunk(0, 0, 0);
+    REQUIRE(c != nullptr);
+    CHECK_EQ(c->faceRects(FaceDir::PosY)[0].tex(), 1);  // 顶面解析为 green
+    CHECK_EQ(c->faceRects(FaceDir::PosX)[0].tex(), 0);  // 侧面 red
+
+    // 4×4 图集：tile0=red, tile1=green, tile2=blue
+    Texture *atlas = makeTileAtlas(gfx, 4, 4);
+    const glm::vec3 eye(1.5f, 1.5f, 10.f);
+    const glm::vec3 target(1.5f, 1.5f, 1.5f);
+    renderVoxelFrame(gfx, &world, atlas, 4, eye, target, 100.f, true);
+    Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.04f);
+}
+

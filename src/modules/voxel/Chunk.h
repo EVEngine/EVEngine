@@ -1,5 +1,6 @@
 #pragma once
 
+#include "voxel/CubeTypeRegistry.h"
 #include "voxel/FaceDir.h"
 #include "voxel/GreedyMesher.h"
 #include "voxel/VoxelPack.h"
@@ -60,14 +61,14 @@ public:
     bool isDirty() const { return dirty_; }
 
     /** Rebuild six face instance buffers via greedy meshing. */
-    void remesh() {
-        GreedyMesher::meshChunk(voxels_, faces_);
+    void remesh(const CubeTypeRegistry &types = CubeTypeRegistry::empty()) {
+        GreedyMesher::meshChunk(voxels_, faces_, types);
         dirty_ = false;
     }
 
     /** Ensure mesh is up to date; remesh if dirty. */
-    void ensureMeshed() {
-        if (dirty_) remesh();
+    void ensureMeshed(const CubeTypeRegistry &types = CubeTypeRegistry::empty()) {
+        if (dirty_) remesh(types);
     }
 
     const std::vector<PackedRect> &faceRects(FaceDir dir) const {

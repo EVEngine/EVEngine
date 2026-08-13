@@ -1,8 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
-#include "voxel/Chunk.h"
-#include "voxel/VoxelPack.h"
+#include "voxel/CubeTypeRegistry.h"
 #include "voxel/VoxelWorld.h"
 
 #include <string>
@@ -22,7 +21,10 @@ namespace eve::voxel {
  * - Six per-chunk face buffers (pos/neg X/Y/Z)
  * - Camera frustum + view-range + face-orientation cull → instanced draws
  *
- * Script: `voxel <- eve.Voxel(); world <- voxel.newWorld();`
+ * 门面只负责「组织世界」与「定义方块类型」；打包 / 网格化等实现细节
+ * 归渲染侧与内部头文件。方块类型由注册表定义，创建世界时传入。
+ *
+ * Script: `voxel <- eve.Voxel(); types <- voxel.newCubeTypes(); world <- voxel.newWorld(types);`
  */
 class Voxel : public Module {
 public:
@@ -32,25 +34,11 @@ public:
 
     int getChunkSize() const { return kChunkSize; }
 
-    VoxelWorld *newWorld();
-    Chunk *newChunk(int cx = 0, int cy = 0, int cz = 0);
+    /** 返回一个新的方块类型注册表（由调用者持有 / 脚本持有）。 */
+    CubeTypeRegistry *newCubeTypes();
 
-    /** Pack helpers for tests / tooling (no overloads). */
-    uint32_t packRect(int x, int y, int z, int width, int height, int tex) const;
-    int unpackRectX(uint32_t bits) const;
-    int unpackRectY(uint32_t bits) const;
-    int unpackRectZ(uint32_t bits) const;
-    int unpackRectWidth(uint32_t bits) const;
-    int unpackRectHeight(uint32_t bits) const;
-    int unpackRectTex(uint32_t bits) const;
-
-    /**
-     * Run greedy meshing on a flat voxel buffer (length >= 32³).
-     * Results stored in module-owned face buffers; query via getMeshFace*.
-     */
-    void meshVoxels(const uint8_t *voxels, int byteCount);
-    int getMeshFaceCount(const std::string &faceDir) const;
-    uint32_t getMeshFacePacked(const std::string &faceDir, int index) const;
+    /** 创建世界；内部拷贝注册表（传 nullptr 表示空注册表，类型 id 即纹理 id）。 */
+    VoxelWorld *newWorld(const CubeTypeRegistry *types = nullptr);
 };
 
 }  // namespace eve::voxel

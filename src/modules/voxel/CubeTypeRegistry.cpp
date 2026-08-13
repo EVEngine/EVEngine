@@ -1,0 +1,168 @@
+#include "voxel/CubeTypeRegistry.h"
+
+#include "data/DataModule.h"
+#include "data/JsonDocument.h"
+
+#include <Poco/Dynamic/Var.h>
+#include <Poco/JSON/Array.h>
+#include <Poco/JSON/Object.h>
+
+#include <cstring>
+#include <memory>
+
+namespace eve::voxel {
+
+namespace {
+
+const CubeTypeRegistry &kEmptyRegistry() {
+    static const CubeTypeRegistry reg;
+    return reg;
+}
+
+// 把某体素在面 dir 上应显示的纹理，从“基础类型 faceTex + orientation”旋转出来。
+// faceTex_variant[dir] = faceTex_base[rotateFaceY(dir, -orientation)]。
+void rotateFaceTex(const uint8_t src[6], int orientation, uint8_t dst[6]) {
+    for (int d = 0; d < 6; ++d) {
+        const FaceDir srcDir = rotateFaceY(FaceDir(d), (4 - (orientation & 3)) & 3);
+        dst[d] = src[int(srcDir)];
+    }
+}
+
+int asInt(const Poco::Dynamic::Var &v, int fallback) {
+    try {
+        if (v.isEmpty()) return fallback;
+        return v.convert<int>();
+    } catch (...) {
+    }
+    return fallback;
+}
+
+std::string asString(const Poco::Dynamic::Var &v, const std::string &fallback = {}) {
+    try {
+        if (v.isEmpty()) return fallback;
+        return v.convert<std::string>();
+    } catch (...) {
+    }
+    return fallback;
+}
+
+bool asBool(const Poco::Dynamic::Var &v, bool fallback) {
+    try {
+        if (v.isEmpty()) return fallback;
+        return v.convert<bool>();
+    } catch (...) {
+    }
+    return fallback;
+}
+
+void asFaceTexArray(Poco::JSON::Object::Ptr o, uint8_t out[6]) {
+    std::memset(out, 0, sizeof(uint8_t) * 6);
+    if (!o || !o->has("faceTex")) return;
+    try {
+        auto arr = o->getArray("faceTex");
+        if (!arr) return;
+        const int n = int(arr->size()) < 6 ? int(arr->size()) : 6;
+        for (int i = 0; i < n; ++i) out[i] = uint8_t(asInt(arr->get(i), 0) & 0xFF);
+    } catch (...) {
+    }
+}
+
+CubeType parseCubeType(Poco::JSON::Object::Ptr o) {
+    CubeType t;
+    if (!o) return t;
+    t.name = asString(o->get("name"));
+    asFaceTexArray(o, t.faceTex);
+    t.directional = asBool(o->get("directional"), false);
+    t.composeGroup = asString(o->get("composeGroup"));
+    t.connects = asBool(o->get("connects"), false);
+    return t;
+}
+
+}  // namespace
+
+const CubeTypeRegistry &CubeTypeRegistry::empty() { return kEmptyRegistry(); }
+
+uint8_t CubeTypeRegistry::add(const CubeType &type) {
+    if (type.name.empty()) return 0;
+    auto it = byName_.find(type.name);
+    if (it != byName_.end()) return it->second;
+
+    const int variants = type.directional ? 4 : 1;
+    // 上限：id 为 uint8_t，0 保留给空气，最多 255 个类型槽位。
+    if (int(types_.size()) + variants > 256) return 0;
+
+    const uint8_t baseId = uint8_t(types_.size());
+    for (int o = 0; o < variants; ++o) {
+        CubeType v = type;
+        v.id = uint8_t(baseId + o);
+        if (type.directional && o > 0) {
+            rotateFaceTex(type.faceTex, o, v.faceTex);
+        }
+        types_.push_back(v);
+    }
+    byName_[type.name] = baseId;
+    return baseId;
+}
+
+int CubeTypeRegistry::loadFromJson(const std::string &json, std::string *error) {
+    auto *dm = eve::data::DataModule::create();
+    std::string err;
+    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
+    if (!doc) {
+        if (error) *error = err.empty() ? "invalid json" : err;
+        return 0;
+    }
+
+    int n = 0;
+    if (doc->isArray()) {
+        auto arr = doc->array();
+        if (!arr) return 0;
+        for (size_t i = 0; i < arr->size(); ++i) {
+            Poco::JSON::Object::Ptr o;
+            try {
+                o = arr->getObject(i);
+            } catch (...) {
+                continue;
+            }
+            if (!o) continue;
+            CubeType t = parseCubeType(o);
+            if (t.name.empty()) continue;
+            add(t);
+            ++n;
+        }
+    } else if (doc->isObject()) {
+        CubeType t = parseCubeType(doc->object());
+        if (!t.name.empty()) {
+            add(t);
+            ++n;
+        }
+    }
+    return n;
+}
+
+const CubeType *CubeTypeRegistry::find(const std::string &name) const {
+    auto it = byName_.find(name);
+    if (it == byName_.end()) return nullptr;
+    return &types_[it->second];
+}
+
+const CubeType *CubeTypeRegistry::find(uint8_t id) const {
+    if (id == 0 || size_t(id) >= types_.size()) return nullptr;
+    return &types_[id];
+}
+
+uint8_t CubeTypeRegistry::variantId(const std::string &name, int orientation) const {
+    auto it = byName_.find(name);
+    if (it == byName_.end()) return 0;
+    const CubeType &base = types_[it->second];
+    if (!base.directional) return base.id;
+    return uint8_t(base.id + (orientation & 3));
+}
+
+void CubeTypeRegistry::clear() {
+    byName_.clear();
+    types_.clear();
+    types_.push_back(CubeType{});  // index 0 = 空气占位
+}
+
+}  // namespace eve::voxel

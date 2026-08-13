@@ -1,92 +1,40 @@
 #include "voxel/Voxel.h"
 
 #include "voxel/FaceDir.h"
-#include "voxel/GreedyMesher.h"
-
-#include "common/Exception.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include <cstring>
 #include <functional>
-#include <vector>
 
 namespace eve::voxel {
 
 Module_IMPL(Voxel, new Voxel());
 
-namespace {
-std::vector<PackedRect> g_meshFaces[6];
-}
+CubeTypeRegistry *Voxel::newCubeTypes() { return new CubeTypeRegistry(); }
 
-VoxelWorld *Voxel::newWorld() { return new VoxelWorld(); }
-
-Chunk *Voxel::newChunk(int cx, int cy, int cz) { return new Chunk(cx, cy, cz); }
-
-uint32_t Voxel::packRect(int x, int y, int z, int width, int height, int tex) const {
-    return PackedRect::pack(x, y, z, width, height, tex).bits;
-}
-
-int Voxel::unpackRectX(uint32_t bits) const { return PackedRect{bits}.x(); }
-int Voxel::unpackRectY(uint32_t bits) const { return PackedRect{bits}.y(); }
-int Voxel::unpackRectZ(uint32_t bits) const { return PackedRect{bits}.z(); }
-int Voxel::unpackRectWidth(uint32_t bits) const { return PackedRect{bits}.width(); }
-int Voxel::unpackRectHeight(uint32_t bits) const { return PackedRect{bits}.height(); }
-int Voxel::unpackRectTex(uint32_t bits) const { return PackedRect{bits}.tex(); }
-
-void Voxel::meshVoxels(const uint8_t *voxels, int byteCount) {
-    if (!voxels || byteCount < kChunkSize * kChunkSize * kChunkSize)
-        throw Exception("Voxel.meshVoxels: need at least 32*32*32 bytes");
-    GreedyMesher::meshChunk(voxels, g_meshFaces);
-}
-
-int Voxel::getMeshFaceCount(const std::string &faceDir) const {
-    FaceDir d;
-    if (!faceDirFromName(faceDir, d)) return 0;
-    return int(g_meshFaces[int(d)].size());
-}
-
-uint32_t Voxel::getMeshFacePacked(const std::string &faceDir, int index) const {
-    FaceDir d;
-    if (!faceDirFromName(faceDir, d)) return 0;
-    const auto &v = g_meshFaces[int(d)];
-    if (index < 0 || index >= int(v.size())) return 0;
-    return v[size_t(index)].bits;
+VoxelWorld *Voxel::newWorld(const CubeTypeRegistry *types) {
+    return types ? new VoxelWorld(*types) : new VoxelWorld();
 }
 
 void Voxel::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Voxel::create, false);
     expose(cls);
 
-    auto chunk = table.addClass<Chunk>(
-        "VoxelChunk", std::function<Chunk *()>([]() -> Chunk * { return nullptr; }), true);
-    chunk.addFunc("getCx", &Chunk::cx);
-    chunk.addFunc("getCy", &Chunk::cy);
-    chunk.addFunc("getCz", &Chunk::cz);
-    chunk.addFunc("getOriginX", &Chunk::originX);
-    chunk.addFunc("getOriginY", &Chunk::originY);
-    chunk.addFunc("getOriginZ", &Chunk::originZ);
-    chunk.addFunc("get", &Chunk::get);
-    chunk.addFunc("set", &Chunk::set);
-    chunk.addFunc("fill", &Chunk::fill);
-    chunk.addFunc("clear", &Chunk::clear);
-    chunk.addFunc("isDirty", &Chunk::isDirty);
-    chunk.addFunc("remesh", &Chunk::remesh);
-    chunk.addFunc("ensureMeshed", &Chunk::ensureMeshed);
-    chunk.addFunc("getFaceRectCount",
-                  std::function<int(Chunk *, const std::string &)>([](Chunk *c, const std::string &n) {
-                      if (!c) return 0;
-                      FaceDir d;
-                      if (!faceDirFromName(n, d)) return 0;
-                      return c->faceRectCount(d);
-                  }));
-    chunk.addFunc("getTotalRectCount", &Chunk::totalRectCount);
+    auto cubeTypes = table.addClass<CubeTypeRegistry>(
+        "VoxelCubeTypes", std::function<CubeTypeRegistry *()>(
+                              []() -> CubeTypeRegistry * { return new CubeTypeRegistry(); }),
+        true);
+    cubeTypes.addFunc("loadFromJson",
+                      std::function<int(CubeTypeRegistry *, const std::string &)>(
+                          [](CubeTypeRegistry *r, const std::string &json) {
+                              return r->loadFromJson(json, nullptr);
+                          }));
+    cubeTypes.addFunc("count", &CubeTypeRegistry::count);
+    cubeTypes.addFunc("variantCount", &CubeTypeRegistry::variantCount);
+    cubeTypes.addFunc("clear", &CubeTypeRegistry::clear);
 
     auto world = table.addClass<VoxelWorld>(
         "VoxelWorld", std::function<VoxelWorld *()>([]() -> VoxelWorld * { return nullptr; }), true);
-    world.addFunc("getOrCreateChunk", &VoxelWorld::getOrCreateChunk);
-    world.addFunc("getChunk",
-                  static_cast<Chunk *(VoxelWorld::*)(int, int, int)>(&VoxelWorld::getChunk));
     world.addFunc("hasChunk", &VoxelWorld::hasChunk);
     world.addFunc("removeChunk", &VoxelWorld::removeChunk);
     world.addFunc("clear", &VoxelWorld::clear);
@@ -94,6 +42,9 @@ void Voxel::expose(ssq::Table &table) {
     world.addFunc("remeshDirty", &VoxelWorld::remeshDirty);
     world.addFunc("getVoxel", &VoxelWorld::getVoxel);
     world.addFunc("setVoxel", &VoxelWorld::setVoxel);
+    world.addFunc("setVoxelByName", &VoxelWorld::setVoxelByName);
+    world.addFunc("getCubeTypeName", &VoxelWorld::getCubeTypeName);
+    world.addFunc("getCubeTypeTex", &VoxelWorld::getCubeTypeTex);
     world.addFunc("getVisibleBatchCount", &VoxelWorld::getVisibleBatchCount);
     world.addFunc("getVisibleChunkCount", &VoxelWorld::getVisibleChunkCount);
     world.addFunc("getVisibleRectCount", &VoxelWorld::getVisibleRectCount);
@@ -115,17 +66,14 @@ void Voxel::expose(ssq::Table &table) {
 
 void Voxel::expose(ssq::Class &cls) {
     cls.addFunc("getChunkSize", &Voxel::getChunkSize);
-    cls.addFunc("newWorld", &Voxel::newWorld);
-    cls.addFunc("newChunk", &Voxel::newChunk);
-    cls.addFunc("packRect", &Voxel::packRect);
-    cls.addFunc("unpackRectX", &Voxel::unpackRectX);
-    cls.addFunc("unpackRectY", &Voxel::unpackRectY);
-    cls.addFunc("unpackRectZ", &Voxel::unpackRectZ);
-    cls.addFunc("unpackRectWidth", &Voxel::unpackRectWidth);
-    cls.addFunc("unpackRectHeight", &Voxel::unpackRectHeight);
-    cls.addFunc("unpackRectTex", &Voxel::unpackRectTex);
-    cls.addFunc("getMeshFaceCount", &Voxel::getMeshFaceCount);
-    cls.addFunc("getMeshFacePacked", &Voxel::getMeshFacePacked);
+    cls.addFunc("newCubeTypes", &Voxel::newCubeTypes);
+    cls.addFunc("newWorld", std::function<VoxelWorld *(Voxel *)>(
+                                [](Voxel *m) -> VoxelWorld * { return m->newWorld(nullptr); }));
+    cls.addFunc("newWorldWithTypes",
+                std::function<VoxelWorld *(Voxel *, CubeTypeRegistry *)>(
+                    [](Voxel *m, CubeTypeRegistry *types) -> VoxelWorld * {
+                        return m->newWorld(types);
+                    }));
 }
 
 }  // namespace eve::voxel
