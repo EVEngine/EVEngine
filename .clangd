@@ -1,2 +1,4 @@
 CompileFlags:
   CompilationDatabase: build
+  # clang-cl defaults to -fno-exceptions unless /EHsc is in compile_commands.
+  Add: [-fcxx-exceptions]

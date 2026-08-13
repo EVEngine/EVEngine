@@ -101,6 +101,105 @@ function testSystemUpdate() {
     return true
 }
 
+function testSystemDynamicSpawnDespawn() {
+    class Position extends eve.Component { x = 0.0 }
+    class Velocity extends eve.Component { x = 1.0 }
+    class Mover extends eve.Entity {
+        pos = Position
+        vel = Velocity
+    }
+    class MoveSys extends eve.System {
+        constructor() { base.constructor(Mover) }
+        function update(dt) {
+            local dying = []
+            foreach (e in entities()) {
+                e.pos.x += e.vel.x * dt
+                if (e.pos.x >= 2.0) dying.push(e)
+            }
+            foreach (e in dying) e.destroy()
+        }
+    }
+
+    local sys = MoveSys()
+    local a = Mover.create()
+    local b = Mover.create()
+    a.vel.x = 1.0
+    b.vel.x = 1.0
+    if (eve.view(Mover).len() != 2) return false
+
+    sys.update(1.0)
+    if (a.pos.x != 1.0 || b.pos.x != 1.0) return false
+    if (eve.view(Mover).len() != 2) return false
+
+    sys.update(1.0)
+    if (a.isAlive() || b.isAlive()) return false
+    if (eve.view(Mover).len() != 0) return false
+
+    local c = Mover.create()
+    c.vel.x = 1.0
+    sys.update(0.5)
+    if (!c.isAlive() || c.pos.x != 0.5) return false
+    if (eve.view(Mover).len() != 1) return false
+
+    // A later entities() call in the same update sees newly created instances.
+    class SpawnSys extends eve.System {
+        snapshot = 0
+        constructor() { base.constructor(Mover) }
+        function update(dt) {
+            snapshot = entities().len()
+            local extra = Mover.create()
+            extra.pos.x = 99.0
+            if (entities().len() != snapshot + 1) return false
+            foreach (e in entities()) {
+                if (e.pos.x >= 2.0) e.destroy()
+            }
+            return true
+        }
+    }
+    local spawnSys = SpawnSys()
+    if (!spawnSys.update(0.0)) return false
+    if (spawnSys.snapshot != 1) return false
+    if (eve.view(Mover).len() != 1) return false
+    foreach (e in eve.view(Mover)) {
+        if (e != c) return false
+        e.destroy()
+    }
+    return eve.view(Mover).len() == 0
+}
+
+function testSystemQueryArrayAndSubclass() {
+    class Hp extends eve.Component { v = 1 }
+    class Actor extends eve.Entity { hp = Hp }
+    class Enemy extends Actor {}
+    class Prop extends eve.Entity { hp = Hp }
+
+    class TickSys extends eve.System {
+        constructor() { base.constructor([Actor, Prop]) }
+        function update(dt) {
+            foreach (e in entities()) e.hp.v += 1
+        }
+    }
+
+    local actor = Actor.create()
+    local enemy = Enemy.create()
+    local prop = Prop.create()
+    local sys = TickSys()
+    sys.update(0.0)
+    if (actor.hp.v != 2 || enemy.hp.v != 2 || prop.hp.v != 2) return false
+
+    sys.setQuery(Enemy)
+    sys.update(0.0)
+    if (actor.hp.v != 2 || enemy.hp.v != 3 || prop.hp.v != 2) return false
+
+    local emptySys = eve.System()
+    if (emptySys.entities().len() != 0) return false
+
+    actor.destroy()
+    enemy.destroy()
+    prop.destroy()
+    return true
+}
+
 function testTypeMarkersAndEntityContainer() {
     class Status extends eve.Component {
         alive = eve.Boolean
@@ -165,6 +264,14 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewIncludesSubclass") {
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemUpdate") {
     CHECK(vm.callFunc(vm.findFunc("testSystemUpdate"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemDynamicSpawnDespawn") {
+    CHECK(vm.callFunc(vm.findFunc("testSystemDynamicSpawnDespawn"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemQueryArrayAndSubclass") {
+    CHECK(vm.callFunc(vm.findFunc("testSystemQueryArrayAndSubclass"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.typeMarkersAndEntityContainer") {
