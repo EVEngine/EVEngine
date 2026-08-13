@@ -154,6 +154,8 @@ float meshApproxSignedVolume(const MeshBuild &m) {
     return vol / 6.f;
 }
 
+bool approxEq(float a, float b, float eps = 1e-5f) { return std::fabs(a - b) < eps; }
+
 bool hasWalkablePath(const Grid2D &g) {
     // BFS from first floor/corridor cell; ensure >1 walkable and connected component covers all.
     const int w = g.getWidth();
@@ -681,6 +683,147 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
     CHECK(mod->lastError().find("field") != std::string::npos);
     CHECK(mod->buildMesh("mesh.missing", &p) == nullptr);
     CHECK(mod->generateMesh("mesh.marchingcubes", nullptr, nullptr) == nullptr);
+}
+
+TEST_CASE("procgen.wfc.simple.dungeonAdjacencyAndListing") {
+    GeneratorRegistry::instance().registerBuiltins();
+    Procgen *mod = Procgen::create();
+    CHECK(mod->hasAlgorithm("wfc.simple"));
+    bool listed = false;
+    for (int i = 0; i < mod->getAlgorithmCount(); ++i) {
+        if (mod->getAlgorithmId(i) == "wfc.simple") listed = true;
+    }
+    CHECK(listed);
+
+    Params p;
+    p.setSeed(17);
+    p.setSize(22, 16);
+    p.setString("preset", "dungeon");
+    p.setInt("maxAttempts", 64);
+    Grid2D g;
+    std::string err;
+    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, g, err));
+    CHECK(borderIsWall(g));
+    // Allowed dungeon pairs (undirected).
+    auto okPair = [](int a, int b) {
+        if (a > b) std::swap(a, b);
+        const int W = int(Semantic::Wall), F = int(Semantic::Floor), C = int(Semantic::Corridor),
+                  D = int(Semantic::Door);
+        if (a == W && (b == W || b == F || b == C || b == D)) return true;
+        if (a == F && (b == F || b == C || b == D)) return true;
+        if (a == C && b == C) return true;
+        return false;
+    };
+    for (int y = 0; y < g.getHeight(); ++y) {
+        for (int x = 0; x < g.getWidth(); ++x) {
+            const int c = g.getCell(x, y);
+            if (x + 1 < g.getWidth()) CHECK(okPair(c, g.getCell(x + 1, y)));
+            if (y + 1 < g.getHeight()) CHECK(okPair(c, g.getCell(x, y + 1)));
+        }
+    }
+}
+
+TEST_CASE("procgen.wfc.simple.multiSeedBatch") {
+    // Stress: several seeds/presets must all collapse successfully.
+    const char *presets[] = {"dungeon", "cave", "terrain"};
+    int okCount = 0;
+    for (const char *preset : presets) {
+        for (uint32_t seed = 1; seed <= 5; ++seed) {
+            Params p;
+            p.setSeed(seed * 13u + 7u);
+            p.setSize(18, 14);
+            p.setString("preset", preset);
+            p.setInt("maxAttempts", 64);
+            Grid2D g;
+            std::string err;
+            if (GeneratorRegistry::instance().generate("wfc.simple", p, g, err)) {
+                ++okCount;
+                CHECK_EQ(g.getWidth(), 18);
+                CHECK_EQ(g.getHeight(), 14);
+                if (std::string(preset) != "terrain") CHECK(borderIsWall(g));
+            }
+        }
+    }
+    CHECK_EQ(okCount, 15);
+}
+
+TEST_CASE("procgen.mesh.marchingcubes.resolutionScales") {
+    Params lo;
+    lo.setSeed(1);
+    lo.setInt("resolution", 12);
+    lo.setString("field", "sphere");
+    lo.setFloat("radius", 0.7f);
+    Params hi = lo;
+    hi.setInt("resolution", 24);
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", lo, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", hi, b, err));
+    CHECK(b.getIndexCount() > a.getIndexCount());
+    CHECK(b.getVertexCount() > a.getVertexCount());
+}
+
+TEST_CASE("procgen.mesh.marchingcubes.torusAndAxisResolution") {
+    Params torus;
+    torus.setSeed(2);
+    torus.setInt("resolution", 20);
+    torus.setString("field", "torus");
+    MeshBuild ring;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", torus, ring, err));
+    CHECK(ring.getVertexCount() > 100);
+    CHECK(meshIndicesInRange(ring));
+    CHECK(meshNormalsFiniteUnit(ring));
+    // Torus should have non-zero volume magnitude.
+    CHECK(std::fabs(meshApproxSignedVolume(ring)) > 0.01f);
+
+    Params axis;
+    axis.setSeed(3);
+    axis.setInt("nx", 10);
+    axis.setInt("ny", 14);
+    axis.setInt("nz", 12);
+    axis.setString("field", "sphere");
+    axis.setFloat("radius", 0.65f);
+    MeshBuild m;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", axis, m, err));
+    CHECK(m.getVertexCount() > 50);
+}
+
+TEST_CASE("procgen.mesh.marchingcubes.sphereVolumeSignStable") {
+    Params p;
+    p.setSeed(1);
+    p.setInt("resolution", 18);
+    p.setString("field", "sphere");
+    p.setFloat("radius", 0.7f);
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, b, err));
+    const float va = meshApproxSignedVolume(a);
+    const float vb = meshApproxSignedVolume(b);
+    CHECK(std::fabs(va) > 0.05f);
+    CHECK(approxEq(va, vb, 1e-5f));
+    // Winding must be consistent across seeds of the same field recipe family.
+    Params p2 = p;
+    p2.setSeed(9);
+    MeshBuild c;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p2, c, err));
+    const float vc = meshApproxSignedVolume(c);
+    CHECK(va * vc > 0.f);  // same sign
+}
+
+TEST_CASE("procgen.mesh.marchingcubes.moduleNullAndList") {
+    Procgen *mod = Procgen::create();
+    CHECK(mod->buildMesh("mesh.marchingcubes", nullptr) == nullptr);
+    CHECK(mod->lastError().find("null") != std::string::npos);
+    CHECK(mod->generateMesh("mesh.marchingcubes", nullptr, nullptr) == nullptr);
+
+    CHECK(mod->getMeshRecipeCount() >= 1);
+    bool found = false;
+    for (int i = 0; i < mod->getMeshRecipeCount(); ++i) {
+        if (mod->getMeshRecipeId(i) == "mesh.marchingcubes") found = true;
+    }
+    CHECK(found);
 }
 
 TEST_CASE("procgen.palette.applyToLayer") {

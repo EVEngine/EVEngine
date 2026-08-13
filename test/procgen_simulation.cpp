@@ -1,6 +1,9 @@
 // Procgen cross-module scenarios — the same surfaces a game would drive:
 //   1) WFC dungeon → TileLayer palette → A* / FlowField spawn→stairs delve
 //   2) Marching Cubes terrain island + crystal props → mesh budgets (+ optional GPU)
+//   3) WFC cave → A* expedition + FOV shadowcast
+//   4) WFC terrain overworld → weighted biome travel + seed replay
+//   5) Marching Cubes torus/sphere loot prop bake + cache bust
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -8,6 +11,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "map/FlowField.h"
+#include "map/Fov.h"
 #include "map/Map.h"
 #include "map/Path.h"
 #include "map/Pathfinder.h"
@@ -29,7 +33,9 @@
 #include <cstdint>
 #include <cstring>
 #include <exception>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace eve::procgen;
@@ -50,6 +56,48 @@ void bindDungeonPalette(Procgen *mod, const std::string &name) {
     mod->setPaletteGid(name, "floor", kFloorGid);
     mod->setPaletteGid(name, "corridor", kCorridorGid);
     mod->setPaletteGid(name, "door", kDoorGid);
+}
+
+bool borderIsWallLike(const Grid2D &g) {
+    const int w = g.getWidth();
+    const int h = g.getHeight();
+    for (int x = 0; x < w; ++x) {
+        if (g.getCell(x, 0) != int(Semantic::Wall)) return false;
+        if (g.getCell(x, h - 1) != int(Semantic::Wall)) return false;
+    }
+    for (int y = 0; y < h; ++y) {
+        if (g.getCell(0, y) != int(Semantic::Wall)) return false;
+        if (g.getCell(w - 1, y) != int(Semantic::Wall)) return false;
+    }
+    return true;
+}
+
+bool terrainAdjacencyOk(const Grid2D &g) {
+    static const int band[] = {int(Semantic::Water), int(Semantic::Sand),  int(Semantic::Grass),
+                               int(Semantic::Dirt),  int(Semantic::Stone), int(Semantic::Snow)};
+    std::set<std::pair<int, int>> allowed;
+    for (int i = 0; i < 6; ++i) {
+        allowed.insert({band[i], band[i]});
+        if (i + 1 < 6) {
+            int lo = band[i], hi = band[i + 1];
+            if (lo > hi) std::swap(lo, hi);
+            allowed.insert({lo, hi});
+        }
+    }
+    auto ok = [&](int a, int b) {
+        if (a > b) std::swap(a, b);
+        return allowed.count({a, b}) > 0;
+    };
+    const int w = g.getWidth();
+    const int h = g.getHeight();
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            const int c = g.getCell(x, y);
+            if (x + 1 < w && !ok(c, g.getCell(x + 1, y))) return false;
+            if (y + 1 < h && !ok(c, g.getCell(x, y + 1))) return false;
+        }
+    }
+    return true;
 }
 
 bool findObject(const Grid2D &g, const std::string &type, int &outX, int &outY) {
@@ -426,4 +474,280 @@ TEST_CASE("procgen.simulation.crystalCave") {
     delete islandB;
     delete island;
     for (MeshBuild *c : crystalMeshes) delete c;
+}
+
+/**
+ * Scenario 3 — Cave expedition (WFC cave + pathfinding + FOV).
+ *
+ * Timeline:
+ *  1) WFC cave → TileLayer (wall/floor)
+ *  2) Find two distant floor cells in the same connected component
+ *  3) A* path between them; path length ≥ manhattan distance
+ *  4) FOV from the start cell: walls block sight, nearby floor is visible
+ */
+TEST_CASE("procgen.simulation.caveExpedition") {
+    constexpr int kMapW = 32;
+    constexpr int kMapH = 24;
+    constexpr float kTile = 16.f;
+
+    Procgen *proc = Procgen::create();
+    Map *mapMod   = Map::create();
+    bindDungeonPalette(proc, "sim_cave");
+
+    Params p;
+    p.setSeed(4242);
+    p.setSize(kMapW, kMapH);
+    p.setString("preset", "cave");
+    p.setInt("maxAttempts", 64);
+
+    Grid2D *grid = proc->generate("wfc.simple", &p);
+    REQUIRE(grid != nullptr);
+    CHECK(borderIsWallLike(*grid));
+
+    TileLayer *layer = mapMod->newLayer(kMapW, kMapH, kTile, kTile);
+    CHECK(proc->applyToLayer(grid, "sim_cave", layer));
+
+    // Collect floor cells.
+    std::vector<std::pair<int, int>> floors;
+    for (int y = 1; y < kMapH - 1; ++y) {
+        for (int x = 1; x < kMapW - 1; ++x) {
+            if (layer->getTile(x, y) == kFloorGid) floors.emplace_back(x, y);
+        }
+    }
+    REQUIRE(floors.size() >= 8);
+
+    // BFS components; pick two cells from the largest component that are far apart.
+    auto idx = [&](int x, int y) { return y * kMapW + x; };
+    std::vector<int> comp(size_t(kMapW * kMapH), -1);
+    int bestComp = -1, bestSize = 0;
+    std::vector<std::pair<int, int>> bestCells;
+    int nextId = 0;
+    const int dx4[4] = {1, -1, 0, 0};
+    const int dy4[4] = {0, 0, 1, -1};
+    for (auto [sx, sy] : floors) {
+        if (comp[size_t(idx(sx, sy))] >= 0) continue;
+        std::vector<std::pair<int, int>> cells;
+        std::vector<std::pair<int, int>> q;
+        q.emplace_back(sx, sy);
+        comp[size_t(idx(sx, sy))] = nextId;
+        size_t qi = 0;
+        while (qi < q.size()) {
+            auto [cx, cy] = q[qi++];
+            cells.emplace_back(cx, cy);
+            for (int d = 0; d < 4; ++d) {
+                const int nx = cx + dx4[d], ny = cy + dy4[d];
+                if (nx < 0 || ny < 0 || nx >= kMapW || ny >= kMapH) continue;
+                if (layer->getTile(nx, ny) != kFloorGid) continue;
+                if (comp[size_t(idx(nx, ny))] >= 0) continue;
+                comp[size_t(idx(nx, ny))] = nextId;
+                q.emplace_back(nx, ny);
+            }
+        }
+        if (int(cells.size()) > bestSize) {
+            bestSize = int(cells.size());
+            bestComp = nextId;
+            bestCells = std::move(cells);
+        }
+        ++nextId;
+    }
+    REQUIRE(bestSize >= 4);
+    CHECK(bestComp >= 0);
+
+    // Farthest pair (approx) for a meaningful expedition.
+    int a = 0, b = 0, bestDist = -1;
+    for (int i = 0; i < int(bestCells.size()); ++i) {
+        for (int j = i + 1; j < int(bestCells.size()); ++j) {
+            const int dist = std::abs(bestCells[size_t(i)].first - bestCells[size_t(j)].first) +
+                             std::abs(bestCells[size_t(i)].second - bestCells[size_t(j)].second);
+            if (dist > bestDist) {
+                bestDist = dist;
+                a = i;
+                b = j;
+            }
+        }
+    }
+    CHECK(bestDist >= 2);
+    const int ax = bestCells[size_t(a)].first, ay = bestCells[size_t(a)].second;
+    const int bx = bestCells[size_t(b)].first, by = bestCells[size_t(b)].second;
+
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->blockGid(kWallGid);
+    pf->setBlockEmpty(true);
+    pf->setTopology("ortho4");
+    Path *path = pf->findPath(ax, ay, bx, by);
+    REQUIRE(path != nullptr);
+    CHECK(path->getLength() >= bestDist + 1);  // inclusive endpoints
+    CHECK(pathOnLayer(path, layer));
+    CHECK_EQ(path->getX(0), ax);
+    CHECK_EQ(path->getY(path->getLength() - 1), by);
+
+    // FOV: walls opaque; floor around start is visible; far goal may be hidden.
+    Fov *fov = mapMod->newFov(layer);
+    REQUIRE(fov != nullptr);
+    fov->blockOpaqueGid(kWallGid);
+    fov->setAlgorithm("shadowcast");
+    const int rev = fov->addRevealer(ax, ay, 6);
+    CHECK(rev >= 0);
+    fov->compute();
+    CHECK(fov->isVisible(ax, ay));
+    CHECK(fov->isExplored(ax, ay));
+    // Immediate floor neighbors (if any) should be visible.
+    for (int d = 0; d < 4; ++d) {
+        const int nx = ax + dx4[d], ny = ay + dy4[d];
+        if (nx < 0 || ny < 0 || nx >= kMapW || ny >= kMapH) continue;
+        if (layer->getTile(nx, ny) == kFloorGid) CHECK(fov->isVisible(nx, ny));
+    }
+
+    delete path;
+    delete pf;
+    delete fov;
+    delete grid;
+    layer->setVisible(false);
+}
+
+/**
+ * Scenario 4 — Overworld biome travel (WFC terrain + weighted path).
+ *
+ * Timeline:
+ *  1) WFC terrain → biome Grid2D with adjacency invariant
+ *  2) Palette GIDs per biome; TileLayer filled
+ *  3) Pathfinder with higher cost on water/snow; path prefers mid biomes
+ *  4) Same seed regenerate matches for a save-game overworld
+ */
+TEST_CASE("procgen.simulation.overworldBiomeTravel") {
+    constexpr int kMapW = 28;
+    constexpr int kMapH = 22;
+    constexpr float kTile = 16.f;
+
+    Procgen *proc = Procgen::create();
+    Map *mapMod   = Map::create();
+
+    // Biome GIDs
+    constexpr int kWater = 10, kSand = 11, kGrass = 12, kDirt = 13, kStone = 14, kSnow = 15;
+    proc->setPaletteGid("sim_biome", "water", kWater);
+    proc->setPaletteGid("sim_biome", "sand", kSand);
+    proc->setPaletteGid("sim_biome", "grass", kGrass);
+    proc->setPaletteGid("sim_biome", "dirt", kDirt);
+    proc->setPaletteGid("sim_biome", "stone", kStone);
+    proc->setPaletteGid("sim_biome", "snow", kSnow);
+
+    Params p;
+    p.setSeed(9001);
+    p.setSize(kMapW, kMapH);
+    p.setString("preset", "terrain");
+    p.setInt("maxAttempts", 64);
+
+    Grid2D *grid = proc->generate("wfc.simple", &p);
+    REQUIRE(grid != nullptr);
+    CHECK(terrainAdjacencyOk(*grid));
+
+    TileLayer *layer = mapMod->newLayer(kMapW, kMapH, kTile, kTile);
+    CHECK(proc->applyToLayer(grid, "sim_biome", layer));
+
+    // Pick a grass cell and a dirt/stone cell if possible.
+    int sx = -1, sy = -1, gx = -1, gy = -1;
+    for (int y = 0; y < kMapH; ++y) {
+        for (int x = 0; x < kMapW; ++x) {
+            const int gid = layer->getTile(x, y);
+            if (sx < 0 && gid == kGrass) {
+                sx = x;
+                sy = y;
+            }
+            if (gid == kDirt || gid == kStone) {
+                gx = x;
+                gy = y;
+            }
+        }
+    }
+    if (sx < 0) {
+        sx = 1;
+        sy = 1;
+    }
+    if (gx < 0) {
+        gx = kMapW - 2;
+        gy = kMapH - 2;
+    }
+
+    Pathfinder *pf = mapMod->newPathfinder(layer);
+    pf->setTopology("ortho4");
+    pf->setBlockEmpty(false);
+    // Prefer dry land: water/snow expensive.
+    for (int y = 0; y < kMapH; ++y) {
+        for (int x = 0; x < kMapW; ++x) {
+            const int gid = layer->getTile(x, y);
+            float cost = 1.f;
+            if (gid == kWater) cost = 8.f;
+            else if (gid == kSnow) cost = 4.f;
+            else if (gid == kSand) cost = 1.5f;
+            pf->setCellCost(x, y, cost);
+        }
+    }
+
+    Path *path = pf->findPath(sx, sy, gx, gy);
+    REQUIRE(path != nullptr);
+    CHECK(path->getLength() >= 2);
+    CHECK_EQ(path->getX(0), sx);
+    CHECK_EQ(path->getY(path->getLength() - 1), gy);
+    // Cost should be finite and positive.
+    CHECK(path->getTotalCost() > 0.f);
+
+    // Reproducible overworld for save/load.
+    Grid2D *grid2 = proc->generate("wfc.simple", &p);
+    REQUIRE(grid2 != nullptr);
+    CHECK(grid->cells() == grid2->cells());
+
+    delete path;
+    delete pf;
+    delete grid2;
+    delete grid;
+    layer->setVisible(false);
+}
+
+/**
+ * Scenario 5 — Loot prop bake (torus ring + gem spheres for a content pipeline).
+ */
+TEST_CASE("procgen.simulation.lootPropBake") {
+    Procgen *proc = Procgen::create();
+
+    Params ringP;
+    ringP.setSeed(12);
+    ringP.setInt("resolution", 22);
+    ringP.setString("field", "torus");
+    ringP.setFloat("majorRadius", 0.5f);
+    ringP.setFloat("minorRadius", 0.18f);
+
+    MeshBuild *ring = proc->buildMesh("mesh.marchingcubes", &ringP);
+    REQUIRE(ring != nullptr);
+    CHECK(ring->getVertexCount() > 150);
+    CHECK_EQ(ring->getIndexCount() % 3, 0);
+
+    Params gemP;
+    gemP.setSeed(44);
+    gemP.setInt("resolution", 16);
+    gemP.setString("field", "sphere");
+    gemP.setFloat("radius", 0.4f);
+    MeshBuild *gem = proc->buildMesh("mesh.marchingcubes", &gemP);
+    REQUIRE(gem != nullptr);
+
+    const int totalTris = ring->getIndexCount() / 3 + gem->getIndexCount() / 3;
+    CHECK(totalTris > 100);
+    CHECK(totalTris < 30000);
+
+    // Content-pipeline cache key: identical params → identical bytes.
+    MeshBuild *ring2 = proc->buildMesh("mesh.marchingcubes", &ringP);
+    REQUIRE(ring2 != nullptr);
+    CHECK(ring->positions() == ring2->positions());
+    CHECK(ring->indices() == ring2->indices());
+
+    // Slight param change busts the cache.
+    Params ringP2 = ringP;
+    ringP2.setFloat("minorRadius", 0.22f);
+    MeshBuild *ring3 = proc->buildMesh("mesh.marchingcubes", &ringP2);
+    REQUIRE(ring3 != nullptr);
+    CHECK(ring->positions() != ring3->positions());
+
+    delete ring3;
+    delete ring2;
+    delete gem;
+    delete ring;
 }
