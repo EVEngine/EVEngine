@@ -18,7 +18,9 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
+#include <atomic>
 #include <chrono>
+#include <cstring>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -453,5 +455,127 @@ TEST_CASE("devtools.dap.scriptBreakpointHitViaHook") {
     CHECK(!dbg.isPaused());
 
     dt.detach();
+    dap.stop();
+}
+
+TEST_CASE("devtools.dap.realScriptBreakpointAndCallStack") {
+    auto& dap = DebugAdapter::instance();
+    auto& dbg = Debugger::instance();
+    auto& dt  = DevTool::instance();
+
+    dap.stop();
+    dt.detach();
+    dbg.clearBreakpoints();
+
+    const char* src =
+        "function inner() {\n"      // line 1
+        "    local a = 1\n"         // line 2
+        "    local b = a + 1\n"     // line 3 <-- breakpoint
+        "}\n"
+        "function outer() {\n"
+        "    inner()\n"
+        "}\n"
+        "outer()\n";
+
+    std::atomic<bool> attached{false};
+    std::atomic<bool> go{false};
+    std::atomic<bool> scriptDone{false};
+
+    // Run the script on its own thread. DevTool must be attached HERE because
+    // g_active is thread_local and the Squirrel debug hook fires on this thread.
+    // DevTool::attach() internally calls detach()->stopDap(), so the DAP server
+    // must NOT be listening yet — the main thread waits for `attached` first.
+    std::thread scriptThread([&] {
+        ssq::VM vm(1024, ssq::Libs::ALL);
+        HSQUIRRELVM v = vm.getHandle();
+        dt.attach(v, /*sampleLocals=*/false);
+        attached = true;
+        while (!go.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        const SQInteger len = static_cast<SQInteger>(std::strlen(src));
+        SQRESULT rc = sq_compilebuffer(v, src, len, _SC("e2e.nut"), SQTrue);
+        REQUIRE(SQ_SUCCEEDED(rc));
+        sq_pushroottable(v);
+        REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+        sq_poptop(v);
+        dt.detach();
+        scriptDone = true;
+    });
+
+    // Wait until DevTool is attached (and DAP stopped), then start DAP + handshake.
+    while (!attached.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+
+    DapClient client(port);
+    pump(20);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+    client.sendRequest("launch", "{\"program\":\".\"}");
+    REQUIRE(client.expectResponse("launch"));
+    client.sendRequest("setBreakpoints",
+                       "{\"source\":{\"path\":\"e2e.nut\",\"name\":\"e2e.nut\"},"
+                       "\"breakpoints\":[{\"line\":3}]}");
+    REQUIRE(client.expectResponse("setBreakpoints"));
+    client.sendRequest("configurationDone");
+    REQUIRE(client.expectResponse("configurationDone"));
+
+    // Release the script now that breakpoints are installed.
+    client.clearEvents();
+    go = true;
+
+    // The breakpoint hit produces a `stopped` event with the real location.
+    auto stopped = client.expectEvent("stopped", 8000);
+    REQUIRE(stopped);
+    {
+        auto body = stopped->getObject("body");
+        REQUIRE(body);
+        CHECK_EQ(body->optValue<std::string>("reason", ""), std::string("breakpoint"));
+        CHECK_EQ(body->optValue<int>("line", 0), 3);
+    }
+
+    // The call stack must include the CURRENT (innermost) frame `inner` first.
+    client.sendRequest("stackTrace", "{\"threadId\":1,\"startFrame\":0,\"levels\":20}");
+    auto stResp = client.expectResponse("stackTrace");
+    REQUIRE(stResp);
+    {
+        auto body = stResp->getObject("body");
+        REQUIRE(body);
+        auto frames = body->getArray("stackFrames");
+        REQUIRE(frames);
+        REQUIRE(frames->size() >= 3u);
+        auto f0 = frames->getObject(0);
+        REQUIRE(f0);
+        CHECK_EQ(f0->optValue<int>("line", 0), 3);
+        CHECK(f0->optValue<std::string>("name", "").find("inner") != std::string::npos);
+        auto f1 = frames->getObject(1);
+        REQUIRE(f1);
+        CHECK(f1->optValue<std::string>("name", "").find("outer") != std::string::npos);
+        auto f2 = frames->getObject(2);
+        REQUIRE(f2);
+        CHECK(f2->optValue<std::string>("name", "").find("main") != std::string::npos);
+    }
+
+    // F5 continue from VS Code → script finishes.
+    client.sendRequest("continue", "{\"threadId\":1}");
+    REQUIRE(client.expectResponse("continue"));
+
+    // Poll-based join: if a previous CHECK/REQUIRE failed the script may never
+    // finish, so never block on an unconditional join (would hang the suite).
+    for (int i = 0; i < 200 && !scriptDone.load(); ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        dap.poll();
+    }
+    if (scriptThread.joinable()) {
+        if (scriptDone.load()) {
+            scriptThread.join();
+        } else {
+            scriptThread.detach();  // test already failed; avoid std::terminate
+        }
+    }
+    const bool done = scriptDone.load();
+    CHECK(done);
+    CHECK(!dbg.isPaused());
+
     dap.stop();
 }

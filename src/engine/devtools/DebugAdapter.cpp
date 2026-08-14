@@ -525,7 +525,7 @@ void DebugAdapter::handleRequest(const std::string& json) {
             const int ref = args ? args->optValue<int>("variablesReference", 0) : 0;
             Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
             if (ref == varRefLocals_) {
-                for (const auto& v : dbg.locals(1)) {
+                for (const auto& v : dbg.locals(0)) {
                     Poco::JSON::Object::Ptr o = new Poco::JSON::Object();
                     o->set("name", v.name);
                     o->set("value", v.value);
