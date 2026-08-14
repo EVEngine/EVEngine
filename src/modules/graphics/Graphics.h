@@ -420,6 +420,41 @@ public:
     virtual void requestSurfaceRecreate() {}
 
     /**
+     * Called by the Window module when the native window backing the render
+     * surface is destroyed (window close / recreation). Backends that keep a
+     * platform surface tied to the native window must drop it here so the next
+     * initWithWindow() rebuilds it against a fresh window — even when SDL hands
+     * back the same pointer for the recreated window.
+     *
+     * The present overlay is bound to the destroyed window, so it is also
+     * dropped here: a stale ImGui callback would otherwise keep drawing into
+     * later presents of unrelated windows. Registered window-destroyed
+     * callbacks (e.g. the UI backend's ImGui teardown) fire first so they can
+     * release their ImGui context while the surface is still valid.
+     */
+    virtual void onNativeWindowDestroyed() {
+        for (auto &cb : windowDestroyedCallbacks_) cb.first(cb.second);
+        windowDestroyedCallbacks_.clear();
+        clearPresentOverlay();
+    }
+
+    /** Drop the present overlay callback (window gone; re-register on UI init). */
+    void clearPresentOverlay() {
+        presentOverlayFn_ = nullptr;
+        presentOverlayUser_ = nullptr;
+    }
+
+    /**
+     * Register a callback invoked when the native window is destroyed.
+     * Used by the UI backend to tear down its ImGui context; callbacks are
+     * cleared (and invoked) on onNativeWindowDestroyed().
+     */
+    using WindowDestroyedCallback = void (*)(void *userdata);
+    void addWindowDestroyedCallback(WindowDestroyedCallback cb, void *userdata) {
+        windowDestroyedCallbacks_.emplace_back(cb, userdata);
+    }
+
+    /**
      * Optional overlay drawn inside the swapchain render pass (before end).
      * Used by declarative UI (ImGui). `commandBuffer` is a VkCommandBuffer as void*.
      */
@@ -667,6 +702,7 @@ protected:
     int msaaSamples = 4;
     PresentOverlayFn presentOverlayFn_ = nullptr;
     void *presentOverlayUser_ = nullptr;
+    std::vector<std::pair<WindowDestroyedCallback, void *>> windowDestroyedCallbacks_;
     Shader *currentShader = nullptr;
     Font *currentFont = nullptr;
     std::unique_ptr<RenderControl> renderControl_;

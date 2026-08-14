@@ -262,11 +262,18 @@ Graphics::~Graphics() {
 void Graphics::initWithWindow(void *nativeWindow) {
     if (initialized) {
         // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
-        // The Vulkan surface is tied to the native window — rebuild it when the
-        // handle changes, otherwise acquire/present use a destroyed surface.
-        if (sdlWindow == nativeWindow) return;
+        // The Vulkan surface is tied to the native window. SDL can hand back the
+        // same pointer for a freshly recreated window, so pointer identity alone
+        // can't tell whether the surface is still valid: Window::close() drops it
+        // via onNativeWindowDestroyed(), and a missing surface must be rebuilt too.
+        if (sdlWindow == nativeWindow && surface) return;
         sdlWindow = nativeWindow;
         recreateSurfaceForResume();
+        // Restore the initWithWindow contract (device + swapchain valid on
+        // return): rebuild the swapchain synchronously. On desktop this runs
+        // immediately; on Android/iOS isRenderSurfaceStable() defers it until
+        // the native surface settles, leaving swapchainDirty set (same as before).
+        rebuildSwapchainIfNeeded();
         return;
     }
     sdlWindow = nativeWindow;
@@ -355,6 +362,26 @@ void Graphics::initWithWindow(void *nativeWindow) {
     createShadowResources();
     const uint8_t whitePixel[4] = {255, 255, 255, 255};
     whiteTexture = newTexture(1, 1, whitePixel);
+}
+
+void Graphics::onNativeWindowDestroyed() {
+    if (!initialized) return;
+    // Fire registered window-destroyed callbacks (UI backend tears down its
+    // ImGui context here) before the device/surface resources are released.
+    for (auto &cb : windowDestroyedCallbacks_) cb.first(cb.second);
+    windowDestroyedCallbacks_.clear();
+    clearPresentOverlay();
+
+    device->waitIdle();
+    destroySwapchainResources();
+    swapchain.destroy();
+    swapchain = vkb::Swapchain{};
+    if (surface) {
+        inst.instance.destroySurfaceKHR(surface);
+        surface = VK_NULL_HANDLE;
+    }
+    sdlWindow = nullptr;
+    swapchainDirty = true;
 }
 
 void Graphics::destroySwapchainResources() {
