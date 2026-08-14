@@ -32,7 +32,7 @@ struct WindowSettings {
     uint8_t  display       = 0;
     bool     borderless    = false;
     bool     centered      = true;
-    bool     high_dpi      = false;
+    bool     high_dpi      = true;
     bool     use_dpi_scale = true;
     bool     use_position  = false;
     bool     fullscreen    = false;

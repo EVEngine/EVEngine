@@ -64,7 +64,8 @@ struct Theme {
     float scrollbarSize = 14.f;
     float grabMinSize = 12.f;
 
-    /** Multiplier on top of UI DPI scale (FontGlobalScale = uiScale * fontScale). */
+    /** Font size multiplier relative to the base UI font (FontGlobalScale). DPI is
+     *  baked into the font atlas at rasterization time, not via FontGlobalScale. */
     float fontScale = 1.f;
     bool navEnableKeyboard = true;
 

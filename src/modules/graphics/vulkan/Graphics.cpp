@@ -233,6 +233,7 @@ Graphics::~Graphics() {
     destroyShadowResources();
     destroyGBufferResources();
     destroySceneColorResources();
+    destroyUiColorResources();
     auto destroyBuf = [&](vkb::GenericBuffer &b) { b.release(); };
     for (auto &st : clusteredStorages) {
         destroyBuf(st.lightsBuf);
@@ -473,6 +474,11 @@ Texture *Graphics::getSceneColorTexture() {
     auto *slot = currentSceneColorSlot();
     if (!slot || !slot->colorTex.gpuHandle) return nullptr;
     return &slot->colorTex;
+}
+
+Graphics::UiColorSlot *Graphics::currentUiColorSlot() {
+    if (uiColorSlots.empty()) return nullptr;
+    return &uiColorSlots[currentFrameSlot() % uiColorSlots.size()];
 }
 
 void Graphics::dropPendingOffscreenPasses() {
@@ -1006,6 +1012,162 @@ void Graphics::destroySceneColorResources() {
     sceneColorHeight = 0;
     sceneColorFormat = vk::Format::eUndefined;
     sceneColorSamples = vk::SampleCountFlagBits::e1;
+}
+
+void Graphics::createUiColorResources(int width, int height) {
+    if (width <= 0 || height <= 0) return;
+    const vk::Format colorFmt = swapchain.image_format;
+    if (colorFmt == vk::Format::eUndefined) return;
+
+    const vk::SampleCountFlags supported =
+        device.physical_device.properties.limits.framebufferColorSampleCounts;
+    const vk::SampleCountFlagBits samples =
+        (supported & vk::SampleCountFlagBits::e4) ? vk::SampleCountFlagBits::e4
+                                                  : vk::SampleCountFlagBits::e1;
+
+    // The render pass is size-independent and must remain stable for ImGui's
+    // lifetime: ImGui_ImplVulkan_Init builds its pipeline against it. Create it
+    // once, before any early-returns below.
+    if (!uiRenderPass) {
+        if (samples != vk::SampleCountFlagBits::e1) {
+            uiRenderPass =
+                device.createRenderPass()
+                    .addSampledColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear, samples)
+                    .addResolveColorAttachment(colorFmt)
+                    .addSubpass(vkb::SubpassBuilder()
+                                    .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                    .addResolveAttachment(1, vk::ImageLayout::eColorAttachmentOptimal))
+                    .addExternalShaderReadDependencies()
+                    .build();
+        } else {
+            uiRenderPass =
+                device.createRenderPass()
+                    .addSampledColorAttachment(colorFmt)
+                    .addSubpass(vkb::SubpassBuilder()
+                                    .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal))
+                    .addExternalShaderReadDependencies()
+                    .build();
+        }
+    }
+
+    if (!texSetLayout || !descriptorPool) return;
+
+    if (!uiColorSlots.empty() && uiColorWidth == width && uiColorHeight == height &&
+        uiColorFormat == colorFmt && uiColorSamples == samples)
+        return;
+    destroyUiColorTargets();
+
+    uiColorWidth = width;
+    uiColorHeight = height;
+    uiColorFormat = colorFmt;
+    uiColorSamples = samples;
+    const uint32_t w = uint32_t(width);
+    const uint32_t h = uint32_t(height);
+    const bool msaa = samples != vk::SampleCountFlagBits::e1;
+
+    uiColorSlots.resize(kAsyncResourceCopies);
+    for (auto &slot : uiColorSlots) {
+        slot.color = device.createColorTarget(w, h, colorFmt);
+        if (msaa) slot.msaaColor = device.createColorTarget(w, h, colorFmt, samples);
+    }
+    auto uiPass = uiRenderPass;
+
+    for (auto &slot : uiColorSlots) {
+        if (msaa) {
+            slot.framebuffer = uiPass.createFramebuffer(
+                device, w, h, {slot.msaaColor.asAttachment(), slot.color.asAttachment()});
+        } else {
+            slot.framebuffer = uiPass.createFramebuffer(device, w, h, {slot.color.asAttachment()});
+        }
+    }
+
+    auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
+        vkb::SamplerBuilder sb;
+        gpu.sampler = sb.magFilter(vk::Filter::eLinear)
+                          .minFilter(vk::Filter::eLinear)
+                          .addressModeU(vk::SamplerAddressMode::eClampToEdge)
+                          .addressModeV(vk::SamplerAddressMode::eClampToEdge)
+                          .build(device);
+        auto sets = vkb::DescriptorSetBuilder()
+                        .layout(texSetLayout)
+                        .build(device.instance, descriptorPool);
+        gpu.descriptorSet = vkb::BoundSet{sets[0]};
+        gpu.width = width;
+        gpu.height = height;
+        gpu.viewOverride = view;
+        writeCombinedImageDescriptor(&gpu);
+        tex.width = width;
+        tex.height = height;
+        tex.pixelWidth = width;
+        tex.pixelHeight = height;
+        tex.gpuHandle = &gpu;
+    };
+    for (auto &slot : uiColorSlots)
+        makeSampleTex(slot.colorGpu, slot.colorTex, slot.color.imageView());
+}
+
+void Graphics::destroyUiColorTargets() {
+    for (auto &slot : uiColorSlots) {
+        slot.colorTex.gpuHandle = nullptr;
+        if (slot.framebuffer) {
+            device->destroyFramebuffer(slot.framebuffer);
+            slot.framebuffer = vk::Framebuffer{};
+        }
+        destroySampler(device, slot.colorGpu.sampler);
+    }
+    uiColorSlots.clear();
+    uiColorWidth = 0;
+    uiColorHeight = 0;
+    uiColorFormat = vk::Format::eUndefined;
+    uiColorSamples = vk::SampleCountFlagBits::e1;
+}
+
+void Graphics::destroyUiColorResources() {
+    destroyUiColorTargets();
+    if (uiRenderPass) {
+        device->destroyRenderPass(uiRenderPass);
+        uiRenderPass = {};
+    }
+}
+
+void Graphics::queueUiResolve() {
+    auto *slot = currentUiColorSlot();
+    if (!slot || !slot->colorTex.gpuHandle) return;
+    TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, Batcher{}};
+    resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight),
+                                  Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+    texturedBatches.push_back(std::move(resolve));
+}
+
+bool Graphics::renderUiOverlayPass() {
+    if (!presentOverlayFn_) return false;
+    createUiColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
+    auto *slot = currentUiColorSlot();
+    if (!slot || !uiRenderPass || !slot->framebuffer) return false;
+
+    auto &cb = currentPresentCb();
+    const bool msaa = uiColorSamples != vk::SampleCountFlagBits::e1;
+    std::array<vk::ClearValue, 2> clears{};
+    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0.f, 0.f, 0.f, 0.f});
+    clears[1].color = vk::ClearColorValue(std::array<float, 4>{0.f, 0.f, 0.f, 0.f});
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = uiRenderPass;
+    rpBegin.framebuffer = slot->framebuffer;
+    rpBegin.renderArea = vk::Rect2D{{0, 0}, {uint32_t(uiColorWidth), uint32_t(uiColorHeight)}};
+    rpBegin.clearValueCount = msaa ? 2 : 1;
+    rpBegin.pClearValues = clears.data();
+
+    slot->color.beginColorAttachment();
+    if (msaa) slot->msaaColor.beginColorAttachment();
+    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+
+    VkCommandBuffer raw = static_cast<VkCommandBuffer>(cb);
+    presentOverlayFn_(presentOverlayUser_, raw);
+
+    cb.endRenderPass();
+    slot->color.endSampledLayout();
+    queueUiResolve();
+    return true;
 }
 
 namespace {
@@ -2737,16 +2899,35 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
 
 void Graphics::flushToSwapchain() {
     const bool continue3D = swapchainPassOpen;
-    if (sceneColorPassOpen) {
+    const bool hadScenePass = sceneColorPassOpen;
+
+    if (hadScenePass) {
         endSceneColorRenderPass();
         queueSceneColorResolve();
-        beginSwapchainColorPass();
-        swapchainPassOpen = true;
-    } else if (!continue3D) {
-        if (!beginSwapchainRenderPass()) {
+    }
+
+    if (!continue3D) {
+        // 2D-only path: acquire the present CB and record deferred passes now,
+        // so the UI overlay's dedicated MSAA pass can be recorded before the
+        // swapchain pass begins.
+        if (!beginPresentCommandBuffer()) {
+            dropPendingOffscreenPasses();
             hasPendingClear = false;
             return;
         }
+        recordPendingShadowPasses();
+        recordPendingGBufferPass();
+    }
+
+    // Render the UI overlay (ImGui) into its own MSAA pass, resolved and
+    // composited as the top-most fullscreen quad. Skipped only on the rare 3D
+    // fallback path where the swapchain pass is already open from begin3DFrame.
+    if (presentOverlayFn_ && !(continue3D && !hadScenePass)) {
+        renderUiOverlayPass();
+    }
+
+    if (hadScenePass || !continue3D) {
+        beginSwapchainColorPass();
         swapchainPassOpen = true;
     }
 
@@ -2826,7 +3007,9 @@ void Graphics::flushToSwapchain() {
     // Invalidate prior readback so a failed present cannot reuse a stale frame.
     if (screenReadbackEnabled) hasPresentedFrame = false;
 
-    if (presentOverlayFn_) {
+    // Fallback path only: the swapchain pass was already open when this frame
+    // began (3D MSAA scene pass unavailable), so draw the overlay directly.
+    if (presentOverlayFn_ && continue3D && !hadScenePass) {
         VkCommandBuffer raw = static_cast<VkCommandBuffer>(cb);
         presentOverlayFn_(presentOverlayUser_, raw);
     }

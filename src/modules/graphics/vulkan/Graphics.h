@@ -271,6 +271,13 @@ public:
     vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
     const vkb::BuiltRenderPass &getOffscreenRenderPass() const { return offscreenRenderPass; }
     vk::RenderPass getSwapchainRenderPass() const { return renderpass; }
+    vk::RenderPass getUiMsaaRenderPass() const { return uiRenderPass; }
+    /** Sample count the UI MSAA pass runs with (matches getUiMsaaRenderPass). */
+    vk::SampleCountFlagBits getUiMsaaSamples() const { return uiColorSamples; }
+    /** Create the UI MSAA render pass (once) and its color targets for ImGui init. */
+    void ensureUiColorResources() {
+        createUiColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
+    }
     vkb::Instance &getInstance() { return inst; }
     vkb::Swapchain &getSwapchain() { return swapchain; }
     void *getSdlWindow() const { return sdlWindow; }
@@ -304,6 +311,12 @@ private:
     void destroyGBufferResources();
     void createSceneColorResources(int width, int height);
     void destroySceneColorResources();
+    void createUiColorResources(int width, int height);
+    void destroyUiColorTargets();
+    void destroyUiColorResources();
+    void queueUiResolve();
+    /** Render the present overlay (ImGui) into the UI MSAA pass and queue resolve. */
+    bool renderUiOverlayPass();
     void recordPendingShadowPasses();
     void recordPendingGBufferPass();
     void dropPendingOffscreenPasses();
@@ -585,6 +598,23 @@ private:
     vk::SampleCountFlagBits scenePassPipelineSamples = vk::SampleCountFlagBits::e1;
     int appliedMsaa = -1;
     SceneColorSlot *currentSceneColorSlot();
+
+    // Dedicated 4x-MSAA color target for the UI overlay (ImGui), resolved to a
+    // single-sample texture that is composited as the top-most fullscreen quad.
+    struct UiColorSlot {
+        vkb::ColorTarget msaaColor;
+        vkb::ColorTarget color;
+        vk::Framebuffer framebuffer{};
+        GpuTexture colorGpu{};
+        Texture colorTex{};
+    };
+    int uiColorWidth = 0;
+    int uiColorHeight = 0;
+    vk::Format uiColorFormat = vk::Format::eUndefined;
+    vk::SampleCountFlagBits uiColorSamples = vk::SampleCountFlagBits::e1;
+    std::vector<UiColorSlot> uiColorSlots;
+    vkb::BuiltRenderPass uiRenderPass{};
+    UiColorSlot *currentUiColorSlot();
 
     vkb::Present presentModel;
     vkb::RecordingCmd presentRecording;

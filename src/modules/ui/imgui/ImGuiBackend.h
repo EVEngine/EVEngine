@@ -30,6 +30,12 @@ private:
     void renderDrawData(void *vkCommandBuffer);
     static void presentOverlayThunk(void *userdata, void *commandBuffer);
     void applyScale(float scale);
+    /** Initial UI scale derived from window DPI (desktop) or display DPI (mobile). */
+    float computeInitialScale() const;
+    /** Clear the font atlas and re-add fonts at the current physical-pixel size. */
+    void loadFonts();
+    /** Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
+    void rebuildFonts();
 
     bool initialized_ = false;
     bool fontsUploaded_ = false;

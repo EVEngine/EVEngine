@@ -187,7 +187,9 @@ void applyThemeToImGui(const Theme &theme, float uiScale) {
     style.GrabMinSize = theme.grabMinSize * s;
 
     ImGuiIO &io = ImGui::GetIO();
-    io.FontGlobalScale = s * theme.fontScale;
+    // DPI scale is baked into the font atlas at rasterization time (physical
+    // pixels); FontGlobalScale only carries the user's logical font preference.
+    io.FontGlobalScale = theme.fontScale;
 
     if (theme.navEnableKeyboard) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     else io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
