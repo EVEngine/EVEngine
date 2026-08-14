@@ -20,6 +20,9 @@ Run the startup/frame-error smoke test on Windows with:
 python examples/metroidvania/smoke_test.py build/src/engine/Debug/eve.exe
 ```
 
+Add `--input-replay` to exercise movement, both jump directions, the three-hit combo, and
+the kick action while checking the engine log for frame/runtime errors.
+
 ## Asset licenses
 
 - Tile, prop, and background art is selected from Kenney's **Platformer Pack Redux** and is

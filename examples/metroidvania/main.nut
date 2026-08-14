@@ -67,9 +67,10 @@ function makeSpine(model, animationName, scale) {
              textures = textures, current = animationName };
 }
 
-function playSpine(holder, name, loop = true) {
-    if (holder == null || holder.current == name) return;
+function playSpine(holder, name, loop = true, restart = false, speed = 1.0) {
+    if (holder == null || (holder.current == name && !restart)) return;
     holder.current = name;
+    holder.player.setSpeed(speed);
     holder.player.setLoop(loop);
     holder.player.play(name);
 }
@@ -84,7 +85,7 @@ function spawnPlayer(x, y) {
     local body = game.world.newBody("dynamic", x, y - 28.0);
     body.setFixedRotation(true);
     body.setBullet(true);
-    local main = body.newRectangleFixture(30.0, 54.0, 1.0, 0.25, 0.0);
+    local main = body.newRectangleFixture(30.0, 54.0, 1.0, 0.0, 0.0);
     setFixtureFilter(main, CAT_PLAYER, CAT_TERRAIN | CAT_ENEMY | CAT_PROP | CAT_HAZARD,
                      "player");
     local foot = body.newRectangleFixtureAt(22.0, 7.0, 0.0, 29.0, 0.0, 0.0, 0.0);
@@ -100,10 +101,13 @@ function spawnPlayer(x, y) {
     local e = {
         kind = "player", body = body, fixtures = [main, foot, wallL, wallR, attackL, attackR],
         attackL = attackL, attackR = attackR, hp = TUNE.playerHp, maxHp = TUNE.playerHp,
-        facing = 1, grounded = 0, wallLeft = 0, wallRight = 0, coyote = 0.0,
+        facing = 1, grounded = 0, wallLeft = 0, wallRight = 0,
+        groundContacts = {}, wallLeftContacts = {}, wallRightContacts = {}, coyote = 0.0,
         jumpBuffer = 0.0, dashTimer = 0.0, dashReady = true, attackTimer = 0.0,
-        attackActive = 0.0, combo = 0, comboGrace = 0.0, attackHits = {},
-        invulnerable = 0.0, spine = makeSpine("hero", "Idle", 0.58)
+        wallJumpLock = 0.0, attackStartup = 0.0, attackActive = 0.0,
+        attackEnabled = false, attackWindowDone = false, attackKind = "none", attackFixture = null,
+        queuedAttack = false, queuedKick = false, combo = 0, comboGrace = 0.0, attackHits = {},
+        invulnerable = 0.0, spine = makeSpine("hero", "Idle", TUNE.heroVisualScale)
     };
     return addBodyEntity(e);
 }
@@ -112,14 +116,19 @@ function spawnEnemy(kind, x, y) {
     local body = game.world.newBody("dynamic", x + 16.0, y - 27.0);
     body.setFixedRotation(true);
     body.setBullet(true);
-    local main = body.newRectangleFixture(31.0, 52.0, TUNE.enemyDensity, 0.35, 0.02);
+    local main = body.newRectangleFixture(31.0, 52.0, TUNE.enemyDensity, 0.0, 0.02);
     setFixtureFilter(main, CAT_ENEMY, CAT_TERRAIN | CAT_PLAYER | CAT_PROP | CAT_ENEMY |
                      CAT_PLAYER_ATTACK, "enemy");
+    local foot = body.newRectangleFixtureAt(21.0, 7.0, 0.0, 28.0, 0.0, 0.0, 0.0);
+    setFixtureFilter(foot, CAT_ENEMY, CAT_TERRAIN | CAT_PROP, "enemy_foot", true);
+    local wall = body.newRectangleFixtureAt(37.0, 30.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    setFixtureFilter(wall, CAT_ENEMY, CAT_TERRAIN, "enemy_wall", true);
     local e = {
-        kind = kind, body = body, fixtures = [main], hp = TUNE.enemyHp, maxHp = TUNE.enemyHp,
+        kind = kind, body = body, fixtures = [main, foot, wall], hp = TUNE.enemyHp, maxHp = TUNE.enemyHp,
         stagger = 0.0, staggerDelay = 0.0, state = "normal", stateTimer = 0.0,
-        attackCooldown = 0.3, impactCooldown = 0.0, facing = -1,
-        spine = makeSpine("spineboy", "idle", 0.34)
+        attackCooldown = 0.3, attackDealt = false, impactCooldown = 0.0, facing = -1,
+        grounded = 0, groundContacts = {}, wallContacts = {},
+        spine = makeSpine("spineboy", "idle", TUNE.enemyVisualScale)
     };
     return addBodyEntity(e);
 }
@@ -165,7 +174,8 @@ function spawnBoss(x, y) {
         kind = "boss", body = body, fixtures = [fx], hp = TUNE.bossHp, maxHp = TUNE.bossHp,
         stagger = 0.0, staggerDelay = 0.0, state = "normal", stateTimer = 0.0,
         impactCooldown = 0.0, phase = 1, time = 0.0,
-        homeX = x + 48.0, homeY = y - 48.0, spine = makeSpine("dragon", "flying", 0.30)
+        homeX = x + 48.0, homeY = y - 48.0,
+        spine = makeSpine("dragon", "flying", TUNE.bossVisualScale)
     };
     game.boss = e;
     return addBodyEntity(e);
@@ -235,6 +245,7 @@ function resetRun(preserveAbilities) {
     game.byBody = {};
     game.staticBodies = [];
     game.activeImpacts = {};
+    game.contactCounts = {};
     game.effects = [];
     game.boss = null;
     game.hasWallJump = wall;
@@ -246,35 +257,47 @@ function resetRun(preserveAbilities) {
 
 function beginAttack(stage, kick) {
     local p = game.player;
+    p.attackL.setMaskBits(0);
+    p.attackR.setMaskBits(0);
     p.combo = stage;
-    p.attackTimer = kick ? 0.32 : TUNE.attackDuration[stage - 1];
-    p.attackActive = kick ? 0.13 : TUNE.attackActive[stage - 1];
-    p.comboGrace = TUNE.comboGrace;
+    p.attackKind = kick ? "kick" : "attack";
+    p.attackTimer = kick ? TUNE.kickDuration : TUNE.attackDuration[stage - 1];
+    p.attackStartup = kick ? TUNE.kickStartup : TUNE.attackStartup[stage - 1];
+    p.attackActive = kick ? TUNE.kickActive : TUNE.attackActive[stage - 1];
+    p.attackEnabled = false;
+    p.attackWindowDone = false;
+    p.attackFixture = p.facing > 0 ? p.attackR : p.attackL;
+    p.comboGrace = 0.0;
     p.attackHits = {};
-    local fx = p.facing > 0 ? p.attackR : p.attackL;
-    fx.setTag(kick ? "player_kick" : ("player_attack_" + stage));
-    fx.setMaskBits(CAT_ENEMY | CAT_PROP);
-    playSpine(p.spine, "Attack", false);
+    p.attackFixture.setTag(kick ? "player_kick" : ("player_attack_" + stage));
+    local animSpeed = kick ? 0.88 : (stage == 1 ? 1.15 : (stage == 2 ? 1.0 : 0.82));
+    playSpine(p.spine, "Attack", false, true, animSpeed);
 }
 
 function damageActor(e, damage, stagger, impulseX, impulseY) {
-    if (e == null || e.hp <= 0.0 || e.impactCooldown > 0.0) return;
+    if (e == null || e.hp <= 0.0 || e.state == "dying" || e.state == "dead" ||
+        e.impactCooldown > 0.0) return;
     e.hp -= damage;
     e.stagger += stagger;
     e.staggerDelay = TUNE.staggerDecayDelay;
-    e.body.applyLinearImpulse(impulseX, impulseY);
     e.impactCooldown = TUNE.impactInvulnerability;
     game.hitStop = damage >= 12.0 ? 0.04 : 0.018;
     if (e.hp <= 0.0) {
         e.hp = 0.0;
-        e.state = "dead";
         if (e.kind == "boss") {
+            e.state = "dead";
             game.message = "Dragon defeated - reach the opened gate";
             game.messageTimer = 6.0;
-        } else playSpine(e.spine, "death", false);
+        } else {
+            e.state = "dying";
+            e.stateTimer = TUNE.enemyDeathTime;
+            e.body.setLinearVelocity(0.0, 0.0);
+            playSpine(e.spine, "death", false, true);
+        }
         return;
     }
     if (e.kind == "boss") {
+        e.body.applyLinearImpulse(impulseX, impulseY);
         if (e.stagger >= TUNE.staggerThreshold * 2.0) {
             e.state = "knocked_down";
             e.stateTimer = 2.4;
@@ -283,14 +306,16 @@ function damageActor(e, damage, stagger, impulseX, impulseY) {
         return;
     }
     if (e.stagger >= TUNE.staggerThreshold) {
+        e.body.applyLinearImpulse(impulseX, impulseY);
         e.state = "launched";
         e.stateTimer = 0.0;
         e.stagger = 0.0;
-        playSpine(e.spine, "hit", false);
+        playSpine(e.spine, "jump", true, true);
     } else {
+        e.body.applyLinearImpulse(impulseX * 0.55, impulseY * 0.22);
         e.state = "hit_stun";
-        e.stateTimer = 0.16;
-        playSpine(e.spine, "hit", false);
+        e.stateTimer = 0.18;
+        playSpine(e.spine, "hit", false, true);
     }
 }
 
@@ -328,6 +353,11 @@ function tagsAre(a, b, ta, tb) {
     return (a == ta && b == tb) || (a == tb && b == ta);
 }
 
+function contactOtherId(aId, aTag, bId, tag) { return aTag == tag ? bId : aId; }
+
+function addContact(table, id) { if (!(id in table)) table[id] <- true; }
+function removeContact(table, id) { if (id in table) delete table[id]; }
+
 function processContactEvents() {
     local p = game.player;
     for (local i = 0; i < game.world.getBeginContactCount(); i += 1) {
@@ -335,11 +365,28 @@ function processContactEvents() {
         local bId = game.world.getBeginContactBodyBId(i);
         local a = game.world.getBeginContactFixtureATag(i);
         local b = game.world.getBeginContactFixtureBTag(i);
+        local pairKey = bodyPair(aId, bId);
+        game.contactCounts[pairKey] <- (pairKey in game.contactCounts) ?
+            game.contactCounts[pairKey] + 1 : 1;
         if (tagsAre(a, b, "player_foot", "terrain") ||
             tagsAre(a, b, "player_foot", "prop_crate") || tagsAre(a, b, "player_foot", "prop_rock"))
-            p.grounded += 1;
-        if (tagsAre(a, b, "player_wall_l", "terrain")) p.wallLeft += 1;
-        if (tagsAre(a, b, "player_wall_r", "terrain")) p.wallRight += 1;
+            addContact(p.groundContacts, contactOtherId(aId, a, bId, "player_foot"));
+        if (tagsAre(a, b, "player_wall_l", "terrain"))
+            addContact(p.wallLeftContacts, contactOtherId(aId, a, bId, "player_wall_l"));
+        if (tagsAre(a, b, "player_wall_r", "terrain"))
+            addContact(p.wallRightContacts, contactOtherId(aId, a, bId, "player_wall_r"));
+        if (a == "enemy_foot" || b == "enemy_foot") {
+            local enemyId = a == "enemy_foot" ? aId : bId;
+            if (enemyId in game.byBody)
+                addContact(game.byBody[enemyId].groundContacts,
+                           contactOtherId(aId, a, bId, "enemy_foot"));
+        }
+        if (a == "enemy_wall" || b == "enemy_wall") {
+            local enemyId = a == "enemy_wall" ? aId : bId;
+            if (enemyId in game.byBody)
+                addContact(game.byBody[enemyId].wallContacts,
+                           contactOtherId(aId, a, bId, "enemy_wall"));
+        }
         handleAttackContact(aId, a, bId, b);
         local other = aId == p.body.getId() ? bId : (bId == p.body.getId() ? aId : 0);
         if (other != 0 && other in game.byBody) {
@@ -359,6 +406,8 @@ function processContactEvents() {
             } else if (e.kind == "hazard") {
                 p.hp -= 20.0; p.body.setPosition(game.checkpointX, game.checkpointY);
                 p.body.setLinearVelocity(0.0, 0.0);
+                p.groundContacts.clear(); p.wallLeftContacts.clear(); p.wallRightContacts.clear();
+                p.grounded = 0; p.wallLeft = 0; p.wallRight = 0; p.coyote = 0.0;
             }
         }
     }
@@ -369,12 +418,37 @@ function processContactEvents() {
         local b = game.world.getEndContactFixtureBTag(i);
         if (tagsAre(a, b, "player_foot", "terrain") ||
             tagsAre(a, b, "player_foot", "prop_crate") || tagsAre(a, b, "player_foot", "prop_rock"))
-            p.grounded = p.grounded > 0 ? p.grounded - 1 : 0;
-        if (tagsAre(a, b, "player_wall_l", "terrain")) p.wallLeft = p.wallLeft > 0 ? p.wallLeft - 1 : 0;
-        if (tagsAre(a, b, "player_wall_r", "terrain")) p.wallRight = p.wallRight > 0 ? p.wallRight - 1 : 0;
+            removeContact(p.groundContacts, contactOtherId(aId, a, bId, "player_foot"));
+        if (tagsAre(a, b, "player_wall_l", "terrain"))
+            removeContact(p.wallLeftContacts, contactOtherId(aId, a, bId, "player_wall_l"));
+        if (tagsAre(a, b, "player_wall_r", "terrain"))
+            removeContact(p.wallRightContacts, contactOtherId(aId, a, bId, "player_wall_r"));
+        if (a == "enemy_foot" || b == "enemy_foot") {
+            local enemyId = a == "enemy_foot" ? aId : bId;
+            if (enemyId in game.byBody)
+                removeContact(game.byBody[enemyId].groundContacts,
+                              contactOtherId(aId, a, bId, "enemy_foot"));
+        }
+        if (a == "enemy_wall" || b == "enemy_wall") {
+            local enemyId = a == "enemy_wall" ? aId : bId;
+            if (enemyId in game.byBody)
+                removeContact(game.byBody[enemyId].wallContacts,
+                              contactOtherId(aId, a, bId, "enemy_wall"));
+        }
         local key = bodyPair(aId, bId);
-        if (key in game.activeImpacts) delete game.activeImpacts[key];
+        if (key in game.contactCounts) {
+            game.contactCounts[key] -= 1;
+            if (game.contactCounts[key] <= 0) {
+                delete game.contactCounts[key];
+                if (key in game.activeImpacts) delete game.activeImpacts[key];
+            }
+        }
     }
+    p.grounded = p.groundContacts.len();
+    p.wallLeft = p.wallLeftContacts.len();
+    p.wallRight = p.wallRightContacts.len();
+    foreach (e in game.entities)
+        if ("groundContacts" in e && e.kind != "player") e.grounded = e.groundContacts.len();
 }
 
 function impactCarrier(e, preSolveSpeed) {
@@ -404,6 +478,8 @@ function processImpacts() {
         local a = (aId in game.byBody) ? game.byBody[aId] : null;
         local b = (bId in game.byBody) ? game.byBody[bId] : null;
         if (!impactCarrier(a, speed) && !impactCarrier(b, speed)) continue;
+        local aWasLaunched = a != null && "state" in a && a.state == "launched";
+        local bWasLaunched = b != null && "state" in b && b.state == "launched";
         game.activeImpacts[key] <- true;
         local damage = clampf(impulse * (speed - TUNE.impactSpeedThreshold) * TUNE.impactScale,
                               1.0, TUNE.impactDamageCap);
@@ -423,11 +499,13 @@ function processImpacts() {
             b.hp -= damage;
             if (impulse >= TUNE.crateBreakImpulse) b.hp = 0.0;
         }
-        if (a != null && "state" in a && a.state == "launched") {
+        if (aWasLaunched && a.state != "dying" && a.state != "dead") {
             a.state = "knocked_down"; a.stateTimer = TUNE.knockdownTime;
+            playSpine(a.spine, "hit", false, true);
         }
-        if (b != null && "state" in b && b.state == "launched") {
+        if (bWasLaunched && b.state != "dying" && b.state != "dead") {
             b.state = "knocked_down"; b.stateTimer = TUNE.knockdownTime;
+            playSpine(b.spine, "hit", false, true);
         }
         game.shake = clampf(damage * 0.35, 2.0, 10.0);
         game.hitStop = damage > 18.0 ? 0.05 : (damage > 7.0 ? 0.022 : game.hitStop);
@@ -451,21 +529,30 @@ function updatePlayer(dt) {
     }
     if (p.grounded > 0) { p.coyote = TUNE.coyoteTime; p.dashReady = true; }
     else p.coyote -= dt;
+    if (p.wallJumpLock > 0.0) p.wallJumpLock -= dt;
     if (keyPressed("Space")) p.jumpBuffer = TUNE.jumpBuffer;
     else p.jumpBuffer -= dt;
     local move = 0.0;
     if (keyDown("A", "Left")) move -= 1.0;
     if (keyDown("D", "Right")) move += 1.0;
-    if (move != 0.0) p.facing = move > 0.0 ? 1 : -1;
+    // Keep the visual and the already-selected attack/dash fixture pointing in
+    // the same direction until that action completes.
+    if (move != 0.0 && p.attackTimer <= 0.0 && p.dashTimer <= 0.0)
+        p.facing = move > 0.0 ? 1 : -1;
 
     if (p.jumpBuffer > 0.0) {
         if (p.coyote > 0.0) {
             p.body.setLinearVelocity(p.body.getLinearVelocityX(), -TUNE.jumpSpeed);
+            p.groundContacts.clear(); p.grounded = 0;
             p.jumpBuffer = 0.0; p.coyote = 0.0;
         } else if (game.hasWallJump && (p.wallLeft > 0 || p.wallRight > 0)) {
             local dir = p.wallLeft > 0 ? 1.0 : -1.0;
             p.body.setLinearVelocity(TUNE.wallJumpX * dir, -TUNE.wallJumpY);
-            p.jumpBuffer = 0.0;
+            p.facing = dir > 0.0 ? 1 : -1;
+            p.wallJumpLock = TUNE.wallJumpLockTime;
+            p.wallLeftContacts.clear(); p.wallRightContacts.clear();
+            p.wallLeft = 0; p.wallRight = 0;
+            p.jumpBuffer = 0.0; p.coyote = 0.0;
         }
     }
     if (game.hasDash && p.dashReady && keyPressed("Left Shift", "Right Shift")) {
@@ -476,29 +563,63 @@ function updatePlayer(dt) {
         p.dashTimer -= dt;
         p.body.setLinearVelocity(TUNE.dashSpeed * p.facing, 0.0);
     } else {
-        local control = p.grounded > 0 ? 1.0 : TUNE.airControl;
         local target = move * TUNE.moveSpeed;
         local vx = p.body.getLinearVelocityX();
-        p.body.setLinearVelocity(vx + (target - vx) * clampf(dt * 14.0 * control, 0.0, 1.0),
-                                 p.body.getLinearVelocityY());
-        if (game.hasWallJump && p.grounded == 0 && (p.wallLeft > 0 || p.wallRight > 0) &&
+        local acceleration = p.grounded > 0 ? TUNE.groundAcceleration : TUNE.airAcceleration;
+        local nextVx = p.wallJumpLock > 0.0 ? vx :
+            vx + (target - vx) * clampf(dt * acceleration, 0.0, 1.0);
+        local nextVy = p.body.getLinearVelocityY();
+        if (!keyDown("Space") && nextVy < -80.0)
+            nextVy += TUNE.jumpCutAcceleration * dt;
+        p.body.setLinearVelocity(nextVx, nextVy);
+        local pressingIntoWall = (p.wallLeft > 0 && move < 0.0) || (p.wallRight > 0 && move > 0.0);
+        if (game.hasWallJump && p.grounded == 0 && pressingIntoWall &&
             p.body.getLinearVelocityY() > TUNE.wallSlideSpeed)
             p.body.setLinearVelocity(p.body.getLinearVelocityX(), TUNE.wallSlideSpeed);
     }
 
-    p.comboGrace -= dt;
+    if (p.attackTimer <= 0.0) p.comboGrace -= dt;
     if (keyPressed("J")) {
-        local next = p.comboGrace > 0.0 ? (p.combo % 3) + 1 : 1;
-        beginAttack(next, false);
+        if (p.attackTimer > 0.0) p.queuedAttack = true;
+        else beginAttack(p.comboGrace > 0.0 ? (p.combo % 3) + 1 : 1, false);
     }
-    if (keyPressed("K")) beginAttack(1, true);
+    if (keyPressed("K")) {
+        if (p.attackTimer > 0.0) p.queuedKick = true;
+        else beginAttack(1, true);
+    }
     if (p.attackTimer > 0.0) {
-        p.attackTimer -= dt; p.attackActive -= dt;
-        if (p.attackActive <= 0.0) { p.attackL.setMaskBits(0); p.attackR.setMaskBits(0); }
+        p.attackTimer -= dt;
+        if (!p.attackEnabled && !p.attackWindowDone) {
+            p.attackStartup -= dt;
+            if (p.attackStartup <= 0.0) {
+                p.attackEnabled = true;
+                p.attackFixture.setMaskBits(CAT_ENEMY | CAT_PROP);
+            }
+        } else {
+            p.attackActive -= dt;
+            if (p.attackActive <= 0.0) {
+                p.attackEnabled = false;
+                p.attackWindowDone = true;
+                p.attackL.setMaskBits(0); p.attackR.setMaskBits(0);
+            }
+        }
+        if (p.attackTimer <= 0.0) {
+            p.attackL.setMaskBits(0); p.attackR.setMaskBits(0);
+            p.attackEnabled = false;
+            p.comboGrace = TUNE.comboGrace;
+            if (p.queuedKick) {
+                p.queuedKick = false; p.queuedAttack = false;
+                beginAttack(1, true);
+            } else if (p.queuedAttack) {
+                p.queuedAttack = false;
+                beginAttack((p.combo % 3) + 1, false);
+            }
+        }
     }
     if (p.invulnerable > 0.0) p.invulnerable -= dt;
 
     if (p.attackTimer <= 0.0) {
+        p.spine.player.setSpeed(1.0);
         local vy = p.body.getLinearVelocityY();
         if (p.grounded > 0) playSpine(p.spine, absf(p.body.getLinearVelocityX()) > 25.0 ? "Run" : "Idle");
         else playSpine(p.spine, vy < 0.0 ? "Jump" : "Fall");
@@ -511,38 +632,68 @@ function updateEnemies(dt) {
     foreach (e in game.entities) {
         if (!("state" in e) || e.kind == "player" || e.kind == "boss" || e.state == "dead") continue;
         if (e.impactCooldown > 0.0) e.impactCooldown -= dt;
+        if (e.attackCooldown > 0.0) e.attackCooldown -= dt;
         if (e.staggerDelay > 0.0) e.staggerDelay -= dt;
         else e.stagger = clampf(e.stagger - TUNE.staggerDecay * dt, 0.0, TUNE.staggerThreshold);
-        if (e.state == "hit_stun") {
+        if (e.state == "dying") {
+            e.stateTimer -= dt;
+            if (e.stateTimer <= 0.0) { e.state = "dead"; e.body.setActive(false); }
+            continue;
+        } else if (e.state == "attacking") {
+            e.stateTimer -= dt;
+            e.body.setLinearVelocity(0.0, e.body.getLinearVelocityY());
+            if (!e.attackDealt && e.stateTimer <= TUNE.enemyAttackDuration - TUNE.enemyAttackHitTime) {
+                e.attackDealt = true;
+                local dxNow = game.player.body.getX() - e.body.getX();
+                local dyNow = game.player.body.getY() - e.body.getY();
+                if (absf(dxNow) < 54.0 && absf(dyNow) < 52.0 && game.player.invulnerable <= 0.0) {
+                    game.player.hp -= 9.0;
+                    game.player.invulnerable = 0.55;
+                    game.player.body.applyLinearImpulse(e.facing * 240.0, -80.0);
+                }
+            }
+            if (e.stateTimer <= 0.0) { e.state = "normal"; e.attackCooldown = 0.72; }
+            continue;
+        } else if (e.state == "hit_stun") {
             e.stateTimer -= dt;
             if (e.stateTimer <= 0.0) e.state = "normal";
+        } else if (e.state == "launched") {
+            if (e.grounded > 0 && absf(e.body.getLinearVelocityY()) < TUNE.launchedLandSpeed) {
+                e.state = "knocked_down";
+                e.stateTimer = TUNE.knockdownTime;
+                e.body.setLinearVelocity(e.body.getLinearVelocityX() * 0.55, 0.0);
+                playSpine(e.spine, "hit", false, true);
+            }
         } else if (e.state == "knocked_down") {
             e.stateTimer -= dt;
-            if (e.stateTimer <= 0.0) { e.state = "getting_up"; e.stateTimer = TUNE.getupTime; }
+            if (e.stateTimer <= 0.0) {
+                e.state = "getting_up"; e.stateTimer = TUNE.getupTime;
+                playSpine(e.spine, "idle", true, true);
+            }
         } else if (e.state == "getting_up") {
             e.stateTimer -= dt;
             if (e.stateTimer <= 0.0) e.state = "normal";
         }
         if (e.state != "normal") continue;
-        e.attackCooldown -= dt;
         local dx = px - e.body.getX();
         local dy = py - e.body.getY();
         e.facing = dx >= 0.0 ? 1 : -1;
-        if (absf(dx) < 42.0 && absf(dy) < 52.0 && e.attackCooldown <= 0.0) {
-            if (game.player.invulnerable <= 0.0) {
-                game.player.hp -= 9.0;
-                game.player.invulnerable = 0.55;
-                game.player.body.applyLinearImpulse(-e.facing * 240.0, -80.0);
-            }
-            e.attackCooldown = 1.0;
-            playSpine(e.spine, "shoot", false);
+        if (absf(dx) < 48.0 && absf(dy) < 52.0 && e.attackCooldown <= 0.0) {
+            e.state = "attacking";
+            e.stateTimer = TUNE.enemyAttackDuration;
+            e.attackDealt = false;
+            e.body.setLinearVelocity(0.0, e.body.getLinearVelocityY());
+            playSpine(e.spine, "shoot", false, true);
         } else if (absf(dx) < 430.0) {
             local speed = e.kind == "enemy_leaper" ? 105.0 : 78.0;
-            e.body.setLinearVelocity(e.facing * speed, e.body.getLinearVelocityY());
-            if (e.kind == "enemy_leaper" && absf(dx) < 180.0 && e.attackCooldown <= 0.0) {
+            local blocked = e.wallContacts.len() > 0;
+            e.body.setLinearVelocity(blocked ? 0.0 : e.facing * speed,
+                                     e.body.getLinearVelocityY());
+            if (e.kind == "enemy_leaper" && e.grounded > 0 && absf(dx) < 180.0 &&
+                e.attackCooldown <= 0.0 && (!blocked || absf(dx) < 90.0)) {
                 e.body.applyLinearImpulse(e.facing * 190.0, -420.0);
                 e.attackCooldown = 1.8;
-                playSpine(e.spine, "jump");
+                playSpine(e.spine, "jump", true);
             } else playSpine(e.spine, "run");
         } else playSpine(e.spine, "idle");
     }
@@ -600,12 +751,18 @@ function removeBrokenProps() {
 }
 
 function updateCamera(dt) {
-    local targetX = clampf(game.player.body.getX(), config.width * 0.5, 120.0 * 32.0 - config.width * 0.5);
-    local targetY = clampf(game.player.body.getY(), config.height * 0.5, 22.0 * 32.0 - config.height * 0.5);
+    local worldWidth = 120.0 * 32.0;
+    local worldHeight = 22.0 * 32.0;
+    local targetX = worldWidth <= config.width ? worldWidth * 0.5 :
+        clampf(game.player.body.getX(), config.width * 0.5, worldWidth - config.width * 0.5);
+    local targetY = worldHeight <= config.height ? worldHeight * 0.5 :
+        clampf(game.player.body.getY(), config.height * 0.5, worldHeight - config.height * 0.5);
     game.cameraX += (targetX - game.cameraX) * clampf(dt * 5.5, 0.0, 1.0);
     game.cameraY += (targetY - game.cameraY) * clampf(dt * 5.5, 0.0, 1.0);
-    game.camera.setPosition(game.cameraX, game.cameraY);
-    if (game.shake > 0.0) game.shake -= dt * 24.0;
+    local shakeX = game.shake > 0.0 ? sin(game.time * 97.0) * game.shake : 0.0;
+    local shakeY = game.shake > 0.0 ? cos(game.time * 83.0) * game.shake * 0.55 : 0.0;
+    game.camera.setPosition(game.cameraX + shakeX, game.cameraY + shakeY);
+    if (game.shake > 0.0) game.shake = clampf(game.shake - dt * 24.0, 0.0, 10.0);
 }
 
 function buildHud() {
@@ -657,13 +814,13 @@ eve_init = function() {
         world = null, entities = [], byBody = {}, staticBodies = [], player = null, boss = null,
         collisionLayer = map.getLayer(1), camera = camera, cameraX = 640.0, cameraY = 360.0,
         checkpointX = 112.0, checkpointY = 548.0, hasWallJump = false, hasDash = false,
-        activeImpacts = {}, crateTexture = gfx.newTextureFromFile("assets/crate.png"),
+        activeImpacts = {}, contactCounts = {}, crateTexture = gfx.newTextureFromFile("assets/crate.png"),
         rockTexture = gfx.newTextureFromFile("assets/rock.png"),
         backgrounds = [gfx.newTextureFromFile("assets/background_forest.png"),
                        gfx.newTextureFromFile("assets/background_ruins.png"),
                        gfx.newTextureFromFile("assets/background_mine.png")],
         message = "Reach the ruins",
-        messageTimer = 3.0, shake = 0.0, hitStop = 0.0, accumulator = 0.0,
+        messageTimer = 3.0, shake = 0.0, time = 0.0, hitStop = 0.0, accumulator = 0.0,
         effects = [], won = false
     };
     buildHud();
@@ -671,6 +828,7 @@ eve_init = function() {
 };
 
 function simulateStep(dt) {
+    game.time += dt;
     if (game.won && keyPressed("R")) { game.won = false; resetRun(false); }
     game.world.clearContactEvents();
     updatePlayer(dt);
@@ -740,10 +898,12 @@ eve_render = function() {
             local sx = screenX(e.body.getX());
             local sy = screenY(e.body.getY());
             local facing = ("facing" in e) ? e.facing : 1;
-            local baseScale = e.kind == "player" ? 0.58 : (e.kind == "boss" ? 0.30 : 0.34);
+            local baseScale = e.kind == "player" ? TUNE.heroVisualScale :
+                (e.kind == "boss" ? TUNE.bossVisualScale : TUNE.enemyVisualScale);
             e.spine.player.setScale(baseScale * facing, baseScale);
-            e.spine.player.setPosition(sx, sy + (e.kind == "boss" ? 20.0 : 27.0));
-            if ("impactCooldown" in e && e.impactCooldown > 0.0)
+            e.spine.player.setPosition(sx, sy + (e.kind == "boss" ? 20.0 : TUNE.actorVisualYOffset));
+            if ((e.kind == "player" && e.invulnerable > 0.0) ||
+                ("impactCooldown" in e && e.impactCooldown > 0.0))
                 e.spine.player.setColor(1.0, 0.55, 0.48, 1.0);
             else e.spine.player.setColor(1.0, 1.0, 1.0, 1.0);
             e.spine.player.draw(gfx);
