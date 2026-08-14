@@ -548,6 +548,7 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
         const char *enableFeat;
         const char *disableFeat;
         const char *tag;
+        int msaaSamples = -1;
     };
     const Extra extras[] = {
         {RenderCfg::DirAndPoint, nullptr, nullptr, "dir_point"},
@@ -556,6 +557,8 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
         {RenderCfg::DirectionalLit, "gbuffer", nullptr, "gbuffer"},
         {RenderCfg::DirectionalLit, "gbufferAlbedo", nullptr, "gbuffer_albedo"},
         {RenderCfg::DirectionalShadows, nullptr, "shadow", "no_shadow_pass"},
+        {RenderCfg::DirectionalShadows, nullptr, nullptr, "msaa_2x", 2},
+        {RenderCfg::DirectionalShadows, nullptr, nullptr, "msaa_off", 0},
     };
     RenderControl *rc = gfx->getRenderControl();
     gfx->setScreenReadbackEnabled(false);
@@ -570,6 +573,7 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
             rc->disable(ex.disableFeat);
             rc->compile();
         }
+        if (ex.msaaSamples >= 0) gfx->setMsaaSamples(ex.msaaSamples);
         std::printf("ClassicScenes[%s] extra=%s\n", sceneTag, ex.tag);
         for (int i = 0; i < 2; ++i) {
             RenderSystem3D::render(*gfx);
@@ -584,6 +588,7 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
         auditCapturedFrame(snap, gfx, sceneTag, ex.tag);
         delete snap;
         gfx->setScreenReadbackEnabled(false);
+        if (ex.msaaSamples >= 0) gfx->setMsaaSamples(4);
     }
     resetRenderControl(gfx);
     gfx->setScreenReadbackEnabled(true);

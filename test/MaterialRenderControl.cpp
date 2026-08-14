@@ -41,6 +41,7 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.supports("ao"));
     CHECK(rc.supports("gi"));
     CHECK(rc.supports("aa"));
+    CHECK(rc.supports("msaa"));
     CHECK(rc.supports("shadow"));
     CHECK(!rc.supports("deferred"));
 
@@ -53,6 +54,12 @@ TEST_CASE("renderControl.compileFeaturesToPasses") {
     CHECK(rc.isEnabled("ao"));
     CHECK(rc.isEnabled("gi"));
     CHECK(rc.isEnabled("aa"));
+    CHECK(rc.isEnabled("msaa"));
+
+    rc.disable("msaa");
+    CHECK(!rc.isEnabled("msaa"));
+    rc.enable("msaa");
+    CHECK(rc.isEnabled("msaa"));
 
     rc.disable("ao");
     rc.disable("gi");

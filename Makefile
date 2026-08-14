@@ -156,6 +156,7 @@ VS_GENERATOR ?= Visual Studio 18 2026
 CMAKE_EXTRA_ARGS ?=
 JOBS ?= 32
 ANDROID_JOBS ?= 8
+CTEST_JOBS ?= 4
 
 build/win32: build/win32/EVEngine.sln
 	cmake.exe --build $@ --config Release --target deps -j $(JOBS)
@@ -437,27 +438,27 @@ CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 
 # Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
 test/win32:
-	ctest --test-dir build/win32 -C Release --output-on-failure -j $(JOBS) $(CTEST_FILTER)
+	ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
 
 test/win32-debug:
-	ctest --test-dir build/win32-debug --output-on-failure -j $(JOBS) $(CTEST_FILTER)
+	ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
 
 test/linux:
-	ctest --test-dir build/linux -C Release --output-on-failure -j $(JOBS) $(CTEST_FILTER)
+	ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
 
 test/linux-debug:
-	ctest --test-dir build/linux-debug --output-on-failure -j $(JOBS) $(CTEST_FILTER)
+	ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
 
 test/macosx:
-	ctest --test-dir build/macosx -C Release --output-on-failure -j $(JOBS) $(CTEST_FILTER)
+	ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
 
 test/macosx-debug:
-	ctest --test-dir build/macosx-debug --output-on-failure -j $(JOBS) $(CTEST_FILTER)
+	ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
 
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).
 test/%:
-	ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(JOBS) -R '^$(subst .,\.,$*)'
+	ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)'
 
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).
 run: run/$(PLATFORM)-debug

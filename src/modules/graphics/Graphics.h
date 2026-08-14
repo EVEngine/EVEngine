@@ -370,6 +370,14 @@ public:
     virtual void setVSync(bool enabled) { vsyncEnabled = enabled; }
     bool isVSync() const { return vsyncEnabled; }
 
+    /**
+     * Hardware MSAA sample count for the 3D scene color pass (0 disables, then
+     * 2/4/8 are used when the device supports them). 0 or 1 mean no MSAA.
+     * Takes effect on the next begin3DFrame.
+     */
+    virtual void setMsaaSamples(int samples) { msaaSamples = samples > 0 ? samples : 0; }
+    virtual int getMsaaSamples() const { return msaaSamples; }
+
     /** Pause/resume presenting (Android background / foreground). */
     void setActive(bool active) {
         graphicsActive = active;
@@ -633,6 +641,7 @@ protected:
     bool screenReadbackEnabled = false;
     bool vsyncEnabled = true;
     bool graphicsActive = true;
+    int msaaSamples = 4;
     PresentOverlayFn presentOverlayFn_ = nullptr;
     void *presentOverlayUser_ = nullptr;
     Shader *currentShader = nullptr;

@@ -28,6 +28,8 @@ class Graphics;
  *   "ao"            — screen-space AO overlay after FXAA resolve (implies gbuffer; default on)
  *   "gi"            — enables gbufferAlbedo; mesh hemispheric GI (fullscreen SSGI is not auto-applied)
  *   "aa"            — FXAA resolve of the 3D scene color into the swapchain (default on)
+ *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via
+ *                     Graphics.setMsaaSamples, default 4, clamped to device support)
  *
  * 3D draws into a sampleable scene color target (not the swapchain). Present
  * resolves that target (FXAA when "aa" is on), then composites AO/HUD.

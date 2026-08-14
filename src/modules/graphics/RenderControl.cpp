@@ -4,7 +4,7 @@ namespace eve::graphics {
 namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
-                                "forward",   "hair",       "clustered", "ao", "gi", "aa"};
+                                "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -26,6 +26,7 @@ RenderControl::RenderControl() {
     features_["ao"] = true;
     features_["gi"] = true;
     features_["aa"] = true;
+    features_["msaa"] = true;
     dirty_ = true;
     compiled_ = false;
 }

@@ -222,3 +222,38 @@ TEST_CASE("aa.paramOverrides") {
     aa->setFloat("strength", 1.5f);
     CHECK(std::fabs(aa->getFloat("strength") - 1.5f) < 1e-5f);
 }
+
+TEST_CASE("aa.msaaSamplesApi") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 256, 192);
+
+    // Defaults: hardware MSAA on at 4 samples via the render control feature.
+    RenderControl *rc = gfx->getRenderControl();
+    REQUIRE(rc != nullptr);
+    CHECK(rc->isEnabled("msaa"));
+    CHECK(gfx->getMsaaSamples() == 4);
+
+    gfx->setMsaaSamples(8);
+    CHECK(gfx->getMsaaSamples() == 8);
+    gfx->setMsaaSamples(2);
+    CHECK(gfx->getMsaaSamples() == 2);
+    gfx->setMsaaSamples(0);
+    CHECK(gfx->getMsaaSamples() == 0);
+    gfx->setMsaaSamples(1);  // below the MSAA threshold → treated as off
+    CHECK(gfx->getMsaaSamples() == 0);
+    gfx->setMsaaSamples(-2);
+    CHECK(gfx->getMsaaSamples() == 0);
+    gfx->setMsaaSamples(4);
+    CHECK(gfx->getMsaaSamples() == 4);
+
+    // 3D smoke frame with MSAA enabled: draw a mesh + resolve, no crash/blackout.
+    gfx->setBackgroundColorRGBA(0.05f, 0.05f, 0.08f, 1.f);
+    Mesh *mesh = gfx->newMeshSphere(24, 16);
+    REQUIRE(mesh != nullptr);
+    gfx->begin3DFrame();
+    CHECK(gfx->had3DThisFrame());
+    gfx->drawMesh(mesh, glm::mat4(1.f), nullptr, Color(0.9f, 0.6f, 0.3f, 1.f));
+    gfx->present();
+}
+

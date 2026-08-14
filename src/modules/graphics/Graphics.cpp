@@ -445,6 +445,8 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
+    cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);
+    cls.addFunc("getMsaaSamples", &Graphics::getMsaaSamples);
     cls.addFunc("getSceneColorTexture", &Graphics::getSceneColorTexture);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);

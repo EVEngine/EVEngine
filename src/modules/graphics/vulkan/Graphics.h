@@ -143,6 +143,7 @@ struct GpuShader {
     vk::PipelineLayout pipelineLayout;
     bool isMesh3D = false;
     bool isHair3D = false;
+    Shader *owner = nullptr;
 };
 
 class Graphics final : public eve::graphics::Graphics {
@@ -163,6 +164,12 @@ public:
         eve::graphics::Graphics::setVSync(enabled);
         markSwapchainDirty();
     }
+    void setMsaaSamples(int samples) override {
+        const int raw = samples > 1 ? samples : 0;
+        if (raw == msaaSamples) return;
+        eve::graphics::Graphics::setMsaaSamples(raw);
+    }
+    int getMsaaSamples() const override { return msaaSamples; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
@@ -282,6 +289,8 @@ private:
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void createVoxelRectPipeline();
+    vk::Pipeline buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
+                                        vk::SampleCountFlagBits samples);
     void destroyVoxelRectResources();
     void ensureVoxelUnitQuad();
     vkb::BoundSet voxelRectSetFor(GpuTexture *gpuTex);
@@ -313,10 +322,27 @@ private:
                                              const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout);
     vk::Pipeline createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
                                            const std::vector<uint32_t> &frag,
-                                           vk::PipelineLayout layout);
+                                           vk::PipelineLayout layout,
+                                           const vkb::BuiltRenderPass &rp,
+                                           vk::SampleCountFlagBits samples);
     vk::Pipeline createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
-                                          vk::PipelineLayout layout);
+                                          vk::PipelineLayout layout,
+                                          const vkb::BuiltRenderPass &rp,
+                                          vk::SampleCountFlagBits samples);
+    /** Rebuild scene-pass pipelines against the given render pass / sample count. */
+    void ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
+                                  vk::SampleCountFlagBits samples);
+    /** Clamp a requested sample count to the device-supported set (0/1/2/4/8). */
+    int clampMsaaSamples(int requested) const;
+    /** Render pass a scene-pass pipeline should be built against right now. */
+    const vkb::BuiltRenderPass &activeScenePass() const {
+        return sceneColorRenderPass ? sceneColorRenderPass : renderpass;
+    }
+    /** Sample count the scene pass is currently running with (e1 when no MSAA). */
+    vk::SampleCountFlagBits activeSceneSamples() const {
+        return sceneColorRenderPass ? sceneColorSamples : vk::SampleCountFlagBits::e1;
+    }
     void destroySwapchainResources();
     void flushBatch();
     void flushToSwapchain();
@@ -537,6 +563,7 @@ private:
     GBufferSlot *currentGBufferSlot();
 
     struct SceneColorSlot {
+        vkb::ColorTarget msaaColor;
         vkb::ColorTarget color;
         vkb::DepthTarget depth;
         vk::Framebuffer framebuffer{};
@@ -546,9 +573,13 @@ private:
     int sceneColorWidth = 0;
     int sceneColorHeight = 0;
     vk::Format sceneColorFormat = vk::Format::eUndefined;
+    vk::SampleCountFlagBits sceneColorSamples = vk::SampleCountFlagBits::e1;
     std::vector<SceneColorSlot> sceneColorSlots;
     vkb::BuiltRenderPass sceneColorRenderPass{};
     bool sceneColorPassOpen = false;
+    vk::RenderPass scenePassPipelineTarget = vk::RenderPass{};
+    vk::SampleCountFlagBits scenePassPipelineSamples = vk::SampleCountFlagBits::e1;
+    int appliedMsaa = -1;
     SceneColorSlot *currentSceneColorSlot();
 
     vkb::Present presentModel;

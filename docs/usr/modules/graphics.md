@@ -140,9 +140,17 @@ rc.enable("gi");   // 默认已开
 rc.compile();
 ```
 
-### 经典抗锯齿（FXAA / SMAA / SSAA / NFAA）
+### 抗锯齿（硬件 MSAA + 经典后处理）
 
-`aa <- gfx.newAntiAliasing()`。`setQuality("low"|"medium"|"high")` 调整阈值与搜索；`setMode` 选择算法：
+**硬件 MSAA**（3D 模型/体素边缘效果最好）：3D scene color pass 默认 4x 多重采样再 resolve。用 `RenderControl "msaa"`（默认开）开关，`gfx.setMsaaSamples(n)` 设采样数（0/1=关，2/4/8 按设备能力 clamp）：
+
+```squirrel
+gfx.setMsaaSamples(8);          // 升到 8x（若设备支持）
+gfx.setMsaaSamples(0);          // 关闭硬件 MSAA
+rc.disable("msaa");             // 或通过 RenderControl 特性关
+```
+
+**经典后处理**：`aa <- gfx.newAntiAliasing()`。`setQuality("low"|"medium"|"high")` 调整阈值与搜索；`setMode` 选择算法：
 
 - **fxaa**：FXAA 3.11 风格亮度边搜索
 - **smaa**：SMAA 启发的单 Pass 形态学 AA
@@ -151,7 +159,7 @@ rc.compile();
 
 典型流程：场景 → Canvas → `aa.applyCanvas` / `applyCanvasTo` → 屏幕。
 
-3D 默认路径：`begin3DFrame` 画到可采样的 scene color，present 时按 `RenderControl "aa"`（默认开）做 FXAA resolve 再叠 AO/HUD。手动 Canvas 路径仍然可用。细节见 [`抗锯齿模块设计.md`](../../dev/抗锯齿模块设计.md)。
+3D 默认路径：`begin3DFrame` 画到可采样的 scene color（`"msaa"` 开时先 Nx 多重采样再 resolve 到 1x），present 时按 `RenderControl "aa"`（默认开）做 FXAA resolve 再叠 AO/HUD。手动 Canvas 路径仍然可用。细节见 [`抗锯齿模块设计.md`](../../dev/抗锯齿模块设计.md)。
 
 ### 2D 屏幕拾取
 
@@ -178,7 +186,7 @@ rc.compile();
 - `getScreenRayOriginY()`、`getScreenRayOriginZ()`、`getShader()`、`getShadowBias()`、`getShadowStrength()`、`getType()`、`getUniformIndex()`、`getVertexCount()`
 - `getVolumetric()`、`getVolumetricIntensity()`、`getWidth()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`getZoom()`、`hasMorph()`、`hasMorphData()`
 - `hasUniform()`、`isEnabled()`、`isMorphDirty()`、`newHairShader()`、`newMeshCylinder()`、`newMeshShader()`、`newMeshSphere()`、`newQuad()`、`newShader()`
-- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
+- `newShaderFromSpvFile()`、`newTexture()`、`newTextureWithSampler()`、`setTextureSampler()`、`getMaxAnisotropy()`、`newVolumetric()`、`newAmbientOcclusion()`、`newGlobalIllumination()`、`newAntiAliasing()`、`setMsaaSamples()`、`getMsaaSamples()`、`present()`、`render3D()`、`reset()`、`screenToRay()`、`screenToWorldX()`、`screenToWorldY()`
 - `sendFloat()`、`sendVec2()`、`sendVec3()`、`sendVec4()`、`setActive()`、`setAmbient()`、`setBackgroundColor()`、`setCamera()`
 - `setCanvas()`、`setCastOcclusion()`、`setCastShadow()`、`setColor()`、`setDirection()`、`setDirectionalLight()`、`setEnabled()`、`setEnvIntensity()`、`setEnvMap()`
 - `setEye()`、`setFov()`、`setMesh()`、`setMeshLod()`、`clearMeshLod()`、`getMeshLodCount()`、`getMeshLodLevelAtDistance()`、`setMetallic()`、`setMorphWeight()`、`setNormalTexture()`、`setHeightTexture()`、`setPosition()`、`setRadius()`

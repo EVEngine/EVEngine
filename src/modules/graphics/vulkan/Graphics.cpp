@@ -764,6 +764,12 @@ void Graphics::createSwapchainAndPipeline() {
         pipeline = createSolidColorPipeline(device, renderpass, pipelineLayout);
     }
 
+    // Scene-pass pipelines are initially built for the swapchain render pass at
+    // 1x; ensureScenePassPipelines rebuilds them only when the active scene pass
+    // (handle or sample count) differs.
+    scenePassPipelineTarget = vk::RenderPass(renderpass);
+    scenePassPipelineSamples = vk::SampleCountFlagBits::e1;
+
     presentModel = device.createPresent(swapchain).build(renderpass, depthImage.imageView());
     // Multi-frame overlap: submit + present without waiting on this frame's
     // fence, so the CPU can build frame N+1 while the GPU still renders frame N.
@@ -887,7 +893,9 @@ void Graphics::createMesh3DPipeline() {
 
     auto vert = embeddedSpirv(mesh3d_vert_spv);
     auto frag = embeddedSpirv(mesh3d_frag_spv);
-    mesh3dPipeline = createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout);
+    mesh3dPipeline =
+        createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass,
+                                  vk::SampleCountFlagBits::e1);
 }
 
 void Graphics::createMesh3DClusteredPipeline() {
@@ -916,7 +924,9 @@ void Graphics::createMesh3DClusteredPipeline() {
 
     auto vert = embeddedSpirv(mesh3d_clustered_vert_spv);
     auto frag = embeddedSpirv(mesh3d_clustered_frag_spv);
-    mesh3dClusteredPipeline = createMesh3DStylePipeline(vert, frag, mesh3dClusteredPipelineLayout);
+    mesh3dClusteredPipeline =
+        createMesh3DStylePipeline(vert, frag, mesh3dClusteredPipelineLayout, renderpass,
+                                  vk::SampleCountFlagBits::e1);
 }
 
 void Graphics::destroyShadowResources() {
@@ -995,6 +1005,7 @@ void Graphics::destroySceneColorResources() {
     sceneColorWidth = 0;
     sceneColorHeight = 0;
     sceneColorFormat = vk::Format::eUndefined;
+    sceneColorSamples = vk::SampleCountFlagBits::e1;
 }
 
 namespace {
@@ -1002,6 +1013,13 @@ namespace {
 vk::Format pickGBufferColorFormat(vkb::Device &device) {
     (void)device;
     return vk::Format::eR8G8B8A8Unorm;
+}
+
+vk::SampleCountFlagBits sampleCountFlagFor(int samples) {
+    if (samples >= 8) return vk::SampleCountFlagBits::e8;
+    if (samples >= 4) return vk::SampleCountFlagBits::e4;
+    if (samples >= 2) return vk::SampleCountFlagBits::e2;
+    return vk::SampleCountFlagBits::e1;
 }
 
 }  // namespace
@@ -1106,40 +1124,75 @@ void Graphics::createSceneColorResources(int width, int height) {
     if (!texSetLayout || !descriptorPool) return;
     const vk::Format colorFmt = swapchain.image_format;
     if (colorFmt == vk::Format::eUndefined) return;
+
+    const bool featureMsaa = !renderControl_ || renderControl_->isEnabled("msaa");
+    const int desired = featureMsaa ? msaaSamples : 0;
+    if (desired != appliedMsaa) appliedMsaa = desired;
+    const vk::SampleCountFlagBits samples = sampleCountFlagFor(clampMsaaSamples(appliedMsaa));
+
     if (!sceneColorSlots.empty() && sceneColorWidth == width && sceneColorHeight == height &&
-        sceneColorFormat == colorFmt && sceneColorRenderPass)
+        sceneColorFormat == colorFmt && sceneColorSamples == samples && sceneColorRenderPass)
         return;
     destroySceneColorResources();
 
     sceneColorWidth = width;
     sceneColorHeight = height;
     sceneColorFormat = colorFmt;
+    sceneColorSamples = samples;
     const uint32_t w = uint32_t(width);
     const uint32_t h = uint32_t(height);
     const vk::Format depthFmt = depthFormat;
+    const bool msaa = samples != vk::SampleCountFlagBits::e1;
 
     sceneColorSlots.resize(kAsyncResourceCopies);
     for (auto &slot : sceneColorSlots) {
         slot.color = device.createColorTarget(w, h, colorFmt);
-        slot.depth = device.createDepthTarget(w, h, depthFmt, false);
+        if (msaa) {
+            slot.msaaColor = device.createColorTarget(w, h, colorFmt, samples);
+            slot.depth = device.createDepthTarget(w, h, depthFmt, false, samples);
+        } else {
+            slot.depth = device.createDepthTarget(w, h, depthFmt, false);
+        }
     }
 
-    auto scenePass =
-        device.createRenderPass()
-            .addSampledColorAttachment(colorFmt)
-            .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
-                                vk::AttachmentStoreOp::eDontCare)
-            .addSubpass(vkb::SubpassBuilder()
-                            .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
-                            .setDepthStencilAttachment(
-                                1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-            .addExternalShaderReadDependencies()
-            .build();
-    sceneColorRenderPass = scenePass;
+    if (msaa) {
+        sceneColorRenderPass =
+            device.createRenderPass()
+                .addSampledColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear, samples)
+                .addResolveColorAttachment(colorFmt)
+                .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare, samples)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .addResolveAttachment(1, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    2, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addExternalShaderReadDependencies()
+                .build();
+    } else {
+        sceneColorRenderPass =
+            device.createRenderPass()
+                .addSampledColorAttachment(colorFmt)
+                .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addExternalShaderReadDependencies()
+                .build();
+    }
+    auto scenePass = sceneColorRenderPass;
 
     for (auto &slot : sceneColorSlots) {
-        slot.framebuffer = scenePass.createFramebuffer(
-            device, w, h, {slot.color.asAttachment(), slot.depth.asAttachment()});
+        if (msaa) {
+            slot.framebuffer = scenePass.createFramebuffer(
+                device, w, h,
+                {slot.msaaColor.asAttachment(), slot.color.asAttachment(), slot.depth.asAttachment()});
+        } else {
+            slot.framebuffer = scenePass.createFramebuffer(
+                device, w, h, {slot.color.asAttachment(), slot.depth.asAttachment()});
+        }
     }
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
@@ -1170,20 +1223,42 @@ bool Graphics::beginSceneColorRenderPass() {
     auto *slot = currentSceneColorSlot();
     if (!slot || !sceneColorRenderPass || !slot->framebuffer) return false;
     auto &cb = currentPresentCb();
-    std::array<vk::ClearValue, 2> clears{};
+    const bool msaa = sceneColorSamples != vk::SampleCountFlagBits::e1;
     // A=1 marks sky / far plane so SSGI skips uncleared pixels.
-    clears[0].color = vk::ClearColorValue(
-        std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
-    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    vk::RenderPassBeginInfo rpBegin{};
-    rpBegin.renderPass = sceneColorRenderPass;
-    rpBegin.framebuffer = slot->framebuffer;
-    rpBegin.renderArea = vk::Rect2D{{0, 0}, {uint32_t(sceneColorWidth), uint32_t(sceneColorHeight)}};
-    rpBegin.clearValueCount = 2;
-    rpBegin.pClearValues = clears.data();
-    slot->color.beginColorAttachment();
-    slot->depth.beginDepthAttachment();
-    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    if (msaa) {
+        std::array<vk::ClearValue, 3> clears{};
+        clears[0].color = vk::ClearColorValue(
+            std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
+        clears[1].color = vk::ClearColorValue(
+            std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
+        clears[2].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+        vk::RenderPassBeginInfo rpBegin{};
+        rpBegin.renderPass = sceneColorRenderPass;
+        rpBegin.framebuffer = slot->framebuffer;
+        rpBegin.renderArea =
+            vk::Rect2D{{0, 0}, {uint32_t(sceneColorWidth), uint32_t(sceneColorHeight)}};
+        rpBegin.clearValueCount = uint32_t(clears.size());
+        rpBegin.pClearValues = clears.data();
+        slot->msaaColor.beginColorAttachment();
+        slot->color.beginColorAttachment();
+        slot->depth.beginDepthAttachment();
+        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    } else {
+        std::array<vk::ClearValue, 2> clears{};
+        clears[0].color = vk::ClearColorValue(
+            std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
+        clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+        vk::RenderPassBeginInfo rpBegin{};
+        rpBegin.renderPass = sceneColorRenderPass;
+        rpBegin.framebuffer = slot->framebuffer;
+        rpBegin.renderArea =
+            vk::Rect2D{{0, 0}, {uint32_t(sceneColorWidth), uint32_t(sceneColorHeight)}};
+        rpBegin.clearValueCount = uint32_t(clears.size());
+        rpBegin.pClearValues = clears.data();
+        slot->color.beginColorAttachment();
+        slot->depth.beginDepthAttachment();
+        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    }
     sceneColorPassOpen = true;
     return true;
 }
@@ -1195,6 +1270,59 @@ void Graphics::endSceneColorRenderPass() {
     sceneColorPassOpen = false;
     if (auto *slot = currentSceneColorSlot())
         slot->color.endSampledLayout();
+}
+
+int Graphics::clampMsaaSamples(int requested) const {
+    if (requested <= 1) return 0;
+    vk::SampleCountFlags supported =
+        device.physical_device.properties.limits.framebufferColorSampleCounts &
+        device.physical_device.properties.limits.framebufferDepthSampleCounts;
+    const int candidates[3] = {8, 4, 2};
+    for (int c : candidates) {
+        if (requested >= c && (supported & sampleCountFlagFor(c))) return c;
+    }
+    for (int c : candidates) {
+        if (supported & sampleCountFlagFor(c)) return c;
+    }
+    return 0;
+}
+
+void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
+                                        vk::SampleCountFlagBits samples) {
+    const vk::RenderPass targetHandle = vk::RenderPass(target);
+    if (targetHandle == scenePassPipelineTarget && samples == scenePassPipelineSamples) return;
+    device->waitIdle();
+
+    destroyPipeline(device, mesh3dPipeline);
+    destroyPipeline(device, mesh3dClusteredPipeline);
+    destroyPipeline(device, voxelRectPipeline);
+
+    mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
+                                               embeddedSpirv(mesh3d_frag_spv),
+                                               mesh3dPipelineLayout, target, samples);
+    mesh3dClusteredPipeline =
+        createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
+                                  embeddedSpirv(mesh3d_clustered_frag_spv),
+                                  mesh3dClusteredPipelineLayout, target, samples);
+    voxelRectPipeline = buildVoxelRectPipeline(target, samples);
+
+    for (auto &g : ownedGpuShaders) {
+        if (!g->isMesh3D) continue;
+        destroyPipeline(device, g->mesh3dPipeline);
+        if (!g->owner) continue;
+        if (g->isHair3D) {
+            g->mesh3dPipeline =
+                createMesh3DHairPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
+                                         g->pipelineLayout, target, samples);
+        } else {
+            g->mesh3dPipeline =
+                createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
+                                          g->pipelineLayout, target, samples);
+        }
+    }
+
+    scenePassPipelineTarget = targetHandle;
+    scenePassPipelineSamples = samples;
 }
 
 void Graphics::queueSceneColorResolve() {
@@ -1411,7 +1539,9 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
 
 vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
                                                  const std::vector<uint32_t> &frag,
-                                                 vk::PipelineLayout layout) {
+                                                 vk::PipelineLayout layout,
+                                                 const vkb::BuiltRenderPass &rp,
+                                                 vk::SampleCountFlagBits samples) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
     vk::Pipeline pipeline =
@@ -1424,9 +1554,10 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                            vk::FrontFace::eClockwise)
+            .setMultisampler(false, samples)
             .setDepthStencil(true, true, vk::CompareOp::eLess)
             .setColorAttachmentCount(1)
-            .build(renderpass);
+            .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
     return pipeline;
@@ -1434,7 +1565,9 @@ vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &ve
 
 vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
                                                 const std::vector<uint32_t> &frag,
-                                                vk::PipelineLayout layout) {
+                                                vk::PipelineLayout layout,
+                                                const vkb::BuiltRenderPass &rp,
+                                                vk::SampleCountFlagBits samples) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
     vk::Pipeline pipeline =
@@ -1448,9 +1581,10 @@ vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &ver
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                            vk::FrontFace::eClockwise)
             .setDepthBias(-1.5f, -1.0f)
+            .setMultisampler(false, samples)
             .setDepthStencil(true, false, vk::CompareOp::eLess)
             .setAlphaBlending(1)
-            .build(renderpass);
+            .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
     return pipeline;
@@ -2401,13 +2535,14 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     auto gpu = std::make_unique<GpuShader>();
     gpu->isMesh3D = true;
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
-    gpu->mesh3dPipeline =
-        createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout);
+    gpu->mesh3dPipeline = createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
+                                                    activeScenePass(), activeSceneSamples());
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
     sh->setSpirv(std::move(vert), fragSpv);
     sh->gpuHandle = gpu.get();
+    gpu->owner = sh.get();
 
     Shader *raw = sh.get();
     ownedShaders.push_back(std::move(sh));
@@ -2433,13 +2568,14 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     gpu->isMesh3D = true;
     gpu->isHair3D = true;
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
-    gpu->mesh3dPipeline =
-        createMesh3DHairPipeline(vert, fragSpv, mesh3dShaderPipelineLayout);
+    gpu->mesh3dPipeline = createMesh3DHairPipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
+                                                   activeScenePass(), activeSceneSamples());
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
     sh->setSpirv(std::move(vert), fragSpv);
     sh->gpuHandle = gpu.get();
+    gpu->owner = sh.get();
 
     Shader *raw = sh.get();
     ownedShaders.push_back(std::move(sh));
@@ -2699,8 +2835,18 @@ void Graphics::begin3DFrame() {
     // 3D pass clears with backgroundColor (setBackgroundColor), not a stale 2D clear.
     clearColor = backgroundColor;
     createSceneColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
-    if (!beginSceneColorRenderPass())
+    if (beginSceneColorRenderPass()) {
+        // Rebuild scene-pass pipelines to match the active scene pass (MSAA).
+        // Must happen AFTER the pass opens: if the MSAA scene pass is unavailable
+        // we fall back to the swapchain (e1) render pass below, and rasterizing
+        // with an Nx pipeline into an e1 pass is UB that can hang the GPU (TDR).
+        ensureScenePassPipelines(activeScenePass(), activeSceneSamples());
+    } else {
+        // Scene pass unavailable — draw 3D straight into the swapchain. Scene-pass
+        // pipelines must be 1x / swapchain-compatible to avoid the samples mismatch.
+        ensureScenePassPipelines(renderpass, vk::SampleCountFlagBits::e1);
         beginSwapchainColorPass();
+    }
 
     auto &cb = currentPresentCb();
     setViewportAndScissor(cb, swapchain.extent.width, swapchain.extent.height);
@@ -2757,16 +2903,25 @@ void Graphics::destroyVoxelRectResources() {
 void Graphics::createVoxelRectPipeline() {
     if (voxelRectPipeline) return;
 
-    vkb::DescriptorSetLayoutBuilder layoutBuilder;
-    voxelRectSetLayoutUnique =
-        layoutBuilder
-            .image(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .createUnique(device.instance);
-    voxelRectSetLayout = *voxelRectSetLayoutUnique;
+    if (!voxelRectPipelineLayout) {
+        vkb::DescriptorSetLayoutBuilder layoutBuilder;
+        voxelRectSetLayoutUnique =
+            layoutBuilder
+                .image(0, vk::DescriptorType::eCombinedImageSampler,
+                       vk::ShaderStageFlagBits::eFragment, 1)
+                .createUnique(device.instance);
+        voxelRectSetLayout = *voxelRectSetLayoutUnique;
 
-    const auto pcr = pushConstantRange(vk::ShaderStageFlagBits::eVertex, sizeof(VoxelRectPC));
-    voxelRectPipelineLayout = createPipelineLayout(device, voxelRectSetLayout, &pcr);
+        const auto pcr = pushConstantRange(vk::ShaderStageFlagBits::eVertex, sizeof(VoxelRectPC));
+        voxelRectPipelineLayout = createPipelineLayout(device, voxelRectSetLayout, &pcr);
+    }
 
+    voxelRectPipeline = buildVoxelRectPipeline(renderpass, vk::SampleCountFlagBits::e1);
+    ensureVoxelUnitQuad();
+}
+
+vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
+                                              vk::SampleCountFlagBits samples) {
     auto vert = embeddedSpirv(voxel_rect_vert_spv);
     auto frag = embeddedSpirv(voxel_rect_frag_spv);
     ShaderModulePair modules(device, vert, frag);
@@ -2801,18 +2956,16 @@ void Graphics::createVoxelRectPipeline() {
     // (the mesh-pipeline convention) culls every submitted face after the Y
     // flip; CPU 6-dir cull already dropped the true back faces, so the frame
     // collapses to a 1px silhouette.
-    voxelRectPipeline =
-        device.createPipeline()
-            .useClassicPipeline(modules.vert, modules.frag)
-            .setPipelineLayout(voxelRectPipelineLayout)
-            .setVertexInputState(vi)
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
-                           vk::FrontFace::eCounterClockwise)
-            .setDepthStencil(true, true, vk::CompareOp::eLess)
-            .build(renderpass);
-
-    ensureVoxelUnitQuad();
+    return device.createPipeline()
+        .useClassicPipeline(modules.vert, modules.frag)
+        .setPipelineLayout(voxelRectPipelineLayout)
+        .setVertexInputState(vi)
+        .setDynamicStatesViewportScissor()
+        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
+                       vk::FrontFace::eCounterClockwise)
+        .setMultisampler(false, samples)
+        .setDepthStencil(true, true, vk::CompareOp::eLess)
+        .build(rp);
 }
 
 void Graphics::ensureVoxelUnitQuad() {
