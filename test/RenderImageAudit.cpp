@@ -866,12 +866,8 @@ struct CloseWin {
     }
 };
 
-std::string pathBesideThisSource(const char *relative) {
-    std::string here = __FILE__;
-    auto slash = here.find_last_of("/\\");
-    std::string dir = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/" + relative;
-}
+#include "PathBesideSource.h"
+EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 Mesh *makeFloor(Graphics *gfx, float half = 4.5f) {
     const float pos[] = {

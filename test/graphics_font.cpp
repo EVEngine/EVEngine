@@ -27,12 +27,8 @@ namespace {
 constexpr int         kIconCodepoint = 0xF000;
 constexpr const char *kIconUtf8      = "\xEF\x80\x80";  // UTF-8 for U+F000
 
-std::string pathBesideThisSource(const char *filename) {
-    std::string here  = __FILE__;
-    auto        slash = here.find_last_of("/\\");
-    std::string dir   = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/" + filename;
-}
+#include "PathBesideSource.h"
+EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 std::vector<char> readBinaryFile(const std::string &path) {
     std::ifstream in(path, std::ios::binary);
