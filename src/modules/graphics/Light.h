@@ -113,7 +113,7 @@ public:
         float radius = 8.f;
         bool enabled = true;
         bool castShadow = false;       // only dir lights; at most one active caster per frame
-        float shadowBias = 0.002f;
+        float shadowBias = 0.f;  // 0 = auto NDC from cascade texel / Z range
         float shadowStrength = 1.f;
         bool volumetric = false;
         float volumetricIntensity = 1.f;

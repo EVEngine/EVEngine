@@ -1398,9 +1398,12 @@ void Graphics::createShadowResources() {
                                      .addInputBinding<MeshVertex>()
                                      .addAttributeDescription<MeshVertex>())
             .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eFront,
+            // No cull: Cornell-style one-sided interiors keep writing when the
+            // ceiling/walls are back-facing the sun. Closest depth still wins
+            // on closed meshes, so floors are not punched through.
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                            vk::FrontFace::eClockwise)
-            .setDepthBias(1.25f, 1.75f)
+            .setDepthBias(0.0f, 0.5f)
             .build(shadowPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);

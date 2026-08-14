@@ -17,7 +17,9 @@ struct ShadowConfig {
 struct ShadowUBO {
     glm::mat4 lightVP[ShadowConfig::kCascades]{};
     glm::vec4 splits{0.f};  // xyz = view-space +Z split ends (camera-forward distance); w = strength
-    glm::vec4 bias{0.002f, 0.f, 1.f, 0.f};  // x=bias, y=enabled, z=receive, w unused
+    glm::vec4 bias{0.002f, 0.f, 1.f, 0.f};  // x=c0 fallback, y=enabled, z=receive, w unused
+    glm::vec4 cascadeBias{0.f};             // xyz = per-cascade NDC compare bias
+    glm::vec4 cascadeTexel{0.f};            // xyz = world units per shadow texel
 };
 
 struct ShadowUpload {

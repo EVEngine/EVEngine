@@ -608,6 +608,16 @@ void snapAndSave(Graphics *gfx, const char *name) {
 void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &cam) {
     REQUIRE(!actors.ents.empty());
     applyCam(actors.cam, cam);
+
+    applyConfig(actors, RenderCfg::DirectionalShadows, false);
+    snapAndSave(gfx, "pbr_chart_diag_shadows.png");
+    CamKey side = cam;
+    side.eyeX = 2.f * cam.tgtX - cam.eyeX;
+    side.eyeZ = 2.f * cam.tgtZ - cam.eyeZ;
+    applyCam(actors.cam, side);
+    snapAndSave(gfx, "pbr_chart_diag_shadows_side.png");
+    applyCam(actors.cam, cam);
+
     for (size_t i = 1; i < actors.ents.size(); ++i) actors.ents[i]->setVisible(false);
     auto *ground = actors.ents[0];
     const float savedRough = ground->meshRenderer()->roughness;
@@ -649,6 +659,25 @@ void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &ca
     for (auto *e : actors.ents) e->setVisible(true);
     resetRenderControl(gfx);
     gfx->setScreenReadbackEnabled(true);
+}
+
+void dumpCornellShadowSweep(Graphics *gfx, SceneActors &actors, const std::vector<CamKey> &path) {
+    REQUIRE(path.size() >= 2);
+    applyConfig(actors, RenderCfg::DirectionalShadows, false);
+    for (size_t i = 0; i < path.size(); ++i) {
+        applyCam(actors.cam, path[i]);
+        char name[80];
+        std::snprintf(name, sizeof(name), "cornell_diag_shadow_k%zu.png", i);
+        snapAndSave(gfx, name);
+    }
+    // Consecutive micro-steps on the first leg: swimming shows up as the umbra
+    // crawling across the floor between otherwise-similar frames.
+    for (int i = 0; i < 6; ++i) {
+        applyCam(actors.cam, lerpKey(path[0], path[1], float(i) * 0.04f));
+        char name[80];
+        std::snprintf(name, sizeof(name), "cornell_diag_shadow_step%02d.png", i);
+        snapAndSave(gfx, name);
+    }
 }
 
 float meanLuma(Graphics *gfx, int step = 8) {
@@ -793,11 +822,13 @@ void spawnMetalRoughnessChart(Graphics *gfx, SceneActors &out) {
     Mesh *sphere = gfx->newMeshSphere(24, 16);
     REQUIRE(sphere != nullptr);
     // Ground plane so shadows have somewhere to land.
+    const float sphereR = 0.42f;
+    const float groundHy = 0.04f;  // cylinder object Y in [-1,1] * scale
     auto *ground = Renderable3D::create();
     ground->setMesh(gfx->newMeshCylinder(32, 1, true));
     ground->setTexture(makeSolid(gfx, 60, 62, 68));
-    ground->setPosition(0.f, -0.55f, 0.f);
-    ground->setScale(4.5f, 0.04f, 4.5f);
+    ground->setPosition(0.f, -sphereR - groundHy, 0.f);
+    ground->setScale(4.5f, groundHy, 4.5f);
     ground->setMetallic(0.f);
     ground->setRoughness(0.95f);
     ground->setCastShadow(false);
@@ -816,7 +847,7 @@ void spawnMetalRoughnessChart(Graphics *gfx, SceneActors &out) {
             const float x = (float(im) - 1.5f) * 1.15f;
             const float z = (float(ir) - 1.5f) * 1.15f;
             ent->setPosition(x, 0.f, z);
-            ent->setScale(0.42f, 0.42f, 0.42f);
+            ent->setScale(sphereR, sphereR, sphereR);
             ent->setMetallic(float(im) / float(nM - 1));
             ent->setRoughness(0.08f + 0.85f * (float(ir) / float(nR - 1)));
             ent->setCastShadow(true);
@@ -1229,6 +1260,7 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     auto L = flyThroughConfigs(gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
     expectLightingResponse(L);
     snapStaticConfigGrid(gfx, actors, "cornell", /*polishMetals=*/true);
+    dumpCornellShadowSweep(gfx, actors, path);
 
     // Red vs green walls should remain distinguishable under directional light.
     applyConfig(actors, RenderCfg::DirectionalLit, false);
@@ -1288,6 +1320,9 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     actors.env = makeStudioCubemap(gfx);
     setupLights(actors, actors.bounds);
     setSunColor(actors, 1.f, 0.97f, 0.92f, 3.2f);
+    // Glancing sun so sphere umbrae stretch across the disk in path[0] (a high
+    // sun hides them behind the spheres).
+    actors.sun->setDirection(0.9f, 0.45f, 0.25f);
 
     auto path = makeOrbitPath(actors.bounds, 0.55f, 1.65f);
     auto L = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);

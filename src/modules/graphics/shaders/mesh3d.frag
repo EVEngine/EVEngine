@@ -40,7 +40,9 @@ layout(set = 0, binding = 6) uniform sampler2D heightSampler;
 layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     mat4 lightVP[3];
     vec4 splits; // xyz = cascade ends (view-space +Z depth), w = strength
-    vec4 bias;   // x = depth bias, y = enabled, z = receive, w unused
+    vec4 bias;   // x = c0 fallback, y = enabled, z = receive, w unused
+    vec4 cascadeBias; // xyz = per-cascade NDC compare bias
+    vec4 cascadeTexel; // xyz = world units per shadow texel
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;
@@ -125,29 +127,42 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias) {
         return 1.0;
 
     vec2 texel = 1.0 / vec2(textureSize(shadowMap, 0).xy);
-    // Rotated 3x3 kernel. The tap offsets are a fixed "world-space" pattern so
-    // the sampling footprint rotates in shadow-texel space as the view rotates.
-    // A regular axis-aligned grid produces periodic moiré stripes as the camera
-    // moves across texel boundaries; staggering the offsets breaks that pattern.
+    // Tight rotated 3x3. Wider taps (1–1.2 texels) plus hardware 2x2 PCF ate
+    // indoor creases: empty / unoccluded taps read as lit and drew a bright
+    // rim on the left and top of Cornell umbrae.
     const vec2 kRotOffsets[9] = vec2[9](
-        vec2(-1.0, -1.0), vec2(0.0, -1.2), vec2(1.0, -1.0),
-        vec2(-1.2, 0.0), vec2(0.0, 0.0),  vec2(1.2, 0.0),
-        vec2(-1.0, 1.0), vec2(0.0, 1.2),  vec2(1.0, 1.0)
+        vec2(-0.5, -0.5), vec2(0.0, -0.6), vec2(0.5, -0.5),
+        vec2(-0.6, 0.0), vec2(0.0, 0.0),  vec2(0.6, 0.0),
+        vec2(-0.5, 0.5), vec2(0.0, 0.6),  vec2(0.5, 0.5)
     );
     float sum = 0.0;
+    float zref = depth - bias;
     for (int i = 0; i < 9; ++i) {
-        // Compare sampler: driver blends the per-texel compare result across
-        // the 2x2 linear footprint, so each tap is already a soft PCF sample.
-        // A 3x3 (rotated) kernel keeps the penumbra tight — a larger kernel
-        // blurs the far cascades (whose texels span a lot of world space)
-        // into blocky smears instead of smooth edges.
-        sum += texture(shadowMap, vec4(uv + kRotOffsets[i] * texel,
-                                       float(cascade), depth - bias));
+        vec2 s = uv + kRotOffsets[i] * texel;
+        // Clamp-to-edge on a cleared border texel is depth=1 → fully lit.
+        // Count out-of-cascade taps as shadowed so frustum-edge walls
+        // (Cornell left/ceiling) do not leak.
+        if (s.x < 0.0 || s.x > 1.0 || s.y < 0.0 || s.y > 1.0)
+            continue;
+        sum += texture(shadowMap, vec4(s, float(cascade), zref));
     }
     return sum / 9.0;
 }
 
-float sampleShadowPCF(vec3 worldPos, float viewDepth, float nDotL) {
+float cascadeNdcBias(int cascade) {
+    float b = cascade == 0 ? shadow.cascadeBias.x
+                           : (cascade == 1 ? shadow.cascadeBias.y : shadow.cascadeBias.z);
+    return b > 1e-8 ? b : shadow.bias.x;
+}
+
+float slopeScaledBias(int cascade, float nDotL) {
+    // Caster acne is handled by rasterizer slope bias. Inflating compare bias
+    // when the *receiver* grazes the light opens a bright rim along Cornell
+    // walls/ceiling (nDotL ~ 0.05 → ~50× the gap along the surface).
+    return cascadeNdcBias(cascade) * mix(0.75, 1.0, clamp(nDotL, 0.0, 1.0));
+}
+
+float sampleShadowPCF(vec3 worldPos, vec3 N, float viewDepth, float nDotL) {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4)
         return 1.0;
 
@@ -155,30 +170,33 @@ float sampleShadowPCF(vec3 worldPos, float viewDepth, float nDotL) {
     if (viewDepth < shadow.splits.x) cascade = 0;
     else if (viewDepth < shadow.splits.y) cascade = 1;
 
-    float bias = shadow.bias.x * (1.0 + (1.0 - clamp(nDotL, 0.0, 1.0)) * 0.5);
-    // Large PCF kernels need a larger depth offset: the neighbor taps sample
-    // texels whose depth does not correlate with this pixel's light-space depth,
-    // so an under-biased compare produces spurious self-shadowing (flickering
-    // acne). Scale the base bias with the kernel radius (~1.2 texels here).
-    bias *= 1.4;
-    float vis = sampleShadowCascade(worldPos, cascade, bias);
+    // Slide the receiver a couple of texels along the geometric normal so
+    // concave creases (Cornell box/wall, ceiling/wall) still hit the occluder
+    // instead of a 1–6px fully-lit rim on the left/top of the umbra.
+    float tw = cascade == 0 ? shadow.cascadeTexel.x
+                            : (cascade == 1 ? shadow.cascadeTexel.y : shadow.cascadeTexel.z);
+    // Slope-scaled normal offset: grazing walls (Cornell) need a longer
+    // push into the room or the umbra detaches as a fully-lit rim.
+    vec3 p = worldPos + N * ((2.0 * max(tw, 1e-6)) / max(nDotL, 0.2));
+    float vis = sampleShadowCascade(p, cascade, slopeScaledBias(cascade, nDotL));
 
-    // Cascade boundary blend: cross-fade with the adjacent cascade. The band is
-    // proportional to the cascade's own depth range — a fixed world-meter band
-    // over-fades the near cascades (a few meters deep) and causes flicker as the
-    // camera moves across the texel-snapped cascade projections.
+    // Cross-fade only inside a band at each split. Mix toward the *adjacent*
+    // cascade when approaching that split (weight 1 at the split, 0 after
+    // `band` meters). The previous factors were inverted, so indoor views
+    // that sit entirely inside cascade 0 sampled cascade 2 — huge texels and
+    // swimming stairs as the camera moved.
     float hi = cascade == 0 ? shadow.splits.x : (cascade == 1 ? shadow.splits.y : shadow.splits.z);
     float lo = cascade == 0 ? 0.0 : (cascade == 1 ? shadow.splits.x : shadow.splits.y);
     float band = max(0.5, (hi - lo) * 0.1); // ~10% of the cascade's own span
-    float nearT = clamp((viewDepth - lo) / band, 0.0, 1.0);
-    float farT = clamp((hi - viewDepth) / band, 0.0, 1.0);
-    if (nearT > 0.0 && cascade > 0) {
-        float visPrev = sampleShadowCascade(worldPos, cascade - 1, bias);
-        vis = mix(vis, visPrev, nearT);
+    float toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
+    float toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
+    if (toPrev > 0.0 && cascade > 0) {
+        float visPrev = sampleShadowCascade(p, cascade - 1, slopeScaledBias(cascade - 1, nDotL));
+        vis = mix(vis, visPrev, toPrev);
     }
-    if (farT > 0.0 && cascade < 2) {
-        float visNext = sampleShadowCascade(worldPos, cascade + 1, bias);
-        vis = mix(vis, visNext, farT);
+    if (toNext > 0.0 && cascade < 2) {
+        float visNext = sampleShadowCascade(p, cascade + 1, slopeScaledBias(cascade + 1, nDotL));
+        vis = mix(vis, visNext, toNext);
     }
 
     vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
@@ -215,7 +233,7 @@ void main() {
     // Splits are camera-forward distances (view-space +Z), not euclidean length.
     float viewDepth = max(-vViewPos.z, 0.0);
     vec3 primaryL = normalize(ubo.lightDirIntensity.xyz);
-    float shadowVis = sampleShadowPCF(vWorldPos, viewDepth, max(dot(N, primaryL), 0.0));
+    float shadowVis = sampleShadowPCF(vWorldPos, N, viewDepth, max(dot(N, primaryL), 0.0));
 
     // Primary directional (legacy slot). Packing zeros lightColor when no dir exists
     // so a point in lights[0] is never treated as a sun direction.
