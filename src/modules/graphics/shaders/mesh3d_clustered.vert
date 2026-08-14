@@ -29,7 +29,7 @@ void main() {
     vec4 world = ubo.model * vec4(inPos, 1.0);
     vWorldPos = world.xyz;
     vViewPos = (ubo.view * world).xyz;
-    mat3 normalMat = mat3(ubo.model);
+    mat3 normalMat = transpose(inverse(mat3(ubo.model)));
     vNormal = normalize(normalMat * inNormal);
     vUV = inUV;
     vTint = ubo.tint;

@@ -594,6 +594,63 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
     gfx->setScreenReadbackEnabled(true);
 }
 
+void snapAndSave(Graphics *gfx, const char *name) {
+    gfx->setScreenReadbackEnabled(true);
+    warmPresent(gfx);
+    eve::image::ImageData *snap = gfx->newImageData();
+    REQUIRE(snap != nullptr);
+    saveFramePng(gfx, name, snap);
+    delete snap;
+    gfx->setScreenReadbackEnabled(false);
+}
+
+/** Isolate the pbr_chart ground disk: hide spheres, dump lighting vs GBuffer normals. */
+void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &cam) {
+    REQUIRE(!actors.ents.empty());
+    applyCam(actors.cam, cam);
+    for (size_t i = 1; i < actors.ents.size(); ++i) actors.ents[i]->setVisible(false);
+    auto *ground = actors.ents[0];
+    const float savedRough = ground->meshRenderer()->roughness;
+
+    applyConfig(actors, RenderCfg::DirectionalLit, false);
+    snapAndSave(gfx, "pbr_chart_diag_ground_dir.png");
+
+    applyConfig(actors, RenderCfg::IblReflections, false);
+    snapAndSave(gfx, "pbr_chart_diag_ground_ibl.png");
+
+    applyConfig(actors, RenderCfg::DirectionalLit, false);
+    ground->setRoughness(1.f);
+    snapAndSave(gfx, "pbr_chart_diag_ground_matte.png");
+    ground->setRoughness(savedRough);
+
+    RenderControl *rc = gfx->getRenderControl();
+    REQUIRE(rc != nullptr);
+    applyConfig(actors, RenderCfg::DirectionalLit, false);
+    resetRenderControl(gfx);
+    rc->enable("gbuffer");
+    rc->compile();
+    gfx->setScreenReadbackEnabled(false);
+    for (int i = 0; i < 2; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    Texture *nTex = rc->getGBuffer()->getNormalTexture();
+    REQUIRE(nTex != nullptr);
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColorRGBA(0.08f, 0.09f, 0.11f, 1.f);
+    gfx->clearScreen();
+    gfx->drawTexturedRectRGBA(nTex, 0, 0, float(gfx->getWidth()), float(gfx->getHeight()), 1, 1, 1, 1);
+    gfx->present();
+    eve::image::ImageData *nSnap = gfx->newImageData();
+    REQUIRE(nSnap != nullptr);
+    saveFramePng(gfx, "pbr_chart_diag_gbuffer_n.png", nSnap);
+    delete nSnap;
+
+    for (auto *e : actors.ents) e->setVisible(true);
+    resetRenderControl(gfx);
+    gfx->setScreenReadbackEnabled(true);
+}
+
 float meanLuma(Graphics *gfx, int step = 8) {
     const int w = gfx->getWidth();
     const int h = gfx->getHeight();
@@ -737,10 +794,10 @@ void spawnMetalRoughnessChart(Graphics *gfx, SceneActors &out) {
     REQUIRE(sphere != nullptr);
     // Ground plane so shadows have somewhere to land.
     auto *ground = Renderable3D::create();
-    ground->setMesh(gfx->newMeshSphere(16, 8));
+    ground->setMesh(gfx->newMeshCylinder(32, 1, true));
     ground->setTexture(makeSolid(gfx, 60, 62, 68));
     ground->setPosition(0.f, -0.55f, 0.f);
-    ground->setScale(4.5f, 0.08f, 4.5f);
+    ground->setScale(4.5f, 0.04f, 4.5f);
     ground->setMetallic(0.f);
     ground->setRoughness(0.95f);
     ground->setCastShadow(false);
@@ -1236,6 +1293,7 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     auto L = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
     expectLightingResponse(L);
     snapStaticConfigGrid(gfx, actors, "pbr_chart", /*polishMetals=*/false);
+    dumpPbrChartGroundDiag(gfx, actors, path[0]);
 
     // IBL phase should brighten metals relative to ambient-only.
     CHECK(L[4] > L[0] + 0.01f);

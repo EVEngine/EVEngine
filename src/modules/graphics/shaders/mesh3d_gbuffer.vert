@@ -22,9 +22,10 @@ void main() {
     vec4 hp = pc.mvp * vec4(inPos, 1.0);
     gl_Position = hp;
 
-    // Upper-left 3x3 of column-major model (matches mesh3d.vert mat3(model)).
+    // Upper-left 3x3 of column-major model; inverse-transpose for non-uniform scale.
     mat3 nrmMat = mat3(pc.modelR0.x, pc.modelR1.x, pc.modelR2.x, pc.modelR0.y, pc.modelR1.y,
                        pc.modelR2.y, pc.modelR0.z, pc.modelR1.z, pc.modelR2.z);
+    nrmMat = transpose(inverse(nrmMat));
     vWorldNormal = normalize(nrmMat * inNormal);
     vNdcZ = hp.z / max(hp.w, 1e-6);
     vUV = inUV;

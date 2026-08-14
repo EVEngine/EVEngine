@@ -29,6 +29,7 @@ SHADERS = [
     ("mesh3d_hair.frag", "frag"),
     ("mesh3d_gbuffer.vert", "vert"),
     ("mesh3d_gbuffer.frag", "frag"),
+    ("mesh3d_toon.vert", "vert"),
 ]
 
 

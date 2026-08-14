@@ -26,7 +26,7 @@ void main() {
     gl_Position = ubo.mvp * vec4(inPos, 1.0);
     vec4 world = ubo.model * vec4(inPos, 1.0);
     vWorldPos = world.xyz;
-    mat3 normalMat = mat3(ubo.model);
+    mat3 normalMat = transpose(inverse(mat3(ubo.model)));
     vNormal = normalize(normalMat * inNormal);
     vUV = inUV;
     vTint = ubo.tint;
