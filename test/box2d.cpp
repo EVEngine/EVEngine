@@ -91,6 +91,105 @@ TEST_CASE("box2d.fixture.sensor") {
     CHECK(std::fabs(fixture->getFriction() - 0.7f) < 0.001f);
 }
 
+TEST_CASE("box2d.fixture.tagsFiltersAndBodyProperties") {
+    auto *mod = Physics::create();
+    std::unique_ptr<World> world(mod->newWorld(0.f, 0.f, true));
+    std::unique_ptr<Body> body(world->newBody("dynamic", 30.f, 60.f));
+    std::unique_ptr<Fixture> fixture(body->newRectangleFixture(30.f, 60.f, 2.f));
+
+    fixture->setTag("prop.crate");
+    fixture->setCategoryBits(0x0020);
+    fixture->setMaskBits(0x0006);
+    fixture->setGroupIndex(-3);
+    CHECK_EQ(fixture->getTag(), std::string("prop.crate"));
+    CHECK_EQ(fixture->getCategoryBits(), 0x0020);
+    CHECK_EQ(fixture->getMaskBits(), 0x0006);
+    CHECK_EQ(fixture->getGroupIndex(), -3);
+    CHECK_EQ(fixture->getBodyId(), body->getId());
+    CHECK_GT(body->getMass(), 0.f);
+    CHECK(std::fabs(body->getWorldCenterX() - 30.f) < 0.01f);
+    CHECK(std::fabs(body->getWorldCenterY() - 60.f) < 0.01f);
+    body->setLinearVelocity(300.f, 400.f);
+    CHECK(std::fabs(body->getLinearSpeed() - 500.f) < 0.1f);
+}
+
+TEST_CASE("box2d.contacts.exposeTagsAndImpactData") {
+    auto *mod = Physics::create();
+    std::unique_ptr<World> world(mod->newWorld(0.f, 0.f, true));
+    Body *wall = world->newBody("static", 300.f, 100.f);
+    Fixture *wallFixture = wall->newRectangleFixture(20.f, 160.f, 0.f, 0.2f, 0.f);
+    wallFixture->setTag("terrain");
+    Body *crate = world->newBody("dynamic", 80.f, 100.f);
+    Fixture *crateFixture = crate->newRectangleFixture(40.f, 40.f, 1.f, 0.2f, 0.f);
+    crateFixture->setTag("prop.crate");
+    crate->setBullet(true);
+    crate->setLinearVelocity(900.f, 0.f);
+
+    for (int i = 0; i < 30 && world->getImpactCount() == 0; ++i)
+        world->update(1.f / 60.f);
+
+    REQUIRE_GT(world->getBeginContactCount(), 0);
+    CHECK_EQ(world->getBeginContactFixtureATag(0), std::string("terrain"));
+    CHECK_EQ(world->getBeginContactFixtureBTag(0), std::string("prop.crate"));
+    REQUIRE_GT(world->getImpactCount(), 0);
+    CHECK_GT(world->getImpactRelativeNormalSpeed(0), 100.f);
+    CHECK_GT(world->getImpactNormalImpulse(0), 0.f);
+    CHECK(std::fabs(world->getImpactNormalX(0)) > 0.9f);
+    CHECK(std::fabs(world->getImpactPointX(0) - 290.f) < 5.f);
+
+    world->clearContactEvents();
+    CHECK_EQ(world->getBeginContactCount(), 0);
+    CHECK_EQ(world->getEndContactCount(), 0);
+    CHECK_EQ(world->getImpactCount(), 0);
+    crate->setPosition(80.f, 100.f);
+    crate->setLinearVelocity(0.f, 0.f);
+    for (int i = 0; i < 5; ++i) world->update(1.f / 60.f);
+    CHECK_EQ(world->getImpactCount(), 0);
+
+    delete crateFixture;
+    delete crate;
+    delete wallFixture;
+    delete wall;
+}
+
+TEST_CASE("box2d.gameplay.sameKickMovesLightPropFaster") {
+    auto *mod = Physics::create();
+    std::unique_ptr<World> world(mod->newWorld(0.f, 0.f, true));
+    Body *crate = world->newBody("dynamic", 0.f, 0.f);
+    crate->newRectangleFixture(40.f, 40.f, 1.f, 0.45f, 0.05f);
+    Body *rock = world->newBody("dynamic", 100.f, 0.f);
+    rock->newRectangleFixture(40.f, 40.f, 8.f, 0.85f, 0.05f);
+
+    crate->applyLinearImpulse(720.f, -105.f);
+    rock->applyLinearImpulse(720.f, -105.f);
+
+    CHECK_GT(rock->getMass(), crate->getMass() * 7.f);
+    CHECK_GT(crate->getLinearSpeed(), rock->getLinearSpeed() * 7.f);
+}
+
+TEST_CASE("box2d.contacts.destroyFixturePurgesQueuedEvents") {
+    auto *mod = Physics::create();
+    std::unique_ptr<World> world(mod->newWorld(0.f, 0.f, true));
+    Body *wall = world->newBody("static", 100.f, 100.f);
+    Fixture *wallFixture = wall->newRectangleFixture(40.f, 40.f);
+    wallFixture->setTag("terrain");
+    Body *box = world->newBody("dynamic", 100.f, 100.f);
+    Fixture *boxFixture = box->newRectangleFixture(30.f, 30.f, 1.f);
+    boxFixture->setTag("prop.crate");
+    world->update(1.f / 60.f);
+    REQUIRE_GT(world->getBeginContactCount(), 0);
+
+    boxFixture->destroy();
+    CHECK_EQ(world->getBeginContactCount(), 0);
+    CHECK_EQ(world->getEndContactCount(), 0);
+    CHECK_EQ(world->getImpactCount(), 0);
+
+    delete boxFixture;
+    delete box;
+    delete wallFixture;
+    delete wall;
+}
+
 TEST_CASE("box2d.body.destroy") {
     auto *mod = Physics::create();
     std::unique_ptr<World> world(mod->newWorld(0.f, 0.f, true));

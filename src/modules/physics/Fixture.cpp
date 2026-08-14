@@ -11,9 +11,9 @@ Fixture::Fixture(World *world, Body *body, b2Fixture *fixture)
 
 Fixture::~Fixture() {
     if (fixture_ && body_ && body_->raw()) {
+        if (world_) world_->forgetFixture(this);
         fixture_->SetUserData(nullptr);
         body_->raw()->DestroyFixture(fixture_);
-        if (world_) world_->forgetFixture(this);
     }
     fixture_ = nullptr;
     body_    = nullptr;
@@ -32,9 +32,9 @@ void Fixture::destroy() {
         invalidate();
         return;
     }
+    if (world_) world_->forgetFixture(this);
     fixture_->SetUserData(nullptr);
     body_->raw()->DestroyFixture(fixture_);
-    if (world_) world_->forgetFixture(this);
     fixture_ = nullptr;
     body_    = nullptr;
     world_   = nullptr;
@@ -68,6 +68,39 @@ void Fixture::setDensity(float density) {
 }
 
 float Fixture::getDensity() const { return fixture_ ? fixture_->GetDensity() : 0.f; }
+
+void Fixture::setCategoryBits(int bits) {
+    if (!fixture_) return;
+    b2Filter filter = fixture_->GetFilterData();
+    filter.categoryBits = static_cast<uint16>(bits);
+    fixture_->SetFilterData(filter);
+}
+
+int Fixture::getCategoryBits() const {
+    return fixture_ ? int(fixture_->GetFilterData().categoryBits) : 0;
+}
+
+void Fixture::setMaskBits(int bits) {
+    if (!fixture_) return;
+    b2Filter filter = fixture_->GetFilterData();
+    filter.maskBits = static_cast<uint16>(bits);
+    fixture_->SetFilterData(filter);
+}
+
+int Fixture::getMaskBits() const { return fixture_ ? int(fixture_->GetFilterData().maskBits) : 0; }
+
+void Fixture::setGroupIndex(int index) {
+    if (!fixture_) return;
+    b2Filter filter = fixture_->GetFilterData();
+    filter.groupIndex = static_cast<int16>(index);
+    fixture_->SetFilterData(filter);
+}
+
+int Fixture::getGroupIndex() const {
+    return fixture_ ? int(fixture_->GetFilterData().groupIndex) : 0;
+}
+
+int Fixture::getBodyId() const { return body_ ? body_->getId() : 0; }
 
 bool Fixture::testPoint(float x, float y) const {
     if (!fixture_ || !world_) return false;
