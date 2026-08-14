@@ -10,6 +10,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_vulkan.h>
+#include <SDL2/SDL_vulkan.h>
 
 #include <algorithm>
 #include <cmath>
@@ -247,7 +248,7 @@ float ImGuiBackend::computeInitialScale() const {
     // Requires SDL_WINDOW_ALLOW_HIGHDPI to report a scale > 1 on HiDPI displays.
     int logicalW = 0, logicalH = 0, pixelW = 0, pixelH = 0;
     SDL_GetWindowSize(window_, &logicalW, &logicalH);
-    SDL_GL_GetDrawableSize(window_, &pixelW, &pixelH);
+    SDL_Vulkan_GetDrawableSize(window_, &pixelW, &pixelH);
     if (logicalW > 0 && pixelW > 0) {
         float s = float(pixelW) / float(logicalW);
         if (s > 0.f) return std::clamp(s, 1.f, 4.f);

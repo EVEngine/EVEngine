@@ -994,6 +994,7 @@ void Graphics::destroyGBufferResources() {
 
 void Graphics::destroySceneColorResources() {
     sceneColorPassOpen = false;
+    if (device.instance) device->waitIdle();
     for (auto &slot : sceneColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
@@ -1032,8 +1033,9 @@ void Graphics::createUiColorResources(int width, int height) {
         if (samples != vk::SampleCountFlagBits::e1) {
             uiRenderPass =
                 device.createRenderPass()
-                    .addSampledColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear, samples)
-                    .addResolveColorAttachment(colorFmt)
+                    .addColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear,
+                                        vk::AttachmentStoreOp::eDontCare, samples)
+                    .addResolveColorAttachment(colorFmt, vk::AttachmentLoadOp::eDontCare)
                     .addSubpass(vkb::SubpassBuilder()
                                     .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
                                     .addResolveAttachment(1, vk::ImageLayout::eColorAttachmentOptimal))
@@ -1049,6 +1051,9 @@ void Graphics::createUiColorResources(int width, int height) {
                     .build();
         }
     }
+    // Keep sample count in sync with the render pass even if target creation
+    // returns early (ImGui builds its pipeline from getUiMsaaSamples()).
+    uiColorSamples = samples;
 
     if (!texSetLayout || !descriptorPool) return;
 
@@ -1107,6 +1112,7 @@ void Graphics::createUiColorResources(int width, int height) {
 }
 
 void Graphics::destroyUiColorTargets() {
+    if (device.instance) device->waitIdle();
     for (auto &slot : uiColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
@@ -1119,7 +1125,7 @@ void Graphics::destroyUiColorTargets() {
     uiColorWidth = 0;
     uiColorHeight = 0;
     uiColorFormat = vk::Format::eUndefined;
-    uiColorSamples = vk::SampleCountFlagBits::e1;
+    // Keep uiColorSamples matching uiRenderPass; ImGui's pipeline is bound to it.
 }
 
 void Graphics::destroyUiColorResources() {
@@ -1318,10 +1324,14 @@ void Graphics::createSceneColorResources(int width, int height) {
     }
 
     if (msaa) {
+        // MSAA color is transient (DONT_CARE store). Sampling the 1x resolve.
+        // addSampledColorAttachment on the MSAA target makes MoltenVK treat it
+        // as a shader-readable texture2d and segfaults on macOS.
         sceneColorRenderPass =
             device.createRenderPass()
-                .addSampledColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear, samples)
-                .addResolveColorAttachment(colorFmt)
+                .addColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare, samples)
+                .addResolveColorAttachment(colorFmt, vk::AttachmentLoadOp::eDontCare)
                 .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
                                     vk::AttachmentStoreOp::eDontCare, samples)
                 .addSubpass(vkb::SubpassBuilder()
@@ -3169,6 +3179,7 @@ vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
                        vk::FrontFace::eCounterClockwise)
         .setMultisampler(false, samples)
         .setDepthStencil(true, true, vk::CompareOp::eLess)
+        .setColorAttachmentCount(1)
         .build(rp);
 }
 
