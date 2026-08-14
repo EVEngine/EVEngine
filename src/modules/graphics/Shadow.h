@@ -6,10 +6,10 @@ namespace eve::graphics {
 
 struct ShadowConfig {
     static constexpr int kCascades = 3;
-    static constexpr int kMapSize = 1024;
+    static constexpr int kMapSize = 2048;
     static constexpr float kSplitLambda = 0.7f;
     /** Practical CSM range. Camera far planes for large architecture are often
-     *  hundreds of meters; 3×1024² cascades over that range have no resolution. */
+     *  hundreds of meters; 3×2048² cascades over that range have no resolution. */
     static constexpr float kMaxDistance = 64.f;
 };
 

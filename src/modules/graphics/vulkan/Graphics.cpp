@@ -1358,9 +1358,10 @@ void Graphics::createShadowResources() {
         slot.image = device.createDepthArray(size, size, layers, vk::Format::eD32Sfloat);
 
     vkb::SamplerBuilder sb;
-    // Manual depth compare in the shader — linear filtering of raw D32 is not a
-    // valid PCF and produces large false-shadow regions on some GPUs.
-    shadowSampler = sb.nearestClamp().buildDepth(device);
+    // Hardware PCF: linear filtering + depth compare on the D32 shadow map.
+    // The compare result of each filtered depth sample is blended by the driver,
+    // giving a soft penumbra instead of the hard 1-texel boundary.
+    shadowSampler = sb.linearClamp().compareEnable(VK_TRUE).compareOp(vk::CompareOp::eLess).buildDepthPcf(device);
 
     auto shadowPass =
         device.createRenderPass()

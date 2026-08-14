@@ -106,9 +106,10 @@ ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const g
     }
     out.ubo.splits = glm::vec4(splits[1], splits[2], splits[3], std::max(0.f, strength));
     // Depth-compare bias in NDC. Scale with world texel size so large cascades don't acne
-    // while Cornell-sized frustums keep a small constant.
+    // while Cornell-sized frustums keep a small constant. With 2048 maps the texel is
+    // half of the 1024-era size, so the coefficient is scaled down accordingly.
     const float scaledBias =
-        std::max(std::max(0.f, bias), 0.0008f + maxTexelWorld * 0.02f);
+        std::max(std::max(0.f, bias), 0.0008f + maxTexelWorld * 0.008f);
     out.ubo.bias = glm::vec4(scaledBias, 1.f, 1.f, 0.f);
     return out;
 }
