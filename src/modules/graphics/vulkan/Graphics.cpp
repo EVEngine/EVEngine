@@ -2250,7 +2250,7 @@ void Graphics::drawTexturedRectUV(Texture *texture, float x, float y, float w, f
 
 void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
                                         float h, float u0, float v0, float u1, float v1,
-                                        const Color &color) {
+                                        const Color &color, bool rotatedUV) {
     if (!texture) {
         drawSolidRect(x, y, w, h, color);
         return;
@@ -2260,7 +2260,24 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         texturedBatches.back().shader != shader) {
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
     }
-    texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
+}
+
+void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
+                                               float w, float h, float degrees, float u0, float v0,
+                                               float u1, float v1, const Color &color,
+                                               bool rotatedUV) {
+    if (!texture) {
+        drawSolidRect(cx - w * 0.5f, cy - h * 0.5f, w, h, color);
+        return;
+    }
+    if (texturedBatches.empty() || texturedBatches.back().texture != texture ||
+        texturedBatches.back().depth != nullptr ||
+        texturedBatches.back().shader != shader) {
+        texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
+    }
+    texturedBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1,
+                                                        rotatedUV);
 }
 
 void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,

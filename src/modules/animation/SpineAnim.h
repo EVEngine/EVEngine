@@ -100,6 +100,8 @@ private:
         float       rotation = 0.f;
         int         page     = 0;
         int         region   = -1;
+        int         order    = 0;  // slot draw order (back-to-front)
+        bool        rotated  = false;  // atlas region packed rotated (90°)
         std::string regionName;
         float       u0 = 0.f, v0 = 0.f, u1 = 1.f, v1 = 1.f;
     };

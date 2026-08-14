@@ -152,7 +152,30 @@ public:
     /** UV draw with an explicit Shader (nullptr = default textured pipeline). */
     virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y,
                                           float w, float h, float u0, float v0, float u1, float v1,
-                                          const Color &color) = 0;
+                                          const Color &color, bool rotatedUV = false) = 0;
+
+    /**
+     * UV draw rotated `degrees` clockwise (screen Y-down) around the rect center.
+     * texture may be null → solid. Shader nullptr = default textured pipeline.
+     */
+    virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
+                                                 float w, float h, float degrees, float u0, float v0,
+                                                 float u1, float v1, const Color &color,
+                                                 bool rotatedUV = false) {
+        (void)texture;
+        (void)shader;
+        (void)cx;
+        (void)cy;
+        (void)w;
+        (void)h;
+        (void)degrees;
+        (void)u0;
+        (void)v0;
+        (void)u1;
+        (void)v1;
+        (void)color;
+        (void)rotatedUV;
+    }
 
     /**
      * Fullscreen/post draw sampling `color` at binding 0 and `depth` at binding 1

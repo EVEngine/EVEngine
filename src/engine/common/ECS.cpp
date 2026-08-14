@@ -32,6 +32,12 @@ int& nextEntityId() {
 
 int allocEntityId() { return nextEntityId()++; }
 
+// C++ 实体类型（typeid(T*).hash_code()）→ 脚本 view() 收集函数。
+std::unordered_map<size_t, CppEntityViewFn>& cppEntityViews() {
+    static std::unordered_map<size_t, CppEntityViewFn> views;
+    return views;
+}
+
 // ---------------------------------------------------------------------------
 // Class helpers
 // ---------------------------------------------------------------------------
@@ -415,6 +421,7 @@ function eve::view(entityClass) {
     local out = []
     if (entityClass == null) return out
     eve._ecsCollectInstances(entityClass, out)
+    if ("_cppCollect" in eve) eve._cppCollect(entityClass, out)
     return out
 }
 
@@ -437,6 +444,36 @@ void injectEcsScript(ssq::Table& eveTable) {
     sq_settop(vm, top);
 }
 
+/**
+ * Script hook for eve.view(): walk the script class chain (cls → base → …) and,
+ * at the first class registered via registerCppEntityView(), invoke its collector
+ * to append the matching C++ entities to `out`.
+ */
+void cppCollect(ssq::Class cls, ssq::Array out) {
+    HSQUIRRELVM vm = cls.getHandle();
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, cls.getRaw());
+    for (int guard = 0; guard < 64; ++guard) {
+        if (sq_gettype(vm, -1) != OT_CLASS)
+            break;
+        HSQOBJECT cur;
+        sq_getstackobj(vm, -1, &cur);
+        SQUserPointer tag = nullptr;
+        if (SQ_SUCCEEDED(sq_getobjtypetag(&cur, &tag))) {
+            auto it = cppEntityViews().find(reinterpret_cast<size_t>(tag));
+            if (it != cppEntityViews().end()) {
+                sq_settop(vm, top);
+                it->second(out);
+                return;
+            }
+        }
+        if (SQ_FAILED(sq_getbase(vm, -1)))
+            break;
+        sq_remove(vm, -2);  // drop current class, keep base
+    }
+    sq_settop(vm, top);
+}
+
 }  // namespace
 
 void exposeECS(ssq::Table& table) {
@@ -452,8 +489,13 @@ void exposeECS(ssq::Table& table) {
     table.addFunc("component", [](std::string name, ssq::Object cls) {
         registerScriptComponent(name, cls);
     });
+    table.addFunc("_cppCollect", std::function<void(ssq::Class, ssq::Array)>(cppCollect));
 
     injectEcsScript(table);
+}
+
+void registerCppEntityView(size_t typeHash, CppEntityViewFn fn) {
+    cppEntityViews()[typeHash] = std::move(fn);
 }
 
 void exposeECSToVM(ssq::VM& vm) {

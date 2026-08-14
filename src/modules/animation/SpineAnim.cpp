@@ -5,6 +5,7 @@
 #include "animation/SpineSkeleton.h"
 #include "common/Exception.h"
 
+#include <algorithm>
 #include <cmath>
 
 #ifndef M_PI
@@ -295,39 +296,25 @@ void SpineAnim::rebuildDrawSlots() {
         int boneIndex = skeleton_->getData()->slot(si).bone;
         const auto &bone = skeleton_->bones_[static_cast<size_t>(boneIndex)];
 
-        // Attachment local offset in bone space → world
-        float rad = bone.worldRot * static_cast<float>(M_PI / 180.0);
-        float cos = std::cos(rad);
-        float sin = std::sin(rad);
-        float ax  = att->x * att->scaleX;
-        float ay  = att->y * att->scaleY;
-        // Also apply attachment rotation relative to bone
-        float ar  = att->rotation * static_cast<float>(M_PI / 180.0);
-        float ac  = std::cos(ar);
-        float as  = std::sin(ar);
-        float lx  = ax * ac - ay * as;
-        float ly  = ax * as + ay * ac;
-
-        float wx = bone.a * lx + bone.b * ly + bone.worldX;
-        float wy = bone.c * lx + bone.d * ly + bone.worldY;
-
-        float w = att->width * att->scaleX * std::fabs(bone.worldSX);
-        float h = att->height * att->scaleY * std::fabs(bone.worldSY);
-
         DrawSlot ds;
-        ds.x        = x_ + wx * scaleX_;
-        ds.y        = y_ + (flipY_ ? -wy : wy) * scaleY_;
-        ds.w        = w * std::fabs(scaleX_);
-        ds.h        = h * std::fabs(scaleY_);
-        ds.rotation = bone.worldRot + att->rotation;
-        if (flipY_) ds.rotation = -ds.rotation;
         ds.regionName = att->path.empty() ? att->name : att->path;
 
+        // Atlas region packed dimensions + original dimensions + rotation flag.
+        int  regionIndex = -1;
+        float regionW = att->width, regionH = att->height;
+        float origW = att->width, origH = att->height;
+        bool  rotated = false;
         if (atlas_) {
-            int ri = atlas_->findRegion(ds.regionName);
-            ds.region = ri;
-            if (ri >= 0) {
-                ds.page = atlas_->getRegionPage(ri);
+            regionIndex = atlas_->findRegion(ds.regionName);
+            ds.region   = regionIndex;
+            if (regionIndex >= 0) {
+                ds.page    = atlas_->getRegionPage(regionIndex);
+                rotated    = atlas_->getRegionRotate(regionIndex);
+                ds.rotated = rotated;
+                regionW    = static_cast<float>(atlas_->getRegionWidth(regionIndex));
+                regionH    = static_cast<float>(atlas_->getRegionHeight(regionIndex));
+                origW      = static_cast<float>(atlas_->getRegionOriginalWidth(regionIndex));
+                origH      = static_cast<float>(atlas_->getRegionOriginalHeight(regionIndex));
                 int tw = atlas_->getPageWidth(ds.page);
                 int th = atlas_->getPageHeight(ds.page);
                 auto *tex = getPageTexture(ds.page);
@@ -336,9 +323,61 @@ void SpineAnim::rebuildDrawSlots() {
                     th = tex->getHeight();
                 }
                 if (tw > 0 && th > 0)
-                    atlas_->getRegionUV(ri, tw, th, ds.u0, ds.v0, ds.u1, ds.v1);
+                    atlas_->getRegionUV(regionIndex, tw, th, ds.u0, ds.v0, ds.u1, ds.v1);
             }
         }
+        if (origW <= 0.f) origW = att->width;
+        if (origH <= 0.f) origH = att->height;
+
+        // Official spine RegionAttachment: scale the attachment rect to the
+        // atlas region's PACKED size (regionWidth/regionHeight; for a rotated
+        // region these already span origH×origW), rotate the corner offsets
+        // around the BONE ORIGIN by the attachment rotation, then translate by
+        // the attachment anchor (x, y) and map through the bone matrix.
+        const float regionScaleX = (origW > 0.f) ? (att->width / origW) * att->scaleX : att->scaleX;
+        const float regionScaleY = (origH > 0.f) ? (att->height / origH) * att->scaleY : att->scaleY;
+
+        const float localX  = -att->width * 0.5f * att->scaleX;
+        const float localY  = -att->height * 0.5f * att->scaleY;
+        const float localX2 = localX + regionW * regionScaleX;
+        const float localY2 = localY + regionH * regionScaleY;
+
+        const float ar = att->rotation * static_cast<float>(M_PI / 180.0);
+        const float ac = std::cos(ar);
+        const float as = std::sin(ar);
+
+        // Corner (lx, ly) → bone-space → spine world → screen (Y-down).
+        auto toScreen = [&](float lx, float ly) -> std::pair<float, float> {
+            const float rx = lx * ac - ly * as + att->x;
+            const float ry = lx * as + ly * ac + att->y;
+            const float wx = bone.a * rx + bone.b * ry + bone.worldX;
+            const float wy = bone.c * rx + bone.d * ry + bone.worldY;
+            return {x_ + wx * scaleX_, y_ + (flipY_ ? -wy : wy) * scaleY_};
+        };
+
+        const auto bl = toScreen(localX, localY);
+        const auto br = toScreen(localX2, localY);
+        const auto tl = toScreen(localX, localY2);
+        const auto tr = toScreen(localX2, localY2);
+
+        // Reconstruct the axis-aligned-then-rotated quad the 2D batcher draws:
+        // center = average of corners, w = length of the top edge (UL→UR) in
+        // screen space, h = length of the left edge (UL→BL). The batcher maps
+        // (u0,v0)→top-left of the quad, which after the Spine Y-up → Y-down
+        // flip corresponds to Spine's UL corner; so the rotation angle must be
+        // the direction of the top edge, otherwise the sprite is upside down.
+        ds.x = (bl.first + br.first + tl.first + tr.first) * 0.25f;
+        ds.y = (bl.second + br.second + tl.second + tr.second) * 0.25f;
+        const float dx = tr.first - tl.first;
+        const float dy = tr.second - tl.second;
+        ds.w = std::sqrt(dx * dx + dy * dy);
+        const float hx = bl.first - tl.first;
+        const float hy = bl.second - tl.second;
+        ds.h = std::sqrt(hx * hx + hy * hy);
+        ds.rotation = (ds.w > 1e-6f) ? std::atan2(dy, dx) * static_cast<float>(180.0 / M_PI) : 0.f;
+        // Slot declaration order == Spine back-to-front draw order.
+        ds.order = si;
+
         drawSlots_.push_back(ds);
     }
 }
@@ -353,10 +392,15 @@ void SpineAnim::collectDrawItems(std::vector<graphics::DrawItem2D> &out) {
         item.w      = ds.w;
         item.h      = ds.h;
         item.depthY = ds.y + ds.h * 0.5f;
+        item.order  = ds.order;
+        item.hasOrder = true;
+        item.rotation = ds.rotation;
         item.color  = {r_, g_, b_, a_};
         item.layer  = layer_;
+        item.receiveLight = false;
         item.texture = getPageTexture(ds.page);
         item.hasUV  = true;
+        item.rotatedUV = ds.rotated;
         item.u0     = ds.u0;
         item.v0     = ds.v0;
         item.u1     = ds.u1;

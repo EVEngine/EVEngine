@@ -24,7 +24,12 @@ public:
     void clear();
     void addRect(float x, float y, float w, float h, const Color &color);
     void addTexturedRect(float x, float y, float w, float h, const Color &color,
-                         float u0, float v0, float u1, float v1);
+                         float u0, float v0, float u1, float v1,
+                         bool rotatedUV = false);
+    /** Textured quad rotated `degrees` (clockwise, screen Y-down) around (cx, cy). */
+    void addTexturedRectRotated(float cx, float cy, float w, float h, float degrees,
+                                const Color &color, float u0, float v0, float u1, float v1,
+                                bool rotatedUV = false);
     const std::vector<BatchVertex> &vertices() const { return verts; }
     bool empty() const { return verts.empty(); }
 

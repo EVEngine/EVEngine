@@ -283,6 +283,28 @@ if(EVENGINE_DOWNLOAD_CLASSIC_SCENES)
     VERBATIM)
 endif()
 
+# Free Spine demo models (spineboy / hero / dragon, region attachments only)
+# for animation.spine.* window tests. Default ON; disable offline.
+option(EVENGINE_DOWNLOAD_SPINE_MODELS
+  "Download Spine demo models (spineboy, hero, dragon) for spine animation tests" ON)
+set(_eve_spine_script "${CMAKE_SOURCE_DIR}/scripts/download_spine_models.py")
+add_custom_target(download_spine_models
+  COMMAND ${CMAKE_COMMAND} -E env
+          "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
+          python3 "${_eve_spine_script}"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+  COMMENT "Downloading Spine demo models (spineboy, hero, dragon)"
+  VERBATIM)
+if(EVENGINE_DOWNLOAD_SPINE_MODELS)
+  add_custom_command(TARGET unit_test PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E env
+            "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
+            python3 "${_eve_spine_script}"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    COMMENT "PRE_BUILD: download Spine demo models"
+    VERBATIM)
+endif()
+
 # Free skinned character (CesiumMan, ~0.5 MB) for animation.skinned.* tests.
 # Default ON so test builds fetch the asset over the network; disable offline.
 option(EVENGINE_DOWNLOAD_SKINNED_CHARACTER

@@ -276,15 +276,19 @@ void SpineAtlas::getRegionUV(int index, int texW, int texH, float &u0, float &v0
     checkRegion(index);
     if (texW <= 0 || texH <= 0) throw Exception("SpineAtlas.getRegionUV: invalid texture size");
     const Region &r = regions_[static_cast<size_t>(index)];
-    // Packed size: if rotate, w/h in atlas file are already the packed dimensions.
+    // Packed size: if rotate, the region is stored 90°-rotated so the packed
+    // rectangle spans r.h across and r.w down (matches spine-runtimes spAtlas).
     float x = static_cast<float>(r.x);
     float y = static_cast<float>(r.y);
-    float w = static_cast<float>(r.w);
-    float h = static_cast<float>(r.h);
     u0      = x / static_cast<float>(texW);
     v0      = y / static_cast<float>(texH);
-    u1      = (x + w) / static_cast<float>(texW);
-    v1      = (y + h) / static_cast<float>(texH);
+    if (r.rotate) {
+        u1 = (x + static_cast<float>(r.h)) / static_cast<float>(texW);
+        v1 = (y + static_cast<float>(r.w)) / static_cast<float>(texH);
+    } else {
+        u1 = (x + static_cast<float>(r.w)) / static_cast<float>(texW);
+        v1 = (y + static_cast<float>(r.h)) / static_cast<float>(texH);
+    }
 }
 
 }  // namespace eve::animation
