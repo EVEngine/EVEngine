@@ -24,6 +24,8 @@
 #include "font/FontData.h"
 #endif
 #include "image/ImageData.h"
+#include "image/Image.h"
+#include "filesystem/Filesystem.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
 
@@ -456,6 +458,8 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newTexture",
                 static_cast<Texture *(Graphics::*)(image::ImageData *, bool, bool)>(
                     &Graphics::newTextureFromImageData));
+    cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
+    cls.addFunc("newTextureFromFileRepeated", &Graphics::newTextureFromFileRepeated);
     cls.addFunc("newTextureWithSampler", &Graphics::newTextureWithSampler);
     cls.addFunc("setTextureSampler", &Graphics::setTextureSamplerParams);
     cls.addFunc("getMaxAnisotropy", &Graphics::getMaxAnisotropy);
@@ -579,6 +583,18 @@ Texture *Graphics::newTextureFromImageData(image::ImageData *data, const Texture
         throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
     return newTexture(data->getWidth(), data->getHeight(),
                       static_cast<const uint8_t *>(data->getData()), info);
+}
+
+Texture *Graphics::newTextureFromFileRepeated(const std::string &filename, bool repeatU,
+                                              bool repeatV) {
+    if (filename.empty()) throw eve::Exception("newTextureFromFileRepeated: empty filename");
+    auto *fs = eve::filesystem::Filesystem::create();
+    std::unique_ptr<eve::filesystem::FileData> fileData(fs->read(filename));
+    if (!fileData)
+        throw eve::Exception("newTextureFromFileRepeated: failed to read '%s'", filename.c_str());
+    auto *imgMod = eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> data(imgMod->newImageData(fileData.get()));
+    return newTextureFromImageData(data.get(), repeatU, repeatV);
 }
 
 Texture *Graphics::newTextureWithSampler(image::ImageData *data, bool repeatU, bool repeatV,
