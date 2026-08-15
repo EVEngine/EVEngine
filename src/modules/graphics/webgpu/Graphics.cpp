@@ -3092,9 +3092,3 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
 }
 
 }  // namespace eve::graphics::webgpu
-
-
-
-
-
-
