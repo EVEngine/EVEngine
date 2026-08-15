@@ -63,10 +63,10 @@ std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int ve
  * Expand a unit rectangle per point. Vertex layout:
  *   pos    = grass root
  *   uv     = quad corner in [0,1]^2  (0.5, 0) is the root
- *   normal.x = instance id, normal.y = scale
+ *   normal.x = instance id, normal.y = scale, normal.z = alwaysDark (0/1)
  */
 BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.45f,
-                              float height = 0.7f);
+                              float height = 0.7f, bool alwaysDark = false);
 
 /** Discrete 4-frame index with a per-instance phase offset. */
 int swayFrame(float time, float frameDuration, uint32_t instanceId, int frameCount = 4);

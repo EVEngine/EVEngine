@@ -10,6 +10,7 @@ layout(location = 2) in vec3 vViewPos;
 layout(location = 3) in vec3 vRootPos;
 layout(location = 4) in float vInstanceId;
 layout(location = 5) in vec4 vTint;
+layout(location = 6) in float vAlwaysDark;
 
 struct Light3D {
     vec4 posRadius;
@@ -108,7 +109,7 @@ void main() {
 
     float viewDepth = max(-vViewPos.z, 0.0);
     float vis = sampleGrassShadow(vRootPos, viewDepth);
-    if (u.data[5] > 0.5)
+    if (u.data[5] > 0.5 || vAlwaysDark > 0.5)
         vis = 0.0;
 
     vec3 lightGreen = vec3(u.data[6], u.data[7], u.data[8]);

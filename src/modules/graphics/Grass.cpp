@@ -359,7 +359,8 @@ std::vector<Point> samplePoisson(const float *posXYZ, const float *nrmXYZ, int v
     return accepted;
 }
 
-BillboardMesh buildBillboards(const std::vector<Point> &points, float width, float height) {
+BillboardMesh buildBillboards(const std::vector<Point> &points, float width, float height,
+                              bool alwaysDark) {
     (void)width;
     (void)height;
     BillboardMesh mesh;
@@ -384,7 +385,7 @@ BillboardMesh buildBillboards(const std::vector<Point> &points, float width, flo
             mesh.posXYZ.push_back(p.position.z);
             mesh.nrmXYZ.push_back(float(p.id));
             mesh.nrmXYZ.push_back(p.scale > 1e-3f ? p.scale : 1.f);
-            mesh.nrmXYZ.push_back(0.f);
+            mesh.nrmXYZ.push_back(alwaysDark ? 1.f : 0.f);
             mesh.uvST.push_back(cu[c]);
             mesh.uvST.push_back(cv[c]);
         }
@@ -466,8 +467,8 @@ void GrassField::bake(const float *posXYZ, const float *nrmXYZ, int vertexCount,
     denseCount_ = int(densePts.size());
     sparseCount_ = int(sparsePts.size());
 
-    const auto denseMesh = grass::buildBillboards(densePts, params.width, params.height);
-    const auto sparseMesh = grass::buildBillboards(sparsePts, params.width, params.height);
+    const auto denseMesh = grass::buildBillboards(densePts, params.width, params.height, false);
+    const auto sparseMesh = grass::buildBillboards(sparsePts, params.width, params.height, true);
 
     if (!shader_) shader_ = grass::createShader(gfx_);
     if (!atlas_)

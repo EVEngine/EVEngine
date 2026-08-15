@@ -1,7 +1,7 @@
 #version 450
 // t3ssel8r-style grass billboard vertex.
 // inPos    = grass ROOT (object space)
-// inNormal.x = instance id, inNormal.y = scale
+// inNormal.x = instance id, inNormal.y = scale, inNormal.z = alwaysDark (0/1)
 // inUV     = quad corner in [0,1]^2; (0.5, 0) is the root (bottom center)
 
 struct Light3D {
@@ -38,6 +38,7 @@ layout(location = 2) out vec3 vViewPos;
 layout(location = 3) out vec3 vRootPos;
 layout(location = 4) out float vInstanceId;
 layout(location = 5) out vec4 vTint;
+layout(location = 6) out float vAlwaysDark;
 
 void main() {
     float width = max(u.data[2], 0.01);
@@ -72,4 +73,5 @@ void main() {
     vRootPos = rootWorld.xyz;
     vInstanceId = inNormal.x;
     vTint = ubo.tint;
+    vAlwaysDark = inNormal.z;
 }
