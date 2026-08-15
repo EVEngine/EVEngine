@@ -2,9 +2,6 @@
 #include "zeroerr/unittest.h"
 
 #include <SDL2/SDL.h>
-#include <assimp/matrix4x4.h>
-#include <assimp/mesh.h>
-#include <assimp/scene.h>
 
 #include <cstdio>
 #include <memory>
@@ -21,7 +18,6 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
-#include "medialoader/model/ModelLoader.h"
 #include "window/Window.h"
 
 using namespace eve::graphics;
@@ -88,27 +84,8 @@ void warmPresent(Graphics *gfx, int frames = 2) {
     }
 }
 
-/** Minimal unit cube OBJ (outward CCW for RH Y-up). */
-static const char kCubeObj[] =
-    "v -0.5 -0.5  0.5\nv  0.5 -0.5  0.5\nv  0.5  0.5  0.5\nv -0.5  0.5  0.5\n"
-    "vn 0 0 1\nf 1//1 2//1 3//1\nf 1//1 3//1 4//1\n"
-    "v  0.5 -0.5 -0.5\nv -0.5 -0.5 -0.5\nv -0.5  0.5 -0.5\nv  0.5  0.5 -0.5\n"
-    "vn 0 0 -1\nf 5//2 6//2 7//2\nf 5//2 7//2 8//2\n"
-    "v  0.5 -0.5  0.5\nv  0.5 -0.5 -0.5\nv  0.5  0.5 -0.5\nv  0.5  0.5  0.5\n"
-    "vn 1 0 0\nf 9//3 10//3 11//3\nf 9//3 11//3 12//3\n"
-    "v -0.5 -0.5 -0.5\nv -0.5 -0.5  0.5\nv -0.5  0.5  0.5\nv -0.5  0.5 -0.5\n"
-    "vn -1 0 0\nf 13//4 14//4 15//4\nf 13//4 15//4 16//4\n"
-    "v -0.5  0.5  0.5\nv  0.5  0.5  0.5\nv  0.5  0.5 -0.5\nv -0.5  0.5 -0.5\n"
-    "vn 0 1 0\nf 17//5 18//5 19//5\nf 17//5 19//5 20//5\n"
-    "v -0.5 -0.5 -0.5\nv  0.5 -0.5 -0.5\nv  0.5 -0.5  0.5\nv -0.5 -0.5  0.5\n"
-    "vn 0 -1 0\nf 21//6 22//6 23//6\nf 21//6 23//6 24//6\n";
-
 Mesh *loadCube(Graphics *gfx) {
-    medialoader::ModelLoader loader;
-    auto scene = loader.loadFromMemory(kCubeObj, sizeof(kCubeObj) - 1, ".obj");
-    REQUIRE(!scene.empty());
-    REQUIRE(scene->mNumMeshes >= 1);
-    Mesh *m = gfx->newMeshFromAssimp(*scene->mMeshes[0]);
+    Mesh *m = gfx->newMeshCube();
     REQUIRE(m != nullptr);
     return m;
 }
@@ -207,6 +184,44 @@ TEST_CASE("outline.renderControlFeatureToggle") {
     CHECK(gb->isValid());
     CHECK(gb->getHwDepthTexture() != nullptr);
     CHECK(gb->getNormalTexture() != nullptr);
+
+    win->close();
+}
+
+TEST_CASE("outline.newMeshCubeAndPipelineConfig") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 240, 180);
+
+    Mesh *cube = gfx->newMeshCube(1.f);
+    REQUIRE(cube != nullptr);
+
+    // The auto-applied (render-feature) outline must be reachable and configurable.
+    Outline *pipeline = gfx->pipelineOutline();
+    REQUIRE(pipeline != nullptr);
+    pipeline->setColor(0.2f, 0.1f, 0.05f);
+    pipeline->setWidth(2.5f);
+    pipeline->setClip(0.05f, 40.f);
+    CHECK(std::fabs(pipeline->getWidth() - 2.5f) < 1e-5f);
+    CHECK(std::fabs(pipeline->getColorR() - 0.2f) < 1e-5f);
+
+    RenderControl *rc = gfx->getRenderControl();
+    rc->disable("ao");
+    rc->enable("outline");
+    rc->compile();
+
+    Renderable3D *cubeEnt = Renderable3D::create();
+    cubeEnt->setMesh(cube);
+    cubeEnt->setPosition(0.f, 0.f, 0.f);
+    cubeEnt->setRoughness(0.7f);
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(2.6f, 1.9f, 3.4f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->data()->nearZ = 0.05f;
+    cam->data()->farZ = 40.f;
+    addHud();
+    warmPresent(gfx, 2);
+    CHECK(rc->getGBuffer()->isValid());
 
     win->close();
 }

@@ -245,6 +245,12 @@ public:
      */
     virtual Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) = 0;
 
+    /**
+     * Procedural cube (edge length `size`, centered at origin, outward CCW for RH
+     * Y-up), with per-face normals and a full 0..1 UV per face. Owned by Graphics.
+     */
+    Mesh *newMeshCube(float size = 1.f);
+
     /** Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     void render3D();
     void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
