@@ -44,6 +44,10 @@ WGPUStringView sv(const char *s) {
     return WGPUStringView{s, s ? std::strlen(s) : 0};
 }
 
+// Forward declaration for the readback helper (defined in the Readback section).
+bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queue &queue,
+                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba);
+
 // A shared default sampler used when no texture is provided.
 wgpu::Sampler createLinearSampler(wgpu::Device &dev) {
     WGPUSamplerDescriptor d{};
@@ -271,7 +275,10 @@ void Graphics::configureSurface(int width, int height) {
     cfg.viewFormats = nullptr;
     // emdawnwebgpu only accepts Fifo / Undefined present modes.
     cfg.presentMode = WGPUPresentMode_Fifo;
-    cfg.alphaMode = WGPUCompositeAlphaMode_Auto;
+    // Auto (0) maps to an empty slot in emdawnwebgpu's JS CompositeAlphaMode
+    // table → `alphaMode: undefined`, which some browsers reject. Use Opaque,
+    // which maps to the JS value 'opaque' used by the working replica.
+    cfg.alphaMode = WGPUCompositeAlphaMode_Opaque;
     surface.Configure(reinterpret_cast<const wgpu::SurfaceConfiguration*>(&cfg));
     swapchainConfigured = true;
     // Recreate the offscreen targets at the new size.
@@ -614,6 +621,11 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     WGPUColorTargetState target{};
     target.format = format;
     target.blend = nullptr;
+    // Zero-init yields WGPUColorWriteMask_None, which silently discards every
+    // fragment (the clear still shows because clearValue is unaffected by the
+    // mask). emdawnwebgpu forwards this explicit 0 to the browser, unlike the
+    // JS default of "all".
+    target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
     if (blend) target.blend = &bs;
 
@@ -629,7 +641,9 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
 
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_color2d");
-    pd.layout = emptyLayout.Get();
+    // nullptr = auto (default) pipeline layout; the solid-color shader has no
+    // bindings so the derived layout matches.
+    pd.layout = nullptr;
     wgpu::ShaderModule vertModule = makeWgslModule(dev, kColorVertWgsl);
     wgpu::ShaderModule fragModule = makeWgslModule(dev, kColorFragWgsl);
     pd.vertex.module = vertModule.Get();
@@ -648,6 +662,9 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = nullptr;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -668,6 +685,7 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
 
     WGPUColorTargetState target{};
     target.format = format;
+    target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
     if (blend) target.blend = &bs;
 
@@ -692,6 +710,9 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = nullptr;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -712,6 +733,7 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout l
 
     WGPUColorTargetState target{};
     target.format = format;
+    target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
     if (blend) target.blend = &bs;
 
@@ -736,6 +758,9 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout l
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = nullptr;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -781,6 +806,7 @@ void Graphics::createMesh3DPipelines() {
     WGPUColorTargetState target{};
     target.format = sceneColorFormat;
     target.blend = nullptr;
+    target.writeMask = WGPUColorWriteMask_All;
 
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_mesh3d");
@@ -803,6 +829,9 @@ void Graphics::createMesh3DPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -845,6 +874,9 @@ void Graphics::createShadowPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dShadowPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -876,6 +908,7 @@ void Graphics::createGbufferPipelines() {
     for (int i = 0; i < 3; ++i) {
         targets[i].format = WGPUTextureFormat_RGBA8Unorm;
         targets[i].blend = nullptr;
+        targets[i].writeMask = WGPUColorWriteMask_All;
     }
 
     WGPURenderPipelineDescriptor pd{};
@@ -899,6 +932,9 @@ void Graphics::createGbufferPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dGbufferPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -932,6 +968,7 @@ void Graphics::createVoxelPipelines() {
     WGPUColorTargetState target{};
     target.format = sceneColorFormat;
     target.blend = nullptr;
+    target.writeMask = WGPUColorWriteMask_All;
 
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_voxel");
@@ -954,6 +991,9 @@ void Graphics::createVoxelPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     voxelRectPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 
     // Unit quad for instanced voxel faces (2 triangles, corner + packed uv slot).
@@ -1906,7 +1946,10 @@ void Graphics::begin3DFrame() {
     if (!initialized || !device) return;
     frame3DStarted = true;
     frameHad3DThisFrame = false;
-    frameHad3D = false;
+    // Match the desktop (Vulkan) backend: had3DThisFrame() must return true
+    // once a 3D frame begins, or RenderSystem3D::render bails out before any
+    // mesh is drawn.
+    frameHad3D = true;
     sceneColorPassOpen = false;
     mesh3dDraws.clear();
     shadowPassDraws.clear();
@@ -2488,6 +2531,25 @@ bool Graphics::acquireSurfaceTexture(wgpu::TextureView &view, wgpu::Texture &tex
     return bool(view);
 }
 
+void Graphics::pushValidationScope() {
+#ifdef EVENGINE_WEBGPU
+    if (device) device.PushErrorScope(wgpu::ErrorFilter::Validation);
+#endif
+}
+
+void Graphics::popValidationScope() {
+#ifdef EVENGINE_WEBGPU
+    if (!device) return;
+    device.PopErrorScope(wgpu::CallbackMode::AllowProcessEvents,
+        [](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type, const char *message) {
+            if (message && type != wgpu::ErrorType::NoError) {
+                EM_ASM({ console.log("[GPU_ERR] type=" + $0 + " msg=" + UTF8ToString($1)); },
+                       (int)type, message);
+            }
+        });
+#endif
+}
+
 void Graphics::present() {
     if (!device || !surface || !swapchainConfigured) return;
     rebuildSwapchainIfNeeded();
@@ -2506,6 +2568,10 @@ void Graphics::present() {
     voxelInstanceArena.used = 0;
     ensureUboArena(uboArena, 4096);
     ensureVertexArena(vtxArena, 4096);
+    // Match the desktop (Vulkan) flow: the 3D/swapchain pass clears with the
+    // background set by setBackgroundColor unless the script called clear().
+    if (!hasPendingClear) clearColor = backgroundColor;
+    hasPendingClear = false;
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
 
@@ -2532,8 +2598,8 @@ void Graphics::present() {
                 ds.depthLoadOp = WGPULoadOp_Clear;
                 ds.depthStoreOp = WGPUStoreOp_Store;
                 ds.stencilClearValue = 0;
-                ds.stencilLoadOp = WGPULoadOp_Clear;
-                ds.stencilStoreOp = WGPUStoreOp_Discard;
+                ds.stencilLoadOp = WGPULoadOp_Undefined;
+                ds.stencilStoreOp = WGPUStoreOp_Undefined;
                 WGPURenderPassDescriptor rp{};
                 rp.depthStencilAttachment = &ds;
                 wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
@@ -2560,8 +2626,8 @@ void Graphics::present() {
         ds.depthLoadOp = WGPULoadOp_Clear;
         ds.depthStoreOp = WGPUStoreOp_Store;
         ds.stencilClearValue = 0;
-        ds.stencilLoadOp = WGPULoadOp_Clear;
-        ds.stencilStoreOp = WGPUStoreOp_Discard;
+        ds.stencilLoadOp = WGPULoadOp_Undefined;
+        ds.stencilStoreOp = WGPUStoreOp_Undefined;
         WGPURenderPassDescriptor rp{};
         rp.colorAttachmentCount = 1;
         rp.colorAttachments = &colorAtt;
@@ -2593,8 +2659,8 @@ void Graphics::present() {
         ds.depthLoadOp = WGPULoadOp_Clear;
         ds.depthStoreOp = WGPUStoreOp_Store;
         ds.stencilClearValue = 0;
-        ds.stencilLoadOp = WGPULoadOp_Clear;
-        ds.stencilStoreOp = WGPUStoreOp_Discard;
+        ds.stencilLoadOp = WGPULoadOp_Undefined;
+        ds.stencilStoreOp = WGPUStoreOp_Undefined;
         WGPURenderPassDescriptor rp{};
         rp.colorAttachmentCount = 3;
         rp.colorAttachments = colorAtts;
@@ -2675,6 +2741,13 @@ void Graphics::present() {
 
     wgpu::CommandBuffer cmd = encoder.Finish();
     queue.Submit(1, &cmd);
+    // emdawnwebgpu implements the GPU on the JS main thread: queued commands
+    // (draws, writes) only execute when ProcessEvents drives the work queue.
+    // Without this, render-pass draws are silently never executed (only the
+    // swapchain clear, handled by the browser present, is visible).
+#ifdef __EMSCRIPTEN__
+    if (instance) instance.ProcessEvents();
+#endif
     // emdawnwebgpu does not implement wgpuSurfacePresent (it aborts); the
     // browser presents the canvas automatically once the command buffer is
     // submitted from within a requestAnimationFrame callback. On Emscripten
@@ -2941,6 +3014,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
         fs.targetCount = 1;
         WGPUColorTargetState target{};
         target.format = format;
+        target.writeMask = WGPUColorWriteMask_All;
         if (blend) {
             static WGPUBlendState bs = alphaBlend();
             target.blend = &bs;
@@ -2964,6 +3038,8 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
         pd.depthStencil = &ds;
     }
     pd.multisample.count = sampleCount ? sampleCount : 1;
+    // mask=0 (zero-init) silently discards all fragments; use all-samples.
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
