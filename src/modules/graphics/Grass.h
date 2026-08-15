@@ -120,7 +120,7 @@ public:
     GrassField &operator=(const GrassField &) = delete;
 
     void bake(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices,
-              int indexCount, const BakeParams &params = {});
+              int indexCount, const BakeParams &params);
     void bakePlane(float sizeX, float sizeZ, int segX, int segZ);
     void bakePlane(float sizeX, float sizeZ, int segX, int segZ, const BakeParams &params);
 
