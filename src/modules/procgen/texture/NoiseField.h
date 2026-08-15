@@ -15,8 +15,13 @@ struct NoiseField {
 
     float hash01(int ix, int iy) const;
     float valueNoise(float x, float y) const;
+    /** Classic 2D Perlin gradient noise, remapped to [0, 1]. */
+    float perlinNoise(float x, float y) const;
     float fbm(float x, float y, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f) const;
+    float fbmPerlin(float x, float y, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f) const;
     float ridged(float x, float y, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f) const;
+    float ridgedPerlin(float x, float y, int octaves = 4, float lacunarity = 2.f,
+                       float gain = 0.5f) const;
     float warp(float x, float y, float amp, int octaves = 3) const;
 };
 

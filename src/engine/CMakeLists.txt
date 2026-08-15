@@ -22,6 +22,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     add_executable(eve MACOSX_BUNDLE main.cpp)
     set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 else()
+    # Desktop + webgpu (native Dawn and Emscripten/WASM) produce `eve`.
     add_executable(eve main.cpp)
     set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 endif()
@@ -40,6 +41,10 @@ elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         m
         c++_shared
     )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # Emscripten exposes pthread/dl/GL as virtual libraries; nothing to link.
+    # Game-side threading is enabled through -sPROXY_TO_PTHREAD (platform/webgpu).
+    set(SystemLibraries ${SystemLibraries})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     set(SystemLibraries ${SystemLibraries}
         "-framework UIKit"
@@ -133,6 +138,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS OR APPLE)
         freetype
         PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
         ${SystemLibraries})
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # WASM-trimmed third-party: only the simple vendored libs built by the
+    # aggregate (squirrel/simplesquirrel/physfs/lz4/Box2D/xxHash). SDL2 and
+    # zlib come from Emscripten ports (-sUSE_SDL=2 / -sUSE_ZLIB); Poco/OpenAL/
+    # medialoader/assimp/freetype are skipped (their modules are compiled out).
+    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static
+        medialoader_image physfs lz4 Box2D xxHash
+        ${SystemLibraries})
 else()
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
         medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
@@ -158,8 +171,9 @@ set(EVELIBS
     EVTouch
     EVCmdLine)
 
-# Desktop only: DAP / MCP / DevTools (trimmed out of Android / iOS runtimes).
-if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS))
+# Desktop only: DAP / MCP / DevTools (trimmed out of Android / iOS / browser runtimes).
+if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS
+        OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
     list(APPEND EVELIBS EVDevTools)
 endif()
 
@@ -195,7 +209,17 @@ list(APPEND EVELIBS
     EVStylize
     EVEditor)
 
-if(EVENGINE_BUILD_DEMO)
+# WASM (Emscripten) trims the modules whose third-party deps were dropped.
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    foreach(_eve_trimmed IN ITEMS
+        EVAnimation EVAudio EVAvatar EVBuilding EVDatabase EVFont EVInventory
+        EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVStylize EVVoxel
+        EVDialogue EVProcgen)
+        list(REMOVE_ITEM EVELIBS ${_eve_trimmed})
+    endforeach()
+endif()
+
+if(EVENGINE_BUILD_DEMO AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
     list(APPEND EVELIBS EVDemo)
 endif()
 
@@ -212,9 +236,9 @@ if(NOT EVENGINE_ANDROID_TEST_APP)
     foreach(_eve_lib IN LISTS EVELIBS)
         list(APPEND _eve_whole_archive_libs "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_eve_lib}>")
     endforeach()
-    target_link_libraries(${EVENGINE_NATIVE_TARGET} ${_eve_whole_archive_libs} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+    target_link_libraries(${EVENGINE_NATIVE_TARGET} ${_eve_whole_archive_libs} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   else()
-    target_link_libraries(${EVENGINE_NATIVE_TARGET} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+    target_link_libraries(${EVENGINE_NATIVE_TARGET} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   endif()
 endif()
 
@@ -306,6 +330,53 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     endif()
 endif()
 
+# ---- Emscripten (browser WebGPU / WASM) ----
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # The engine's blocking script loop (load.nut) runs on a pthread; browser
+    # WebGPU calls are proxied to the main thread by Emscripten.
+    target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE
+        # main() runs on the browser main thread so emdawnwebgpu can reach the
+        # DOM canvas directly (PROXY_TO_PTHREAD would run main() on a worker
+        # with no DOM, and the OffscreenCanvas transfer path hits
+        # emscripten_proxy_async failures). pthreads stay available for the
+        # Thread module; ASYNCIFY lets the blocking main loop (emscripten_sleep)
+        # yield to the browser event loop.
+        -sUSE_PTHREADS=1
+        -sALLOW_MEMORY_GROWTH=1
+        # Pre-allocate the worker pool so Emscripten does not print "thread pool
+        # is exhausted" (it warns whenever a new worker is spawned while the pool
+        # is empty). 4 covers the engine's ThreadPool default (capped at 4 on
+        # Emscripten) and any library init.
+        -sPTHREAD_POOL_SIZE=4
+        -sEXIT_RUNTIME=0
+        -sFORCE_FILESYSTEM=1
+        -sASSERTIONS=1
+        -sFETCH=1
+        # The WebGPU backend spin-waits for requestAdapter/requestDevice with
+        # emscripten_sleep(0); on the main thread that requires ASYNCIFY.
+        -sASYNCIFY=1
+    )
+
+    set(EVENGINE_WEBGPU_GAME_DIR "${CMAKE_SOURCE_DIR}/platform/webgpu/game-shell" CACHE PATH
+        "Directory preloaded as /game on the browser (default: platform/webgpu/game-shell)")
+
+    set(_eve_web_shell "${CMAKE_SOURCE_DIR}/platform/webgpu/shell.html")
+    if(EXISTS "${_eve_web_shell}")
+        target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE --shell-file "${_eve_web_shell}")
+    endif()
+
+    # --preload-file mounts the game assets at /game so getGameDirectory()
+    # ("/game") resolves directly against the preloaded VFS.
+    if(IS_DIRECTORY "${EVENGINE_WEBGPU_GAME_DIR}")
+        # --preload-file takes the source path relative to the CMake working
+        # directory; use the absolute game-shell dir so the wasm data embeds
+        # the assets directly at /game without a staging copy.
+        target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE
+            "--preload-file" "${EVENGINE_WEBGPU_GAME_DIR}@/game"
+        )
+    endif()
+endif()
+
 if(NOT EVENGINE_ANDROID_TEST_APP)
 # Plugins resolve ModuleManager / ModuleRegister symbols from the host process.
 # Export surface is EVENGINE_API (__declspec(dllexport)) only — do not enable
@@ -324,8 +395,15 @@ if(WIN32)
 elseif(APPLE)
     # macOS + iOS: Apple ld rejects GNU --export-dynamic.
     target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "LINKER:-export_dynamic")
-elseif(UNIX AND NOT ANDROID AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+elseif(UNIX AND NOT ANDROID AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android")
+       AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
     target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "LINKER:--export-dynamic")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # WASM: dlopen/plugins are not supported; no symbol export flags needed.
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        CXX_VISIBILITY_PRESET default
+        VISIBILITY_INLINES_HIDDEN OFF
+    )
 elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     # libmain.so: keep default-visible EVENGINE_API symbols for dlopened plugins.
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES

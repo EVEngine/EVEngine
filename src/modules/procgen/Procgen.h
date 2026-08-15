@@ -6,6 +6,8 @@
 #include "procgen/OutputSpec.h"
 #include "procgen/Palette.h"
 #include "procgen/Params.h"
+#include "procgen/heightmap/Heightmap.h"
+#include "procgen/heightmap/TerrainSampler.h"
 
 #include <string>
 #include <vector>
@@ -80,6 +82,16 @@ public:
     int         getMeshRecipeCount() const;
     std::string getMeshRecipeId(int index) const;
     bool        hasMeshRecipe(const std::string &recipeId) const;
+
+    // --- Phase D: terrain height sampling ---
+    /** Sampling function over continuous map coordinates (caller owns). */
+    TerrainSampler *newTerrainSampler();
+    /** Empty in-memory heightmap (caller owns). */
+    Heightmap *newHeightmap(int width, int height);
+    /** Build a sampler from params (seed/scale/octaves/…) and materialize it (caller owns). */
+    Heightmap *generateHeightmap(Params *params);
+    /** Classify a heightmap into a semantic Grid2D using params bands (waterMax…). */
+    bool heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out);
 
     PaletteTable &palettes() { return palettes_; }
 

@@ -195,6 +195,8 @@ bool genCaveDrunkard(const Params &params, Grid2D &out, std::string &error) {
 
 // Defined in WfcSimple.cpp
 void registerWfcSimple(GeneratorRegistry &registry);
+// Defined in heightmap/BuiltinHeightmap.cpp
+void registerTerrainHeightmapAlgorithm(GeneratorRegistry &registry);
 
 void GeneratorRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
@@ -204,6 +206,7 @@ void GeneratorRegistry::registerBuiltins() {
     registerAlgorithm("maze.backtrack", genMazeBacktrack);
     registerAlgorithm("noise.terrain", genNoiseTerrain);
     registerWfcSimple(*this);
+    registerTerrainHeightmapAlgorithm(*this);
     builtinsRegistered_ = true;
 }
 
