@@ -81,8 +81,18 @@ TEST_CASE("UISystem.render.headlessImGuiWalk") {
     UIHost *h = UIHost::createHost("walk");
     h->setTree(window("Panel", {text("Label", "label"), button("Btn", "btn")}));
 
+    // This test is headless: it drives UISystem::render() with a private ImGui
+    // context. When run in the same process after a real-window UI test, the UI
+    // module's ImGui backend keeps its own context (and present-overlay hook).
+    // ImGui::CreateContext() only auto-switches current when GImGui is NULL, so
+    // explicitly switch to the private context and back — otherwise the UI
+    // backend's context would be the one NewFrame/EndFrame and DestroyContext
+    // operate on, leaving a dangling ImGui context for later present() calls.
+    ImGuiContext *savedContext = ImGui::GetCurrentContext();
+
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    ImGuiContext *headlessContext = ImGui::CreateContext();
+    ImGui::SetCurrentContext(headlessContext);
     ImGuiIO &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(800.f, 600.f);
     io.IniFilename = nullptr;
@@ -94,7 +104,8 @@ TEST_CASE("UISystem.render.headlessImGuiWalk") {
     ImGui::NewFrame();
     UISystem::render();
     ImGui::EndFrame();
-    ImGui::DestroyContext();
+    ImGui::DestroyContext(headlessContext);
+    if (savedContext) ImGui::SetCurrentContext(savedContext);
 
     CHECK(!h->tree()->dirty);
 }

@@ -40,12 +40,8 @@ using namespace eve::ik;
 
 namespace {
 
-std::string pathBesideThisSource(const char *relative) {
-    std::string here = __FILE__;
-    auto slash       = here.find_last_of("/\\");
-    std::string dir  = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/" + relative;
-}
+#include "PathBesideSource.h"
+EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) { return std::filesystem::is_regular_file(path); }
 
@@ -124,6 +120,11 @@ TEST_CASE("particles.attach.resetClearsParticlesKeepsAttach") {
     CHECK(e->isAttached());
     CHECK_EQ(e->getAttachKind(), std::string("ik2d"));
     CHECK(std::fabs(e->getX() - 11.f) < 1e-2f);
+
+    // The emitter lives in a process-wide ECS; detach before the local
+    // skeleton is destroyed so later ParticleSimSystem::update() calls in
+    // other tests don't dereference the freed skeleton.
+    e->detach();
 }
 
 TEST_CASE("particles.attach.moveToOverwrittenBySync") {
@@ -139,6 +140,7 @@ TEST_CASE("particles.attach.moveToOverwrittenBySync") {
     ParticleSimSystem::update(0.016f);
     CHECK(std::fabs(e->getX() - 5.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 6.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.applyConfigPreservesAttach") {
@@ -157,6 +159,7 @@ TEST_CASE("particles.attach.applyConfigPreservesAttach") {
     e->start();
     ParticleSimSystem::update(0.1f);
     CHECK_GE(e->getCount(), 3);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.layerAndVisibleIndependent") {
@@ -175,6 +178,7 @@ TEST_CASE("particles.attach.layerAndVisibleIndependent") {
     ParticleSimSystem::update(0.016f);
     CHECK(std::fabs(e->getX() - 1.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 2.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ellipseAreaOnBone") {
@@ -197,6 +201,7 @@ TEST_CASE("particles.attach.ellipseAreaOnBone") {
         if (dx * dx + dy * dy <= 1.01f) ++inside;
     }
     CHECK_EQ(inside, e->getCount());
+    e->detach();
 }
 
 TEST_CASE("particles.attach.tangentialForceUsesBoneOrigin") {
@@ -218,6 +223,7 @@ TEST_CASE("particles.attach.tangentialForceUsesBoneOrigin") {
     ParticleSimSystem::update(0.1f);
     // Tangential to radial (+X) is +Y (rdx,rdy)=(1,0) → (-rdy, rdx)=(0,1)
     CHECK(e->sim()->particles[0].vy > 0.f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.particleLifetimeExpiresOnBone") {
@@ -235,6 +241,7 @@ TEST_CASE("particles.attach.particleLifetimeExpiresOnBone") {
     ParticleSimSystem::update(0.1f);
     CHECK_EQ(e->getCount(), 0);
     CHECK(e->isAttached());
+    e->detach();
 }
 
 TEST_CASE("particles.attach.largeDtBurstOnBone") {
@@ -255,6 +262,7 @@ TEST_CASE("particles.attach.largeDtBurstOnBone") {
         CHECK(std::fabs(e->sim()->particles[size_t(i)].x - 7.f) < 1e-2f);
         CHECK(std::fabs(e->sim()->particles[size_t(i)].y - 8.f) < 1e-2f);
     }
+    e->detach();
 }
 
 TEST_CASE("particles.attach.zeroDtStillSyncs") {
@@ -277,6 +285,7 @@ TEST_CASE("particles.attach.zeroDtStillSyncs") {
     CHECK(std::fabs(e->getX() - 15.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 16.f) < 1e-2f);
     CHECK_EQ(e->getCount(), 2);  // no new spawns at dt=0
+    e->detach();
 }
 
 TEST_CASE("particles.attach.cycleThroughAllKinds") {
@@ -333,6 +342,7 @@ TEST_CASE("particles.attach.scaleChangeMidLifetimeResyncs") {
     e->setAttachScale(3.f);
     CHECK(std::fabs(e->getX() - 6.f) < 1e-3f);
     CHECK(std::fabs(e->getY() - 12.f) < 1e-3f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.spinAndSizeVariationOnBone") {
@@ -358,6 +368,7 @@ TEST_CASE("particles.attach.spinAndSizeVariationOnBone") {
     }
     CHECK(spinOk);
     CHECK(sizeVaried);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik2dConstraintsStillEmits") {
@@ -383,6 +394,7 @@ TEST_CASE("particles.attach.ik2dConstraintsStillEmits") {
         CHECK(std::fabs(e->sim()->particles[size_t(i)].x - sk->getX(tip)) < 1e-1f);
         CHECK(std::fabs(e->sim()->particles[size_t(i)].y - sk->getY(tip)) < 1e-1f);
     }
+    e->detach();
 }
 
 TEST_CASE("particles.attach.twoEmittersDifferentPlanes") {
@@ -402,6 +414,8 @@ TEST_CASE("particles.attach.twoEmittersDifferentPlanes") {
     CHECK(std::fabs(xy->getY() - 4.f) < 1e-3f);
     CHECK(std::fabs(xz->getX() - 2.f) < 1e-3f);
     CHECK(std::fabs(xz->getY() - 6.f) < 1e-3f);
+    xy->detach();
+    xz->detach();
 }
 
 TEST_CASE("particles.attach.animChainOffsetThreeBones") {
@@ -425,6 +439,7 @@ TEST_CASE("particles.attach.animChainOffsetThreeBones") {
     // world c = 10+1+1=12, + local offset 0.5 → 12.5
     CHECK(std::fabs(e->getX() - 12.5f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 0.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.spineBobAnimContinuousRate") {
@@ -453,6 +468,7 @@ TEST_CASE("particles.attach.spineBobAnimContinuousRate") {
     }
     CHECK_GE(e->getCount(), 20);
     CHECK_GT(maxY - minY, 5.f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik3dSolverStepContinuous") {
@@ -481,6 +497,7 @@ TEST_CASE("particles.attach.ik3dSolverStepContinuous") {
         CHECK(std::fabs(e->getX() - sk->getX(tip)) < 1e-2f);
     }
     CHECK_GE(moved, 1);
+    e->detach();
 }
 
 TEST_CASE("particles.skin.filterByIndexAndClearFilter") {
@@ -512,6 +529,8 @@ TEST_CASE("particles.skin.filterByIndexAndClearFilter") {
     e->setSkinBoneFilter(-1, 0.f);  // clear filter → all verts
     e->emitFromSkin(32);
     CHECK_EQ(e->getCount(), 32);
+    e->clearSkinSource();
+    e->detach();
 }
 
 TEST_CASE("particles.skin.emitFromSkinRespectsBuffer") {
@@ -536,6 +555,8 @@ TEST_CASE("particles.skin.emitFromSkinRespectsBuffer") {
     e->emitFromSkin(100);
     CHECK_EQ(e->getCount(), 10);
     CHECK_EQ(e->getBufferSize(), 10);
+    e->clearSkinSource();
+    e->detach();
 }
 
 TEST_CASE("particles.attach.cesiumManBoneByNameIfPresent") {
@@ -581,5 +602,6 @@ TEST_CASE("particles.attach.smokeAndFirePresetsOnIk3d") {
         e->start();
         ParticleSimSystem::update(0.05f);
         CHECK_GE(e->getCount(), 1);
+        e->detach();
     }
 }

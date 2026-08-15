@@ -182,7 +182,7 @@ int Debugger::scriptStackDepth() const {
     HSQUIRRELVM vm = vm_;
     if (!vm) return 0;
     int depth = 0;
-    for (int level = 1;; ++level) {
+    for (int level = 0;; ++level) {
         SQStackInfos si;
         if (SQ_FAILED(sq_stackinfos(vm, level, &si))) break;
         ++depth;
@@ -481,7 +481,7 @@ VariableInfo Debugger::evaluate(const std::string& expression) const {
     }
     // Prefer local, then roottable slot. Full expression eval is intentionally
     // limited (safe for watches of variable names / dotted root paths).
-    auto local = readLocal(vm, 1, expression);
+    auto local = readLocal(vm, 0, expression);
     if (local.type != "error") return local;
 
     // Support a.b root path (tables only).
@@ -522,7 +522,7 @@ std::vector<VariableInfo> Debugger::locals(int stackLevel) const {
     std::vector<VariableInfo> out;
     HSQUIRRELVM vm = vm_;
     if (!vm) return out;
-    const SQUnsignedInteger level = static_cast<SQUnsignedInteger>(stackLevel < 0 ? 1 : stackLevel);
+    const SQUnsignedInteger level = static_cast<SQUnsignedInteger>(stackLevel < 0 ? 0 : stackLevel);
     for (SQUnsignedInteger n = 0;; ++n) {
         const SQInteger top  = sq_gettop(vm);
         const SQChar*   name = sq_getlocal(vm, level, n);
@@ -545,7 +545,7 @@ std::vector<StackFrameInfo> Debugger::stackTrace(int maxFrames) const {
     HSQUIRRELVM vm = vm_;
     if (!vm) return out;
     if (maxFrames <= 0) maxFrames = 32;
-    for (int level = 1; level <= maxFrames; ++level) {
+    for (int level = 0; level <= maxFrames; ++level) {
         SQStackInfos si;
         if (SQ_FAILED(sq_stackinfos(vm, level, &si))) break;
         StackFrameInfo f;

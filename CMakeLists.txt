@@ -9,8 +9,12 @@ option(BUILD_TESTING "enable testing" ON)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
+option(EVENGINE_ANDROID_TEST_APP
+    "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
+    OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
+message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
 if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
 endif()
@@ -39,7 +43,8 @@ function(main)
     # /EHsc: CMAKE_CXX_FLAGS is empty in this tree, so MSVC/clang-cl otherwise compile
     # with exceptions off. clangd then errors on try/throw (zeroerr ASSERT, Exception).
     if(MSVC)
-        add_compile_options(/utf-8 /EHsc)
+        # /FS serializes writes to a target PDB when MSBuild schedules several cl.exe jobs.
+        add_compile_options(/utf-8 /EHsc /FS)
     endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
@@ -48,8 +53,12 @@ function(main)
     set(USE_MOLD OFF CACHE BOOL "" FORCE)
     set(COLORFUL_OUTPUT OFF CACHE STRING "" FORCE)
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
-        message(STATUS "Android build: unit tests disabled")
+        if(EVENGINE_ANDROID_TEST_APP)
+            message(STATUS "Android build: unit tests enabled (Android test app)")
+        else()
+            set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+            message(STATUS "Android build: unit tests disabled")
+        endif()
     endif()
     if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
         set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)

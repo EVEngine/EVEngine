@@ -31,6 +31,26 @@ Body *bodyFromFixture(b2Fixture *f) {
     return static_cast<Body *>(b->GetUserData());
 }
 
+Fixture *fixtureFromRaw(b2Fixture *f) {
+    return f ? static_cast<Fixture *>(f->GetUserData()) : nullptr;
+}
+
+World::ContactEvent contactEventFrom(b2Contact *contact) {
+    World::ContactEvent out;
+    if (!contact) return out;
+    Fixture *fa = fixtureFromRaw(contact->GetFixtureA());
+    Fixture *fb = fixtureFromRaw(contact->GetFixtureB());
+    if (fa) {
+        out.bodyAId = fa->getBodyId();
+        out.fixtureATag = fa->getTag();
+    }
+    if (fb) {
+        out.bodyBId = fb->getBodyId();
+        out.fixtureBTag = fb->getTag();
+    }
+    return out;
+}
+
 }  // namespace
 
 class ContactRelay : public b2ContactListener {
@@ -39,6 +59,12 @@ public:
 
     void BeginContact(b2Contact *contact) override { world_->onBeginContact(contact); }
     void EndContact(b2Contact *contact) override { world_->onEndContact(contact); }
+    void PreSolve(b2Contact *contact, const b2Manifold *oldManifold) override {
+        world_->onPreSolve(contact, oldManifold);
+    }
+    void PostSolve(b2Contact *contact, const b2ContactImpulse *impulse) override {
+        world_->onPostSolve(contact, impulse);
+    }
 
 private:
     World *world_;
@@ -149,6 +175,7 @@ void World::destroy() {
         if (f) f->invalidate();
     }
     fixtures_.clear();
+    clearContactEvents();
 
     if (world_) {
         world_->SetContactListener(nullptr);
@@ -217,13 +244,49 @@ void World::destroyBody(Body *body) {
     body->destroy();
 }
 
-void World::forgetBody(Body *body) { bodies_.erase(body); }
-void World::forgetFixture(Fixture *fixture) { fixtures_.erase(fixture); }
+void World::forgetBody(Body *body) {
+    if (!body) return;
+    const int id = body->getId();
+    bodies_.erase(body);
+    auto touches = [id](const ContactEvent &e) { return e.bodyAId == id || e.bodyBId == id; };
+    beginContacts_.erase(std::remove_if(beginContacts_.begin(), beginContacts_.end(), touches),
+                         beginContacts_.end());
+    endContacts_.erase(std::remove_if(endContacts_.begin(), endContacts_.end(), touches),
+                       endContacts_.end());
+    impacts_.erase(std::remove_if(impacts_.begin(), impacts_.end(), touches), impacts_.end());
+}
+void World::forgetFixture(Fixture *fixture) {
+    if (!fixture) return;
+    const int bodyId = fixture->getBodyId();
+    const std::string tag = fixture->getTag();
+    auto touches = [&](const ContactEvent &e) {
+        return (e.bodyAId == bodyId && e.fixtureATag == tag) ||
+               (e.bodyBId == bodyId && e.fixtureBTag == tag);
+    };
+    beginContacts_.erase(std::remove_if(beginContacts_.begin(), beginContacts_.end(), touches),
+                         beginContacts_.end());
+    endContacts_.erase(std::remove_if(endContacts_.begin(), endContacts_.end(), touches),
+                       endContacts_.end());
+    impacts_.erase(std::remove_if(impacts_.begin(), impacts_.end(), touches), impacts_.end());
+    b2Fixture *raw = fixture->raw();
+    for (auto it = preSolve_.begin(); it != preSolve_.end();) {
+        b2Contact *contact = it->first;
+        if (contact && (contact->GetFixtureA() == raw || contact->GetFixtureB() == raw))
+            it = preSolve_.erase(it);
+        else
+            ++it;
+    }
+    fixtures_.erase(fixture);
+}
 
 void World::onBeginContact(b2Contact *contact) {
+    if (!contact || !fixtureFromRaw(contact->GetFixtureA()) ||
+        !fixtureFromRaw(contact->GetFixtureB())) return;
     Body *a = bodyFromFixture(contact->GetFixtureA());
     Body *b = bodyFromFixture(contact->GetFixtureB());
     if (!a || !b) return;
+
+    beginContacts_.push_back(contactEventFrom(contact));
 
     auto *ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
     if (!ev) return;
@@ -233,15 +296,135 @@ void World::onBeginContact(b2Contact *contact) {
 }
 
 void World::onEndContact(b2Contact *contact) {
+    preSolve_.erase(contact);
+    if (!contact || !fixtureFromRaw(contact->GetFixtureA()) ||
+        !fixtureFromRaw(contact->GetFixtureB())) return;
     Body *a = bodyFromFixture(contact->GetFixtureA());
     Body *b = bodyFromFixture(contact->GetFixtureB());
     if (!a || !b) return;
+
+    endContacts_.push_back(contactEventFrom(contact));
 
     auto *ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
     if (!ev) return;
     std::vector<eve::event::Variant> args = {eve::event::Variant::makeInt(a->getId()),
                                              eve::event::Variant::makeInt(b->getId())};
     ev->push(new eve::event::Message("endcontact", args));
+}
+
+void World::onPreSolve(b2Contact *contact, const b2Manifold * /*oldManifold*/) {
+    if (!contact || !world_) return;
+    b2WorldManifold manifold;
+    contact->GetWorldManifold(&manifold);
+    const b2Manifold *local = contact->GetManifold();
+    if (!local || local->pointCount <= 0) return;
+
+    b2Body *a = contact->GetFixtureA()->GetBody();
+    b2Body *b = contact->GetFixtureB()->GetBody();
+    if (!a || !b) return;
+    const b2Vec2 point = manifold.points[0];
+    const b2Vec2 va = a->GetLinearVelocityFromWorldPoint(point);
+    const b2Vec2 vb = b->GetLinearVelocityFromWorldPoint(point);
+
+    PreSolveData data;
+    data.pointX = toPixels(point.x);
+    data.pointY = toPixels(point.y);
+    data.normalX = manifold.normal.x;
+    data.normalY = manifold.normal.y;
+    data.relativeNormalSpeed = toPixels(std::max(0.f, b2Dot(va - vb, manifold.normal)));
+    preSolve_[contact] = data;
+}
+
+void World::onPostSolve(b2Contact *contact, const b2ContactImpulse *impulse) {
+    if (!contact || !impulse) return;
+    auto found = preSolve_.find(contact);
+    if (found == preSolve_.end()) return;
+
+    ImpactEvent out;
+    static_cast<ContactEvent &>(out) = contactEventFrom(contact);
+    out.pointX = found->second.pointX;
+    out.pointY = found->second.pointY;
+    out.normalX = found->second.normalX;
+    out.normalY = found->second.normalY;
+    out.relativeNormalSpeed = found->second.relativeNormalSpeed;
+    const int count = contact->GetManifold() ? contact->GetManifold()->pointCount : 0;
+    for (int i = 0; i < count; ++i) {
+        out.normalImpulse += toPixels(impulse->normalImpulses[i]);
+        out.tangentImpulse += toPixels(std::fabs(impulse->tangentImpulses[i]));
+    }
+    if (out.normalImpulse > 0.f) impacts_.push_back(std::move(out));
+}
+
+namespace {
+template <typename Event>
+const Event *eventAt(const std::vector<Event> &events, int index) {
+    return index >= 0 && index < int(events.size()) ? &events[size_t(index)] : nullptr;
+}
+}  // namespace
+
+int World::getBeginContactBodyAId(int index) const {
+    auto *e = eventAt(beginContacts_, index); return e ? e->bodyAId : 0;
+}
+int World::getBeginContactBodyBId(int index) const {
+    auto *e = eventAt(beginContacts_, index); return e ? e->bodyBId : 0;
+}
+std::string World::getBeginContactFixtureATag(int index) const {
+    auto *e = eventAt(beginContacts_, index); return e ? e->fixtureATag : std::string();
+}
+std::string World::getBeginContactFixtureBTag(int index) const {
+    auto *e = eventAt(beginContacts_, index); return e ? e->fixtureBTag : std::string();
+}
+int World::getEndContactBodyAId(int index) const {
+    auto *e = eventAt(endContacts_, index); return e ? e->bodyAId : 0;
+}
+int World::getEndContactBodyBId(int index) const {
+    auto *e = eventAt(endContacts_, index); return e ? e->bodyBId : 0;
+}
+std::string World::getEndContactFixtureATag(int index) const {
+    auto *e = eventAt(endContacts_, index); return e ? e->fixtureATag : std::string();
+}
+std::string World::getEndContactFixtureBTag(int index) const {
+    auto *e = eventAt(endContacts_, index); return e ? e->fixtureBTag : std::string();
+}
+int World::getImpactBodyAId(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->bodyAId : 0;
+}
+int World::getImpactBodyBId(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->bodyBId : 0;
+}
+std::string World::getImpactFixtureATag(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->fixtureATag : std::string();
+}
+std::string World::getImpactFixtureBTag(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->fixtureBTag : std::string();
+}
+float World::getImpactPointX(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->pointX : 0.f;
+}
+float World::getImpactPointY(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->pointY : 0.f;
+}
+float World::getImpactNormalX(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->normalX : 0.f;
+}
+float World::getImpactNormalY(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->normalY : 0.f;
+}
+float World::getImpactRelativeNormalSpeed(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->relativeNormalSpeed : 0.f;
+}
+float World::getImpactNormalImpulse(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->normalImpulse : 0.f;
+}
+float World::getImpactTangentImpulse(int index) const {
+    auto *e = eventAt(impacts_, index); return e ? e->tangentImpulse : 0.f;
+}
+
+void World::clearContactEvents() {
+    beginContacts_.clear();
+    endContacts_.clear();
+    impacts_.clear();
+    preSolve_.clear();
 }
 
 void World::drawDebug(graphics::Graphics *gfx) {

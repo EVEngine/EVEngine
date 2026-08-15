@@ -120,6 +120,23 @@ float Body::getLinearVelocityY() const {
     return world_->toPixels(body_->GetLinearVelocity().y);
 }
 
+float Body::getLinearSpeed() const {
+    if (!body_ || !world_) return 0.f;
+    return world_->toPixels(body_->GetLinearVelocity().Length());
+}
+
+float Body::getMass() const { return body_ ? body_->GetMass() : 0.f; }
+
+float Body::getWorldCenterX() const {
+    if (!body_ || !world_) return 0.f;
+    return world_->toPixels(body_->GetWorldCenter().x);
+}
+
+float Body::getWorldCenterY() const {
+    if (!body_ || !world_) return 0.f;
+    return world_->toPixels(body_->GetWorldCenter().y);
+}
+
 void Body::setAngularVelocity(float omega) {
     if (!body_) return;
     body_->SetAngularVelocity(omega);
@@ -193,12 +210,18 @@ bool Body::isAwake() const { return body_ ? body_->IsAwake() : false; }
 
 Fixture *Body::newRectangleFixture(float width, float height, float density, float friction,
                                    float restitution) {
+    return newRectangleFixtureAt(width, height, 0.f, 0.f, density, friction, restitution);
+}
+
+Fixture *Body::newRectangleFixtureAt(float width, float height, float offsetX, float offsetY,
+                                     float density, float friction, float restitution) {
     if (!body_ || !world_) throw eve::Exception("Body.newRectangleFixture: body destroyed");
     if (width <= 0.f || height <= 0.f)
         throw eve::Exception("Body.newRectangleFixture: width/height must be > 0");
 
     b2PolygonShape shape;
-    shape.SetAsBox(world_->toMeters(width) * 0.5f, world_->toMeters(height) * 0.5f);
+    shape.SetAsBox(world_->toMeters(width) * 0.5f, world_->toMeters(height) * 0.5f,
+                   b2Vec2(world_->toMeters(offsetX), world_->toMeters(offsetY)), 0.f);
 
     b2FixtureDef def;
     def.shape       = &shape;
