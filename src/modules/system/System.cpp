@@ -4,7 +4,9 @@
 #include "common/Module.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
+#ifndef EVENGINE_WEBGPU
 #include "graphics/vulkan/Graphics.h"
+#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -32,17 +34,21 @@
 namespace eve::system {
 namespace {
 
+#ifndef EVENGINE_WEBGPU
 eve::graphics::vulkan::Graphics *vulkanGraphicsOrNull() {
     auto *base = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!base) return nullptr;
     return dynamic_cast<eve::graphics::vulkan::Graphics *>(base);
 }
+#endif
 
+#ifndef EVENGINE_WEBGPU
 bool gpuReady(eve::graphics::vulkan::Graphics *gfx) {
     if (!gfx) return false;
     vk::PhysicalDevice pd = gfx->getDevice().physical_device;
     return static_cast<VkPhysicalDevice>(pd) != VK_NULL_HANDLE;
 }
+#endif
 
 std::string vendorNameFromId(uint32_t vendorID) {
     switch (vendorID) {
@@ -61,6 +67,7 @@ std::string vendorNameFromId(uint32_t vendorID) {
     }
 }
 
+#ifndef EVENGINE_WEBGPU
 const char *deviceTypeName(vk::PhysicalDeviceType t) {
     switch (t) {
         case vk::PhysicalDeviceType::eDiscreteGpu: return "discrete";
@@ -70,6 +77,7 @@ const char *deviceTypeName(vk::PhysicalDeviceType t) {
         default: return "other";
     }
 }
+#endif
 
 }  // namespace
 
@@ -200,24 +208,39 @@ void System::setClipboardText(const std::string &text) {
 }
 
 std::string System::getGpuName() const {
+#ifdef EVENGINE_WEBGPU
+    return {};
+#else
     auto *gfx = vulkanGraphicsOrNull();
     if (!gpuReady(gfx)) return {};
     return gfx->getDevice().physical_device.properties.deviceName.data();
+#endif
 }
 
 std::string System::getGpuVendor() const {
+#ifdef EVENGINE_WEBGPU
+    return {};
+#else
     auto *gfx = vulkanGraphicsOrNull();
     if (!gpuReady(gfx)) return {};
     return vendorNameFromId(gfx->getDevice().physical_device.properties.vendorID);
+#endif
 }
 
 std::string System::getGpuDeviceType() const {
+#ifdef EVENGINE_WEBGPU
+    return "webgpu";
+#else
     auto *gfx = vulkanGraphicsOrNull();
     if (!gpuReady(gfx)) return {};
     return deviceTypeName(gfx->getDevice().physical_device.properties.deviceType);
+#endif
 }
 
 int System::getGpuMemoryTotalMB() const {
+#ifdef EVENGINE_WEBGPU
+    return 0;
+#else
     auto *gfx = vulkanGraphicsOrNull();
     if (!gpuReady(gfx)) return 0;
     const auto &mem = gfx->getDevice().physical_device.memory_properties;
@@ -227,6 +250,7 @@ int System::getGpuMemoryTotalMB() const {
             bytes += mem.memoryHeaps[i].size;
     }
     return static_cast<int>(bytes / (1024ull * 1024ull));
+#endif
 }
 
 void System::expose(ssq::Table &table) {

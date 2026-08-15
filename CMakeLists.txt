@@ -7,8 +7,8 @@ set(EVENGINE_PATCH_VERSION "0")
 
 option(BUILD_TESTING "enable testing" ON)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
-set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
-    "Read-only prebuilt third-party install (contains include/, lib/, bin/); skips ExternalProject")
+set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
+    "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
@@ -26,6 +26,7 @@ include(CTest)
 function(main)
     get_available_build()
     load_third_party()
+    load_webgpu_backend()
     set_include()
     check_ipo()
     set(CMAKE_CXX_STANDARD 20)
@@ -64,6 +65,53 @@ function(main)
         set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
         message(STATUS "iOS build: unit tests disabled")
     endif()
+    # WebGPU (browser WASM + native Dawn): unit tests are disabled by default —
+    # most tests link Vulkan-only helpers. Native Dawn builds can opt back in
+    # with -DBUILD_TESTING=ON once the test tree is backend-neutral.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+        message(STATUS "Emscripten/webgpu build: unit tests disabled")
+        # Emdawnwebgpu port: provides <webgpu/webgpu.h> + <webgpu/webgpu_cpp.h>
+        # and the browser WebGPU JS glue. Directory-scope so every module target
+        # (EVGraphics, EVUI, EVGpgpu, eve_imgui, ...) gets it at compile + link.
+        add_compile_options(--use-port=emdawnwebgpu)
+        add_link_options(--use-port=emdawnwebgpu)
+        # SDL2 and zlib come from Emscripten ports (vendored trees are skipped
+        # by third-party/CMakeLists.txt on Emscripten). -sUSE_SDL=2 must also be
+        # a compile flag so TUs that include <SDL.h> (imgui_impl_sdl, window,
+        # event, mouse, keyboard, ...) resolve the port headers.
+        add_compile_options(-sUSE_SDL=2 -sUSE_ZLIB)
+        add_link_options(-sUSE_SDL=2 -sUSE_ZLIB)
+        # PROXY_TO_PTHREAD turns on shared memory; every TU must be compiled
+        # with atomics/bulk-memory or wasm-ld rejects the final link.
+        add_compile_options(-matomics -mbulk-memory)
+        # Trimmed third-party / module set for the WASM runtime.
+        set(EVENGINE_WEBGPU_TRIM TRUE CACHE BOOL "Trimmed dependency/module set for Emscripten" FORCE)
+        # Emscripten 6.x vendors a fork of CheckTypeSize.cmake that is
+        # incompatible with CMake >= 4.2 (mpg123/physfs/... try_compile fail
+        # with "/CheckTypeSize.c.in does not exist"). Force a CMake 3.29.x for
+        # Emscripten builds: it must be on PATH (or pip-installed) so that both
+        # this configure and the ExternalProject sub-builds use it.
+        find_program(EVENGINE_WEB_CMAKE NAMES cmake
+            PATHS "$ENV{APPDATA}/Python/Python314/Scripts"
+            "$ENV{APPDATA}/Python/Python311/Scripts"
+            "$ENV{USERPROFILE}/.local/bin")
+        if(EVENGINE_WEB_CMAKE)
+            execute_process(COMMAND "${EVENGINE_WEB_CMAKE}" --version
+                OUTPUT_VARIABLE _eve_cmake_ver OUTPUT_STRIP_TRAILING_WHITESPACE)
+            if(_eve_cmake_ver MATCHES "cmake version 3\.2[0-9]\.")
+                message(STATUS "Emscripten build: using CMake ${_eve_cmake_ver} from ${EVENGINE_WEB_CMAKE}")
+                set(CMAKE_COMMAND "${EVENGINE_WEB_CMAKE}" CACHE INTERNAL "CMake executable (forced 3.29 for Emscripten)")
+            else()
+                message(WARNING "Emscripten build needs CMake 3.29.x (found: ${_eve_cmake_ver}). "
+                    "Install with: python -m pip install cmake==3.29.6")
+            endif()
+        else()
+            message(WARNING "Emscripten build needs CMake 3.29.x on PATH (pip: python -m pip install cmake==3.29.6)")
+        endif()
+    elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
+        message(STATUS "webgpu (native Dawn) build: unit tests enabled")
+    endif()
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).
@@ -96,6 +144,8 @@ macro(create_module libname folder)
     execute_process(COMMAND ${CMAKE_COMMAND}
         -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
         -Dmodule_name=${folder}
+        -Dexclude_dirs=${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}
+        "-Dexclude_files=${EVENGINE_EXCLUDED_MODULE_FILES}"
         -P ${CMAKE_SOURCE_DIR}/cmake/scan_source.cmake
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -116,7 +166,10 @@ macro(create_module libname folder)
         COMMAND ${CMAKE_COMMAND} 
         -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
         -Dbuild_dir=${CMAKE_BINARY_DIR}
-        -Dmodule_name=${folder} -P ${CMAKE_SOURCE_DIR}/cmake/rescan_source.cmake
+        -Dmodule_name=${folder}
+        -Dexclude_dirs=${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}
+        "-Dexclude_files=${EVENGINE_EXCLUDED_MODULE_FILES}"
+        -P ${CMAKE_SOURCE_DIR}/cmake/rescan_source.cmake
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
     
@@ -138,6 +191,11 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
+        # medialoader public headers (image/pixelformat.h etc.) — needed by
+        # ImageData.h; the vendored tree is present even when the library is
+        # not linked (Emscripten trim).
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
         # Dungeon Template Library (header-only)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/DungeonTemplateLibrary/include
     )
@@ -146,6 +204,15 @@ function(set_include)
     # On Apple desktop, MoltenVK from the LunarG Vulkan SDK is required.
     # On iOS, link/embed the SDK's MoltenVK.xcframework (iphoneos arm64 slice).
     # On Android, link the NDK loader (libvulkan.so).
+    #
+    # WebGPU builds (browser WASM or native Dawn) use webgpu.h and do not touch
+    # the Vulkan SDK at all; the Vulkan backend directories are excluded by the
+    # source scanner, so this probe would only ever FATAL_ERROR a valid build.
+    if(EVENGINE_WEBGPU)
+        message(STATUS "WebGPU build: skipping Vulkan SDK probe")
+        set(EVENGINE_VULKAN_LIB "" CACHE INTERNAL "Vulkan link target (unused on webgpu)")
+        return()
+    endif()
     #
     # Windows: installer sets Machine-level VULKAN_SDK, but long-lived IDEs (Cursor)
     # often still lack it in the process env. Probe C:/VulkanSDK/* when unset.
@@ -273,8 +340,13 @@ endfunction()
 macro(get_available_build)
     set(AVAILABLE_PLATFORM "")
 
+    # Cross-compiling for Emscripten (web/WASM, browser WebGPU) must win over host detection.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        list(APPEND AVAILABLE_PLATFORM "webgpu")
+        set(BUILD_PLATFORM "webgpu" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
+        SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
     # Cross-compiling for Android (NDK toolchain) must win over host Apple/Linux detection.
-    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+    elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND AVAILABLE_PLATFORM "android")
         set(BUILD_PLATFORM "android" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
         SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
@@ -287,11 +359,13 @@ macro(get_available_build)
             list(APPEND AVAILABLE_PLATFORM "macosx")
             list(APPEND AVAILABLE_PLATFORM "ios")
             list(APPEND AVAILABLE_PLATFORM "android")
+            list(APPEND AVAILABLE_PLATFORM "webgpu")
             set(BUILD_PLATFORM "macosx" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
             SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
         else() # Linux
             list(APPEND AVAILABLE_PLATFORM "linux")
             list(APPEND AVAILABLE_PLATFORM "android")
+            list(APPEND AVAILABLE_PLATFORM "webgpu")
             set(BUILD_PLATFORM "linux" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
             SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
         endif()
@@ -299,6 +373,7 @@ macro(get_available_build)
         if(WIN32)
             list(APPEND AVAILABLE_PLATFORM "win32")
             list(APPEND AVAILABLE_PLATFORM "android")
+            list(APPEND AVAILABLE_PLATFORM "webgpu")
             set(BUILD_PLATFORM "win32" CACHE STRING "The build platfrom (${AVAILABLE_PLATFORM})")
             MESSAGE("Build Platform:  ${BUILD_PLATFORM}")
             SET_PROPERTY(CACHE BUILD_PLATFORM PROPERTY STRINGS ${AVAILABLE_PLATFORM})
@@ -309,7 +384,7 @@ macro(get_available_build)
     # when switching BUILD_PLATFORM in the same build tree.
     foreach(_eve_plat_var IN ITEMS
             EVENGINE_WINDOWS EVENGINE_MACOSX EVENGINE_LINUX
-            EVENGINE_ANDROID EVENGINE_IOS)
+            EVENGINE_ANDROID EVENGINE_IOS EVENGINE_WEBGPU)
         unset(${_eve_plat_var} CACHE)
         unset(${_eve_plat_var})
     endforeach()
@@ -328,6 +403,30 @@ macro(get_available_build)
     set_platform_var(linux EVENGINE_LINUX)
     set_platform_var(android EVENGINE_ANDROID)
     set_platform_var(ios EVENGINE_IOS)
+    set_platform_var(webgpu EVENGINE_WEBGPU)
+
+    # Backend directories compiled out of the active build. Native backends
+    # (graphics/vulkan, gpgpu/vulkan) are excluded from a webgpu build; the
+    # webgpu backend is excluded from every other platform. ui/imgui stays in
+    # the scan — ImGuiBackend.cpp is the EVUI implementation and gains a
+    # webgpu branch instead.
+    if(BUILD_PLATFORM STREQUAL "webgpu")
+        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "vulkan" CACHE INTERNAL "Backend subdirs excluded from webgpu builds")
+    else()
+        set(EVENGINE_EXCLUDED_BACKEND_SUBDIRS "webgpu" CACHE INTERNAL "Backend subdirs excluded from native builds")
+    endif()
+
+    # Poco-heavy sources trimmed from the WASM (Emscripten) build. The data
+    # module keeps ByteData (needed by gpgpu/webgpu) but drops the JSON/XML/
+    # DataModule files that require Poco. graphics/Font.cpp needs the EVFont
+    # module (FreeType/Poco, skipped on WASM), so it is trimmed as well.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        set(EVENGINE_EXCLUDED_MODULE_FILES
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;Font.cpp"
+            CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten")
+    else()
+        set(EVENGINE_EXCLUDED_MODULE_FILES "" CACHE INTERNAL "Exact basenames excluded from module source scan")
+    endif()
 
     message("Availabe: ${AVAILABLE_PLATFORM}")
 
@@ -422,6 +521,29 @@ endfunction()
 function(check_third_party_project name repo)
     include(ExternalProject)
 
+    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+        get_filename_component(_eve_tp_binary "${EVENGINE_THIRD_PARTY_BINARY_DIR}" ABSOLUTE)
+        if(NOT IS_DIRECTORY "${_eve_tp_binary}/include" OR
+           NOT IS_DIRECTORY "${_eve_tp_binary}/lib")
+            message(FATAL_ERROR
+                "EVENGINE_THIRD_PARTY_BINARY_DIR must contain include/ and lib/: "
+                "${_eve_tp_binary}")
+        endif()
+        add_custom_target(${name})
+        include_directories("${_eve_tp_binary}/include")
+        # SDL2 and FreeType install their public headers one level below include/.
+        # Their sources use <SDL.h> and <ft2build.h>, so expose those roots too.
+        if(IS_DIRECTORY "${_eve_tp_binary}/include/SDL2")
+            include_directories("${_eve_tp_binary}/include/SDL2")
+        endif()
+        if(IS_DIRECTORY "${_eve_tp_binary}/include/freetype2")
+            include_directories("${_eve_tp_binary}/include/freetype2")
+        endif()
+        link_directories("${_eve_tp_binary}/lib")
+        message(STATUS "third-party: using read-only prebuilt tree ${_eve_tp_binary}")
+        return()
+    endif()
+
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${name}/CMakeLists.txt)
         # This is a git clone version
         message("load ${name} folder from git")
@@ -483,6 +605,17 @@ function(check_third_party_project name repo)
         # Force Ninja for deps: parent Xcode generator makes SDL try_compile unbearably slow.
         set(_eve_tp_use_ninja TRUE)
         message(STATUS "third-party iOS toolchain: ARCH=${CMAKE_OSX_ARCHITECTURES} DEPLOY=${CMAKE_OSX_DEPLOYMENT_TARGET} GEN=Ninja FILE=${_eve_ios_tp_toolchain}")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        # Third-party aggregates for the browser build use emcmake so they pick
+        # up the emcc toolchain; Ninja keeps the many try_compile probes fast.
+        find_program(_eve_ninja ninja REQUIRED)
+        list(APPEND _eve_tp_cmake_args
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DCMAKE_SYSTEM_NAME=Emscripten
+            -DCMAKE_MAKE_PROGRAM=${_eve_ninja}
+        )
+        set(_eve_tp_use_ninja TRUE)
+        message(STATUS "third-party Emscripten toolchain: ${CMAKE_TOOLCHAIN_FILE}")
     endif()
 
     # --config is required for multi-config generators (VS); ignored by Ninja.
@@ -552,16 +685,66 @@ function(load_third_party)
     # EVEngine's database module uses POCO Data and its bundled SQLite connector.
     # The third-party aggregate disables these by default to reduce its footprint;
     # enable the two targets in the checked-out aggregate before configuring it.
-    set(_eve_tp_cmake "${CMAKE_CURRENT_SOURCE_DIR}/third-party/CMakeLists.txt")
-    file(READ "${_eve_tp_cmake}" _eve_tp_contents)
-    string(REPLACE "set(ENABLE_DATA OFF CACHE BOOL \"\" FORCE)"
-                   "set(ENABLE_DATA ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
-    string(REPLACE "set(ENABLE_DATA_SQLITE OFF CACHE BOOL \"\" FORCE)"
-                   "set(ENABLE_DATA_SQLITE ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
-    file(WRITE "${_eve_tp_cmake}" "${_eve_tp_contents}")
+    if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
+        set(_eve_tp_cmake "${CMAKE_CURRENT_SOURCE_DIR}/third-party/CMakeLists.txt")
+        file(READ "${_eve_tp_cmake}" _eve_tp_contents)
+        string(REPLACE "set(ENABLE_DATA OFF CACHE BOOL \"\" FORCE)"
+                       "set(ENABLE_DATA ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
+        string(REPLACE "set(ENABLE_DATA_SQLITE OFF CACHE BOOL \"\" FORCE)"
+                       "set(ENABLE_DATA_SQLITE ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
+        file(WRITE "${_eve_tp_cmake}" "${_eve_tp_contents}")
+    endif()
     check_third_party_project(third-party "https://github.com/EVEngine/third-party")
 
     ADD_CUSTOM_TARGET(deps DEPENDS third-party)
+endfunction()
+
+
+# Resolve the WebGPU headers / library for BUILD_PLATFORM=webgpu.
+#   * Emscripten (browser): webgpu.h / webgpu_cpp.h ship with the emsdk and are
+#     already on emcc's include path; no link target is needed.
+#   * Native desktop: Google Dawn is fetched via FetchContent and linked through
+#     the imported target dawn::dawn (set into EVENGINE_WEBGPU_LIB).
+function(load_webgpu_backend)
+    if(NOT BUILD_PLATFORM STREQUAL "webgpu")
+        set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused)")
+        return()
+    endif()
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        message(STATUS "WebGPU: using emsdk headers (no Dawn build needed)")
+        set(EVENGINE_WEBGPU_LIB "" CACHE INTERNAL "WebGPU link target (unused on Emscripten)")
+        return()
+    endif()
+
+    message(STATUS "WebGPU (native): fetching Google Dawn")
+    include(FetchContent)
+    set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+    set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(DAWN_BUILD_WGPU_TESTS OFF CACHE BOOL "" FORCE)
+    set(DAWN_ENABLE_NULL OFF CACHE BOOL "" FORCE)
+    set(DAWN_ENABLE_D3D11 OFF CACHE BOOL "" FORCE)
+    set(DAWN_ENABLE_OPENGLES OFF CACHE BOOL "" FORCE)
+    set(DAWN_USE_XCODE OFF CACHE BOOL "" FORCE)
+
+    set(EVENGINE_DAWN_TAG "main" CACHE STRING
+        "Dawn commit/tag to fetch for the native WebGPU backend (pin for reproducible builds)")
+    FetchContent_Declare(dawn
+        GIT_REPOSITORY https://github.com/google/dawn.git
+        GIT_TAG ${EVENGINE_DAWN_TAG}
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(dawn)
+
+    if(NOT TARGET dawn::dawn)
+        message(FATAL_ERROR "Dawn fetch did not produce the imported target dawn::dawn")
+    endif()
+    # Dawn's webgpu.h / webgpu_cpp.h live under src/ in the checkout; expose
+    # them to every module target (engine, eve_imgui, gpgpu/webgpu, ...).
+    include_directories("${dawn_SOURCE_DIR}/src")
+    set(EVENGINE_WEBGPU_LIB dawn::dawn CACHE INTERNAL "WebGPU link target")
+    message(STATUS "WebGPU (native): Dawn ready, link target = ${EVENGINE_WEBGPU_LIB}")
 endfunction()
 
 main()
