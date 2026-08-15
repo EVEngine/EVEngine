@@ -1,6 +1,11 @@
 #include "graphics/Graphics.h"
 #include "graphics/HairShader.h"
+#include "common/config.h"
+#ifdef EVENGINE_WEBGPU
+#include "graphics/webgpu/Graphics.h"
+#else
 #include "graphics/vulkan/Graphics.h"
+#endif
 #include "graphics/RenderSystem3D.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/Light.h"
@@ -14,7 +19,9 @@
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Material.h"
 #include "graphics/RenderControl.h"
+#ifndef EVENGINE_WEBGPU
 #include "font/FontData.h"
+#endif
 #include "image/ImageData.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
@@ -27,7 +34,11 @@
 
 namespace eve::graphics {
 
+#ifdef EVENGINE_WEBGPU
+Module_IMPL(Graphics, new eve::graphics::webgpu::Graphics());
+#else
 Module_IMPL(Graphics, new vulkan::Graphics());
+#endif
 
 void Graphics::render3D() {
     eve::debug::rtFrameBegin();
@@ -578,6 +589,7 @@ void Graphics::setTextureSamplerParams(Texture *texture, const std::string &filt
 
 Quad *Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
 
+#ifndef EVENGINE_WEBGPU
 Font *Graphics::newFont(font::FontData *data, std::string charset) {
     return new Font(this, data, std::move(charset));
 }
@@ -619,5 +631,6 @@ void Graphics::print(const std::string &text, float x, float y, const Color &col
         prevCodepoint = code;
     }
 }
+#endif  // !EVENGINE_WEBGPU
 
 }  // namespace eve::graphics

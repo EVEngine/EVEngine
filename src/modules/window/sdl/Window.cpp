@@ -1,7 +1,9 @@
 #include "Window.h"
 
 #include <SDL2/SDL_syswm.h>
+#ifndef EVENGINE_WEBGPU
 #include <SDL2/SDL_vulkan.h>
+#endif
 
 #include <algorithm>
 #include <cstdio>
@@ -82,7 +84,10 @@ bool Window::setWindowSettings(WindowSettings f) {
         f.height = mode.h;
     }
 
-    Uint32 sdlflags = SDL_WINDOW_VULKAN;
+    Uint32 sdlflags = 0;
+#ifndef EVENGINE_WEBGPU
+    sdlflags = SDL_WINDOW_VULKAN;
+#endif
 
     // On Android, disable fullscreen first on window creation so it's
     // possible to change the orientation by specifying portait width and
@@ -174,7 +179,13 @@ bool Window::setWindowSettings(WindowSettings f) {
 
     if (graphics) {
         int pw = 0, ph = 0;
+#ifdef EVENGINE_WEBGPU
+        // No Vulkan drawable-size helper on WebGPU; the window size is the
+        // canvas size (the browser applies DPI scaling itself).
+        SDL_GetWindowSize(window, &pw, &ph);
+#else
         SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
+#endif
         if (pw <= 0 || ph <= 0) {
             pw = f.width;
             ph = f.height;
@@ -571,7 +582,11 @@ void Window::updateSettings(const WindowSettings &newsettings, bool updateGraphi
     settings = newsettings;
     if (window) {
         SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+#ifdef EVENGINE_WEBGPU
+        SDL_GetWindowSize(window, &pixelWidth, &pixelHeight);
+#else
         SDL_Vulkan_GetDrawableSize(window, &pixelWidth, &pixelHeight);
+#endif
     }
     if (updateGraphicsViewport && graphics && window) {
         graphics->setViewportSize(windowWidth, windowHeight, pixelWidth, pixelHeight);

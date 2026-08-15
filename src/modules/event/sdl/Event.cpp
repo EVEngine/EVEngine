@@ -5,7 +5,9 @@
 #include "graphics/Graphics.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
+#ifndef EVENGINE_WEBGPU
 #include "audio/Audio.h"
+#endif
 #include "touch/Touch.h"
 #include "touch/sdl/Touch.h"
 #include "keyboard/Keyboard.h"
@@ -141,8 +143,10 @@ void Event::pump()
 		// Ownership stays in the queue until poll()/clear() — do not delete here.
 	}
 
+#ifndef EVENGINE_WEBGPU
 	if (auto *audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio"))
 		audio->pump();
+#endif
 }
 
 Message *Event::wait()

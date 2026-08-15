@@ -1,15 +1,21 @@
 #include "ui/imgui/ImGuiBackend.h"
+#include "ui/Theme.h"
 
 #include "common/Exception.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
-#include "graphics/vulkan/Graphics.h"
-#include "ui/Theme.h"
-#include "vkbuilder.hpp"
 
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
+
+#ifdef EVENGINE_WEBGPU
+#include "graphics/webgpu/Graphics.h"
+#include "imgui_impl_wgpu.h"
+#else
+#include "graphics/vulkan/Graphics.h"
 #include <imgui_impl_vulkan.h>
+#include <vulkan/vulkan.h>
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -17,16 +23,17 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-#include <vulkan/vulkan.h>
 
 
 namespace eve::ui {
 namespace {
 
+#ifndef EVENGINE_WEBGPU
 void checkVk(VkResult err) {
     if (err == 0) return;
     throw eve::Exception("ImGui Vulkan error: VkResult = %d", int(err));
 }
+#endif
 
 /** Base glyph size in logical px (before the DPI scale is applied). */
 constexpr float kBaseFontSizePx = 16.f;
@@ -90,21 +97,28 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     if (initialized_) return true;
     if (!window || !gfx) return false;
 
-    auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
-    if (!vkg) return false;
-    if (!vkg->getSwapchainRenderPass()) return false;
-
     gfx_ = gfx;
     window_ = window;
     uiScale_ = computeInitialScale();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    // Start from unified theme tokens (not a one-off ImGui palette).
     setThemeUiScale(uiScale_);
     applyThemeToImGui(globalTheme(), uiScale_);
 
     ImGui_ImplSDL2_InitForVulkan(window);
+
+#ifdef EVENGINE_WEBGPU
+    auto *wgg = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
+    if (!wgg) return false;
+    ImGui_ImplWGPU_Init(wgg->getDevice().Get(), 2, wgg->getSurfaceFormat());
+    loadFonts();
+    ImGui_ImplWGPU_CreateFontsTexture();
+    fontsUploaded_ = true;
+#else
+    auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    if (!vkg) return false;
+    if (!vkg->getSwapchainRenderPass()) return false;
 
     auto &device = vkg->getDevice();
     VkDescriptorPoolSize poolSizes[] = {
@@ -134,8 +148,6 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     uint32_t imageCount = vkg->getSwapchainImageCount();
     if (imageCount < 2) imageCount = 2;
 
-    // The UI MSAA render pass must exist (and stay stable) before ImGui builds
-    // its pipeline against it; the sample count must match that render pass.
     vkg->ensureUiColorResources();
 
     ImGui_ImplVulkan_InitInfo initInfo{};
@@ -163,6 +175,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
                             });
     ImGui_ImplVulkan_DestroyFontUploadObjects();
     fontsUploaded_ = true;
+#endif
 
     gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
 
@@ -179,18 +192,22 @@ void ImGuiBackend::shutdown() {
     if (gfx_) {
         if (gfx_->getPresentOverlayUser() == this) gfx_->setPresentOverlay(nullptr, nullptr);
     }
+#ifdef EVENGINE_WEBGPU
+    ImGui_ImplWGPU_Shutdown();
+#else
     auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx_);
     if (vkg) {
         vkDeviceWaitIdle(static_cast<VkDevice>(vkg->getDevice().instance));
     }
     ImGui_ImplVulkan_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
     if (imguiDescriptorPool_ && vkg) {
         vkDestroyDescriptorPool(static_cast<VkDevice>(vkg->getDevice().instance),
                                 static_cast<VkDescriptorPool>(imguiDescriptorPool_), nullptr);
         imguiDescriptorPool_ = nullptr;
     }
+#endif
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
     gfx_ = nullptr;
     window_ = nullptr;
     fontsUploaded_ = false;
@@ -204,13 +221,15 @@ void ImGuiBackend::processEvent(const SDL_Event *event) {
 
 void ImGuiBackend::newFrame() {
     if (!initialized_ || !window_) return;
-    // present() may soft-skip on Android while the surface settles after
-    // orientation change; close the previous ImGui frame so NewFrame is safe.
     if (frameOpen_) {
         ImGui::EndFrame();
         frameOpen_ = false;
     }
+#ifdef EVENGINE_WEBGPU
+    ImGui_ImplWGPU_NewFrame();
+#else
     ImGui_ImplVulkan_NewFrame();
+#endif
     ImGui_ImplSDL2_NewFrame(window_);
     ImGui::NewFrame();
     frameOpen_ = true;
@@ -222,11 +241,7 @@ void ImGuiBackend::applyScale(float scale) {
     const bool changed = scale != uiScale_;
     uiScale_ = scale;
     setThemeUiScale(scale);
-    // Re-apply design tokens so geometry stays in sync with theme + DPI.
     applyThemeToImGui(globalTheme(), scale);
-    // The font atlas is rasterized at physical-pixel size, so a scale change
-    // must re-rasterize it rather than rely on FontGlobalScale (which would
-    // blur the glyphs again).
     if (changed) rebuildFonts();
 }
 
@@ -237,17 +252,19 @@ void ImGuiBackend::setScale(float scale) {
 
 float ImGuiBackend::computeInitialScale() const {
 #if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
-    // Readable size on phone/tablet (mdpi = 160).
     float ddpi = 160.f;
     if (SDL_GetDisplayDPI(0, &ddpi, nullptr, nullptr) != 0 || ddpi < 1.f) ddpi = 320.f;
     float s = ddpi / 160.f;
     return std::clamp(s, 1.75f, 3.25f);
 #else
-    // Desktop: match the native window DPI scale (drawable / logical size).
-    // Requires SDL_WINDOW_ALLOW_HIGHDPI to report a scale > 1 on HiDPI displays.
     int logicalW = 0, logicalH = 0, pixelW = 0, pixelH = 0;
     SDL_GetWindowSize(window_, &logicalW, &logicalH);
+#ifdef EVENGINE_WEBGPU
+    // No GL context on WebGPU; drawable size == window size for the canvas.
+    SDL_GetWindowSize(window_, &pixelW, &pixelH);
+#else
     SDL_GL_GetDrawableSize(window_, &pixelW, &pixelH);
+#endif
     if (logicalW > 0 && pixelW > 0) {
         float s = float(pixelW) / float(logicalW);
         if (s > 0.f) return std::clamp(s, 1.f, 4.f);
@@ -261,7 +278,6 @@ void ImGuiBackend::loadFonts() {
     ImFontAtlas *atlas = io.Fonts;
     if (!atlas) return;
 
-    // Base glyph size in logical px at uiScale=1; physical size = base * uiScale.
     const float sizePx = kBaseFontSizePx * uiScale_;
 
     ImFontConfig cfg{};
@@ -278,8 +294,6 @@ void ImGuiBackend::loadFonts() {
     }
     if (!added) atlas->AddFontDefault(&cfg);
 
-    // Best-effort icon-font merge (FontAwesome, private-use glyphs). Missing
-    // file is silently ignored so the default glyphs above still render.
     ImFontConfig iconCfg{};
     iconCfg.OversampleH = 2;
     iconCfg.OversampleV = 2;
@@ -293,6 +307,12 @@ void ImGuiBackend::loadFonts() {
 }
 
 void ImGuiBackend::rebuildFonts() {
+#ifdef EVENGINE_WEBGPU
+    loadFonts();
+    ImGui_ImplWGPU_InvalidateDeviceObjects();
+    ImGui_ImplWGPU_CreateFontsTexture();
+    fontsUploaded_ = true;
+#else
     auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx_);
     if (!vkg) return;
     loadFonts();
@@ -306,6 +326,7 @@ void ImGuiBackend::rebuildFonts() {
                             });
     ImGui_ImplVulkan_DestroyFontUploadObjects();
     fontsUploaded_ = true;
+#endif
 }
 
 bool ImGuiBackend::wantCaptureMouse() const {
@@ -318,12 +339,17 @@ bool ImGuiBackend::wantCaptureKeyboard() const {
     return ImGui::GetIO().WantCaptureKeyboard;
 }
 
-void ImGuiBackend::renderDrawData(void *vkCommandBuffer) {
-    if (!initialized_ || !vkCommandBuffer) return;
+void ImGuiBackend::renderDrawData(void *commandBuffer) {
+    if (!initialized_ || !commandBuffer) return;
     ImGui::Render();
     frameOpen_ = false;
+#ifdef EVENGINE_WEBGPU
+    WGPURenderPassEncoder enc = *static_cast<WGPURenderPassEncoder *>(commandBuffer);
+    ImGui_ImplWGPU_RenderDrawData(ImGui::GetDrawData(), enc);
+#else
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
-                                    static_cast<VkCommandBuffer>(vkCommandBuffer));
+                                    static_cast<VkCommandBuffer>(commandBuffer));
+#endif
 }
 
 void ImGuiBackend::presentOverlayThunk(void *userdata, void *commandBuffer) {
