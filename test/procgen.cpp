@@ -518,6 +518,152 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     win->close();
 }
 
+TEST_CASE("procgen.mesh.bush.reproducibleAndStyles") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260815u);
+    p.setString("style", "mound");
+    p.setString("leafMode", "mixed");
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", p, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", p, b, err));
+    CHECK(a.getVertexCount() > 0);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK_EQ(a.getMeta("recipe", ""), "mesh.bush");
+    CHECK_EQ(a.getMeta("style", ""), "mound");
+    CHECK_EQ(a.getMeta("leafMode", ""), "mixed");
+
+    // Sphere style produces a different silhouette (rounder, taller lobes).
+    Params sphere = p;
+    sphere.setString("style", "sphere");
+    MeshBuild round;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", sphere, round, err));
+    CHECK(round.getVertexCount() > 0);
+    CHECK(round.positions() != a.positions());
+    CHECK(meshIndicesInRange(round));
+    CHECK(meshNormalsFiniteUnit(round));
+    CHECK_EQ(round.getMeta("style", ""), "sphere");
+
+    // Bare foliage still yields a closed mound (blobs only, no cards/twigs tufts).
+    Params blobsOnly = p;
+    blobsOnly.setString("leafMode", "blobs");
+    blobsOnly.setInt("twigs", 0);
+    MeshBuild mounds;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", blobsOnly, mounds, err));
+    CHECK(mounds.getVertexCount() > 0);
+    CHECK(meshIndicesInRange(mounds));
+    CHECK(meshNormalsFiniteUnit(mounds));
+
+    // "none" drops cards but keeps the blobs; fewer vertices than the mixed default.
+    Params bare = p;
+    bare.setString("leafMode", "none");
+    bare.setInt("twigs", 0);
+    MeshBuild noCards;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", bare, noCards, err));
+    CHECK(noCards.getVertexCount() > 0);
+    CHECK(noCards.getVertexCount() < a.getVertexCount());
+    CHECK(meshNormalsFiniteUnit(noCards));
+
+    // Lower resolution should be cheaper than the default.
+    Params lod = p;
+    lod.setInt("rings", 2);
+    lod.setInt("radialSegments", 5);
+    lod.setInt("blobs", 5);
+    MeshBuild cheap;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", lod, cheap, err));
+    CHECK(cheap.getVertexCount() < a.getVertexCount());
+    CHECK(meshIndicesInRange(cheap));
+    CHECK(meshNormalsFiniteUnit(cheap));
+}
+
+TEST_CASE("procgen.mesh.bush.validatesOptions") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setString("style", "bonsai");
+    MeshBuild mesh;
+    std::string err;
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, err));
+    CHECK(err.find("style") != std::string::npos);
+    p.setString("style", "mound");
+    p.setString("leafMode", "marching");
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, err));
+    CHECK(err.find("leafMode") != std::string::npos);
+}
+
+TEST_CASE("procgen.mesh.bush.renderDump") {
+    const char *outputPath = std::getenv("EVENGINE_BUSH_RENDER_PNG");
+    if (!outputPath || !outputPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings ws;
+    ws.width = 900;
+    ws.height = 700;
+    ws.centered = true;
+    REQUIRE(win->setWindowSettings(ws));
+
+    Params params;
+    params.setSeed(20260815u);
+    params.setString("style", "mound");
+    params.setString("leafMode", "mixed");
+    params.setFloat("height", 1.7f);
+    params.setFloat("width", 2.6f);
+    params.setInt("blobs", 12);
+    params.setInt("rings", 3);
+    params.setInt("radialSegments", 8);
+    params.setFloat("leafDensity", 0.8f);
+    params.setFloat("leafSize", 0.32f);
+    params.setInt("twigs", 6);
+
+    Procgen generator;
+    Mesh *bushMesh = generator.generateMesh("mesh.bush", &params, gfx);
+    REQUIRE(bushMesh != nullptr);
+
+    // A tiny two-tone foliage atlas (dark base / light highlight), like the tree test.
+    const uint8_t atlasPixels[] = {
+        52, 86, 40, 255, 84, 132, 60, 255,
+    };
+    Texture *atlas = gfx->newTexture(2, 1, atlasPixels);
+    REQUIRE(atlas != nullptr);
+
+    auto *bush = Renderable3D::create();
+    bush->setMesh(bushMesh);
+    bush->setTexture(atlas);
+    bush->setTint(1.f, 1.f, 1.f, 1.f);
+    bush->setRoughness(0.9f);
+    bush->setRotation(-14.f, 0.f, 0.f);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(5.2f, 3.2f, 5.6f);
+    camera->setTarget(0.f, 0.9f, 0.f);
+    camera->setUp(0.f, 1.f, 0.f);
+    camera->setFov(36.f);
+    camera->setAmbient(0.34f, 0.38f, 0.30f);
+    camera->setActive(true);
+
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(Color(0.075f, 0.105f, 0.095f, 1.f));
+    RenderSystem3D::setDirectionalLight(-0.55f, -1.f, -0.35f, 1.45f, 1.32f, 1.08f);
+
+    for (int frame = 0; frame < 4; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(image.get() != nullptr);
+    REQUIRE(saveImagePng(*image, outputPath));
+    std::printf("bush render saved: %s\n", outputPath);
+    win->close();
+}
+
 TEST_CASE("procgen.dungeon.bsp.reproducible") {
     Params p;
     p.setSeed(42);
