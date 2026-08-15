@@ -1916,3 +1916,197 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
     CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
     CHECK(mod->lastError().find("unknown") != std::string::npos);
 }
+
+// --- Waterfall (graphics): falling water sheet with streaks + top/bottom foam ---
+
+namespace {
+
+struct FallLumaGrid {
+    int grid = 16;
+    std::vector<float> cells;
+};
+
+FallLumaGrid fallCaptureLuma(Graphics *gfx, int grid) {
+    for (int frame = 0; frame < 3; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+    REQUIRE(img.get() != nullptr);
+    const uint8_t *px = static_cast<const uint8_t *>(img->getData());
+    const int w = img->getWidth();
+    const int h = img->getHeight();
+    FallLumaGrid out;
+    out.grid = grid;
+    out.cells.assign(size_t(grid * grid), 0.f);
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            const size_t o = (size_t(y) * w + size_t(x)) * 4u;
+            const float l = 0.2126f * px[o] + 0.7152f * px[o + 1] + 0.0722f * px[o + 2];
+            const int gx = std::min(grid - 1, x * grid / w);
+            const int gy = std::min(grid - 1, y * grid / h);
+            out.cells[size_t(gy * grid + gx)] += l;
+        }
+    }
+    const float scale = 1.f / (float(w / grid) * float(h / grid));
+    for (float &c : out.cells) c *= scale;
+    return out;
+}
+
+float fallDiff(const FallLumaGrid &a, const FallLumaGrid &b) {
+    float sum = 0.f;
+    const int n = a.grid * a.grid;
+    for (int i = 0; i < n; ++i) sum += std::fabs(a.cells[size_t(i)] - b.cells[size_t(i)]);
+    return sum / float(n);
+}
+
+}  // namespace
+
+TEST_CASE("graphics.waterfall.paramsRoundTrip") {
+    auto *gfx = Graphics::create();
+    REQUIRE(gfx != nullptr);
+    Waterfall *wf = gfx->newWaterfall();
+    REQUIRE(wf != nullptr);
+    REQUIRE(wf->getShader() != nullptr);
+
+    wf->setFlowSpeed(2.0f);
+    CHECK(approxEq(wf->getFlowSpeed(), 2.0f, 1e-5f));
+    wf->setTurbulence(0.9f);
+    CHECK(approxEq(wf->getTurbulence(), 0.9f, 1e-5f));
+    wf->setStreakCount(5);
+    CHECK_EQ(wf->getStreakCount(), 5);
+    wf->setStreakScale(7.f);
+    CHECK(approxEq(wf->getStreakScale(), 7.f, 1e-5f));
+    wf->setTopFoam(0.08f);
+    CHECK(approxEq(wf->getTopFoam(), 0.08f, 1e-5f));
+    wf->setBottomFoam(0.15f);
+    CHECK(approxEq(wf->getBottomFoam(), 0.15f, 1e-5f));
+    wf->setFoamAmount(0.9f);
+    CHECK(approxEq(wf->getFoamAmount(), 0.9f, 1e-5f));
+    wf->setWaterColor(0.1f, 0.2f, 0.3f);
+    wf->setReflectionIntensity(0.4f);
+    CHECK(approxEq(wf->getReflectionIntensity(), 0.4f, 1e-5f));
+    wf->setSunIntensity(0.8f);
+    CHECK(approxEq(wf->getSunIntensity(), 0.8f, 1e-5f));
+    wf->bindParams();  // must not throw
+
+    wf->createSheet(10.f, 16.f, 8, 12);
+    REQUIRE(wf->getMesh() != nullptr);
+    CHECK(Waterfall::paramCount() > 0);
+    CHECK(!Waterfall::paramName(0).empty());
+    delete wf;
+}
+
+TEST_CASE("graphics.waterfall.render.fallingFoam") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 256;
+    settings.height = 256;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    // Blue-ish sky cubemap so reflection is visible.
+    eve::image::Image::create();
+    const int fs = 4;
+    const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces × 4×4 × RGBA
+    for (int f = 0; f < 6; ++f)
+        for (int i = 0; i < fs * fs; ++i) {
+            const size_t o = size_t(f) * fs * fs * 4 + size_t(i) * 4;
+            ((uint8_t *)&sky)[o] = 120;
+            ((uint8_t *)&sky)[o + 1] = 160;
+            ((uint8_t *)&sky)[o + 2] = 220;
+            ((uint8_t *)&sky)[o + 3] = 255;
+        }
+    Texture *skyTex = gfx->newCubemap(fs, sky);
+    REQUIRE(skyTex != nullptr);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, 10.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(50.f);
+    camera->setAmbient(0.15f, 0.18f, 0.22f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+    camera->setActive(true);
+
+    gfx->setBackgroundColor(Color(0.02f, 0.03f, 0.05f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.3f, -1.f, 0.2f, 1.1f, 1.0f, 0.9f);
+
+    // Transparent 2D entity drives the normal present path used by render tests.
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    Waterfall *wf = gfx->newWaterfall();
+    REQUIRE(wf != nullptr);
+    wf->createSheet(6.f, 12.f, 16, 24);
+    wf->setTurbulence(0.7f);
+    wf->setFoamAmount(0.9f);
+    wf->setReflectionIntensity(0.7f);
+    wf->setSunIntensity(0.8f);
+
+    auto *fallEnt = Renderable3D::create();
+    fallEnt->setMesh(wf->getMesh());
+    fallEnt->setShader(wf->getShader());
+    fallEnt->setTexture(nullptr);
+    fallEnt->setReceiveShadow(false);
+    fallEnt->setCastShadow(false);
+    fallEnt->setCamera(camera);
+
+    auto captureFall = [&](float time) {
+        wf->setTime(time);
+        wf->bindParams();
+        return fallCaptureLuma(gfx, 16);
+    };
+
+    // Dynamic flow: different times give different patterns (and it renders).
+    const FallLumaGrid t0 = captureFall(0.f);
+    const FallLumaGrid t1 = captureFall(0.35f);
+    const float dynamic = fallDiff(t0, t1);
+    float rendered = 0.f;
+    for (float c : t0.cells) rendered += c;
+    rendered /= float(t0.cells.size());
+    std::printf("waterfall render: dynamic=%.2f rendered=%.2f\n", dynamic, rendered);
+    CHECK(rendered > 1.f);      // water sheet is actually drawn
+    CHECK(dynamic > 0.05f);     // flowing water changes over time
+
+    // Foam on/off: no foam differs from full foam (crests + lip/pool bands).
+    const FallLumaGrid calm = [&] {
+        wf->setFoamAmount(0.f);
+        wf->setTurbulence(0.f);
+        wf->bindParams();
+        wf->setTime(0.6f);
+        return fallCaptureLuma(gfx, 16);
+    }();
+    const FallLumaGrid foamy = [&] {
+        wf->setFoamAmount(0.9f);
+        wf->setTurbulence(0.7f);
+        wf->bindParams();
+        wf->setTime(0.6f);
+        return fallCaptureLuma(gfx, 16);
+    }();
+    const float foamDiff = fallDiff(calm, foamy);
+    std::printf("waterfall render: foamDiff=%.2f\n", foamDiff);
+    CHECK(foamDiff > 0.1f);     // foam + turbulence change the surface
+
+    // Optional PNG dump for visual inspection (EVENGINE_WATERFALL_RENDER_PNG).
+    const char *outputPath = std::getenv("EVENGINE_WATERFALL_RENDER_PNG");
+    if (outputPath && outputPath[0]) {
+        captureFall(0.6f);
+        std::unique_ptr<eve::image::ImageData> snap(gfx->newImageData());
+        REQUIRE(snap.get() != nullptr);
+        REQUIRE(saveImagePng(*snap, outputPath));
+        std::printf("waterfall render saved: %s\n", outputPath);
+    }
+
+    delete wf;
+    win->close();
+}
