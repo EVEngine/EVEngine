@@ -2148,7 +2148,7 @@ static Mesh *makeUnitCube(Graphics *gfx) {
                                   idx.data(), int(idx.size()));
 }
 
-TEST_CASE("graphics.water.render.tiledBlocks") {
+TEST_CASE("graphics.water.render.plane") {
     const char *outputPath = std::getenv("EVENGINE_WATER_RENDER_PNG");
     if (!outputPath || !outputPath[0]) return;
 
@@ -2177,8 +2177,8 @@ TEST_CASE("graphics.water.render.tiledBlocks") {
     REQUIRE(skyTex != nullptr);
 
     auto *camera = Camera3D::createCamera();
-    camera->setEye(5.f, 4.f, 7.f);
-    camera->setTarget(0.f, 0.2f, 0.f);
+    camera->setEye(6.f, 5.f, 8.f);
+    camera->setTarget(0.f, 0.f, 0.f);
     camera->setFov(50.f);
     camera->setAmbient(0.28f, 0.32f, 0.40f);
     camera->setEnvMap(skyTex);
@@ -2195,38 +2195,27 @@ TEST_CASE("graphics.water.render.tiledBlocks") {
     present->sprite()->height = 1.f;
     present->sprite()->a = 0.f;
 
-    // Water shader + params (one shared for every block).
+    // A single flat water plane carrying the water shader.
     Water *water = gfx->newWater();
     REQUIRE(water != nullptr);
+    water->createPlane(14.f, 14.f, 64, 64);
     water->setWaterColor(0.06f, 0.30f, 0.48f);
     water->setWaveAmplitude(0.5f);
     water->setRippleAmplitude(0.9f);
     water->setRippleCount(8);
     water->setRippleInterval(1.4f);
-    water->setWaveScale(16.f);
+    water->setWaveScale(14.f);
     water->setReflectionTint(0.9f, 0.95f, 1.0f);
     water->setReflectionIntensity(1.3f);
     water->setSunIntensity(1.6f);
 
-    // Tile a grid of unit cubes, each carrying the water shader.
-    Mesh *cube = makeUnitCube(gfx);
-    REQUIRE(cube != nullptr);
-    const int N = 8;
-    const float gap = 1.05f;
-    std::vector<Renderable3D *> blocks;
-    for (int z = 0; z < N; ++z) {
-        for (int x = 0; x < N; ++x) {
-            auto *b = Renderable3D::create();
-            b->setMesh(cube);
-            b->setShader(water->getShader());
-            b->setTexture(nullptr);
-            b->setReceiveShadow(false);
-            b->setCastShadow(false);
-            b->setCamera(camera);
-            b->setPosition((x - (N - 1) * 0.5f) * gap, 0.f, (z - (N - 1) * 0.5f) * gap);
-            blocks.push_back(b);
-        }
-    }
+    auto *waterEnt = Renderable3D::create();
+    waterEnt->setMesh(water->getMesh());
+    waterEnt->setShader(water->getShader());
+    waterEnt->setTexture(nullptr);
+    waterEnt->setReceiveShadow(false);
+    waterEnt->setCastShadow(false);
+    waterEnt->setCamera(camera);
 
     // Animate a few seconds so ripples travel, then save a frame.
     for (int frame = 0; frame < 40; ++frame) {
@@ -2238,6 +2227,6 @@ TEST_CASE("graphics.water.render.tiledBlocks") {
     std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
     REQUIRE(image.get() != nullptr);
     REQUIRE(saveImagePng(*image, outputPath));
-    std::printf("water tiled blocks render saved: %s\n", outputPath);
+    std::printf("water plane render saved: %s\n", outputPath);
     win->close();
 }
