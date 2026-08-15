@@ -368,6 +368,76 @@ TEST_CASE("procgen.mesh.tree.validatesOptions") {
     CHECK(err.find("branchAlgorithm") != std::string::npos);
 }
 
+TEST_CASE("procgen.mesh.skyscraper.reproducibleAndControllable") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(2026);
+    p.setFloat("baseWidth", 10.f);
+    p.setFloat("baseDepth", 10.f);
+    p.setInt("tiers", 6);
+    p.setFloat("tierHeight", 6.f);
+    p.setFloat("setback", 0.08f);
+    p.setInt("windowCols", 6);
+    p.setInt("windowRows", 4);
+    p.setFloat("windowDepth", 0.04f);
+    p.setFloat("spireHeight", 4.f);
+    MeshBuild a, b, tapering;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, a, err));
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, b, err));
+    CHECK(a.getVertexCount() > 0);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK_EQ(a.getIndexCount() % 3, 0);
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK_EQ(a.getMeta("algorithm", ""), "mesh.skyscraper");
+    CHECK_EQ(a.getMeta("tiers", ""), "6");
+    CHECK_EQ(a.getMeta("windowCols", ""), "6");
+    CHECK_EQ(a.getMeta("windowRows", ""), "4");
+    // 6 tiers * 4 facades * (1 wall + cols*rows windows) quads = 6*4*(1+24) = 600 quads, plus roof.
+    CHECK_EQ(a.getVertexCount() % 4, 0);
+
+    // More setbacks / smaller footprint must change geometry.
+    p.setFloat("setback", 0.2f);
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, tapering, err));
+    CHECK(a.positions() != tapering.positions());
+
+    // A taller tower should have more vertices (more tiers).
+    Params tall;
+    tall.setInt("tiers", 12);
+    tall.setInt("windowCols", 8);
+    tall.setInt("windowRows", 6);
+    MeshBuild tallMesh;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", tall, tallMesh, err));
+    CHECK(tallMesh.getVertexCount() > a.getVertexCount());
+    CHECK(meshNormalsFiniteUnit(tallMesh));
+}
+
+TEST_CASE("procgen.mesh.skyscraper.heightsAndBounds") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(7);
+    p.setInt("tiers", 4);
+    p.setFloat("tierHeight", 5.f);
+    p.setFloat("spireHeight", 3.f);
+    MeshBuild mesh;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, mesh, err));
+    // Total height: tiers*tierHeight + spire.
+    const float expectedHeight = 4.f * 5.f + 3.f;
+    CHECK_EQ(std::stof(mesh.getMeta("height", "0")), expectedHeight);
+    // Every vertex must sit on or above the ground plane (y >= -epsilon).
+    for (int i = 0; i < mesh.getVertexCount(); ++i) {
+        CHECK(mesh.getPositionY(i) >= -1e-4f);
+    }
+    // Base footprint should be wider than the top tier after setbacks.
+    const float baseW = p.getFloat("baseWidth", 10.f) * 0.5f;
+    const float topW = baseW * (1.f - p.getFloat("setback", 0.08f) * 3.f);
+    CHECK(topW < baseW);
+}
+
 TEST_CASE("procgen.mesh.tree.renderDump") {
     const char *outputPath = std::getenv("EVENGINE_TREE_RENDER_PNG");
     if (!outputPath || !outputPath[0]) return;
@@ -820,6 +890,96 @@ TEST_CASE("procgen.render.hexplanetPng") {
     REQUIRE(output.good());
     output.close();
     std::printf("hex planet render saved: %s\n", outPath.string().c_str());
+    win->close();
+}
+
+TEST_CASE("procgen.render.skyscraperPng") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 640;
+    settings.height = 720;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    Procgen *procgen = Procgen::create();
+    Params params;
+    params.setSeed(99);
+    params.setFloat("baseWidth", 10.f);
+    params.setFloat("baseDepth", 10.f);
+    params.setInt("tiers", 6);
+    params.setFloat("tierHeight", 6.f);
+    params.setFloat("setback", 0.08f);
+    params.setInt("windowCols", 6);
+    params.setInt("windowRows", 5);
+    params.setFloat("windowDepth", 0.06f);
+    params.setFloat("spireHeight", 5.f);
+    Mesh *towerMesh = procgen->generateMesh("mesh.skyscraper", &params, gfx);
+    REQUIRE(towerMesh != nullptr);
+
+    // 2x2 atlas: bottom texel dark wall, top texel bright window (matches UV convention).
+    const uint8_t atlas[16] = {
+        90, 96, 104, 255,   // wall
+        120, 128, 138, 255, // wall
+        240, 236, 220, 255, // window
+        200, 205, 215, 255, // window
+    };
+    Texture *towerTexture = gfx->newTexture(2, 2, atlas);
+    REQUIRE(towerTexture != nullptr);
+
+    auto *tower = eve::graphics::Renderable3D::create();
+    tower->setMesh(towerMesh);
+    tower->setTexture(towerTexture);
+    tower->setMetallic(0.02f);
+    tower->setRoughness(0.85f);
+    tower->setCastShadow(true);
+    tower->setReceiveShadow(true);
+    tower->transform()->yaw = 0.6f;
+
+    auto *camera = eve::graphics::Camera3D::createCamera();
+    camera->setEye(18.f, 14.f, 20.f);
+    camera->setTarget(0.f, 14.f, 0.f);
+    camera->setFov(42.f);
+    camera->setAmbient(0.16f, 0.18f, 0.22f);
+
+    auto *present = eve::graphics::Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.20f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    eve::graphics::RenderSystem3D::setDirectionalLight(0.55f, 0.85f, 1.1f, 1.15f, 0.98f, 0.88f);
+    for (int frame = 0; frame < 8; ++frame) {
+        tower->transform()->yaw += 0.02f;
+        eve::graphics::RenderSystem3D::render(*gfx);
+        eve::graphics::RenderSystem::render(*gfx);
+    }
+
+    eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(static_cast<bool>(image));
+    std::unique_ptr<eve::filesystem::FileData> png(
+        image->encode(medialoader::FormatHandler::ENCODED_PNG, "skyscraper.png", false));
+    REQUIRE(static_cast<bool>(png));
+    REQUIRE(png->getSize() > 0);
+
+    const std::filesystem::path outDir =
+        std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
+    std::filesystem::create_directories(outDir);
+    const std::filesystem::path outPath = outDir / "skyscraper.png";
+    std::ofstream output(outPath, std::ios::binary);
+    REQUIRE(output.good());
+    output.write(static_cast<const char *>(png->getData()),
+                 static_cast<std::streamsize>(png->getSize()));
+    REQUIRE(output.good());
+    output.close();
+    std::printf("skyscraper render saved: %s\n", outPath.string().c_str());
     win->close();
 }
 
