@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <map>
 
 namespace eve::procgen {
 namespace {
@@ -94,7 +95,141 @@ float fbm3(float x, float y, float z, uint32_t seed, int octaves) {
     return norm > 0.f ? sum / norm : 0.f;
 }
 
+struct Vec3 {
+    float x = 0.f, y = 0.f, z = 0.f;
+};
+
+Vec3 add(Vec3 a, Vec3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+Vec3 sub(Vec3 a, Vec3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+Vec3 mul(Vec3 a, float s) { return {a.x * s, a.y * s, a.z * s}; }
+float dot(Vec3 a, Vec3 b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+Vec3 cross(Vec3 a, Vec3 b) {
+    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
+Vec3 normalized(Vec3 v) {
+    const float len = std::sqrt(dot(v, v));
+    return len > 1e-8f ? mul(v, 1.f / len) : Vec3{0.f, 1.f, 0.f};
+}
+
+struct Triangle {
+    uint32_t a, b, c;
+};
+
+uint64_t edgeKey(uint32_t a, uint32_t b) {
+    if (a > b) std::swap(a, b);
+    return (uint64_t(a) << 32u) | uint64_t(b);
+}
+
+uint32_t midpoint(uint32_t a, uint32_t b, std::vector<Vec3> &vertices,
+                  std::map<uint64_t, uint32_t> &cache) {
+    const uint64_t key = edgeKey(a, b);
+    const auto it = cache.find(key);
+    if (it != cache.end()) return it->second;
+    const uint32_t index = uint32_t(vertices.size());
+    vertices.push_back(normalized(add(vertices[a], vertices[b])));
+    cache.emplace(key, index);
+    return index;
+}
+
+void addPlanetVertex(MeshBuild &out, Vec3 p, float radius) {
+    p = normalized(p);
+    constexpr float kPi = 3.14159265358979323846f;
+    const float u = std::atan2(p.z, p.x) / (2.f * kPi) + 0.5f;
+    const float v = std::asin(std::clamp(p.y, -1.f, 1.f)) / kPi + 0.5f;
+    out.addVertex(p.x * radius, p.y * radius, p.z * radius, p.x, p.y, p.z, u, v);
+}
+
 }  // namespace
+
+bool generateHexPlanetMesh(const Params &params, MeshBuild &out, std::string &error) {
+    const int subdivisions = params.getInt("subdivisions", 2);
+    const float radius = params.getFloat("radius", 1.f);
+    const float inset = params.getFloat("tileInset", 0.06f);
+    if (subdivisions < 0 || subdivisions > 7) {
+        error = "mesh.hexplanet: subdivisions must be in [0, 7]";
+        return false;
+    }
+    if (!(radius > 0.f)) {
+        error = "mesh.hexplanet: radius must be positive";
+        return false;
+    }
+    if (inset < 0.f || inset >= 0.5f) {
+        error = "mesh.hexplanet: tileInset must be in [0, 0.5)";
+        return false;
+    }
+
+    const float phi = (1.f + std::sqrt(5.f)) * 0.5f;
+    std::vector<Vec3> vertices = {
+        {-1, phi, 0}, {1, phi, 0}, {-1, -phi, 0}, {1, -phi, 0},
+        {0, -1, phi}, {0, 1, phi}, {0, -1, -phi}, {0, 1, -phi},
+        {phi, 0, -1}, {phi, 0, 1}, {-phi, 0, -1}, {-phi, 0, 1},
+    };
+    for (Vec3 &v : vertices) v = normalized(v);
+    std::vector<Triangle> faces = {
+        {0, 11, 5}, {0, 5, 1}, {0, 1, 7}, {0, 7, 10}, {0, 10, 11},
+        {1, 5, 9}, {5, 11, 4}, {11, 10, 2}, {10, 7, 6}, {7, 1, 8},
+        {3, 9, 4}, {3, 4, 2}, {3, 2, 6}, {3, 6, 8}, {3, 8, 9},
+        {4, 9, 5}, {2, 4, 11}, {6, 2, 10}, {8, 6, 7}, {9, 8, 1},
+    };
+    for (int level = 0; level < subdivisions; ++level) {
+        std::map<uint64_t, uint32_t> cache;
+        std::vector<Triangle> next;
+        next.reserve(faces.size() * 4u);
+        for (const Triangle &f : faces) {
+            const uint32_t ab = midpoint(f.a, f.b, vertices, cache);
+            const uint32_t bc = midpoint(f.b, f.c, vertices, cache);
+            const uint32_t ca = midpoint(f.c, f.a, vertices, cache);
+            next.insert(next.end(), {{f.a, ab, ca}, {f.b, bc, ab}, {f.c, ca, bc}, {ab, bc, ca}});
+        }
+        faces.swap(next);
+    }
+
+    std::vector<std::vector<uint32_t>> incident(vertices.size());
+    std::vector<Vec3> faceCenters;
+    faceCenters.reserve(faces.size());
+    for (uint32_t i = 0; i < faces.size(); ++i) {
+        const Triangle &f = faces[i];
+        faceCenters.push_back(normalized(add(add(vertices[f.a], vertices[f.b]), vertices[f.c])));
+        incident[f.a].push_back(i);
+        incident[f.b].push_back(i);
+        incident[f.c].push_back(i);
+    }
+
+    out.clear();
+    int pentagons = 0, hexagons = 0;
+    for (uint32_t cell = 0; cell < vertices.size(); ++cell) {
+        const Vec3 center = vertices[cell];
+        const Vec3 reference = std::fabs(center.y) < 0.9f ? normalized(cross({0, 1, 0}, center))
+                                                            : normalized(cross({1, 0, 0}, center));
+        const Vec3 tangent = cross(center, reference);
+        auto &ring = incident[cell];
+        std::sort(ring.begin(), ring.end(), [&](uint32_t lhs, uint32_t rhs) {
+            const Vec3 a = sub(faceCenters[lhs], mul(center, dot(faceCenters[lhs], center)));
+            const Vec3 b = sub(faceCenters[rhs], mul(center, dot(faceCenters[rhs], center)));
+            return std::atan2(dot(a, tangent), dot(a, reference)) <
+                   std::atan2(dot(b, tangent), dot(b, reference));
+        });
+        if (ring.size() == 5) ++pentagons;
+        else if (ring.size() == 6) ++hexagons;
+
+        const uint32_t base = uint32_t(out.getVertexCount());
+        addPlanetVertex(out, center, radius);
+        for (uint32_t faceIndex : ring) {
+            // Pull dual corners toward this cell's center. Re-normalizing keeps every tile spherical.
+            addPlanetVertex(out, normalized(add(mul(faceCenters[faceIndex], 1.f - inset),
+                                               mul(center, inset))), radius);
+        }
+        for (uint32_t i = 0; i < ring.size(); ++i) {
+            out.addTriangle(base, base + 1u + i, base + 1u + (i + 1u) % uint32_t(ring.size()));
+        }
+    }
+    out.setMeta("algorithm", "mesh.hexplanet");
+    out.setMeta("cells", std::to_string(vertices.size()));
+    out.setMeta("pentagons", std::to_string(pentagons));
+    out.setMeta("hexagons", std::to_string(hexagons));
+    out.setMeta("subdivisions", std::to_string(subdivisions));
+    return true;
+}
 
 bool marchingCubes(const float *density, int nx, int ny, int nz, float isolevel, MeshBuild &out,
                    std::string *error) {
@@ -300,6 +435,7 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
     registerRecipe("mesh.marchingcubes", generateMarchingCubesMesh);
+    registerRecipe("mesh.hexplanet", generateHexPlanetMesh);
     builtinsRegistered_ = true;
 }
 

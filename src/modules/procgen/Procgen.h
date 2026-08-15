@@ -71,7 +71,7 @@ public:
     bool        hasTextureRecipe(const std::string &recipeId) const;
 
     // --- Mesh recipes (Marching Cubes, …) ---
-    /** CPU mesh (caller owns). Recipes: mesh.marchingcubes. */
+    /** CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. */
     MeshBuild *buildMesh(const std::string &recipeId, Params *params);
     /** Build + upload to GPU Mesh (owned by Graphics). */
     graphics::Mesh *generateMesh(const std::string &recipeId, Params *params,
