@@ -3,8 +3,20 @@
 #include "devtools/AiPanel.hpp"
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
+#include "devtools/DevTool.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/Snapshot.hpp"
+
+#include "common/Module.h"
+#include "audio/Audio.h"
+#include "graphics/Graphics.h"
+#include "image/ImageData.h"
+#include "particles/Particles.h"
+#include "physics/Physics.h"
+#include "physics/World.h"
+#include "procgen/Procgen.h"
+#include "scene/Scene.h"
+#include "scene/SceneHost.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -158,11 +170,342 @@ int argInt(Poco::JSON::Object::Ptr args, const char* key, int def = 0) {
     }
 }
 
+float argFloat(Poco::JSON::Object::Ptr args, const char* key, float def = 0.f) {
+    if (!args || !args->has(key)) return def;
+    try {
+        return args->get(key).convert<float>();
+    } catch (...) {
+        return def;
+    }
+}
+
+bool argBool(Poco::JSON::Object::Ptr args, const char* key, bool def = false) {
+    if (!args || !args->has(key)) return def;
+    try {
+        return args->get(key).convert<bool>();
+    } catch (...) {
+        return def;
+    }
+}
+
+// --- Game-feature registries (MCP tools create transient worlds/emitters) ---
+std::vector<eve::physics::World*>& mcpPhysicsWorlds() {
+    static std::vector<eve::physics::World*> worlds;
+    return worlds;
+}
+
+eve::physics::World* mcpPhysicsWorld(int id) {
+    auto& ws = mcpPhysicsWorlds();
+    return (id >= 0 && id < static_cast<int>(ws.size())) ? ws[static_cast<size_t>(id)] : nullptr;
+}
+
 std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object::Ptr args) {
     auto& dbg = Debugger::instance();
     auto& dap = DebugAdapter::instance();
 
     if (name == "eve_status") return engineStatusJson(mcp);
+
+    // ============================= Scene / Entity =============================
+    if (name == "eve_scene_status") {
+        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        if (!scene) {
+            o->set("error", "Scene module not available");
+            return mcpStringify(Poco::Dynamic::Var(o));
+        }
+        auto* host = scene->current();
+        if (!host) {
+            o->set("activeHost", Poco::Dynamic::Var());
+            o->set("nodeCount", 0);
+            return mcpStringify(Poco::Dynamic::Var(o));
+        }
+        o->set("activeHost", host->getName());
+        o->set("nodeCount", host->getNodeCount());
+        o->set("rootId", host->getRoot() ? host->getRoot()->id : std::string(""));
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_scene_nodes") {
+        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
+        if (!scene || !scene->current()) return "error: no active scene host";
+        auto* host = scene->current();
+        const int limit = argInt(args, "limit", 500);
+        Poco::JSON::Array::Ptr arr = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+        host->walkDepthFirst([&](eve::scene::SceneHost*, int, eve::scene::SceneNode& n) {
+            if (static_cast<int>(arr->size()) >= limit) return;
+            Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            o->set("id", n.id);
+            o->set("name", n.name);
+            o->set("path", host->getPathById(n.id));
+            o->set("visible", n.visible);
+            arr->add(o);
+        });
+        return mcpStringify(Poco::Dynamic::Var(arr));
+    }
+
+    if (name == "eve_scene_node_get") {
+        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
+        if (!scene || !scene->current()) return "error: no active scene host";
+        auto* host = scene->current();
+        const std::string id = argString(args, "id");
+        auto* n = id.empty() ? nullptr : host->findById(id);
+        if (!n) return "error: node not found: " + id;
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("id", n->id);
+        o->set("name", n->name);
+        o->set("path", host->getPathById(id));
+        o->set("visible", n->visible);
+        o->set("x", n->x); o->set("y", n->y); o->set("z", n->z);
+        o->set("yaw", n->yaw); o->set("pitch", n->pitch); o->set("roll", n->roll);
+        o->set("sx", n->sx); o->set("sy", n->sy); o->set("sz", n->sz);
+        auto* parent = host->getParentById(id);
+        o->set("parent", parent ? parent->id : std::string(""));
+        Poco::JSON::Array::Ptr kids = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+        for (int i = 0; i < host->getChildCountById(id); ++i) {
+            auto* c = host->getChildAtById(id, i);
+            if (c) kids->add(c->id);
+        }
+        o->set("children", kids);
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_scene_node_set") {
+        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
+        if (!scene || !scene->current()) return "error: no active scene host";
+        auto* host = scene->current();
+        const std::string id = argString(args, "id");
+        auto* n = id.empty() ? nullptr : host->findById(id);
+        if (!n) return "error: node not found: " + id;
+        bool changed = false;
+        if (args && args->has("x") && args->has("y") && args->has("z")) {
+            n->x = argFloat(args, "x"); n->y = argFloat(args, "y"); n->z = argFloat(args, "z");
+            changed = true;
+        }
+        if (args && args->has("visible")) {
+            n->visible = argBool(args, "visible");
+            changed = true;
+        }
+        if (changed) host->markTransformDirty();
+        return "ok";
+    }
+
+    // ============================= Procgen =============================
+    if (name == "eve_procgen_recipes") {
+        auto* pg = eve::ModuleManager::getInstance<eve::procgen::Procgen>("Procgen");
+        if (!pg) return "error: Procgen module not available";
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        auto addList = [&](const char* key, int count, auto getId) {
+            Poco::JSON::Array::Ptr a = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+            for (int i = 0; i < count; ++i) a->add(getId(i));
+            o->set(key, a);
+        };
+        addList("algorithms", pg->getAlgorithmCount(),
+                [&](int i) { return pg->getAlgorithmId(i); });
+        addList("meshRecipes", pg->getMeshRecipeCount(),
+                [&](int i) { return pg->getMeshRecipeId(i); });
+        addList("textureRecipes", pg->getTextureRecipeCount(),
+                [&](int i) { return pg->getTextureRecipeId(i); });
+        addList("pbrRecipes", pg->getPbrRecipeCount(),
+                [&](int i) { return pg->getPbrRecipeId(i); });
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_procgen_map") {
+        auto* pg = eve::ModuleManager::getInstance<eve::procgen::Procgen>("Procgen");
+        if (!pg) return "error: Procgen module not available";
+        const std::string algorithm = argString(args, "algorithm");
+        if (algorithm.empty()) return "error: missing algorithm";
+        auto* params = pg->newParams();
+        params->setSize(argInt(args, "width", 32), argInt(args, "height", 32));
+        if (args && args->has("seed")) params->setSeed(static_cast<uint32_t>(argInt(args, "seed")));
+        for (const auto& key : {"roomCount", "roomMin", "roomMax", "corridorWidth", "autotile",
+                                "scale", "octaves"}) {
+            if (args && args->has(key)) params->setInt(key, argInt(args, key));
+        }
+        if (args && args->has("corridorStyle"))
+            params->setString("corridorStyle", argString(args, "corridorStyle"));
+        auto* grid = pg->generate(algorithm, params);
+        if (!grid) return "error: generate failed: " + pg->lastError();
+        std::string json = pg->gridToJson(grid);
+        delete grid;
+        return json.empty() ? "error: empty grid" : json;
+    }
+
+    if (name == "eve_procgen_mesh") {
+        auto* pg = eve::ModuleManager::getInstance<eve::procgen::Procgen>("Procgen");
+        if (!pg) return "error: Procgen module not available";
+        const std::string recipe = argString(args, "recipe");
+        if (recipe.empty()) return "error: missing recipe";
+        auto* params = pg->newParams();
+        if (args && args->has("seed")) params->setSeed(static_cast<uint32_t>(argInt(args, "seed")));
+        if (args && args->has("width")) params->setInt("width", argInt(args, "width"));
+        if (args && args->has("height")) params->setInt("height", argInt(args, "height"));
+        if (args && args->has("depth")) params->setInt("depth", argInt(args, "depth"));
+        auto* mesh = pg->buildMesh(recipe, params);
+        if (!mesh) return "error: build failed: " + pg->lastError();
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("recipe", recipe);
+        o->set("vertices", mesh->getVertexCount());
+        o->set("triangles", mesh->getIndexCount() / 3);
+        std::string meta = mesh->getMeta("error", "");
+        if (!meta.empty()) o->set("error", meta);
+        delete mesh;
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    // ============================= Physics =============================
+    if (name == "eve_physics_new_world") {
+        auto* ph = eve::ModuleManager::getInstance<eve::physics::Physics>("Physics");
+        if (!ph) return "error: Physics module not available";
+        eve::physics::World* w =
+            ph->newWorld(argFloat(args, "gravityX", 0.f), argFloat(args, "gravityY", 900.f));
+        auto& ws = mcpPhysicsWorlds();
+        ws.push_back(w);
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("id", static_cast<int>(ws.size()) - 1);
+        o->set("gravityX", w->getGravityX());
+        o->set("gravityY", w->getGravityY());
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_physics_list_worlds") {
+        Poco::JSON::Array::Ptr arr = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+        const auto& ws = mcpPhysicsWorlds();
+        for (size_t i = 0; i < ws.size(); ++i) {
+            if (!ws[i]) continue;
+            Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            o->set("id", static_cast<int>(i));
+            o->set("gravityX", ws[i]->getGravityX());
+            o->set("gravityY", ws[i]->getGravityY());
+            arr->add(o);
+        }
+        return mcpStringify(Poco::Dynamic::Var(arr));
+    }
+
+    if (name == "eve_physics_raycast") {
+        auto* w = mcpPhysicsWorld(argInt(args, "world", 0));
+        if (!w) return "error: unknown physics world id";
+        w->rayCast(argFloat(args, "x1"), argFloat(args, "y1"),
+                   argFloat(args, "x2"), argFloat(args, "y2"));
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("hit", w->hasRayHit());
+        if (w->hasRayHit()) {
+            o->set("bodyId", w->getRayHitBodyId());
+            o->set("x", w->getRayHitX());
+            o->set("y", w->getRayHitY());
+            o->set("normalX", w->getRayHitNormalX());
+            o->set("normalY", w->getRayHitNormalY());
+            o->set("fraction", w->getRayHitFraction());
+        }
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_physics_remove_world") {
+        auto& ws = mcpPhysicsWorlds();
+        const int id = argInt(args, "world", -1);
+        if (id < 0 || id >= static_cast<int>(ws.size()) || !ws[static_cast<size_t>(id)])
+            return "error: unknown physics world id";
+        delete ws[static_cast<size_t>(id)];
+        ws[static_cast<size_t>(id)] = nullptr;
+        return "ok";
+    }
+
+    // ============================= Render =============================
+    if (name == "eve_render_status") {
+        auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        if (!gfx) {
+            o->set("error", "Graphics module not available");
+            return mcpStringify(Poco::Dynamic::Var(o));
+        }
+        o->set("width", gfx->getWidth());
+        o->set("height", gfx->getHeight());
+        o->set("pixelWidth", gfx->getPixelWidth());
+        o->set("pixelHeight", gfx->getPixelHeight());
+        o->set("had3DThisFrame", gfx->had3DThisFrame());
+        o->set("readbackEnabled", gfx->isScreenReadbackEnabled());
+        o->set("renderFlowEvents", static_cast<int>(DevTool::instance().renderFlow().eventCount()));
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_screenshot") {
+        auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+        if (!gfx) return "error: Graphics module not available";
+        std::string path = argString(args, "path");
+        if (path.empty()) path = "mcp_screenshot.png";
+        gfx->setScreenReadbackEnabled(true);
+        eve::image::ImageData* img = gfx->newImageData();
+        if (!img) return "error: readback returned no image";
+        eve::image::ImageData::FormatHandler::EncodedFormat fmt;
+        if (!eve::image::ImageData::getConstant("PNG", fmt)) {
+            delete img;
+            return "error: no PNG encoder";
+        }
+        const int w = gfx->getPixelWidth();
+        const int h = gfx->getPixelHeight();
+        img->encode(fmt, path.c_str(), true);
+        delete img;
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("path", path);
+        o->set("width", w);
+        o->set("height", h);
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    // ============================= Particles / Weather =============================
+    if (name == "eve_particles_status") {
+        auto* part = eve::ModuleManager::getInstance<eve::particles::Particles>("Particles");
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        if (!part) {
+            o->set("error", "Particles module not available");
+            return mcpStringify(Poco::Dynamic::Var(o));
+        }
+        o->set("emitterCount", part->getEmitterCount());
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_particles_emit") {
+        auto* part = eve::ModuleManager::getInstance<eve::particles::Particles>("Particles");
+        if (!part) return "error: Particles module not available";
+        auto* em = part->newEmitter(argInt(args, "buffer", 1000));
+        if (!em) return "error: failed to create emitter";
+        em->setPosition(argFloat(args, "x"), argFloat(args, "y"));
+        const std::string preset = argString(args, "preset");
+        if (!preset.empty()) em->applyPreset(preset);
+        em->start();
+        em->emit(argInt(args, "count", 100));
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("x", em->getX());
+        o->set("y", em->getY());
+        o->set("count", em->getCount());
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    // ============================= Audio =============================
+    if (name == "eve_audio_status") {
+        auto* audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio");
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        if (!audio) {
+            o->set("error", "Audio module not available");
+            return mcpStringify(Poco::Dynamic::Var(o));
+        }
+        o->set("volume", audio->getVolume());
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "eve_audio_set_volume") {
+        auto* audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio");
+        if (!audio) return "error: Audio module not available";
+        audio->setVolume(argFloat(args, "volume", 1.f));
+        return "ok";
+    }
+
+    if (name == "eve_audio_stop_all") {
+        auto* audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio");
+        if (!audio) return "error: Audio module not available";
+        audio->stopAll();
+        return "ok";
+    }
 
     if (name == "eve_eval") {
         const std::string expr = argString(args, "expression");
@@ -431,6 +774,42 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_ai_note\",\"description\":\"Append a note to the DevTools AI session log.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}},"
         "{\"name\":\"eve_ai_log\",\"description\":\"Read the DevTools AI session log.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_scene_status\",\"description\":\"Active scene host name, node count and root id.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_scene_nodes\",\"description\":\"List nodes of the active scene host (id/name/path/visible).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"limit\":{\"type\":\"integer\"}}}},"
+        "{\"name\":\"eve_scene_node_get\",\"description\":\"Read transform/visibility/parent/children of a scene node by id.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"]}},"
+        "{\"name\":\"eve_scene_node_set\",\"description\":\"Set position (x,y,z) or visibility of a scene node by id.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"x\":{\"type\":\"number\"},\"y\":{\"type\":\"number\"},\"z\":{\"type\":\"number\"},\"visible\":{\"type\":\"boolean\"}},\"required\":[\"id\"]}},"
+        "{\"name\":\"eve_procgen_recipes\",\"description\":\"List available procgen map algorithms and mesh/texture/PBR recipes.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_procgen_map\",\"description\":\"Generate a semantic tile grid with a procgen map algorithm.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"algorithm\":{\"type\":\"string\"},\"width\":{\"type\":\"integer\"},\"height\":{\"type\":\"integer\"},\"seed\":{\"type\":\"integer\"}},\"required\":[\"algorithm\"]}},"
+        "{\"name\":\"eve_procgen_mesh\",\"description\":\"Build a procedural CPU mesh (mesh.* recipe) and return stats.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"recipe\":{\"type\":\"string\"},\"seed\":{\"type\":\"integer\"}},\"required\":[\"recipe\"]}},"
+        "{\"name\":\"eve_physics_new_world\",\"description\":\"Create a 2D physics world and return its id.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"gravityX\":{\"type\":\"number\"},\"gravityY\":{\"type\":\"number\"}}}},"
+        "{\"name\":\"eve_physics_list_worlds\",\"description\":\"List live 2D physics worlds with gravity.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_physics_raycast\",\"description\":\"Raycast a segment in a physics world and report the closest hit.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},\"x1\":{\"type\":\"number\"},\"y1\":{\"type\":\"number\"},\"x2\":{\"type\":\"number\"},\"y2\":{\"type\":\"number\"}},\"required\":[\"world\",\"x1\",\"y1\",\"x2\",\"y2\"]}},"
+        "{\"name\":\"eve_physics_remove_world\",\"description\":\"Destroy a 2D physics world by id.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"}},\"required\":[\"world\"]}},"
+        "{\"name\":\"eve_render_status\",\"description\":\"Render window size, 3D frame flag, readback state and RenderFlow event count.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_screenshot\",\"description\":\"Capture the current frame to a PNG file (enables readback).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_particles_status\",\"description\":\"Report live particle emitter count.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_particles_emit\",\"description\":\"Spawn a particle emitter at a position (optionally a preset) and emit particles.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"x\":{\"type\":\"number\"},\"y\":{\"type\":\"number\"},\"preset\":{\"type\":\"string\"},\"count\":{\"type\":\"integer\"}}}},"
+        "{\"name\":\"eve_audio_status\",\"description\":\"Report master audio volume.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_audio_set_volume\",\"description\":\"Set master audio volume (0..1).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"volume\":{\"type\":\"number\"}},\"required\":[\"volume\"]}},"
+        "{\"name\":\"eve_audio_stop_all\",\"description\":\"Stop all playing audio sources.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}"
         "]}";
     return makeResult(idJson, kToolsJson);
