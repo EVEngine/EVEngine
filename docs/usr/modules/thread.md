@@ -25,13 +25,17 @@ pool.submitPush(channel, "done", 100);
 
 ### 等待关卡加载任务
 
-为每项任务保留 Task，轮询 `isDone()` / `hasFailed()`，显示进度；仅在退出或确定不会卡住界面时调用 `wait()` / `waitAll()`。
+需要观察状态时为每项任务保留 Task，轮询 `isDone()` / `hasFailed()`，显示进度。脚本提前释放 Task 或匿名 Channel 不会中止已提交工作；线程池会持有任务完成所需的原生状态。仅在退出或确定不会卡住界面时调用 `wait()` / `waitAll()`。
+
+`newThreadPool(0)` 使用硬件并发度；显式线程数上限为 256。`waitAll()` 与 `stop()` 不能从同一个线程池的 worker 中调用，这类调用会立即抛出异常，避免自等待死锁。
 
 ## 常见问题
 
 - worker 调用 gfx/ui/Squirrel：这些对象不是线程安全的。
+- worker 调用所属 Pool 的 `waitAll()` / `stop()`：会抛出异常；把关闭与汇合操作放在主线程。
 - 主线程立即 `waitAll()`：异步退化成卡顿的同步。
 - 忽略 `hasFailed()` / `getError()`：失败任务会悄悄丢结果。
+- 并发任务使用相同 Event 名称：业务监听仍按队列消费；`asyncPost()` 的 Promise 按具体 Task 关联，不会因同名事件乱序而串线。
 
 ## API 快查
 

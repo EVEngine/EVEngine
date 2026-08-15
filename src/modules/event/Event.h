@@ -78,6 +78,9 @@ public:
     virtual Message* wait() = 0;
 
 protected:
+    /** Wake a platform-specific blocking wait after a message is queued. */
+    virtual void wakeWaiters() {}
+
     std::mutex           queueMu_;
     std::queue<Message*> queue;
     std::string          lastData_;
