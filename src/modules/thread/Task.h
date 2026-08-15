@@ -1,8 +1,8 @@
 #pragma once
 
-#include <atomic>
 #include <condition_variable>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <string>
 
@@ -30,11 +30,22 @@ public:
     void run();
 
 private:
-    std::function<void()> fn_;
-    mutable std::mutex mu_;
-    std::condition_variable cv_;
-    std::string status_ = "pending";
-    std::string error_;
+    struct State {
+        explicit State(std::function<void()> taskFn) : fn(std::move(taskFn)) {}
+
+        std::function<void()> fn;
+        mutable std::mutex mu;
+        std::condition_variable cv;
+        std::string status = "pending";
+        std::string error;
+    };
+
+    explicit Task(std::shared_ptr<State> state);
+    static void run(const std::shared_ptr<State> &state);
+
+    std::shared_ptr<State> state_;
+
+    friend class ThreadPool;
 };
 
 }  // namespace thread

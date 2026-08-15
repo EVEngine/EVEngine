@@ -66,6 +66,29 @@ void Physics::expose(ssq::Table &table) {
     world.addFunc("queryAABB", &World::queryAABB);
     world.addFunc("getQueryCount", &World::getQueryCount);
     world.addFunc("getQueryBodyId", &World::getQueryBodyId);
+    world.addFunc("getBeginContactCount", &World::getBeginContactCount);
+    world.addFunc("getBeginContactBodyAId", &World::getBeginContactBodyAId);
+    world.addFunc("getBeginContactBodyBId", &World::getBeginContactBodyBId);
+    world.addFunc("getBeginContactFixtureATag", &World::getBeginContactFixtureATag);
+    world.addFunc("getBeginContactFixtureBTag", &World::getBeginContactFixtureBTag);
+    world.addFunc("getEndContactCount", &World::getEndContactCount);
+    world.addFunc("getEndContactBodyAId", &World::getEndContactBodyAId);
+    world.addFunc("getEndContactBodyBId", &World::getEndContactBodyBId);
+    world.addFunc("getEndContactFixtureATag", &World::getEndContactFixtureATag);
+    world.addFunc("getEndContactFixtureBTag", &World::getEndContactFixtureBTag);
+    world.addFunc("getImpactCount", &World::getImpactCount);
+    world.addFunc("getImpactBodyAId", &World::getImpactBodyAId);
+    world.addFunc("getImpactBodyBId", &World::getImpactBodyBId);
+    world.addFunc("getImpactFixtureATag", &World::getImpactFixtureATag);
+    world.addFunc("getImpactFixtureBTag", &World::getImpactFixtureBTag);
+    world.addFunc("getImpactPointX", &World::getImpactPointX);
+    world.addFunc("getImpactPointY", &World::getImpactPointY);
+    world.addFunc("getImpactNormalX", &World::getImpactNormalX);
+    world.addFunc("getImpactNormalY", &World::getImpactNormalY);
+    world.addFunc("getImpactRelativeNormalSpeed", &World::getImpactRelativeNormalSpeed);
+    world.addFunc("getImpactNormalImpulse", &World::getImpactNormalImpulse);
+    world.addFunc("getImpactTangentImpulse", &World::getImpactTangentImpulse);
+    world.addFunc("clearContactEvents", &World::clearContactEvents);
 
     auto world3 = table.addClass<World3D>(
         "World3D", std::function<World3D *()>([]() -> World3D * { return nullptr; }), true);
@@ -103,6 +126,10 @@ void Physics::expose(ssq::Table &table) {
     body.addFunc("setLinearVelocity", &Body::setLinearVelocity);
     body.addFunc("getLinearVelocityX", &Body::getLinearVelocityX);
     body.addFunc("getLinearVelocityY", &Body::getLinearVelocityY);
+    body.addFunc("getLinearSpeed", &Body::getLinearSpeed);
+    body.addFunc("getMass", &Body::getMass);
+    body.addFunc("getWorldCenterX", &Body::getWorldCenterX);
+    body.addFunc("getWorldCenterY", &Body::getWorldCenterY);
     body.addFunc("setAngularVelocity", &Body::setAngularVelocity);
     body.addFunc("getAngularVelocity", &Body::getAngularVelocity);
     body.addFunc("applyForce", &Body::applyForce);
@@ -120,6 +147,7 @@ void Physics::expose(ssq::Table &table) {
     body.addFunc("setAwake", &Body::setAwake);
     body.addFunc("isAwake", &Body::isAwake);
     body.addFunc("newRectangleFixture", &Body::newRectangleFixture);
+    body.addFunc("newRectangleFixtureAt", &Body::newRectangleFixtureAt);
     body.addFunc("newCircleFixture", &Body::newCircleFixture);
     body.addFunc("destroy", &Body::destroy);
 
@@ -172,6 +200,15 @@ void Physics::expose(ssq::Table &table) {
     fixture.addFunc("getRestitution", &Fixture::getRestitution);
     fixture.addFunc("setDensity", &Fixture::setDensity);
     fixture.addFunc("getDensity", &Fixture::getDensity);
+    fixture.addFunc("setTag", &Fixture::setTag);
+    fixture.addFunc("getTag", &Fixture::getTag);
+    fixture.addFunc("setCategoryBits", &Fixture::setCategoryBits);
+    fixture.addFunc("getCategoryBits", &Fixture::getCategoryBits);
+    fixture.addFunc("setMaskBits", &Fixture::setMaskBits);
+    fixture.addFunc("getMaskBits", &Fixture::getMaskBits);
+    fixture.addFunc("setGroupIndex", &Fixture::setGroupIndex);
+    fixture.addFunc("getGroupIndex", &Fixture::getGroupIndex);
+    fixture.addFunc("getBodyId", &Fixture::getBodyId);
     fixture.addFunc("getBody", &Fixture::getBody);
     fixture.addFunc("testPoint", &Fixture::testPoint);
     fixture.addFunc("destroy", &Fixture::destroy);

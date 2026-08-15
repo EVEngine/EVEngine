@@ -3,6 +3,9 @@
 
 #include "event/Event.h"
 
+#include <chrono>
+#include <thread>
+
 using eve::event::Event;
 using eve::event::Message;
 using eve::event::Variant;
@@ -103,4 +106,20 @@ TEST_CASE("event.clearThenPollEmpty") {
 TEST_CASE("event.pumpSmoke") {
     auto* ev = Event::create();
     ev->pump();
+}
+
+TEST_CASE("event.workerPushWakesWait") {
+    auto *ev = Event::create();
+    ev->clear();
+    std::thread producer([ev] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        ev->pushData("worker-wake", "ready");
+    });
+    Message *message = ev->wait();
+    producer.join();
+    REQUIRE(message != nullptr);
+    CHECK_EQ(message->name, std::string("worker-wake"));
+    REQUIRE(message->args.size() == 1);
+    CHECK_EQ(message->args[0].s, std::string("ready"));
+    delete message;
 }

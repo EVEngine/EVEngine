@@ -42,12 +42,8 @@ using namespace eve::graphics;
 
 namespace {
 
-std::string pathBesideThisSource(const char *relative) {
-    std::string here = __FILE__;
-    auto slash       = here.find_last_of("/\\");
-    std::string dir  = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/" + relative;
-}
+#include "PathBesideSource.h"
+EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) {
     return std::filesystem::is_regular_file(path);
@@ -585,7 +581,12 @@ TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
         loadCesiumMan("ev_ut_animation_skinned_factory"));
     REQUIRE(model.get() != nullptr);
 
-    std::unique_ptr<Animation> anim(Animation::create());
+    // Animation::create() returns the process-wide module singleton owned by
+    // ModuleManager; do NOT wrap it in unique_ptr (that would delete the
+    // singleton out from under ModuleManager and leave a dangling pointer for
+    // later tests that call Animation::create() again).
+    Animation *anim = Animation::create();
+    REQUIRE(anim != nullptr);
     std::unique_ptr<AnimSkeleton> sk(anim->newSkeletonFromModel(model.get()));
     REQUIRE(sk.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());

@@ -29,8 +29,11 @@ Event::~Event() {}
 void Event::push(Message* msg) {
     if (!msg)
         return;
-    std::lock_guard<std::mutex> lock(queueMu_);
-    queue.push(msg);
+    {
+        std::lock_guard<std::mutex> lock(queueMu_);
+        queue.push(msg);
+    }
+    wakeWaiters();
 }
 
 void Event::pushData(std::string name, std::string data) {

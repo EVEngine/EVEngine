@@ -1,6 +1,7 @@
 #include "cmdline.h"
 #include "scripts.h"
 #include "common/Module.h"
+#include "common/Runtime.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
@@ -98,13 +99,13 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             }
         }
 
-        ssq::VM vm(2048, ssq::Libs::ALL);
-        ModuleManager::expose(vm);
+        Runtime runtime(2048, ssq::Libs::ALL);
+        runtime.initialize();
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
-            dt.attach(vm, /*sampleLocals=*/true);
-            dt.exposeScriptApi(vm);
+            dt.attach(runtime.vm(), /*sampleLocals=*/true);
+            dt.exposeScriptApi(runtime.vm());
             if (dapPort > 0) {
                 const int bound = dt.startDap(static_cast<uint16_t>(dapPort));
                 if (bound > 0) {
@@ -139,13 +140,12 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
 #endif
         // Embedded default demo (src/scripts/demo.nut); load.nut runs it when no main.nut.
         {
-            ssq::Table eve(vm.find("eve"));
+            ssq::Table eve = runtime.table("eve");
             eve.set("demoScript", std::string(demo_content ? demo_content : ""));
             eve.set("asyncScript", std::string(async_content ? async_content : ""));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
-        ssq::Script script = vm.compileSource(root.c_str(), "load.nut");
-        vm.run(script);
+        runtime.runSource(root, "load.nut");
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
         if (debug) eve::dev::DevTool::instance().detach();
 #endif

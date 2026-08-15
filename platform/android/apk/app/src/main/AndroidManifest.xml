@@ -16,7 +16,7 @@
         android:hardwareAccelerated="true">
 
         <activity
-            android:name=".EVEngineActivity"
+            android:name=".EVTestActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:alwaysRetainTaskState="true"
