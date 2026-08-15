@@ -114,7 +114,7 @@ void main() {
     float fresnel = 0.02 + 0.98 * pow(1.0 - ndv, 5.0);
 
     vec3 waterCol = vec3(u.data[9], u.data[10], u.data[11]);
-    float reflectAmt = clamp(fresnel * u.data[5] + 0.05, 0.0, 1.0);
+    float reflectAmt = clamp(fresnel * u.data[5] + 0.30, 0.0, 1.0);
     vec3 color = mix(waterCol, refl, reflectAmt);
 
     // Sun glint highlight.

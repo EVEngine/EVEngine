@@ -2105,3 +2105,139 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     delete w;
     win->close();
 }
+
+/** Build a unit cube ([-0.5,0.5]³) with per-face UVs in [0,1]². */
+static Mesh *makeUnitCube(Graphics *gfx) {
+    std::vector<float> pos, nrm, uv;
+    std::vector<uint32_t> idx;
+    // 6 faces: +X,-X,+Y,-Y,+Z,-Z. Each face 4 corners (CCW from outside).
+    const float nx[6] = {1, -1, 0, 0, 0, 0};
+    const float ny[6] = {0, 0, 1, -1, 0, 0};
+    const float nz[6] = {0, 0, 0, 0, 1, -1};
+    // Corner offsets relative to face center (unit cube half-extent 0.5).
+    const float ox[4] = {0.5f, -0.5f, -0.5f, 0.5f};
+    const float oy[4] = {0.5f, 0.5f, -0.5f, -0.5f};
+    const float oz[4] = {0.5f, -0.5f, -0.5f, 0.5f};
+    const float uu[4] = {0.f, 1.f, 1.f, 0.f};
+    const float vv[4] = {0.f, 0.f, 1.f, 1.f};
+    for (int f = 0; f < 6; ++f) {
+        const uint32_t base = uint32_t(pos.size() / 3);
+        for (int c = 0; c < 4; ++c) {
+            // Tangents spanning the face so corners are correct for each normal axis.
+            float px = 0.f, py = 0.f, pz = 0.f;
+            if (nx[f] != 0.f) { px = nx[f] * 0.5f; py = oy[c]; pz = oz[c]; }
+            else if (ny[f] != 0.f) { py = ny[f] * 0.5f; px = ox[c]; pz = oz[c]; }
+            else { pz = nz[f] * 0.5f; px = ox[c]; py = oy[c]; }
+            pos.push_back(px);
+            pos.push_back(py);
+            pos.push_back(pz);
+            nrm.push_back(nx[f]);
+            nrm.push_back(ny[f]);
+            nrm.push_back(nz[f]);
+            uv.push_back(uu[c]);
+            uv.push_back(vv[c]);
+        }
+        idx.push_back(base + 0);
+        idx.push_back(base + 1);
+        idx.push_back(base + 2);
+        idx.push_back(base + 0);
+        idx.push_back(base + 2);
+        idx.push_back(base + 3);
+    }
+    return gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
+                                  idx.data(), int(idx.size()));
+}
+
+TEST_CASE("graphics.water.render.tiledBlocks") {
+    const char *outputPath = std::getenv("EVENGINE_WATER_RENDER_PNG");
+    if (!outputPath || !outputPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 640;
+    settings.height = 480;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    eve::image::Image::create();
+
+    // Blue sky cubemap so the reflection reads clearly.
+    const int fs = 8;
+    std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
+    for (size_t i = 0; i < sky.size(); i += 4) {
+        sky[i] = 118;
+        sky[i + 1] = 158;
+        sky[i + 2] = 218;
+        sky[i + 3] = 255;
+    }
+    Texture *skyTex = gfx->newCubemap(fs, sky.data());
+    REQUIRE(skyTex != nullptr);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(5.f, 4.f, 7.f);
+    camera->setTarget(0.f, 0.2f, 0.f);
+    camera->setFov(50.f);
+    camera->setAmbient(0.28f, 0.32f, 0.40f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+
+    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.45f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
+
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    // Water shader + params (one shared for every block).
+    Water *water = gfx->newWater();
+    REQUIRE(water != nullptr);
+    water->setWaterColor(0.06f, 0.30f, 0.48f);
+    water->setWaveAmplitude(0.5f);
+    water->setRippleAmplitude(0.9f);
+    water->setRippleCount(8);
+    water->setRippleInterval(1.4f);
+    water->setWaveScale(16.f);
+    water->setReflectionTint(0.9f, 0.95f, 1.0f);
+    water->setReflectionIntensity(1.3f);
+    water->setSunIntensity(1.6f);
+
+    // Tile a grid of unit cubes, each carrying the water shader.
+    Mesh *cube = makeUnitCube(gfx);
+    REQUIRE(cube != nullptr);
+    const int N = 8;
+    const float gap = 1.05f;
+    std::vector<Renderable3D *> blocks;
+    for (int z = 0; z < N; ++z) {
+        for (int x = 0; x < N; ++x) {
+            auto *b = Renderable3D::create();
+            b->setMesh(cube);
+            b->setShader(water->getShader());
+            b->setTexture(nullptr);
+            b->setReceiveShadow(false);
+            b->setCastShadow(false);
+            b->setCamera(camera);
+            b->setPosition((x - (N - 1) * 0.5f) * gap, 0.f, (z - (N - 1) * 0.5f) * gap);
+            blocks.push_back(b);
+        }
+    }
+
+    // Animate a few seconds so ripples travel, then save a frame.
+    for (int frame = 0; frame < 40; ++frame) {
+        water->setTime(float(frame) * 0.06f);
+        water->bindParams();
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(image.get() != nullptr);
+    REQUIRE(saveImagePng(*image, outputPath));
+    std::printf("water tiled blocks render saved: %s\n", outputPath);
+    win->close();
+}
