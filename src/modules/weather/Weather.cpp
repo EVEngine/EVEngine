@@ -14,6 +14,11 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include "weather/shaders/weather_vert_spv.inc"
+#include "weather/shaders/weather_frag_spv.inc"
+#include "weather/shaders/bolt_vert_spv.inc"
+#include "weather/shaders/bolt_frag_spv.inc"
+
 namespace eve::weather {
 
 namespace {
@@ -39,166 +44,6 @@ constexpr float kBoxY = 20.f;   // fall band height
 // Push-constant slots are fixed and must match the shaders and
 // declareWeatherParams(): 0=time 1=windX 2=windZ 3=speed 4=length 5=width
 // 6=intensity 7..9=fog rgb 10=fogDensity 11=flash.
-
-// ---------------------------------------------------------------------------
-// Shaders
-// ---------------------------------------------------------------------------
-
-// Billboarded, animated vertex shader for rain + snow.
-// inPos = billboard anchor; inUV.x = horizontal offset (-0.5..0.5), inUV.y = vertical offset.
-const char *kWeatherVert = R"(#version 450
-layout(location = 0) in vec3 inPos;
-layout(location = 1) in vec3 inNormal;
-layout(location = 2) in vec2 inUV;
-
-struct Light3D { vec4 posRadius; vec4 color; };
-layout(set = 0, binding = 0, std140) uniform Frame {
-    mat4 mvp; mat4 model;
-    vec4 lightDirIntensity; vec4 lightColor; vec4 tint; vec4 cameraPos;
-    vec4 ambient; Light3D lights[8]; vec4 texBomb; vec4 parallax;
-    mat4 view; vec4 clipInfo;
-} ubo;
-
-layout(push_constant) uniform Externals { float data[32]; } u;
-
-layout(location = 0) out vec3 vNormal;
-layout(location = 1) out vec2 vUV;
-layout(location = 2) out vec4 vTint;
-layout(location = 3) out vec3 vWorldPos;
-layout(location = 4) out vec3 vCameraPos;
-layout(location = 5) out vec3 vViewPos;
-
-float hash12(vec2 p) {
-    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-    p3 += dot(p3, p3.yzx + 33.33);
-    return fract((p3.x + p3.y) * p3.z);
-}
-
-void main() {
-    // Push-constant slots: 0=time 1=windX 2=windZ 3=speed 4=length 5=width 6=intensity.
-    float H = 20.0;
-    float phase = hash12(inPos.xz * 0.5 + vec2(floor(inPos.y * 0.7), 13.0));
-    float t = u.data[0] * u.data[3] + phase * H;
-    float yOff = fract(t / H) * H;
-
-    vec3 base = inPos;
-    base.y -= yOff;
-    // Wind tilt grows toward the ground.
-    float lift = clamp(base.y / H, 0.0, 1.0);
-    base.x += u.data[1] * lift * u.data[4] * 0.5;
-    base.z += u.data[2] * lift * u.data[4] * 0.5;
-    // Gentle gust sway for snow.
-    float sway = sin(u.data[0] * 1.2 + phase * 6.2831) * 0.06 * u.data[4];
-    base.x += sway * u.data[1];
-    base.z += sway * u.data[2];
-
-    // Camera-facing billboard basis.
-    vec3 right = normalize(vec3(ubo.view[0][0], ubo.view[1][0], ubo.view[2][0]));
-    vec3 up = normalize(vec3(ubo.view[0][1], ubo.view[1][1], ubo.view[2][1]));
-    vec3 pos = base + right * inUV.x * u.data[5] + up * inUV.y * u.data[4];
-
-    vec4 world = ubo.model * vec4(pos, 1.0);
-    gl_Position = ubo.mvp * vec4(pos, 1.0);
-    vWorldPos = world.xyz;
-    vViewPos = (ubo.view * world).xyz;
-    vUV = inUV;
-    vTint = ubo.tint;
-    vCameraPos = ubo.cameraPos.xyz;
-    vNormal = inNormal;
-}
-)";
-
-// Static vertex shader for lightning bolts (geometry already built).
-const char *kBoltVert = R"(#version 450
-layout(location = 0) in vec3 inPos;
-layout(location = 1) in vec3 inNormal;
-layout(location = 2) in vec2 inUV;
-
-struct Light3D { vec4 posRadius; vec4 color; };
-layout(set = 0, binding = 0, std140) uniform Frame {
-    mat4 mvp; mat4 model;
-    vec4 lightDirIntensity; vec4 lightColor; vec4 tint; vec4 cameraPos;
-    vec4 ambient; Light3D lights[8]; vec4 texBomb; vec4 parallax;
-    mat4 view; vec4 clipInfo;
-} ubo;
-
-layout(push_constant) uniform Externals { float data[32]; } u;
-
-layout(location = 0) out vec3 vNormal;
-layout(location = 1) out vec2 vUV;
-layout(location = 2) out vec4 vTint;
-layout(location = 3) out vec3 vWorldPos;
-layout(location = 4) out vec3 vCameraPos;
-layout(location = 5) out vec3 vViewPos;
-
-void main() {
-    vec4 world = ubo.model * vec4(inPos, 1.0);
-    gl_Position = ubo.mvp * vec4(inPos, 1.0);
-    vWorldPos = world.xyz;
-    vViewPos = (ubo.view * world).xyz;
-    vUV = inUV;
-    vTint = ubo.tint;
-    vCameraPos = ubo.cameraPos.xyz;
-    vNormal = inNormal;
-}
-)";
-
-// Textured, alpha-tested fragment shader for rain + snow, with distance fog.
-const char *kWeatherFrag = R"(#version 450
-layout(location = 1) in vec2 vUV;
-layout(location = 2) in vec4 vTint;
-layout(location = 3) in vec3 vWorldPos;
-layout(location = 4) in vec3 vCameraPos;
-layout(location = 5) in vec3 vViewPos;
-
-layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
-
-layout(push_constant) uniform Externals { float data[32]; } u;
-
-layout(location = 0) out vec4 outColor;
-
-void main() {
-    // Push-constant slots: 6=intensity 7=fogR 8=fogG 9=fogB 10=fogDensity.
-    vec4 tex = texture(albedoSampler, vUV);
-    float intensity = u.data[6];
-    vec4 col = tex * vTint;
-    col.a *= intensity;
-    if (col.a < 0.5) discard;
-
-    float viewDist = length(vViewPos);
-    float fogAmt = clamp(1.0 - exp(-viewDist * u.data[10]), 0.0, 1.0);
-    vec3 fogCol = vec3(u.data[7], u.data[8], u.data[9]);
-    vec3 rgb = mix(col.rgb, fogCol, fogAmt);
-
-    // Opaque pipeline: alpha carries linear depth for the scene color target.
-    outColor = vec4(rgb, 1.0);
-}
-)";
-
-// Fragment shader for lightning: bright white-blue bolt that flickers with uFlash.
-const char *kBoltFrag = R"(#version 450
-layout(location = 2) in vec4 vTint;
-layout(location = 3) in vec3 vWorldPos;
-layout(location = 5) in vec3 vViewPos;
-
-layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
-
-layout(push_constant) uniform Externals { float data[32]; } u;
-
-layout(location = 0) out vec4 outColor;
-
-void main() {
-    // Push-constant slots: 7=fogR 8=fogG 9=fogB 10=fogDensity 11=flash.
-    float flash = clamp(u.data[11], 0.0, 1.0);
-    if (flash <= 0.01) discard;
-    vec3 core = vec3(0.75, 0.85, 1.0) * flash;
-    float viewDist = length(vViewPos);
-    float fogAmt = clamp(1.0 - exp(-viewDist * u.data[10]), 0.0, 1.0);
-    vec3 fogCol = vec3(u.data[7], u.data[8], u.data[9]);
-    vec3 rgb = mix(core, fogCol, fogAmt * 0.6);
-    outColor = vec4(rgb, 1.0);
-}
-)";
 
 // ---------------------------------------------------------------------------
 // Texture generation
@@ -488,9 +333,13 @@ void Weather::init(graphics::Graphics *gfx) {
     graphics::Texture *rainTex = gfx->newTexture(8, 32, rainRgba.data(), true, true);
     graphics::Texture *snowTex = gfx->newTexture(16, 16, snowRgba.data(), true, true);
 
-    // ---- shaders ----
-    graphics::Shader *weatherVert = gfx->newMeshShader(kWeatherVert, kWeatherFrag);
-    graphics::Shader *boltShader = gfx->newMeshShader(kBoltVert, kBoltFrag);
+    // ---- shaders (precompiled SPIR-V; runtime GLSL compile is not available on Windows) ----
+    std::vector<uint32_t> wv(weather_vert_spv, weather_vert_spv + weather_vert_spv_count);
+    std::vector<uint32_t> wf(weather_frag_spv, weather_frag_spv + weather_frag_spv_count);
+    std::vector<uint32_t> bv(bolt_vert_spv, bolt_vert_spv + bolt_vert_spv_count);
+    std::vector<uint32_t> bf(bolt_frag_spv, bolt_frag_spv + bolt_frag_spv_count);
+    graphics::Shader *weatherVert = gfx->newMeshShaderFromSpv(wv, wf);
+    graphics::Shader *boltShader = gfx->newMeshShaderFromSpv(bv, bf);
     declareWeatherParams(weatherVert);
     declareWeatherParams(boltShader);
 

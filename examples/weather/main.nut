@@ -1,16 +1,27 @@
-// WEATHER LAB — a small 3D diorama that demonstrates the EVEngine weather
+// WEATHER LAB 鈥?a small 3D diorama that demonstrates the EVEngine weather
 // module: rain, snow, lightning, wind and the storm mood (sky / fog / sun).
-// Use the left panel to pick a preset, or press 1..6 to switch quickly.
+//
+// Controls:
+//   鈥?Panel buttons or keys 1..6  鈥?pick a preset
+//   鈥?Space  /  "Cycle" button     鈥?auto-loop through every weather
+//   鈥?S      /  "Strike" button    鈥?force a lightning bolt
+//   鈥?Sliders tune intensity + wind live
+//   鈥?Camera auto-orbits the diorama
 
 if (!("uiReady" in getroottable())) uiReady <- false;
 if (!("preset" in getroottable())) preset <- "clear";
 if (!("camAngle" in getroottable())) camAngle <- 0.0;
 if (!("autoOrbit" in getroottable())) autoOrbit <- true;
+if (!("autoCycle" in getroottable())) autoCycle <- false;
+if (!("cycleTimer" in getroottable())) cycleTimer <- 0.0;
 if (!("props" in getroottable())) props <- [];
 if (!("strikeWasDown" in getroottable())) strikeWasDown <- false;
 
+
+presetOrder <- ["clear", "drizzle", "rain", "storm", "snow", "fog"];
+
 presets <- {
-    clear   = { intensity = 0.0, wind = 1.5, dir = 0,  sky = [0.45, 0.53, 0.62], sun = 1.0,  fog = [0.55, 0.58, 0.62], fogD = 0.0015, lightning = false }
+    clear   = { intensity = 0.0,  wind = 1.5, dir = 0,  sky = [0.45, 0.53, 0.62], sun = 1.0,  fog = [0.55, 0.58, 0.62], fogD = 0.0015, lightning = false }
     drizzle = { intensity = 0.25, wind = 4.0, dir = 20, sky = [0.40, 0.46, 0.55], sun = 0.8, fog = [0.52, 0.54, 0.56], fogD = 0.006,  lightning = false }
     rain    = { intensity = 0.65, wind = 7.0, dir = 35, sky = [0.34, 0.39, 0.47], sun = 0.5, fog = [0.45, 0.48, 0.51], fogD = 0.012,  lightning = false }
     storm   = { intensity = 0.9,  wind = 13.0, dir = 55, sky = [0.22, 0.26, 0.32], sun = 0.25, fog = [0.30, 0.32, 0.36], fogD = 0.02,   lightning = true }
@@ -19,6 +30,7 @@ presets <- {
 };
 
 camera <- null;
+lastFrameWasDown <- false;
 
 function buildProp(kind, x, z) {
     local root = eve.Renderable3D();
@@ -83,6 +95,26 @@ function buildScene() {
     buildProp("rock", -1.0, -9.0);
 }
 
+function syncSliders() {
+    local p = presets[preset];
+    if (!uiReady) return;
+    ui.select("panel");
+    ui.setValue("intensity", p.intensity);
+    ui.setValue("wind", p.wind);
+    ui.setValue("winddir", p.dir);
+}
+
+function updateHud() {
+    if (!uiReady) return;
+    local p = presets[preset];
+    ui.select("hud");
+    ui.setText("hudPreset", "Preset:  " + preset);
+    ui.setText("hudIntensity", "Intensity:  " + (p.intensity * 100).tointeger() + "%");
+    ui.setText("hudWind", "Wind:  " + p.wind + " m/s @ " + p.dir + "\u00B0");
+    ui.setText("hudFx", (p.lightning ? "Lightning:  ON" : "Lightning:  off") +
+                        "   鈥?  Cycle: " + (autoCycle ? "ON" : "off"));
+}
+
 function applyPreset() {
     local p = presets[preset];
     weather.setPreset(preset);
@@ -94,15 +126,14 @@ function applyPreset() {
     weather.setSunIntensity(p.sun);
     weather.setFogColor(p.fog[0], p.fog[1], p.fog[2]);
     weather.setFogDensity(p.fogD);
-    if (uiReady) {
-        ui.select("panel");
-        ui.setText("status", "Preset: " + preset);
-    }
+    syncSliders();
+    updateHud();
 }
 
 function buildPanel() {
     ui.setTheme("dark");
     ui.setNavKeyboard(true);
+
     ui.beginBuild();
     ui.beginWindow("WEATHER LAB", "root");
     ui.text("Presets", "h1");
@@ -117,13 +148,26 @@ function buildPanel() {
     ui.slider("Wind speed", presets[preset].wind, 0.0, 20.0, "wind");
     ui.slider("Wind dir (deg)", presets[preset].dir, 0.0, 360.0, "winddir");
     ui.button("Strike lightning (S)", "strike");
-    ui.text(preset, "status");
-    ui.text("Camera: space to orbit • S = bolt", "hint");
+    ui.button("Cycle all (Space)", "cycle");
+    ui.text("Camera: space to orbit 鈥?S = bolt", "hint");
     ui.end();
     ui.mountBuildAs("panel");
     ui.select("panel");
     ui.setHostOverlay(true);
-    ui.setHostPos(760.0, 24.0, 250.0, 600.0);
+    ui.setHostPos(760.0, 24.0, 250.0, 620.0);
+
+    ui.beginBuild();
+    ui.beginWindow("Weather", "hudroot");
+    ui.text("Preset", "hudPreset");
+    ui.text("Intensity", "hudIntensity");
+    ui.text("Wind", "hudWind");
+    ui.text("FX", "hudFx");
+    ui.end();
+    ui.mountBuildAs("hud");
+    ui.select("hud");
+    ui.setHostOverlay(true);
+    ui.setHostPos(20.0, 20.0, 300.0, 120.0);
+
     uiReady = true;
 }
 
@@ -139,7 +183,7 @@ eve_init = function() {
     buildScene();
     if (!uiReady) buildPanel();
     applyPreset();
-};
+    };
 
 eve_update = function(dt) {
     if (autoOrbit) {
@@ -152,19 +196,38 @@ eve_update = function(dt) {
     local keys = ["1", "2", "3", "4", "5", "6"];
     foreach (k in keys) {
         if (keyboard.isDown(k)) {
-            local names = ["clear", "drizzle", "rain", "storm", "snow", "fog"];
             local idx = k.tointeger() - 1;
-            if (idx >= 0 && idx < names.len() && preset != names[idx]) {
-                preset = names[idx];
+            if (idx >= 0 && idx < presetOrder.len() && preset != presetOrder[idx]) {
+                preset = presetOrder[idx];
                 applyPreset();
             }
         }
     }
+
+    // Space toggles the auto-cycle; S strikes a bolt (edge-triggered).
+    local space = keyboard.isDown("Space");
+    if (space && !lastFrameWasDown) autoCycle = !autoCycle;
+    lastFrameWasDown = space;
+
     if (keyboard.isDown("s") || keyboard.isDown("S")) {
         if (!strikeWasDown) weather.strike();
         strikeWasDown = true;
     } else {
         strikeWasDown = false;
+    }
+
+    // Auto-cycle through every weather preset.
+    if (autoCycle) {
+        cycleTimer -= dt;
+        if (cycleTimer <= 0.0) {
+            local idx = 0;
+            foreach (i, name in presetOrder) {
+                if (name == preset) { idx = i; break; }
+            }
+            preset = presetOrder[(idx + 1) % presetOrder.len()];
+            applyPreset();
+            cycleTimer = 6.0;
+        }
     }
 
     local clicked = ui.consumeClick();
@@ -177,6 +240,7 @@ eve_update = function(dt) {
         else if (clicked == "panel/pSnow") { preset = "snow"; needApply = true; }
         else if (clicked == "panel/pFog") { preset = "fog"; needApply = true; }
         else if (clicked == "panel/strike") weather.strike();
+        else if (clicked == "panel/cycle") autoCycle = !autoCycle;
         clicked = ui.consumeClick();
     }
     if (needApply) applyPreset();
@@ -184,11 +248,19 @@ eve_update = function(dt) {
     local changed = ui.consumeChange();
     while (changed != "") {
         ui.select("panel");
-        if (changed == "panel/intensity") weather.setIntensity(ui.getValue("intensity"));
-        else if (changed == "panel/wind") weather.setWindSpeed(ui.getValue("wind"));
-        else if (changed == "panel/winddir") weather.setWindDirection(ui.getValue("winddir"));
+        if (changed == "panel/intensity") {
+            weather.setIntensity(ui.getValue("intensity"));
+            presets[preset].intensity = ui.getValue("intensity");
+        } else if (changed == "panel/wind") {
+            weather.setWindSpeed(ui.getValue("wind"));
+            presets[preset].wind = ui.getValue("wind");
+        } else if (changed == "panel/winddir") {
+            weather.setWindDirection(ui.getValue("winddir"));
+            presets[preset].dir = ui.getValue("winddir");
+        }
         changed = ui.consumeChange();
     }
+    updateHud();
 
     weather.update(dt, gfx);
     camera.setAmbient(
