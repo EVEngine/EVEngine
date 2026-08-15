@@ -133,6 +133,10 @@ public:
     /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure.
      *  Same path returns the same Texture* and reloads pixels in place on repeat calls. */
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
+    /** Load a texture from disk with wrap/repeat sampling (for tiling structures).
+     *  Non-virtual helper (same pattern as newTextureFromImageData); reads + decodes
+     *  via Filesystem/Image then uploads with the requested repeat modes. */
+    Texture *newTextureFromFileRepeated(const std::string &filename, bool repeatU, bool repeatV);
 
     /** Reload a path-cached texture from disk in place (pointer stable). False if unbound. */
     virtual bool reloadTextureFromFile(const std::string &filename) = 0;
