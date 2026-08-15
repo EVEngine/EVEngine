@@ -18,6 +18,7 @@
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Outline.h"
 #include "graphics/Material.h"
 #include "graphics/RenderControl.h"
 #ifndef EVENGINE_WEBGPU
@@ -455,6 +456,31 @@ void Graphics::expose(ssq::Table &table) {
     ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
     ao.addFunc("getFromDepthShader", &AmbientOcclusion::getFromDepthShader);
 
+    auto outline = table.addClass<Outline>(
+        "Outline",
+        std::function<Outline *()>([]() -> Outline * { return nullptr; }), true);
+    outline.addFunc("setColor", &Outline::setColor);
+    outline.addFunc("getColorR", &Outline::getColorR);
+    outline.addFunc("getColorG", &Outline::getColorG);
+    outline.addFunc("getColorB", &Outline::getColorB);
+    outline.addFunc("setWidth", &Outline::setWidth);
+    outline.addFunc("getWidth", &Outline::getWidth);
+    outline.addFunc("setDepthThreshold", &Outline::setDepthThreshold);
+    outline.addFunc("getDepthThreshold", &Outline::getDepthThreshold);
+    outline.addFunc("setDepthSensitivity", &Outline::setDepthSensitivity);
+    outline.addFunc("getDepthSensitivity", &Outline::getDepthSensitivity);
+    outline.addFunc("setNormalThreshold", &Outline::setNormalThreshold);
+    outline.addFunc("getNormalThreshold", &Outline::getNormalThreshold);
+    outline.addFunc("setSoftness", &Outline::setSoftness);
+    outline.addFunc("getSoftness", &Outline::getSoftness);
+    outline.addFunc("setClip", &Outline::setClip);
+    outline.addFunc("hasParam", &Outline::hasParam);
+    outline.addFunc("setFloat", &Outline::setFloat);
+    outline.addFunc("getFloat", &Outline::getFloat);
+    outline.addFunc("apply", &Outline::apply);
+    outline.addFunc("applyTo", &Outline::applyTo);
+    outline.addFunc("getShader", &Outline::getShader);
+
     auto gi = table.addClass<GlobalIllumination>(
         "GlobalIllumination",
         std::function<GlobalIllumination *()>([]() -> GlobalIllumination * { return nullptr; }), true);
@@ -547,6 +573,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
+    cls.addFunc("newOutline", &Graphics::newOutline);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
     cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
     cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
@@ -566,6 +593,8 @@ Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
 
 AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
+Outline *Graphics::newOutline() { return new Outline(this); }
+
 GlobalIllumination *Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
 
 AmbientOcclusion *Graphics::pipelineAmbientOcclusion() {
@@ -581,6 +610,11 @@ GlobalIllumination *Graphics::pipelineGlobalIllumination() {
 AntiAliasing *Graphics::pipelineAntiAliasing() {
     if (!pipelineAA_) pipelineAA_ = std::make_unique<AntiAliasing>(this);
     return pipelineAA_.get();
+}
+
+Outline *Graphics::pipelineOutline() {
+    if (!pipelineOutline_) pipelineOutline_ = std::make_unique<Outline>(this);
+    return pipelineOutline_.get();
 }
 
 AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }

@@ -32,6 +32,7 @@ file(GLOB all_test_cpp
   Volumetric.cpp
   TextureSampler.cpp
   AmbientOcclusion.cpp
+  Outline.cpp
   AntiAliasing.cpp
   GlobalIllumination.cpp
   UISystem.cpp
