@@ -135,7 +135,8 @@ public:
     void refreshWatches();
     /** Evaluate a single expression (local name, or roottable slot). */
     VariableInfo evaluate(const std::string& expression) const;
-    std::vector<VariableInfo> locals(int stackLevel = 1) const;
+    /** Locals of the given call-stack level (0 = current script frame). */
+    std::vector<VariableInfo> locals(int stackLevel = 0) const;
     std::vector<StackFrameInfo> stackTrace(int maxFrames = 32) const;
 
     using PumpFn = std::function<void()>;

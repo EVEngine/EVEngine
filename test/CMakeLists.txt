@@ -94,6 +94,7 @@ file(GLOB all_test_cpp
   callgraph.cpp
   renderflow.cpp
   debugger.cpp
+  debugger_audit.cpp
   dap.cpp
   mcp.cpp
   main.cpp
