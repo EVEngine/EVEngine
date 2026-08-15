@@ -7,6 +7,8 @@
 
 #ifdef EVENGINE_WINDOWS
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 using namespace std::filesystem;
@@ -16,6 +18,13 @@ namespace eve::cmd
 {
 
 namespace {
+
+// Runtime binary name inside the SDK's bin/: eve.exe on Windows, eve elsewhere.
+#ifdef EVENGINE_WINDOWS
+constexpr const char* kEveRuntimeName = "eve.exe";
+#else
+constexpr const char* kEveRuntimeName = "eve";
+#endif
 
 bool copyFileIf(const path& src, const path& dst) {
     error_code ec;
@@ -41,15 +50,20 @@ std::string resolveSdkRoot(const std::string& sdkArg) {
     const char* env = getenv("EVENGINE_SDK");
     if (env && is_directory(env)) return env;
 
-    // Running from <sdk>/bin/eve.exe -> root is two directories up.
+    // Running from <sdk>/bin/<runtime> -> root is two directories up.
+    path exe;
 #ifdef EVENGINE_WINDOWS
     wchar_t buf[MAX_PATH + 1] = {0};
-    if (GetModuleFileNameW(nullptr, buf, MAX_PATH) != 0) {
-        path exe(buf);
+    if (GetModuleFileNameW(nullptr, buf, MAX_PATH) != 0) exe = path(buf);
+#else
+    char buf[4096] = {0};
+    const ssize_t n = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+    if (n > 0) exe = path(std::string(buf, static_cast<size_t>(n)));
+#endif
+    if (!exe.empty()) {
         path root = exe.parent_path().parent_path();
         if (exists(root / "share" / "eve" / "TARGET_PLATFORM")) return root.string();
     }
-#endif
     return "";
 }
 
@@ -58,7 +72,7 @@ std::string resolveSdkRoot(const std::string& sdkArg) {
 struct PackageArgs : Handler {
     string sdkPath, outputPath;
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
-        auto subcmd = app.add_subcommand("package", "Package a game into a runnable Windows game folder.");
+        auto subcmd = app.add_subcommand("package", "Package a game into a runnable game folder.");
         subcmd->allow_extras();
         subcmd->add_option("-o,--output", outputPath, "output folder path");
         subcmd->add_option("--sdk", sdkPath, "target SDK root (default: auto-detect / $EVENGINE_SDK)");
@@ -88,7 +102,7 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     if (sdkRoot.empty()) {
         cerr << rang::fg::red
              << "Cannot locate the target SDK. Pass --sdk <dir>, set $EVENGINE_SDK, "
-                "or run from <sdk>/bin/eve.exe."
+                "or run from <sdk>/bin/<runtime>."
              << rang::fg::reset << endl;
         return 2;
     }
@@ -108,12 +122,15 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     path sdkPlat = path(sdkRoot) / "platform";
 
     // 1. Runtime executable.
-    if (!copyFileIf(sdkBin / "eve.exe", outDir / "eve.exe")) {
-        cerr << rang::fg::red << "SDK missing " << (sdkBin / "eve.exe").string() << rang::fg::reset << endl;
+    path runtimeSrc = sdkBin / kEveRuntimeName;
+    path runtimeDst = outDir / kEveRuntimeName;
+    if (!copyFileIf(runtimeSrc, runtimeDst)) {
+        cerr << rang::fg::red << "SDK missing " << runtimeSrc.string() << rang::fg::reset << endl;
         return 3;
     }
 
-    // 2. Runtime DLLs eve.exe needs (vulkan + debug CRT). Best-effort: skip if absent.
+#ifdef EVENGINE_WINDOWS
+    // 2. Windows runtime DLLs the executable needs (vulkan + VC CRT). Best-effort.
     std::vector<path> crtCandidates;
     if (exists(sdkBin)) crtCandidates.push_back(sdkBin);
     // VC redist (version-independent glob): both release CRT and debug CRT.
@@ -151,8 +168,9 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
             cerr << rang::fg::yellow << "note: runtime DLL not found (may be system-installed): "
                  << dll << rang::fg::reset << endl;
     }
+#endif  // EVENGINE_WINDOWS
 
-    // 3. Platform packaging template (win32 README etc).
+    // 3. Platform packaging template (win32/linux README etc).
     if (exists(sdkPlat)) {
         for (const auto& entry : directory_iterator(sdkPlat, ec)) {
             copy(entry.path(), outDir / entry.path().filename(),
@@ -169,8 +187,9 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     }
 
     cout << rang::fg::green << "Built game package -> " << rang::fg::reset << outDir.string() << endl;
-    cout << "  run: " << (outDir / "eve.exe").string() << endl;
+    cout << "  run: " << runtimeDst.string() << endl;
     return 0;
 }
 
 }  // namespace eve::cmd
+
