@@ -325,10 +325,17 @@ while (running) {
         eve_render();
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();
+    } catch (e) {
+        print("frame error: " + e + "\n");
+    }
+    // Always present: eve_render may have opened a 3D pass (gfx.render3D)
+    // before throwing. Skipping present leaves swapchainPassOpen and every
+    // later frame fails with "begin3DFrame: swapchain pass already open".
+    try {
         gfx.present();
         ui.dispatchEvents();
     } catch (e) {
-        print("frame error: " + e + "\n");
+        print("present error: " + e + "\n");
     }
 }
 

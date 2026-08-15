@@ -1686,8 +1686,36 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
 // 2D drawing
 // ---------------------------------------------------------------------------
 
+void Graphics::clear2DBatches() {
+    solidBatch.clear();
+    texturedBatches.clear();
+    litBatches.clear();
+    overlaySpans.clear();
+    sceneColorComposited = false;
+}
+
+void Graphics::noteSolidOverlay() {
+    const uint32_t n = uint32_t(solidBatch.vertices().size());
+    if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Solid) {
+        overlaySpans.back().vertCount = n - overlaySpans.back().vertBegin;
+        return;
+    }
+    const uint32_t begin = n >= 6u ? n - 6u : 0u;
+    overlaySpans.push_back({OverlayKind::Solid, 0, begin, n - begin});
+}
+
+void Graphics::noteTexturedOverlay(Texture *tex) {
+    if (tex && tex == getSceneColorTexture()) sceneColorComposited = true;
+    const uint32_t idx = texturedBatches.empty() ? 0u : uint32_t(texturedBatches.size() - 1);
+    if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Textured &&
+        overlaySpans.back().index == idx)
+        return;
+    overlaySpans.push_back({OverlayKind::Textured, idx, 0, 0});
+}
+
 void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &color) {
     solidBatch.addRect(x, y, w, h, color);
+    noteSolidOverlay();
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h,
@@ -1712,16 +1740,12 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         drawSolidRect(x, y, w, h, color);
         return;
     }
-    auto it = std::find_if(texturedBatches.begin(), texturedBatches.end(),
-                           [&](const TexturedBatch &tb) {
-                               return tb.texture == texture && tb.shader == shader &&
-                                      tb.depth == nullptr;
-                           });
-    if (it == texturedBatches.end()) {
+    if (texturedBatches.empty() || texturedBatches.back().texture != texture ||
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != nullptr) {
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
-        it = texturedBatches.end() - 1;
     }
-    it->batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
+    noteTexturedOverlay(texture);
 }
 
 void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
@@ -1742,6 +1766,7 @@ void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader,
         it = texturedBatches.end() - 1;
     }
     it->batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1, rotatedUV);
+    noteTexturedOverlay(texture);
 }
 
 void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
@@ -1760,6 +1785,7 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
         it = texturedBatches.end() - 1;
     }
     it->batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
+    noteTexturedOverlay(color);
 }
 
 void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
@@ -1787,8 +1813,14 @@ void Graphics::setLighting2D(const Lighting2DUBO &ubo) {
 
 void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
                        WGPUTextureFormat format) {
-    // Solid batch.
-    if (!solidBatch.empty() && (colorPipeline || offscreenColorPipeline)) {
+    auto spans = std::move(overlaySpans);
+    const bool offscreen = uint32_t(format) != uint32_t(surfaceFormat);
+
+    uint64_t solidOffset = 0;
+    uint64_t solidBytes = 0;
+    wgpu::RenderPipeline solidPipe =
+        offscreen ? offscreenColorPipeline : colorPipeline;
+    if (!solidBatch.empty() && solidPipe) {
         Batcher ndc = solidBatch;
         ndc.toNDC(viewW, viewH);
         auto verts = ndc.vertices();
@@ -1807,34 +1839,43 @@ void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
                 data.push_back(v.color.b);
                 data.push_back(v.color.a);
             }
-            uint64_t bytes = data.size() * sizeof(float);
+            solidBytes = data.size() * sizeof(float);
             auto &arena = currentVertexArena();
-            ensureVertexArena(arena, arena.used + bytes);
-            uint64_t offset = arena.alloc(bytes);
-            queue.WriteBuffer(arena.buffer, offset, data.data(), bytes);
-
-            wgpu::RenderPipeline pipe =
-                uint32_t(format) == uint32_t(surfaceFormat) ? colorPipeline : offscreenColorPipeline;
-            pass.SetPipeline(pipe);
-            pass.SetVertexBuffer(0, arena.buffer, offset, bytes);
-            pass.Draw(static_cast<uint32_t>(verts.size()), 1, 0, 0);
+            ensureVertexArena(arena, arena.used + solidBytes);
+            solidOffset = arena.alloc(solidBytes);
+            queue.WriteBuffer(arena.buffer, solidOffset, data.data(), solidBytes);
         }
     }
-    solidBatch.clear();
 
-    // Textured batches.
-    for (auto &tb : texturedBatches) {
-        if (tb.batch.empty()) continue;
-        drawTexturedBatch(pass, tb, viewW, viewH, format, uint32_t(format) != uint32_t(surfaceFormat));
-    }
-    texturedBatches.clear();
+    auto drawSolid = [&](uint32_t first, uint32_t count) {
+        if (!solidPipe || solidBytes == 0 || count == 0) return;
+        pass.SetPipeline(solidPipe);
+        pass.SetVertexBuffer(0, currentVertexArena().buffer, solidOffset, solidBytes);
+        pass.Draw(count, 1, first, 0);
+    };
 
-    // Lit batches.
-    for (auto &lb : litBatches) {
-        if (lb.batch.empty()) continue;
-        drawLitBatch(pass, lb, viewW, viewH, format);
+    if (!spans.empty()) {
+        for (const auto &sp : spans) {
+            if (sp.kind == OverlayKind::Solid)
+                drawSolid(sp.vertBegin, sp.vertCount);
+            else if (sp.kind == OverlayKind::Textured && sp.index < texturedBatches.size())
+                drawTexturedBatch(pass, texturedBatches[sp.index], viewW, viewH, format, offscreen);
+            else if (sp.kind == OverlayKind::Lit && sp.index < litBatches.size())
+                drawLitBatch(pass, litBatches[sp.index], viewW, viewH, format);
+        }
+    } else {
+        if (solidBytes > 0)
+            drawSolid(0, uint32_t(solidBatch.vertices().size()));
+        for (auto &tb : texturedBatches) {
+            if (tb.batch.empty()) continue;
+            drawTexturedBatch(pass, tb, viewW, viewH, format, offscreen);
+        }
+        for (auto &lb : litBatches) {
+            if (lb.batch.empty()) continue;
+            drawLitBatch(pass, lb, viewW, viewH, format);
+        }
     }
-    litBatches.clear();
+    clear2DBatches();
 }
 
 void Graphics::drawTexturedBatch(wgpu::RenderPassEncoder pass, TexturedBatch &tb, int viewW,
@@ -2689,7 +2730,7 @@ void Graphics::present() {
         rp.colorAttachments = &colorAtt;
         wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
 
-        if (sceneView) {
+        if (sceneView && !sceneColorComposited) {
             if (!fullscreenQuadReady) {
                 // Textured vertex: pos(2) + color(4) + uv(2) = 32 bytes.
                 float verts[32] = {

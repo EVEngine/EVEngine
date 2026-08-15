@@ -197,6 +197,12 @@ std::string Graphics::getBackendName() const { return "vulkan"; }
 Graphics::~Graphics() {
     if (!initialized) return;
     device->waitIdle();
+    // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
+    // first so their destructors do not see freed shader pointers.
+    pipelineAA_.reset();
+    pipelineAO_.reset();
+    pipelineGI_.reset();
+    renderControl_.reset();
     ownedCanvases.clear();
     ownedMeshes.clear();
     ownedGpuMeshes.clear();
@@ -366,6 +372,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
 
 void Graphics::onNativeWindowDestroyed() {
     if (!initialized) return;
+    if (swapchainPassOpen || sceneColorPassOpen) abortOpen3DFrame();
     // Fire registered window-destroyed callbacks (UI backend tears down its
     // ImGui context here) before the device/surface resources are released.
     for (auto &cb : windowDestroyedCallbacks_) cb.first(cb.second);
@@ -1169,7 +1176,7 @@ void Graphics::queueUiResolve() {
     TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, Batcher{}};
     resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight),
                                   Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
-    texturedBatches.push_back(std::move(resolve));
+    pendingUiResolve = std::move(resolve);
 }
 
 bool Graphics::renderUiOverlayPass() {
@@ -1527,23 +1534,13 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
 void Graphics::queueSceneColorResolve() {
     Texture *src = getSceneColorTexture();
     if (!src || !src->gpuHandle) return;
-    AntiAliasing *aa = pipelineAntiAliasing();
-    aa->setMode("fxaa");
-    const bool doAA = !renderControl_ || renderControl_->isEnabled("aa");
-    if (doAA) {
-        aa->setQuality("medium");
-    } else {
-        aa->setFloat("edgeThreshold", 1.f);
-        aa->setFloat("edgeThresholdMin", 1.f);
-        aa->setFloat("subpix", 0.f);
-    }
-    aa->prepareSource(src);
-    Shader *sh = aa->getShader();
+    Shader *sh = prepareSceneColorResolveShader(src);
     if (!sh) return;
+    if (sceneColorComposited) return;
     TexturedBatch resolve{src, nullptr, sh, Batcher{}};
     resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), Color(1.f, 1.f, 1.f, 1.f),
                                   0.f, 0.f, 1.f, 1.f);
-    texturedBatches.insert(texturedBatches.begin(), std::move(resolve));
+    pendingSceneResolve = std::move(resolve);
 }
 
 void Graphics::createShadowResources() {
@@ -2002,14 +1999,51 @@ void Graphics::setViewportSize(int newW, int newH, int newPw, int newPh) {
     if (initialized && changed) swapchainDirty = true;
 }
 
+void Graphics::clear2DBatches() {
+    solidBatch.clear();
+    texturedBatches.clear();
+    litBatches.clear();
+    overlaySpans.clear();
+    engine3DSpans.clear();
+    pendingSceneResolve.reset();
+    pendingUiResolve.reset();
+    sceneColorComposited = false;
+}
+
+void Graphics::noteSolidOverlay() {
+    const uint32_t n = uint32_t(solidBatch.vertices().size());
+    auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
+    if (!spans.empty() && spans.back().kind == OverlayKind::Solid) {
+        spans.back().vertCount = n - spans.back().vertBegin;
+        return;
+    }
+    const uint32_t begin = n >= 6u ? n - 6u : 0u;
+    spans.push_back({OverlayKind::Solid, 0, begin, n - begin});
+}
+
+void Graphics::noteTexturedOverlay(Texture *tex) {
+    if (tex && tex == getSceneColorTexture()) sceneColorComposited = true;
+    auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
+    const uint32_t idx = texturedBatches.empty() ? 0u : uint32_t(texturedBatches.size() - 1);
+    if (!spans.empty() && spans.back().kind == OverlayKind::Textured && spans.back().index == idx)
+        return;
+    spans.push_back({OverlayKind::Textured, idx, 0, 0});
+}
+
+void Graphics::noteLitOverlay() {
+    auto &spans = recordingEngine3D_ ? engine3DSpans : overlaySpans;
+    const uint32_t idx = litBatches.empty() ? 0u : uint32_t(litBatches.size() - 1);
+    if (!spans.empty() && spans.back().kind == OverlayKind::Lit && spans.back().index == idx)
+        return;
+    spans.push_back({OverlayKind::Lit, idx, 0, 0});
+}
+
 void Graphics::clear(std::optional<Color> color, std::optional<int>, std::optional<double>) {
     // Keep 3D framebuffer contents when composing 2D on top of an open 3D pass.
     if (frameHad3D && activeCanvas == nullptr) return;
     clearColor = color.value_or(backgroundColor);
     hasPendingClear = true;
-    solidBatch.clear();
-    texturedBatches.clear();
-    litBatches.clear();
+    clear2DBatches();
     if (auto *oc = dynamic_cast<OffscreenCanvas *>(activeCanvas)) {
         oc->clear(clearColor, std::nullopt, std::nullopt);
     }
@@ -2017,6 +2051,7 @@ void Graphics::clear(std::optional<Color> color, std::optional<int>, std::option
 
 void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &color) {
     solidBatch.addRect(x, y, w, h, color);
+    noteSolidOverlay();
 }
 
 namespace {
@@ -2460,6 +2495,7 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
+    noteTexturedOverlay(texture);
 }
 
 void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
@@ -2477,6 +2513,7 @@ void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader,
     }
     texturedBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1,
                                                         rotatedUV);
+    noteTexturedOverlay(texture);
 }
 
 void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
@@ -2494,6 +2531,7 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
         texturedBatches.push_back(TexturedBatch{color, depth, shader, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f);
+    noteTexturedOverlay(color);
 }
 
 void Graphics::setLighting2D(const Lighting2DUBO &ubo) { lighting2dFrame = ubo; }
@@ -2518,6 +2556,7 @@ void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, 
         litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1);
+    noteLitOverlay();
 }
 
 vkb::BoundSet Graphics::lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen) {
@@ -2826,9 +2865,8 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
     Batcher solid = solidBatch;
     auto textured = std::move(texturedBatches);
     auto lit = std::move(litBatches);
-    solidBatch.clear();
-    texturedBatches.clear();
-    litBatches.clear();
+    auto spans = std::move(overlaySpans);
+    clear2DBatches();
 
     const Color cc = canvas->pendingClearColor();
     const bool needClear = canvas->takePendingClear();
@@ -2861,80 +2899,151 @@ void Graphics::flushToOffscreen(OffscreenCanvas *canvas) {
                                 vkb::HostVertexBuffer &solidBuf = offscreenBuffers.solidBuf;
                                 std::vector<vkb::HostVertexBuffer> &texBufs = offscreenBuffers.texBufs;
                                 size_t texBufIndex = 0;
+                                const int vw = canvas->getWidth();
+                                const int vh = canvas->getHeight();
 
-                                if (!solid.empty() && offscreenSolidPipeline) {
+                                auto drawOffscreenTextured = [&](TexturedBatch &tb) {
+                                    if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
+                                    auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
+                                    vk::DescriptorSet texSet = gpu->descriptorSet;
+                                    if (tb.depth && tb.depth->gpuHandle) {
+                                        auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
+                                        if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu))
+                                            texSet = combo;
+                                    }
+                                    Batcher ndc = tb.batch;
+                                    ndc.toNDC(vw, vh);
+                                    std::vector<TexturedVertex> gpuVerts;
+                                    gpuVerts.reserve(ndc.vertices().size());
+                                    for (const auto &v : ndc.vertices())
+                                        gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
+
+                                    if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
+                                    vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
+                                    vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
+
+                                    if (tb.shader && tb.shader->gpuHandle) {
+                                        ensureShaderOffscreenPipeline(tb.shader);
+                                        auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
+                                        if (!gs->offscreenPipeline) return;
+                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                                        gs->offscreenPipeline);
+                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                              shaderPipelineLayout, 0, 1,
+                                                              &texSet, 0, nullptr);
+                                        cb.pushConstants(shaderPipelineLayout,
+                                                         vk::ShaderStageFlagBits::eVertex |
+                                                             vk::ShaderStageFlagBits::eFragment,
+                                                         0, Shader::kPushConstantBytes,
+                                                         tb.shader->pushConstantData());
+                                    } else if (offscreenTexPipeline) {
+                                        cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                                        offscreenTexPipeline);
+                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                              texPipelineLayout, 0, 1,
+                                                              &texSet, 0, nullptr);
+                                    } else {
+                                        return;
+                                    }
+                                    vk::DeviceSize offset = 0;
+                                    cb.bindVertexBuffers(0, 1, vb, &offset);
+                                    cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
+                                };
+
+                                bool solidUploaded = false;
+                                auto uploadSolid = [&]() {
+                                    if (solidUploaded || solid.empty() || !offscreenSolidPipeline) return;
                                     Batcher ndc = solid;
-                                    ndc.toNDC(canvas->getWidth(), canvas->getHeight());
+                                    ndc.toNDC(vw, vh);
                                     std::vector<ColorVertex> gpuVerts;
                                     gpuVerts.reserve(ndc.vertices().size());
                                     for (const auto &v : ndc.vertices())
                                         gpuVerts.push_back(ColorVertex{v.pos, v.color});
                                     solidBuf.allocate<ColorVertex>(frameToken(), device, gpuVerts);
+                                    solidUploaded = true;
+                                };
+
+                                auto drawSolidSpan = [&](uint32_t begin, uint32_t count) {
+                                    if (!offscreenSolidPipeline || count == 0) return;
+                                    uploadSolid();
                                     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, offscreenSolidPipeline);
                                     vk::DeviceSize offset = 0;
                                     cb.bindVertexBuffers(0, 1, solidBuf, &offset);
-                                    cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
-                                }
+                                    cb.draw(count, 1, begin, 0);
+                                };
 
-                                if (offscreenTexPipeline) {
-                                    for (auto &tb : textured) {
-                                        if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) continue;
-                                        auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
-                                        vk::DescriptorSet texSet = gpu->descriptorSet;
-                                        if (tb.depth && tb.depth->gpuHandle) {
-                                            auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
-                                            if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu))
-                                                texSet = combo;
+                                if (!spans.empty()) {
+                                    for (const auto &sp : spans) {
+                                        if (sp.kind == OverlayKind::Solid)
+                                            drawSolidSpan(sp.vertBegin, sp.vertCount);
+                                        else if (sp.kind == OverlayKind::Textured &&
+                                                 sp.index < textured.size())
+                                            drawOffscreenTextured(textured[sp.index]);
+                                        else if (sp.kind == OverlayKind::Lit && offscreenLitPipeline &&
+                                                 sp.index < lit.size()) {
+                                            std::vector<LitBatch> one;
+                                            one.push_back(std::move(lit[sp.index]));
+                                            drawLitBatches(cb, vw, vh, offscreenLitPipeline, one,
+                                                           texBufs, texBufIndex, true);
                                         }
-                                        Batcher ndc = tb.batch;
-                                        ndc.toNDC(canvas->getWidth(), canvas->getHeight());
-                                        std::vector<TexturedVertex> gpuVerts;
-                                        gpuVerts.reserve(ndc.vertices().size());
-                                        for (const auto &v : ndc.vertices())
-                                            gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
-
-                                        if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
-                                        vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
-                                        vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
-
-                                        if (tb.shader && tb.shader->gpuHandle) {
-                                            ensureShaderOffscreenPipeline(tb.shader);
-                                            auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
-                                            if (!gs->offscreenPipeline) continue;
-                                            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                                            gs->offscreenPipeline);
-                                            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                                  shaderPipelineLayout, 0, 1,
-                                                                  &texSet, 0, nullptr);
-                                            cb.pushConstants(shaderPipelineLayout,
-                                                             vk::ShaderStageFlagBits::eVertex |
-                                                                 vk::ShaderStageFlagBits::eFragment,
-                                                             0, Shader::kPushConstantBytes,
-                                                             tb.shader->pushConstantData());
-                                        } else {
-                                            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                                            offscreenTexPipeline);
-                                            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                                  texPipelineLayout, 0, 1,
-                                                                  &texSet, 0, nullptr);
-                                        }
-                                        vk::DeviceSize offset = 0;
-                                        cb.bindVertexBuffers(0, 1, vb, &offset);
-                                        cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
                                     }
+                                } else {
+                                    if (!solid.empty())
+                                        drawSolidSpan(0, uint32_t(solid.vertices().size()));
+                                    for (auto &tb : textured) drawOffscreenTextured(tb);
+                                    if (offscreenLitPipeline)
+                                        drawLitBatches(cb, vw, vh, offscreenLitPipeline, lit, texBufs,
+                                                       texBufIndex, true);
                                 }
-
-                                if (offscreenLitPipeline)
-                                    drawLitBatches(cb, canvas->getWidth(), canvas->getHeight(),
-                                                   offscreenLitPipeline, lit, texBufs, texBufIndex,
-                                                   true);
 
                                 cb.endRenderPass();
                                 canvas->colorImage().endSampledLayout();
                             });
 }
 
+void Graphics::abortOpen3DFrame() {
+    const bool hadScene = sceneColorPassOpen;
+    const bool had3D = swapchainPassOpen;
+    try {
+        if (hadScene) endSceneColorRenderPass();
+    } catch (...) {
+        sceneColorPassOpen = false;
+    }
+    try {
+        if (had3D) {
+            // Scene-pass path never opened the swapchain pass; open a dummy
+            // one so the acquired command buffer can be submitted.
+            if (hadScene) beginSwapchainColorPass();
+            presentRecording = swapchainPass.endRenderPass();
+            swapchainPass = {};
+            presentRecording.end().submitAndPresent();
+            presentRecording = {};
+        }
+    } catch (...) {
+        swapchainPass = {};
+        presentRecording = {};
+    }
+    swapchainPassOpen = false;
+    sceneColorPassOpen = false;
+    frameHad3D = false;
+    hasPendingClear = false;
+    flushingSwapchain_ = false;
+    clear2DBatches();
+}
+
 void Graphics::flushToSwapchain() {
+    if (flushingSwapchain_) return;
+    flushingSwapchain_ = true;
+    bool completed = false;
+    struct FlushGuard {
+        Graphics *g;
+        bool *completed;
+        ~FlushGuard() {
+            g->flushingSwapchain_ = false;
+            if (!*completed) g->abortOpen3DFrame();
+        }
+    } guard{this, &completed};
+
     const bool continue3D = swapchainPassOpen;
     const bool hadScenePass = sceneColorPassOpen;
 
@@ -2950,6 +3059,7 @@ void Graphics::flushToSwapchain() {
         if (!beginPresentCommandBuffer()) {
             dropPendingOffscreenPasses();
             hasPendingClear = false;
+            completed = true;
             return;
         }
         recordPendingShadowPasses();
@@ -2971,9 +3081,13 @@ void Graphics::flushToSwapchain() {
     Batcher solid = solidBatch;
     auto textured = std::move(texturedBatches);
     auto lit = std::move(litBatches);
-    solidBatch.clear();
-    texturedBatches.clear();
-    litBatches.clear();
+    auto spans = std::move(overlaySpans);
+    auto engineSpans = std::move(engine3DSpans);
+    auto sceneResolve = std::move(pendingSceneResolve);
+    auto uiResolve = std::move(pendingUiResolve);
+    const bool autoScene = hadScenePass && !sceneColorComposited;
+    Texture *sceneTex = getSceneColorTexture();
+    clear2DBatches();
 
     auto &cb = currentPresentCb();
     setViewportAndScissor(cb, swapchain.extent.width, swapchain.extent.height);
@@ -2985,7 +3099,46 @@ void Graphics::flushToSwapchain() {
     std::vector<vkb::HostVertexBuffer> &texBufs = frameBufs.texBufs;
     size_t texBufIndex = 0;
 
-    if (!solid.empty() && pipeline) {
+    auto drawTextured = [&](TexturedBatch &tb) {
+        if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
+        auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
+        vk::DescriptorSet texSet = gpu->descriptorSet;
+        if (tb.depth && tb.depth->gpuHandle) {
+            auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
+            if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu)) texSet = combo;
+        }
+        Batcher ndc = tb.batch;
+        ndc.toNDC(width, height);
+        std::vector<TexturedVertex> gpuVerts;
+        gpuVerts.reserve(ndc.vertices().size());
+        for (const auto &v : ndc.vertices())
+            gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
+
+        if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
+        vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
+        vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
+
+        if (tb.shader && tb.shader->gpuHandle) {
+            auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
+                                  &texSet, 0, nullptr);
+            cb.pushConstants(shaderPipelineLayout,
+                             vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
+                             Shader::kPushConstantBytes, tb.shader->pushConstantData());
+        } else {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, texPipeline);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
+                                  &texSet, 0, nullptr);
+        }
+        vk::DeviceSize offset = 0;
+        cb.bindVertexBuffers(0, 1, vb, &offset);
+        cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
+    };
+
+    bool solidUploaded = false;
+    auto uploadSolid = [&]() {
+        if (solidUploaded || solid.empty() || !pipeline) return;
         Batcher ndc = solid;
         ndc.toNDC(width, height);
         std::vector<ColorVertex> gpuVerts;
@@ -2993,53 +3146,76 @@ void Graphics::flushToSwapchain() {
         for (const auto &v : ndc.vertices())
             gpuVerts.push_back(ColorVertex{v.pos, v.color});
         solidBuf.allocate<ColorVertex>(frameToken(), device, gpuVerts);
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-        vk::DeviceSize offset = 0;
-        cb.bindVertexBuffers(0, 1, solidBuf, &offset);
-        cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
+        solidUploaded = true;
+    };
+
+    auto replaySpans = [&](const std::vector<OverlaySpan> &list) {
+        for (const auto &sp : list) {
+            if (sp.kind == OverlayKind::Solid && pipeline && !solid.empty() && sp.vertCount > 0) {
+                uploadSolid();
+                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+                vk::DeviceSize offset = 0;
+                cb.bindVertexBuffers(0, 1, solidBuf, &offset);
+                cb.draw(sp.vertCount, 1, sp.vertBegin, 0);
+            } else if (sp.kind == OverlayKind::Textured && texPipeline &&
+                       sp.index < textured.size()) {
+                drawTextured(textured[sp.index]);
+            } else if (sp.kind == OverlayKind::Lit && lit2dPipeline && sp.index < lit.size()) {
+                std::vector<LitBatch> one;
+                one.push_back(std::move(lit[sp.index]));
+                drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            }
+        }
+    };
+
+    bool engineDrawn = false;
+    auto drawEngine3D = [&]() {
+        if (engineDrawn) return;
+        engineDrawn = true;
+        replaySpans(engineSpans);
+    };
+
+    // Default: blit 3D fullscreen under script 2D. Scripts that call
+    // drawScene3D / drawTexturedRect(getSceneColorTexture()) own the order.
+    if (autoScene && sceneResolve) {
+        drawTextured(*sceneResolve);
+        drawEngine3D();
     }
 
-    if (texPipeline) {
-        for (auto &tb : textured) {
-            if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) continue;
-            auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
-            vk::DescriptorSet texSet = gpu->descriptorSet;
-            if (tb.depth && tb.depth->gpuHandle) {
-                auto *depthGpu = static_cast<GpuTexture *>(tb.depth->gpuHandle);
-                if (vk::DescriptorSet combo = post2SetFor(gpu, depthGpu)) texSet = combo;
-            }
-            Batcher ndc = tb.batch;
-            ndc.toNDC(width, height);
-            std::vector<TexturedVertex> gpuVerts;
-            gpuVerts.reserve(ndc.vertices().size());
-            for (const auto &v : ndc.vertices())
-                gpuVerts.push_back(TexturedVertex{v.pos, v.color, v.uv});
-
-            if (texBufIndex >= texBufs.size()) texBufs.emplace_back();
-            vkb::HostVertexBuffer &vb = texBufs[texBufIndex++];
-            vb.allocate<TexturedVertex>(frameToken(), device, gpuVerts);
-
-            if (tb.shader && tb.shader->gpuHandle) {
-                auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
-                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->swapchainPipeline);
-                cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, shaderPipelineLayout, 0, 1,
-                                      &texSet, 0, nullptr);
-                cb.pushConstants(shaderPipelineLayout,
-                                 vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
-                                 Shader::kPushConstantBytes, tb.shader->pushConstantData());
-            } else {
-                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, texPipeline);
-                cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, texPipelineLayout, 0, 1,
-                                      &texSet, 0, nullptr);
-            }
+    if (spans.empty()) {
+        uploadSolid();
+        if (solidUploaded) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
             vk::DeviceSize offset = 0;
-            cb.bindVertexBuffers(0, 1, vb, &offset);
-            cb.draw(uint32_t(gpuVerts.size()), 1, 0, 0);
+            cb.bindVertexBuffers(0, 1, solidBuf, &offset);
+            cb.draw(uint32_t(solid.vertices().size()), 1, 0, 0);
+        }
+        if (texPipeline) {
+            for (auto &tb : textured) drawTextured(tb);
+        }
+        if (lit2dPipeline) drawLitBatches(cb, width, height, lit2dPipeline, lit, texBufs, texBufIndex,
+                                          false);
+    } else {
+        for (const auto &sp : spans) {
+            if (sp.kind == OverlayKind::Solid && pipeline && !solid.empty() && sp.vertCount > 0) {
+                uploadSolid();
+                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+                vk::DeviceSize offset = 0;
+                cb.bindVertexBuffers(0, 1, solidBuf, &offset);
+                cb.draw(sp.vertCount, 1, sp.vertBegin, 0);
+            } else if (sp.kind == OverlayKind::Textured && texPipeline &&
+                       sp.index < textured.size()) {
+                drawTextured(textured[sp.index]);
+                if (textured[sp.index].texture == sceneTex) drawEngine3D();
+            } else if (sp.kind == OverlayKind::Lit && lit2dPipeline && sp.index < lit.size()) {
+                std::vector<LitBatch> one;
+                one.push_back(std::move(lit[sp.index]));
+                drawLitBatches(cb, width, height, lit2dPipeline, one, texBufs, texBufIndex, false);
+            }
         }
     }
 
-    if (lit2dPipeline) drawLitBatches(cb, width, height, lit2dPipeline, lit, texBufs, texBufIndex,
-                                      false);
+    if (uiResolve) drawTextured(*uiResolve);
 
     // Invalidate prior readback so a failed present cannot reuse a stale frame.
     if (screenReadbackEnabled) hasPresentedFrame = false;
@@ -3059,13 +3235,21 @@ void Graphics::flushToSwapchain() {
     hasPendingClear = false;
     swapchainPassOpen = false;
     frameHad3D = false;
+    completed = true;
 }
 
 void Graphics::begin3DFrame() {
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
     if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
-    if (swapchainPassOpen) throw Exception("begin3DFrame: swapchain pass already open");
+    if (swapchainPassOpen) {
+        // Previous eve_render opened 3D then threw before present().
+        try {
+            flushToSwapchain();
+        } catch (...) {
+            abortOpen3DFrame();
+        }
+    }
     // Soft-fail like flushToSwapchain: on Android/iOS the surface may still be
     // settling after orientation change; throwing would abort the whole script.
     if (!beginPresentCommandBuffer())
@@ -4108,9 +4292,8 @@ void Graphics::present() {
     if (!isRenderSurfaceReady()) {
         // Native window is mid-(re)creation / rotation; drop this frame's work
         // instead of touching an invalid swapchain (which crashes the driver).
-        solidBatch.clear();
-        texturedBatches.clear();
-        litBatches.clear();
+        if (swapchainPassOpen) abortOpen3DFrame();
+        else clear2DBatches();
         hasPendingClear = false;
         return;
     }

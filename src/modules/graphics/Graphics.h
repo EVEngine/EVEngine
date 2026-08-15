@@ -250,6 +250,26 @@ public:
                              float b = 1.f);
 
     /**
+     * Composite this frame's 3D scene color into a rect (screen or active Canvas).
+     * Call after render3D(); order vs drawSolidRect / drawTexturedRect is preserved.
+     * If never called, present() still blits the 3D scene fullscreen under 2D.
+     * RGB is blitted opaque (scene A is linear depth, not transparency).
+     */
+    void drawScene3DRGBA(float x, float y, float w, float h, float r = 1.f, float g = 1.f,
+                         float b = 1.f, float a = 1.f);
+    /** Script-friendly 4-arg form (simplesquirrel does not apply C++ defaults). */
+    void drawScene3D(float x, float y, float w, float h) {
+        drawScene3DRGBA(x, y, w, h, 1.f, 1.f, 1.f, 1.f);
+    }
+
+    /** Draw a Canvas color buffer as a textured rect (same batch order as other 2D). */
+    void drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r = 1.f,
+                        float g = 1.f, float b = 1.f, float a = 1.f);
+    void drawCanvas(Canvas *canvas, float x, float y, float w, float h) {
+        drawCanvasRGBA(canvas, x, y, w, h, 1.f, 1.f, 1.f, 1.f);
+    }
+
+    /**
      * Backend hooks so the platform-independent render3D() can wrap its work in
      * a GPU validation error scope (used on WebGPU to catch early device errors).
      */
@@ -720,6 +740,8 @@ protected:
     int pixelHeight = 0;
     Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
     bool frameHad3D = false;
+    /** True while RenderSystem3D is submitting (AO / engine overlays). */
+    bool recordingEngine3D_ = false;
     bool screenReadbackEnabled = false;
     bool vsyncEnabled = true;
     bool graphicsActive = true;
@@ -733,6 +755,9 @@ protected:
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
     std::unique_ptr<AntiAliasing> pipelineAA_;
+
+    /** FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */
+    Shader *prepareSceneColorResolveShader(Texture *scene);
 };
 
 }  // namespace eve::graphics

@@ -432,6 +432,18 @@ private:
     std::vector<TexturedBatch> texturedBatches;
     std::vector<LitBatch> litBatches;
     Lighting2DUBO lighting2dFrame{};
+    enum class OverlayKind : uint8_t { Solid, Textured, Lit };
+    struct OverlaySpan {
+        OverlayKind kind = OverlayKind::Solid;
+        uint32_t index = 0;
+        uint32_t vertBegin = 0;
+        uint32_t vertCount = 0;
+    };
+    std::vector<OverlaySpan> overlaySpans;
+    bool sceneColorComposited = false;
+    void noteSolidOverlay();
+    void noteTexturedOverlay(Texture *tex);
+    void clear2DBatches();
 
     // 3D frame state.
     bool frame3DStarted = false;
