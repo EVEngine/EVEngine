@@ -1,4 +1,5 @@
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/RockMesh.h"
 
 #include <algorithm>
 #include <cmath>
@@ -220,6 +221,38 @@ bool fillDensityField(const Params &params, std::vector<float> &density, int &nx
                 if (field == "sphere") {
                     const float r = params.getFloat("radius", 0.7f);
                     d = r - std::sqrt(px * px + py * py + pz * pz);
+                } else if (field == "rock") {
+                    // An ellipsoid SDF whose radius is displaced by low-frequency strata and
+                    // higher-frequency erosion.  Quantising the direction before sampling the
+                    // strata creates broad, natural fracture planes instead of a noisy sphere.
+                    const float radius = params.getFloat("radius", 0.68f);
+                    const float flattening =
+                        std::clamp(params.getFloat("flattening", 0.22f), 0.f, 0.7f);
+                    const float angularity =
+                        std::clamp(params.getFloat("angularity", 0.35f), 0.f, 1.f);
+                    const float erosion =
+                        std::clamp(params.getFloat("erosion", 0.18f), 0.f, 0.45f);
+                    const float detailScale = std::max(0.25f, scale);
+                    const float sy = std::max(0.3f, 1.f - flattening);
+                    const float ex = px;
+                    const float ey = py / sy;
+                    const float ez = pz;
+                    const float len = std::sqrt(ex * ex + ey * ey + ez * ez);
+                    const float invLen = len > 1e-5f ? 1.f / len : 0.f;
+                    const float steps = 3.f + angularity * 9.f;
+                    const float qx = std::round(ex * invLen * steps) / steps;
+                    const float qy = std::round(ey * invLen * steps) / steps;
+                    const float qz = std::round(ez * invLen * steps) / steps;
+                    const float strata = fbm3((qx + 2.3f) * detailScale,
+                                              (qy + 4.7f) * detailScale,
+                                              (qz + 8.1f) * detailScale, seed, octaves);
+                    const float pits = fbm3((px + 7.2f) * detailScale * 2.7f,
+                                            (py + 1.9f) * detailScale * 2.7f,
+                                            (pz + 5.4f) * detailScale * 2.7f,
+                                            seed + 7919u, std::max(2, octaves - 1));
+                    const float displacement = strata * (0.08f + angularity * 0.16f) -
+                                               std::max(0.f, pits) * erosion;
+                    d = radius + displacement - len;
                 } else if (field == "torus") {
                     const float R = params.getFloat("majorRadius", 0.55f);
                     const float r = params.getFloat("minorRadius", 0.22f);
@@ -235,7 +268,7 @@ bool fillDensityField(const Params &params, std::vector<float> &density, int &nx
                     d = n - params.getFloat("threshold", 0.05f);
                 } else {
                     error = "mesh.marchingcubes: unknown field '" + field +
-                            "' (use sphere|torus|noise|terrain)";
+                            "' (use sphere|rock|torus|noise|terrain)";
                     return false;
                 }
                 // Soft boundary falloff so surfaces close.
@@ -300,6 +333,7 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
     registerRecipe("mesh.marchingcubes", generateMarchingCubesMesh);
+    registerRecipe("mesh.rock", generateRockMesh);
     builtinsRegistered_ = true;
 }
 

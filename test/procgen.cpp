@@ -220,6 +220,58 @@ TEST_CASE("procgen.registry.builtins") {
     CHECK(GeneratorRegistry::instance().has("wfc.simple"));
 }
 
+TEST_CASE("procgen.mesh.rock.reproducibleAndControllable") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(1847);
+    p.setInt("subdivisions", 3);
+    p.setFloat("radius", 0.7f);
+    p.setFloat("flattening", 0.3f);
+    p.setFloat("angularity", 0.45f);
+    p.setFloat("erosion", 0.16f);
+    p.setFloat("scale", 2.4f);
+    MeshBuild a, b, flatter;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, a, err));
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, b, err));
+    CHECK_EQ(a.getVertexCount(), 642);
+    CHECK_EQ(a.getIndexCount() / 3, 1280);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshNormalsFiniteUnit(a));
+
+    p.setFloat("flattening", 0.58f);
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, flatter, err));
+    CHECK(a.positions() != flatter.positions());
+
+    p.setInt("subdivisions", 2);
+    MeshBuild lod1;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, lod1, err));
+    CHECK_EQ(lod1.getVertexCount(), 162);
+    CHECK_EQ(lod1.getIndexCount() / 3, 320);
+
+    std::vector<std::vector<float>> shapePositions;
+    for (const char *shape : {"boulder", "slab", "block", "shard"}) {
+        p.setString("baseShape", shape);
+        p.setInt("subdivisions", 3);
+        MeshBuild variant;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, variant, err));
+        CHECK_EQ(variant.getMeta("baseShape", ""), shape);
+        CHECK_EQ(variant.getVertexCount(), 642);
+        CHECK(meshIndicesInRange(variant));
+        CHECK(meshNormalsFiniteUnit(variant));
+        shapePositions.push_back(variant.positions());
+    }
+    CHECK(shapePositions[0] != shapePositions[1]);
+    CHECK(shapePositions[1] != shapePositions[2]);
+    CHECK(shapePositions[2] != shapePositions[3]);
+
+    p.setString("baseShape", "invalid");
+    MeshBuild invalid;
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.rock", p, invalid, err));
+}
+
 TEST_CASE("procgen.dungeon.bsp.reproducible") {
     Params p;
     p.setSeed(42);
