@@ -9,6 +9,7 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/ColorRamp.h"
 #include "map/TileLayer.h"
@@ -1431,6 +1432,117 @@ TEST_CASE("procgen.texture.generateImage.andNormal") {
     delete nrm;
     CHECK(mod->hasTextureRecipe("tex.soil"));
     CHECK(mod->getTextureRecipeCount() >= 5);
+}
+
+TEST_CASE("procgen.texture.builtinRecipes.expanded") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",
+                         "tex.ripple",  "tex.sky_cloud", "tex.wood", "tex.cloth",  "tex.ornament",
+                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud"};
+    for (const char *id : ids) {
+        Params p;
+        p.setSeed(11);
+        p.setSize(32, 32);
+        p.setInt("colors", 5);
+        std::string err;
+        eve::image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
+        eve::image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(a != nullptr);
+        REQUIRE(b != nullptr);
+        CHECK_EQ(a->getFormat(), std::string("RGBA8"));
+        CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
+        delete a;
+        delete b;
+    }
+}
+
+TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    const char *ids[] = {"pbr.soil",   "pbr.rock",   "pbr.marble", "pbr.water", "pbr.wood",
+                         "pbr.cloth",  "pbr.ornament", "pbr.spot", "pbr.zebra", "pbr.wall",
+                         "pbr.cement", "pbr.mud",    "pbr.ripple"};
+    for (const char *id : ids) {
+        REQUIRE(PbrRecipeRegistry::instance().has(id));
+        Params p;
+        p.setSeed(7);
+        p.setSize(32, 32);
+        std::string err;
+        PbrTextureSet *a = PbrRecipeRegistry::instance().generate(id, p, err);
+        PbrTextureSet *b = PbrRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(a != nullptr);
+        REQUIRE(b != nullptr);
+        // All six maps present, same size, reproducible.
+        REQUIRE(a->albedo != nullptr);
+        REQUIRE(a->normal != nullptr);
+        REQUIRE(a->roughness != nullptr);
+        REQUIRE(a->metallic != nullptr);
+        REQUIRE(a->height != nullptr);
+        REQUIRE(a->ao != nullptr);
+        CHECK_EQ(a->albedo->getWidth(), 32);
+        CHECK_EQ(a->albedo->getHeight(), 32);
+        CHECK(std::memcmp(a->albedo->getData(), b->albedo->getData(), a->albedo->getSize()) == 0);
+        CHECK(std::memcmp(a->normal->getData(), b->normal->getData(), a->normal->getSize()) == 0);
+        // Grayscale maps must be RGBA8 with alpha=255.
+        const auto *px = static_cast<const uint8_t *>(a->roughness->getData());
+        bool alphaOk  = true;
+        for (size_t i = 0; i < a->roughness->getSize(); i += 4) {
+            if (px[i + 3] != 255) alphaOk = false;
+        }
+        CHECK(alphaOk);
+        a->destroy();
+        b->destroy();
+        delete a;
+        delete b;
+    }
+}
+
+TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    Params p;
+    p.setSeed(3);
+    p.setSize(48, 48);
+    p.setFloat("metallic", 1.f);
+    p.setFloat("roughnessLow", 0.1f);
+    p.setFloat("roughnessHigh", 0.2f);
+    std::string err;
+    PbrTextureSet *set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
+    REQUIRE(set != nullptr);
+    const auto *m = static_cast<const uint8_t *>(set->metallic->getData());
+    for (size_t i = 0; i < set->metallic->getSize(); i += 4) {
+        CHECK_EQ(m[i], 255);  // fully metallic
+    }
+    const auto *r = static_cast<const uint8_t *>(set->roughness->getData());
+    for (size_t i = 0; i < set->roughness->getSize(); i += 4) {
+        CHECK(r[i] >= 25);  // roughnessLow 0.1 -> 25
+        CHECK(r[i] <= 51);  // roughnessHigh 0.2 -> 51
+    }
+    set->destroy();
+    delete set;
+}
+
+TEST_CASE("procgen.pbr.viaModuleAndErrors") {
+    Procgen *mod = Procgen::create();
+    Params p;
+    p.setSeed(9);
+    p.setSize(40, 40);
+    PbrTextureSet *set = mod->generatePbrMaterial("pbr.wall", &p);
+    REQUIRE(set != nullptr);
+    CHECK(set->albedo != nullptr);
+    CHECK(set->normal != nullptr);
+    set->destroy();
+    delete set;
+
+    CHECK(mod->hasPbrRecipe("pbr.wood"));
+    CHECK(mod->getPbrRecipeCount() >= 13);
+    bool listed = false;
+    for (int i = 0; i < mod->getPbrRecipeCount(); ++i) {
+        if (mod->getPbrRecipeId(i) == "pbr.wood") listed = true;
+    }
+    CHECK(listed);
+
+    CHECK(mod->generatePbrMaterial("pbr.missing", &p) == nullptr);
+    CHECK(mod->generatePbrMaterial("pbr.wall", nullptr) == nullptr);
+    CHECK(mod->lastError().find("null") != std::string::npos);
 }
 
 static Color colorForSemantic(int sem) {

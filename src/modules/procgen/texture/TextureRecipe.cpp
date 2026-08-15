@@ -50,6 +50,37 @@ TextureGenContext TextureGenContext::fromParams(const Params &params) {
     return ctx;
 }
 
+PbrParams PbrParams::fromParams(const Params &params) {
+    PbrParams p;
+    p.roughnessLow   = std::clamp(params.getFloat("roughnessLow", p.roughnessLow), 0.f, 1.f);
+    p.roughnessHigh  = std::clamp(params.getFloat("roughnessHigh", p.roughnessHigh), 0.f, 1.f);
+    p.metallic       = std::clamp(params.getFloat("metallic", p.metallic), 0.f, 1.f);
+    p.normalStrength = std::max(0.01f, params.getFloat("normalStrength", p.normalStrength));
+    p.aoStrength     = std::clamp(params.getFloat("aoStrength", p.aoStrength), 0.f, 5.f);
+    p.heightStrength = std::max(0.f, params.getFloat("heightStrength", p.heightStrength));
+    return p;
+}
+
+void fillHeightField(const TextureGenContext &ctx,
+                     const std::function<float(float, float, const NoiseField &)> &fn,
+                     std::vector<float> &height) {
+    height.resize(size_t(ctx.width) * size_t(ctx.height));
+    NoiseField n;
+    n.seed = ctx.seed;
+    if (ctx.seamless) {
+        n.periodX = std::max(1, int(std::lround(ctx.scale)));
+        n.periodY = std::max(1, int(std::lround(ctx.scale * float(ctx.height) /
+                                                float(std::max(1, ctx.width)))));
+    }
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            const float u = float(x) / float(ctx.width) * ctx.scale;
+            const float v = float(y) / float(ctx.height) * ctx.scale;
+            height[size_t(y * ctx.width + x)] = std::clamp(fn(u, v, n), 0.f, 1.f);
+        }
+    }
+}
+
 void paintHeightToImage(image::ImageData &img, const std::vector<float> &height, int w, int h,
                         const ColorRamp &ramp, int bands, int pixelSize) {
     auto *pixels = static_cast<uint8_t *>(img.getData());
