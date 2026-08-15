@@ -26,6 +26,9 @@ ssq::Function* gFrameFunc = nullptr;
 
 void webgpuFrameTick() {
     if (!gFrameVm || !gFrameFunc || gFrameFunc->isEmpty()) return;
+    // First frame is presented by the browser, so the shell's loading overlay
+    // can be dismissed now (it covered the canvas until this point).
+    EM_ASM({ if (window.hideEVELoading) window.hideEVELoading(); });
     bool keep = true;
     try {
         ssq::Object r = gFrameVm->callFunc(*gFrameFunc, *gFrameVm);

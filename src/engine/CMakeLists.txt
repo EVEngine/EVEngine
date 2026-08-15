@@ -352,6 +352,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         -sFORCE_FILESYSTEM=1
         -sASSERTIONS=1
         -sFETCH=1
+        # C++ exceptions can be thrown through ASYNCIFY-wrapped frames (e.g. a
+        # module expose() failing); keep JS-side catching enabled so the abort
+        # helper is compiled instead of asserting on the first __cxa_throw.
+        -sNO_DISABLE_EXCEPTION_CATCHING=1
         # The WebGPU backend spin-waits for requestAdapter/requestDevice with
         # emscripten_sleep(0); on the main thread that requires ASYNCIFY.
         -sASYNCIFY=1
@@ -363,6 +367,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(_eve_web_shell "${CMAKE_SOURCE_DIR}/platform/webgpu/shell.html")
     if(EXISTS "${_eve_web_shell}")
         target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE --shell-file "${_eve_web_shell}")
+        # Link to eve.html (not the default eve.js) so --shell-file is applied
+        # and the served page is regenerated on every build. Emscripten emits
+        # eve.js / eve.wasm / eve.data alongside it.
+        set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES SUFFIX ".html")
+        # Track the shell as a link input so ninja relinks when it changes.
+        set_property(TARGET ${EVENGINE_NATIVE_TARGET} APPEND PROPERTY
+            LINK_DEPENDS "${_eve_web_shell}")
     endif()
 
     # --preload-file mounts the game assets at /game so getGameDirectory()
