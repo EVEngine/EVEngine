@@ -82,6 +82,11 @@ Filesystem::Filesystem() : fused(false), fusedSet(false) {
 Filesystem::~Filesystem() {
     unwatchAll();
 
+    if (memoryArchive_) {
+        free(memoryArchive_);
+        memoryArchive_ = nullptr;
+    }
+
 #ifdef EVENGINE_ANDROID
     android::deinitializeVirtualArchive();
 #endif
@@ -230,6 +235,30 @@ bool Filesystem::setSource(std::string source) {
 }
 
 std::string Filesystem::getSource() const { return game_source.c_str(); }
+
+bool Filesystem::setSourceFromMemory(const void* data, size_t size) {
+    if (!PHYSFS_isInit() || !data || size == 0) return false;
+    // Only one source per process.
+    if (!game_source.empty()) return false;
+
+    // PhysFS keeps a pointer to the buffer for the lifetime of the mount, so we
+    // must own a copy that outlives it. Freed in the destructor.
+    void* owned = malloc(size);
+    if (!owned) return false;
+    memcpy(owned, data, size);
+
+    // Mount at "/" so dofile("config.nut") / "main.nut" resolve via PhysFS.
+    if (!PHYSFS_mountMemory(owned, size, nullptr, "game.eve", "/", 1)) {
+        const auto err = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+        std::cerr << "PhysFS mountMemory failed: " << (err ? err : "unknown error") << std::endl;
+        free(owned);
+        return false;
+    }
+
+    memoryArchive_ = owned;
+    game_source    = "game.eve";
+    return true;
+}
 
 bool Filesystem::setupWriteDirectory() {
     if (!PHYSFS_isInit()) return false;
