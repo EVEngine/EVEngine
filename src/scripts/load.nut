@@ -61,6 +61,7 @@ editor <- eve.Editor();
 tf <- eve.TF();
 ui <- eve.UI();
 scene <- eve.Scene();
+camera <- eve.Camera();
 particles <- eve.Particles();
 map <- eve.Map();
 procgen <- eve.Procgen();

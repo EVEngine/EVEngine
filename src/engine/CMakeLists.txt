@@ -191,6 +191,7 @@ list(APPEND EVELIBS
     EVUI
     eve_imgui
     EVScene
+    EVCamera
     EVParticles
     EVMap
     EVGpgpu
