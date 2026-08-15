@@ -29,6 +29,10 @@ public:
     void  setLinearVelocity(float vx, float vy);
     float getLinearVelocityX() const;
     float getLinearVelocityY() const;
+    float getLinearSpeed() const;
+    float getMass() const;
+    float getWorldCenterX() const;
+    float getWorldCenterY() const;
 
     void  setAngularVelocity(float omega);
     float getAngularVelocity() const;
@@ -56,6 +60,10 @@ public:
     /** width/height in pixels; density kg/m² (Box2D units). */
     Fixture *newRectangleFixture(float width, float height, float density = 1.f,
                                  float friction = 0.2f, float restitution = 0.f);
+    /** Rectangle fixture with a local pixel-space offset from the body origin. */
+    Fixture *newRectangleFixtureAt(float width, float height, float offsetX, float offsetY,
+                                   float density = 1.f, float friction = 0.2f,
+                                   float restitution = 0.f);
     Fixture *newCircleFixture(float radius, float density = 1.f, float friction = 0.2f,
                               float restitution = 0.f);
 

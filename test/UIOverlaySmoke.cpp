@@ -84,7 +84,7 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
         }
 
         // After present+readback, swapchain content should be readable.
-        Color p = gfx->getPixel(gfx->getPixelWidth() / 2, gfx->getPixelHeight() / 2);
+        Color p = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
         CHECK(std::isfinite(p.r));
         CHECK(std::isfinite(p.g));
         CHECK(std::isfinite(p.b));

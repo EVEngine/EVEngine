@@ -10,8 +10,12 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 set(EVENGINE_IOS_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum iOS/iPadOS deployment target")
 
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    # SDLActivity loads libmain.so and calls SDL_main (via SDL_main.h macro on main).
-    add_library(main SHARED main.cpp)
+    if(NOT EVENGINE_ANDROID_TEST_APP)
+        # SDLActivity loads libmain.so and calls SDL_main (via SDL_main.h macro on main).
+        # In Android test-app mode the shared `main` library is built by test/CMakeLists.txt
+        # from the zeroerr unit-test runner instead of the engine main.cpp.
+        add_library(main SHARED main.cpp)
+    endif()
     set(EVENGINE_NATIVE_TARGET main CACHE INTERNAL "Host target for SDK install")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     # UIKit SDL entry: MACOSX_BUNDLE .app with SDL_main.
@@ -223,7 +227,8 @@ if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
 endif()
 
-if(CMAKE_GENERATOR MATCHES "Xcode")
+if(NOT EVENGINE_ANDROID_TEST_APP)
+  if(CMAKE_GENERATOR MATCHES "Xcode")
     # create_module() emits STATIC libraries here, so the linker would drop the
     # translation units whose only job is to self-register a module or a
     # subcommand at static-init time. Pull the archives in whole.
@@ -232,8 +237,9 @@ if(CMAKE_GENERATOR MATCHES "Xcode")
         list(APPEND _eve_whole_archive_libs "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_eve_lib}>")
     endforeach()
     target_link_libraries(${EVENGINE_NATIVE_TARGET} ${_eve_whole_archive_libs} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
-else()
+  else()
     target_link_libraries(${EVENGINE_NATIVE_TARGET} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
@@ -337,6 +343,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # yield to the browser event loop.
         -sUSE_PTHREADS=1
         -sALLOW_MEMORY_GROWTH=1
+        # Pre-allocate the worker pool so Emscripten does not print "thread pool
+        # is exhausted" (it warns whenever a new worker is spawned while the pool
+        # is empty). 4 covers the engine's ThreadPool default (capped at 4 on
+        # Emscripten) and any library init.
+        -sPTHREAD_POOL_SIZE=4
         -sEXIT_RUNTIME=0
         -sFORCE_FILESYSTEM=1
         -sASSERTIONS=1
@@ -366,6 +377,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     endif()
 endif()
 
+if(NOT EVENGINE_ANDROID_TEST_APP)
 # Plugins resolve ModuleManager / ModuleRegister symbols from the host process.
 # Export surface is EVENGINE_API (__declspec(dllexport)) only — do not enable
 # WINDOWS_EXPORT_ALL_SYMBOLS: it pulls Poco/ImGui template instantiations into
@@ -398,4 +410,5 @@ elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         CXX_VISIBILITY_PRESET default
         VISIBILITY_INLINES_HIDDEN OFF
     )
+endif()
 endif()

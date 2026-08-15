@@ -49,14 +49,16 @@ TileLayer *Map::newLayerFromFile(const std::string &path) {
     std::vector<MapObject> objs;
     auto layers = loadMapFile(path, &objs, nullptr);
     setObjects(std::move(objs));
-    return layers.empty() ? nullptr : layers.front();
+    loadedLayers_ = layers;
+    return loadedLayers_.empty() ? nullptr : loadedLayers_.front();
 }
 
 int Map::loadFromFile(const std::string &path) {
     std::vector<MapObject> objs;
     auto layers = loadMapFile(path, &objs, nullptr);
     setObjects(std::move(objs));
-    return int(layers.size());
+    loadedLayers_ = std::move(layers);
+    return int(loadedLayers_.size());
 }
 
 void Map::update(float dt) {
@@ -80,6 +82,11 @@ int Map::getLayerCount() const {
     auto view = ecs::View<TileLayer, TileLayer::Config>();
     for (auto it = view.begin(); it != view.end(); ++it) ++n;
     return n;
+}
+
+TileLayer *Map::getLayer(int index) const {
+    if (index < 0 || index >= int(loadedLayers_.size())) return nullptr;
+    return loadedLayers_[size_t(index)];
 }
 
 void Map::setObjects(std::vector<MapObject> objects) { objects_ = std::move(objects); }
@@ -326,6 +333,7 @@ void Map::expose(ssq::Class &cls) {
     cls.addFunc("render", &Map::render);
     cls.addFunc("pollConfigs", &Map::pollConfigs);
     cls.addFunc("getLayerCount", &Map::getLayerCount);
+    cls.addFunc("getLayer", &Map::getLayer);
     cls.addFunc("getObjectCount", &Map::getObjectCount);
     cls.addFunc("getObjectName", &Map::getObjectName);
     cls.addFunc("getObjectType", &Map::getObjectType);

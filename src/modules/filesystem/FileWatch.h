@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef EVENGINE_WEBGPU
+#include <Poco/DirectoryWatcher.h>
+#endif
+
 #include <memory>
 #include <mutex>
 #include <string>
@@ -48,6 +52,14 @@ public:
 
 private:
     struct DirWatch;
+
+#ifndef EVENGINE_WEBGPU
+    void onAdded(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+    void onRemoved(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+    void onModified(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+    void onMovedFrom(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+    void onMovedTo(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+#endif
 
     void handlePocoEvent(const std::string &kind, const std::string &itemPath);
 

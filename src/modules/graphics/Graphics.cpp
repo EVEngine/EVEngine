@@ -434,6 +434,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setBackgroundColor", &Graphics::setBackgroundColorRGBA);
     cls.addFunc("drawSolidRect", &Graphics::drawSolidRectRGBA);
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
+    cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
                 static_cast<Texture *(Graphics::*)(image::ImageData *, bool, bool)>(
                     &Graphics::newTextureFromImageData));

@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 
+namespace eve::graphics {
+class Graphics;
+}
+
 namespace eve::animation {
 
 class Animation;
@@ -77,6 +81,8 @@ public:
 
     /** Append region attachment quads into the shared 2D draw queue. */
     void collectDrawItems(std::vector<graphics::DrawItem2D> &out);
+    /** Draw the current pose into an existing frame without clearing or presenting it. */
+    void draw(graphics::Graphics *gfx);
 
     /**
      * Query posed draw slots without textures (for unit tests).

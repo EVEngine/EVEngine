@@ -4,6 +4,7 @@
 #ifndef EVENGINE_WEBGPU
 
 #include <Poco/Delegate.h>
+#include <Poco/DirectoryWatcher.h>
 #include <Poco/File.h>
 #include <Poco/Path.h>
 

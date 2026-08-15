@@ -100,11 +100,13 @@ GAME ?=
 
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
+	build/android-debug-test \
 	wsl/linux wsl/linux-debug show-targets \
 	debug release example \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
-	sync/android-libs sync/android-assets install/android-debug run/android-debug log/android \
+	sync/android-libs sync/android-assets sync/android-test-assets install/android-debug run/android-debug log/android \
+	run/android-test-debug log/android-test \
 	install/ios-debug run/ios-debug log/ios \
 	sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
 	sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug \
@@ -340,9 +342,16 @@ reinstall/third-party/ios-debug:
 	cmake --build build/third-party/ios-debug --target install -j 8
 
 # Copy native shared libraries into the Gradle jniLibs tree.
+# In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
+# otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
 	mkdir -p $(JNI_LIBS)
-	cp -f $(BUILD_DIR)/src/engine/libmain.so $(JNI_LIBS)/
+	@if [ -f $(BUILD_DIR)/test/libmain.so ]; then \
+	  echo "syncing test runner libmain.so"; \
+	  cp -f $(BUILD_DIR)/test/libmain.so $(JNI_LIBS)/; \
+	else \
+	  cp -f $(BUILD_DIR)/src/engine/libmain.so $(JNI_LIBS)/; \
+	fi
 	@TP_DIR=build/third-party-binary/$$(basename $(BUILD_DIR)); \
 	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android-debug; fi; \
 	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android; fi; \
@@ -373,6 +382,16 @@ sync/android-assets:
 	echo "Synced Android game assets ($$src) -> $(ANDROID_ASSETS_GAME)"; \
 	ls -la "$(ANDROID_ASSETS_GAME)"
 
+# Populate APK assets/test + assets/examples for the Android test app
+# (EVTestActivity unpacks them to <files>/evengine_test at first launch).
+sync/android-test-assets:
+	@rm -rf "$(APK_DIR)/app/src/main/assets/test" "$(APK_DIR)/app/src/main/assets/examples" "$(APK_DIR)/app/src/main/assets/game"
+	@mkdir -p "$(APK_DIR)/app/src/main/assets/test" "$(APK_DIR)/app/src/main/assets/examples"
+	cp -R test/. "$(APK_DIR)/app/src/main/assets/test/"
+	cp -R examples/. "$(APK_DIR)/app/src/main/assets/examples/"
+	@echo "Synced Android test assets -> $(APK_DIR)/app/src/main/assets/{test,examples}"
+	ls -la "$(APK_DIR)/app/src/main/assets/test" | head -20
+
 install/android-debug:
 	$(ANDROID_SDK)/platform-tools/adb install -r \
 		$(APK_DIR)/app/build/outputs/apk/debug/app-debug.apk
@@ -382,6 +401,46 @@ run/android-debug: install/android-debug
 
 log/android:
 	$(ANDROID_SDK)/platform-tools/adb logcat -s EVEngineActivity:I SDL:V SDL/APP:V vulkan:V libc:F DEBUG:F
+
+# ---- Android test app (zeroerr suite as libmain.so) ----
+#   make build/android-debug-test        # configure + deps + engine/tests + APK
+#   make run/android-test-debug [FILTER=math.*]   # install + launch on device
+#   make log/android-test                # stream test results from logcat
+build/android-debug-test: build/android-debug-test/build.ninja
+	cmake --build $@ --target deps -j $(ANDROID_JOBS)
+	cmake --build $@ -j $(ANDROID_JOBS)
+	$(MAKE) sync/android-libs BUILD_DIR=build/android-debug-test
+	$(MAKE) sync/android-test-assets
+	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleDebug
+
+build/android-debug-test/build.ninja:
+	cmake -G Ninja \
+		-DCMAKE_TOOLCHAIN_FILE=$(ANDROID_NDK)/build/cmake/android.toolchain.cmake \
+		-DANDROID_ABI=$(ANDROID_ABI) \
+		-DANDROID_PLATFORM=$(ANDROID_PLATFORM) \
+		-DANDROID_STL=$(ANDROID_STL) \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DBUILD_PLATFORM=android \
+		-DBUILD_TESTING=ON \
+		-DEVENGINE_ANDROID_TEST_APP=ON \
+		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
+		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(CMAKE_EXTRA_ARGS) \
+		-B build/android-debug-test -S .
+
+# Convenience: reuse the game APK's install/run with the test filter extra.
+FILTER ?=
+run/android-test-debug: install/android-debug
+	@if [ -n "$(FILTER)" ]; then \
+	  $(ANDROID_SDK)/platform-tools/adb shell am start -n com.evengine.example/.EVTestActivity --es evengine.test.filter "$(FILTER)"; \
+	else \
+	  $(ANDROID_SDK)/platform-tools/adb shell am start -n com.evengine.example/.EVTestActivity; \
+	fi
+
+log/android-test:
+	$(ANDROID_SDK)/platform-tools/adb logcat -c
+	$(ANDROID_SDK)/platform-tools/adb logcat -s EVEngineTest:V SDL:V vulkan:V libc:F DEBUG:F
 
 # Install Debug .app to the first connected physical iOS/iPadOS device.
 install/ios-debug:

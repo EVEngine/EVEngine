@@ -155,6 +155,7 @@ public:
     void initWithWindow(void *nativeWindow) override;
     void present() override;
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
+    void onNativeWindowDestroyed() override;
     void setScreenReadbackEnabled(bool enabled) override {
         eve::graphics::Graphics::setScreenReadbackEnabled(enabled);
         ensurePresentCaptureHook();

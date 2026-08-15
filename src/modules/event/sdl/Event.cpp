@@ -117,6 +117,11 @@ Event::Event()
 {
 	if (SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
 		throw eve::Exception("Could not initialize SDL events subsystem (%s)", SDL_GetError());
+	wakeEventType_ = SDL_RegisterEvents(1);
+	if (wakeEventType_ == static_cast<Uint32>(-1)) {
+		SDL_QuitSubSystem(SDL_INIT_EVENTS);
+		throw eve::Exception("Could not reserve SDL wake event (%s)", SDL_GetError());
+	}
 
 	SDL_AddEventWatch(watchAppEvents, this);
 }
@@ -153,12 +158,28 @@ Message *Event::wait()
 {
 	exceptionIfInRenderPass("eve.event.wait");
 
-	SDL_Event e;
+	for (;;) {
+		if (Message *queued = poll())
+			return queued;
 
-	if (SDL_WaitEvent(&e) != 1)
-		return nullptr;
+		SDL_Event e;
+		if (SDL_WaitEvent(&e) != 1)
+			return nullptr;
+		if (e.type == wakeEventType_)
+			continue;
 
-	return convert(e);
+		if (Message *message = convert(e))
+			return message;
+	}
+}
+
+void Event::wakeWaiters()
+{
+	SDL_Event e{};
+	e.type = wakeEventType_;
+	e.user.type = wakeEventType_;
+	e.user.data1 = this;
+	SDL_PushEvent(&e);
 }
 
 void Event::clear()

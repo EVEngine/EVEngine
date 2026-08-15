@@ -38,6 +38,8 @@ class Class;
 
 namespace eve {
 
+class Runtime;
+
 class EVENGINE_API Module {
 public:
     virtual ~Module() {}
@@ -55,11 +57,14 @@ public:
     static void    insert(const char* name, Module* inst);
 
     static void register_module(const char* name, creator_t c, exposer_t e);
+    static void expose(Runtime& runtime);
+    // Compatibility for embedders that still own their ssq::VM directly.
     static void expose(ssq::VM& vm);
     // Expose modules registered after the initial expose() (e.g. plugins).
     static int  expose_pending();
-    static void set_vm(ssq::VM* vm);
+    static Runtime* runtime();
     static ssq::VM* vm();
+    static void detach(Runtime* runtime);
 
     template <typename T>
     static T* getInstance(const char* name) {
@@ -74,6 +79,8 @@ public:
     }
 
 protected:
+    static void exposeVM(ssq::VM& vm);
+
     struct ModuleInfo {
         creator_t creator = nullptr;
         exposer_t exposer = nullptr;
@@ -82,7 +89,7 @@ protected:
     };
 
     std::unordered_map<std::string, ModuleInfo> registered_modules;
-    ssq::VM* active_vm_ = nullptr;
+    Runtime* active_runtime_ = nullptr;
 };
 
 struct EVENGINE_API ModuleRegister {
