@@ -62,6 +62,7 @@ file(GLOB all_test_cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp
+  Xray.cpp
   voxel.cpp
   voxel_render.cpp
   gpgpu.cpp

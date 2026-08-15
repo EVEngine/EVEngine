@@ -74,6 +74,13 @@ public:
     virtual std::string getBackendName() const = 0;
 
     /**
+     * Whether gbuffer-based post-process shaders (AO, GI) can be created on this
+     * backend. False on WebGPU, whose custom post shaders are WGSL-only (the
+     * built-in AO/GI use SPIR-V), so RenderSystem3D skips them there.
+     */
+    virtual bool supportsGBufferPost() const { return true; }
+
+    /**
      * Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
      * Must be called after the window exists (SDL_WINDOW_VULKAN).
      **/
@@ -337,6 +344,13 @@ public:
     /** Optional height map for parallax (R channel; nullptr = flat / off). */
     virtual void setMesh3DHeightTexture(Texture *height) = 0;
 
+    /**
+     * Optional scene hardware depth (G-buffer hwDepth, Vulkan NDC z) bound to
+     * mesh3d shader binding 7. X-ray mesh shaders sample it to discard visible
+     * (non-occluded) fragments. nullptr falls back to a placeholder.
+     */
+    virtual void setMesh3DSceneDepth(Texture *depth) = 0;
+
     /** Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
 
@@ -548,6 +562,15 @@ public:
      */
     virtual Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
+    /**
+     * Create a Mesh3D custom shader from WGSL source (WebGPU backend).
+     * The WGSL must declare the engine's Frame UBO (group 0 binding 0) and the
+     * shared mesh3d bindings (albedo 1, normal 2, env 3, shadow UBO 4,
+     * shadow depth 5, height 6, main sampler 7, shadow compare sampler 8,
+     * scene depth 9). Vulkan throws (uses SPIR-V via newMeshShaderFromSpv).
+     */
+    virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
+                                          const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     Shader *newMeshShader(const std::string &fragGlsl) {
         return newMeshShader(std::string(), fragGlsl);

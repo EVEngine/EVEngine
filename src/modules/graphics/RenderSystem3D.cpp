@@ -257,6 +257,14 @@ void Renderable3D::setMaterial(Material *material) { meshRenderer()->material = 
 
 Material *Renderable3D::getMaterial() { return meshRenderer()->material; }
 
+void Renderable3D::setXRayShader(Shader *shader) { meshRenderer()->xrayShader = shader; }
+
+Shader *Renderable3D::getXRayShader() { return meshRenderer()->xrayShader; }
+
+void Renderable3D::setXRayHighlight(bool on) { meshRenderer()->xrayHighlight = on; }
+
+bool Renderable3D::getXRayHighlight() { return meshRenderer()->xrayHighlight; }
+
 void Renderable3D::setPart(int index, const std::string &name, Mesh *mesh, Material *material) {
     auto mr = meshRenderer();
     if (index < 0 || index >= MeshRenderer::kMaxParts) return;
@@ -521,6 +529,9 @@ void RenderSystem3D::render(Graphics &gfx) {
         for (auto it = gbView.begin(); it != gbView.end(); ++it) {
             auto [xf, mr] = *it;
             if (!mr->visible) continue;
+            // X-ray targets are skipped so their pixels record the occluder depth
+            // behind them; the X-ray shader samples that to detect occlusion.
+            if (mr->xrayHighlight) continue;
             const glm::mat4 model = modelFromTransform(*xf);
             const glm::mat4 mvp = viewProj * model;
             auto emit = [&](Mesh *drawMesh, Material *mat, Texture *albedo, float tr, float tg,
@@ -714,7 +725,26 @@ void RenderSystem3D::render(Graphics &gfx) {
         eve::debug::rtBind("mesh", "renderable3d");
         eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
         gfx.drawMeshShader(drawMesh, model, albedo, tint, shader);
+
+        // X-ray second pass: paint only the occluded (behind-building) part over
+        // the scene. The pipeline runs with depth test/write off + alpha blend and
+        // the shader discards visible fragments by sampling the G-buffer depth.
+        if (mr->xrayHighlight && mr->xrayShader) {
+            float sw = gfx.getPixelWidth() > 0 ? float(gfx.getPixelWidth()) : float(gfx.getWidth());
+            float shh =
+                gfx.getPixelHeight() > 0 ? float(gfx.getPixelHeight()) : float(gfx.getHeight());
+            if (mr->xrayShader->hasUniform("screenW")) mr->xrayShader->sendFloat("screenW", sw);
+            if (mr->xrayShader->hasUniform("screenH")) mr->xrayShader->sendFloat("screenH", shh);
+            eve::debug::rtBind("shader", "xray");
+            eve::debug::rtDraw("drawMeshShader", "xray");
+            gfx.drawMeshShader(drawMesh, model, albedo, tint, mr->xrayShader);
+        }
     };
+
+    // Provide the G-buffer depth to X-ray shaders for the occlusion test.
+    if (doGBuffer && rc->getGBuffer() && rc->getGBuffer()->isValid()) {
+        if (Texture *depth = rc->getGBuffer()->getHwDepthTexture()) gfx.setMesh3DSceneDepth(depth);
+    }
 
     if (doForward) {
         for (const auto &item : opaque) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
@@ -724,7 +754,9 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
 
     const bool doAO = rc->isEnabled("ao");
-    if (doAO && defaultCam && gfx.had3DThisFrame()) {
+    // WebGPU has no SPIR-V AO shaders; the X-ray path (below) still reads the
+    // G-buffer depth directly.
+    if (doAO && gfx.supportsGBufferPost() && defaultCam && gfx.had3DThisFrame()) {
         GBuffer *gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
             auto cd = defaultCam->data();
