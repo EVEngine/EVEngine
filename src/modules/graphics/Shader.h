@@ -23,6 +23,9 @@ namespace eve::graphics {
  *
  * **Hair/fur cards** (`newHairShader` / `newHairShaderFromSpv`):
  *   Same layout as mesh shaders; pipeline uses alpha blend, no back-face cull, no depth write.
+ *
+ * **Stylized grass** (`newGrassShader`): Mesh3D layout + CSM shadow bindings.
+ *   Alpha-tested billboards (depth write on). See graphics/Grass.h.
  */
 class Shader {
 public:
