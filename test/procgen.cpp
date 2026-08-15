@@ -2164,17 +2164,71 @@ TEST_CASE("graphics.water.render.plane") {
     REQUIRE(win->setWindowSettings(settings));
     eve::image::Image::create();
 
-    // Blue sky cubemap so the reflection reads clearly.
-    const int fs = 8;
+    // Gradient sky cubemap: deep blue at the zenith, pale near the horizon.
+    const int fs = 16;
     std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
-    for (size_t i = 0; i < sky.size(); i += 4) {
-        sky[i] = 118;
-        sky[i + 1] = 158;
-        sky[i + 2] = 218;
-        sky[i + 3] = 255;
+    {
+        auto dirFor = [&](int f, int x, int y, float &dx, float &dy, float &dz) {
+            const float u = (float(x) + 0.5f) / fs * 2.f - 1.f;
+            const float v = (float(y) + 0.5f) / fs * 2.f - 1.f;
+            // Vulkan cubemap face order: +X,-X,+Y,-Y,+Z,-Z (Y-down texel convention).
+            switch (f) {
+            case 0: dx = 1.f; dy = -v; dz = -u; break;
+            case 1: dx = -1.f; dy = -v; dz = u; break;
+            case 2: dx = u; dy = 1.f; dz = v; break;
+            case 3: dx = u; dy = -1.f; dz = -v; break;
+            case 4: dx = u; dy = -v; dz = 1.f; break;
+            default: dx = -u; dy = -v; dz = -1.f; break;
+            }
+        };
+        for (int f = 0; f < 6; ++f) {
+            for (int y = 0; y < fs; ++y) {
+                for (int x = 0; x < fs; ++x) {
+                    float dx, dy, dz;
+                    dirFor(f, x, y, dx, dy, dz);
+                    const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+                    const float ny = dy / len;
+                    // t=1 at zenith, t=0 near/below horizon.
+                    const float t = std::pow(std::clamp(ny * 0.5f + 0.5f, 0.f, 1.f), 1.5f);
+                    // Pale blue horizon → deep blue zenith.
+                    const float cr = 0.72f + (0.12f - 0.72f) * t;
+                    const float cg = 0.80f + (0.32f - 0.80f) * t;
+                    const float cb = 0.90f + (0.72f - 0.90f) * t;
+                    const size_t o = (size_t(f) * fs * fs + size_t(y) * fs + size_t(x)) * 4u;
+                    sky[o + 0] = uint8_t(cr * 255.f);
+                    sky[o + 1] = uint8_t(cg * 255.f);
+                    sky[o + 2] = uint8_t(cb * 255.f);
+                    sky[o + 3] = 255;
+                }
+            }
+        }
     }
     Texture *skyTex = gfx->newCubemap(fs, sky.data());
     REQUIRE(skyTex != nullptr);
+
+    // Skybox: a huge sphere centered on the camera, shaded purely by the env
+    // cubemap so the sky is visible behind the water.
+    const char *kSkyFrag = R"GLSL(#version 450
+layout(location = 3) in vec3 vWorldPos;
+layout(location = 4) in vec3 vCameraPos;
+layout(set = 0, binding = 3) uniform samplerCube env;
+layout(location = 0) out vec4 outColor;
+void main() {
+    vec3 c = texture(env, normalize(vWorldPos - vCameraPos)).rgb;
+    outColor = vec4(c, 1.0);
+}
+)GLSL";
+    Shader *skyShader = gfx->newMeshShader("", kSkyFrag);
+    REQUIRE(skyShader != nullptr);
+    Mesh *skyMesh = gfx->newMeshSphere(24, 16);
+    REQUIRE(skyMesh != nullptr);
+    auto *skyEnt = Renderable3D::create();
+    skyEnt->setMesh(skyMesh);
+    skyEnt->setShader(skyShader);
+    skyEnt->setTexture(nullptr);
+    skyEnt->setScale(200.f, 200.f, 200.f);
+    skyEnt->setReceiveShadow(false);
+    skyEnt->setCastShadow(false);
 
     auto *camera = Camera3D::createCamera();
     camera->setEye(6.f, 5.f, 8.f);
@@ -2183,6 +2237,9 @@ TEST_CASE("graphics.water.render.plane") {
     camera->setAmbient(0.28f, 0.32f, 0.40f);
     camera->setEnvMap(skyTex);
     camera->setEnvIntensity(1.f);
+    camera->data()->nearZ = 0.1f;
+    camera->data()->farZ = 2000.f;
+    skyEnt->setCamera(camera);
 
     gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
     gfx->setScreenReadbackEnabled(true);
@@ -2219,6 +2276,8 @@ TEST_CASE("graphics.water.render.plane") {
 
     // Animate a few seconds so ripples travel, then save a frame.
     for (int frame = 0; frame < 40; ++frame) {
+        // Keep the skybox centered on the camera so it reads as a surrounding sky.
+        skyEnt->setPosition(camera->data()->eyeX, camera->data()->eyeY, camera->data()->eyeZ);
         water->setTime(float(frame) * 0.06f);
         water->bindParams();
         RenderSystem3D::render(*gfx);
