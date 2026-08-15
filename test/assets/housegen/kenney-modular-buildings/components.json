@@ -1,0 +1,55 @@
+{
+  "components": [
+    {
+      "id": "kenney.wall.block",
+      "model": "building-block.glb",
+      "category": "wall",
+      "rotations": [0, 90, 180, 270],
+      "weight": 2,
+      "tags": ["kenney", "modern"],
+      "material": {
+        "baseColor": [1.0, 1.0, 1.0, 1.0],
+        "baseColorTexture": "../materials/ambientcg-bricks001/bricks001-color.jpg",
+        "normalTexture": "../materials/ambientcg-bricks001/bricks001-normal-gl.jpg",
+        "heightTexture": "../materials/ambientcg-bricks001/bricks001-height.jpg",
+        "metallic": 0.0,
+        "roughness": 0.86,
+        "parallaxScale": 0.025,
+        "parallaxMinLayers": 8,
+        "parallaxMaxLayers": 24,
+        "cellBombScale": 4.0,
+        "cellBombStrength": 0.08,
+        "cellBombRotation": 0.0
+      }
+    },
+    {
+      "id": "kenney.wall.window",
+      "model": "building-window.glb",
+      "category": "wall",
+      "rotations": [0, 90, 180, 270],
+      "weight": 5,
+      "tags": ["kenney", "modern", "window"],
+      "material": { "metallic": 0.0, "roughness": 0.58 }
+    },
+    {
+      "id": "kenney.door",
+      "model": "building-door.glb",
+      "category": "door",
+      "rotations": [0, 90, 180, 270],
+      "tags": ["kenney", "modern", "entrance"],
+      "material": { "metallic": 0.0, "roughness": 0.68 }
+    },
+    {
+      "id": "kenney.roof.gable",
+      "model": "roof-gable.glb",
+      "category": "roof",
+      "rotations": [0, 90, 180, 270],
+      "tags": ["kenney", "modern", "gable"],
+      "material": {
+        "baseColor": [0.18, 0.22, 0.28, 1.0],
+        "metallic": 0.0,
+        "roughness": 0.74
+      }
+    }
+  ]
+}

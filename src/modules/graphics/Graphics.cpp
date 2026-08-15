@@ -1,6 +1,12 @@
 #include "graphics/Graphics.h"
 #include "graphics/HairShader.h"
+#include "graphics/Grass.h"
+#include "common/config.h"
+#ifdef EVENGINE_WEBGPU
+#include "graphics/webgpu/Graphics.h"
+#else
 #include "graphics/vulkan/Graphics.h"
+#endif
 #include "graphics/RenderSystem3D.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/Light.h"
@@ -14,7 +20,9 @@
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Material.h"
 #include "graphics/RenderControl.h"
+#ifndef EVENGINE_WEBGPU
 #include "font/FontData.h"
+#endif
 #include "image/ImageData.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
@@ -27,12 +35,18 @@
 
 namespace eve::graphics {
 
+#ifdef EVENGINE_WEBGPU
+Module_IMPL(Graphics, new eve::graphics::webgpu::Graphics());
+#else
 Module_IMPL(Graphics, new vulkan::Graphics());
+#endif
 
 void Graphics::render3D() {
+    pushValidationScope();
     eve::debug::rtFrameBegin();
     RenderSystem3D::render(*this);
     eve::debug::rtFrameEnd();
+    popValidationScope();
 }
 
 void Graphics::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
@@ -331,6 +345,23 @@ void Graphics::expose(ssq::Table &table) {
     vol.addFunc("getRayMarchShader", &Volumetric::getRayMarchShader);
     vol.addFunc("getFogShader", &Volumetric::getFogShader);
 
+    auto grassField = table.addClass<GrassField>(
+        "GrassField", std::function<GrassField *()>([]() -> GrassField * { return nullptr; }), true);
+    grassField.addFunc("bakePlane",
+                       static_cast<void (GrassField::*)(float, float, int, int)>(&GrassField::bakePlane));
+    grassField.addFunc("update", &GrassField::update);
+    grassField.addFunc("setTime", &GrassField::setTime);
+    grassField.addFunc("getTime", &GrassField::getTime);
+    grassField.addFunc("setFrameDuration", &GrassField::setFrameDuration);
+    grassField.addFunc("getFrameDuration", &GrassField::getFrameDuration);
+    grassField.addFunc("draw", static_cast<void (GrassField::*)()>(&GrassField::draw));
+    grassField.addFunc("getDenseMesh", &GrassField::getDenseMesh);
+    grassField.addFunc("getSparseMesh", &GrassField::getSparseMesh);
+    grassField.addFunc("getShader", &GrassField::getShader);
+    grassField.addFunc("getAtlas", &GrassField::getAtlas);
+    grassField.addFunc("getDenseCount", &GrassField::getDenseCount);
+    grassField.addFunc("getSparseCount", &GrassField::getSparseCount);
+
     auto ao = table.addClass<AmbientOcclusion>(
         "AmbientOcclusion",
         std::function<AmbientOcclusion *()>([]() -> AmbientOcclusion * { return nullptr; }), true);
@@ -438,6 +469,8 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newMeshShader",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newMeshShader));
     cls.addFunc("newHairShader", &Graphics::newHairShader);
+    cls.addFunc("newGrassShader", &Graphics::newGrassShader);
+    cls.addFunc("newGrassField", &Graphics::newGrassField);
     cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
@@ -491,6 +524,10 @@ AntiAliasing *Graphics::pipelineAntiAliasing() {
 AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 
 Shader *Graphics::newHairShader() { return hair::createShader(this); }
+
+Shader *Graphics::newGrassShader() { return grass::createShader(this); }
+
+GrassField *Graphics::newGrassField() { return new GrassField(this); }
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
     if (drawable) drawable->draw(this, m);
@@ -579,6 +616,7 @@ void Graphics::setTextureSamplerParams(Texture *texture, const std::string &filt
 
 Quad *Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
 
+#ifndef EVENGINE_WEBGPU
 Font *Graphics::newFont(font::FontData *data, std::string charset) {
     return new Font(this, data, std::move(charset));
 }
@@ -620,5 +658,6 @@ void Graphics::print(const std::string &text, float x, float y, const Color &col
         prevCodepoint = code;
     }
 }
+#endif  // !EVENGINE_WEBGPU
 
 }  // namespace eve::graphics

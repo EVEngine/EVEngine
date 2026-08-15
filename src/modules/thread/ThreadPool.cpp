@@ -35,6 +35,13 @@ ThreadPool::ThreadPool(int workerCount) {
         if (workerCount <= 0)
             workerCount = 1;
     }
+#if defined(__EMSCRIPTEN__)
+    // Emscripten spawns a real browser worker per pthread; hardware_concurrency
+    // on desktops reports 8-32 workers, which is wasteful (and exhausts the
+    // -sPTHREAD_POOL_SIZE pool). Cap to the pre-allocated pool size so the pool
+    // workers are reused instead of spawning more.
+    workerCount = std::min(workerCount, 4);
+#endif
     if (workerCount > kMaxWorkerCount)
         throw eve::Exception("ThreadPool worker count exceeds limit (%d)", kMaxWorkerCount);
 

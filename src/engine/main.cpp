@@ -6,13 +6,17 @@
 #include <string>
 #include <vector>
 
-#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
+#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_main.h>
 #endif
 
 #if defined(EVENGINE_IOS)
 #include "ios/ios.h"
+#endif
+
+#if defined(EVENGINE_WEBGPU)
+#include "webgpu/webplatform.h"
 #endif
 
 using namespace eve;
@@ -57,6 +61,20 @@ int main(int argc, char **argv)
         argv = injected.data();
     }
     eve::ios::initAudioSessionInterruptionHandler();
+#elif defined(EVENGINE_WEBGPU)
+    // The browser launches with no CLI args; inject `run <game root>` where
+    // the game is the preloaded VFS mount (/game) or the CWD.
+    static std::string gamePath;
+    static std::vector<char *> injected;
+    if (argc <= 1) {
+        gamePath = eve::webgpu_platform::getGameDirectory();
+        if (gamePath.empty())
+            gamePath = ".";
+        static char runFlag[] = "run";
+        injected = {argv[0], runFlag, gamePath.data()};
+        argc = static_cast<int>(injected.size());
+        argv = injected.data();
+    }
 #endif
     return requireModInst(eve::cmd,Cmdline)->runArgs(argc, argv);
 }

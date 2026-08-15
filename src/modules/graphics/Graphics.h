@@ -16,6 +16,7 @@
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Grass.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
 #include "graphics/RenderControl.h"
@@ -243,6 +244,13 @@ public:
     void render3D();
     void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
                              float b = 1.f);
+
+    /**
+     * Backend hooks so the platform-independent render3D() can wrap its work in
+     * a GPU validation error scope (used on WebGPU to catch early device errors).
+     */
+    virtual void pushValidationScope() {}
+    virtual void popValidationScope() {}
 
     /**
      * Create a Material asset (shading model + textures + PBR knobs).
@@ -529,6 +537,18 @@ public:
                                          const std::vector<uint32_t> &fragSpv) = 0;
     /** Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
+
+    /**
+     * t3ssel8r-style grass billboard shader (alpha test + shadow two-tone).
+     * Owned by Graphics. See grass:: / GrassField.
+     */
+    Shader *newGrassShader();
+
+    /**
+     * Dense + sparse stylized grass field. Caller owns GrassField*;
+     * its Mesh / Shader / Texture are owned by Graphics.
+     */
+    GrassField *newGrassField();
 
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
