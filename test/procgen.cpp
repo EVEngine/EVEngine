@@ -1916,3 +1916,192 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
     CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
     CHECK(mod->lastError().find("unknown") != std::string::npos);
 }
+
+// --- Water (graphics): sky reflection + animated edge waves + middle drop ripples ---
+
+namespace {
+
+struct WaterLumaGrid {
+    int grid = 16;
+    std::vector<float> cells;
+};
+
+/** Render the current scene and downsample luma into a grid (for comparison). */
+WaterLumaGrid waterCaptureLuma(Graphics *gfx, int grid) {
+    for (int frame = 0; frame < 3; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+    REQUIRE(img.get() != nullptr);
+    const uint8_t *px = static_cast<const uint8_t *>(img->getData());
+    const int w = img->getWidth();
+    const int h = img->getHeight();
+    WaterLumaGrid out;
+    out.grid = grid;
+    out.cells.assign(size_t(grid * grid), 0.f);
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            const size_t o = (size_t(y) * w + size_t(x)) * 4u;
+            const float l = 0.2126f * px[o] + 0.7152f * px[o + 1] + 0.0722f * px[o + 2];
+            const int gx = std::min(grid - 1, x * grid / w);
+            const int gy = std::min(grid - 1, y * grid / h);
+            out.cells[size_t(gy * grid + gx)] += l;
+        }
+    }
+    const float scale = 1.f / (float(w / grid) * float(h / grid));
+    for (float &c : out.cells) c *= scale;
+    return out;
+}
+
+float waterDiff(const WaterLumaGrid &a, const WaterLumaGrid &b) {
+    float sum = 0.f;
+    const int n = a.grid * a.grid;
+    for (int i = 0; i < n; ++i) sum += std::fabs(a.cells[size_t(i)] - b.cells[size_t(i)]);
+    return sum / float(n);
+}
+
+}  // namespace
+
+TEST_CASE("graphics.water.paramsRoundTrip") {
+    auto *gfx = Graphics::create();
+    REQUIRE(gfx != nullptr);
+    Water *w = gfx->newWater();
+    REQUIRE(w != nullptr);
+    REQUIRE(w->getShader() != nullptr);
+
+    w->setWaveSpeed(2.5f);
+    CHECK(approxEq(w->getWaveSpeed(), 2.5f, 1e-5f));
+    w->setWaveAmplitude(0.8f);
+    CHECK(approxEq(w->getWaveAmplitude(), 0.8f, 1e-5f));
+    w->setRippleAmplitude(0.9f);
+    CHECK(approxEq(w->getRippleAmplitude(), 0.9f, 1e-5f));
+    w->setEdgeFalloff(0.25f);
+    CHECK(approxEq(w->getEdgeFalloff(), 0.25f, 1e-5f));
+    w->setRippleCount(4);
+    CHECK_EQ(w->getRippleCount(), 4);
+    w->setRippleInterval(1.2f);
+    CHECK(approxEq(w->getRippleInterval(), 1.2f, 1e-5f));
+    w->setWaveScale(10.f);
+    CHECK(approxEq(w->getWaveScale(), 10.f, 1e-5f));
+    w->setWaterColor(0.1f, 0.2f, 0.3f);
+    w->setReflectionTint(0.5f, 0.6f, 0.7f);
+    w->setReflectionIntensity(0.4f);
+    CHECK(approxEq(w->getReflectionIntensity(), 0.4f, 1e-5f));
+    w->setSunIntensity(0.8f);
+    CHECK(approxEq(w->getSunIntensity(), 0.8f, 1e-5f));
+    w->bindParams();  // must not throw
+
+    w->createPlane(10.f, 8.f, 8, 6);
+    REQUIRE(w->getMesh() != nullptr);
+    CHECK(Water::paramCount() > 0);
+    CHECK(!Water::paramName(0).empty());
+    delete w;
+}
+
+TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 256;
+    settings.height = 256;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    // Blue-ish sky cubemap so reflection is visible.
+    eve::image::Image::create();
+    const int fs = 4;
+    const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces × 4×4 × RGBA
+    for (int f = 0; f < 6; ++f)
+        for (int i = 0; i < fs * fs; ++i) {
+            const size_t o = size_t(f) * fs * fs * 4 + size_t(i) * 4;
+            ((uint8_t *)&sky)[o] = 120;
+            ((uint8_t *)&sky)[o + 1] = 160;
+            ((uint8_t *)&sky)[o + 2] = 220;
+            ((uint8_t *)&sky)[o + 3] = 255;
+        }
+    Texture *skyTex = gfx->newCubemap(fs, sky);
+    REQUIRE(skyTex != nullptr);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 10.f, 4.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(55.f);
+    camera->setAmbient(0.15f, 0.18f, 0.22f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+
+    gfx->setBackgroundColor(Color(0.02f, 0.03f, 0.05f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.3f, 1.f, 0.2f, 1.1f, 1.0f, 0.9f);
+
+    // Transparent 2D entity drives the normal present path used by render tests.
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    Water *w = gfx->newWater();
+    REQUIRE(w != nullptr);
+    w->createPlane(20.f, 20.f, 40, 40);
+    w->setWaveAmplitude(0.5f);
+    w->setRippleAmplitude(0.8f);
+    w->setRippleCount(6);
+    w->setReflectionIntensity(0.8f);
+    w->setSunIntensity(0.8f);
+
+    // Attach the water plane + shader to a scene-graph renderable (standard path).
+    auto *waterEnt = Renderable3D::create();
+    waterEnt->setMesh(w->getMesh());
+    waterEnt->setShader(w->getShader());
+    waterEnt->setTexture(nullptr);
+    waterEnt->setReceiveShadow(false);
+    waterEnt->setCastShadow(false);
+    waterEnt->setCamera(camera);
+
+    auto captureWater = [&](float time) {
+        w->setTime(time);
+        w->bindParams();
+        return waterCaptureLuma(gfx, 16);
+    };
+
+    // Dynamic ripples: different times give different patterns (and it renders).
+    const WaterLumaGrid t0 = captureWater(0.f);
+    const WaterLumaGrid t1 = captureWater(0.35f);
+    const float dynamic = waterDiff(t0, t1);
+    float rendered = 0.f;
+    for (float c : t0.cells) rendered += c;
+    rendered /= float(t0.cells.size());
+    std::printf("water render: dynamic=%.2f rendered=%.2f\n", dynamic, rendered);
+    CHECK(rendered > 1.f);      // water surface is actually drawn
+    CHECK(dynamic > 0.3f);      // ripples move over time
+
+    // Edge waves + middle drop ripples: flat (no ripples) differs from rippled.
+    const WaterLumaGrid flat = [&] {
+        w->setRippleAmplitude(0.f);
+        w->setWaveAmplitude(0.f);
+        w->setReflectionIntensity(0.f);
+        w->bindParams();
+        w->setTime(0.6f);
+        return waterCaptureLuma(gfx, 16);
+    }();
+    const WaterLumaGrid wavy = [&] {
+        w->setRippleAmplitude(0.9f);
+        w->setWaveAmplitude(0.5f);
+        w->setReflectionIntensity(0.8f);
+        w->bindParams();
+        w->setTime(0.6f);
+        return waterCaptureLuma(gfx, 16);
+    }();
+    const float rippleDiff = waterDiff(flat, wavy);
+    std::printf("water render: rippleDiff=%.2f\n", rippleDiff);
+    CHECK(rippleDiff > 0.2f);   // ripples (edge + middle) change the surface
+
+    delete w;
+    win->close();
+}

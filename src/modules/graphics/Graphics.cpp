@@ -415,6 +415,37 @@ void Graphics::expose(ssq::Table &table) {
     grassField.addFunc("getDenseCount", &GrassField::getDenseCount);
     grassField.addFunc("getSparseCount", &GrassField::getSparseCount);
 
+    auto water = table.addClass<Water>(
+        "Water", std::function<Water *()>([]() -> Water * { return nullptr; }), true);
+    water.addFunc("createPlane", &Water::createPlane);
+    water.addFunc("update", &Water::update);
+    water.addFunc("setTime", &Water::setTime);
+    water.addFunc("getTime", &Water::getTime);
+    water.addFunc("setWaveSpeed", &Water::setWaveSpeed);
+    water.addFunc("getWaveSpeed", &Water::getWaveSpeed);
+    water.addFunc("setWaveAmplitude", &Water::setWaveAmplitude);
+    water.addFunc("getWaveAmplitude", &Water::getWaveAmplitude);
+    water.addFunc("setRippleAmplitude", &Water::setRippleAmplitude);
+    water.addFunc("getRippleAmplitude", &Water::getRippleAmplitude);
+    water.addFunc("setEdgeFalloff", &Water::setEdgeFalloff);
+    water.addFunc("getEdgeFalloff", &Water::getEdgeFalloff);
+    water.addFunc("setRippleCount", &Water::setRippleCount);
+    water.addFunc("getRippleCount", &Water::getRippleCount);
+    water.addFunc("setRippleInterval", &Water::setRippleInterval);
+    water.addFunc("getRippleInterval", &Water::getRippleInterval);
+    water.addFunc("setWaveScale", &Water::setWaveScale);
+    water.addFunc("getWaveScale", &Water::getWaveScale);
+    water.addFunc("setWaterColor", &Water::setWaterColor);
+    water.addFunc("setReflectionTint", &Water::setReflectionTint);
+    water.addFunc("setReflectionIntensity", &Water::setReflectionIntensity);
+    water.addFunc("getReflectionIntensity", &Water::getReflectionIntensity);
+    water.addFunc("setSunIntensity", &Water::setSunIntensity);
+    water.addFunc("getSunIntensity", &Water::getSunIntensity);
+    water.addFunc("bindParams", &Water::bindParams);
+    water.addFunc("draw", &Water::draw);
+    water.addFunc("getShader", &Water::getShader);
+    water.addFunc("getMesh", &Water::getMesh);
+
     auto ao = table.addClass<AmbientOcclusion>(
         "AmbientOcclusion",
         std::function<AmbientOcclusion *()>([]() -> AmbientOcclusion * { return nullptr; }), true);
@@ -526,7 +557,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
-    cls.addFunc("newShaderFromSpvFile",
+    cls.addFunc("newWater", &Graphics::newWater);    cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);
@@ -590,6 +621,8 @@ Shader *Graphics::newHairShader() { return hair::createShader(this); }
 Shader *Graphics::newGrassShader() { return grass::createShader(this); }
 
 GrassField *Graphics::newGrassField() { return new GrassField(this); }
+
+Water *Graphics::newWater() { return new Water(this); }
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
     if (drawable) drawable->draw(this, m);

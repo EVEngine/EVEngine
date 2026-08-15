@@ -14,6 +14,7 @@
 #include "graphics/Shadow.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
+#include "graphics/Water.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Grass.h"
@@ -573,6 +574,12 @@ public:
      * its Mesh / Shader / Texture are owned by Graphics.
      */
     GrassField *newGrassField();
+
+    /**
+     * Dynamic water surface (sky reflection + animated edge waves + middle
+     * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
+     */
+    Water *newWater();
 
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
