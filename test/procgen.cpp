@@ -2257,8 +2257,8 @@ void main() {
     REQUIRE(water != nullptr);
     water->createPlane(14.f, 14.f, 64, 64);
     water->setWaterColor(0.06f, 0.30f, 0.48f);
-    water->setWaveAmplitude(0.5f);
-    water->setRippleAmplitude(0.9f);
+    water->setWaveAmplitude(0.30f);
+    water->setRippleAmplitude(0.55f);
     water->setRippleCount(8);
     water->setRippleInterval(1.4f);
     water->setWaveScale(14.f);

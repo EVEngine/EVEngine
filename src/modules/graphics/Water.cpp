@@ -50,25 +50,26 @@ const float PI = 3.14159265;
 float hash(float n) { return fract(sin(n) * 43758.5453123); }
 vec2  hash2(int i) { return vec2(hash(float(i) * 7.31), hash(float(i) * 13.17 + 1.0)); }
 
-// Expanding ring from a periodic drop at a near-center position.
+// Expanding damped-wavelet ripple from a periodic drop (smooth, water-like).
 float rippleRing(vec2 uv, int i) {
     float period = max(u.data[7], 1e-3);        // rippleInterval
     float local = mod(u.data[0], period);
     float startPhase = hash(float(i) * 3.7) * period;
     float age = local - startPhase;
     if (age < 0.0) return 0.0;
-    float life = period * 0.7;
+    float life = period * 0.8;
     if (age > life) return 0.0;
     vec2 center = hash2(i);
     center = mix(vec2(0.5), center, 0.72);      // keep drops near the middle
-    vec2 d = uv - center;
-    float r = length(d);
-    float radius = age * 0.5;                   // expand outward
-    float band = 0.055;
-    float ring = 1.0 - clamp(abs(r - radius) / band, 0.0, 1.0);
-    ring *= ring;
-    float env = exp(-age * 1.6);                // fade out
-    return ring * env * u.data[3];              // rippleAmp
+    float r = length(uv - center);
+    float radius = age * 0.22;                  // expanding ring
+    float wavelength = 0.10;                    // spacing between crests
+    float x = (r - radius) / wavelength;
+    // Soft damped wavelet: smooth gaussian envelope, a crest + trough pair.
+    float envelope = exp(-(x * x) * 0.9);
+    float wave = cos(x * 6.28318);
+    float fade = exp(-age * 1.6);               // fade out as it grows
+    return u.data[3] * envelope * wave * fade;  // rippleAmp
 }
 
 // Water height displacement over UV.
