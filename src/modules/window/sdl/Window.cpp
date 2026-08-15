@@ -565,14 +565,12 @@ void Window::close(bool allowExceptions) {
     }
 
     if (window) {
+        // ImGui / swapchain teardown needs the native window and surface still
+        // alive. Destroy the SDL window only after graphics has dropped them.
+        if (graphics) graphics->onNativeWindowDestroyed();
+
         SDL_DestroyWindow(window);
         window = nullptr;
-
-        // The Vulkan surface/swapchain is tied to the destroyed native window.
-        // Drop it now so the next initWithWindow() rebuilds it against a fresh
-        // window — SDL may hand back the same pointer for the recreated window,
-        // so pointer identity cannot be used to detect a stale surface.
-        if (graphics) graphics->onNativeWindowDestroyed();
 
         // The old window may have generated pending events which are no longer
         // relevant. Destroy them all!

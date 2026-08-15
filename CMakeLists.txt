@@ -9,6 +9,19 @@ option(BUILD_TESTING "enable testing" ON)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
+set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
+    "Compatibility alias for EVENGINE_THIRD_PARTY_BINARY_DIR")
+set(EVENGINE_THIRD_PARTY_ROOT "" CACHE PATH
+    "Deprecated compatibility alias for EVENGINE_THIRD_PARTY_BINARY_DIR")
+if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
+    if(EVENGINE_PREBUILT_THIRD_PARTY)
+        set(EVENGINE_THIRD_PARTY_BINARY_DIR "${EVENGINE_PREBUILT_THIRD_PARTY}" CACHE PATH
+            "Use a prebuilt third-party install tree" FORCE)
+    elseif(EVENGINE_THIRD_PARTY_ROOT)
+        set(EVENGINE_THIRD_PARTY_BINARY_DIR "${EVENGINE_THIRD_PARTY_ROOT}" CACHE PATH
+            "Use a prebuilt third-party install tree" FORCE)
+    endif()
+endif()
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
@@ -663,17 +676,19 @@ function(load_third_party)
     set(TP_BUILD_PATH ${BUILD_PLATFORM}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
-    if(EVENGINE_PREBUILT_THIRD_PARTY)
-        cmake_path(ABSOLUTE_PATH EVENGINE_PREBUILT_THIRD_PARTY NORMALIZE
+    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+        cmake_path(ABSOLUTE_PATH EVENGINE_THIRD_PARTY_BINARY_DIR NORMALIZE
                    OUTPUT_VARIABLE _eve_prebuilt_tp)
         if(NOT IS_DIRECTORY "${_eve_prebuilt_tp}/include" OR
            NOT IS_DIRECTORY "${_eve_prebuilt_tp}/lib")
             message(FATAL_ERROR
-                "EVENGINE_PREBUILT_THIRD_PARTY must contain include/ and lib/: ${_eve_prebuilt_tp}")
+                "EVENGINE_THIRD_PARTY_BINARY_DIR must contain include/ and lib/: ${_eve_prebuilt_tp}")
         endif()
         message(STATUS "third-party: using read-only prebuilt install ${_eve_prebuilt_tp}")
         include_directories("${_eve_prebuilt_tp}/include")
         link_directories("${_eve_prebuilt_tp}/lib")
+        set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
+            "Use installed third-party prefix" FORCE)
         # Preserve the dependency target expected by create_module(), but give it no
         # configure/build/install commands so the prebuilt tree can remain read-only.
         add_custom_target(third-party)

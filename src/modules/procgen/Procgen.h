@@ -25,6 +25,7 @@ class ImageData;
 }  // namespace eve::image
 
 namespace eve::procgen {
+class PbrTextureSet;
 
 /**
  * Procedural generation module.
@@ -54,6 +55,15 @@ public:
     int         getAlgorithmCount() const;
     std::string getAlgorithmId(int index) const;
     bool        hasAlgorithm(const std::string &algorithmId) const;
+
+    /**
+     * Post-process a generated grid: fill each wall cell's detail with an
+     * 8-bit neighbour mask (autotile directions). Mutates `grid` in place.
+     */
+    bool autotileGrid(Grid2D *grid);
+
+    /** Fresh non-zero seed for regenerating a level. */
+    uint32_t randomSeed();
 
     std::string lastError() const;
     std::string gridToJson(Grid2D *grid) const;
@@ -88,6 +98,17 @@ public:
                      float extent);
     void sampleCloudShadow(CloudShadow *shadow, float *out, int w, int h, float time, float x0,
                            float z0, float extent);
+    /**
+     * Full metallic-roughness PBR set (albedo/normal/roughness/metallic/height/ao)
+     * derived from a single displacement field. Caller owns the returned set
+     * (call PbrTextureSet::destroy()). Recipes: pbr.soil/stone/rock/marble/water/
+     * ripple/wood/cloth/ornament/spot/zebra/wall/cement/mud/sky_cloud.
+     */
+    PbrTextureSet *generatePbrMaterial(const std::string &recipeId, Params *params);
+
+    int         getPbrRecipeCount() const;
+    std::string getPbrRecipeId(int index) const;
+    bool        hasPbrRecipe(const std::string &recipeId) const;
 
     // --- Mesh recipes (Marching Cubes, …) ---
     /** CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. */
@@ -119,6 +140,7 @@ private:
     mutable std::string              lastError_;
     mutable std::vector<std::string> algorithmIdsCache_;
     mutable std::vector<std::string> textureRecipeIdsCache_;
+    mutable std::vector<std::string> pbrRecipeIdsCache_;
     mutable std::vector<std::string> meshRecipeIdsCache_;
 };
 

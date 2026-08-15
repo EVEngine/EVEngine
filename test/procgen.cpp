@@ -7,7 +7,9 @@
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/LinearStructure.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/ColorRamp.h"
 #include "map/TileLayer.h"
@@ -368,6 +370,76 @@ TEST_CASE("procgen.mesh.tree.validatesOptions") {
     CHECK(err.find("branchAlgorithm") != std::string::npos);
 }
 
+TEST_CASE("procgen.mesh.skyscraper.reproducibleAndControllable") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(2026);
+    p.setFloat("baseWidth", 10.f);
+    p.setFloat("baseDepth", 10.f);
+    p.setInt("tiers", 6);
+    p.setFloat("tierHeight", 6.f);
+    p.setFloat("setback", 0.08f);
+    p.setInt("windowCols", 6);
+    p.setInt("windowRows", 4);
+    p.setFloat("windowDepth", 0.04f);
+    p.setFloat("spireHeight", 4.f);
+    MeshBuild a, b, tapering;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, a, err));
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, b, err));
+    CHECK(a.getVertexCount() > 0);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK_EQ(a.getIndexCount() % 3, 0);
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK_EQ(a.getMeta("algorithm", ""), "mesh.skyscraper");
+    CHECK_EQ(a.getMeta("tiers", ""), "6");
+    CHECK_EQ(a.getMeta("windowCols", ""), "6");
+    CHECK_EQ(a.getMeta("windowRows", ""), "4");
+    // 6 tiers * 4 facades * (1 wall + cols*rows windows) quads = 6*4*(1+24) = 600 quads, plus roof.
+    CHECK_EQ(a.getVertexCount() % 4, 0);
+
+    // More setbacks / smaller footprint must change geometry.
+    p.setFloat("setback", 0.2f);
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, tapering, err));
+    CHECK(a.positions() != tapering.positions());
+
+    // A taller tower should have more vertices (more tiers).
+    Params tall;
+    tall.setInt("tiers", 12);
+    tall.setInt("windowCols", 8);
+    tall.setInt("windowRows", 6);
+    MeshBuild tallMesh;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", tall, tallMesh, err));
+    CHECK(tallMesh.getVertexCount() > a.getVertexCount());
+    CHECK(meshNormalsFiniteUnit(tallMesh));
+}
+
+TEST_CASE("procgen.mesh.skyscraper.heightsAndBounds") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(7);
+    p.setInt("tiers", 4);
+    p.setFloat("tierHeight", 5.f);
+    p.setFloat("spireHeight", 3.f);
+    MeshBuild mesh;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, mesh, err));
+    // Total height: tiers*tierHeight + spire.
+    const float expectedHeight = 4.f * 5.f + 3.f;
+    CHECK_EQ(std::stof(mesh.getMeta("height", "0")), expectedHeight);
+    // Every vertex must sit on or above the ground plane (y >= -epsilon).
+    for (int i = 0; i < mesh.getVertexCount(); ++i) {
+        CHECK(mesh.getPositionY(i) >= -1e-4f);
+    }
+    // Base footprint should be wider than the top tier after setbacks.
+    const float baseW = p.getFloat("baseWidth", 10.f) * 0.5f;
+    const float topW = baseW * (1.f - p.getFloat("setback", 0.08f) * 3.f);
+    CHECK(topW < baseW);
+}
+
 TEST_CASE("procgen.mesh.tree.renderDump") {
     const char *outputPath = std::getenv("EVENGINE_TREE_RENDER_PNG");
     if (!outputPath || !outputPath[0]) return;
@@ -443,6 +515,152 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     REQUIRE(image.get() != nullptr);
     REQUIRE(saveImagePng(*image, outputPath));
     std::printf("tree render saved: %s\n", outputPath);
+    win->close();
+}
+
+TEST_CASE("procgen.mesh.bush.reproducibleAndStyles") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260815u);
+    p.setString("style", "mound");
+    p.setString("leafMode", "mixed");
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", p, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", p, b, err));
+    CHECK(a.getVertexCount() > 0);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK_EQ(a.getMeta("recipe", ""), "mesh.bush");
+    CHECK_EQ(a.getMeta("style", ""), "mound");
+    CHECK_EQ(a.getMeta("leafMode", ""), "mixed");
+
+    // Sphere style produces a different silhouette (rounder, taller lobes).
+    Params sphere = p;
+    sphere.setString("style", "sphere");
+    MeshBuild round;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", sphere, round, err));
+    CHECK(round.getVertexCount() > 0);
+    CHECK(round.positions() != a.positions());
+    CHECK(meshIndicesInRange(round));
+    CHECK(meshNormalsFiniteUnit(round));
+    CHECK_EQ(round.getMeta("style", ""), "sphere");
+
+    // Bare foliage still yields a closed mound (blobs only, no cards/twigs tufts).
+    Params blobsOnly = p;
+    blobsOnly.setString("leafMode", "blobs");
+    blobsOnly.setInt("twigs", 0);
+    MeshBuild mounds;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", blobsOnly, mounds, err));
+    CHECK(mounds.getVertexCount() > 0);
+    CHECK(meshIndicesInRange(mounds));
+    CHECK(meshNormalsFiniteUnit(mounds));
+
+    // "none" drops cards but keeps the blobs; fewer vertices than the mixed default.
+    Params bare = p;
+    bare.setString("leafMode", "none");
+    bare.setInt("twigs", 0);
+    MeshBuild noCards;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", bare, noCards, err));
+    CHECK(noCards.getVertexCount() > 0);
+    CHECK(noCards.getVertexCount() < a.getVertexCount());
+    CHECK(meshNormalsFiniteUnit(noCards));
+
+    // Lower resolution should be cheaper than the default.
+    Params lod = p;
+    lod.setInt("rings", 2);
+    lod.setInt("radialSegments", 5);
+    lod.setInt("blobs", 5);
+    MeshBuild cheap;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", lod, cheap, err));
+    CHECK(cheap.getVertexCount() < a.getVertexCount());
+    CHECK(meshIndicesInRange(cheap));
+    CHECK(meshNormalsFiniteUnit(cheap));
+}
+
+TEST_CASE("procgen.mesh.bush.validatesOptions") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setString("style", "bonsai");
+    MeshBuild mesh;
+    std::string err;
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, err));
+    CHECK(err.find("style") != std::string::npos);
+    p.setString("style", "mound");
+    p.setString("leafMode", "marching");
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, err));
+    CHECK(err.find("leafMode") != std::string::npos);
+}
+
+TEST_CASE("procgen.mesh.bush.renderDump") {
+    const char *outputPath = std::getenv("EVENGINE_BUSH_RENDER_PNG");
+    if (!outputPath || !outputPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings ws;
+    ws.width = 900;
+    ws.height = 700;
+    ws.centered = true;
+    REQUIRE(win->setWindowSettings(ws));
+
+    Params params;
+    params.setSeed(20260815u);
+    params.setString("style", "mound");
+    params.setString("leafMode", "mixed");
+    params.setFloat("height", 1.7f);
+    params.setFloat("width", 2.6f);
+    params.setInt("blobs", 12);
+    params.setInt("rings", 3);
+    params.setInt("radialSegments", 8);
+    params.setFloat("leafDensity", 0.8f);
+    params.setFloat("leafSize", 0.32f);
+    params.setInt("twigs", 6);
+
+    Procgen generator;
+    Mesh *bushMesh = generator.generateMesh("mesh.bush", &params, gfx);
+    REQUIRE(bushMesh != nullptr);
+
+    // A tiny two-tone foliage atlas (dark base / light highlight), like the tree test.
+    const uint8_t atlasPixels[] = {
+        52, 86, 40, 255, 84, 132, 60, 255,
+    };
+    Texture *atlas = gfx->newTexture(2, 1, atlasPixels);
+    REQUIRE(atlas != nullptr);
+
+    auto *bush = Renderable3D::create();
+    bush->setMesh(bushMesh);
+    bush->setTexture(atlas);
+    bush->setTint(1.f, 1.f, 1.f, 1.f);
+    bush->setRoughness(0.9f);
+    bush->setRotation(-14.f, 0.f, 0.f);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(5.2f, 3.2f, 5.6f);
+    camera->setTarget(0.f, 0.9f, 0.f);
+    camera->setUp(0.f, 1.f, 0.f);
+    camera->setFov(36.f);
+    camera->setAmbient(0.34f, 0.38f, 0.30f);
+    camera->setActive(true);
+
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(Color(0.075f, 0.105f, 0.095f, 1.f));
+    RenderSystem3D::setDirectionalLight(-0.55f, -1.f, -0.35f, 1.45f, 1.32f, 1.08f);
+
+    for (int frame = 0; frame < 4; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(image.get() != nullptr);
+    REQUIRE(saveImagePng(*image, outputPath));
+    std::printf("bush render saved: %s\n", outputPath);
     win->close();
 }
 
@@ -919,7 +1137,96 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
     CHECK_GT(lit, 10.f);            // baseline is lit
     CHECK(cloudy < lit * 0.85f);    // clouds meaningfully darken the ground
     CHECK(approxEq(lit, litAgain, 2.f));  // disabled again → back to baseline
+    win->close();
+}
 
+TEST_CASE("procgen.render.skyscraperPng") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 640;
+    settings.height = 720;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    Procgen *procgen = Procgen::create();
+    Params params;
+    params.setSeed(99);
+    params.setFloat("baseWidth", 10.f);
+    params.setFloat("baseDepth", 10.f);
+    params.setInt("tiers", 6);
+    params.setFloat("tierHeight", 6.f);
+    params.setFloat("setback", 0.08f);
+    params.setInt("windowCols", 6);
+    params.setInt("windowRows", 5);
+    params.setFloat("windowDepth", 0.06f);
+    params.setFloat("spireHeight", 5.f);
+    Mesh *towerMesh = procgen->generateMesh("mesh.skyscraper", &params, gfx);
+    REQUIRE(towerMesh != nullptr);
+
+    // 2x2 atlas: bottom texel dark wall, top texel bright window (matches UV convention).
+    const uint8_t atlas[16] = {
+        90, 96, 104, 255,   // wall
+        120, 128, 138, 255, // wall
+        240, 236, 220, 255, // window
+        200, 205, 215, 255, // window
+    };
+    Texture *towerTexture = gfx->newTexture(2, 2, atlas);
+    REQUIRE(towerTexture != nullptr);
+
+    auto *tower = eve::graphics::Renderable3D::create();
+    tower->setMesh(towerMesh);
+    tower->setTexture(towerTexture);
+    tower->setMetallic(0.02f);
+    tower->setRoughness(0.85f);
+    tower->setCastShadow(true);
+    tower->setReceiveShadow(true);
+    tower->transform()->yaw = 0.6f;
+
+    auto *camera = eve::graphics::Camera3D::createCamera();
+    camera->setEye(18.f, 14.f, 20.f);
+    camera->setTarget(0.f, 14.f, 0.f);
+    camera->setFov(42.f);
+    camera->setAmbient(0.16f, 0.18f, 0.22f);
+
+    auto *present = eve::graphics::Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.20f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    eve::graphics::RenderSystem3D::setDirectionalLight(0.55f, 0.85f, 1.1f, 1.15f, 0.98f, 0.88f);
+    for (int frame = 0; frame < 8; ++frame) {
+        tower->transform()->yaw += 0.02f;
+        eve::graphics::RenderSystem3D::render(*gfx);
+        eve::graphics::RenderSystem::render(*gfx);
+    }
+
+    eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(static_cast<bool>(image));
+    std::unique_ptr<eve::filesystem::FileData> png(
+        image->encode(medialoader::FormatHandler::ENCODED_PNG, "skyscraper.png", false));
+    REQUIRE(static_cast<bool>(png));
+    REQUIRE(png->getSize() > 0);
+
+    const std::filesystem::path outDir =
+        std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
+    std::filesystem::create_directories(outDir);
+    const std::filesystem::path outPath = outDir / "skyscraper.png";
+    std::ofstream output(outPath, std::ios::binary);
+    REQUIRE(output.good());
+    output.write(static_cast<const char *>(png->getData()),
+                 static_cast<std::streamsize>(png->getSize()));
+    REQUIRE(output.good());
+    output.close();
+    std::printf("skyscraper render saved: %s\n", outPath.string().c_str());
     win->close();
 }
 
@@ -1517,6 +1824,117 @@ TEST_CASE("procgen.cloud.viaModule") {
 }
 
 
+TEST_CASE("procgen.texture.builtinRecipes.expanded") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",
+                         "tex.ripple",  "tex.sky_cloud", "tex.wood", "tex.cloth",  "tex.ornament",
+                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud"};
+    for (const char *id : ids) {
+        Params p;
+        p.setSeed(11);
+        p.setSize(32, 32);
+        p.setInt("colors", 5);
+        std::string err;
+        eve::image::ImageData *a = TextureRecipeRegistry::instance().generate(id, p, err);
+        eve::image::ImageData *b = TextureRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(a != nullptr);
+        REQUIRE(b != nullptr);
+        CHECK_EQ(a->getFormat(), std::string("RGBA8"));
+        CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
+        delete a;
+        delete b;
+    }
+}
+
+TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    const char *ids[] = {"pbr.soil",   "pbr.rock",   "pbr.marble", "pbr.water", "pbr.wood",
+                         "pbr.cloth",  "pbr.ornament", "pbr.spot", "pbr.zebra", "pbr.wall",
+                         "pbr.cement", "pbr.mud",    "pbr.ripple"};
+    for (const char *id : ids) {
+        REQUIRE(PbrRecipeRegistry::instance().has(id));
+        Params p;
+        p.setSeed(7);
+        p.setSize(32, 32);
+        std::string err;
+        PbrTextureSet *a = PbrRecipeRegistry::instance().generate(id, p, err);
+        PbrTextureSet *b = PbrRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(a != nullptr);
+        REQUIRE(b != nullptr);
+        // All six maps present, same size, reproducible.
+        REQUIRE(a->albedo != nullptr);
+        REQUIRE(a->normal != nullptr);
+        REQUIRE(a->roughness != nullptr);
+        REQUIRE(a->metallic != nullptr);
+        REQUIRE(a->height != nullptr);
+        REQUIRE(a->ao != nullptr);
+        CHECK_EQ(a->albedo->getWidth(), 32);
+        CHECK_EQ(a->albedo->getHeight(), 32);
+        CHECK(std::memcmp(a->albedo->getData(), b->albedo->getData(), a->albedo->getSize()) == 0);
+        CHECK(std::memcmp(a->normal->getData(), b->normal->getData(), a->normal->getSize()) == 0);
+        // Grayscale maps must be RGBA8 with alpha=255.
+        const auto *px = static_cast<const uint8_t *>(a->roughness->getData());
+        bool alphaOk  = true;
+        for (size_t i = 0; i < a->roughness->getSize(); i += 4) {
+            if (px[i + 3] != 255) alphaOk = false;
+        }
+        CHECK(alphaOk);
+        a->destroy();
+        b->destroy();
+        delete a;
+        delete b;
+    }
+}
+
+TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    Params p;
+    p.setSeed(3);
+    p.setSize(48, 48);
+    p.setFloat("metallic", 1.f);
+    p.setFloat("roughnessLow", 0.1f);
+    p.setFloat("roughnessHigh", 0.2f);
+    std::string err;
+    PbrTextureSet *set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
+    REQUIRE(set != nullptr);
+    const auto *m = static_cast<const uint8_t *>(set->metallic->getData());
+    for (size_t i = 0; i < set->metallic->getSize(); i += 4) {
+        CHECK_EQ(m[i], 255);  // fully metallic
+    }
+    const auto *r = static_cast<const uint8_t *>(set->roughness->getData());
+    for (size_t i = 0; i < set->roughness->getSize(); i += 4) {
+        CHECK(r[i] >= 25);  // roughnessLow 0.1 -> 25
+        CHECK(r[i] <= 51);  // roughnessHigh 0.2 -> 51
+    }
+    set->destroy();
+    delete set;
+}
+
+TEST_CASE("procgen.pbr.viaModuleAndErrors") {
+    Procgen *mod = Procgen::create();
+    Params p;
+    p.setSeed(9);
+    p.setSize(40, 40);
+    PbrTextureSet *set = mod->generatePbrMaterial("pbr.wall", &p);
+    REQUIRE(set != nullptr);
+    CHECK(set->albedo != nullptr);
+    CHECK(set->normal != nullptr);
+    set->destroy();
+    delete set;
+
+    CHECK(mod->hasPbrRecipe("pbr.wood"));
+    CHECK(mod->getPbrRecipeCount() >= 13);
+    bool listed = false;
+    for (int i = 0; i < mod->getPbrRecipeCount(); ++i) {
+        if (mod->getPbrRecipeId(i) == "pbr.wood") listed = true;
+    }
+    CHECK(listed);
+
+    CHECK(mod->generatePbrMaterial("pbr.missing", &p) == nullptr);
+    CHECK(mod->generatePbrMaterial("pbr.wall", nullptr) == nullptr);
+    CHECK(mod->lastError().find("null") != std::string::npos);
+}
+
 static Color colorForSemantic(int sem) {
     switch (sem) {
     case int(Semantic::Wall):
@@ -1630,4 +2048,115 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
 
     CHECK_GT(drawnCells, 100);
     win->close();
+}
+
+TEST_CASE("procgen.mesh.linearStructure.recipesRegistered") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    for (const char *id : {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall",
+                           "mesh.hedge", "mesh.chevaldefrise"}) {
+        CHECK(MeshRecipeRegistry::instance().has(id));
+    }
+    const auto ids = MeshRecipeRegistry::instance().list();
+    for (const char *id : {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall",
+                           "mesh.hedge", "mesh.chevaldefrise"}) {
+        CHECK(std::find(ids.begin(), ids.end(), id) != ids.end());
+    }
+}
+
+TEST_CASE("procgen.mesh.linearStructure.buildsAllKinds") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    for (const char *id : {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall",
+                           "mesh.hedge", "mesh.chevaldefrise"}) {
+        Params p;
+        p.setSeed(7);
+        p.setInt("segments", 4);
+        p.setFloat("segLength", 1.f);
+        MeshBuild m;
+        std::string err;
+        CHECK(MeshRecipeRegistry::instance().generate(id, p, m, err));
+        CHECK(m.getVertexCount() > 0);
+        CHECK(m.getIndexCount() > 0);
+        CHECK_EQ(m.getIndexCount() % 3, 0);
+        CHECK(meshIndicesInRange(m));
+        CHECK(meshPositionsFinite(m));
+        CHECK(meshNormalsFiniteUnit(m));
+        CHECK_EQ(m.getMeta("algorithm", ""), std::string(id));
+        CHECK_EQ(m.getMeta("segments", ""), std::string("4"));
+    }
+}
+
+TEST_CASE("procgen.mesh.linearStructure.reproducibleAndScalable") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(3);
+    p.setInt("segments", 5);
+    p.setFloat("segLength", 1.2f);
+    MeshBuild a, b, scaled;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p, b, err));
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+
+    Params p2 = p;
+    p2.setFloat("scale", 2.f);
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p2, scaled, err));
+    CHECK_EQ(a.getVertexCount(), scaled.getVertexCount());
+    // Scaling a 2x should scale the X extent of the whole run by 2x.
+    float minAx = 1e30f, maxAx = -1e30f, minSx = 1e30f, maxSx = -1e30f;
+    for (int i = 0; i < a.getVertexCount(); ++i) {
+        minAx = std::min(minAx, a.getPositionX(i));
+        maxAx = std::max(maxAx, a.getPositionX(i));
+        minSx = std::min(minSx, scaled.getPositionX(i));
+        maxSx = std::max(maxSx, scaled.getPositionX(i));
+    }
+    CHECK(std::fabs((maxAx - minAx) * 2.f - (maxSx - minSx)) < 1e-3f);
+}
+
+TEST_CASE("procgen.mesh.linearStructure.segmentsScaleVertexCount") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params lo;
+    lo.setInt("segments", 2);
+    lo.setFloat("segLength", 1.f);
+    Params hi = lo;
+    hi.setInt("segments", 6);
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", lo, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", hi, b, err));
+    // Linear repetition of one unit ⇒ vertex count grows linearly with segments.
+    CHECK_EQ(3 * a.getVertexCount(), b.getVertexCount());
+}
+
+TEST_CASE("procgen.mesh.linearStructure.tileableSeamAlignment") {
+    // One unit ends exactly where the next begins, so a tiled run is contiguous.
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setInt("segments", 1);
+    p.setFloat("segLength", 1.f);
+    MeshBuild single;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bridge", p, single, err));
+    float maxX = -1e30f;
+    for (int i = 0; i < single.getVertexCount(); ++i) maxX = std::max(maxX, single.getPositionX(i));
+    // Unit occupies [0, segLength]; tiling repeats at +segLength.
+    CHECK(std::fabs(maxX - 1.f) < 1e-3f);
+}
+
+TEST_CASE("procgen.mesh.linearStructure.viaModule") {
+    Procgen *mod = Procgen::create();
+    Params p;
+    p.setSeed(1);
+    p.setInt("segments", 4);
+    p.setFloat("segLength", 1.f);
+    MeshBuild *m = mod->buildMesh("mesh.stonewall", &p);
+    REQUIRE(m != nullptr);
+    CHECK(m->getVertexCount() > 0);
+    CHECK(meshIndicesInRange(*m));
+    CHECK(mod->hasMeshRecipe("mesh.stonewall"));
+    CHECK(mod->hasMeshRecipe("mesh.bridge"));
+    delete m;
+
+    CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
+    CHECK(mod->lastError().find("unknown") != std::string::npos);
 }

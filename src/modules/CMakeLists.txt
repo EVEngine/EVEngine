@@ -82,36 +82,44 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVAudio PRIVATE AL_LIBTYPE_STATIC)
 endif()
 
-# Dear ImGui (compiled from third-party sources; also installed by third-party ExternalProject)
-set(_eve_imgui_sources
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
-)
-if(BUILD_PLATFORM STREQUAL "webgpu")
-  # Vulkan renderer is compiled out; the WebGPU backend (imgui_impl_wgpu.cpp)
-  # is compiled by the EVUI module source scan (ui/imgui/) to avoid duplicate
-  # symbols between EVUI and eve_imgui.
-  list(REMOVE_ITEM _eve_imgui_sources
-    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
-endif()
-add_library(eve_imgui STATIC ${_eve_imgui_sources})
-target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
-# imgui_impl_sdl includes <SDL.h>; vendored install puts headers under include/SDL2/.
-# On Emscripten the SDL2 headers come from the port sysroot (EMSCRIPTEN_SYSROOT).
-if(EVENGINE_WEBGPU_TRIM)
-  target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
+if(EVENGINE_THIRD_PARTY_BINARY_ONLY AND NOT BUILD_PLATFORM STREQUAL "webgpu")
+  # The shared prefix already contains ImGui and its SDL/Vulkan backends.
+  add_library(eve_imgui INTERFACE)
+  if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_libraries(eve_imgui INTERFACE imguimdd)
+  elseif(WIN32)
+    target_link_libraries(eve_imgui INTERFACE imguimd)
+  else()
+    target_link_libraries(eve_imgui INTERFACE imgui)
+  endif()
 else()
-  target_include_directories(eve_imgui PRIVATE
-    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
-    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
+  # Dear ImGui (compiled from third-party sources; also installed by third-party ExternalProject)
+  set(_eve_imgui_sources
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
   )
+  if(BUILD_PLATFORM STREQUAL "webgpu")
+    # Vulkan renderer is compiled out; the WebGPU backend is compiled by EVUI.
+    list(REMOVE_ITEM _eve_imgui_sources
+      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
+  endif()
+  add_library(eve_imgui STATIC ${_eve_imgui_sources})
+  target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
+  # On Emscripten SDL2 headers come from the port sysroot.
+  if(EVENGINE_WEBGPU_TRIM)
+    target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
+  else()
+    target_include_directories(eve_imgui PRIVATE
+      ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
+      ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
+    )
+  endif()
+  target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
 endif()
-# Avoid pulling imgui_demo.cpp (ShowFontAtlas etc.) into every link.
-target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
 
 create_module(EVUI ui)
 target_link_libraries(EVUI PUBLIC eve_imgui)
@@ -147,10 +155,15 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVModel3D model3d)
   create_module(EVFont font)
   # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
-  target_include_directories(EVFont PRIVATE
-    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/freetype2
-    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/freetype2
-  )
+  if(EVENGINE_THIRD_PARTY_BINARY_ONLY)
+    target_include_directories(EVFont PRIVATE
+      ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/freetype2)
+  else()
+    target_include_directories(EVFont PRIVATE
+      ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/freetype2
+      ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/freetype2
+    )
+  endif()
 endif()
 create_module(EVThread thread)
 if(NOT EVENGINE_WEBGPU_TRIM)
@@ -170,10 +183,12 @@ endif()
 # Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL), then DTL.
 # BEFORE must precede the visibility keyword so -I dtl_compat wins over the submodule.
 if(NOT EVENGINE_WEBGPU_TRIM)
-    target_include_directories(EVProcgen BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
-    target_include_directories(EVProcgen PUBLIC ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
-endif()
-if(NOT EVENGINE_WEBGPU_TRIM)
+  target_include_directories(EVProcgen BEFORE PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
+  target_include_directories(EVProcgen PUBLIC
+    ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
+  create_module(EVHouseGen housegen)
+  target_compile_definitions(EVHouseGen PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVVoxel voxel)
   target_compile_definitions(EVVoxel PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVStylize stylize)

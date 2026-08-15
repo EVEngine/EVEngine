@@ -36,11 +36,10 @@ void ModuleManager::register_module(const char* name, creator_t c, exposer_t e) 
 
 void ModuleManager::exposeVM(ssq::VM& vm) {
     ssq::Table table;
-    try {
-        table = ssq::Table(vm.find("eve"));
-    } catch (const ssq::NotFoundException&) {
-        table = vm.addTable("eve");
-    }
+    // Runtime::initialize() guarantees expose() runs once, so addTable never
+    // sees an existing "eve" slot. Avoid find()+catch here: ASYNCIFY-wrapped
+    // frames can drop the catch and leak NotFoundException to the JS boundary.
+    table = vm.addTable("eve");
     for (auto& D : inst().registered_modules) {
         if (D.second.exposer) D.second.exposer(table);
         D.second.exposed = true;

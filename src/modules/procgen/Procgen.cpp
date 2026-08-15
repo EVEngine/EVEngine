@@ -4,7 +4,9 @@
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "procgen/texture/PbrMaterial.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -22,6 +24,7 @@ Module_IMPL(Procgen, new Procgen());
 Procgen::Procgen() {
     GeneratorRegistry::instance().registerBuiltins();
     TextureRecipeRegistry::instance().registerBuiltins();
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
     MeshRecipeRegistry::instance().registerBuiltins();
     // Sensible pixel-RPG default palette (games override GIDs to match tileset).
     setPaletteGid("default", "empty", 0);
@@ -133,6 +136,16 @@ std::string Procgen::getAlgorithmId(int index) const {
 bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
+
+bool Procgen::autotileGrid(Grid2D *grid) {
+    if (!grid) {
+        lastError_ = "autotileGrid: null grid";
+        return false;
+    }
+    return eve::procgen::autotileGridInPlace(*grid);
+}
+
+uint32_t Procgen::randomSeed() { return eve::procgen::randomSeedValue(); }
 
 std::string Procgen::lastError() const { return lastError_; }
 
@@ -249,6 +262,36 @@ void Procgen::sampleCloudShadow(CloudShadow *shadow, float *out, int w, int h, f
         return;
     }
     shadow->sampleCoverage(out, w, h, time, x0, z0, extent);
+PbrTextureSet *Procgen::generatePbrMaterial(const std::string &recipeId, Params *params) {
+    lastError_.clear();
+    if (!params) {
+        lastError_ = "generatePbrMaterial: null params";
+        return nullptr;
+    }
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    PbrTextureSet *set = PbrRecipeRegistry::instance().generate(recipeId, *params, lastError_);
+    if (!set && lastError_.empty()) lastError_ = "generatePbrMaterial failed";
+    return set;
+}
+
+int Procgen::getPbrRecipeCount() const {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    pbrRecipeIdsCache_ = PbrRecipeRegistry::instance().list();
+    return int(pbrRecipeIdsCache_.size());
+}
+
+std::string Procgen::getPbrRecipeId(int index) const {
+    if (pbrRecipeIdsCache_.empty()) {
+        PbrRecipeRegistry::instance().registerPbrBuiltins();
+        pbrRecipeIdsCache_ = PbrRecipeRegistry::instance().list();
+    }
+    if (index < 0 || index >= int(pbrRecipeIdsCache_.size())) return {};
+    return pbrRecipeIdsCache_[size_t(index)];
+}
+
+bool Procgen::hasPbrRecipe(const std::string &recipeId) const {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    return PbrRecipeRegistry::instance().has(recipeId);
 }
 
 MeshBuild *Procgen::buildMesh(const std::string &recipeId, Params *params) {
@@ -374,6 +417,8 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getHeight", &Grid2D::getHeight);
     grid.addFunc("setCell", &Grid2D::setCell);
     grid.addFunc("getCell", &Grid2D::getCell);
+    grid.addFunc("setDetail", &Grid2D::setDetail);
+    grid.addFunc("getDetail", &Grid2D::getDetail);
     grid.addFunc("fill", &Grid2D::fill);
     grid.addFunc("setMeta", &Grid2D::setMeta);
     grid.addFunc("getMeta", &Grid2D::getMeta);
@@ -484,6 +529,20 @@ void Procgen::expose(ssq::Table &table) {
     cloudShadow.addFunc("setStrength", &CloudShadow::setStrength);
     cloudShadow.addFunc("coverageAt", &CloudShadow::coverageAt);
     cloudShadow.addFunc("shadowFactorAt", &CloudShadow::shadowFactorAt);
+    auto pbr = table.addClass<PbrTextureSet>(
+        "ProcgenPbrMaterial",
+        std::function<PbrTextureSet *()>([]() -> PbrTextureSet * { return nullptr; }), true);
+    pbr.addFunc("destroy", &PbrTextureSet::destroy);
+    pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet *s) { return s->albedo->getWidth(); });
+    pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet *s) { return s->albedo->getHeight(); });
+    pbr.addFunc("getNormalWidth", [](const PbrTextureSet *s) { return s->normal->getWidth(); });
+    pbr.addFunc("getRoughnessWidth", [](const PbrTextureSet *s) { return s->roughness->getWidth(); });
+    pbr.addFunc("getMetallicWidth", [](const PbrTextureSet *s) { return s->metallic->getWidth(); });
+    pbr.addFunc("getHeightWidth", [](const PbrTextureSet *s) { return s->height->getWidth(); });
+    pbr.addFunc("getAoWidth", [](const PbrTextureSet *s) { return s->ao->getWidth(); });
+    pbr.addFunc("hasAllMaps", [](const PbrTextureSet *s) {
+        return s->albedo && s->normal && s->roughness && s->metallic && s->height && s->ao;
+    });
 }
 
 void Procgen::expose(ssq::Class &cls) {
@@ -499,6 +558,8 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("autotileGrid", &Procgen::autotileGrid);
+    cls.addFunc("randomSeed", &Procgen::randomSeed);
     cls.addFunc("lastError", &Procgen::lastError);
     cls.addFunc("gridToJson", &Procgen::gridToJson);
     cls.addFunc("generateImage", &Procgen::generateImage);
@@ -507,6 +568,10 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
     cls.addFunc("getTextureRecipeId", &Procgen::getTextureRecipeId);
     cls.addFunc("hasTextureRecipe", &Procgen::hasTextureRecipe);
+    cls.addFunc("generatePbrMaterial", &Procgen::generatePbrMaterial);
+    cls.addFunc("getPbrRecipeCount", &Procgen::getPbrRecipeCount);
+    cls.addFunc("getPbrRecipeId", &Procgen::getPbrRecipeId);
+    cls.addFunc("hasPbrRecipe", &Procgen::hasPbrRecipe);
     cls.addFunc("buildMesh", &Procgen::buildMesh);
     cls.addFunc("generateMesh", &Procgen::generateMesh);
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);

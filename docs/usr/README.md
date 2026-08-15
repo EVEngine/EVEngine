@@ -62,6 +62,7 @@ make run/win32-debug GAME=examples/basic
 | `make ecs` | 脚本 ECS 与移动系统 |
 | `make rpg` | 属性、状态、技能和战斗结算 |
 | `make run/$(平台)-debug GAME=examples/procgen` | 程序化地图与纹理 |
+| `make run/$(平台)-debug GAME=examples/roguelike-generator` | Roguelike 风格地牢：房间/走廊、地板图案、墙方向、装饰（2D/2.5D） |
 | `make test` | 当前平台 Debug 测试 |
 
 `$(平台)` 可替换为 `linux`、`macosx` 或 `win32`。Windows 的 Release 构建默认使用 Visual Studio 生成器，Debug 构建使用项目 Makefile 中配置的工具链。

@@ -24,6 +24,8 @@
 #include "font/FontData.h"
 #endif
 #include "image/ImageData.h"
+#include "image/Image.h"
+#include "filesystem/Filesystem.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
 
@@ -42,9 +44,51 @@ Module_IMPL(Graphics, new vulkan::Graphics());
 #endif
 
 void Graphics::render3D() {
+    pushValidationScope();
+    recordingEngine3D_ = true;
     eve::debug::rtFrameBegin();
     RenderSystem3D::render(*this);
     eve::debug::rtFrameEnd();
+    recordingEngine3D_ = false;
+    popValidationScope();
+}
+
+Shader *Graphics::prepareSceneColorResolveShader(Texture *scene) {
+    if (!scene) return nullptr;
+    AntiAliasing *aa = pipelineAntiAliasing();
+    aa->setMode("fxaa");
+    const bool doAA = !renderControl_ || renderControl_->isEnabled("aa");
+    if (doAA) {
+        aa->setQuality("medium");
+    } else {
+        aa->setFloat("edgeThreshold", 1.f);
+        aa->setFloat("edgeThresholdMin", 1.f);
+        aa->setFloat("subpix", 0.f);
+    }
+    aa->prepareSource(scene);
+    return aa->getShader();
+}
+
+void Graphics::drawScene3DRGBA(float x, float y, float w, float h, float r, float g, float b,
+                               float a) {
+    Texture *scene = getSceneColorTexture();
+    if (!scene) return;
+    // Scene color A is linear view-depth, not opacity. The default textured
+    // blit multiplies that into SrcAlpha, so the planet composites against
+    // the dark clear color and looks dim. Use the same opaque FXAA resolve
+    // as the engine auto-composite path (aa shader writes alpha = 1).
+    if (Shader *sh = prepareSceneColorResolveShader(scene))
+        drawTexturedRectShader(scene, sh, x, y, w, h, Color(r, g, b, a));
+    else
+        drawTexturedRect(scene, x, y, w, h, Color(r, g, b, a));
+}
+
+void Graphics::drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r, float g,
+                              float b, float a) {
+    if (!canvas) return;
+    Texture *tex = canvas->getTexture();
+    if (!tex) return;
+    drawTexturedRect(tex, x, y, w, h, Color(r, g, b, a));
 }
 
 void Graphics::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
@@ -65,6 +109,13 @@ RenderControl *Graphics::getRenderControl() {
 void Graphics::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
+
+    auto canvasCls =
+        table.addClass<Canvas>("Canvas", std::function<Canvas *()>([]() -> Canvas * { return nullptr; }),
+                               true);
+    canvasCls.addFunc("getWidth", &Canvas::getWidth);
+    canvasCls.addFunc("getHeight", &Canvas::getHeight);
+    canvasCls.addFunc("getTexture", &Canvas::getTexture);
 
     auto texCls =
         table.addClass<Texture>("Texture", std::function<Texture *()>([]() -> Texture * { return nullptr; }),
@@ -114,8 +165,11 @@ void Graphics::expose(ssq::Table &table) {
     shader.addFunc("hasUniform", &Shader::hasUniform);
     shader.addFunc("getUniformIndex", &Shader::getUniformIndex);
 
+    // ECS entities live in the registry buffer (not standalone new/delete).
+    // Squirrel must not delete them on VM shutdown or close asserts
+    // _CrtIsValidHeapPointer.
     auto cam2d = table.addClass<Camera2D>(
-        "Camera2D", std::function<Camera2D *()>([]() { return Camera2D::createCamera(); }), true);
+        "Camera2D", std::function<Camera2D *()>([]() { return Camera2D::createCamera(); }), false);
     cam2d.addFunc("setAmbient", &Camera2D::setAmbient);
     cam2d.addFunc("setPosition", &Camera2D::setPosition);
     cam2d.addFunc("getX", &Camera2D::getX);
@@ -128,7 +182,7 @@ void Graphics::expose(ssq::Table &table) {
     cam2d.addFunc("worldToScreenY", &Camera2D::worldToScreenY);
 
     auto light = table.addClass<Light2D>(
-        "Light2D", std::function<Light2D *()>([]() { return Light2D::createLight("point"); }), true);
+        "Light2D", std::function<Light2D *()>([]() { return Light2D::createLight("point"); }), false);
     light.addFunc("setType", &Light2D::setType);
     light.addFunc("getType", &Light2D::getType);
     light.addFunc("setPosition", &Light2D::setPosition);
@@ -149,7 +203,7 @@ void Graphics::expose(ssq::Table &table) {
     light.addFunc("setCanvas", &Light2D::setCanvas);
 
     auto cam = table.addClass<Camera3D>(
-        "Camera3D", std::function<Camera3D *()>([]() { return Camera3D::createCamera(); }), true);
+        "Camera3D", std::function<Camera3D *()>([]() { return Camera3D::createCamera(); }), false);
     cam.addFunc("setEye", &Camera3D::setEye);
     cam.addFunc("setTarget", &Camera3D::setTarget);
     cam.addFunc("setUp", &Camera3D::setUp);
@@ -167,7 +221,7 @@ void Graphics::expose(ssq::Table &table) {
     cam.addFunc("getScreenRayDirZ", &Camera3D::getScreenRayDirZ);
 
     auto light3d = table.addClass<Light3D>(
-        "Light3D", std::function<Light3D *()>([]() { return Light3D::createLight("point"); }), true);
+        "Light3D", std::function<Light3D *()>([]() { return Light3D::createLight("point"); }), false);
     light3d.addFunc("setType", &Light3D::setType);
     light3d.addFunc("getType", &Light3D::getType);
     light3d.addFunc("setPosition", &Light3D::setPosition);
@@ -195,7 +249,8 @@ void Graphics::expose(ssq::Table &table) {
     light3d.addFunc("getVolumetricIntensity", &Light3D::getVolumetricIntensity);
 
     auto ent = table.addClass<Renderable3D>(
-        "Renderable3D", std::function<Renderable3D *()>([]() { return Renderable3D::create(); }), true);
+        "Renderable3D", std::function<Renderable3D *()>([]() { return Renderable3D::create(); }),
+        false);
     ent.addFunc("setPosition", &Renderable3D::setPosition);
     ent.addFunc("setRotation", &Renderable3D::setRotation);
     ent.addFunc("setYaw", &Renderable3D::setYaw);
@@ -456,6 +511,8 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newTexture",
                 static_cast<Texture *(Graphics::*)(image::ImageData *, bool, bool)>(
                     &Graphics::newTextureFromImageData));
+    cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
+    cls.addFunc("newTextureFromFileRepeated", &Graphics::newTextureFromFileRepeated);
     cls.addFunc("newTextureWithSampler", &Graphics::newTextureWithSampler);
     cls.addFunc("setTextureSampler", &Graphics::setTextureSamplerParams);
     cls.addFunc("getMaxAnisotropy", &Graphics::getMaxAnisotropy);
@@ -474,6 +531,13 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
+    cls.addFunc("drawScene3D", &Graphics::drawScene3D);
+    cls.addFunc("drawCanvas", &Graphics::drawCanvas);
+    cls.addFunc("newCanvas", &Graphics::newCanvas);
+    cls.addFunc("setCanvas", static_cast<void (Graphics::*)(Canvas *)>(&Graphics::setCanvas));
+    cls.addFunc("getCanvas", &Graphics::getCanvas);
+    cls.addFunc("getWidth", &Graphics::getWidth);
+    cls.addFunc("getHeight", &Graphics::getHeight);
     cls.addFunc("setDirectionalLight", &Graphics::setDirectionalLight);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
@@ -579,6 +643,18 @@ Texture *Graphics::newTextureFromImageData(image::ImageData *data, const Texture
         throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
     return newTexture(data->getWidth(), data->getHeight(),
                       static_cast<const uint8_t *>(data->getData()), info);
+}
+
+Texture *Graphics::newTextureFromFileRepeated(const std::string &filename, bool repeatU,
+                                              bool repeatV) {
+    if (filename.empty()) throw eve::Exception("newTextureFromFileRepeated: empty filename");
+    auto *fs = eve::filesystem::Filesystem::create();
+    std::unique_ptr<eve::filesystem::FileData> fileData(fs->read(filename));
+    if (!fileData)
+        throw eve::Exception("newTextureFromFileRepeated: failed to read '%s'", filename.c_str());
+    auto *imgMod = eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> data(imgMod->newImageData(fileData.get()));
+    return newTextureFromImageData(data.get(), repeatU, repeatV);
 }
 
 Texture *Graphics::newTextureWithSampler(image::ImageData *data, bool repeatU, bool repeatV,

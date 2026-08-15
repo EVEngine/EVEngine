@@ -44,6 +44,10 @@ WGPUStringView sv(const char *s) {
     return WGPUStringView{s, s ? std::strlen(s) : 0};
 }
 
+// Forward declaration for the readback helper (defined in the Readback section).
+bool copyTextureToCpu(wgpu::Instance &instance, wgpu::Device &device, wgpu::Queue &queue,
+                      wgpu::Texture src, int width, int height, std::vector<uint8_t> &outRgba);
+
 // A shared default sampler used when no texture is provided.
 wgpu::Sampler createLinearSampler(wgpu::Device &dev) {
     WGPUSamplerDescriptor d{};
@@ -271,7 +275,10 @@ void Graphics::configureSurface(int width, int height) {
     cfg.viewFormats = nullptr;
     // emdawnwebgpu only accepts Fifo / Undefined present modes.
     cfg.presentMode = WGPUPresentMode_Fifo;
-    cfg.alphaMode = WGPUCompositeAlphaMode_Auto;
+    // Auto (0) maps to an empty slot in emdawnwebgpu's JS CompositeAlphaMode
+    // table → `alphaMode: undefined`, which some browsers reject. Use Opaque,
+    // which maps to the JS value 'opaque' used by the working replica.
+    cfg.alphaMode = WGPUCompositeAlphaMode_Opaque;
     surface.Configure(reinterpret_cast<const wgpu::SurfaceConfiguration*>(&cfg));
     swapchainConfigured = true;
     // Recreate the offscreen targets at the new size.
@@ -614,6 +621,11 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     WGPUColorTargetState target{};
     target.format = format;
     target.blend = nullptr;
+    // Zero-init yields WGPUColorWriteMask_None, which silently discards every
+    // fragment (the clear still shows because clearValue is unaffected by the
+    // mask). emdawnwebgpu forwards this explicit 0 to the browser, unlike the
+    // JS default of "all".
+    target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
     if (blend) target.blend = &bs;
 
@@ -629,7 +641,9 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
 
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_color2d");
-    pd.layout = emptyLayout.Get();
+    // nullptr = auto (default) pipeline layout; the solid-color shader has no
+    // bindings so the derived layout matches.
+    pd.layout = nullptr;
     wgpu::ShaderModule vertModule = makeWgslModule(dev, kColorVertWgsl);
     wgpu::ShaderModule fragModule = makeWgslModule(dev, kColorFragWgsl);
     pd.vertex.module = vertModule.Get();
@@ -648,6 +662,9 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = nullptr;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -668,6 +685,7 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
 
     WGPUColorTargetState target{};
     target.format = format;
+    target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
     if (blend) target.blend = &bs;
 
@@ -692,6 +710,9 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = nullptr;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -712,6 +733,7 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout l
 
     WGPUColorTargetState target{};
     target.format = format;
+    target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
     if (blend) target.blend = &bs;
 
@@ -736,6 +758,9 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device &dev, wgpu::PipelineLayout l
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = nullptr;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -781,6 +806,7 @@ void Graphics::createMesh3DPipelines() {
     WGPUColorTargetState target{};
     target.format = sceneColorFormat;
     target.blend = nullptr;
+    target.writeMask = WGPUColorWriteMask_All;
 
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_mesh3d");
@@ -803,6 +829,9 @@ void Graphics::createMesh3DPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -845,6 +874,9 @@ void Graphics::createShadowPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dShadowPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -876,6 +908,7 @@ void Graphics::createGbufferPipelines() {
     for (int i = 0; i < 3; ++i) {
         targets[i].format = WGPUTextureFormat_RGBA8Unorm;
         targets[i].blend = nullptr;
+        targets[i].writeMask = WGPUColorWriteMask_All;
     }
 
     WGPURenderPipelineDescriptor pd{};
@@ -899,6 +932,9 @@ void Graphics::createGbufferPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dGbufferPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -932,6 +968,7 @@ void Graphics::createVoxelPipelines() {
     WGPUColorTargetState target{};
     target.format = sceneColorFormat;
     target.blend = nullptr;
+    target.writeMask = WGPUColorWriteMask_All;
 
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_voxel");
@@ -954,6 +991,9 @@ void Graphics::createVoxelPipelines() {
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
+    // Zero-init would leave mask=0, which discards every fragment
+    // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
+    pd.multisample.mask = 0xFFFFFFFFu;
     voxelRectPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 
     // Unit quad for instanced voxel faces (2 triangles, corner + packed uv slot).
@@ -1646,8 +1686,36 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
 // 2D drawing
 // ---------------------------------------------------------------------------
 
+void Graphics::clear2DBatches() {
+    solidBatch.clear();
+    texturedBatches.clear();
+    litBatches.clear();
+    overlaySpans.clear();
+    sceneColorComposited = false;
+}
+
+void Graphics::noteSolidOverlay() {
+    const uint32_t n = uint32_t(solidBatch.vertices().size());
+    if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Solid) {
+        overlaySpans.back().vertCount = n - overlaySpans.back().vertBegin;
+        return;
+    }
+    const uint32_t begin = n >= 6u ? n - 6u : 0u;
+    overlaySpans.push_back({OverlayKind::Solid, 0, begin, n - begin});
+}
+
+void Graphics::noteTexturedOverlay(Texture *tex) {
+    if (tex && tex == getSceneColorTexture()) sceneColorComposited = true;
+    const uint32_t idx = texturedBatches.empty() ? 0u : uint32_t(texturedBatches.size() - 1);
+    if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Textured &&
+        overlaySpans.back().index == idx)
+        return;
+    overlaySpans.push_back({OverlayKind::Textured, idx, 0, 0});
+}
+
 void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &color) {
     solidBatch.addRect(x, y, w, h, color);
+    noteSolidOverlay();
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h,
@@ -1672,16 +1740,12 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
         drawSolidRect(x, y, w, h, color);
         return;
     }
-    auto it = std::find_if(texturedBatches.begin(), texturedBatches.end(),
-                           [&](const TexturedBatch &tb) {
-                               return tb.texture == texture && tb.shader == shader &&
-                                      tb.depth == nullptr;
-                           });
-    if (it == texturedBatches.end()) {
+    if (texturedBatches.empty() || texturedBatches.back().texture != texture ||
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != nullptr) {
         texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
-        it = texturedBatches.end() - 1;
     }
-    it->batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
+    texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
+    noteTexturedOverlay(texture);
 }
 
 void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
@@ -1702,6 +1766,7 @@ void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader,
         it = texturedBatches.end() - 1;
     }
     it->batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1, rotatedUV);
+    noteTexturedOverlay(texture);
 }
 
 void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
@@ -1720,6 +1785,7 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
         it = texturedBatches.end() - 1;
     }
     it->batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
+    noteTexturedOverlay(color);
 }
 
 void Graphics::drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w,
@@ -1747,8 +1813,14 @@ void Graphics::setLighting2D(const Lighting2DUBO &ubo) {
 
 void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
                        WGPUTextureFormat format) {
-    // Solid batch.
-    if (!solidBatch.empty() && (colorPipeline || offscreenColorPipeline)) {
+    auto spans = std::move(overlaySpans);
+    const bool offscreen = uint32_t(format) != uint32_t(surfaceFormat);
+
+    uint64_t solidOffset = 0;
+    uint64_t solidBytes = 0;
+    wgpu::RenderPipeline solidPipe =
+        offscreen ? offscreenColorPipeline : colorPipeline;
+    if (!solidBatch.empty() && solidPipe) {
         Batcher ndc = solidBatch;
         ndc.toNDC(viewW, viewH);
         auto verts = ndc.vertices();
@@ -1767,34 +1839,43 @@ void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
                 data.push_back(v.color.b);
                 data.push_back(v.color.a);
             }
-            uint64_t bytes = data.size() * sizeof(float);
+            solidBytes = data.size() * sizeof(float);
             auto &arena = currentVertexArena();
-            ensureVertexArena(arena, arena.used + bytes);
-            uint64_t offset = arena.alloc(bytes);
-            queue.WriteBuffer(arena.buffer, offset, data.data(), bytes);
-
-            wgpu::RenderPipeline pipe =
-                uint32_t(format) == uint32_t(surfaceFormat) ? colorPipeline : offscreenColorPipeline;
-            pass.SetPipeline(pipe);
-            pass.SetVertexBuffer(0, arena.buffer, offset, bytes);
-            pass.Draw(static_cast<uint32_t>(verts.size()), 1, 0, 0);
+            ensureVertexArena(arena, arena.used + solidBytes);
+            solidOffset = arena.alloc(solidBytes);
+            queue.WriteBuffer(arena.buffer, solidOffset, data.data(), solidBytes);
         }
     }
-    solidBatch.clear();
 
-    // Textured batches.
-    for (auto &tb : texturedBatches) {
-        if (tb.batch.empty()) continue;
-        drawTexturedBatch(pass, tb, viewW, viewH, format, uint32_t(format) != uint32_t(surfaceFormat));
-    }
-    texturedBatches.clear();
+    auto drawSolid = [&](uint32_t first, uint32_t count) {
+        if (!solidPipe || solidBytes == 0 || count == 0) return;
+        pass.SetPipeline(solidPipe);
+        pass.SetVertexBuffer(0, currentVertexArena().buffer, solidOffset, solidBytes);
+        pass.Draw(count, 1, first, 0);
+    };
 
-    // Lit batches.
-    for (auto &lb : litBatches) {
-        if (lb.batch.empty()) continue;
-        drawLitBatch(pass, lb, viewW, viewH, format);
+    if (!spans.empty()) {
+        for (const auto &sp : spans) {
+            if (sp.kind == OverlayKind::Solid)
+                drawSolid(sp.vertBegin, sp.vertCount);
+            else if (sp.kind == OverlayKind::Textured && sp.index < texturedBatches.size())
+                drawTexturedBatch(pass, texturedBatches[sp.index], viewW, viewH, format, offscreen);
+            else if (sp.kind == OverlayKind::Lit && sp.index < litBatches.size())
+                drawLitBatch(pass, litBatches[sp.index], viewW, viewH, format);
+        }
+    } else {
+        if (solidBytes > 0)
+            drawSolid(0, uint32_t(solidBatch.vertices().size()));
+        for (auto &tb : texturedBatches) {
+            if (tb.batch.empty()) continue;
+            drawTexturedBatch(pass, tb, viewW, viewH, format, offscreen);
+        }
+        for (auto &lb : litBatches) {
+            if (lb.batch.empty()) continue;
+            drawLitBatch(pass, lb, viewW, viewH, format);
+        }
     }
-    litBatches.clear();
+    clear2DBatches();
 }
 
 void Graphics::drawTexturedBatch(wgpu::RenderPassEncoder pass, TexturedBatch &tb, int viewW,
@@ -1906,7 +1987,10 @@ void Graphics::begin3DFrame() {
     if (!initialized || !device) return;
     frame3DStarted = true;
     frameHad3DThisFrame = false;
-    frameHad3D = false;
+    // Match the desktop (Vulkan) backend: had3DThisFrame() must return true
+    // once a 3D frame begins, or RenderSystem3D::render bails out before any
+    // mesh is drawn.
+    frameHad3D = true;
     sceneColorPassOpen = false;
     mesh3dDraws.clear();
     shadowPassDraws.clear();
@@ -2496,6 +2580,25 @@ bool Graphics::acquireSurfaceTexture(wgpu::TextureView &view, wgpu::Texture &tex
     return bool(view);
 }
 
+void Graphics::pushValidationScope() {
+#ifdef EVENGINE_WEBGPU
+    if (device) device.PushErrorScope(wgpu::ErrorFilter::Validation);
+#endif
+}
+
+void Graphics::popValidationScope() {
+#ifdef EVENGINE_WEBGPU
+    if (!device) return;
+    device.PopErrorScope(wgpu::CallbackMode::AllowProcessEvents,
+        [](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type, const char *message) {
+            if (message && type != wgpu::ErrorType::NoError) {
+                EM_ASM({ console.log("[GPU_ERR] type=" + $0 + " msg=" + UTF8ToString($1)); },
+                       (int)type, message);
+            }
+        });
+#endif
+}
+
 void Graphics::present() {
     if (!device || !surface || !swapchainConfigured) return;
     rebuildSwapchainIfNeeded();
@@ -2514,6 +2617,10 @@ void Graphics::present() {
     voxelInstanceArena.used = 0;
     ensureUboArena(uboArena, 4096);
     ensureVertexArena(vtxArena, 4096);
+    // Match the desktop (Vulkan) flow: the 3D/swapchain pass clears with the
+    // background set by setBackgroundColor unless the script called clear().
+    if (!hasPendingClear) clearColor = backgroundColor;
+    hasPendingClear = false;
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
 
@@ -2540,8 +2647,8 @@ void Graphics::present() {
                 ds.depthLoadOp = WGPULoadOp_Clear;
                 ds.depthStoreOp = WGPUStoreOp_Store;
                 ds.stencilClearValue = 0;
-                ds.stencilLoadOp = WGPULoadOp_Clear;
-                ds.stencilStoreOp = WGPUStoreOp_Discard;
+                ds.stencilLoadOp = WGPULoadOp_Undefined;
+                ds.stencilStoreOp = WGPUStoreOp_Undefined;
                 WGPURenderPassDescriptor rp{};
                 rp.depthStencilAttachment = &ds;
                 wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
@@ -2568,8 +2675,8 @@ void Graphics::present() {
         ds.depthLoadOp = WGPULoadOp_Clear;
         ds.depthStoreOp = WGPUStoreOp_Store;
         ds.stencilClearValue = 0;
-        ds.stencilLoadOp = WGPULoadOp_Clear;
-        ds.stencilStoreOp = WGPUStoreOp_Discard;
+        ds.stencilLoadOp = WGPULoadOp_Undefined;
+        ds.stencilStoreOp = WGPUStoreOp_Undefined;
         WGPURenderPassDescriptor rp{};
         rp.colorAttachmentCount = 1;
         rp.colorAttachments = &colorAtt;
@@ -2601,8 +2708,8 @@ void Graphics::present() {
         ds.depthLoadOp = WGPULoadOp_Clear;
         ds.depthStoreOp = WGPUStoreOp_Store;
         ds.stencilClearValue = 0;
-        ds.stencilLoadOp = WGPULoadOp_Clear;
-        ds.stencilStoreOp = WGPUStoreOp_Discard;
+        ds.stencilLoadOp = WGPULoadOp_Undefined;
+        ds.stencilStoreOp = WGPUStoreOp_Undefined;
         WGPURenderPassDescriptor rp{};
         rp.colorAttachmentCount = 3;
         rp.colorAttachments = colorAtts;
@@ -2631,7 +2738,7 @@ void Graphics::present() {
         rp.colorAttachments = &colorAtt;
         wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
 
-        if (sceneView) {
+        if (sceneView && !sceneColorComposited) {
             if (!fullscreenQuadReady) {
                 // Textured vertex: pos(2) + color(4) + uv(2) = 32 bytes.
                 float verts[32] = {
@@ -2683,6 +2790,13 @@ void Graphics::present() {
 
     wgpu::CommandBuffer cmd = encoder.Finish();
     queue.Submit(1, &cmd);
+    // emdawnwebgpu implements the GPU on the JS main thread: queued commands
+    // (draws, writes) only execute when ProcessEvents drives the work queue.
+    // Without this, render-pass draws are silently never executed (only the
+    // swapchain clear, handled by the browser present, is visible).
+#ifdef __EMSCRIPTEN__
+    if (instance) instance.ProcessEvents();
+#endif
     // emdawnwebgpu does not implement wgpuSurfacePresent (it aborts); the
     // browser presents the canvas automatically once the command buffer is
     // submitted from within a requestAnimationFrame callback. On Emscripten
@@ -2949,6 +3063,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
         fs.targetCount = 1;
         WGPUColorTargetState target{};
         target.format = format;
+        target.writeMask = WGPUColorWriteMask_All;
         if (blend) {
             static WGPUBlendState bs = alphaBlend();
             target.blend = &bs;
@@ -2972,6 +3087,8 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device &dev, wgpu::PipelineLayo
         pd.depthStencil = &ds;
     }
     pd.multisample.count = sampleCount ? sampleCount : 1;
+    // mask=0 (zero-init) silently discards all fragments; use all-samples.
+    pd.multisample.mask = 0xFFFFFFFFu;
     return dev.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -3024,9 +3141,3 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
 }
 
 }  // namespace eve::graphics::webgpu
-
-
-
-
-
-
