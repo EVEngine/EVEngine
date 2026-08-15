@@ -11,6 +11,7 @@ namespace {
 Theme g_theme = Theme::dark();
 std::string g_themeName = "dark";
 float g_uiScale = 1.f;
+float g_dpiScale = 1.f;
 
 void copy4(float dst[4], const float src[4]) {
     dst[0] = src[0];
@@ -125,6 +126,12 @@ void setThemeUiScale(float scale) {
 
 float themeUiScale() { return g_uiScale; }
 
+void setThemeDpiScale(float dpiScale) {
+    g_dpiScale = std::clamp(dpiScale, 1.f, 5.f);
+}
+
+float themeDpiScale() { return g_dpiScale; }
+
 void applyThemeToImGui(const Theme &theme) { applyThemeToImGui(theme, g_uiScale); }
 
 void applyThemeToImGui(const Theme &theme, float uiScale) {
@@ -187,9 +194,15 @@ void applyThemeToImGui(const Theme &theme, float uiScale) {
     style.GrabMinSize = theme.grabMinSize * s;
 
     ImGuiIO &io = ImGui::GetIO();
-    // DPI scale is baked into the font atlas at rasterization time (physical
-    // pixels); FontGlobalScale only carries the user's logical font preference.
-    io.FontGlobalScale = theme.fontScale;
+    // The font atlas is rasterized at `baseSize * dpiScale` so glyphs stay
+    // crisp on HiDPI displays, but ImGui already scales the whole frame by
+    // io.DisplayFramebufferScale (which is the same DPI ratio). Cancelling it
+    // here keeps the logical text size constant across display densities, so
+    // the UI no longer double-scales (appears too large) on high-res screens.
+    // FontGlobalScale carries the logical UI scale (uiScale) on top of the
+    // user's per-theme font preference (theme.fontScale).
+    const float dpi = std::clamp(g_dpiScale, 1.f, 5.f);
+    io.FontGlobalScale = theme.fontScale * (s / dpi);
 
     if (theme.navEnableKeyboard) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     else io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
