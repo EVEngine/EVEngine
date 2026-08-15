@@ -102,6 +102,8 @@ public:
 
     void initWithWindow(void *nativeWindow) override;
     void present() override;
+    void pushValidationScope() override;
+    void popValidationScope() override;
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
     void setVSync(bool enabled) override;
     int getMsaaSamples() const override { return msaaSamples; }

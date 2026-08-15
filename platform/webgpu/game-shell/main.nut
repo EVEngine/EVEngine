@@ -1,34 +1,33 @@
-// EVEngine WebGPU minimal demo: bouncing 2D squares + HUD.
-// Uses only the trimmed module set (Window/Graphics/Timer).
+// WebGPU demo: a rotating lit sphere rendered through the offscreen
+// scene-color pass and composited to the swapchain.
 
-eve_init <- function() {
+local frameCount = 0;
+local cam = null;
+local ball = null;
+
+eve_init = function() {
     gfx.setBackgroundColor(0.04, 0.05, 0.12, 1.0);
-    x <- 0.0;
-    y <- 0.0;
-    vx <- 180.0;
-    vy <- 120.0;
-    frameCount <- 0;
-    print("eve_init ok\n");
+    cam = eve.Camera3D();
+    cam.setEye(0.0, 0.0, 3.2);
+    cam.setTarget(0.0, 0.0, 0.0);
+    cam.setFov(45.0);
+    cam.setActive(true);
+    ball = eve.Renderable3D();
+    ball.setMesh(gfx.newMeshSphere(48, 24));
+    ball.setTint(0.85, 0.9, 1.0, 1.0);
+    gfx.setDirectionalLight(-0.35, 0.7, 0.45, 1.0, 0.95, 0.9);
+    print("webgpu main.nut init ok\n");
 };
 
-eve_update <- function(dt) {
-    x = x + vx * dt;
-    y = y + vy * dt;
-    if (x < 0 || x > config.width - 40.0) vx = -vx;
-    if (y < 0 || y > config.height - 40.0) vy = -vy;
+eve_update = function(dt) {
+    if (ball != null)
+        ball.setYaw(ball.getYaw() + dt * 0.4);
 };
 
-eve_render <- function() {
-    gfx.clear();
-
-    // Bouncing square.
-    gfx.drawSolidRect(x, y, 40.0, 40.0, 0.35, 0.85, 1.0, 1.0);
-
-    // Static HUD bar.
-    gfx.drawSolidRect(10.0, 10.0, 180.0, 28.0, 0.15, 0.5, 0.95, 0.9);
-
+eve_render = function() {
     frameCount += 1;
-    if (frameCount % 30 == 0) {
-        print("frame " + frameCount + "\n");
-    }
+    if ((frameCount % 60) == 0)
+        print("eve_render frame " + frameCount + "\n");
+    gfx.clear();
+    gfx.render3D();
 };

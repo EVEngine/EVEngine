@@ -378,11 +378,10 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
     }
     color = color / (color + vec3f(1.0));
-    let nearZ = max(ubo.clipInfo.x, 1e-4);
-    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
-    let viewZ = max(-in.vViewPos.z, 0.0);
-    let linear01 = clamp((viewZ - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    return vec4f(color, linear01);
+    // The scene texture's alpha would otherwise carry linear depth, which the
+    // swapchain compositor blends as transparency (making the mesh nearly
+    // invisible). Output opaque.
+    return vec4f(color, 1.0);
 }
 )wgsl";
 

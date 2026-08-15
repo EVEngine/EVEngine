@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/config.h"
+
 #ifndef EVENGINE_WEBGPU
 #include <Poco/DirectoryWatcher.h>
 #endif

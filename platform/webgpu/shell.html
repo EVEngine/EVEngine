@@ -68,6 +68,12 @@
         if (st) st.textContent = 'Engine ready';
       }
     };
+    // The engine hides the loading overlay after the first composited frame;
+    // this is the hook it calls (guarded, in case the page is reused).
+    window.hideEVELoading = function () {
+      var el = document.getElementById('loading');
+      if (el) el.style.display = 'none';
+    };
     // Diagnostic status line: reports WebGPU + SharedArrayBuffer availability
     // so engine init failures are visible without DevTools.
     (function () {

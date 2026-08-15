@@ -246,6 +246,13 @@ public:
                              float b = 1.f);
 
     /**
+     * Backend hooks so the platform-independent render3D() can wrap its work in
+     * a GPU validation error scope (used on WebGPU to catch early device errors).
+     */
+    virtual void pushValidationScope() {}
+    virtual void popValidationScope() {}
+
+    /**
      * Create a Material asset (shading model + textures + PBR knobs).
      * Caller owns Material*; not tracked by Graphics.
      */

@@ -42,9 +42,11 @@ Module_IMPL(Graphics, new vulkan::Graphics());
 #endif
 
 void Graphics::render3D() {
+    pushValidationScope();
     eve::debug::rtFrameBegin();
     RenderSystem3D::render(*this);
     eve::debug::rtFrameEnd();
+    popValidationScope();
 }
 
 void Graphics::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
