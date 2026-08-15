@@ -23,6 +23,15 @@ public:
     int  getCell(int x, int y) const;
     void fill(int semantic);
 
+    /**
+     * Per-cell detail layer (0..255), parallel to `cells`. Semantics stay in
+     * `cells` (palette/GID compatible); `detail` carries algorithm-specific
+     * extras such as wall-autotile direction masks, floor-pattern variants and
+     * decor tile indices. Semantics that have no detail use 0.
+     */
+    void setDetail(int x, int y, int value);
+    int  getDetail(int x, int y) const;
+
     void        setMeta(const std::string &key, const std::string &value);
     std::string getMeta(const std::string &key, const std::string &defaultValue) const;
 
@@ -42,6 +51,8 @@ public:
 
     const std::vector<uint32_t>     &cells() const { return cells_; }
     std::vector<uint32_t>           &cells() { return cells_; }
+    const std::vector<uint8_t>      &detail() const { return detail_; }
+    std::vector<uint8_t>            &detail() { return detail_; }
     const std::vector<map::MapObject> &objects() const { return objects_; }
 
 private:
@@ -50,6 +61,7 @@ private:
     int                                      width_  = 0;
     int                                      height_ = 0;
     std::vector<uint32_t>                    cells_;
+    std::vector<uint8_t>                     detail_;
     std::unordered_map<std::string, std::string> meta_;
     std::vector<map::MapObject>              objects_;
 };

@@ -64,6 +64,42 @@ local gpu = gen.generateMesh("mesh.hexplanet", p, gfx);
 是用多边形铺满球面时无法消除的拓扑要求。
 
 建议在创建关卡或切换星球时生成一次并缓存 GPU Mesh，不要逐帧重新生成。
+### 生成可玩地牢（`level.roguelike`，Roguelike 风格）
+
+`level.roguelike` 是种子驱动的房间-走廊地牢生成器，在墙/地板网格之上
+再叠一层**细节**（`Grid2D.detail`）与**对象**，适合快速搭建 2D / 2.5D 关卡：
+
+- 墙格 `getDetail` = 8 位邻接掩码（哪些方向是可行走地板），即瓦片方向，
+  可驱动方向感知的自动拼墙。
+- 地板格 `getDetail` = 地板图案变体（`1..N`）；`>= 100` 表示随机散落的装饰瓦片。
+- `getObjectType` 提供 `spawn` / `stairs` 以及 `pillar` / `chest` 道具。
+- `getMeta` 记录 `seed` / `rooms` / `floorPattern` / `decorTiles` / `corridorStyle`，
+  便于复现或存档关卡。
+
+```squirrel
+local p = procgen.newParams();
+p.setSeed(42);
+p.setSize(48, 32);
+p.setInt("roomCount", 12);
+p.setString("corridorStyle", "l");   // l | straight | diagonal
+p.setString("floorPattern", "brick");// brick | checker | plank | cobble | plain
+p.setFloat("decorDensity", 0.06);
+p.setString("decorSet", "mixed");    // none | pillars | treasure | nature | mixed
+local grid = procgen.generate("level.roguelike", p);
+```
+
+常用规则：`roomCount` / `roomMin` / `roomMax`（房间预算与尺寸）、
+`corridorWidth`（走廊宽）、`padding`（外框墙厚）、`spacing`（房间间距）、
+`floorVariants`（地板变体数）、`autotile`（是否写入墙方向掩码）。
+
+配套工具：
+
+- `procgen.autotileGrid(grid)`：对**任意**已生成网格的墙格补写 8 位方向掩码，
+  为其它算法生成的关卡也加上“瓦片方向”细节。
+- `procgen.randomSeed()`：产生一个非 0 的随机种子，用于再掷一局。
+
+可运行脚本与快捷键见 [`examples/roguelike-generator`](../../../examples/roguelike-generator/README.md)。
+
 ### 生成随机树木网格
 
 `mesh.tree` 生成可复现的树干、分枝和叶片网格。`branchAlgorithm` 的两个值互斥：
@@ -95,6 +131,22 @@ local tree = gen.generateMesh("mesh.tree", p, gfx);
 
 完整参数范围、交互快捷键和可运行脚本见 [`examples/tree-generator`](../../../examples/tree-generator/README.md)。生成网格有一定成本，应在加载、换 seed 或修改参数时重建，不要每帧调用。
 
+### 生成线性可拼接结构（栅栏 / 石墙 / 桥 / 长城 / 树篱 / 拒马）
+
+将单个可拼接单元段沿 X 轴重复 N 次生成连续结构，接缝处纹理连续平铺。
+
+```squirrel
+local p = gen.newParams();
+p.setInt("segments", 8);      // 重复单元数
+p.setFloat("segLength", 2.0); // 单元段长度
+p.setFloat("height", 1.5);    // 高度覆盖
+p.setFloat("uvRepeat", 2.0);  // 每世界单位的纹理重复次数
+local mesh = gen.generateMesh("mesh.stonewall", p, gfx); // 或 mesh.fence / mesh.bridge
+                                                         // mesh.greatwall / mesh.hedge / mesh.chevaldefrise
+```
+
+共享参数：`segments`、`segLength`、`height`、`depth`、`thickness`、`scale`、`uvRepeat`。
+
 ### 生成无缝材质
 
 设置 texture recipe、尺寸、octaves、pixelSize 和 seamless，调用纹理或法线图生成接口；开发期切换 seed 预览，发布时缓存 Texture，不能每帧重新生成。
@@ -110,12 +162,12 @@ local tree = gen.generateMesh("mesh.tree", p, gfx);
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `addObject()`、`addObjectAt()`、`applyToLayer()`、`buildMesh()`、`clearObjects()`、`fill()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
-- `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getFloat()`、`getHeight()`、`getInt()`
+- `addObject()`、`addObjectAt()`、`applyToLayer()`、`autotileGrid()`、`buildMesh()`、`clearObjects()`、`fill()`、`generate()`、`generateImage()`、`generateMesh()`、`generateNormalImage()`
+- `generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
 - `getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
 - `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
 - `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`
-- `lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`resize()`、`setCell()`、`setFloat()`、`setInt()`
+- `lastError()`、`newGrid()`、`newOutput()`、`newParams()`、`randomSeed()`、`resize()`、`setCell()`、`setDetail()`、`setFloat()`、`setInt()`
 - `setLayer()`、`setMeta()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setSeed()`、`setSize()`、`setString()`
 - `setTarget()`
 

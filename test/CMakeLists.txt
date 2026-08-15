@@ -57,7 +57,10 @@ file(GLOB all_test_cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
+  housegen.cpp
+  housegen_render.cpp
   procgen_simulation.cpp
+  roguelike_generator.cpp
   stylize.cpp
   voxel.cpp
   voxel_render.cpp
@@ -67,6 +70,7 @@ file(GLOB all_test_cpp
   softbody.cpp
   hotreload.cpp
   shader.cpp
+  grass.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -277,6 +281,7 @@ set(EVELIBS
   EVAvatar
   EVDialogue
   EVProcgen
+  EVHouseGen
   EVVoxel
   EVStylize
   EVEditor)

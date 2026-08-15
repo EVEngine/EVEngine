@@ -4,7 +4,9 @@
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "procgen/texture/PbrMaterial.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -22,6 +24,7 @@ Module_IMPL(Procgen, new Procgen());
 Procgen::Procgen() {
     GeneratorRegistry::instance().registerBuiltins();
     TextureRecipeRegistry::instance().registerBuiltins();
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
     MeshRecipeRegistry::instance().registerBuiltins();
     // Sensible pixel-RPG default palette (games override GIDs to match tileset).
     setPaletteGid("default", "empty", 0);
@@ -134,6 +137,16 @@ bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
 
+bool Procgen::autotileGrid(Grid2D *grid) {
+    if (!grid) {
+        lastError_ = "autotileGrid: null grid";
+        return false;
+    }
+    return eve::procgen::autotileGridInPlace(*grid);
+}
+
+uint32_t Procgen::randomSeed() { return eve::procgen::randomSeedValue(); }
+
 std::string Procgen::lastError() const { return lastError_; }
 
 std::string Procgen::gridToJson(Grid2D *grid) const {
@@ -209,6 +222,38 @@ bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
+PbrTextureSet *Procgen::generatePbrMaterial(const std::string &recipeId, Params *params) {
+    lastError_.clear();
+    if (!params) {
+        lastError_ = "generatePbrMaterial: null params";
+        return nullptr;
+    }
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    PbrTextureSet *set = PbrRecipeRegistry::instance().generate(recipeId, *params, lastError_);
+    if (!set && lastError_.empty()) lastError_ = "generatePbrMaterial failed";
+    return set;
+}
+
+int Procgen::getPbrRecipeCount() const {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    pbrRecipeIdsCache_ = PbrRecipeRegistry::instance().list();
+    return int(pbrRecipeIdsCache_.size());
+}
+
+std::string Procgen::getPbrRecipeId(int index) const {
+    if (pbrRecipeIdsCache_.empty()) {
+        PbrRecipeRegistry::instance().registerPbrBuiltins();
+        pbrRecipeIdsCache_ = PbrRecipeRegistry::instance().list();
+    }
+    if (index < 0 || index >= int(pbrRecipeIdsCache_.size())) return {};
+    return pbrRecipeIdsCache_[size_t(index)];
+}
+
+bool Procgen::hasPbrRecipe(const std::string &recipeId) const {
+    PbrRecipeRegistry::instance().registerPbrBuiltins();
+    return PbrRecipeRegistry::instance().has(recipeId);
+}
+
 MeshBuild *Procgen::buildMesh(const std::string &recipeId, Params *params) {
     lastError_.clear();
     if (!params) {
@@ -260,6 +305,40 @@ bool Procgen::hasMeshRecipe(const std::string &recipeId) const {
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
+TerrainSampler *Procgen::newTerrainSampler() { return new TerrainSampler(); }
+
+Heightmap *Procgen::newHeightmap(int width, int height) {
+    return new Heightmap(width, height);
+}
+
+Heightmap *Procgen::generateHeightmap(Params *params) {
+    lastError_.clear();
+    if (!params) {
+        lastError_ = "generateHeightmap: null params";
+        return nullptr;
+    }
+    const TerrainSampler sampler = TerrainSampler::fromParams(*params);
+    return new Heightmap(Heightmap::generate(sampler, params->getWidth(), params->getHeight()));
+}
+
+bool Procgen::heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out) {
+    lastError_.clear();
+    if (!heightmap) {
+        lastError_ = "heightmapToGrid: null heightmap";
+        return false;
+    }
+    if (!out) {
+        lastError_ = "heightmapToGrid: null grid";
+        return false;
+    }
+    const TerrainBands bands = params ? TerrainBands::fromParams(*params) : TerrainBands();
+    if (!heightmap->toGrid(*out, bands)) {
+        lastError_ = "heightmapToGrid: heightmap is empty";
+        return false;
+    }
+    return true;
+}
+
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
@@ -298,6 +377,8 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getHeight", &Grid2D::getHeight);
     grid.addFunc("setCell", &Grid2D::setCell);
     grid.addFunc("getCell", &Grid2D::getCell);
+    grid.addFunc("setDetail", &Grid2D::setDetail);
+    grid.addFunc("getDetail", &Grid2D::getDetail);
     grid.addFunc("fill", &Grid2D::fill);
     grid.addFunc("setMeta", &Grid2D::setMeta);
     grid.addFunc("getMeta", &Grid2D::getMeta);
@@ -331,6 +412,75 @@ void Procgen::expose(ssq::Table &table) {
     mesh.addFunc("getIndex", &MeshBuild::getIndex);
     mesh.addFunc("setMeta", &MeshBuild::setMeta);
     mesh.addFunc("getMeta", &MeshBuild::getMeta);
+
+    auto sampler = table.addClass<TerrainSampler>(
+        "ProcgenTerrainSampler",
+        std::function<TerrainSampler *()>([]() -> TerrainSampler * { return nullptr; }), true);
+    sampler.addFunc("sample", &TerrainSampler::sample);
+    sampler.addFunc("sampleTile", &TerrainSampler::sampleTile);
+    sampler.addFunc("setSeed", &TerrainSampler::setSeed);
+    sampler.addFunc("getSeed", &TerrainSampler::getSeed);
+    sampler.addFunc("setScale", &TerrainSampler::setScale);
+    sampler.addFunc("getScale", &TerrainSampler::getScale);
+    sampler.addFunc("setFrequency", &TerrainSampler::setFrequency);
+    sampler.addFunc("getFrequency", &TerrainSampler::getFrequency);
+    sampler.addFunc("setWavelength", &TerrainSampler::setWavelength);
+    sampler.addFunc("getWavelength", &TerrainSampler::getWavelength);
+    sampler.addFunc("setOctaves", &TerrainSampler::setOctaves);
+    sampler.addFunc("getOctaves", &TerrainSampler::getOctaves);
+    sampler.addFunc("setLacunarity", &TerrainSampler::setLacunarity);
+    sampler.addFunc("getLacunarity", &TerrainSampler::getLacunarity);
+    sampler.addFunc("setGain", &TerrainSampler::setGain);
+    sampler.addFunc("getGain", &TerrainSampler::getGain);
+    sampler.addFunc("setRidge", &TerrainSampler::setRidge);
+    sampler.addFunc("getRidge", &TerrainSampler::getRidge);
+    sampler.addFunc("setWarp", &TerrainSampler::setWarp);
+    sampler.addFunc("getWarp", &TerrainSampler::getWarp);
+    sampler.addFunc("setExponent", &TerrainSampler::setExponent);
+    sampler.addFunc("getExponent", &TerrainSampler::getExponent);
+    sampler.addFunc("setContinent", &TerrainSampler::setContinent);
+    sampler.addFunc("getContinent", &TerrainSampler::getContinent);
+    sampler.addFunc("setIsland", &TerrainSampler::setIsland);
+    sampler.addFunc("getIsland", &TerrainSampler::getIsland);
+    sampler.addFunc("setCoastSoftness", &TerrainSampler::setCoastSoftness);
+    sampler.addFunc("getCoastSoftness", &TerrainSampler::getCoastSoftness);
+    sampler.addFunc("setWorldSize", &TerrainSampler::setWorldSize);
+    sampler.addFunc("getWorldWidth", &TerrainSampler::getWorldWidth);
+    sampler.addFunc("getWorldHeight", &TerrainSampler::getWorldHeight);
+    sampler.addFunc("setBase", &TerrainSampler::setBase);
+    sampler.addFunc("getBase", &TerrainSampler::getBase);
+    sampler.addFunc("setAmplitude", &TerrainSampler::setAmplitude);
+    sampler.addFunc("getAmplitude", &TerrainSampler::getAmplitude);
+    sampler.addFunc("setClamp", &TerrainSampler::setClamp);
+    sampler.addFunc("isClamped", &TerrainSampler::isClamped);
+    sampler.addFunc("getClampMin", &TerrainSampler::getClampMin);
+    sampler.addFunc("getClampMax", &TerrainSampler::getClampMax);
+
+    auto heightmap = table.addClass<Heightmap>(
+        "ProcgenHeightmap", std::function<Heightmap *()>([]() -> Heightmap * { return nullptr; }),
+        true);
+    heightmap.addFunc("resize", &Heightmap::resize);
+    heightmap.addFunc("getWidth", &Heightmap::getWidth);
+    heightmap.addFunc("getHeight", &Heightmap::getHeight);
+    heightmap.addFunc("setHeight", &Heightmap::setHeight);
+    heightmap.addFunc("height", &Heightmap::height);
+    heightmap.addFunc("sampleBilinear", &Heightmap::sampleBilinear);
+    heightmap.addFunc("sampleBilinearSeamless", &Heightmap::sampleBilinearSeamless);
+
+    auto pbr = table.addClass<PbrTextureSet>(
+        "ProcgenPbrMaterial",
+        std::function<PbrTextureSet *()>([]() -> PbrTextureSet * { return nullptr; }), true);
+    pbr.addFunc("destroy", &PbrTextureSet::destroy);
+    pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet *s) { return s->albedo->getWidth(); });
+    pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet *s) { return s->albedo->getHeight(); });
+    pbr.addFunc("getNormalWidth", [](const PbrTextureSet *s) { return s->normal->getWidth(); });
+    pbr.addFunc("getRoughnessWidth", [](const PbrTextureSet *s) { return s->roughness->getWidth(); });
+    pbr.addFunc("getMetallicWidth", [](const PbrTextureSet *s) { return s->metallic->getWidth(); });
+    pbr.addFunc("getHeightWidth", [](const PbrTextureSet *s) { return s->height->getWidth(); });
+    pbr.addFunc("getAoWidth", [](const PbrTextureSet *s) { return s->ao->getWidth(); });
+    pbr.addFunc("hasAllMaps", [](const PbrTextureSet *s) {
+        return s->albedo && s->normal && s->roughness && s->metallic && s->height && s->ao;
+    });
 }
 
 void Procgen::expose(ssq::Class &cls) {
@@ -346,6 +496,8 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("autotileGrid", &Procgen::autotileGrid);
+    cls.addFunc("randomSeed", &Procgen::randomSeed);
     cls.addFunc("lastError", &Procgen::lastError);
     cls.addFunc("gridToJson", &Procgen::gridToJson);
     cls.addFunc("generateImage", &Procgen::generateImage);
@@ -354,11 +506,19 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
     cls.addFunc("getTextureRecipeId", &Procgen::getTextureRecipeId);
     cls.addFunc("hasTextureRecipe", &Procgen::hasTextureRecipe);
+    cls.addFunc("generatePbrMaterial", &Procgen::generatePbrMaterial);
+    cls.addFunc("getPbrRecipeCount", &Procgen::getPbrRecipeCount);
+    cls.addFunc("getPbrRecipeId", &Procgen::getPbrRecipeId);
+    cls.addFunc("hasPbrRecipe", &Procgen::hasPbrRecipe);
     cls.addFunc("buildMesh", &Procgen::buildMesh);
     cls.addFunc("generateMesh", &Procgen::generateMesh);
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
     cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
     cls.addFunc("hasMeshRecipe", &Procgen::hasMeshRecipe);
+    cls.addFunc("newTerrainSampler", &Procgen::newTerrainSampler);
+    cls.addFunc("newHeightmap", &Procgen::newHeightmap);
+    cls.addFunc("generateHeightmap", &Procgen::generateHeightmap);
+    cls.addFunc("heightmapToGrid", &Procgen::heightmapToGrid);
 }
 
 }  // namespace eve::procgen

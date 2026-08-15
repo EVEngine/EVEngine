@@ -10,6 +10,7 @@
 #include "vkbuilder.hpp"
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 #include <cstdint>
@@ -365,6 +366,11 @@ private:
     void flushBatch();
     void flushToSwapchain();
     void flushToOffscreen(OffscreenCanvas *canvas);
+    void abortOpen3DFrame();
+    void noteSolidOverlay();
+    void noteTexturedOverlay(Texture *tex);
+    void noteLitOverlay();
+    void clear2DBatches();
     void drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
                         std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
                         size_t &texBufIndex, bool offscreen);
@@ -634,6 +640,19 @@ private:
 
     std::vector<LitBatch> litBatches;
 
+    enum class OverlayKind : uint8_t { Solid, Textured, Lit };
+    struct OverlaySpan {
+        OverlayKind kind = OverlayKind::Solid;
+        uint32_t index = 0;
+        uint32_t vertBegin = 0;
+        uint32_t vertCount = 0;
+    };
+    std::vector<OverlaySpan> overlaySpans;
+    std::vector<OverlaySpan> engine3DSpans;
+    std::optional<TexturedBatch> pendingSceneResolve;
+    std::optional<TexturedBatch> pendingUiResolve;
+    bool sceneColorComposited = false;
+
     // Persistent host-visible vertex buffers for 2D batching, reused across
     // frames. GenericBuffer now owns the Vulkan handles.
     struct Frame2DBuffers {
@@ -682,6 +701,7 @@ private:
     std::vector<std::unique_ptr<eve::graphics::Canvas>> ownedCanvases;
 
     bool swapchainPassOpen = false;
+    bool flushingSwapchain_ = false;
     Mesh3DUBO mesh3dFrameUbo{};
 
     // Instanced voxel face rectangles (packed uint32 instances).

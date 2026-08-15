@@ -1,7 +1,9 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/RockMesh.h"
+#include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/BushMesh.h"
+#include "procgen/algorithms/LinearStructure.h"
 
 #include <algorithm>
 #include <cmath>
@@ -474,6 +476,8 @@ void MeshRecipeRegistry::registerBuiltins() {
     registerRecipe("mesh.hexplanet", generateHexPlanetMesh);
     registerRecipe("mesh.tree", generateTreeMesh);
     registerRecipe("mesh.bush", generateBushMesh);
+    registerRecipe("mesh.skyscraper", generateSkyscraperMesh);
+    registerLinearStructureRecipes(*this);
     builtinsRegistered_ = true;
 }
 

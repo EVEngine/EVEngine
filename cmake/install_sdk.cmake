@@ -20,6 +20,23 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         BUNDLE DESTINATION bin
         RUNTIME DESTINATION bin
     )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    install(TARGETS ${EVENGINE_NATIVE_TARGET}
+        RUNTIME DESTINATION bin
+    )
+    # The browser build produces eve.js / eve.wasm / eve.html next to the
+    # runtime output; copy them plus the preloaded game into bin/.
+    install(FILES
+        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.js"
+        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.wasm"
+        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.html"
+        DESTINATION bin
+        OPTIONAL
+    )
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/platform/webgpu/game-shell"
+        DESTINATION bin
+        OPTIONAL
+    )
 else()
     install(TARGETS ${EVENGINE_NATIVE_TARGET}
         RUNTIME DESTINATION bin
@@ -53,6 +70,7 @@ foreach(_eve_mod IN LISTS _eve_module_dirs)
                 PATTERN "*.hpp"
                 PATTERN "sdl" EXCLUDE
                 PATTERN "vulkan" EXCLUDE
+                PATTERN "webgpu" EXCLUDE
                 PATTERN "physfs" EXCLUDE
                 PATTERN "openal" EXCLUDE
                 PATTERN "imgui" EXCLUDE

@@ -3,10 +3,12 @@
 #include "common/Module.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
+#ifndef EVENGINE_WEBGPU
 #include "map/TileConfig.h"
 #include "map/TileLayer.h"
 #include "particles/ParticleConfig.h"
 #include "particles/ParticleEmitter.h"
+#endif
 
 #include <cctype>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -67,6 +69,7 @@ bool HotReload::isJsonPath(const std::string &normPath) const {
     return extensionOf(normPath) == ".json";
 }
 
+#ifndef EVENGINE_WEBGPU
 bool HotReload::reloadParticles(const std::string &normPath) {
     if (ecs::current()->getManager<particles::ParticleEmitter>() == nullptr) return false;
 
@@ -95,6 +98,10 @@ bool HotReload::reloadTilemaps(const std::string &normPath) {
     }
     return reloaded > 0;
 }
+#else
+bool HotReload::reloadParticles(const std::string &) { return false; }
+bool HotReload::reloadTilemaps(const std::string &) { return false; }
+#endif
 
 bool HotReload::reloadTextures(const std::string &normPath) {
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
@@ -102,6 +109,7 @@ bool HotReload::reloadTextures(const std::string &normPath) {
 
     bool ok = gfx->reloadTextureFromFile(normPath);
 
+#ifndef EVENGINE_WEBGPU
     // Emitters that reference this texture path: force re-bind via config reload or setTexture.
     if (ecs::current()->getManager<particles::ParticleEmitter>() != nullptr) {
         auto view = ecs::View<particles::ParticleEmitter, particles::ParticleEmitter::Config,
@@ -135,6 +143,7 @@ bool HotReload::reloadTextures(const std::string &normPath) {
             }
         }
     }
+#endif
     return ok;
 }
 
