@@ -38,3 +38,6 @@ platform/android/apk/app/src/main/jniLibs/
 # Filled by `make sync/android-assets` (source: platform/android/game-shell or example/).
 platform/android/apk/app/src/main/assets/game/*
 !platform/android/apk/app/src/main/assets/game/.gitkeep
+# Filled by `make sync/android-test-assets` (zeroerr suite + examples on-device tree).
+platform/android/apk/app/src/main/assets/test/
+platform/android/apk/app/src/main/assets/examples/

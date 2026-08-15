@@ -2,6 +2,8 @@
 
 #include "ui/UIBackend.h"
 
+#include <imgui.h>
+
 namespace eve::ui {
 
 /** Dear ImGui + SDL input + Vulkan present overlay. */
@@ -29,6 +31,7 @@ public:
 private:
     void renderDrawData(void *vkCommandBuffer);
     static void presentOverlayThunk(void *userdata, void *commandBuffer);
+    static void windowDestroyedThunk(void *userdata);
     void applyScale(float scale);
     /** Initial UI scale derived from window DPI (desktop) or display DPI (mobile). */
     float computeInitialScale() const;
@@ -43,7 +46,8 @@ private:
     float uiScale_ = 1.f;
     eve::graphics::Graphics *gfx_ = nullptr;
     SDL_Window *window_ = nullptr;
-    void *imguiDescriptorPool_ = nullptr;  // VkDescriptorPool
+    void *imguiDescriptorPool_ = nullptr;   // VkDescriptorPool
+    ImGuiContext *ctx_ = nullptr;           // ImGui context owned by this backend
 };
 
 }  // namespace eve::ui

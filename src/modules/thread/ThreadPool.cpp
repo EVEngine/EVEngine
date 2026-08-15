@@ -7,11 +7,27 @@
 
 #include <algorithm>
 #include <chrono>
+#include <mutex>
 #include <system_error>
 #include <utility>
 
 namespace eve {
 namespace thread {
+
+namespace {
+constexpr int kMaxWorkerCount = 256;
+thread_local const void *currentPoolState = nullptr;
+std::mutex eventResolveMu;
+}  // namespace
+
+struct ThreadPool::State {
+    mutable std::mutex mu;
+    std::condition_variable cv;
+    std::condition_variable idleCv;
+    std::queue<std::shared_ptr<Task::State>> queue;
+    int busy = 0;
+    bool stopping = false;
+};
 
 ThreadPool::ThreadPool(int workerCount) {
     if (workerCount <= 0) {
@@ -19,15 +35,42 @@ ThreadPool::ThreadPool(int workerCount) {
         if (workerCount <= 0)
             workerCount = 1;
     }
+#if defined(__EMSCRIPTEN__)
+    // Emscripten spawns a real browser worker per pthread; hardware_concurrency
+    // on desktops reports 8-32 workers, which is wasteful (and exhausts the
+    // -sPTHREAD_POOL_SIZE pool). Cap to the pre-allocated pool size so the pool
+    // workers are reused instead of spawning more.
+    workerCount = std::min(workerCount, 4);
+#endif
+    if (workerCount > kMaxWorkerCount)
+        throw eve::Exception("ThreadPool worker count exceeds limit (%d)", kMaxWorkerCount);
+
     workerCount_ = workerCount;
+    state_ = std::make_shared<State>();
     workers_.reserve(static_cast<size_t>(workerCount_));
-    for (int i = 0; i < workerCount_; ++i)
-        workers_.emplace_back([this] { workerMain(); });
+    try {
+        for (int i = 0; i < workerCount_; ++i) {
+            auto state = state_;
+            workers_.emplace_back([state] { workerMain(state); });
+        }
+    } catch (...) {
+        {
+            std::lock_guard<std::mutex> lock(state_->mu);
+            state_->stopping = true;
+        }
+        state_->cv.notify_all();
+        for (auto &worker : workers_) {
+            if (worker.joinable())
+                worker.join();
+        }
+        workers_.clear();
+        throw;
+    }
 }
 
 ThreadPool::~ThreadPool() {
     try {
-        stop();
+        stopImpl(true);
     } catch (...) {
     }
 }
@@ -35,29 +78,30 @@ ThreadPool::~ThreadPool() {
 int ThreadPool::getWorkerCount() const { return workerCount_; }
 
 int ThreadPool::getPendingCount() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return static_cast<int>(queue_.size());
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return static_cast<int>(state_->queue.size());
 }
 
 bool ThreadPool::isRunning() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return !stopping_;
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return !state_->stopping;
 }
 
 Task *ThreadPool::submit(std::function<void()> fn) {
     if (!fn)
         throw eve::Exception("ThreadPool::submit: null function");
 
-    auto *task = new Task(std::move(fn));
+    auto state = std::make_shared<Task::State>(std::move(fn));
+    auto *task = new Task(state);
     {
-        std::lock_guard<std::mutex> lock(mu_);
-        if (stopping_) {
+        std::lock_guard<std::mutex> lock(state_->mu);
+        if (state_->stopping) {
             delete task;
             throw eve::Exception("ThreadPool is stopped");
         }
-        queue_.push(task);
+        state_->queue.push(std::move(state));
     }
-    cv_.notify_one();
+    state_->cv.notify_one();
     return task;
 }
 
@@ -74,10 +118,15 @@ Task *ThreadPool::submitPush(Channel *channel, std::string message, int delayMs)
         throw eve::Exception("ThreadPool::submitPush: channel is null");
     if (delayMs < 0)
         delayMs = 0;
-    return submit([channel, msg = std::move(message), delayMs] {
+    auto channelState = channel->state_;
+    return submit([channelState, msg = std::move(message), delayMs] {
         if (delayMs > 0)
             std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
-        channel->push(msg);
+        {
+            std::lock_guard<std::mutex> lock(channelState->mu);
+            channelState->queue.push(msg);
+        }
+        channelState->cv.notify_one();
     });
 }
 
@@ -86,39 +135,65 @@ Task *ThreadPool::submitPost(std::string name, std::string data, int delayMs) {
         throw eve::Exception("ThreadPool::submitPost: name must not be empty");
     if (delayMs < 0)
         delayMs = 0;
-    return submit([name = std::move(name), data = std::move(data), delayMs] {
-        if (delayMs > 0)
-            std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
-        auto *ev = ModuleManager::getInstance<event::Event>("Event");
+    event::Event *ev = nullptr;
+    {
+        // ModuleManager is not thread-safe. Resolve/create the singleton while
+        // submitPost is still on the submitting (script/main) thread.
+        std::lock_guard<std::mutex> lock(eventResolveMu);
+        ev = ModuleManager::getInstance<event::Event>("Event");
         if (!ev)
             ev = event::Event::create();
+    }
+    return submit([ev, name = std::move(name), data = std::move(data), delayMs] {
+        if (delayMs > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
         ev->pushData(name, data);
     });
 }
 
 void ThreadPool::waitAll() {
-    std::unique_lock<std::mutex> lock(mu_);
-    idleCv_.wait(lock, [this] { return queue_.empty() && busy_ == 0; });
+    auto state = state_;
+    if (currentPoolState == state.get())
+        throw eve::Exception("ThreadPool::waitAll cannot be called from its worker");
+    std::unique_lock<std::mutex> lock(state->mu);
+    state->idleCv.wait(lock, [&state] { return state->queue.empty() && state->busy == 0; });
 }
 
 void ThreadPool::stop() {
+    if (currentPoolState == state_.get())
+        throw eve::Exception("ThreadPool::stop cannot be called from its worker");
+    stopImpl(false);
+}
+
+void ThreadPool::stopImpl(bool allowWorkerCaller) {
+    std::lock_guard<std::mutex> lifecycleLock(lifecycleMu_);
+    auto state = state_;
+    const bool calledByWorker = currentPoolState == state.get();
+    if (calledByWorker && !allowWorkerCaller)
+        throw eve::Exception("ThreadPool::stop cannot be called from its worker");
+
     {
-        std::lock_guard<std::mutex> lock(mu_);
-        if (stopping_)
-            return;
-        stopping_ = true;
+        std::lock_guard<std::mutex> lock(state->mu);
+        state->stopping = true;
     }
-    cv_.notify_all();
-    const auto self = std::this_thread::get_id();
+    state->cv.notify_all();
+
+    // Destruction from a running job cannot safely join any pool worker: a
+    // different worker may itself be waiting for the current Task to finish.
+    // Workers only retain State, not ThreadPool, so detaching all of them here
+    // is safe and lets them drain accepted work before exiting.
+    if (calledByWorker) {
+        for (auto &worker : workers_) {
+            if (worker.joinable())
+                worker.detach();
+        }
+        workers_.clear();
+        return;
+    }
+
     for (auto &w : workers_) {
         if (!w.joinable())
             continue;
-        // MSVC throws std::system_error(resource_deadlock_would_occur) if this
-        // thread is a worker (stop from a task / TLS teardown).
-        if (w.get_id() == self) {
-            w.detach();
-            continue;
-        }
         try {
             w.join();
         } catch (const std::system_error &) {
@@ -129,27 +204,30 @@ void ThreadPool::stop() {
     workers_.clear();
 }
 
-void ThreadPool::workerMain() {
+void ThreadPool::workerMain(std::shared_ptr<State> state) {
+    currentPoolState = state.get();
     for (;;) {
-        Task *task = nullptr;
+        std::shared_ptr<Task::State> task;
         {
-            std::unique_lock<std::mutex> lock(mu_);
-            cv_.wait(lock, [this] { return stopping_ || !queue_.empty(); });
-            if (stopping_ && queue_.empty())
+            std::unique_lock<std::mutex> lock(state->mu);
+            state->cv.wait(lock, [&state] { return state->stopping || !state->queue.empty(); });
+            if (state->stopping && state->queue.empty()) {
+                currentPoolState = nullptr;
                 return;
-            task = queue_.front();
-            queue_.pop();
-            ++busy_;
+            }
+            task = std::move(state->queue.front());
+            state->queue.pop();
+            ++state->busy;
         }
 
         if (task)
-            task->run();
+            Task::run(task);
 
         {
-            std::lock_guard<std::mutex> lock(mu_);
-            --busy_;
-            if (queue_.empty() && busy_ == 0)
-                idleCv_.notify_all();
+            std::lock_guard<std::mutex> lock(state->mu);
+            --state->busy;
+            if (state->queue.empty() && state->busy == 0)
+                state->idleCv.notify_all();
         }
     }
 }

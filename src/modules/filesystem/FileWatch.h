@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef EVENGINE_WEBGPU
 #include <Poco/DirectoryWatcher.h>
+#endif
 
 #include <memory>
 #include <mutex>
@@ -11,8 +13,10 @@
 namespace eve::filesystem {
 
 /**
- * OS directory watch (Poco::DirectoryWatcher) with a main-thread event queue.
- * Watch a directory (all children) or a single file (parent dir + name filter).
+ * OS directory watch with a main-thread event queue.
+ * Desktop/mobile: backed by Poco::DirectoryWatcher (see FileWatch.cpp).
+ * WebGPU (Emscripten): the browser VFS has no native file watching, so this is
+ * a no-op stub — add()/remove() return false, poll() returns false.
  */
 class FileWatch {
 public:
@@ -49,11 +53,13 @@ public:
 private:
     struct DirWatch;
 
+#ifndef EVENGINE_WEBGPU
     void onAdded(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onRemoved(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onModified(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onMovedFrom(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onMovedTo(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+#endif
 
     void handlePocoEvent(const std::string &kind, const std::string &itemPath);
 

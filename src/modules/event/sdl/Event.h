@@ -34,8 +34,10 @@ public:
 	void clear() override;
 
 private:
+	void wakeWaiters() override;
 	void exceptionIfInRenderPass(const char *name);
 	Message *convert(const SDL_Event &e);
+	Uint32 wakeEventType_ = static_cast<Uint32>(-1);
 
 }; // Event
 

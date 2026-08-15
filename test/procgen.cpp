@@ -13,13 +13,22 @@
 #include "map/TileLayer.h"
 #include "image/ImageData.h"
 #include "graphics/Graphics.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
 #include "window/Window.h"
+#include "image/Image.h"
+#include "filesystem/FileData.h"
+#include "RenderImageAudit.h"
 
 #include <SDL2/SDL.h>
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <memory>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -218,6 +227,223 @@ TEST_CASE("procgen.registry.builtins") {
     CHECK(GeneratorRegistry::instance().has("maze.backtrack"));
     CHECK(GeneratorRegistry::instance().has("noise.terrain"));
     CHECK(GeneratorRegistry::instance().has("wfc.simple"));
+}
+
+TEST_CASE("procgen.mesh.rock.reproducibleAndControllable") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(1847);
+    p.setInt("subdivisions", 3);
+    p.setFloat("radius", 0.7f);
+    p.setFloat("flattening", 0.3f);
+    p.setFloat("angularity", 0.45f);
+    p.setFloat("erosion", 0.16f);
+    p.setFloat("scale", 2.4f);
+    MeshBuild a, b, flatter;
+    std::string err;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, a, err));
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, b, err));
+    CHECK_EQ(a.getVertexCount(), 642);
+    CHECK_EQ(a.getIndexCount() / 3, 1280);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshNormalsFiniteUnit(a));
+
+    p.setFloat("flattening", 0.58f);
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, flatter, err));
+    CHECK(a.positions() != flatter.positions());
+
+    p.setInt("subdivisions", 2);
+    MeshBuild lod1;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, lod1, err));
+    CHECK_EQ(lod1.getVertexCount(), 162);
+    CHECK_EQ(lod1.getIndexCount() / 3, 320);
+
+    std::vector<std::vector<float>> shapePositions;
+    for (const char *shape : {"boulder", "slab", "block", "shard"}) {
+        p.setString("baseShape", shape);
+        p.setInt("subdivisions", 3);
+        MeshBuild variant;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, variant, err));
+        CHECK_EQ(variant.getMeta("baseShape", ""), shape);
+        CHECK_EQ(variant.getVertexCount(), 642);
+        CHECK(meshIndicesInRange(variant));
+        CHECK(meshNormalsFiniteUnit(variant));
+        shapePositions.push_back(variant.positions());
+    }
+    CHECK(shapePositions[0] != shapePositions[1]);
+    CHECK(shapePositions[1] != shapePositions[2]);
+    CHECK(shapePositions[2] != shapePositions[3]);
+
+    p.setString("baseShape", "invalid");
+    MeshBuild invalid;
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.rock", p, invalid, err));
+}
+
+TEST_CASE("procgen.mesh.tree.stylesAndLeaves") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params low;
+    low.setSeed(1234);
+    low.setString("style", "lowpoly");
+    low.setString("leafMode", "cards");
+    low.setFloat("leafDensity", 0.8f);
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", low, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", low, b, err));
+    CHECK(a.getVertexCount() > 0);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK_EQ(a.getMeta("style", ""), "lowpoly");
+    CHECK_EQ(a.getMeta("leafMode", ""), "cards");
+
+    Params realistic;
+    realistic.setSeed(22);
+    realistic.setString("style", "realistic");
+    realistic.setString("leafMode", "canopy");
+    realistic.setString("branchAlgorithm", "spaceColonization");
+    realistic.setFloat("leafDensity", 1.f);
+    MeshBuild canopy;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", realistic, canopy, err));
+    CHECK(canopy.getVertexCount() > a.getVertexCount() / 2);
+    CHECK(meshIndicesInRange(canopy));
+    CHECK(meshNormalsFiniteUnit(canopy));
+    CHECK_EQ(canopy.getMeta("branchAlgorithm", ""), "spaceColonization");
+
+    Params sparseCoverage = realistic;
+    sparseCoverage.setFloat("lowerLeafCoverage", 0.f);
+    sparseCoverage.setFloat("upperLeafCoverage", 0.f);
+    Params fullCoverage = realistic;
+    fullCoverage.setFloat("lowerLeafCoverage", 1.f);
+    fullCoverage.setFloat("upperLeafCoverage", 1.f);
+    MeshBuild sparseLeaves, coveredBranches;
+    CHECK(MeshRecipeRegistry::instance().generate(
+        "mesh.tree", sparseCoverage, sparseLeaves, err));
+    CHECK(MeshRecipeRegistry::instance().generate(
+        "mesh.tree", fullCoverage, coveredBranches, err));
+    CHECK(coveredBranches.getVertexCount() > sparseLeaves.getVertexCount());
+
+    Params bare;
+    bare.setSeed(22);
+    bare.setString("leafMode", "none");
+    MeshBuild noLeaves;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", bare, noLeaves, err));
+    CHECK(noLeaves.getVertexCount() < canopy.getVertexCount());
+
+    Params straight = bare;
+    straight.setFloat("trunkCurve", 0.f);
+    straight.setFloat("branchCurve", 0.f);
+    straight.setFloat("curveBack", 0.f);
+    straight.setFloat("tropism", 0.f);
+    straight.setFloat("droop", 0.f);
+    Params expressive = straight;
+    expressive.setFloat("trunkCurve", 0.2f);
+    expressive.setFloat("branchCurve", 0.24f);
+    expressive.setFloat("curveBack", 0.2f);
+    expressive.setFloat("tropism", 0.35f);
+    expressive.setFloat("droop", 0.28f);
+    MeshBuild rigidTree, curvedTree;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", straight, rigidTree, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", expressive, curvedTree, err));
+    CHECK(rigidTree.positions() != curvedTree.positions());
+    CHECK(meshPositionsFinite(curvedTree));
+    CHECK(meshNormalsFiniteUnit(curvedTree));
+}
+
+TEST_CASE("procgen.mesh.tree.validatesOptions") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setString("style", "watercolor");
+    MeshBuild mesh;
+    std::string err;
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
+    CHECK(err.find("style") != std::string::npos);
+    p.setString("style", "lowpoly");
+    p.setString("branchAlgorithm", "crystalGrowth");
+    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
+    CHECK(err.find("branchAlgorithm") != std::string::npos);
+}
+
+TEST_CASE("procgen.mesh.tree.renderDump") {
+    const char *outputPath = std::getenv("EVENGINE_TREE_RENDER_PNG");
+    if (!outputPath || !outputPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings ws;
+    ws.width = 900;
+    ws.height = 700;
+    ws.centered = true;
+    REQUIRE(win->setWindowSettings(ws));
+
+    Params params;
+    params.setSeed(31415);
+    params.setString("style", "lowpoly");
+    const char *leafModeOverride = std::getenv("EVENGINE_TREE_LEAF_MODE");
+    params.setString("leafMode", leafModeOverride ? leafModeOverride : "canopy");
+    params.setString("branchAlgorithm", "spaceColonization");
+    params.setFloat("leafDensity", 0.82f);
+    params.setFloat("height", 6.2f);
+    params.setFloat("crownRadius", 2.15f);
+    params.setInt("branchLevels", 3);
+    params.setInt("branchCount", 8);
+    params.setInt("attractorCount", 120);
+    params.setInt("colonizationIterations", 38);
+    params.setFloat("branchInertia", 1.15f);
+    params.setFloat("tropism", 0.20f);
+    params.setFloat("droop", 0.08f);
+    params.setFloat("growthStep", 0.25f);
+    params.setFloat("maxTurnAngle", 18.f);
+    params.setInt("maxChildren", 2);
+
+    Procgen generator;
+    Mesh *treeMesh = generator.generateMesh("mesh.tree", &params, gfx);
+    REQUIRE(treeMesh != nullptr);
+
+    // 4px bark/foliage atlas; UVs are partitioned by the mesh recipe.
+    const uint8_t atlasPixels[] = {
+        111, 70, 42, 255, 128, 82, 47, 255,
+        64, 119, 57, 255, 82, 145, 67, 255,
+    };
+    Texture *atlas = gfx->newTexture(4, 1, atlasPixels);
+    REQUIRE(atlas != nullptr);
+
+    auto *tree = Renderable3D::create();
+    tree->setMesh(treeMesh);
+    tree->setTexture(atlas);
+    tree->setTint(1.f, 1.f, 1.f, 1.f);
+    tree->setRoughness(0.88f);
+    tree->setRotation(-18.f, 0.f, 0.f);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(9.2f, 5.1f, 11.4f);
+    camera->setTarget(0.f, 3.1f, 0.f);
+    camera->setUp(0.f, 1.f, 0.f);
+    camera->setFov(36.f);
+    camera->setAmbient(0.30f, 0.34f, 0.28f);
+    camera->setActive(true);
+
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(Color(0.075f, 0.105f, 0.095f, 1.f));
+    RenderSystem3D::setDirectionalLight(-0.55f, -1.f, -0.35f, 1.45f, 1.32f, 1.08f);
+
+    // Warm up pipelines and read back the final stable frame.
+    for (int frame = 0; frame < 4; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(image.get() != nullptr);
+    REQUIRE(saveImagePng(*image, outputPath));
+    std::printf("tree render saved: %s\n", outputPath);
+    win->close();
 }
 
 TEST_CASE("procgen.dungeon.bsp.reproducible") {
@@ -493,6 +719,110 @@ TEST_CASE("procgen.mesh.marchingcubes.sphere") {
     CHECK(mesh.indices() == mesh2.indices());
 }
 
+TEST_CASE("procgen.mesh.hexplanet.topology") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setFloat("radius", 2.f);
+    p.setInt("subdivisions", 2);
+    p.setFloat("tileInset", 0.05f);
+    MeshBuild mesh;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.hexplanet", p, mesh, err));
+    CHECK(meshIndicesInRange(mesh));
+    CHECK(meshPositionsFinite(mesh));
+    CHECK(meshNormalsFiniteUnit(mesh));
+    CHECK_EQ(mesh.getMeta("algorithm", ""), std::string("mesh.hexplanet"));
+    CHECK_EQ(mesh.getMeta("pentagons", ""), std::string("12"));
+    // V = 10 * 4^n + 2 for a subdivided icosahedron.
+    CHECK_EQ(mesh.getMeta("cells", ""), std::string("162"));
+    CHECK_EQ(mesh.getMeta("hexagons", ""), std::string("150"));
+    CHECK_EQ(mesh.getIndexCount() % 3, 0);
+    for (int i = 0; i < mesh.getVertexCount(); ++i) {
+        const float x = mesh.getPositionX(i), y = mesh.getPositionY(i), z = mesh.getPositionZ(i);
+        CHECK(std::fabs(std::sqrt(x * x + y * y + z * z) - 2.f) < 1e-4f);
+    }
+}
+
+TEST_CASE("procgen.render.hexplanetPng") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 768;
+    settings.height = 768;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    Procgen *procgen = Procgen::create();
+    Params params;
+    params.setFloat("radius", 1.f);
+    params.setInt("subdivisions", 3);
+    params.setFloat("tileInset", 0.12f);
+    Mesh *planetMesh = procgen->generateMesh("mesh.hexplanet", &params, gfx);
+    REQUIRE(planetMesh != nullptr);
+
+    const uint8_t oceanBlue[4] = {42, 155, 181, 255};
+    Texture *planetTexture = gfx->newTexture(1, 1, oceanBlue);
+    REQUIRE(planetTexture != nullptr);
+
+    auto *planet = eve::graphics::Renderable3D::create();
+    planet->setMesh(planetMesh);
+    planet->setTexture(planetTexture);
+    planet->setMetallic(0.05f);
+    planet->setRoughness(0.72f);
+    planet->setCastShadow(false);
+    planet->setReceiveShadow(false);
+    planet->transform()->yaw = 0.42f;
+    planet->transform()->pitch = -0.22f;
+
+    auto *camera = eve::graphics::Camera3D::createCamera();
+    camera->setEye(2.65f, 1.55f, 3.05f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(38.f);
+    camera->setAmbient(0.16f, 0.19f, 0.24f);
+
+    // A transparent 2D entity drives the normal present path used by render tests.
+    auto *present = eve::graphics::Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    gfx->setBackgroundColor(Color(0.012f, 0.018f, 0.035f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    eve::graphics::RenderSystem3D::setDirectionalLight(0.55f, 0.85f, 1.1f, 1.15f, 0.98f,
+                                                        0.88f);
+    for (int frame = 0; frame < 8; ++frame) {
+        planet->transform()->yaw += 0.025f;
+        eve::graphics::RenderSystem3D::render(*gfx);
+        eve::graphics::RenderSystem::render(*gfx);
+    }
+
+    eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(static_cast<bool>(image));
+    std::unique_ptr<eve::filesystem::FileData> png(
+        image->encode(medialoader::FormatHandler::ENCODED_PNG, "hex_planet.png", false));
+    REQUIRE(static_cast<bool>(png));
+    REQUIRE(png->getSize() > 0);
+
+    const std::filesystem::path outDir =
+        std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
+    std::filesystem::create_directories(outDir);
+    const std::filesystem::path outPath = outDir / "hex_planet.png";
+    std::ofstream output(outPath, std::ios::binary);
+    REQUIRE(output.good());
+    output.write(static_cast<const char *>(png->getData()),
+                 static_cast<std::streamsize>(png->getSize()));
+    REQUIRE(output.good());
+    output.close();
+    std::printf("hex planet render saved: %s\n", outPath.string().c_str());
+    win->close();
+}
+
 TEST_CASE("procgen.mesh.marchingcubes.allFields") {
     MeshRecipeRegistry::instance().registerBuiltins();
     const char *fields[] = {"sphere", "torus", "noise", "terrain"};
@@ -673,7 +1003,11 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
     CHECK(meshIndicesInRange(*m));
     CHECK(mod->hasMeshRecipe("mesh.marchingcubes"));
     CHECK(mod->getMeshRecipeCount() >= 1);
-    CHECK_EQ(mod->getMeshRecipeId(0), std::string("mesh.marchingcubes"));
+    bool listed = false;
+    for (int i = 0; i < mod->getMeshRecipeCount(); ++i) {
+        if (mod->getMeshRecipeId(i) == "mesh.marchingcubes") listed = true;
+    }
+    CHECK(listed);
     delete m;
 
     Params bad;
