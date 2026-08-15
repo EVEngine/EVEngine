@@ -1,6 +1,7 @@
 #include "graphics/Grass.h"
 
 #include "common/Exception.h"
+#include "data/ByteData.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/Shader.h"
@@ -8,20 +9,27 @@
 #include "graphics/TextureSampler.h"
 #include "graphics/shaders/mesh3d_grass_frag_spv.inc"
 #include "graphics/shaders/mesh3d_grass_vert_spv.inc"
+#include "image/Image.h"
+#include "image/ImageData.h"
 
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstring>
+#include <fstream>
+#include <iterator>
+#include <memory>
 #include <unordered_map>
 #include <utility>
 
 namespace eve::graphics::grass {
 namespace {
 
-const std::array<const char *, 13> kParamSlots = {
-    "time",        "frameDuration", "grassWidth",  "grassHeight", "alphaCutoff", "alwaysDark",
-    "lightGreenX", "lightGreenY",   "lightGreenZ", "darkGreenX",  "darkGreenY",  "darkGreenZ",
-    "frameCount"};
+const std::array<const char *, 18> kParamSlots = {
+    "time",        "frameDuration", "grassWidth",         "grassHeight", "alphaCutoff",
+    "alwaysDark",  "lightGreenX",   "lightGreenY",        "lightGreenZ", "darkGreenX",
+    "darkGreenY",  "darkGreenZ",    "frameCount",         "atlasCols",   "atlasRows",
+    "grassVariantCount", "leafVariantCount", "leafRowOffset"};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
@@ -165,30 +173,107 @@ float hash01(uint32_t id) {
     return h;
 }
 
-void plotPixel(std::vector<uint8_t> &rgba, int w, int h, int x, int y, uint8_t a) {
+float clampf(float x, float lo, float hi) { return std::min(hi, std::max(lo, x)); }
+
+float coverEdge(float distPx, float radiusPx) {
+    // 1 inside the stroke, 0 outside, ~1px antialiased fringe for nearest upscale.
+    return clampf(radiusPx + 0.65f - distPx, 0.f, 1.f);
+}
+
+void stampOver(std::vector<uint8_t> &rgba, int w, int h, int x, int y, float luma, float a) {
     if (x < 0 || y < 0 || x >= w || y >= h) return;
+    a = clampf(a, 0.f, 1.f);
+    luma = clampf(luma, 0.f, 1.f);
+    if (a < 0.02f) return;
     const size_t i = (size_t(y) * size_t(w) + size_t(x)) * 4u;
-    if (a > rgba[i + 3]) {
-        rgba[i + 0] = 255;
-        rgba[i + 1] = 255;
-        rgba[i + 2] = 255;
-        rgba[i + 3] = a;
+    const float oa = float(rgba[i + 3]) / 255.f;
+    const float or_ = float(rgba[i + 0]) / 255.f;
+    const float og = float(rgba[i + 1]) / 255.f;
+    const float ob = float(rgba[i + 2]) / 255.f;
+    const float outA = a + oa * (1.f - a);
+    if (outA < 1e-4f) return;
+    const float nr = (luma * a + or_ * oa * (1.f - a)) / outA;
+    const float ng = (luma * a + og * oa * (1.f - a)) / outA;
+    const float nb = (luma * a + ob * oa * (1.f - a)) / outA;
+    rgba[i + 0] = uint8_t(std::round(clampf(nr, 0.f, 1.f) * 255.f));
+    rgba[i + 1] = uint8_t(std::round(clampf(ng, 0.f, 1.f) * 255.f));
+    rgba[i + 2] = uint8_t(std::round(clampf(nb, 0.f, 1.f) * 255.f));
+    rgba[i + 3] = uint8_t(std::round(clampf(outA, 0.f, 1.f) * 255.f));
+}
+
+void stampBlade(std::vector<uint8_t> &rgba, int atlasW, int atlasH, int ox, int frameW, int frameH,
+                float baseU, float height, float lean, float baseHalf, float tipHalf, float luma0,
+                float luma1) {
+    const float fw = float(frameW);
+    const float fh = float(frameH);
+    height = clampf(height, 0.12f, 1.f);
+    for (int y = 0; y < frameH; ++y) {
+        for (int x = 0; x < frameW; ++x) {
+            const float u = (float(x) + 0.5f) / fw;
+            const float v = 1.f - (float(y) + 0.5f) / fh;
+            if (v < -0.02f || v > height + 0.04f) continue;
+            const float t = clampf(v / height, 0.f, 1.f);
+            const float cx = baseU + lean * t * t;
+            const float half = baseHalf * (1.f - t * 0.82f) + tipHalf * t;
+            const float dist = std::abs(u - cx) * fw;
+            float cov = coverEdge(dist, half * fw);
+            cov *= 1.f - clampf((v - height) / 0.03f, 0.f, 1.f);
+            cov *= clampf((v + 0.02f) / 0.05f, 0.f, 1.f);
+            if (cov > 0.5f) cov = 1.f;
+            else if (cov < 0.25f) cov = 0.f;
+            if (cov <= 0.f) continue;
+            const float side = (u - cx) * fw;  // +right
+            float luma = luma0 + (luma1 - luma0) * t;
+            if (side > 0.15f) luma *= 0.78f;  // 1px-ish self-shadow on the right
+            stampOver(rgba, atlasW, atlasH, ox + x, y, luma, cov);
+        }
     }
 }
 
-void drawBlade(std::vector<uint8_t> &rgba, int atlasW, int atlasH, int ox, int frameW, int frameH,
-               float baseX, float lean, int thickness) {
-    const int steps = std::max(frameH - 2, 8);
-    for (int s = 0; s <= steps; ++s) {
-        const float t = float(s) / float(steps);  // 0 root .. 1 tip
-        const float x = baseX + lean * t * t * float(frameW) * 0.45f;
-        const float yFromRoot = t * float(frameH - 2);
-        const int py = frameH - 1 - int(std::round(yFromRoot));
-        const int px = ox + int(std::round(x));
-        const uint8_t a = uint8_t(255.f * (1.f - t * 0.15f));
-        const int half = std::max(1, int(std::round(float(thickness) * (1.f - t * 0.7f))));
-        for (int dx = -half; dx <= half; ++dx)
-            plotPixel(rgba, atlasW, atlasH, px + dx, py, a);
+struct BladeDesc {
+    float u;
+    float height;
+    float lean;
+    float baseHalf;
+    float tipHalf;
+    float luma0;
+    float luma1;
+};
+
+void stampTuft(std::vector<uint8_t> &rgba, int atlasW, int atlasH, int ox, int frameW, int frameH,
+               float wind) {
+    // Tiny root pad only — a solid mound turns overlapping cards into a flat lime slab.
+    const float fw = float(frameW);
+    const float fh = float(frameH);
+    for (int y = 0; y < frameH; ++y) {
+        for (int x = 0; x < frameW; ++x) {
+            const float u = (float(x) + 0.5f) / fw;
+            const float v = 1.f - (float(y) + 0.5f) / fh;
+            if (v > 0.16f) continue;
+            const float cx = 0.50f + wind * 0.02f;
+            const float hw = 0.16f * (1.f - v / 0.16f);
+            float cov = coverEdge(std::abs(u - cx) * fw, hw * fw);
+            if (cov > 0.5f) cov = 1.f;
+            else if (cov < 0.25f) cov = 0.f;
+            if (cov > 0.f) stampOver(rgba, atlasW, atlasH, ox + x, y, 0.72f, cov);
+        }
+    }
+
+    // 7 separated blades with gaps so later cards show through. Outline then fill.
+    const BladeDesc blades[] = {
+        {0.50f, 0.98f, 0.02f, 0.070f, 0.018f, 0.86f, 1.00f}, {0.38f, 0.90f, -0.14f, 0.062f, 0.016f, 0.82f, 0.97f},
+        {0.62f, 0.92f, 0.16f, 0.062f, 0.016f, 0.82f, 0.97f}, {0.28f, 0.74f, -0.26f, 0.056f, 0.016f, 0.78f, 0.93f},
+        {0.72f, 0.76f, 0.28f, 0.056f, 0.016f, 0.78f, 0.93f}, {0.44f, 0.84f, -0.06f, 0.050f, 0.014f, 0.84f, 0.98f},
+        {0.56f, 0.86f, 0.08f, 0.050f, 0.014f, 0.84f, 0.98f},
+    };
+    const float outline = 1.15f / fw;
+    for (const BladeDesc &b : blades) {
+        const float lean = b.lean + wind * 0.32f;
+        const float u = b.u + wind * 0.03f;
+        stampBlade(rgba, atlasW, atlasH, ox, frameW, frameH, u, b.height, lean, b.baseHalf + outline,
+                   b.tipHalf + outline * 0.5f, 0.42f, 0.55f);
+        stampBlade(rgba, atlasW, atlasH, ox, frameW, frameH, u, b.height, lean, b.baseHalf, b.tipHalf,
+                   b.luma0, b.luma1);
     }
 }
 
@@ -212,15 +297,35 @@ void bindDefaults(Shader *shader) {
     shader->declareVec3("lightGreen");
     shader->declareVec3("darkGreen");
     shader->declareFloat("frameCount");
+    shader->declareFloat("atlasCols");
+    shader->declareFloat("atlasRows");
+    shader->declareFloat("grassVariantCount");
+    shader->declareFloat("leafVariantCount");
+    shader->declareFloat("leafRowOffset");
     shader->sendFloat("time", 0.f);
     shader->sendFloat("frameDuration", 0.12f);
-    shader->sendFloat("grassWidth", 0.45f);
-    shader->sendFloat("grassHeight", 0.7f);
+    shader->sendFloat("grassWidth", 0.62f);
+    shader->sendFloat("grassHeight", 0.95f);
     shader->sendFloat("alphaCutoff", 0.35f);
     shader->sendFloat("alwaysDark", 0.f);
-    shader->sendVec3("lightGreen", 0.55f, 0.82f, 0.28f);
-    shader->sendVec3("darkGreen", 0.12f, 0.32f, 0.14f);
+    shader->sendVec3("lightGreen", 0.58f, 0.84f, 0.26f);
+    shader->sendVec3("darkGreen", 0.10f, 0.28f, 0.12f);
     shader->sendFloat("frameCount", 4.f);
+    shader->sendFloat("atlasCols", 2.f);
+    shader->sendFloat("atlasRows", 2.f);
+    shader->sendFloat("grassVariantCount", 1.f);
+    shader->sendFloat("leafVariantCount", 1.f);
+    shader->sendFloat("leafRowOffset", 0.f);
+}
+
+void bindAtlasLayout(Shader *shader, const PackedAtlasInfo &info) {
+    if (!shader) throw eve::Exception("grass::bindAtlasLayout: null shader");
+    shader->sendFloat("frameCount", float(std::max(info.frames, 1)));
+    shader->sendFloat("atlasCols", float(std::max(info.atlasCols, 1)));
+    shader->sendFloat("atlasRows", float(std::max(info.atlasRows, 1)));
+    shader->sendFloat("grassVariantCount", float(std::max(info.grassVariants, 1)));
+    shader->sendFloat("leafVariantCount", float(std::max(info.leafVariants, 1)));
+    shader->sendFloat("leafRowOffset", float(std::max(info.leafRowOffset, 0)));
 }
 
 void bindLayer(Shader *shader, bool alwaysDark) {
@@ -269,18 +374,9 @@ void makeSwayAtlasRGBA(int frameW, int frameH, int frames, std::vector<uint8_t> 
     const int h = swayAtlasHeight(frameH);
     rgbaOut.assign(size_t(w * h * 4), 0);
 
-    const float bladeXs[] = {0.28f, 0.42f, 0.50f, 0.58f, 0.72f};
-    const float bladeLean[] = {-0.22f, -0.08f, 0.02f, 0.12f, 0.26f};
-    const int bladeThick[] = {1, 1, 2, 1, 1};
-
     for (int f = 0; f < frames; ++f) {
         const float wind = (float(f) - 1.5f) / 1.5f;  // -1 .. +1 across 4 frames
-        const int ox = f * frameW;
-        for (int b = 0; b < 5; ++b) {
-            const float base = bladeXs[b] * float(frameW);
-            const float lean = (bladeLean[b] + wind * 0.55f);
-            drawBlade(rgbaOut, w, h, ox, frameW, frameH, base, lean, bladeThick[b]);
-        }
+        stampTuft(rgbaOut, w, h, f * frameW, frameW, frameH, wind);
     }
 }
 
@@ -292,6 +388,131 @@ Texture *createSwayAtlas(Graphics *gfx, int frameW, int frameH, int frames) {
     info.sampler = TextureSampler::nearest();
     return gfx->newTexture(swayAtlasWidth(frameW, frames), swayAtlasHeight(frameH), rgba.data(),
                            info);
+}
+
+namespace {
+
+bool readWholeFile(const std::string &path, std::vector<char> &out) {
+    std::ifstream in(path, std::ios::binary);
+    if (!in) return false;
+    out.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+    return in.good() || !out.empty();
+}
+
+void maskToTintable(std::vector<uint8_t> &rgba) {
+    for (size_t i = 0; i + 3 < rgba.size(); i += 4) {
+        const uint8_t luma = std::max(rgba[i], std::max(rgba[i + 1], rgba[i + 2]));
+        const uint8_t a = std::max(luma, rgba[i + 3]);
+        rgba[i + 0] = 255;
+        rgba[i + 1] = 255;
+        rgba[i + 2] = 255;
+        rgba[i + 3] = a;
+    }
+}
+
+bool loadSwayMaskPng(const std::string &path, std::vector<uint8_t> &rgba, int &w, int &h) {
+    std::vector<char> raw;
+    if (!readWholeFile(path, raw)) return false;
+    eve::image::Image::create();
+    eve::data::ByteData bytes(raw.data(), raw.size());
+    std::unique_ptr<eve::image::ImageData> img(eve::image::Image::create()->newImageData(&bytes));
+    if (!img) return false;
+    w = img->getWidth();
+    h = img->getHeight();
+    if (w < 2 || h < 2) return false;
+    const size_t n = size_t(w) * size_t(h) * 4u;
+    if (img->getSize() < n) return false;
+    rgba.resize(n);
+    std::memcpy(rgba.data(), img->getData(), n);
+    maskToTintable(rgba);
+    return true;
+}
+
+void blitRgba(std::vector<uint8_t> &dst, int dw, int dh, int dx, int dy,
+              const std::vector<uint8_t> &src, int sw, int sh) {
+    for (int y = 0; y < sh; ++y) {
+        const int ty = dy + y;
+        if (ty < 0 || ty >= dh) continue;
+        for (int x = 0; x < sw; ++x) {
+            const int tx = dx + x;
+            if (tx < 0 || tx >= dw) continue;
+            const size_t si = (size_t(y) * size_t(sw) + size_t(x)) * 4u;
+            const size_t di = (size_t(ty) * size_t(dw) + size_t(tx)) * 4u;
+            dst[di + 0] = src[si + 0];
+            dst[di + 1] = src[si + 1];
+            dst[di + 2] = src[si + 2];
+            dst[di + 3] = src[si + 3];
+        }
+    }
+}
+
+}  // namespace
+
+void packSwayAtlasRGBA(const std::vector<std::string> &grassFiles,
+                       const std::vector<std::string> &leafFiles, std::vector<uint8_t> &rgbaOut,
+                       PackedAtlasInfo &info) {
+    if (grassFiles.empty()) throw eve::Exception("grass::packSwayAtlasRGBA: no grass atlas files");
+
+    struct Loaded {
+        std::vector<uint8_t> rgba;
+        int w = 0;
+        int h = 0;
+    };
+    auto loadOne = [](const std::string &path) {
+        Loaded img;
+        if (!loadSwayMaskPng(path, img.rgba, img.w, img.h))
+            throw eve::Exception("grass::packSwayAtlasRGBA: failed to load '%s'", path.c_str());
+        return img;
+    };
+
+    std::vector<Loaded> grass;
+    grass.reserve(grassFiles.size());
+    for (const auto &p : grassFiles) grass.push_back(loadOne(p));
+    std::vector<Loaded> leaf;
+    leaf.reserve(leafFiles.size());
+    for (const auto &p : leafFiles) leaf.push_back(loadOne(p));
+
+    const int tw = grass.front().w;
+    const int th = grass.front().h;
+    auto checkSize = [tw, th](const Loaded &img, const char *kind) {
+        if (img.w != tw || img.h != th)
+            throw eve::Exception("grass::packSwayAtlasRGBA: %s atlas size mismatch (%dx%d vs %dx%d)",
+                                 kind, img.w, img.h, tw, th);
+    };
+    for (const auto &img : grass) checkSize(img, "grass");
+    for (const auto &img : leaf) checkSize(img, "leaf");
+
+    const int nGrass = int(grass.size());
+    const int nLeaf = int(leaf.size());
+    const int nX = std::max(nGrass, std::max(nLeaf, 1));
+    const int nY = nLeaf > 0 ? 2 : 1;
+    info.frames = 4;
+    info.grassVariants = nGrass;
+    info.leafVariants = nLeaf > 0 ? nLeaf : 1;
+    info.leafRowOffset = nLeaf > 0 ? 2 : 0;
+    info.atlasCols = nX * 2;
+    info.atlasRows = nY * 2;
+    info.width = nX * tw;
+    info.height = nY * th;
+    rgbaOut.assign(size_t(info.width) * size_t(info.height) * 4u, 0);
+
+    for (int i = 0; i < nGrass; ++i)
+        blitRgba(rgbaOut, info.width, info.height, i * tw, 0, grass[size_t(i)].rgba, tw, th);
+    for (int i = 0; i < nLeaf; ++i)
+        blitRgba(rgbaOut, info.width, info.height, i * tw, th, leaf[size_t(i)].rgba, tw, th);
+}
+
+Texture *createSwayAtlasFromFiles(Graphics *gfx, const std::vector<std::string> &grassFiles,
+                                  const std::vector<std::string> &leafFiles,
+                                  PackedAtlasInfo *infoOut) {
+    if (!gfx) throw eve::Exception("grass::createSwayAtlasFromFiles: null graphics");
+    PackedAtlasInfo info;
+    std::vector<uint8_t> rgba;
+    packSwayAtlasRGBA(grassFiles, leafFiles, rgba, info);
+    if (infoOut) *infoOut = info;
+    TextureCreateInfo texInfo;
+    texInfo.sampler = TextureSampler::linear();
+    return gfx->newTexture(info.width, info.height, rgba.data(), texInfo);
 }
 
 std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int vertexCount,
@@ -471,14 +692,26 @@ void GrassField::bake(const float *posXYZ, const float *nrmXYZ, int vertexCount,
     const auto sparseMesh = grass::buildBillboards(sparsePts, params.width, params.height, true);
 
     if (!shader_) shader_ = grass::createShader(gfx_);
-    if (!atlas_)
-        atlas_ = grass::createSwayAtlas(gfx_, params.atlasFrameW, params.atlasFrameH,
-                                        params.atlasFrames);
+    grass::PackedAtlasInfo layout;
+    if (!params.grassAtlasFiles.empty()) {
+        atlas_ = grass::createSwayAtlasFromFiles(gfx_, params.grassAtlasFiles, params.leafAtlasFiles,
+                                                 &layout);
+    } else {
+        if (!atlas_)
+            atlas_ = grass::createSwayAtlas(gfx_, params.atlasFrameW, params.atlasFrameH,
+                                            params.atlasFrames);
+        layout.frames = std::max(params.atlasFrames, 1);
+        layout.atlasCols = layout.frames;
+        layout.atlasRows = 1;
+        layout.grassVariants = 1;
+        layout.leafVariants = 1;
+        layout.leafRowOffset = 0;
+    }
 
     grass::bindDefaults(shader_);
+    grass::bindAtlasLayout(shader_, layout);
     shader_->sendFloat("grassWidth", params.width);
     shader_->sendFloat("grassHeight", params.height);
-    shader_->sendFloat("frameCount", float(std::max(params.atlasFrames, 1)));
     shader_->sendFloat("frameDuration", frameDuration_);
     shader_->sendFloat("time", time_);
 

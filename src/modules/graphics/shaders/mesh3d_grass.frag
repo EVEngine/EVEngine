@@ -3,6 +3,11 @@
 // Push: [0] time  [1] frameDuration  [2] width  [3] height
 //       [4] alphaCutoff  [5] alwaysDark
 //       [6..8] lightGreen  [9..11] darkGreen  [12] frameCount
+//       [13] atlasCols  [14] atlasRows
+//       [15] grassVariantCount  [16] leafVariantCount  [17] leafRowOffset
+// Authored atlases are 2x2 per variant. Packed layout (4 grass + 2 leaf):
+//   8 frame-cols x 4 frame-rows; grass variants along the top two rows,
+//   leaf variants along the bottom two. Strip atlases use atlasRows=1.
 
 layout(location = 0) in vec2 vUV;
 layout(location = 1) in vec3 vWorldPos;
@@ -101,8 +106,27 @@ void main() {
     float t = u.data[0] / duration + hash * frames;
     int frame = int(mod(floor(t), frames));
 
+    int cols = int(max(u.data[13], 1.0));
+    int rows = int(max(u.data[14], 1.0));
+    int grassVars = int(max(u.data[15], 1.0));
+    int leafVars = int(max(u.data[16], 1.0));
+    int leafRowOffset = int(u.data[17] + 0.5);
+    bool leaf = (vAlwaysDark > 0.5) || (u.data[5] > 0.5);
+    int nVar = leaf ? leafVars : grassVars;
+    int variant = int(mod(vInstanceId, float(nVar)));
+
     // inUV.y = 0 at the root (bottom). Vulkan/image v=0 is the top row.
-    vec2 atlasUV = vec2((vUV.x + float(frame)) / frames, 1.0 - vUV.y);
+    vec2 atlasUV;
+    if (rows <= 1) {
+        atlasUV = vec2((vUV.x + float(frame)) / frames, 1.0 - vUV.y);
+    } else {
+        int localCol = frame % 2;
+        int localRow = frame / 2;
+        int col = variant * 2 + localCol;
+        int row = (leaf ? leafRowOffset : 0) + localRow;
+        atlasUV = vec2((float(col) + vUV.x) / float(cols),
+                       (float(row) + (1.0 - vUV.y)) / float(rows));
+    }
     vec4 mask = texture(albedoSampler, atlasUV) * vTint;
     if (mask.a < max(u.data[4], 0.01))
         discard;

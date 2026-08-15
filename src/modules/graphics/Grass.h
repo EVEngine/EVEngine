@@ -35,8 +35,8 @@ struct Point {
 };
 
 struct SampleParams {
-    float radius = 0.35f;
-    int maxPoints = 4096;
+    float radius = 0.14f;
+    int maxPoints = 8192;
     uint32_t seed = 1;
     /** Skip faces whose Y-up slope is below this (0 = keep walls). */
     float minSlopeDot = 0.25f;
@@ -65,22 +65,46 @@ std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int ve
  *   uv     = quad corner in [0,1]^2  (0.5, 0) is the root
  *   normal.x = instance id, normal.y = scale, normal.z = alwaysDark (0/1)
  */
-BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.45f,
-                              float height = 0.7f, bool alwaysDark = false);
+BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.62f,
+                              float height = 0.95f, bool alwaysDark = false);
 
 /** Discrete 4-frame index with a per-instance phase offset. */
 int swayFrame(float time, float frameDuration, uint32_t instanceId, int frameCount = 4);
 
-/** Procedural 4-frame white+alpha sway atlas (horizontal strip). */
+/**
+ * Procedural 4-frame fallback atlas (horizontal strip). GPU paths should load
+ * authored 2x2 PNG masks via packSwayAtlasRGBA / createSwayAtlasFromFiles.
+ */
 void makeSwayAtlasRGBA(int frameW, int frameH, int frames, std::vector<uint8_t> &rgbaOut);
 int swayAtlasWidth(int frameW, int frames);
 int swayAtlasHeight(int frameH);
 
-Texture *createSwayAtlas(Graphics *gfx, int frameW = 32, int frameH = 32, int frames = 4);
+Texture *createSwayAtlas(Graphics *gfx, int frameW = 64, int frameH = 64, int frames = 4);
+
+/** Layout of a packed 2x2-per-variant sway atlas (4 grass + 2 leaf typical). */
+struct PackedAtlasInfo {
+    int width = 0;
+    int height = 0;
+    int atlasCols = 2;
+    int atlasRows = 2;
+    int grassVariants = 1;
+    int leafVariants = 1;
+    int leafRowOffset = 0;
+    int frames = 4;
+};
+
+/** Load white-on-black (or RGBA) 2x2 sway PNGs and pack them into one atlas. */
+void packSwayAtlasRGBA(const std::vector<std::string> &grassFiles,
+                       const std::vector<std::string> &leafFiles, std::vector<uint8_t> &rgbaOut,
+                       PackedAtlasInfo &info);
+Texture *createSwayAtlasFromFiles(Graphics *gfx, const std::vector<std::string> &grassFiles,
+                                  const std::vector<std::string> &leafFiles,
+                                  PackedAtlasInfo *infoOut = nullptr);
 
 Shader *createShader(Graphics *gfx);
 void bindDefaults(Shader *shader);
 void bindLayer(Shader *shader, bool alwaysDark);
+void bindAtlasLayout(Shader *shader, const PackedAtlasInfo &info);
 void setTime(Shader *shader, float seconds);
 void setFrameDuration(Shader *shader, float seconds);
 
@@ -100,17 +124,21 @@ void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> 
 class GrassField {
 public:
     struct BakeParams {
-        float denseRadius = 0.35f;
-        float sparseRadius = 1.4f;
-        int maxDense = 4096;
-        int maxSparse = 256;
+        /** Poisson spacing. Keep this well below `width` so tufts overlap. */
+        float denseRadius = 0.14f;
+        float sparseRadius = 0.62f;
+        int maxDense = 8192;
+        int maxSparse = 384;
         uint32_t seed = 1;
-        float width = 0.45f;
-        float height = 0.7f;
+        float width = 0.62f;
+        float height = 0.95f;
         float minSlopeDot = 0.25f;
-        int atlasFrameW = 32;
-        int atlasFrameH = 32;
+        int atlasFrameW = 64;
+        int atlasFrameH = 64;
         int atlasFrames = 4;
+        /** Authored 2x2 sway masks (4 grass + 2 leaf). Empty = procedural strip. */
+        std::vector<std::string> grassAtlasFiles;
+        std::vector<std::string> leafAtlasFiles;
     };
 
     explicit GrassField(Graphics *gfx);

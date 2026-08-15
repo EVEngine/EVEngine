@@ -39,9 +39,13 @@ using eve::graphics::Shader;
 using eve::graphics::Texture;
 using eve::graphics::grass::BillboardMesh;
 using eve::graphics::grass::Point;
+using eve::graphics::grass::PackedAtlasInfo;
 using eve::graphics::grass::SampleParams;
 
 namespace {
+
+#include "PathBesideSource.h"
+EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 void makeTestPlane(std::vector<float> &pos, std::vector<float> &nrm, std::vector<uint32_t> &idx) {
     eve::graphics::grass::makePlane(4.f, 4.f, 4, 4, pos, nrm, idx);
@@ -74,14 +78,21 @@ TEST_CASE("graphics.Grass.bindDefaults") {
     CHECK_EQ(sh.getUniformIndex("lightGreen"), 6);
     CHECK_EQ(sh.getUniformIndex("darkGreen"), 9);
     CHECK_EQ(sh.getUniformIndex("frameCount"), 12);
-    CHECK_EQ(sh.usedFloats(), 13);
+    CHECK_EQ(sh.getUniformIndex("atlasCols"), 13);
+    CHECK_EQ(sh.getUniformIndex("atlasRows"), 14);
+    CHECK_EQ(sh.getUniformIndex("grassVariantCount"), 15);
+    CHECK_EQ(sh.getUniformIndex("leafVariantCount"), 16);
+    CHECK_EQ(sh.getUniformIndex("leafRowOffset"), 17);
+    CHECK_EQ(sh.usedFloats(), 18);
 }
 
 TEST_CASE("graphics.Grass.paramNames") {
-    CHECK_EQ(eve::graphics::grass::paramCount(), 13);
+    CHECK_EQ(eve::graphics::grass::paramCount(), 18);
     CHECK_EQ(eve::graphics::grass::paramName(0), std::string("time"));
     CHECK_EQ(eve::graphics::grass::paramName(5), std::string("alwaysDark"));
     CHECK_EQ(eve::graphics::grass::paramName(12), std::string("frameCount"));
+    CHECK_EQ(eve::graphics::grass::paramName(13), std::string("atlasCols"));
+    CHECK_EQ(eve::graphics::grass::paramName(17), std::string("leafRowOffset"));
 }
 
 TEST_CASE("graphics.Grass.spvMagic") {
@@ -222,6 +233,19 @@ TEST_CASE("graphics.Grass.swayAtlasFourFrames") {
     CHECK(opaque > 80);
     for (int f = 0; f < 4; ++f) CHECK(perFrame[f] > 10);
 
+    // Filled tuft: the root band is denser than the tips (not five 1px sticks).
+    int baseOpaque = 0, tipOpaque = 0;
+    for (int x = 0; x < 32; ++x) {
+        for (int y = 24; y < 32; ++y) {
+            if (rgba[(size_t(y) * 128u + size_t(x)) * 4u + 3u] > 16) ++baseOpaque;
+        }
+        for (int y = 0; y < 8; ++y) {
+            if (rgba[(size_t(y) * 128u + size_t(x)) * 4u + 3u] > 16) ++tipOpaque;
+        }
+    }
+    CHECK(baseOpaque > tipOpaque);
+    CHECK(baseOpaque > 40);
+
     // Frames actually differ (wind lean).
     int diffs = 0;
     for (int y = 0; y < 32; ++y) {
@@ -232,6 +256,55 @@ TEST_CASE("graphics.Grass.swayAtlasFourFrames") {
         }
     }
     CHECK(diffs > 8);
+}
+
+TEST_CASE("graphics.Grass.fileSwayAtlasPacksFourGrassAndTwoLeaf") {
+    const std::vector<std::string> grass = {
+        pathBesideThisSource("Texture/grass_sway_0.png"),
+        pathBesideThisSource("Texture/grass_sway_1.png"),
+        pathBesideThisSource("Texture/grass_sway_2.png"),
+        pathBesideThisSource("Texture/grass_sway_3.png"),
+    };
+    const std::vector<std::string> leaf = {
+        pathBesideThisSource("Texture/leaf_sway_0.png"),
+        pathBesideThisSource("Texture/leaf_sway_1.png"),
+    };
+    for (const auto &p : grass) REQUIRE(std::filesystem::exists(p));
+    for (const auto &p : leaf) REQUIRE(std::filesystem::exists(p));
+
+    std::vector<uint8_t> rgba;
+    PackedAtlasInfo packed;
+    eve::graphics::grass::packSwayAtlasRGBA(grass, leaf, rgba, packed);
+    CHECK_EQ(packed.grassVariants, 4);
+    CHECK_EQ(packed.leafVariants, 2);
+    CHECK_EQ(packed.atlasCols, 8);
+    CHECK_EQ(packed.atlasRows, 4);
+    CHECK_EQ(packed.leafRowOffset, 2);
+    CHECK_EQ(packed.frames, 4);
+    CHECK(packed.width >= 512);
+    CHECK(packed.height >= 512);
+    CHECK_EQ(int(rgba.size()), packed.width * packed.height * 4);
+
+    auto opaqueInCell = [&](int col, int row) {
+        const int cellW = packed.width / packed.atlasCols;
+        const int cellH = packed.height / packed.atlasRows;
+        int n = 0;
+        for (int y = row * cellH; y < (row + 1) * cellH; ++y) {
+            for (int x = col * cellW; x < (col + 1) * cellW; ++x) {
+                if (rgba[(size_t(y) * size_t(packed.width) + size_t(x)) * 4u + 3u] > 16) ++n;
+            }
+        }
+        return n;
+    };
+    // Each grass variant is a 2x2 block on the top two frame-rows.
+    for (int v = 0; v < 4; ++v) {
+        CHECK(opaqueInCell(v * 2, 0) + opaqueInCell(v * 2 + 1, 0) + opaqueInCell(v * 2, 1) +
+                  opaqueInCell(v * 2 + 1, 1) >
+              80);
+    }
+    // Leaf variants occupy the bottom two frame-rows.
+    CHECK(opaqueInCell(0, 2) + opaqueInCell(1, 2) + opaqueInCell(0, 3) + opaqueInCell(1, 3) > 80);
+    CHECK(opaqueInCell(2, 2) + opaqueInCell(3, 2) + opaqueInCell(2, 3) + opaqueInCell(3, 3) > 80);
 }
 
 TEST_CASE("graphics.Grass.layerFlag") {
@@ -358,7 +431,7 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     constexpr float kField = 10.f;
     auto *ground = Renderable3D::create();
     ground->setMesh(makeGroundMesh(gfx, kField, kField));
-    ground->setTexture(makeSolidTex(gfx, 92, 72, 42));
+    ground->setTexture(makeSolidTex(gfx, 68, 54, 30));
     ground->setPosition(0.f, 0.f, 0.f);
     ground->setMetallic(0.f);
     ground->setRoughness(0.92f);
@@ -366,20 +439,31 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     ground->setReceiveShadow(true);
 
     GrassField::BakeParams bake;
-    bake.denseRadius = 0.28f;
-    bake.sparseRadius = 1.15f;
-    bake.maxDense = 1800;
-    bake.maxSparse = 80;
-    bake.width = 0.42f;
-    bake.height = 0.78f;
+    bake.denseRadius = 0.10f;
+    bake.sparseRadius = 0.46f;
+    bake.maxDense = 7000;
+    bake.maxSparse = 220;
+    bake.width = 0.58f;
+    bake.height = 0.98f;
     bake.seed = 11;
     bake.minSlopeDot = 0.2f;
+    bake.grassAtlasFiles = {
+        pathBesideThisSource("Texture/grass_sway_0.png"),
+        pathBesideThisSource("Texture/grass_sway_1.png"),
+        pathBesideThisSource("Texture/grass_sway_2.png"),
+        pathBesideThisSource("Texture/grass_sway_3.png"),
+    };
+    bake.leafAtlasFiles = {
+        pathBesideThisSource("Texture/leaf_sway_0.png"),
+        pathBesideThisSource("Texture/leaf_sway_1.png"),
+    };
 
     GrassField *field = gfx->newGrassField();
     REQUIRE(field != nullptr);
     field->bakePlane(kField, kField, 16, 16, bake);
     field->setTime(0.22f);
-    REQUIRE(field->getDenseCount() >= 40);
+    std::printf("\ngrass dense=%d sparse=%d\n", field->getDenseCount(), field->getSparseCount());
+    REQUIRE(field->getDenseCount() >= 800);
     REQUIRE(field->getDenseMesh() != nullptr);
     REQUIRE(field->getShader() != nullptr);
     REQUIRE(field->getAtlas() != nullptr);
@@ -411,8 +495,8 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     post->setReceiveShadow(false);
 
     auto *cam = Camera3D::createCamera();
-    cam->setEye(6.4f, 4.6f, 7.8f);
-    cam->setTarget(0.f, 0.25f, 0.f);
+    cam->setEye(4.8f, 2.9f, 5.9f);
+    cam->setTarget(0.f, 0.45f, 0.f);
     cam->setAmbient(0.18f, 0.20f, 0.16f);
     cam->data()->nearZ = 0.1f;
     cam->data()->farZ = 80.f;
@@ -459,9 +543,9 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
             }
         }
     }
-    CHECK(greenish > 80);
-    CHECK(darkGreen > 4);
-    CHECK(litGreen > 8);
+    CHECK(greenish > 400);
+    CHECK(darkGreen > 8);
+    CHECK(litGreen > 40);
 
     eve::image::Image::create();
     eve::image::ImageData *frame = gfx->newImageData();
@@ -470,6 +554,16 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
     savePng(frame, outDir + "/grass_field.png");
     savePng(frame, "/opt/cursor/artifacts/grass_field.png");
+
+    std::vector<uint8_t> atlasRgba;
+    PackedAtlasInfo atlasInfo;
+    eve::graphics::grass::packSwayAtlasRGBA(bake.grassAtlasFiles, bake.leafAtlasFiles, atlasRgba,
+                                            atlasInfo);
+    auto *atlasImg = new eve::image::ImageData(atlasInfo.width, atlasInfo.height, "RGBA8",
+                                               atlasRgba.data(), false);
+    savePng(atlasImg, outDir + "/grass_atlas.png");
+    savePng(atlasImg, "/opt/cursor/artifacts/grass_atlas.png");
+    delete atlasImg;
 
     win->close();
 }
