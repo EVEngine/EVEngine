@@ -1,4 +1,5 @@
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/TreeMesh.h"
 
 #include <algorithm>
 #include <cmath>
@@ -300,6 +301,7 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
     registerRecipe("mesh.marchingcubes", generateMarchingCubesMesh);
+    registerRecipe("mesh.tree", generateTreeMesh);
     builtinsRegistered_ = true;
 }
 
