@@ -108,6 +108,7 @@ TEST_CASE("particles.attach.spineBoneFollowsAndEmits") {
     e->attachToSpineBoneByName(spine.get(), "Missing");
     CHECK(!e->isAttached());
     CHECK_EQ(e->getAttachKind(), std::string("none"));
+    e->detach();
 }
 
 TEST_CASE("particles.attach.spineDynamicEmitAcrossAnim") {
@@ -140,6 +141,7 @@ TEST_CASE("particles.attach.spineDynamicEmitAcrossAnim") {
     }
     CHECK_EQ(e->getCount(), 6);
     CHECK_GE(moved, 1);  // hand translate keyframes should move spawn X
+    e->detach();
 }
 
 TEST_CASE("particles.attach.spineFollowRotation") {
@@ -156,6 +158,7 @@ TEST_CASE("particles.attach.spineFollowRotation") {
     e->setFollowBoneRotation(true);
     e->attachToSpineBone(spine.get(), body);
     CHECK(std::fabs(e->getDirection() - float(M_PI * 0.5)) < 0.05f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik2dBoneEmit") {
@@ -194,6 +197,7 @@ TEST_CASE("particles.attach.ik2dBoneEmit") {
     sk->forwardKinematics();
     ParticleSimSystem::update(0.016f);
     CHECK(std::fabs(e->getX() - sk->getX(tip)) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik2dFollowRotationAndSolver") {
@@ -219,6 +223,7 @@ TEST_CASE("particles.attach.ik2dFollowRotationAndSolver") {
     const float fy = sk->getOrientationY(tip);
     const float expect = std::atan2(fy, fx);
     CHECK(std::fabs(e->getDirection() - expect) < 0.1f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik3dBoneEmitProjected") {
@@ -251,6 +256,7 @@ TEST_CASE("particles.attach.ik3dBoneEmitProjected") {
     e->start();
     ParticleSimSystem::update(0.05f);
     CHECK_GE(e->getCount(), 2);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.switchKindsClearsPrevious") {
@@ -268,6 +274,7 @@ TEST_CASE("particles.attach.switchKindsClearsPrevious") {
     CHECK_EQ(e->getAttachKind(), std::string("ik3d"));
     CHECK(e->attach()->ik2d == nullptr);
     CHECK(e->attach()->ik3d == sk3.get());
+    e->detach();
 }
 
 TEST_CASE("particles.attach.nullAndOutOfRangeDisable") {
@@ -320,6 +327,7 @@ TEST_CASE("particles.attach.invalidPlaneFallsBackToXy") {
     CHECK_EQ(e->attach()->plane, std::string("xy"));
     CHECK(std::fabs(e->getX() - 3.f) < 1e-3f);
     CHECK(std::fabs(e->getY() - 4.f) < 1e-3f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.multiEmittersOnSameSkeleton") {
@@ -356,6 +364,8 @@ TEST_CASE("particles.attach.multiEmittersOnSameSkeleton") {
     // Spawn clusters stay near their respective bones.
     CHECK(std::fabs(rootFx->sim()->particles[0].x - sk->getX(0)) < 0.5f);
     CHECK(std::fabs(tipFx->sim()->particles[0].x - sk->getX(tip)) < 0.5f);
+    rootFx->detach();
+    tipFx->detach();
 }
 
 TEST_CASE("particles.attach.rateEmitTracksMovingIk2d") {
@@ -382,6 +392,7 @@ TEST_CASE("particles.attach.rateEmitTracksMovingIk2d") {
     }
     // Tip world x ≈ root.x + length; root moves 0,10,20,30,40 → tip ~1,11,21,31,41
     CHECK(xs.back() - xs.front() > 20.f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik2dOffsetAlongOrientation") {
@@ -404,6 +415,7 @@ TEST_CASE("particles.attach.ik2dOffsetAlongOrientation") {
     e->syncAttach();
     CHECK(std::fabs(e->getX() - 10.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 3.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik3dYzPlaneAndFollowRotation") {
@@ -431,6 +443,7 @@ TEST_CASE("particles.attach.ik3dYzPlaneAndFollowRotation") {
         CHECK(std::fabs(e->getDirection() - expect) < 0.15f);
     else
         (void)fx;  // orientation collapsed on yz — direction unchanged is fine
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik3dSolverMovesEmitter") {
@@ -455,6 +468,7 @@ TEST_CASE("particles.attach.ik3dSolverMovesEmitter") {
     CHECK(std::fabs(e->getX() - sk->getX(tip)) < 5e-2f);
     CHECK(std::fabs(e->getY() - sk->getY(tip)) < 5e-2f);
     CHECK(std::fabs(e->getX() - x0) + std::fabs(e->getY() - y0) > 0.2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.spineScaleAndModuleUpdate") {
@@ -479,6 +493,7 @@ TEST_CASE("particles.attach.spineScaleAndModuleUpdate") {
     mod->update(0.1f);  // module path must sync attach + sim
     CHECK_GE(e->getCount(), 4);
     CHECK(std::fabs(e->sim()->particles[0].x - e->getX()) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.detachKeepsAliveParticles") {
@@ -528,6 +543,7 @@ TEST_CASE("particles.attach.pauseStopsSpawnButStillSyncs") {
     ParticleSimSystem::update(0.05f);
     CHECK_EQ(e->getCount(), n);  // paused: no new particles
     CHECK(std::fabs(e->getX() - sk->getX(0)) < 1e-2f);  // but attach still syncs
+    e->detach();
 }
 
 TEST_CASE("particles.attach.switchSpineToAnimClearsSpine") {
@@ -556,6 +572,7 @@ TEST_CASE("particles.attach.switchSpineToAnimClearsSpine") {
     CHECK(e->attach()->pose == pose.get());
     CHECK(std::fabs(e->getX() - 7.f) < 1e-3f);
     CHECK(std::fabs(e->getY() - 8.f) < 1e-3f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.animOffsetRotatedByBone") {
@@ -577,6 +594,7 @@ TEST_CASE("particles.attach.animOffsetRotatedByBone") {
     e->attachToBone(pose.get(), root);
     CHECK(std::fabs(e->getX() - 0.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 2.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.skinTakesPriorityOverBoneOrigin") {
@@ -601,4 +619,5 @@ TEST_CASE("particles.attach.skinTakesPriorityOverBoneOrigin") {
         CHECK(std::fabs(e->sim()->particles[size_t(i)].y - 200.f) < 1e-2f);
     }
     CHECK(!e->hasSkinSource());
+    e->detach();
 }

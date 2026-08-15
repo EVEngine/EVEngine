@@ -125,6 +125,7 @@ TEST_CASE("particles.attach.emitterLifeExpiresWhileAttached") {
     CHECK_EQ(e->getCount(), n);
     // Attach sync still updates origin even when inactive.
     CHECK(std::fabs(e->getX() - sk->getX(0)) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.bufferCapUnderRateOnBone") {
@@ -141,6 +142,7 @@ TEST_CASE("particles.attach.bufferCapUnderRateOnBone") {
     ParticleSimSystem::update(1.f);
     CHECK_EQ(e->getCount(), 8);
     CHECK_EQ(e->getBufferSize(), 8);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.rebindDifferentBone") {
@@ -160,6 +162,7 @@ TEST_CASE("particles.attach.rebindDifferentBone") {
     CHECK_EQ(e->getAttachKind(), std::string("ik2d"));
     CHECK(std::fabs(e->getX() - sk->getX(tip)) < 1e-2f);
     CHECK(std::fabs(e->getX() - sk->getX(mid)) > 1.f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.zeroAndNegativeScale") {
@@ -180,6 +183,7 @@ TEST_CASE("particles.attach.zeroAndNegativeScale") {
     e->setAttachScale(-2.f);
     CHECK(std::fabs(e->getX() - (-4.f)) < 1e-3f);
     CHECK(std::fabs(e->getY() - (-6.f)) < 1e-3f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.stopStartPreservesAttach") {
@@ -209,6 +213,7 @@ TEST_CASE("particles.attach.stopStartPreservesAttach") {
     ParticleSimSystem::update(0.05f);
     CHECK_GT(e->getCount(), n);
     CHECK_EQ(e->getAttachKind(), std::string("ik3d"));
+    e->detach();
 }
 
 TEST_CASE("particles.attach.emissionAreaAroundBone") {
@@ -237,6 +242,7 @@ TEST_CASE("particles.attach.emissionAreaAroundBone") {
     }
     CHECK_GT(maxX - minX, 5.f);
     CHECK_GT(maxY - minY, 2.f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.followRotationAffectsSpawnVelocity") {
@@ -262,6 +268,7 @@ TEST_CASE("particles.attach.followRotationAffectsSpawnVelocity") {
     // Direction ≈ π/2 → velocity mostly +Y
     CHECK(std::fabs(p.vx) < 1.f);
     CHECK(p.vy > 8.f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.radialForceUsesMovingOrigin") {
@@ -293,6 +300,7 @@ TEST_CASE("particles.attach.radialForceUsesMovingOrigin") {
     ParticleSimSystem::update(0.1f);
     // Away from origin at 100: particle at 10 → direction -X → negative vx
     CHECK(e->sim()->particles[0].vx < 0.f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.getAttachBoneAfterDetach") {
@@ -328,6 +336,7 @@ TEST_CASE("particles.attach.stableWhenPoseUnchanged") {
     // xz of (5,6,7) → (5,7)
     CHECK(std::fabs(x0 - 5.f) < 1e-3f);
     CHECK(std::fabs(y0 - 7.f) < 1e-3f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.spineRotatedParentOffset") {
@@ -351,6 +360,7 @@ TEST_CASE("particles.attach.spineRotatedParentOffset") {
     const float ey = spine->getBoneWorldY(hand) + d * 5.f;
     CHECK(std::fabs(e->getX() - ex) < 1e-2f);
     CHECK(std::fabs(e->getY() - ey) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik2dSolverStepTracksTip") {
@@ -380,6 +390,7 @@ TEST_CASE("particles.attach.ik2dSolverStepTracksTip") {
         CHECK(std::fabs(e->getY() - sk->getY(tip)) < 1e-2f);
     }
     CHECK_GE(moved, 1);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.ik3dOffsetAlongBoneProjected") {
@@ -396,6 +407,7 @@ TEST_CASE("particles.attach.ik3dOffsetAlongBoneProjected") {
     e->attachToSkeleton3D(sk.get(), tip);
     CHECK(std::fabs(e->getX() - 3.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 0.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.animByNameAfterDetach") {
@@ -416,6 +428,7 @@ TEST_CASE("particles.attach.animByNameAfterDetach") {
     CHECK(e->isAttached());
     CHECK_EQ(e->getAttachBone(), head);
     CHECK(std::fabs(e->getY() - 2.f) < 1e-3f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.presetStillWorksWhenAttached") {
@@ -432,6 +445,7 @@ TEST_CASE("particles.attach.presetStillWorksWhenAttached") {
     e->start();
     ParticleSimSystem::update(0.05f);
     CHECK_GE(e->getCount(), 1);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.emitZeroAndNegativeNoOp") {
@@ -443,6 +457,7 @@ TEST_CASE("particles.attach.emitZeroAndNegativeNoOp") {
     e->emit(0);
     e->emit(-5);
     CHECK_EQ(e->getCount(), 0);
+    e->detach();
 }
 
 TEST_CASE("particles.skin.planeXzYzCesiumMan") {
@@ -503,6 +518,8 @@ TEST_CASE("particles.skin.planeXzYzCesiumMan") {
         spreadYZ = (maxX - minX) + (maxY - minY);
     }
     CHECK_GT(spreadYZ, 0.5f);
+    e->clearSkinSource();
+    e->detach();
 }
 
 TEST_CASE("particles.skin.clearRestoresBoneOriginSpawn") {
@@ -539,6 +556,7 @@ TEST_CASE("particles.skin.clearRestoresBoneOriginSpawn") {
         CHECK(std::fabs(e->sim()->particles[size_t(i)].x - e->getX()) < 1e-2f);
         CHECK(std::fabs(e->sim()->particles[size_t(i)].y - e->getY()) < 1e-2f);
     }
+    e->detach();
 }
 
 TEST_CASE("particles.attach.manualSyncAttachWithoutSim") {
@@ -553,6 +571,7 @@ TEST_CASE("particles.attach.manualSyncAttachWithoutSim") {
     e->syncAttach();
     CHECK(std::fabs(e->getX() - 8.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 9.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.followRotationToggleResyncs") {
@@ -578,4 +597,5 @@ TEST_CASE("particles.attach.followRotationToggleResyncs") {
     e->setDirection(0.3f);
     e->syncAttach();
     CHECK(std::fabs(e->getDirection() - 0.3f) < 1e-4f);
+    e->detach();
 }

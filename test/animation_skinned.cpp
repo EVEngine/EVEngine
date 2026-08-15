@@ -581,7 +581,12 @@ TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
         loadCesiumMan("ev_ut_animation_skinned_factory"));
     REQUIRE(model.get() != nullptr);
 
-    std::unique_ptr<Animation> anim(Animation::create());
+    // Animation::create() returns the process-wide module singleton owned by
+    // ModuleManager; do NOT wrap it in unique_ptr (that would delete the
+    // singleton out from under ModuleManager and leave a dangling pointer for
+    // later tests that call Animation::create() again).
+    Animation *anim = Animation::create();
+    REQUIRE(anim != nullptr);
     std::unique_ptr<AnimSkeleton> sk(anim->newSkeletonFromModel(model.get()));
     REQUIRE(sk.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());

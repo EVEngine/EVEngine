@@ -100,7 +100,7 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     uiScale_ = computeInitialScale();
 
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    ctx_ = ::ImGui::CreateContext();
     // Start from unified theme tokens (not a one-off ImGui palette).
     setThemeUiScale(uiScale_);
     applyThemeToImGui(globalTheme(), uiScale_);
@@ -166,9 +166,18 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     fontsUploaded_ = true;
 
     gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
+    // The ImGui context + Vulkan pipeline are bound to the native window. When
+    // the window is destroyed, tear down so the next init() rebuilds against a
+    // fresh window — even if SDL hands back the same pointer.
+    gfx_->addWindowDestroyedCallback(&ImGuiBackend::windowDestroyedThunk, this);
 
     initialized_ = true;
     return true;
+}
+
+void ImGuiBackend::windowDestroyedThunk(void *userdata) {
+    auto *self = static_cast<ImGuiBackend *>(userdata);
+    if (self) self->shutdown();
 }
 
 void ImGuiBackend::shutdown() {
@@ -184,9 +193,22 @@ void ImGuiBackend::shutdown() {
     if (vkg) {
         vkDeviceWaitIdle(static_cast<VkDevice>(vkg->getDevice().instance));
     }
-    ImGui_ImplVulkan_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
+    // The ImGui backend data lives on the context this backend created. It may
+    // not be the currently active context (headless tests switch contexts), so
+    // explicitly select it before tearing down ImGui_Impl* state.
+    if (ctx_) {
+        ::ImGuiContext *prev = ::ImGui::GetCurrentContext();
+        ::ImGuiContext *mine = ctx_;
+        ::ImGui::SetCurrentContext(mine);
+        ::ImGui_ImplVulkan_Shutdown();
+        ::ImGui_ImplSDL2_Shutdown();
+        ::ImGui::DestroyContext(mine);
+        ctx_ = nullptr;
+        // Restore the previous current context unless it was the one we just
+        // destroyed (DestroyContext already reset it to null).
+        if (prev && prev != mine) ::ImGui::SetCurrentContext(prev);
+        else ::ImGui::SetCurrentContext(nullptr);
+    }
     if (imguiDescriptorPool_ && vkg) {
         vkDestroyDescriptorPool(static_cast<VkDevice>(vkg->getDevice().instance),
                                 static_cast<VkDescriptorPool>(imguiDescriptorPool_), nullptr);
