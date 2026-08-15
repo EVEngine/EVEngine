@@ -5,63 +5,71 @@
 namespace eve {
 namespace thread {
 
-Task::Task(std::function<void()> fn) : fn_(std::move(fn)) {
-    if (!fn_)
+Task::Task(std::function<void()> fn) {
+    if (!fn)
         throw eve::Exception("Task function is null");
+    state_ = std::make_shared<State>(std::move(fn));
 }
+
+Task::Task(std::shared_ptr<State> state) : state_(std::move(state)) {}
 
 Task::~Task() = default;
 
 std::string Task::getStatus() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return status_;
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return state_->status;
 }
 
 bool Task::isDone() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return status_ == "done" || status_ == "failed";
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return state_->status == "done" || state_->status == "failed";
 }
 
 bool Task::hasFailed() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return status_ == "failed";
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return state_->status == "failed";
 }
 
 std::string Task::getError() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return error_;
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return state_->error;
 }
 
 void Task::wait() {
-    std::unique_lock<std::mutex> lock(mu_);
-    cv_.wait(lock, [this] { return status_ == "done" || status_ == "failed"; });
+    auto state = state_;
+    std::unique_lock<std::mutex> lock(state->mu);
+    state->cv.wait(lock, [&state] { return state->status == "done" || state->status == "failed"; });
 }
 
 void Task::run() {
+    run(state_);
+}
+
+void Task::run(const std::shared_ptr<State> &state) {
     {
-        std::lock_guard<std::mutex> lock(mu_);
-        status_ = "running";
+        std::lock_guard<std::mutex> lock(state->mu);
+        state->status = "running";
     }
 
     try {
-        fn_();
-        std::lock_guard<std::mutex> lock(mu_);
-        status_ = "done";
+        state->fn();
+        std::lock_guard<std::mutex> lock(state->mu);
+        state->status = "done";
     } catch (const eve::Exception &e) {
-        std::lock_guard<std::mutex> lock(mu_);
-        status_ = "failed";
-        error_ = e.what();
+        std::lock_guard<std::mutex> lock(state->mu);
+        state->status = "failed";
+        state->error = e.what();
     } catch (const std::exception &e) {
-        std::lock_guard<std::mutex> lock(mu_);
-        status_ = "failed";
-        error_ = e.what();
+        std::lock_guard<std::mutex> lock(state->mu);
+        state->status = "failed";
+        state->error = e.what();
     } catch (...) {
-        std::lock_guard<std::mutex> lock(mu_);
-        status_ = "failed";
-        error_ = "unknown exception";
+        std::lock_guard<std::mutex> lock(state->mu);
+        state->status = "failed";
+        state->error = "unknown exception";
     }
 
-    cv_.notify_all();
+    state->cv.notify_all();
 }
 
 }  // namespace thread

@@ -165,3 +165,87 @@ TEST_CASE("thread.pool.stopRejectsSubmit") {
     CHECK(!pool->isRunning());
     CHECK(expectException([&] { pool->submitSleep(1); }));
 }
+
+TEST_CASE("thread.pool.queueOwnsTaskState") {
+    std::unique_ptr<eve::thread::ThreadPool> pool(threadModule()->newThreadPool(1));
+    eve::thread::Task *task = pool->submitSleep(10);
+    delete task;
+    pool->waitAll();
+    CHECK_EQ(pool->getPendingCount(), 0);
+}
+
+TEST_CASE("thread.pool.jobOwnsAnonymousChannelState") {
+    std::unique_ptr<eve::thread::ThreadPool> pool(threadModule()->newThreadPool(1));
+    auto *channel = threadModule()->newChannel();
+    std::unique_ptr<eve::thread::Task> task(pool->submitPush(channel, "late", 10));
+    delete channel;
+    task->wait();
+    CHECK_EQ(task->getStatus(), std::string("done"));
+}
+
+TEST_CASE("thread.pool.workerWaitAllRejected") {
+    std::unique_ptr<eve::thread::ThreadPool> pool(threadModule()->newThreadPool(1));
+    std::atomic<bool> rejected{false};
+    std::unique_ptr<eve::thread::Task> task(pool->submit([&] {
+        try {
+            pool->waitAll();
+        } catch (const eve::Exception &) {
+            rejected.store(true, std::memory_order_relaxed);
+        }
+    }));
+    task->wait();
+    CHECK(rejected.load(std::memory_order_relaxed));
+}
+
+TEST_CASE("thread.pool.workerStopRejected") {
+    std::unique_ptr<eve::thread::ThreadPool> pool(threadModule()->newThreadPool(1));
+    std::atomic<bool> rejected{false};
+    std::unique_ptr<eve::thread::Task> task(pool->submit([&] {
+        try {
+            pool->stop();
+        } catch (const eve::Exception &) {
+            rejected.store(true, std::memory_order_relaxed);
+        }
+    }));
+    task->wait();
+    CHECK(rejected.load(std::memory_order_relaxed));
+    CHECK(pool->isRunning());
+}
+
+TEST_CASE("thread.pool.workerCountBounded") {
+    CHECK(expectException([&] {
+        std::unique_ptr<eve::thread::ThreadPool> pool(threadModule()->newThreadPool(257));
+    }));
+}
+
+TEST_CASE("thread.pool.destructorFromWorkerIsSafe") {
+    auto *pool = threadModule()->newThreadPool(1);
+    std::unique_ptr<eve::thread::Task> task(pool->submit([pool] { delete pool; }));
+    task->wait();
+    CHECK_EQ(task->getStatus(), std::string("done"));
+}
+
+TEST_CASE("thread.pool.workerDestructorDoesNotJoinDependentWorker") {
+    auto *pool = threadModule()->newThreadPool(2);
+    std::atomic<eve::thread::Task *> deletingTask{nullptr};
+    std::atomic<bool> waiterReady{false};
+
+    std::unique_ptr<eve::thread::Task> waiter(pool->submit([&] {
+        eve::thread::Task *target = nullptr;
+        while ((target = deletingTask.load(std::memory_order_acquire)) == nullptr)
+            std::this_thread::yield();
+        waiterReady.store(true, std::memory_order_release);
+        target->wait();
+    }));
+    std::unique_ptr<eve::thread::Task> destroyer(pool->submit([&] {
+        while (!waiterReady.load(std::memory_order_acquire))
+            std::this_thread::yield();
+        delete pool;
+    }));
+    deletingTask.store(destroyer.get(), std::memory_order_release);
+
+    destroyer->wait();
+    waiter->wait();
+    CHECK_EQ(destroyer->getStatus(), std::string("done"));
+    CHECK_EQ(waiter->getStatus(), std::string("done"));
+}

@@ -740,6 +740,7 @@ void Animation::expose(ssq::Table &table) {
     spanim.addFunc("getAnimationDuration", &SpineAnim::getAnimationDuration);
     spanim.addFunc("apply", &SpineAnim::apply);
     spanim.addFunc("update", &SpineAnim::update);
+    spanim.addFunc("draw", &SpineAnim::draw);
     // collectDrawItems is C++-only (shared DrawItem2D queue); scripts use getDrawSlot*.
     spanim.addFunc("getDrawSlotCount", &SpineAnim::getDrawSlotCount);
     spanim.addFunc("getDrawSlotX", &SpineAnim::getDrawSlotX);

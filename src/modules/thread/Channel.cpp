@@ -5,62 +5,66 @@
 namespace eve {
 namespace thread {
 
-Channel::Channel(std::string name) : name_(std::move(name)) {}
+Channel::Channel() : state_(std::make_shared<State>()) {}
+
+Channel::Channel(std::string name) : state_(std::make_shared<State>(std::move(name))) {}
 
 Channel::~Channel() = default;
 
-std::string Channel::getName() const { return name_; }
+std::string Channel::getName() const { return state_->name; }
 
 void Channel::push(std::string value) {
     {
-        std::lock_guard<std::mutex> lock(mu_);
-        queue_.push(std::move(value));
+        std::lock_guard<std::mutex> lock(state_->mu);
+        state_->queue.push(std::move(value));
     }
-    cv_.notify_one();
+    state_->cv.notify_one();
 }
 
 std::string Channel::pop() {
-    std::lock_guard<std::mutex> lock(mu_);
-    if (queue_.empty())
+    std::lock_guard<std::mutex> lock(state_->mu);
+    if (state_->queue.empty())
         return {};
-    std::string v = std::move(queue_.front());
-    queue_.pop();
+    std::string v = std::move(state_->queue.front());
+    state_->queue.pop();
     return v;
 }
 
 std::string Channel::demand() {
-    std::unique_lock<std::mutex> lock(mu_);
-    cv_.wait(lock, [this] { return !queue_.empty(); });
-    std::string v = std::move(queue_.front());
-    queue_.pop();
+    auto state = state_;
+    std::unique_lock<std::mutex> lock(state->mu);
+    state->cv.wait(lock, [&state] { return !state->queue.empty(); });
+    std::string v = std::move(state->queue.front());
+    state->queue.pop();
     return v;
 }
 
 std::string Channel::supply(int timeoutMs) {
-    std::unique_lock<std::mutex> lock(mu_);
+    auto state = state_;
+    std::unique_lock<std::mutex> lock(state->mu);
     if (timeoutMs < 0)
         timeoutMs = 0;
-    if (!cv_.wait_for(lock, std::chrono::milliseconds(timeoutMs), [this] { return !queue_.empty(); }))
+    if (!state->cv.wait_for(lock, std::chrono::milliseconds(timeoutMs), [&state] { return !state->queue.empty(); }))
         return {};
-    std::string v = std::move(queue_.front());
-    queue_.pop();
+    std::string v = std::move(state->queue.front());
+    state->queue.pop();
     return v;
 }
 
 bool Channel::hasData() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return !queue_.empty();
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return !state_->queue.empty();
 }
 
 int Channel::getCount() const {
-    std::lock_guard<std::mutex> lock(mu_);
-    return static_cast<int>(queue_.size());
+    std::lock_guard<std::mutex> lock(state_->mu);
+    return static_cast<int>(state_->queue.size());
 }
 
 void Channel::clear() {
-    std::lock_guard<std::mutex> lock(mu_);
-    while (!queue_.empty())
-        queue_.pop();
+    std::lock_guard<std::mutex> lock(state_->mu);
+    while (!state_->queue.empty())
+        state_->queue.pop();
 }
 
 }  // namespace thread

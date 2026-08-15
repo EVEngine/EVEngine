@@ -26,12 +26,8 @@ using namespace eve::animation;
 
 namespace {
 
-std::string pathBesideThisSource(const char *relative) {
-    std::string here = __FILE__;
-    auto slash       = here.find_last_of("/\\");
-    std::string dir  = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/" + relative;
-}
+#include "PathBesideSource.h"
+EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) { return std::filesystem::is_regular_file(path); }
 
@@ -161,6 +157,7 @@ TEST_CASE("particles.attach.followRotation") {
     e->setFollowBoneRotation(true);
     e->attachToBone(pose.get(), root);
     CHECK(std::fabs(e->getDirection() - (3.14159265f * 0.5f)) < 0.05f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.emitsAtBone") {
@@ -185,6 +182,7 @@ TEST_CASE("particles.attach.emitsAtBone") {
         CHECK(std::fabs(sim->particles[size_t(i)].x - 50.f) < 1e-2f);
         CHECK(std::fabs(sim->particles[size_t(i)].y - 60.f) < 1e-2f);
     }
+    e->detach();
 }
 
 TEST_CASE("particles.skin.surfaceEmitCesiumMan") {
@@ -308,6 +306,7 @@ TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
     // tip world x = root.x + 1 → scaled ×10; frames 0..4 → x = 10,30,50,70,90
     CHECK(std::fabs(sim->particles[0].x - 10.f) < 1e-2f);
     CHECK(std::fabs(sim->particles[4].x - 90.f) < 1e-2f);
+    e->detach();
 }
 
 TEST_CASE("particles.attach.yzPlaneAndDetachClearsKind") {
@@ -376,6 +375,7 @@ TEST_CASE("particles.attach.clipSampleMovesEmitter") {
     CHECK_EQ(e->getCount(), 8);
     // Animated bone should move enough that spawn positions spread out.
     CHECK_GT(maxX - minX + maxY - minY, 1.f);
+    e->detach();
 }
 
 TEST_CASE("particles.skin.emptyBoneFilterFallsBack") {
@@ -413,6 +413,8 @@ TEST_CASE("particles.skin.emptyBoneFilterFallsBack") {
     // Fallback spawn at emitter position.
     CHECK(std::fabs(e->sim()->particles[0].x - 12.f) < 1e-2f);
     CHECK(std::fabs(e->sim()->particles[0].y - 34.f) < 1e-2f);
+    e->clearSkinSource();
+    e->detach();
 }
 
 TEST_CASE("particles.attach.followRotationOffKeepsDirection") {
@@ -430,4 +432,5 @@ TEST_CASE("particles.attach.followRotationOffKeepsDirection") {
     e->setFollowBoneRotation(false);
     e->attachToBone(pose.get(), root);
     CHECK(std::fabs(e->getDirection() - 0.25f) < 1e-4f);
+    e->detach();
 }

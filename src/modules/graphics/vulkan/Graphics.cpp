@@ -262,11 +262,18 @@ Graphics::~Graphics() {
 void Graphics::initWithWindow(void *nativeWindow) {
     if (initialized) {
         // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
-        // The Vulkan surface is tied to the native window — rebuild it when the
-        // handle changes, otherwise acquire/present use a destroyed surface.
-        if (sdlWindow == nativeWindow) return;
+        // The Vulkan surface is tied to the native window. SDL can hand back the
+        // same pointer for a freshly recreated window, so pointer identity alone
+        // can't tell whether the surface is still valid: Window::close() drops it
+        // via onNativeWindowDestroyed(), and a missing surface must be rebuilt too.
+        if (sdlWindow == nativeWindow && surface) return;
         sdlWindow = nativeWindow;
         recreateSurfaceForResume();
+        // Restore the initWithWindow contract (device + swapchain valid on
+        // return): rebuild the swapchain synchronously. On desktop this runs
+        // immediately; on Android/iOS isRenderSurfaceStable() defers it until
+        // the native surface settles, leaving swapchainDirty set (same as before).
+        rebuildSwapchainIfNeeded();
         return;
     }
     sdlWindow = nativeWindow;
@@ -355,6 +362,26 @@ void Graphics::initWithWindow(void *nativeWindow) {
     createShadowResources();
     const uint8_t whitePixel[4] = {255, 255, 255, 255};
     whiteTexture = newTexture(1, 1, whitePixel);
+}
+
+void Graphics::onNativeWindowDestroyed() {
+    if (!initialized) return;
+    // Fire registered window-destroyed callbacks (UI backend tears down its
+    // ImGui context here) before the device/surface resources are released.
+    for (auto &cb : windowDestroyedCallbacks_) cb.first(cb.second);
+    windowDestroyedCallbacks_.clear();
+    clearPresentOverlay();
+
+    device->waitIdle();
+    destroySwapchainResources();
+    swapchain.destroy();
+    swapchain = vkb::Swapchain{};
+    if (surface) {
+        inst.instance.destroySurfaceKHR(surface);
+        surface = VK_NULL_HANDLE;
+    }
+    sdlWindow = nullptr;
+    swapchainDirty = true;
 }
 
 void Graphics::destroySwapchainResources() {
@@ -994,6 +1021,7 @@ void Graphics::destroyGBufferResources() {
 
 void Graphics::destroySceneColorResources() {
     sceneColorPassOpen = false;
+    if (device.instance) device->waitIdle();
     for (auto &slot : sceneColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
@@ -1032,8 +1060,9 @@ void Graphics::createUiColorResources(int width, int height) {
         if (samples != vk::SampleCountFlagBits::e1) {
             uiRenderPass =
                 device.createRenderPass()
-                    .addSampledColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear, samples)
-                    .addResolveColorAttachment(colorFmt)
+                    .addColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear,
+                                        vk::AttachmentStoreOp::eDontCare, samples)
+                    .addResolveColorAttachment(colorFmt, vk::AttachmentLoadOp::eDontCare)
                     .addSubpass(vkb::SubpassBuilder()
                                     .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
                                     .addResolveAttachment(1, vk::ImageLayout::eColorAttachmentOptimal))
@@ -1049,6 +1078,9 @@ void Graphics::createUiColorResources(int width, int height) {
                     .build();
         }
     }
+    // Keep sample count in sync with the render pass even if target creation
+    // returns early (ImGui builds its pipeline from getUiMsaaSamples()).
+    uiColorSamples = samples;
 
     if (!texSetLayout || !descriptorPool) return;
 
@@ -1107,6 +1139,7 @@ void Graphics::createUiColorResources(int width, int height) {
 }
 
 void Graphics::destroyUiColorTargets() {
+    if (device.instance) device->waitIdle();
     for (auto &slot : uiColorSlots) {
         slot.colorTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
@@ -1119,7 +1152,7 @@ void Graphics::destroyUiColorTargets() {
     uiColorWidth = 0;
     uiColorHeight = 0;
     uiColorFormat = vk::Format::eUndefined;
-    uiColorSamples = vk::SampleCountFlagBits::e1;
+    // Keep uiColorSamples matching uiRenderPass; ImGui's pipeline is bound to it.
 }
 
 void Graphics::destroyUiColorResources() {
@@ -1318,10 +1351,14 @@ void Graphics::createSceneColorResources(int width, int height) {
     }
 
     if (msaa) {
+        // MSAA color is transient (DONT_CARE store). Sampling the 1x resolve.
+        // addSampledColorAttachment on the MSAA target makes MoltenVK treat it
+        // as a shader-readable texture2d and segfaults on macOS.
         sceneColorRenderPass =
             device.createRenderPass()
-                .addSampledColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear, samples)
-                .addResolveColorAttachment(colorFmt)
+                .addColorAttachment(colorFmt, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare, samples)
+                .addResolveColorAttachment(colorFmt, vk::AttachmentLoadOp::eDontCare)
                 .addDepthAttachment(depthFmt, vk::AttachmentLoadOp::eClear,
                                     vk::AttachmentStoreOp::eDontCare, samples)
                 .addSubpass(vkb::SubpassBuilder()
@@ -3169,6 +3206,7 @@ vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
                        vk::FrontFace::eCounterClockwise)
         .setMultisampler(false, samples)
         .setDepthStencil(true, true, vk::CompareOp::eLess)
+        .setColorAttachmentCount(1)
         .build(rp);
 }
 

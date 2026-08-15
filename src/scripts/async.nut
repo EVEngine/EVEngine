@@ -13,9 +13,13 @@ if (!("_async" in getroottable())) {
         maxDrain = 1000
         // Pending worker polls: { ch, resolve, reject, task }
         waits = []
+        // Task-correlated completions: { task, value, resolve, reject }
+        taskWaits = []
         eventWaits = []  // { name, resolve, reject }
     };
 }
+if (!("taskWaits" in _async))
+    _async.taskWaits <- [];
 
 function nextTick(fn) {
     if (typeof fn != "function")
@@ -133,6 +137,30 @@ function _async_poll_waits() {
     _async.waits = remain;
 }
 
+function _async_poll_tasks() {
+    if (_async.taskWaits.len() == 0)
+        return;
+    local remain = [];
+    foreach (w in _async.taskWaits) {
+        local done = false;
+        try {
+            if (w.task.hasFailed()) {
+                w.reject(w.task.getError());
+                done = true;
+            } else if (w.task.isDone()) {
+                w.resolve(w.value);
+                done = true;
+            }
+        } catch (e) {
+            try { w.reject(e); } catch (e2) {}
+            done = true;
+        }
+        if (!done)
+            remain.append(w);
+    }
+    _async.taskWaits = remain;
+}
+
 // Drain timers, worker waits, and microtasks. Call once per frame (load.nut).
 function async_pump() {
     if (_async.draining)
@@ -141,6 +169,7 @@ function async_pump() {
     try {
         _async_fire_timers();
         _async_poll_waits();
+        _async_poll_tasks();
         _async_drain_microtasks();
         // Timers / waits may have queued more microtasks.
         _async_drain_microtasks();
@@ -356,14 +385,16 @@ function async_dispatch_event(name, data) {
     return matched;
 }
 
-// Delay on a worker, then post Event(name, data); resolves when that event is polled.
+// Delay on a worker, then post Event(name, data). The Promise is correlated to
+// its own native Task, so same-name events cannot resolve the wrong request.
 function asyncPost(name, data, ms) {
     if (data == null) data = "";
     if (ms == null) ms = 0;
     return Promise(function(resolve, reject) {
         local pool = thread.getPool();
-        pool.submitPost(name, "" + data, ms);
-        _async.eventWaits.append({ name = name, resolve = resolve, reject = reject });
+        local value = "" + data;
+        local task = pool.submitPost(name, value, ms);
+        _async.taskWaits.append({ task = task, value = value, resolve = resolve, reject = reject });
     });
 }
 

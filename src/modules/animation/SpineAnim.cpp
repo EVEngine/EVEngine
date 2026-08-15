@@ -4,6 +4,8 @@
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
 #include "common/Exception.h"
+#include "graphics/Graphics.h"
+#include "graphics/RenderSystem.h"
 
 #include <algorithm>
 #include <cmath>
@@ -286,6 +288,13 @@ bool SpineAnim::update(float dt) {
     return true;
 }
 
+void SpineAnim::draw(graphics::Graphics *gfx) {
+    if (!gfx) return;
+    std::vector<graphics::DrawItem2D> items;
+    collectDrawItems(items);
+    graphics::RenderSystem::drawItems(*gfx, items, false);
+}
+
 void SpineAnim::rebuildDrawSlots() {
     drawSlots_.clear();
     if (!skeleton_) return;
@@ -405,6 +414,16 @@ void SpineAnim::collectDrawItems(std::vector<graphics::DrawItem2D> &out) {
         item.v0     = ds.v0;
         item.u1     = ds.u1;
         item.v1     = ds.v1;
+        // A reflected skeleton cannot be represented by rotation plus positive
+        // quad extents alone. Reconstructing the reflected quad adds a 180-degree
+        // rotation, so regular regions need a V flip to leave only the requested
+        // horizontal reflection. Rotated atlas regions exchange the UV axes.
+        if (scaleX_ < 0.f) {
+            if (ds.rotated)
+                std::swap(item.u0, item.u1);
+            else
+                std::swap(item.v0, item.v1);
+        }
         out.push_back(item);
     }
 }
