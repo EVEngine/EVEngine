@@ -16,6 +16,8 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "window/Window.h"
+#include "image/Image.h"
+#include "filesystem/FileData.h"
 #include "RenderImageAudit.h"
 
 #include <SDL2/SDL.h>
@@ -24,6 +26,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <memory>
 #include <set>
 #include <string>
@@ -663,6 +667,110 @@ TEST_CASE("procgen.mesh.marchingcubes.sphere") {
     CHECK(mesh.indices() == mesh2.indices());
 }
 
+TEST_CASE("procgen.mesh.hexplanet.topology") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setFloat("radius", 2.f);
+    p.setInt("subdivisions", 2);
+    p.setFloat("tileInset", 0.05f);
+    MeshBuild mesh;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.hexplanet", p, mesh, err));
+    CHECK(meshIndicesInRange(mesh));
+    CHECK(meshPositionsFinite(mesh));
+    CHECK(meshNormalsFiniteUnit(mesh));
+    CHECK_EQ(mesh.getMeta("algorithm", ""), std::string("mesh.hexplanet"));
+    CHECK_EQ(mesh.getMeta("pentagons", ""), std::string("12"));
+    // V = 10 * 4^n + 2 for a subdivided icosahedron.
+    CHECK_EQ(mesh.getMeta("cells", ""), std::string("162"));
+    CHECK_EQ(mesh.getMeta("hexagons", ""), std::string("150"));
+    CHECK_EQ(mesh.getIndexCount() % 3, 0);
+    for (int i = 0; i < mesh.getVertexCount(); ++i) {
+        const float x = mesh.getPositionX(i), y = mesh.getPositionY(i), z = mesh.getPositionZ(i);
+        CHECK(std::fabs(std::sqrt(x * x + y * y + z * z) - 2.f) < 1e-4f);
+    }
+}
+
+TEST_CASE("procgen.render.hexplanetPng") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 768;
+    settings.height = 768;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    Procgen *procgen = Procgen::create();
+    Params params;
+    params.setFloat("radius", 1.f);
+    params.setInt("subdivisions", 3);
+    params.setFloat("tileInset", 0.12f);
+    Mesh *planetMesh = procgen->generateMesh("mesh.hexplanet", &params, gfx);
+    REQUIRE(planetMesh != nullptr);
+
+    const uint8_t oceanBlue[4] = {42, 155, 181, 255};
+    Texture *planetTexture = gfx->newTexture(1, 1, oceanBlue);
+    REQUIRE(planetTexture != nullptr);
+
+    auto *planet = eve::graphics::Renderable3D::create();
+    planet->setMesh(planetMesh);
+    planet->setTexture(planetTexture);
+    planet->setMetallic(0.05f);
+    planet->setRoughness(0.72f);
+    planet->setCastShadow(false);
+    planet->setReceiveShadow(false);
+    planet->transform()->yaw = 0.42f;
+    planet->transform()->pitch = -0.22f;
+
+    auto *camera = eve::graphics::Camera3D::createCamera();
+    camera->setEye(2.65f, 1.55f, 3.05f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(38.f);
+    camera->setAmbient(0.16f, 0.19f, 0.24f);
+
+    // A transparent 2D entity drives the normal present path used by render tests.
+    auto *present = eve::graphics::Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    gfx->setBackgroundColor(Color(0.012f, 0.018f, 0.035f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    eve::graphics::RenderSystem3D::setDirectionalLight(0.55f, 0.85f, 1.1f, 1.15f, 0.98f,
+                                                        0.88f);
+    for (int frame = 0; frame < 8; ++frame) {
+        planet->transform()->yaw += 0.025f;
+        eve::graphics::RenderSystem3D::render(*gfx);
+        eve::graphics::RenderSystem::render(*gfx);
+    }
+
+    eve::image::Image::create();
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(static_cast<bool>(image));
+    std::unique_ptr<eve::filesystem::FileData> png(
+        image->encode(medialoader::FormatHandler::ENCODED_PNG, "hex_planet.png", false));
+    REQUIRE(static_cast<bool>(png));
+    REQUIRE(png->getSize() > 0);
+
+    const std::filesystem::path outDir =
+        std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
+    std::filesystem::create_directories(outDir);
+    const std::filesystem::path outPath = outDir / "hex_planet.png";
+    std::ofstream output(outPath, std::ios::binary);
+    REQUIRE(output.good());
+    output.write(static_cast<const char *>(png->getData()),
+                 static_cast<std::streamsize>(png->getSize()));
+    REQUIRE(output.good());
+    output.close();
+    std::printf("hex planet render saved: %s\n", outPath.string().c_str());
+    win->close();
+}
+
 TEST_CASE("procgen.mesh.marchingcubes.allFields") {
     MeshRecipeRegistry::instance().registerBuiltins();
     const char *fields[] = {"sphere", "torus", "noise", "terrain"};
@@ -843,7 +951,11 @@ TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
     CHECK(meshIndicesInRange(*m));
     CHECK(mod->hasMeshRecipe("mesh.marchingcubes"));
     CHECK(mod->getMeshRecipeCount() >= 1);
-    CHECK_EQ(mod->getMeshRecipeId(0), std::string("mesh.marchingcubes"));
+    bool listed = false;
+    for (int i = 0; i < mod->getMeshRecipeCount(); ++i) {
+        if (mod->getMeshRecipeId(i) == "mesh.marchingcubes") listed = true;
+    }
+    CHECK(listed);
     delete m;
 
     Params bad;

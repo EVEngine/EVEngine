@@ -27,6 +27,13 @@ bool fillDensityField(const Params &params, std::vector<float> &density, int &nx
 /** Build mesh from Params (field + resolution + isolevel). */
 bool generateMarchingCubesMesh(const Params &params, MeshBuild &out, std::string &error);
 
+/**
+ * Build the dual of a subdivided icosahedron. The result is a closed planet made
+ * of hexagonal cells plus the twelve pentagons required by spherical topology.
+ * Params: radius (1), subdivisions (2), tileInset (0.06, in [0, 0.5)).
+ */
+bool generateHexPlanetMesh(const Params &params, MeshBuild &out, std::string &error);
+
 using MeshRecipeFn = std::function<bool(const Params &params, MeshBuild &out, std::string &error)>;
 
 class MeshRecipeRegistry {
