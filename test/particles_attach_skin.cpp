@@ -26,12 +26,8 @@ using namespace eve::animation;
 
 namespace {
 
-std::string pathBesideThisSource(const char *relative) {
-    std::string here = __FILE__;
-    auto slash       = here.find_last_of("/\\");
-    std::string dir  = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
-    return dir + "/" + relative;
-}
+#include "PathBesideSource.h"
+EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) { return std::filesystem::is_regular_file(path); }
 

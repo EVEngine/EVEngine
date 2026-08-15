@@ -104,6 +104,16 @@ if(EVENGINE_BUILD_DEMO)
   list(APPEND all_test_cpp demo.cpp)
 endif()
 
+# Desktop-only DevTools (DAP / MCP / debugger / callgraph / renderflow) are not
+# compiled into the Android runtime, so their test files cannot link there.
+# all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
+if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp)
+    list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
+  endforeach()
+  message(STATUS "Android test: removed devtools test files, remaining=${all_test_cpp}")
+endif()
+
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
@@ -120,15 +130,36 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(
-  unit_test
-  ${all_test_cpp}
-  ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
-)
+# On Android the zeroerr runner is packaged as the app's native entry point
+# (libmain.so loaded by SDLActivity), replacing the engine main.cpp.
+if(EVENGINE_ANDROID_TEST_APP)
+  add_library(main SHARED
+    ${all_test_cpp}
+    ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
+  )
+else()
+  add_executable(
+    unit_test
+    ${all_test_cpp}
+    ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
+  )
+endif()
 
 
 if(WIN32)
   set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
+elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+  find_library(ANDROID_LOG_LIB log)
+  find_library(ANDROID_LIB android)
+  find_library(ANDROID_OPENSLES_LIB OpenSLES)
+  set(SystemLibraries ${SystemLibraries}
+    ${ANDROID_LOG_LIB}
+    ${ANDROID_LIB}
+    ${ANDROID_OPENSLES_LIB}
+    dl
+    m
+    c++_shared
+  )
 elseif(APPLE)
   set(SystemLibraries ${SystemLibraries}
     dl pthread iconv
@@ -192,6 +223,11 @@ else()
     set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2
       PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
       ${SystemLibraries})
+  elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+    # Same unprefixed static names as the engine Android build; SDL2 stays shared.
+    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
+      PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
+      ${SystemLibraries})
   else()
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2
       PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
@@ -210,7 +246,6 @@ set(EVELIBS
   EVTouch
   EVGraphics
   EVImage
-  EVDevTools
   EVCommon
   EVEvent
   EVTimer
@@ -246,6 +281,10 @@ set(EVELIBS
   EVStylize
   EVEditor)
 
+if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")))
+  list(APPEND EVELIBS EVDevTools)
+endif()
+
 if(EVENGINE_BUILD_DEMO)
   list(APPEND
     EVELIBS EVDemo)
@@ -255,14 +294,30 @@ if(EVENGINE_PLATFORM_LIB)
   list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
 endif()
 
-target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
-target_compile_definitions(unit_test PRIVATE
-  EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
-  EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+if(EVENGINE_ANDROID_TEST_APP)
+  target_link_libraries(main ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  # Source/binary roots are resolved at runtime: the Android test runner chdirs to
+  # the unpacked asset root before running, so "." means "repo root on device".
+  target_compile_definitions(main PRIVATE
+    EVENGINE_TEST_BINARY_DIR="."
+    EVENGINE_SOURCE_DIR="."
+    EVENGINE_ANDROID=1)
+  # Keep SDL_main / module registration symbols visible for the dlopened SDLActivity.
+  set_target_properties(main PROPERTIES
+    CXX_VISIBILITY_PRESET default
+    VISIBILITY_INLINES_HIDDEN OFF)
+else()
+  target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  target_compile_definitions(unit_test PRIVATE
+    EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+    EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+endif()
 
 # Large classic scenes (Sponza / DamagedHelmet). Cornell Box is committed.
 # Enable with -DEVENGINE_DOWNLOAD_CLASSIC_SCENES=ON, or build target
 # `download_classic_scenes` before running ClassicScenes.* tests.
+# (Skipped on the Android test app: bash/python3 download steps do not run there.)
+if(NOT EVENGINE_ANDROID_TEST_APP)
 option(EVENGINE_DOWNLOAD_CLASSIC_SCENES
   "Download large classic render test scenes (Sponza, DamagedHelmet)" OFF)
 set(_eve_classic_scenes_script "${CMAKE_SOURCE_DIR}/scripts/download_classic_scenes.sh")
@@ -327,6 +382,9 @@ if(EVENGINE_DOWNLOAD_SKINNED_CHARACTER)
     COMMENT "PRE_BUILD: download skinned character (CesiumMan)"
     VERBATIM)
 endif()
+endif()  # NOT EVENGINE_ANDROID_TEST_APP
 
+if(NOT EVENGINE_ANDROID_TEST_APP)
 include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 zeroerr_discover_tests(unit_test)
+endif()
