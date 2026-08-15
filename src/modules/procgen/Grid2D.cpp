@@ -14,6 +14,7 @@ void Grid2D::resize(int width, int height) {
     width_  = width > 0 ? width : 0;
     height_ = height > 0 ? height : 0;
     cells_.assign(size_t(width_ * height_), Semantic::Empty);
+    detail_.assign(size_t(width_ * height_), 0);
 }
 
 int Grid2D::getWidth() const { return width_; }
@@ -31,6 +32,16 @@ int Grid2D::getCell(int x, int y) const {
 
 void Grid2D::fill(int semantic) {
     std::fill(cells_.begin(), cells_.end(), uint32_t(semantic < 0 ? 0 : semantic));
+}
+
+void Grid2D::setDetail(int x, int y, int value) {
+    if (!inBounds(x, y)) return;
+    detail_[size_t(y * width_ + x)] = uint8_t(value < 0 ? 0 : (value > 255 ? 255 : value));
+}
+
+int Grid2D::getDetail(int x, int y) const {
+    if (!inBounds(x, y)) return 0;
+    return int(detail_[size_t(y * width_ + x)]);
 }
 
 void Grid2D::setMeta(const std::string &key, const std::string &value) { meta_[key] = value; }

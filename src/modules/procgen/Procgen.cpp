@@ -4,6 +4,7 @@
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/texture/TextureRecipe.h"
 
 #include "graphics/Graphics.h"
@@ -133,6 +134,16 @@ std::string Procgen::getAlgorithmId(int index) const {
 bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
+
+bool Procgen::autotileGrid(Grid2D *grid) {
+    if (!grid) {
+        lastError_ = "autotileGrid: null grid";
+        return false;
+    }
+    return eve::procgen::autotileGridInPlace(*grid);
+}
+
+uint32_t Procgen::randomSeed() { return eve::procgen::randomSeedValue(); }
 
 std::string Procgen::lastError() const { return lastError_; }
 
@@ -298,6 +309,8 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getHeight", &Grid2D::getHeight);
     grid.addFunc("setCell", &Grid2D::setCell);
     grid.addFunc("getCell", &Grid2D::getCell);
+    grid.addFunc("setDetail", &Grid2D::setDetail);
+    grid.addFunc("getDetail", &Grid2D::getDetail);
     grid.addFunc("fill", &Grid2D::fill);
     grid.addFunc("setMeta", &Grid2D::setMeta);
     grid.addFunc("getMeta", &Grid2D::getMeta);
@@ -346,6 +359,8 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("autotileGrid", &Procgen::autotileGrid);
+    cls.addFunc("randomSeed", &Procgen::randomSeed);
     cls.addFunc("lastError", &Procgen::lastError);
     cls.addFunc("gridToJson", &Procgen::gridToJson);
     cls.addFunc("generateImage", &Procgen::generateImage);
