@@ -7,6 +7,7 @@
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/LinearStructure.h"
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/ColorRamp.h"
@@ -1385,4 +1386,115 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
 
     CHECK_GT(drawnCells, 100);
     win->close();
+}
+
+TEST_CASE("procgen.mesh.linearStructure.recipesRegistered") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    for (const char *id : {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall",
+                           "mesh.hedge", "mesh.chevaldefrise"}) {
+        CHECK(MeshRecipeRegistry::instance().has(id));
+    }
+    const auto ids = MeshRecipeRegistry::instance().list();
+    for (const char *id : {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall",
+                           "mesh.hedge", "mesh.chevaldefrise"}) {
+        CHECK(std::find(ids.begin(), ids.end(), id) != ids.end());
+    }
+}
+
+TEST_CASE("procgen.mesh.linearStructure.buildsAllKinds") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    for (const char *id : {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall",
+                           "mesh.hedge", "mesh.chevaldefrise"}) {
+        Params p;
+        p.setSeed(7);
+        p.setInt("segments", 4);
+        p.setFloat("segLength", 1.f);
+        MeshBuild m;
+        std::string err;
+        CHECK(MeshRecipeRegistry::instance().generate(id, p, m, err));
+        CHECK(m.getVertexCount() > 0);
+        CHECK(m.getIndexCount() > 0);
+        CHECK_EQ(m.getIndexCount() % 3, 0);
+        CHECK(meshIndicesInRange(m));
+        CHECK(meshPositionsFinite(m));
+        CHECK(meshNormalsFiniteUnit(m));
+        CHECK_EQ(m.getMeta("algorithm", ""), std::string(id));
+        CHECK_EQ(m.getMeta("segments", ""), std::string("4"));
+    }
+}
+
+TEST_CASE("procgen.mesh.linearStructure.reproducibleAndScalable") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(3);
+    p.setInt("segments", 5);
+    p.setFloat("segLength", 1.2f);
+    MeshBuild a, b, scaled;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p, b, err));
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+
+    Params p2 = p;
+    p2.setFloat("scale", 2.f);
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p2, scaled, err));
+    CHECK_EQ(a.getVertexCount(), scaled.getVertexCount());
+    // Scaling a 2x should scale the X extent of the whole run by 2x.
+    float minAx = 1e30f, maxAx = -1e30f, minSx = 1e30f, maxSx = -1e30f;
+    for (int i = 0; i < a.getVertexCount(); ++i) {
+        minAx = std::min(minAx, a.getPositionX(i));
+        maxAx = std::max(maxAx, a.getPositionX(i));
+        minSx = std::min(minSx, scaled.getPositionX(i));
+        maxSx = std::max(maxSx, scaled.getPositionX(i));
+    }
+    CHECK(std::fabs((maxAx - minAx) * 2.f - (maxSx - minSx)) < 1e-3f);
+}
+
+TEST_CASE("procgen.mesh.linearStructure.segmentsScaleVertexCount") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params lo;
+    lo.setInt("segments", 2);
+    lo.setFloat("segLength", 1.f);
+    Params hi = lo;
+    hi.setInt("segments", 6);
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", lo, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", hi, b, err));
+    // Linear repetition of one unit ⇒ vertex count grows linearly with segments.
+    CHECK_EQ(3 * a.getVertexCount(), b.getVertexCount());
+}
+
+TEST_CASE("procgen.mesh.linearStructure.tileableSeamAlignment") {
+    // One unit ends exactly where the next begins, so a tiled run is contiguous.
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setInt("segments", 1);
+    p.setFloat("segLength", 1.f);
+    MeshBuild single;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.bridge", p, single, err));
+    float maxX = -1e30f;
+    for (int i = 0; i < single.getVertexCount(); ++i) maxX = std::max(maxX, single.getPositionX(i));
+    // Unit occupies [0, segLength]; tiling repeats at +segLength.
+    CHECK(std::fabs(maxX - 1.f) < 1e-3f);
+}
+
+TEST_CASE("procgen.mesh.linearStructure.viaModule") {
+    Procgen *mod = Procgen::create();
+    Params p;
+    p.setSeed(1);
+    p.setInt("segments", 4);
+    p.setFloat("segLength", 1.f);
+    MeshBuild *m = mod->buildMesh("mesh.stonewall", &p);
+    REQUIRE(m != nullptr);
+    CHECK(m->getVertexCount() > 0);
+    CHECK(meshIndicesInRange(*m));
+    CHECK(mod->hasMeshRecipe("mesh.stonewall"));
+    CHECK(mod->hasMeshRecipe("mesh.bridge"));
+    delete m;
+
+    CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
+    CHECK(mod->lastError().find("unknown") != std::string::npos);
 }
