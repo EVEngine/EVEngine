@@ -375,7 +375,7 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     bake.seed = 11;
     bake.minSlopeDot = 0.2f;
 
-    std::unique_ptr<GrassField> field(gfx->newGrassField());
+    GrassField *field = gfx->newGrassField();
     REQUIRE(field != nullptr);
     field->bakePlane(kField, kField, 16, 16, bake);
     field->setTime(0.22f);
@@ -464,11 +464,12 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     CHECK(litGreen > 8);
 
     eve::image::Image::create();
-    std::unique_ptr<eve::image::ImageData> frame(gfx->newImageData());
+    eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
+    std::unique_ptr<eve::image::ImageData> ownedFrame(frame);
     const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
-    savePng(frame.get(), outDir + "/grass_field.png");
-    savePng(frame.get(), "/opt/cursor/artifacts/grass_field.png");
+    savePng(frame, outDir + "/grass_field.png");
+    savePng(frame, "/opt/cursor/artifacts/grass_field.png");
 
     win->close();
 }
