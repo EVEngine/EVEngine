@@ -69,6 +69,7 @@ dialogue <- eve.Dialogue();
 anim <- eve.Animation();
 stylize <- eve.Stylize();
 gpgpu <- eve.Gpgpu();
+daynight <- eve.DayNight();
 physics <- eve.Physics();
 keyboard <- eve.Keyboard();
 mouse <- eve.Mouse();
