@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class b2Fixture;
 
 namespace eve::physics {
@@ -27,6 +29,18 @@ public:
     void  setDensity(float density);
     float getDensity() const;
 
+    void setTag(const std::string &tag) { tag_ = tag; }
+    const std::string &getTag() const { return tag_; }
+
+    void setCategoryBits(int bits);
+    int getCategoryBits() const;
+    void setMaskBits(int bits);
+    int getMaskBits() const;
+    void setGroupIndex(int index);
+    int getGroupIndex() const;
+
+    int getBodyId() const;
+
     Body *getBody() { return body_; }
 
     /** Pixel-space point-in-fixture test (uses World meter). */
@@ -46,6 +60,7 @@ private:
     World     *world_   = nullptr;
     Body      *body_    = nullptr;
     b2Fixture *fixture_ = nullptr;
+    std::string tag_;
 };
 
 }  // namespace eve::physics

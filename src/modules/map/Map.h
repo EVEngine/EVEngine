@@ -56,6 +56,8 @@ public:
     int pollConfigs();
 
     int getLayerCount() const;
+    /** Layer created by the most recent loadFromFile/newLayerFromFile call. */
+    TileLayer *getLayer(int index) const;
 
     int getObjectCount() const;
     std::string getObjectName(int i) const;
@@ -87,6 +89,7 @@ public:
 
 private:
     std::vector<MapObject> objects_;
+    std::vector<TileLayer *> loadedLayers_;
     std::string dualGridError_;
 };
 

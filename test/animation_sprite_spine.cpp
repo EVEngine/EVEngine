@@ -239,6 +239,18 @@ TEST_CASE("animation.spine.skeletonAndAnim") {
     player->collectDrawItems(items);
     CHECK_EQ(static_cast<int>(items.size()), 2);
     CHECK_EQ(items[0].layer, 0);
+
+    std::vector<eve::graphics::DrawItem2D> mirrored;
+    player->setScale(-1.f, 1.f);
+    player->collectDrawItems(mirrored);
+    REQUIRE_EQ(static_cast<int>(mirrored.size()), 2);
+    // Negative X scale reconstructs the reflected quad with a 180-degree
+    // rotation. A V-axis UV compensation keeps attachments upright while
+    // preserving the requested left/right mirror.
+    CHECK(std::fabs(mirrored[0].u0 - items[0].u0) < 1e-6f);
+    CHECK(std::fabs(mirrored[0].u1 - items[0].u1) < 1e-6f);
+    CHECK(std::fabs(mirrored[0].v0 - items[0].v1) < 1e-6f);
+    CHECK(std::fabs(mirrored[0].v1 - items[0].v0) < 1e-6f);
 }
 
 TEST_CASE("animation.spine.modulePump") {
