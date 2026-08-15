@@ -53,9 +53,10 @@ for x in range(80, W):
 rect(terrain, 5, 16, 7, 1, 1)
 rect(terrain, 15, 13, 7, 1, 1)
 rect(terrain, 25, 16, 6, 1, 1)
-rect(terrain, 34, 12, 1, 7, 2)
+# The left shaft wall floats above a three-tile entrance. Players collect wall
+# jump before it, walk underneath, then alternate between the two faces.
+rect(terrain, 34, 12, 1, 4, 2)
 rect(terrain, 38, 10, 2, 9, 2)
-rect(terrain, 35, 15, 3, 1, 1)
 
 # Ruins: vertical rooms for wall jumping, then a dash altar.
 rect(terrain, 42, 16, 7, 1, 3)
@@ -95,7 +96,9 @@ objects = [
     obj("rock_1", "prop_rock", 28, 15),
     obj("scout_1", "enemy_melee", 18, 18),
     obj("scout_2", "enemy_leaper", 29, 15),
-    obj("wall_jump", "ability_walljump", 36, 14),
+    # Full-height trigger before the shaft: running or double-jumping cannot
+    # accidentally skip the ability required by the following room.
+    obj("wall_jump", "ability_walljump", 32, 19, 2, 7),
     obj("cp_ruins", "checkpoint", 42, 18),
     obj("guard_1", "enemy_melee", 48, 18),
     obj("guard_2", "enemy_leaper", 68, 10),
@@ -110,6 +113,31 @@ objects = [
     obj("dragon", "boss", 113, 12, 3, 3),
     obj("boss_exit", "exit", 117, 18, 2, 2),
 ]
+
+
+def validate_level():
+    """Catch ability-order and jump-route regressions before writing the map."""
+    wall_jump = next(item for item in objects if item["type"] == "ability_walljump")
+    trigger_left = wall_jump["x"] // TILE
+    trigger_right = (wall_jump["x"] + wall_jump["width"]) // TILE
+    assert trigger_left < 34 and trigger_right <= 34, "wall jump must be acquired before the shaft"
+    assert wall_jump["y"] - wall_jump["height"] <= 12 * TILE, "wall-jump trigger is too short"
+    assert all(terrain[y * W + 34] == 0 for y in range(16, 19)), "shaft entrance is blocked"
+    assert all(terrain[y * W + x] == 0 for y in range(10, 19) for x in range(35, 38)), (
+        "wall-jump shaft contains an impassable crossbar"
+    )
+
+    gap = longest_gap = 0
+    for x in range(W):
+        if terrain[19 * W + x] == 0:
+            gap += 1
+            longest_gap = max(longest_gap, gap)
+        else:
+            gap = 0
+    assert longest_gap <= 4, "ground gap exceeds the configured running-jump route"
+
+
+validate_level()
 
 tileset = {
     "firstgid": 1,

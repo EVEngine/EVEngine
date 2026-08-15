@@ -10,7 +10,7 @@ Run from the repository root with the platform-specific engine target, for examp
 make run/win32-debug GAME=examples/metroidvania
 ```
 
-Controls: `A/D` or arrows move, `Space` jumps/wall-jumps, `J` attacks, `K` kicks props, and
+Controls: `A/D` or arrows move, `Space` jumps/double-jumps/wall-jumps, `J` attacks, `K` kicks props, and
 either `Shift` key air-dashes after the upgrade. Enable `debug` in `config.nut` to see Box2D
 fixtures.
 

@@ -35,26 +35,36 @@ def replay_input(process_id: int) -> None:
     if not target.value:
         raise RuntimeError("game window did not appear")
 
-    user32.SetForegroundWindow(target.value)
+    def set_key(vk: int, down: bool) -> None:
+        scan = user32.MapVirtualKeyW(vk, 0)
+        flags = 1 | (scan << 16)
+        message = 0x0100  # WM_KEYDOWN
+        if not down:
+            message = 0x0101  # WM_KEYUP
+            flags |= (1 << 30) | (1 << 31)
+        if not user32.PostMessageW(target.value, message, vk, flags):
+            raise RuntimeError(f"failed to post key 0x{vk:02x}")
 
     def key(vk: int, held: float = 0.08) -> None:
-        user32.keybd_event(vk, 0, 0, 0)
+        set_key(vk, True)
         time.sleep(held)
-        user32.keybd_event(vk, 0, 2, 0)
+        set_key(vk, False)
 
-    user32.keybd_event(ord("D"), 0, 0, 0)
+    set_key(ord("D"), True)
     time.sleep(0.8)
     key(0x20, 0.12)  # jump while moving right
-    time.sleep(0.65)
-    user32.keybd_event(ord("D"), 0, 2, 0)
+    time.sleep(0.16)
+    key(0x20, 0.09)  # double jump
+    time.sleep(0.40)
+    set_key(ord("D"), False)
     for _ in range(3):
         key(ord("J"))
         time.sleep(0.2)
     key(ord("K"))
-    user32.keybd_event(ord("A"), 0, 0, 0)
+    set_key(ord("A"), True)
     time.sleep(0.35)
     key(0x20, 0.09)  # reverse-facing jump
-    user32.keybd_event(ord("A"), 0, 2, 0)
+    set_key(ord("A"), False)
 
 
 def main() -> int:

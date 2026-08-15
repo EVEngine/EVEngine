@@ -86,7 +86,8 @@ function spawnPlayer(x, y) {
     body.setFixedRotation(true);
     body.setBullet(true);
     local main = body.newRectangleFixture(30.0, 54.0, 1.0, 0.0, 0.0);
-    setFixtureFilter(main, CAT_PLAYER, CAT_TERRAIN | CAT_ENEMY | CAT_PROP | CAT_HAZARD,
+    setFixtureFilter(main, CAT_PLAYER,
+                     CAT_TERRAIN | CAT_ENEMY | CAT_PROP | CAT_PICKUP | CAT_HAZARD,
                      "player");
     local foot = body.newRectangleFixtureAt(22.0, 7.0, 0.0, 29.0, 0.0, 0.0, 0.0);
     setFixtureFilter(foot, CAT_PLAYER, CAT_TERRAIN | CAT_PROP, "player_foot", true);
@@ -103,7 +104,9 @@ function spawnPlayer(x, y) {
         attackL = attackL, attackR = attackR, hp = TUNE.playerHp, maxHp = TUNE.playerHp,
         facing = 1, grounded = 0, wallLeft = 0, wallRight = 0,
         groundContacts = {}, wallLeftContacts = {}, wallRightContacts = {}, coyote = 0.0,
-        jumpBuffer = 0.0, dashTimer = 0.0, dashReady = true, attackTimer = 0.0,
+        jumpBuffer = 0.0, airJumpsRemaining = TUNE.airJumpCount,
+        wallCoyote = 0.0, wallJumpDir = 0.0, wallJumpFeedback = 0.0,
+        dashTimer = 0.0, dashReady = true, attackTimer = 0.0,
         wallJumpLock = 0.0, attackStartup = 0.0, attackActive = 0.0,
         attackEnabled = false, attackWindowDone = false, attackKind = "none", attackFixture = null,
         queuedAttack = false, queuedKick = false, combo = 0, comboGrace = 0.0, attackHits = {},
@@ -527,9 +530,23 @@ function updatePlayer(dt) {
         game.message = "Returned to checkpoint"; game.messageTimer = 2.0;
         return;
     }
-    if (p.grounded > 0) { p.coyote = TUNE.coyoteTime; p.dashReady = true; }
+    if (p.grounded > 0) {
+        p.coyote = TUNE.coyoteTime;
+        p.dashReady = true;
+        p.airJumpsRemaining = TUNE.airJumpCount;
+    }
     else p.coyote -= dt;
     if (p.wallJumpLock > 0.0) p.wallJumpLock -= dt;
+    if (p.wallJumpFeedback > 0.0) p.wallJumpFeedback -= dt;
+    if (p.grounded > 0) {
+        p.wallCoyote = 0.0;
+    } else if (p.wallLeft > 0) {
+        p.wallCoyote = TUNE.wallContactGrace; p.wallJumpDir = 1.0;
+    } else if (p.wallRight > 0) {
+        p.wallCoyote = TUNE.wallContactGrace; p.wallJumpDir = -1.0;
+    } else {
+        p.wallCoyote -= dt;
+    }
     if (keyPressed("Space")) p.jumpBuffer = TUNE.jumpBuffer;
     else p.jumpBuffer -= dt;
     local move = 0.0;
@@ -541,18 +558,33 @@ function updatePlayer(dt) {
         p.facing = move > 0.0 ? 1 : -1;
 
     if (p.jumpBuffer > 0.0) {
-        if (p.coyote > 0.0) {
-            p.body.setLinearVelocity(p.body.getLinearVelocityX(), -TUNE.jumpSpeed);
-            p.groundContacts.clear(); p.grounded = 0;
-            p.jumpBuffer = 0.0; p.coyote = 0.0;
-        } else if (game.hasWallJump && (p.wallLeft > 0 || p.wallRight > 0)) {
-            local dir = p.wallLeft > 0 ? 1.0 : -1.0;
+        // Wall jump takes priority over the air jump so touching a wall always
+        // produces the expected horizontal kick instead of consuming double jump.
+        if (p.grounded == 0 && game.hasWallJump && p.wallCoyote > 0.0) {
+            local dir = p.wallJumpDir;
             p.body.setLinearVelocity(TUNE.wallJumpX * dir, -TUNE.wallJumpY);
             p.facing = dir > 0.0 ? 1 : -1;
             p.wallJumpLock = TUNE.wallJumpLockTime;
+            p.wallJumpFeedback = TUNE.wallJumpFeedbackTime;
+            p.wallCoyote = 0.0;
+            p.airJumpsRemaining = TUNE.airJumpCount;
             p.wallLeftContacts.clear(); p.wallRightContacts.clear();
             p.wallLeft = 0; p.wallRight = 0;
             p.jumpBuffer = 0.0; p.coyote = 0.0;
+            playSpine(p.spine, "Jump", false, true, 1.15);
+        } else if (p.coyote > 0.0) {
+            p.body.setLinearVelocity(p.body.getLinearVelocityX(), -TUNE.jumpSpeed);
+            p.groundContacts.clear(); p.grounded = 0;
+            p.jumpBuffer = 0.0; p.coyote = 0.0;
+        } else if (p.airJumpsRemaining > 0) {
+            p.body.setLinearVelocity(p.body.getLinearVelocityX(), -TUNE.airJumpSpeed);
+            p.airJumpsRemaining -= 1;
+            p.jumpBuffer = 0.0; p.coyote = 0.0;
+            playSpine(p.spine, "Jump", false, true, 1.2);
+            for (local puff = 0; puff < 5; puff += 1)
+                game.effects.push({ x = p.body.getX() + (puff - 2) * 5.0,
+                                    y = p.body.getY() + 24.0, vx = (puff - 2) * 24.0,
+                                    vy = 45.0, life = 0.16, heavy = false });
         }
     }
     if (game.hasDash && p.dashReady && keyPressed("Left Shift", "Right Shift")) {
@@ -786,8 +818,8 @@ function refreshHud() {
     ui.select("hud");
     ui.setValue("hp", clampf(game.player.hp / game.player.maxHp, 0.0, 1.0));
     ui.setText("hptext", "HP " + game.player.hp.tointeger() + "/" + game.player.maxHp.tointeger());
-    ui.setText("ability", "Abilities: Wall Jump " + (game.hasWallJump ? "ON" : "--") +
-        "   Air Dash " + (game.hasDash ? "ON" : "--"));
+    ui.setText("ability", "Abilities: Double Jump ON   Wall Jump " +
+        (game.hasWallJump ? "ON" : "--") + "   Air Dash " + (game.hasDash ? "ON" : "--"));
     ui.setText("message", game.won ? "RUINS CLEARED - press R to restart" : game.message);
     if (game.boss != null && game.boss.hp > 0.0 && game.player.body.getX() > 104.0 * 32.0) {
         ui.setValue("boss", game.boss.hp / game.boss.maxHp);
@@ -894,6 +926,12 @@ eve_render = function() {
         } else if (e.kind == "moving_platform") {
             gfx.drawSolidRect(screenX(e.body.getX()) - 48.0, screenY(e.body.getY()) - 12.0,
                               96.0, 24.0, 0.36, 0.42, 0.48, 1.0);
+        } else if (e.kind == "ability_walljump" || e.kind == "ability_dash") {
+            local pulse = 13.0 + sin(game.time * 5.0) * 3.0;
+            local r = e.kind == "ability_walljump" ? 0.25 : 0.85;
+            local g = e.kind == "ability_walljump" ? 0.78 : 0.45;
+            gfx.drawSolidRect(screenX(e.body.getX()) - pulse, screenY(e.body.getY()) - pulse,
+                              pulse * 2.0, pulse * 2.0, r, g, 1.0, 0.85);
         } else if ("spine" in e && e.spine != null && (!("state" in e) || e.state != "dead")) {
             local sx = screenX(e.body.getX());
             local sy = screenY(e.body.getY());
@@ -902,7 +940,9 @@ eve_render = function() {
                 (e.kind == "boss" ? TUNE.bossVisualScale : TUNE.enemyVisualScale);
             e.spine.player.setScale(baseScale * facing, baseScale);
             e.spine.player.setPosition(sx, sy + (e.kind == "boss" ? 20.0 : TUNE.actorVisualYOffset));
-            if ((e.kind == "player" && e.invulnerable > 0.0) ||
+            if (e.kind == "player" && e.wallJumpFeedback > 0.0)
+                e.spine.player.setColor(0.45, 0.82, 1.0, 1.0);
+            else if ((e.kind == "player" && e.invulnerable > 0.0) ||
                 ("impactCooldown" in e && e.impactCooldown > 0.0))
                 e.spine.player.setColor(1.0, 0.55, 0.48, 1.0);
             else e.spine.player.setColor(1.0, 1.0, 1.0, 1.0);
