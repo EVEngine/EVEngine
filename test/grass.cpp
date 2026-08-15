@@ -197,7 +197,7 @@ TEST_CASE("graphics.Grass.swayDesyncByInstanceId") {
     CHECK(c < 4);
     CHECK((a != b || b != c));
 
-    const int later = eve::graphics::grass::swayFrame(0.48f, 0.12f, 0, 4);
+    const int later = eve::graphics::grass::swayFrame(0.36f, 0.12f, 0, 4);
     CHECK(later != a);
 }
 
@@ -325,7 +325,7 @@ void savePng(eve::image::ImageData *frame, const std::string &path) {
         REQUIRE(out.good());
     }
     delete png;
-    std::printf("grass render saved: %s\n", path.c_str());
+    std::printf("\ngrass render saved: %s\n", path.c_str());
 }
 
 }  // namespace
