@@ -1,12 +1,26 @@
 #include "filesystem/FileWatch.h"
+#include "common/config.h"
+
+#ifndef EVENGINE_WEBGPU
 
 #include <Poco/Delegate.h>
+#include <Poco/DirectoryWatcher.h>
 #include <Poco/File.h>
 #include <Poco/Path.h>
 
 #include <cstdlib>
 
+#endif
+
 namespace eve::filesystem {
+
+#ifdef EVENGINE_WEBGPU
+// WebGPU (browser) build has no native directory watching; DirWatch stays an
+// empty struct so the unique_ptr members in the header compile.
+struct FileWatch::DirWatch {};
+#endif
+
+#ifndef EVENGINE_WEBGPU
 namespace {
 
 std::string basenameOf(const std::string &path) {
@@ -41,6 +55,7 @@ struct FileWatch::DirWatch {
     std::unordered_map<std::string, std::string> filters;  // filter → reportPath
     int refs = 0;
 };
+#endif  // !EVENGINE_WEBGPU
 
 FileWatch::FileWatch() = default;
 
@@ -48,6 +63,14 @@ FileWatch::~FileWatch() { clear(); }
 
 bool FileWatch::add(const std::string &realDir, const std::string &filterName,
                     const std::string &reportPath, int scanInterval) {
+#ifdef EVENGINE_WEBGPU
+    // Browser VFS has no native directory watching; no-op stub.
+    (void)realDir;
+    (void)filterName;
+    (void)reportPath;
+    (void)scanInterval;
+    return false;
+#else
     if (realDir.empty() || reportPath.empty()) return false;
     const std::string dir = normalizeDir(realDir);
     try {
@@ -112,9 +135,14 @@ bool FileWatch::add(const std::string &realDir, const std::string &filterName,
     ++dw->refs;
     reportToDir_[reportPath] = dir;
     return true;
+#endif
 }
 
 bool FileWatch::remove(const std::string &reportPath) {
+#ifdef EVENGINE_WEBGPU
+    (void)reportPath;
+    return false;
+#else
     std::lock_guard<std::mutex> lock(mu_);
     auto prev = reportToDir_.find(reportPath);
     if (prev == reportToDir_.end()) return false;
@@ -143,10 +171,15 @@ bool FileWatch::remove(const std::string &reportPath) {
         byDir_.erase(it);
     }
     return true;
+#endif
 }
 
 void FileWatch::clear() {
     std::lock_guard<std::mutex> lock(mu_);
+#ifdef EVENGINE_WEBGPU
+    queue_.clear();
+    return;
+#else
     for (auto &kv : byDir_) {
         DirWatch *dw = kv.second.get();
         if (dw && dw->watcher) {
@@ -160,11 +193,16 @@ void FileWatch::clear() {
     byDir_.clear();
     reportToDir_.clear();
     queue_.clear();
+#endif
 }
 
 int FileWatch::count() const {
     std::lock_guard<std::mutex> lock(mu_);
+#ifdef EVENGINE_WEBGPU
+    return 0;
+#else
     return int(reportToDir_.size());
+#endif
 }
 
 bool FileWatch::poll(Event &out) {
@@ -175,6 +213,7 @@ bool FileWatch::poll(Event &out) {
     return true;
 }
 
+#ifndef EVENGINE_WEBGPU
 void FileWatch::handlePocoEvent(const std::string &kind, const std::string &itemPath) {
     const std::string name = basenameOf(itemPath);
     Poco::Path parent(itemPath);
@@ -233,5 +272,6 @@ void FileWatch::onMovedFrom(const void *, const Poco::DirectoryWatcher::Director
 void FileWatch::onMovedTo(const void *, const Poco::DirectoryWatcher::DirectoryEvent &event) {
     handlePocoEvent("movedTo", event.item.path());
 }
+#endif  // !EVENGINE_WEBGPU
 
 }  // namespace eve::filesystem

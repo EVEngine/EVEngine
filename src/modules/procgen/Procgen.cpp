@@ -4,6 +4,7 @@
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/texture/TextureRecipe.h"
 
 #include "graphics/Graphics.h"
@@ -134,6 +135,16 @@ bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
 
+bool Procgen::autotileGrid(Grid2D *grid) {
+    if (!grid) {
+        lastError_ = "autotileGrid: null grid";
+        return false;
+    }
+    return eve::procgen::autotileGridInPlace(*grid);
+}
+
+uint32_t Procgen::randomSeed() { return eve::procgen::randomSeedValue(); }
+
 std::string Procgen::lastError() const { return lastError_; }
 
 std::string Procgen::gridToJson(Grid2D *grid) const {
@@ -260,6 +271,40 @@ bool Procgen::hasMeshRecipe(const std::string &recipeId) const {
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
+TerrainSampler *Procgen::newTerrainSampler() { return new TerrainSampler(); }
+
+Heightmap *Procgen::newHeightmap(int width, int height) {
+    return new Heightmap(width, height);
+}
+
+Heightmap *Procgen::generateHeightmap(Params *params) {
+    lastError_.clear();
+    if (!params) {
+        lastError_ = "generateHeightmap: null params";
+        return nullptr;
+    }
+    const TerrainSampler sampler = TerrainSampler::fromParams(*params);
+    return new Heightmap(Heightmap::generate(sampler, params->getWidth(), params->getHeight()));
+}
+
+bool Procgen::heightmapToGrid(Heightmap *heightmap, Params *params, Grid2D *out) {
+    lastError_.clear();
+    if (!heightmap) {
+        lastError_ = "heightmapToGrid: null heightmap";
+        return false;
+    }
+    if (!out) {
+        lastError_ = "heightmapToGrid: null grid";
+        return false;
+    }
+    const TerrainBands bands = params ? TerrainBands::fromParams(*params) : TerrainBands();
+    if (!heightmap->toGrid(*out, bands)) {
+        lastError_ = "heightmapToGrid: heightmap is empty";
+        return false;
+    }
+    return true;
+}
+
 void Procgen::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Procgen::create, false);
     expose(cls);
@@ -298,6 +343,8 @@ void Procgen::expose(ssq::Table &table) {
     grid.addFunc("getHeight", &Grid2D::getHeight);
     grid.addFunc("setCell", &Grid2D::setCell);
     grid.addFunc("getCell", &Grid2D::getCell);
+    grid.addFunc("setDetail", &Grid2D::setDetail);
+    grid.addFunc("getDetail", &Grid2D::getDetail);
     grid.addFunc("fill", &Grid2D::fill);
     grid.addFunc("setMeta", &Grid2D::setMeta);
     grid.addFunc("getMeta", &Grid2D::getMeta);
@@ -331,6 +378,60 @@ void Procgen::expose(ssq::Table &table) {
     mesh.addFunc("getIndex", &MeshBuild::getIndex);
     mesh.addFunc("setMeta", &MeshBuild::setMeta);
     mesh.addFunc("getMeta", &MeshBuild::getMeta);
+
+    auto sampler = table.addClass<TerrainSampler>(
+        "ProcgenTerrainSampler",
+        std::function<TerrainSampler *()>([]() -> TerrainSampler * { return nullptr; }), true);
+    sampler.addFunc("sample", &TerrainSampler::sample);
+    sampler.addFunc("sampleTile", &TerrainSampler::sampleTile);
+    sampler.addFunc("setSeed", &TerrainSampler::setSeed);
+    sampler.addFunc("getSeed", &TerrainSampler::getSeed);
+    sampler.addFunc("setScale", &TerrainSampler::setScale);
+    sampler.addFunc("getScale", &TerrainSampler::getScale);
+    sampler.addFunc("setFrequency", &TerrainSampler::setFrequency);
+    sampler.addFunc("getFrequency", &TerrainSampler::getFrequency);
+    sampler.addFunc("setWavelength", &TerrainSampler::setWavelength);
+    sampler.addFunc("getWavelength", &TerrainSampler::getWavelength);
+    sampler.addFunc("setOctaves", &TerrainSampler::setOctaves);
+    sampler.addFunc("getOctaves", &TerrainSampler::getOctaves);
+    sampler.addFunc("setLacunarity", &TerrainSampler::setLacunarity);
+    sampler.addFunc("getLacunarity", &TerrainSampler::getLacunarity);
+    sampler.addFunc("setGain", &TerrainSampler::setGain);
+    sampler.addFunc("getGain", &TerrainSampler::getGain);
+    sampler.addFunc("setRidge", &TerrainSampler::setRidge);
+    sampler.addFunc("getRidge", &TerrainSampler::getRidge);
+    sampler.addFunc("setWarp", &TerrainSampler::setWarp);
+    sampler.addFunc("getWarp", &TerrainSampler::getWarp);
+    sampler.addFunc("setExponent", &TerrainSampler::setExponent);
+    sampler.addFunc("getExponent", &TerrainSampler::getExponent);
+    sampler.addFunc("setContinent", &TerrainSampler::setContinent);
+    sampler.addFunc("getContinent", &TerrainSampler::getContinent);
+    sampler.addFunc("setIsland", &TerrainSampler::setIsland);
+    sampler.addFunc("getIsland", &TerrainSampler::getIsland);
+    sampler.addFunc("setCoastSoftness", &TerrainSampler::setCoastSoftness);
+    sampler.addFunc("getCoastSoftness", &TerrainSampler::getCoastSoftness);
+    sampler.addFunc("setWorldSize", &TerrainSampler::setWorldSize);
+    sampler.addFunc("getWorldWidth", &TerrainSampler::getWorldWidth);
+    sampler.addFunc("getWorldHeight", &TerrainSampler::getWorldHeight);
+    sampler.addFunc("setBase", &TerrainSampler::setBase);
+    sampler.addFunc("getBase", &TerrainSampler::getBase);
+    sampler.addFunc("setAmplitude", &TerrainSampler::setAmplitude);
+    sampler.addFunc("getAmplitude", &TerrainSampler::getAmplitude);
+    sampler.addFunc("setClamp", &TerrainSampler::setClamp);
+    sampler.addFunc("isClamped", &TerrainSampler::isClamped);
+    sampler.addFunc("getClampMin", &TerrainSampler::getClampMin);
+    sampler.addFunc("getClampMax", &TerrainSampler::getClampMax);
+
+    auto heightmap = table.addClass<Heightmap>(
+        "ProcgenHeightmap", std::function<Heightmap *()>([]() -> Heightmap * { return nullptr; }),
+        true);
+    heightmap.addFunc("resize", &Heightmap::resize);
+    heightmap.addFunc("getWidth", &Heightmap::getWidth);
+    heightmap.addFunc("getHeight", &Heightmap::getHeight);
+    heightmap.addFunc("setHeight", &Heightmap::setHeight);
+    heightmap.addFunc("height", &Heightmap::height);
+    heightmap.addFunc("sampleBilinear", &Heightmap::sampleBilinear);
+    heightmap.addFunc("sampleBilinearSeamless", &Heightmap::sampleBilinearSeamless);
 }
 
 void Procgen::expose(ssq::Class &cls) {
@@ -346,6 +447,8 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getAlgorithmCount", &Procgen::getAlgorithmCount);
     cls.addFunc("getAlgorithmId", &Procgen::getAlgorithmId);
     cls.addFunc("hasAlgorithm", &Procgen::hasAlgorithm);
+    cls.addFunc("autotileGrid", &Procgen::autotileGrid);
+    cls.addFunc("randomSeed", &Procgen::randomSeed);
     cls.addFunc("lastError", &Procgen::lastError);
     cls.addFunc("gridToJson", &Procgen::gridToJson);
     cls.addFunc("generateImage", &Procgen::generateImage);
@@ -359,6 +462,10 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
     cls.addFunc("getMeshRecipeId", &Procgen::getMeshRecipeId);
     cls.addFunc("hasMeshRecipe", &Procgen::hasMeshRecipe);
+    cls.addFunc("newTerrainSampler", &Procgen::newTerrainSampler);
+    cls.addFunc("newHeightmap", &Procgen::newHeightmap);
+    cls.addFunc("generateHeightmap", &Procgen::generateHeightmap);
+    cls.addFunc("heightmapToGrid", &Procgen::heightmapToGrid);
 }
 
 }  // namespace eve::procgen

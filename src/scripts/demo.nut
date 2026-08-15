@@ -439,8 +439,13 @@ eve_update = function(dt) {
 
 eve_render = function() {
     gfx.clear();
-    if (planet != null)
+    if (planet != null) {
         gfx.render3D();
+        // Script owns 2D/3D order: blit the planet, then draw sprites on top.
+        // To put 3D in a window instead: gfx.drawScene3D(x, y, w, h)
+        // or render into a Canvas and gfx.drawCanvas(rt, x, y, w, h).
+        gfx.drawScene3D(0.0, 0.0, config.width.tofloat(), config.height.tofloat());
+    }
 
     foreach (st in stars) {
         local t = st.life;

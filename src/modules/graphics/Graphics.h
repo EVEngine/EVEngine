@@ -16,6 +16,7 @@
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Grass.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
 #include "graphics/RenderControl.h"
@@ -132,6 +133,10 @@ public:
     /** Load file via Filesystem + Image decode, then upload (RGBA8). Throws on failure.
      *  Same path returns the same Texture* and reloads pixels in place on repeat calls. */
     virtual Texture *newTextureFromFile(const std::string &filename) = 0;
+    /** Load a texture from disk with wrap/repeat sampling (for tiling structures).
+     *  Non-virtual helper (same pattern as newTextureFromImageData); reads + decodes
+     *  via Filesystem/Image then uploads with the requested repeat modes. */
+    Texture *newTextureFromFileRepeated(const std::string &filename, bool repeatU, bool repeatV);
 
     /** Reload a path-cached texture from disk in place (pointer stable). False if unbound. */
     virtual bool reloadTextureFromFile(const std::string &filename) = 0;
@@ -243,6 +248,33 @@ public:
     void render3D();
     void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
                              float b = 1.f);
+
+    /**
+     * Composite this frame's 3D scene color into a rect (screen or active Canvas).
+     * Call after render3D(); order vs drawSolidRect / drawTexturedRect is preserved.
+     * If never called, present() still blits the 3D scene fullscreen under 2D.
+     * RGB is blitted opaque (scene A is linear depth, not transparency).
+     */
+    void drawScene3DRGBA(float x, float y, float w, float h, float r = 1.f, float g = 1.f,
+                         float b = 1.f, float a = 1.f);
+    /** Script-friendly 4-arg form (simplesquirrel does not apply C++ defaults). */
+    void drawScene3D(float x, float y, float w, float h) {
+        drawScene3DRGBA(x, y, w, h, 1.f, 1.f, 1.f, 1.f);
+    }
+
+    /** Draw a Canvas color buffer as a textured rect (same batch order as other 2D). */
+    void drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r = 1.f,
+                        float g = 1.f, float b = 1.f, float a = 1.f);
+    void drawCanvas(Canvas *canvas, float x, float y, float w, float h) {
+        drawCanvasRGBA(canvas, x, y, w, h, 1.f, 1.f, 1.f, 1.f);
+    }
+
+    /**
+     * Backend hooks so the platform-independent render3D() can wrap its work in
+     * a GPU validation error scope (used on WebGPU to catch early device errors).
+     */
+    virtual void pushValidationScope() {}
+    virtual void popValidationScope() {}
 
     /**
      * Create a Material asset (shading model + textures + PBR knobs).
@@ -530,6 +562,18 @@ public:
     /** Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
 
+    /**
+     * t3ssel8r-style grass billboard shader (alpha test + shadow two-tone).
+     * Owned by Graphics. See grass:: / GrassField.
+     */
+    Shader *newGrassShader();
+
+    /**
+     * Dense + sparse stylized grass field. Caller owns GrassField*;
+     * its Mesh / Shader / Texture are owned by Graphics.
+     */
+    GrassField *newGrassField();
+
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
 
@@ -696,6 +740,8 @@ protected:
     int pixelHeight = 0;
     Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
     bool frameHad3D = false;
+    /** True while RenderSystem3D is submitting (AO / engine overlays). */
+    bool recordingEngine3D_ = false;
     bool screenReadbackEnabled = false;
     bool vsyncEnabled = true;
     bool graphicsActive = true;
@@ -709,6 +755,9 @@ protected:
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
     std::unique_ptr<AntiAliasing> pipelineAA_;
+
+    /** FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */
+    Shader *prepareSceneColorResolveShader(Texture *scene);
 };
 
 }  // namespace eve::graphics
