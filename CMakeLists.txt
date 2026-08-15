@@ -7,6 +7,8 @@ set(EVENGINE_PATCH_VERSION "0")
 
 option(BUILD_TESTING "enable testing" ON)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
+set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
+    "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
@@ -519,6 +521,29 @@ endfunction()
 function(check_third_party_project name repo)
     include(ExternalProject)
 
+    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+        get_filename_component(_eve_tp_binary "${EVENGINE_THIRD_PARTY_BINARY_DIR}" ABSOLUTE)
+        if(NOT IS_DIRECTORY "${_eve_tp_binary}/include" OR
+           NOT IS_DIRECTORY "${_eve_tp_binary}/lib")
+            message(FATAL_ERROR
+                "EVENGINE_THIRD_PARTY_BINARY_DIR must contain include/ and lib/: "
+                "${_eve_tp_binary}")
+        endif()
+        add_custom_target(${name})
+        include_directories("${_eve_tp_binary}/include")
+        # SDL2 and FreeType install their public headers one level below include/.
+        # Their sources use <SDL.h> and <ft2build.h>, so expose those roots too.
+        if(IS_DIRECTORY "${_eve_tp_binary}/include/SDL2")
+            include_directories("${_eve_tp_binary}/include/SDL2")
+        endif()
+        if(IS_DIRECTORY "${_eve_tp_binary}/include/freetype2")
+            include_directories("${_eve_tp_binary}/include/freetype2")
+        endif()
+        link_directories("${_eve_tp_binary}/lib")
+        message(STATUS "third-party: using read-only prebuilt tree ${_eve_tp_binary}")
+        return()
+    endif()
+
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${name}/CMakeLists.txt)
         # This is a git clone version
         message("load ${name} folder from git")
@@ -638,17 +663,37 @@ function(load_third_party)
     set(TP_BUILD_PATH ${BUILD_PLATFORM}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
+    if(EVENGINE_PREBUILT_THIRD_PARTY)
+        cmake_path(ABSOLUTE_PATH EVENGINE_PREBUILT_THIRD_PARTY NORMALIZE
+                   OUTPUT_VARIABLE _eve_prebuilt_tp)
+        if(NOT IS_DIRECTORY "${_eve_prebuilt_tp}/include" OR
+           NOT IS_DIRECTORY "${_eve_prebuilt_tp}/lib")
+            message(FATAL_ERROR
+                "EVENGINE_PREBUILT_THIRD_PARTY must contain include/ and lib/: ${_eve_prebuilt_tp}")
+        endif()
+        message(STATUS "third-party: using read-only prebuilt install ${_eve_prebuilt_tp}")
+        include_directories("${_eve_prebuilt_tp}/include")
+        link_directories("${_eve_prebuilt_tp}/lib")
+        # Preserve the dependency target expected by create_module(), but give it no
+        # configure/build/install commands so the prebuilt tree can remain read-only.
+        add_custom_target(third-party)
+        add_custom_target(deps DEPENDS third-party)
+        return()
+    endif()
+
     ensure_third_party_checkout()
     # EVEngine's database module uses POCO Data and its bundled SQLite connector.
     # The third-party aggregate disables these by default to reduce its footprint;
     # enable the two targets in the checked-out aggregate before configuring it.
-    set(_eve_tp_cmake "${CMAKE_CURRENT_SOURCE_DIR}/third-party/CMakeLists.txt")
-    file(READ "${_eve_tp_cmake}" _eve_tp_contents)
-    string(REPLACE "set(ENABLE_DATA OFF CACHE BOOL \"\" FORCE)"
-                   "set(ENABLE_DATA ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
-    string(REPLACE "set(ENABLE_DATA_SQLITE OFF CACHE BOOL \"\" FORCE)"
-                   "set(ENABLE_DATA_SQLITE ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
-    file(WRITE "${_eve_tp_cmake}" "${_eve_tp_contents}")
+    if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
+        set(_eve_tp_cmake "${CMAKE_CURRENT_SOURCE_DIR}/third-party/CMakeLists.txt")
+        file(READ "${_eve_tp_cmake}" _eve_tp_contents)
+        string(REPLACE "set(ENABLE_DATA OFF CACHE BOOL \"\" FORCE)"
+                       "set(ENABLE_DATA ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
+        string(REPLACE "set(ENABLE_DATA_SQLITE OFF CACHE BOOL \"\" FORCE)"
+                       "set(ENABLE_DATA_SQLITE ON CACHE BOOL \"\" FORCE)" _eve_tp_contents "${_eve_tp_contents}")
+        file(WRITE "${_eve_tp_cmake}" "${_eve_tp_contents}")
+    endif()
     check_third_party_project(third-party "https://github.com/EVEngine/third-party")
 
     ADD_CUSTOM_TARGET(deps DEPENDS third-party)

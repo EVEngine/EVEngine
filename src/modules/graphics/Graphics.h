@@ -16,6 +16,7 @@
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Grass.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
 #include "graphics/RenderControl.h"
@@ -536,6 +537,18 @@ public:
                                          const std::vector<uint32_t> &fragSpv) = 0;
     /** Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
+
+    /**
+     * t3ssel8r-style grass billboard shader (alpha test + shadow two-tone).
+     * Owned by Graphics. See grass:: / GrassField.
+     */
+    Shader *newGrassShader();
+
+    /**
+     * Dense + sparse stylized grass field. Caller owns GrassField*;
+     * its Mesh / Shader / Texture are owned by Graphics.
+     */
+    GrassField *newGrassField();
 
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;

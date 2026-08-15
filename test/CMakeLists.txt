@@ -67,6 +67,7 @@ file(GLOB all_test_cpp
   softbody.cpp
   hotreload.cpp
   shader.cpp
+  grass.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
