@@ -40,8 +40,10 @@ struct Mesh3DUBO {
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f};     // x=scale, y=minLayers, z=maxLayers
     glm::mat4 view{1.f};
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f};   // x=near, y=far
+    glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};        // x=strength(0=off), y=worldCell, z=time
+    glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};  // xy=wind vel, z=coverage, w=detail
 };
-static_assert(sizeof(Mesh3DUBO) == 576, "Mesh3DUBO layout must match the WGSL Frame block");
+static_assert(sizeof(Mesh3DUBO) == 608, "Mesh3DUBO layout must match the WGSL Frame block");
 
 /**
  * Texture resources backed by a wgpu texture + view + sampler + bind groups.
@@ -176,6 +178,8 @@ public:
     void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
     void setMesh3DLighting(const Lighting3DPack &pack) override;
+    void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                         float windAngle, float coverage, float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
@@ -446,6 +450,8 @@ private:
     float mesh3dRoughness = 0.45f;
     float mesh3dTexBombScale = 4.f, mesh3dTexBombStrength = 0.f, mesh3dTexBombRot = 1.f;
     float mesh3dParallaxScale = 0.f, mesh3dParallaxMin = 8.f, mesh3dParallaxMax = 32.f;
+    glm::vec4 mesh3dCloud{0.f, 1.5f, 0.f, 0.f};
+    glm::vec4 mesh3dCloudWind{4.f, 0.f, 0.55f, 0.5f};
     Lighting3DPack mesh3dLighting{};
     ShadowUpload mesh3dShadows{};
     bool mesh3dShadowReceive = true;

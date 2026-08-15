@@ -1963,6 +1963,12 @@ void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) 
     mesh3dParallaxMax = maxLayers;
 }
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) { mesh3dLighting = pack; }
+void Graphics::setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                               float windAngle, float coverage, float detail) {
+    mesh3dCloud = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f), time, 0.f);
+    mesh3dCloudWind = glm::vec4(std::cos(windAngle) * windSpeed, std::sin(windAngle) * windSpeed,
+                                std::clamp(coverage, 0.f, 1.f), std::clamp(detail, 0.f, 1.f));
+}
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
     mesh3dClustered = upload;
     mesh3dClusteredActive = upload.active;
@@ -2292,6 +2298,8 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         ubo.parallax = glm::vec4(mesh3dParallaxScale, mesh3dParallaxMin, mesh3dParallaxMax, 0.f);
         ubo.view = mesh3dView;
         ubo.clipInfo = glm::vec4(mesh3dNear, mesh3dFar, 0.f, 0.f);
+        ubo.cloud = mesh3dCloud;
+        ubo.cloudWind = mesh3dCloudWind;
         ubo.lightColor.w = mesh3dEnvIntensity;
         queue.WriteBuffer(uboArena.buffer, d.frameUboOffset, &ubo, sizeof(ubo));
     }

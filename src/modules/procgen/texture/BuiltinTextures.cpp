@@ -1,6 +1,8 @@
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/ColorRamp.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 
 #include <algorithm>
 #include <cmath>
@@ -132,6 +134,75 @@ image::ImageData *genSkyCloud(const Params &params, std::string &error) {
     });
 }
 
+/** Build a CloudField::Params from texture params (world-scale / wind / coverage…). */
+CloudField::Params cloudFieldFromParams(const Params &params) {
+    CloudField::Params p;
+    p.seed       = params.getSeed();
+    p.worldScale = params.getFloat("worldScale", 96.f);
+    p.coverage   = params.getFloat("cloudCoverage", 0.55f);
+    p.softness   = params.getFloat("cloudSoftness", 0.12f);
+    p.detail     = params.getFloat("cloudDetail", 0.5f);
+    p.windSpeed  = params.getFloat("windSpeed", 4.f);
+    p.windAngle  = params.getFloat("windAngle", 0.f);
+    p.octaves    = params.getInt("octaves", 4);
+    return p;
+}
+
+/** tex.cloud: standalone billowy cloud cover (white puffs on translucent sky). */
+image::ImageData *genCloud(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    ColorRamp ramp;
+    ramp.add(0.00f, 90, 140, 205);
+    ramp.add(0.30f, 168, 205, 238);
+    ramp.add(0.55f, 238, 248, 252);
+    ramp.add(1.00f, 255, 255, 255);
+
+    CloudField field(cloudFieldFromParams(params));
+    const float time   = params.getFloat("time", 0.f);
+    const float extent = params.getFloat("extent", field.params().worldScale);
+    std::vector<float> height(size_t(ctx.width * ctx.height));
+    field.sample(height.data(), ctx.width, ctx.height, time, 0.f, 0.f, extent);
+    paintHeightToImage(*img, height, ctx.width, ctx.height, ramp, ctx.colors, ctx.pixelSize);
+    return img;
+}
+
+/** tex.cloud_shadow: projected cloud coverage cast on the ground (white = dense shadow). */
+image::ImageData *genCloudShadow(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto *img = new image::ImageData(ctx.width, ctx.height, "RGBA8");
+    ColorRamp ramp;
+    ramp.add(0.00f, 18, 20, 26);   // clear (lit)
+    ramp.add(0.30f, 60, 62, 70);
+    ramp.add(0.60f, 120, 122, 130);
+    ramp.add(1.00f, 200, 202, 208);  // dense cloud (strong shadow)
+
+    CloudField::Params fp = cloudFieldFromParams(params);
+    CloudShadow::Params sp;
+    sp.field          = CloudField(fp);
+    sp.sunDirX        = params.getFloat("sunDirX", 0.f);
+    sp.sunDirY        = params.getFloat("sunDirY", 1.f);
+    sp.sunDirZ        = params.getFloat("sunDirZ", 0.f);
+    sp.cloudAltitude  = params.getFloat("cloudAltitude", 60.f);
+    sp.strength       = params.getFloat("cloudShadowStrength", 0.8f);
+    CloudShadow shadow(sp);
+
+    const float time   = params.getFloat("time", 0.f);
+    const float extent = params.getFloat("extent", fp.worldScale);
+    std::vector<float> height(size_t(ctx.width * ctx.height));
+    shadow.sampleCoverage(height.data(), ctx.width, ctx.height, time, 0.f, 0.f, extent);
+    paintHeightToImage(*img, height, ctx.width, ctx.height, ramp, ctx.colors, ctx.pixelSize);
+    return img;
+}
+
 }  // namespace
 
 void TextureRecipeRegistry::registerBuiltins() {
@@ -141,6 +212,8 @@ void TextureRecipeRegistry::registerBuiltins() {
     registerRecipe("tex.marble", genMarble);
     registerRecipe("tex.water", genWater);
     registerRecipe("tex.sky_cloud", genSkyCloud);
+    registerRecipe("tex.cloud", genCloud);
+    registerRecipe("tex.cloud_shadow", genCloudShadow);
     builtinsRegistered_ = true;
 }
 

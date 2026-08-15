@@ -95,6 +95,10 @@ struct Mesh3DUBO {
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f}; // x=scale (0=off), y=minLayers, z=maxLayers
     glm::mat4 view{1.f};                     // camera view (CSM / view-space depth)
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f}; // x=near, y=far (linear depth in scene color A)
+    // Dynamic cloud shadows on ground. cloud.x=strength (0=off), y=world cell size,
+    // z=time, w=unused; cloudWind.xy=wind velocity (world/s), z=coverage, w=detail.
+    glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};
+    glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};
 };
 
 struct Mesh3DClusteredUBO {
@@ -237,6 +241,8 @@ public:
     void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
     void setMesh3DLighting(const Lighting3DPack &pack) override;
+    void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                         float windAngle, float coverage, float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;

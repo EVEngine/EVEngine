@@ -823,6 +823,106 @@ TEST_CASE("procgen.render.hexplanetPng") {
     win->close();
 }
 
+TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 256;
+    settings.height = 256;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    // Flat ground grid over XZ.
+    const int N = 24;
+    const float S = 40.f;  // world extent
+    std::vector<float> pos, nrm, uv;
+    std::vector<uint32_t> idx;
+    for (int y = 0; y <= N; ++y) {
+        for (int x = 0; x <= N; ++x) {
+            pos.push_back(-S / 2 + S * float(x) / N);
+            pos.push_back(0.f);
+            pos.push_back(-S / 2 + S * float(y) / N);
+            nrm.push_back(0.f);
+            nrm.push_back(1.f);
+            nrm.push_back(0.f);
+            uv.push_back(float(x) / N);
+            uv.push_back(float(y) / N);
+        }
+    }
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < N; ++x) {
+            const uint32_t a = uint32_t(y * (N + 1) + x);
+            const uint32_t b = a + 1;
+            const uint32_t c = a + uint32_t(N + 1);
+            const uint32_t d = c + 1;
+            idx.push_back(a); idx.push_back(c); idx.push_back(b);
+            idx.push_back(b); idx.push_back(c); idx.push_back(d);
+        }
+    }
+    Mesh *groundMesh = gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
+                                              idx.data(), int(idx.size()));
+    REQUIRE(groundMesh != nullptr);
+    const uint8_t grass[4] = {96, 150, 70, 255};
+    Texture *grassTex = gfx->newTexture(1, 1, grass);
+    REQUIRE(grassTex != nullptr);
+
+    auto *ground = Renderable3D::create();
+    ground->setMesh(groundMesh);
+    ground->setTexture(grassTex);
+    ground->setRoughness(0.9f);
+    ground->setCastShadow(false);
+    ground->setReceiveShadow(false);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 18.f, 6.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(55.f);
+    camera->setAmbient(0.12f, 0.14f, 0.16f);
+
+    gfx->setBackgroundColor(Color(0.02f, 0.03f, 0.05f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.3f, 1.f, 0.2f, 1.15f, 1.05f, 0.95f);
+
+    auto meanLuma = [&]() -> float {
+        for (int frame = 0; frame < 3; ++frame) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+        REQUIRE(img.get() != nullptr);
+        const uint8_t *px = static_cast<const uint8_t *>(img->getData());
+        const int w = img->getWidth();
+        const int h = img->getHeight();
+        double sum = 0.0;
+        for (int i = 0; i < w * h; ++i) {
+            const size_t o = size_t(i) * 4u;
+            sum += 0.2126 * px[o] + 0.7152 * px[o + 1] + 0.0722 * px[o + 2];
+        }
+        return float(sum / double(w * h));
+    };
+
+    // No clouds → fully lit (baseline).
+    gfx->setCloudShadows(0.f, 1.5f, 0.f, 4.f, 0.f, 0.5f, 0.5f);
+    const float lit = meanLuma();
+
+    // Dense, strong clouds → ground visibly darker.
+    gfx->setCloudShadows(0.9f, 2.0f, 1.5f, 4.f, 0.f, 0.5f, 0.5f);
+    const float cloudy = meanLuma();
+
+    gfx->setCloudShadows(0.f, 1.5f, 0.f, 4.f, 0.f, 0.5f, 0.5f);
+    const float litAgain = meanLuma();
+
+    std::printf("cloud shadows render: lit=%.3f cloudy=%.3f litAgain=%.3f\n", lit, cloudy, litAgain);
+    CHECK_GT(lit, 10.f);            // baseline is lit
+    CHECK(cloudy < lit * 0.85f);    // clouds meaningfully darken the ground
+    CHECK(approxEq(lit, litAgain, 2.f));  // disabled again → back to baseline
+
+    win->close();
+}
+
 TEST_CASE("procgen.mesh.marchingcubes.allFields") {
     MeshRecipeRegistry::instance().registerBuiltins();
     const char *fields[] = {"sphere", "torus", "noise", "terrain"};
@@ -1271,6 +1371,151 @@ TEST_CASE("procgen.texture.generateImage.andNormal") {
     CHECK(mod->hasTextureRecipe("tex.soil"));
     CHECK(mod->getTextureRecipeCount() >= 5);
 }
+
+TEST_CASE("procgen.cloud.field.reproducibleAnimatedSeamless") {
+    CloudField::Params p;
+    p.seed = 99;
+    p.worldScale = 64.f;
+    p.coverage = 0.5f;
+    CloudField a(p), b(p);
+    // Deterministic: same seed → same coverage at the same point/time.
+    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), b.coverageAt(3.f, 4.f, 0.f), 1e-5f));
+    // Animated: different time drifts the field (for a non-zero wind speed).
+    const float t0 = a.coverageAt(3.f, 4.f, 0.f);
+    const float t1 = a.coverageAt(3.f, 4.f, 5.f);
+    const float t2 = a.coverageAt(3.f, 4.f, 10.f);
+    const float moved = (t0 != t1) || (t1 != t2);
+    CHECK(moved);  // drifting over time
+    // Seamless: coverage tiles over one worldScale.
+    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), a.coverageAt(3.f + 64.f, 4.f, 0.f), 1e-4f));
+    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), a.coverageAt(3.f, 4.f + 64.f, 0.f), 1e-4f));
+    // Values stay in range.
+    for (float x = -200.f; x < 200.f; x += 40.f) {
+        const float c = a.coverageAt(x, 13.f, 1.f);
+        CHECK(c >= 0.f);
+        CHECK(c <= 1.f);
+    }
+    // Different seed → different field.
+    CloudField::Params q = p;
+    q.seed = 100;
+    CloudField c(q);
+    CHECK(!approxEq(a.coverageAt(3.f, 4.f, 0.f), c.coverageAt(3.f, 4.f, 0.f), 1e-5f));
+}
+
+TEST_CASE("procgen.cloud.field.windDriftsInDirection") {
+    CloudField::Params p;
+    p.seed = 5;
+    p.worldScale = 32.f;
+    p.windSpeed = 10.f;
+    p.windAngle = 0.f;  // drift toward +x
+    CloudField f(p);
+    // A feature moving at +x over time should arrive at a +x-shifted position.
+    const float base = f.coverageAt(0.f, 0.f, 0.f);
+    const float dt = 1.f;
+    CHECK(approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 0.f, 1.f), 1e-2f));
+    // Perpendicular axis is unchanged at that same world offset check fails → drift is 1D.
+    CHECK(!approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 5.f, 1.f), 1e-2f));
+}
+
+TEST_CASE("procgen.cloud.shadow.projection") {
+    CloudField::Params fp;
+    fp.seed = 7;
+    fp.worldScale = 48.f;
+    fp.coverage = 0.5f;
+    CloudField field(fp);
+
+    // Overhead sun (0,1,0): shadow coverage equals field coverage at the point.
+    CloudShadow::Params sp;
+    sp.field = field;
+    sp.sunDirX = 0.f;
+    sp.sunDirY = 1.f;
+    sp.sunDirZ = 0.f;
+    sp.cloudAltitude = 50.f;
+    CloudShadow overhead(sp);
+    const float px = 5.f, pz = 6.f;
+    CHECK(approxEq(overhead.coverageAt(px, pz, 0.f), field.coverageAt(px, pz, 0.f), 1e-5f));
+
+    // Angled sun: ground coverage = field coverage sampled up-sun at the cloud point.
+    sp.sunDirX = 0.5f;
+    sp.sunDirY = 1.f;
+    sp.sunDirZ = 0.f;
+    CloudShadow angled(sp);
+    float ox = 0.f, oz = 0.f;
+    angled.cloudOffset(ox, oz);
+    CHECK(approxEq(angled.coverageAt(px, pz, 0.f), field.coverageAt(px + ox, pz + oz, 0.f), 1e-5f));
+
+    // Factor: 1 when clear, (1-strength) when fully covered; always in [0,1].
+    CloudShadow::Params sp2 = sp;
+    sp2.strength = 0.8f;
+    CloudShadow shadow(sp2);
+    float minF = 1.f, maxF = 0.f;
+    for (float z = 0.f; z < 24.f; z += 2.f) {
+        for (float x = 0.f; x < 24.f; x += 2.f) {
+            const float f = shadow.shadowFactorAt(x, z, 0.f);
+            CHECK(f >= 0.f);
+            CHECK(f <= 1.f);
+            minF = std::min(minF, f);
+            maxF = std::max(maxF, f);
+        }
+    }
+    CHECK(maxF > 0.9f);               // some fully-lit ground
+    CHECK(minF < 1.f);                // some coverage darkens ground
+    // Sun below horizon → no cloud shadows.
+    sp.sunDirY = -1.f;
+    CloudShadow below(sp);
+    CHECK_EQ(below.coverageAt(px, pz, 0.f), 0.f);
+    CHECK_EQ(below.shadowFactorAt(px, pz, 0.f), 1.f);
+}
+
+TEST_CASE("procgen.cloud.recipes.generate") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const char *ids[] = {"tex.cloud", "tex.cloud_shadow"};
+    for (const char *id : ids) {
+        Params p;
+        p.setSeed(42);
+        p.setSize(48, 48);
+        p.setFloat("worldScale", 64.f);
+        p.setFloat("time", 1.5f);
+        std::string err;
+        eve::image::ImageData *img = TextureRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(img != nullptr);
+        CHECK_EQ(img->getFormat(), std::string("RGBA8"));
+        CHECK_EQ(img->getWidth(), 48);
+        CHECK_EQ(img->getHeight(), 48);
+        delete img;
+    }
+    CHECK(TextureRecipeRegistry::instance().has("tex.cloud"));
+    CHECK(TextureRecipeRegistry::instance().has("tex.cloud_shadow"));
+}
+
+TEST_CASE("procgen.cloud.viaModule") {
+    Procgen *mod = Procgen::create();
+    CloudField *f = mod->newCloudField();
+    REQUIRE(f != nullptr);
+    f->setSeed(3);
+    f->setWorldScale(64.f);
+    f->setCoverage(0.5f);
+    const float c0 = mod->cloudCoverageAt(f, 2.f, 3.f, 0.f);
+    const float c1 = mod->cloudCoverageAt(f, 2.f, 3.f, 4.f);
+    CHECK(c0 >= 0.f);
+    CHECK(c0 <= 1.f);
+    CHECK(mod->cloudCoverageAt(nullptr, 0.f, 0.f, 0.f) == 0.f);
+
+    CloudShadow *s = mod->newCloudShadow();
+    REQUIRE(s != nullptr);
+    s->setSunDirection(0.5f, 1.f, 0.f);
+    s->setCloudAltitude(50.f);
+    s->setStrength(0.8f);
+    CHECK(mod->cloudShadowFactor(s, 2.f, 3.f, 0.f) >= 0.f);
+    CHECK(mod->cloudShadowFactor(nullptr, 0.f, 0.f, 0.f) == 1.f);
+
+    std::vector<float> buf(16 * 16);
+    mod->sampleCloud(f, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
+    mod->sampleCloudShadow(s, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
+    delete f;
+    delete s;
+}
+
 
 static Color colorForSemantic(int sem) {
     switch (sem) {

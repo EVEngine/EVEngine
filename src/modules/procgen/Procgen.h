@@ -8,6 +8,8 @@
 #include "procgen/Params.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 
 #include <string>
 #include <vector>
@@ -71,6 +73,21 @@ public:
     int         getTextureRecipeCount() const;
     std::string getTextureRecipeId(int index) const;
     bool        hasTextureRecipe(const std::string &recipeId) const;
+
+    // --- Phase E: dynamic clouds + cloud shadows ---
+    /** New deterministic, tiling, time-animated cloud field (caller owns). */
+    CloudField *newCloudField();
+    /** New sun projection over a cloud field → ground shadows (caller owns). */
+    CloudShadow *newCloudShadow();
+    /** Cloud coverage at world (x, z) and time (via a CloudField). */
+    float cloudCoverageAt(CloudField *field, float x, float z, float time);
+    /** Light multiplier in [0,1] from a CloudShadow at world (x, z) and time. */
+    float cloudShadowFactor(CloudShadow *shadow, float x, float z, float time);
+    /** Sample coverage/factor into a caller-owned float buffer (w*h). */
+    void sampleCloud(CloudField *field, float *out, int w, int h, float time, float x0, float z0,
+                     float extent);
+    void sampleCloudShadow(CloudShadow *shadow, float *out, int w, int h, float time, float x0,
+                           float z0, float extent);
 
     // --- Mesh recipes (Marching Cubes, …) ---
     /** CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. */

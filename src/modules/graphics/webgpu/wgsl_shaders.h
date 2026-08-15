@@ -157,7 +157,10 @@ struct Frame {
     parallax: vec4f,
     view: mat4x4f,
     clipInfo: vec4f,
+    cloud: vec4f,
+    cloudWind: vec4f,
 };
+
 struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) vNormal: vec3f,
@@ -214,6 +217,8 @@ struct Frame {
     parallax: vec4f,
     view: mat4x4f,
     clipInfo: vec4f,
+    cloud: vec4f,
+    cloudWind: vec4f,
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>,
@@ -272,8 +277,46 @@ fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: v
     let kd = (vec3f(1.0) - f) * (1.0 - metallic);
     return (kd * albedo * diffuse + spec * ndl) * rad;
 }
-fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
-    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
+fn cloudHash(p: vec2f) -> f32 {
+    let ip = ivec2(floor(mod(p, 64.0)));
+    var h = (u32(ip.x) * 374761393u) ^ (u32(ip.y) * 668265263u);
+    h = (h ^ (h >> 13)) * 1274126177u;
+    h = h ^ (h >> 16);
+    return f32(h & 0x00FFFFFFu) / f32(0x00FFFFFFu);
+}
+fn cloudNoise(p: vec2f) -> f32 {
+    let i = floor(p);
+    var f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    let a = cloudHash(i);
+    let b = cloudHash(i + vec2f(1.0, 0.0));
+    let c = cloudHash(i + vec2f(0.0, 1.0));
+    let d = cloudHash(i + vec2f(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+fn cloudFbm(p: vec2f) -> f32 {
+    var sum = 0.0;
+    var amp = 0.5;
+    var freq = 1.0;
+    for (var i = 0; i < 4; i = i + 1) {
+        sum += amp * cloudNoise(p * freq);
+        amp *= 0.5;
+        freq *= 2.0;
+    }
+    return sum * 2.0;
+}
+fn cloudShadowFactor(worldPos: vec3f) -> f32 {
+    if (ubo.cloud.x < 1e-4) { return 1.0; }
+    let cell = 1.0 / max(ubo.cloud.y, 1e-4);
+    let drift = (ubo.cloudWind.xy * cell) * ubo.cloud.z;
+    let p = worldPos.xz * cell - drift;
+    let f = cloudFbm(p);
+    let c = smoothstep(ubo.cloudWind.z - 0.1, ubo.cloudWind.z + 0.1, f);
+    let d = cloudNoise(p * 3.0 + vec2f(11.7, 5.3));
+    let covered = mix(c, c * d, ubo.cloudWind.w);
+    return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
+}
+fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
     let uv = ndc.xy * 0.5 + 0.5;
     let depth = ndc.z;
@@ -343,7 +386,8 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     let primaryL = normalize(ubo.lightDir.xyz);
     let shadowVis = sampleShadowPCF(in.vWorldPos, n, viewDepth, max(dot(n, primaryL), 0.0));
     if (length(ubo.lightColor.rgb) > 1e-6) {
-        lo += shadeLight(n, v, albedo, metallic, rough, primaryL, ubo.lightColor.rgb) * shadowVis;
+        lo += shadeLight(n, v, albedo, metallic, rough, primaryL, ubo.lightColor.rgb) * shadowVis *
+              cloudShadowFactor(in.vWorldPos);
     }
     for (var i = 0; i < 8; i = i + 1) {
         if (i >= count) { break; }
