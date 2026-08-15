@@ -23,6 +23,7 @@ class ImageData;
 }  // namespace eve::image
 
 namespace eve::procgen {
+class PbrTextureSet;
 
 /**
  * Procedural generation module.
@@ -72,6 +73,18 @@ public:
     std::string getTextureRecipeId(int index) const;
     bool        hasTextureRecipe(const std::string &recipeId) const;
 
+    /**
+     * Full metallic-roughness PBR set (albedo/normal/roughness/metallic/height/ao)
+     * derived from a single displacement field. Caller owns the returned set
+     * (call PbrTextureSet::destroy()). Recipes: pbr.soil/stone/rock/marble/water/
+     * ripple/wood/cloth/ornament/spot/zebra/wall/cement/mud/sky_cloud.
+     */
+    PbrTextureSet *generatePbrMaterial(const std::string &recipeId, Params *params);
+
+    int         getPbrRecipeCount() const;
+    std::string getPbrRecipeId(int index) const;
+    bool        hasPbrRecipe(const std::string &recipeId) const;
+
     // --- Mesh recipes (Marching Cubes, …) ---
     /** CPU mesh (caller owns). Recipes: mesh.marchingcubes, mesh.hexplanet. */
     MeshBuild *buildMesh(const std::string &recipeId, Params *params);
@@ -102,6 +115,7 @@ private:
     mutable std::string              lastError_;
     mutable std::vector<std::string> algorithmIdsCache_;
     mutable std::vector<std::string> textureRecipeIdsCache_;
+    mutable std::vector<std::string> pbrRecipeIdsCache_;
     mutable std::vector<std::string> meshRecipeIdsCache_;
 };
 
