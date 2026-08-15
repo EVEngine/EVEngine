@@ -7,6 +7,8 @@ set(EVENGINE_PATCH_VERSION "0")
 
 option(BUILD_TESTING "enable testing" ON)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
+set(EVENGINE_THIRD_PARTY_ROOT "" CACHE PATH
+    "Read-only installed third-party prefix (include/, lib/); skips third-party source checkout")
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 if (CMAKE_BUILD_TYPE STREQUAL "")
@@ -37,7 +39,9 @@ function(main)
     # /EHsc: CMAKE_CXX_FLAGS is empty in this tree, so MSVC/clang-cl otherwise compile
     # with exceptions off. clangd then errors on try/throw (zeroerr ASSERT, Exception).
     if(MSVC)
-        add_compile_options(/utf-8 /EHsc)
+        # /FS serializes writes to a target's compiler PDB. Visual Studio may launch
+        # multiple cl.exe instances for one target, otherwise causing C1041.
+        add_compile_options(/utf-8 /EHsc /FS)
     endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
@@ -518,6 +522,24 @@ function(load_third_party)
 
     set(TP_BUILD_PATH ${BUILD_PLATFORM}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
+
+    # CI/worktrees can share a prebuilt dependency prefix.  Do not require the aggregate
+    # third-party repository in this mode: its headers and libraries are already installed.
+    if(EVENGINE_THIRD_PARTY_ROOT)
+        if(NOT EXISTS "${EVENGINE_THIRD_PARTY_ROOT}/include" OR
+           NOT EXISTS "${EVENGINE_THIRD_PARTY_ROOT}/lib")
+            message(FATAL_ERROR "EVENGINE_THIRD_PARTY_ROOT must contain include/ and lib/: ${EVENGINE_THIRD_PARTY_ROOT}")
+        endif()
+        message(STATUS "third-party: using read-only installed prefix ${EVENGINE_THIRD_PARTY_ROOT}")
+        include_directories("${EVENGINE_THIRD_PARTY_ROOT}/include")
+        link_directories("${EVENGINE_THIRD_PARTY_ROOT}/lib")
+        set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL "Use installed third-party prefix")
+        # create_module() uniformly depends on this target; make it a no-op when
+        # consuming a prebuilt prefix instead of building the aggregate project.
+        add_custom_target(third-party)
+        add_custom_target(deps DEPENDS third-party)
+        return()
+    endif()
 
     ensure_third_party_checkout()
     # EVEngine's database module uses POCO Data and its bundled SQLite connector.

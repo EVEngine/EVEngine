@@ -45,24 +45,36 @@ target_include_directories(EVSound PRIVATE
 create_module(EVAudio audio)
 target_compile_definitions(EVAudio PRIVATE AL_LIBTYPE_STATIC)
 
-# Dear ImGui (compiled from third-party sources; also installed by third-party ExternalProject)
-set(_eve_imgui_sources
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
-  ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
-)
-add_library(eve_imgui STATIC ${_eve_imgui_sources})
-target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
-# imgui_impl_sdl includes <SDL.h>; vendored install puts headers under include/SDL2/.
-target_include_directories(eve_imgui PRIVATE
-  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
-  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
-)
-# Avoid pulling imgui_demo.cpp (ShowFontAtlas etc.) into every link.
-target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
+if(EVENGINE_THIRD_PARTY_BINARY_ONLY)
+  # The shared prefix already contains ImGui and its SDL/Vulkan backends.
+  add_library(eve_imgui INTERFACE)
+  if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_libraries(eve_imgui INTERFACE imguimdd)
+  elseif(WIN32)
+    target_link_libraries(eve_imgui INTERFACE imguimd)
+  else()
+    target_link_libraries(eve_imgui INTERFACE imgui)
+  endif()
+else()
+  # Dear ImGui (compiled from third-party sources; also installed by third-party ExternalProject)
+  set(_eve_imgui_sources
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
+  )
+  add_library(eve_imgui STATIC ${_eve_imgui_sources})
+  target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
+  # imgui_impl_sdl includes <SDL.h>; vendored install puts headers under include/SDL2/.
+  target_include_directories(eve_imgui PRIVATE
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
+  )
+  # Avoid pulling imgui_demo.cpp (ShowFontAtlas etc.) into every link.
+  target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
+endif()
 
 create_module(EVUI ui)
 target_link_libraries(EVUI PUBLIC eve_imgui)
@@ -93,10 +105,14 @@ target_include_directories(EVGpgpu BEFORE PRIVATE
 create_module(EVModel3D model3d)
 create_module(EVFont font)
 # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
-target_include_directories(EVFont PRIVATE
-  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/freetype2
-  ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/freetype2
-)
+if(EVENGINE_THIRD_PARTY_BINARY_ONLY)
+  target_include_directories(EVFont PRIVATE ${EVENGINE_THIRD_PARTY_ROOT}/include/freetype2)
+else()
+  target_include_directories(EVFont PRIVATE
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/freetype2
+    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/freetype2
+  )
+endif()
 create_module(EVThread thread)
 create_module(EVPlugins plugins)
 create_module(EVRPG rpg)
@@ -112,6 +128,8 @@ create_module(EVProcgen procgen)
 # BEFORE must precede the visibility keyword so -I dtl_compat wins over the submodule.
 target_include_directories(EVProcgen BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
 target_include_directories(EVProcgen PUBLIC ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
+create_module(EVHouseGen housegen)
+target_compile_definitions(EVHouseGen PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVVoxel voxel)
 target_compile_definitions(EVVoxel PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVStylize stylize)

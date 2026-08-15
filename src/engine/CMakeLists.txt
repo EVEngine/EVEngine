@@ -187,6 +187,7 @@ list(APPEND EVELIBS
     EVAvatar
     EVDialogue
     EVProcgen
+    EVHouseGen
     EVVoxel
     EVStylize
     EVEditor)
