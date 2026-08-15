@@ -1,6 +1,7 @@
 #pragma once
 
 #include <condition_variable>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
@@ -15,7 +16,7 @@ namespace thread {
  */
 class Channel {
 public:
-    Channel() = default;
+    Channel();
     explicit Channel(std::string name);
     ~Channel();
 
@@ -34,10 +35,18 @@ public:
     void clear();
 
 private:
-    std::string name_;
-    mutable std::mutex mu_;
-    std::condition_variable cv_;
-    std::queue<std::string> queue_;
+    struct State {
+        explicit State(std::string channelName = {}) : name(std::move(channelName)) {}
+
+        std::string name;
+        mutable std::mutex mu;
+        std::condition_variable cv;
+        std::queue<std::string> queue;
+    };
+
+    std::shared_ptr<State> state_;
+
+    friend class ThreadPool;
 };
 
 }  // namespace thread

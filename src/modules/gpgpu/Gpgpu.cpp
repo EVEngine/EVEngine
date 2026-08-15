@@ -2,13 +2,19 @@
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/EcsScriptPack.h"
 #include "gpgpu/GpuBuffer.h"
-#include "gpgpu/vulkan/VulkanGpgpu.h"
-#include "gpgpu/vulkan/VulkanUtil.h"
 #include "gpgpu/ShaderSystem.h"
 
 #include "common/Exception.h"
 #include "common/Module.h"
+#include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
+
+#ifdef EVENGINE_WEBGPU
+#include "gpgpu/webgpu/WebGpuGpgpu.h"
+#else
+#include "gpgpu/vulkan/VulkanGpgpu.h"
+#include "gpgpu/vulkan/VulkanUtil.h"
+#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -29,39 +35,82 @@ std::string currentGraphicsBackend() {
 Module_IMPL(Gpgpu, new Gpgpu());
 
 bool Gpgpu::isAvailable() const {
+#ifdef EVENGINE_WEBGPU
+    if (currentGraphicsBackend() != "webgpu") return false;
+    return webgpuGpgpuReady();
+#else
     if (currentGraphicsBackend() != "vulkan") return false;
     return vulkanGpgpuReady();
+#endif
 }
 
 ComputeShader *Gpgpu::newShader(const std::string &source) {
+#ifdef EVENGINE_WEBGPU
+    if (currentGraphicsBackend() != "webgpu")
+        throw Exception("Gpgpu.newShader: requires webgpu Graphics backend");
+    // Source is WGSL on the WebGPU backend (browsers cannot compile GLSL).
+    return webgpuNewShaderFromWgsl(source);
+#else
     if (currentGraphicsBackend() != "vulkan")
         throw Exception("Gpgpu.newShader: requires vulkan Graphics backend");
     return vulkanNewShaderFromSpirv(compileComputeGlsl(source));
+#endif
 }
 
 ComputeShader *Gpgpu::newShaderFromBytecode(const std::string &path) {
+#ifdef EVENGINE_WEBGPU
+    if (currentGraphicsBackend() != "webgpu")
+        throw Exception("Gpgpu.newShaderFromBytecode: requires webgpu Graphics backend");
+    // Load WGSL text from the given path.
+    auto *fs = eve::filesystem::Filesystem::create();
+    if (!fs) throw Exception("Gpgpu.newShaderFromBytecode: no filesystem");
+    std::unique_ptr<eve::filesystem::FileData> file(fs->read(path));
+    if (!file) throw Exception("Gpgpu.newShaderFromBytecode: cannot open '%s'", path.c_str());
+    std::string src(reinterpret_cast<const char *>(file->getData()), file->getSize());
+    return webgpuNewShaderFromWgsl(src);
+#else
     if (currentGraphicsBackend() != "vulkan")
         throw Exception("Gpgpu.newShaderFromBytecode: requires vulkan Graphics backend");
     return vulkanNewShaderFromSpirv(loadSpirvFile(path));
+#endif
 }
 
 ComputeShader *Gpgpu::newShaderFromSpvFile(const std::string &path) {
+#ifdef EVENGINE_WEBGPU
+    if (currentGraphicsBackend() != "webgpu")
+        throw Exception("Gpgpu.newShaderFromSpvFile: requires webgpu Graphics backend");
+    throw Exception("Gpgpu.newShaderFromSpvFile: SPIR-V is only supported on vulkan; "
+                    "use newShaderFromBytecode with a .wgsl file on the WebGPU backend");
+#else
     if (currentGraphicsBackend() != "vulkan")
         throw Exception("Gpgpu.newShaderFromSpvFile: SPIR-V is only supported on vulkan");
     return newShaderFromBytecode(path);
+#endif
 }
 
 GpuBuffer *Gpgpu::newBuffer(int byteSize, const std::string &usage) {
+#ifdef EVENGINE_WEBGPU
+    if (currentGraphicsBackend() != "webgpu")
+        throw Exception("Gpgpu.newBuffer: requires webgpu Graphics backend");
+    return webgpuNewBuffer(byteSize, usage);
+#else
     if (currentGraphicsBackend() != "vulkan")
         throw Exception("Gpgpu.newBuffer: requires vulkan Graphics backend");
     return vulkanNewBuffer(byteSize, usage);
+#endif
 }
 
 void Gpgpu::dispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ) {
     if (!shader) return;
+#ifdef EVENGINE_WEBGPU
+    if (currentGraphicsBackend() != "webgpu")
+        throw Exception("Gpgpu.dispatch: requires webgpu Graphics backend");
+    webgpuDispatch(shader, groupsX, groupsY, groupsZ);
+#else
     if (currentGraphicsBackend() != "vulkan")
         throw Exception("Gpgpu.dispatch: requires vulkan Graphics backend");
     vulkanDispatch(shader, groupsX, groupsY, groupsZ);
+#endif
 }
 
 void Gpgpu::expose(ssq::Table &table) {

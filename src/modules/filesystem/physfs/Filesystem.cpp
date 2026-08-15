@@ -27,6 +27,10 @@
 #include "ios/ios.h"
 #endif
 
+#ifdef EVENGINE_WEBGPU
+#include "webgpu/webplatform.h"
+#endif
+
 #include <string>
 
 #ifdef EVENGINE_ANDROID
@@ -400,6 +404,8 @@ std::string Filesystem::getUserDirectory() {
 #ifdef EVENGINE_IOS
     // PHYSFS_getUserDir doesn't give exactly the path we want on iOS.
     static std::string userDir = normalize(ios::getHomeDirectory());
+#elif defined(EVENGINE_WEBGPU)
+    static std::string userDir = normalize(eve::webgpu_platform::getHomeDirectory());
 #else
     const char* dir = PHYSFS_getUserDir();
     static std::string userDir;
@@ -412,6 +418,8 @@ std::string Filesystem::getAppdataDirectory() {
     if (appdata.empty()) {
 #ifdef EVENGINE_WINDOWS_UWP
         appdata = getUserDirectory();
+#elif defined(EVENGINE_WEBGPU)
+        appdata = normalize(eve::webgpu_platform::getAppdataDirectory());
 #elif defined(EVENGINE_WINDOWS)
         wchar_t *w_appdata = _wgetenv(L"APPDATA");
         appdata            = to_utf8(w_appdata);

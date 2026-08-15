@@ -1,5 +1,6 @@
 #include "common/Module.h"
 #include "common/ECS.h"
+#include "common/Runtime.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -33,28 +34,51 @@ void ModuleManager::register_module(const char* name, creator_t c, exposer_t e) 
     }
 }
 
-void ModuleManager::expose(ssq::VM& vm) {
-    inst().active_vm_ = &vm;
-    auto table = vm.addTable("eve");
+void ModuleManager::exposeVM(ssq::VM& vm) {
+    ssq::Table table;
+    try {
+        table = ssq::Table(vm.find("eve"));
+    } catch (const ssq::NotFoundException&) {
+        table = vm.addTable("eve");
+    }
     for (auto& D : inst().registered_modules) {
-        D.second.exposer(table);
+        if (D.second.exposer) D.second.exposer(table);
         D.second.exposed = true;
     }
     // After modules: script ECS owns eve.Component / Entity / System / view.
     exposeECS(table);
 }
 
-void ModuleManager::set_vm(ssq::VM* vm) { inst().active_vm_ = vm; }
+void ModuleManager::expose(Runtime& runtime) {
+    inst().active_runtime_ = &runtime;
+    exposeVM(runtime.vm());
+}
 
-ssq::VM* ModuleManager::vm() { return inst().active_vm_; }
+void ModuleManager::expose(ssq::VM& vm) {
+    inst().active_runtime_ = nullptr;
+    exposeVM(vm);
+}
+
+Runtime* ModuleManager::runtime() { return inst().active_runtime_; }
+
+ssq::VM* ModuleManager::vm() {
+    Runtime* active = runtime();
+    return active ? &active->vm() : nullptr;
+}
+
+void ModuleManager::detach(Runtime* runtime) {
+    if (inst().active_runtime_ == runtime) inst().active_runtime_ = nullptr;
+}
 
 int ModuleManager::expose_pending() {
-    ssq::VM* v = inst().active_vm_;
-    if (!v)
+    Runtime* active = inst().active_runtime_;
+    if (!active)
         return -1;
     int count = 0;
     try {
-        ssq::Table table(v->find("eve"));
+        auto scope = active->enter();
+        auto stack = active->guard();
+        ssq::Table table = active->table("eve");
         for (auto& D : inst().registered_modules) {
             if (D.second.exposed || !D.second.exposer)
                 continue;

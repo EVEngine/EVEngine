@@ -393,10 +393,10 @@ void DevTool::sampleFrameLocals(HSQUIRRELVM vm, const SourceLoc& loc) {
     auto&     prev  = localSnap_[depth];
     std::unordered_map<std::string, std::string> cur;
 
-    // Level 0 = current function (hook runs inside the debug callback frame?);
-    // Squirrel docs: level is the call stack level — 0 is top (current).
-    // When the native hook fires, level 1 is typically the script frame of interest.
-    const SQUnsignedInteger level = 1;
+    // Level 0 = current script frame. The native debug hook is invoked as a
+    // direct C call (no CallInfo pushed), so the top of the Squirrel call
+    // stack is the script frame that triggered the line event.
+    const SQUnsignedInteger level = 0;
     for (SQUnsignedInteger n = 0;; ++n) {
         const SQInteger top = sq_gettop(vm);
         const SQChar*   name = sq_getlocal(vm, level, n);
@@ -489,7 +489,7 @@ void DevTool::markErrorUses(const SourceLoc& loc,
     }
     graph_.onLine(site);
 
-    const SQUnsignedInteger level = 1;
+    const SQUnsignedInteger level = 0;
     for (SQUnsignedInteger n = 0;; ++n) {
         const SQInteger top  = sq_gettop(vm_);
         const SQChar*   name = sq_getlocal(vm_, level, n);

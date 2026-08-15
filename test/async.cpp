@@ -112,6 +112,27 @@ TEST_CASE("async.asyncDelay.worker") {
     CHECK_EQ(out, std::string("hello"));
 }
 
+TEST_CASE("async.asyncPost.sameNameCorrelatedByTask") {
+    std::string out = runAsyncSnippet(R"(
+        result <- "pending";
+        local slow = "";
+        local fast = "";
+        asyncPost("same-name-correlation", "slow", 25).then(function(v) { slow = v; });
+        asyncPost("same-name-correlation", "fast", 1).then(function(v) { fast = v; });
+        thread.getPool().waitAll();
+
+        local name = event.poll();
+        while (name != "") {
+            async_dispatch_event(name, event.getLastData());
+            name = event.poll();
+        }
+        for (local i = 0; i < 6; i++)
+            async_pump();
+        result = slow + "," + fast;
+    )");
+    CHECK_EQ(out, std::string("slow,fast"));
+}
+
 TEST_CASE("async.postMain.event") {
     auto *th = eve::thread::Thread::create();
     auto *ev = eve::event::Event::create();

@@ -15,6 +15,8 @@
 #include "ios/ios.h"
 #elif defined(EVENGINE_ANDROID)
 #include "android/android.h"
+#elif defined(EVENGINE_WEBGPU)
+#include "webgpu/webplatform.h"
 #elif defined(EVENGINE_WINDOWS)
 #include <windows.h>
 
@@ -44,6 +46,14 @@ void Filesystem::expose(ssq::Class &cls) {
     cls.addFunc("getIdentity", &Filesystem::getIdentity);
     cls.addFunc("setSource", &Filesystem::setSource);
     cls.addFunc("getSource", &Filesystem::getSource);
+    cls.addFunc("allowMountingForPath", &Filesystem::allowMountingForPath);
+    cls.addFunc("mountPath", [](Filesystem *self, const std::string &archive,
+                                const std::string &mountpoint, bool appendToPath) {
+        return self && self->mount(archive, mountpoint, appendToPath);
+    });
+    cls.addFunc("unmountPath", [](Filesystem *self, const std::string &archive) {
+        return self && self->unmount(archive);
+    });
     cls.addFunc("newFile", &Filesystem::newFile);
     cls.addFunc("newFileData", &Filesystem::newFileData);
     cls.addFunc("getWorkingDirectory", &Filesystem::getWorkingDirectory);
@@ -103,6 +113,8 @@ std::string Filesystem::getExecutablePath() const {
     return ios::getExecutablePath();
 #elif defined(EVENGINE_ANDROID)
     return android::getExecutablePath();
+#elif defined(EVENGINE_WEBGPU)
+    return eve::webgpu_platform::getExecutablePath();
 #elif defined(EVENGINE_WINDOWS)
     wchar_t buffer[MAX_PATH + 1] = {0};
     if (GetModuleFileNameW(nullptr, buffer, MAX_PATH) == 0) return "";

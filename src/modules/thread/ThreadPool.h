@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <cstddef>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
@@ -32,7 +33,7 @@ public:
     int getPendingCount() const;
     bool isRunning() const;
 
-    /** Submit a C++ callable. Caller owns the returned Task* (delete when done). */
+    /** Submit a C++ callable. Caller owns the Task wrapper; work owns its shared state. */
     Task *submit(std::function<void()> fn);
 
     /** Sleep on a worker, then mark done — useful from scripts / tests. */
@@ -47,23 +48,22 @@ public:
      */
     Task *submitPost(std::string name, std::string data = "", int delayMs = 0);
 
-    /** Block until the queue is empty and no worker is busy. */
+    /** Block until idle. Throws when called by a worker belonging to this pool. */
     void waitAll();
 
-    /** Stop accepting work, join workers. Idempotent. */
+    /** Stop accepting work and join workers. Worker calls are rejected. Idempotent. */
     void stop();
 
 private:
-    void workerMain();
+    struct State;
+
+    static void workerMain(std::shared_ptr<State> state);
+    void stopImpl(bool allowWorkerCaller);
 
     int workerCount_ = 0;
     std::vector<std::thread> workers_;
-    mutable std::mutex mu_;
-    std::condition_variable cv_;
-    std::condition_variable idleCv_;
-    std::queue<Task *> queue_;
-    int busy_ = 0;
-    bool stopping_ = false;
+    std::shared_ptr<State> state_;
+    std::mutex lifecycleMu_;
 };
 
 }  // namespace thread
