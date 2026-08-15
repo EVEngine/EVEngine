@@ -1,6 +1,7 @@
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/DtlHelpers.h"
+#include "procgen/algorithms/RoguelikeGenerator.h"
 
 #include <algorithm>
 #include <cmath>
@@ -206,6 +207,7 @@ void GeneratorRegistry::registerBuiltins() {
     registerAlgorithm("maze.backtrack", genMazeBacktrack);
     registerAlgorithm("noise.terrain", genNoiseTerrain);
     registerWfcSimple(*this);
+    registerRoguelikeGenerator(*this);
     registerTerrainHeightmapAlgorithm(*this);
     builtinsRegistered_ = true;
 }

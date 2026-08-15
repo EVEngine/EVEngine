@@ -60,6 +60,7 @@ file(GLOB all_test_cpp
   housegen.cpp
   housegen_render.cpp
   procgen_simulation.cpp
+  roguelike_generator.cpp
   stylize.cpp
   voxel.cpp
   voxel_render.cpp
