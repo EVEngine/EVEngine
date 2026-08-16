@@ -113,8 +113,21 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("sync", &AvatarInstance::sync);
     av.addFunc("release", &AvatarInstance::release);
 
-    av.addFunc("addLayer", &AvatarInstance::addLayer);
-    av.addFunc("setLayerTexture", &AvatarInstance::setLayerTexture);
+    // addLayer / setLayerTexture accept a nullable texture (colored placeholder
+    // layers). ssq's default pointer binding rejects Squirrel `null`, so accept
+    // ssq::Object and translate null -> nullptr.
+    av.addFunc("addLayer", [](AvatarInstance *a, const std::string &name, ssq::Object textureObj,
+                              int zIndex) -> bool {
+        graphics::Texture *tex =
+            textureObj.isNull() ? nullptr : textureObj.toPtrUnsafe<graphics::Texture *>();
+        return a->addLayer(name, tex, zIndex);
+    });
+    av.addFunc("setLayerTexture", [](AvatarInstance *a, const std::string &name,
+                                     ssq::Object textureObj) -> bool {
+        graphics::Texture *tex =
+            textureObj.isNull() ? nullptr : textureObj.toPtrUnsafe<graphics::Texture *>();
+        return a->setLayerTexture(name, tex);
+    });
     av.addFunc("setLayerVisible", &AvatarInstance::setLayerVisible);
     av.addFunc("setLayerOffset", &AvatarInstance::setLayerOffset);
     av.addFunc("setLayerColor", &AvatarInstance::setLayerColor);

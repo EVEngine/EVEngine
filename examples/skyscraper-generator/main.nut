@@ -74,8 +74,9 @@ if (camera == null) {
     gfx.setDirectionalLight(-0.5, -1.0, -0.4, 1.5, 1.35, 1.1);
 }
 if (tower == null) { rebuildTexture(); rebuildTower(); }
+gfx.setBackgroundColor(0.10, 0.13, 0.19, 1.0);
 
-function update(dt) {
+function eve_update(dt) {
     yaw += dt * 6.0;
     tower.setYaw(yaw);
     if (pressed("r") || pressed("R")) { towerSeed += 1; rebuildTower(); }
@@ -94,10 +95,10 @@ function update(dt) {
     }
 }
 
-function draw() {
-    gfx.clear(0.10, 0.13, 0.19, 1.0);
+function eve_render() {
+    gfx.clear();
     gfx.render3D();
     if (facadeTex != null) {
-        gfx.drawTexturedRect(facadeTex, 28, 28, 96, 192, 1, 1, 1, 1);
+        gfx.drawTexturedRect(facadeTex, 28.0, 28.0, 96.0, 192.0, 1.0, 1.0, 1.0, 1.0);
     }
 }

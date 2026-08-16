@@ -64,8 +64,9 @@ if (bushCamera == null) {
     gfx.setDirectionalLight(-0.45, -1.0, -0.35, 1.35, 1.24, 1.02);
 }
 if (bushMesh == null) rebuildBush();
+gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
 
-function update(dt) {
+function eve_update(dt) {
     bushYaw += dt * 7.0;
     bushObject.setYaw(bushYaw);
     if (pressed("r") || pressed("R")) { bushSeed += 1; rebuildBush(); }
@@ -89,8 +90,8 @@ function update(dt) {
     if (pressed("rightbracket")) { bushDensity = min(1.0, bushDensity + 0.1); rebuildBush(); }
 }
 
-function draw() {
-    gfx.clear(0.055, 0.075, 0.07, 1.0);
+function eve_render() {
+    gfx.clear();
     gfx.render3D();
-    gfx.drawSolidRect(28, 28, 320, 200, 0.92, 0.94, 0.86, 0.96);
+    gfx.drawSolidRect(28.0, 28.0, 320.0, 200.0, 0.92, 0.94, 0.86, 0.96);
 }

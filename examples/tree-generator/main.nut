@@ -52,8 +52,9 @@ if (treeCamera == null) {
     gfx.setDirectionalLight(-0.45, -1.0, -0.35, 1.35, 1.24, 1.02);
 }
 if (treeMesh == null) rebuildTree();
+gfx.setBackgroundColor(0.055, 0.075, 0.07, 1.0);
 
-function update(dt) {
+function eve_update(dt) {
     treeYaw += dt * 7.0;
     treeObject.setYaw(treeYaw);
     if (pressed("r") || pressed("R")) { treeSeed += 1; rebuildTree(); }
@@ -75,8 +76,8 @@ function update(dt) {
     if (pressed("rightbracket")) { leafDensity = min(1.0, leafDensity + 0.1); rebuildTree(); }
 }
 
-function draw() {
-    gfx.clear(0.055, 0.075, 0.07, 1.0);
+function eve_render() {
+    gfx.clear();
     gfx.render3D();
-    gfx.drawSolidRect(28, 28, 310, 212, 0.92, 0.94, 0.86, 0.96);
+    gfx.drawSolidRect(28.0, 28.0, 310.0, 212.0, 0.92, 0.94, 0.86, 0.96);
 }

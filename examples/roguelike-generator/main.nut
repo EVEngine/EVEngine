@@ -34,11 +34,11 @@ if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("info" in getroottable())) info <- "";
 if (!("objInfo" in getroottable())) objInfo <- "";
 
-if (!("TILE" in getroottable())) TILE <- 16;
+if (!("TILE" in getroottable())) TILE <- 16.0;
 if (!("MAP_W" in getroottable())) MAP_W <- 48;
 if (!("MAP_H" in getroottable())) MAP_H <- 34;
-if (!("BASE_X" in getroottable())) BASE_X <- 40;
-if (!("BASE_Y" in getroottable())) BASE_Y <- 40;
+if (!("BASE_X" in getroottable())) BASE_X <- 40.0;
+if (!("BASE_Y" in getroottable())) BASE_Y <- 40.0;
 
 function pressed(name) {
     local down = keyboard.isDown(name);
@@ -166,25 +166,26 @@ function drawMarkers() {
 
 function drawLegend() {
     // Status bar.
-    gfx.drawSolidRect(4, 4, config.width - 8, 26, 0.12, 0.14, 0.18, 0.95);
-    gfx.drawSolidRect(8, 8, 8, 8, colors().floor[0][0], colors().floor[0][1], colors().floor[0][2], 1.0);
-    gfx.drawSolidRect(8, 18, 8, 8, colors().wall[0], colors().wall[1], colors().wall[2], 1.0);
-    gfx.drawSolidRect(20, 8, 8, 8, colors().spawn[0], colors().spawn[1], colors().spawn[2], 1.0);
-    gfx.drawSolidRect(20, 18, 8, 8, colors().stairs[0], colors().stairs[1], colors().stairs[2], 1.0);
+    gfx.drawSolidRect(4.0, 4.0, config.width - 8.0, 26.0, 0.12, 0.14, 0.18, 0.95);
+    gfx.drawSolidRect(8.0, 8.0, 8.0, 8.0, colors().floor[0][0], colors().floor[0][1], colors().floor[0][2], 1.0);
+    gfx.drawSolidRect(8.0, 18.0, 8.0, 8.0, colors().wall[0], colors().wall[1], colors().wall[2], 1.0);
+    gfx.drawSolidRect(20.0, 8.0, 8.0, 8.0, colors().spawn[0], colors().spawn[1], colors().spawn[2], 1.0);
+    gfx.drawSolidRect(20.0, 18.0, 8.0, 8.0, colors().stairs[0], colors().stairs[1], colors().stairs[2], 1.0);
 }
 
 function drawTilesPanel() {
     if (!showTiles || tileTex == null) return;
     // CC0 "dungeon tileset" (Buch) loaded from the game directory.
-    gfx.drawTexturedRect(tileTex, config.width - 210, 40, 200, 200, 1, 1, 1, 1);
+    gfx.drawTexturedRect(tileTex, config.width - 210.0, 40.0, 200.0, 200.0, 1.0, 1.0, 1.0, 1.0);
 }
 
 if (tileTex == null) {
     tileTex = gfx.newTextureFromFile("textures/dungeon_tiles.png");
 }
 if (gen == null) regenerate(false);
+gfx.setBackgroundColor(colors().bg[0], colors().bg[1], colors().bg[2], 1.0);
 
-function update(dt) {
+function eve_update(dt) {
     if (pressed("r") || pressed("R") || pressed("space")) { regenerate(true); }
     if (pressed("s") || pressed("S")) { seed = (seed * 1664525 + 1013904223) & 0x7FFFFFFF; regenerate(false); }
     if (pressed("1")) { roomCount = 6;  regenerate(false); }
@@ -214,8 +215,8 @@ function update(dt) {
     if (pressed("rightbracket")) { wallHeight = (wallHeight - 1.0 > 1.0) ? wallHeight - 1.0 : 1.0; }
 }
 
-function render() {
-    gfx.clear(colors().bg[0], colors().bg[1], colors().bg[2], 1.0);
+function eve_render() {
+    gfx.clear();
     if (gen != null) {
         if (view3D) render25D(); else render2D();
         drawMarkers();
