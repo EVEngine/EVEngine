@@ -84,6 +84,16 @@ public:
     virtual bool setSource(std::string source) = 0;
 
     /**
+     * Loads the game source from a packaged archive (.eve / zip) held entirely in
+     * memory and mounts it at "/" (no extraction to disk). The bytes are copied and
+     * kept alive for the lifetime of the mounted archive.
+     * This can only be set once.
+     * @param data Pointer to the archive bytes.
+     * @param size Number of bytes.
+     **/
+    virtual bool setSourceFromMemory(const void* data, size_t size) = 0;
+
+    /**
      * Gets the path to the game source.
      * Returns a 0-length string if the source has not been set.
      **/
