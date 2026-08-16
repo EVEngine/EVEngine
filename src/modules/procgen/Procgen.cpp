@@ -262,6 +262,8 @@ void Procgen::sampleCloudShadow(CloudShadow *shadow, float *out, int w, int h, f
         return;
     }
     shadow->sampleCoverage(out, w, h, time, x0, z0, extent);
+}
+
 PbrTextureSet *Procgen::generatePbrMaterial(const std::string &recipeId, Params *params) {
     lastError_.clear();
     if (!params) {
