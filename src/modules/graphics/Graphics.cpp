@@ -642,8 +642,9 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
-    cls.addFunc("newWaterfall", &Graphics::newWaterfall);    cls.addFunc("newShaderFromSpvFile",
-    cls.addFunc("newWater", &Graphics::newWater);    cls.addFunc("newShaderFromSpvFile",
+    cls.addFunc("newWaterfall", &Graphics::newWaterfall);
+    cls.addFunc("newWater", &Graphics::newWater);
+    cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);

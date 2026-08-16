@@ -66,9 +66,14 @@ function(main)
     elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # GCC/Clang equivalent of /Gy + /OPT:REF: put each function/data symbol in
         # its own section at compile time, then let the linker's --gc-sections drop
-        # the unused ones instead of keeping whole objects.
+        # the unused ones instead of keeping whole objects. Apple's ld does not
+        # accept --gc-sections; use -dead_strip instead.
         add_compile_options(-ffunction-sections -fdata-sections)
-        add_link_options(-Wl,--gc-sections)
+        if(APPLE)
+            add_link_options(-Wl,-dead_strip)
+        else()
+            add_link_options(-Wl,--gc-sections)
+        endif()
     endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
