@@ -1,5 +1,7 @@
 #include "devtools/Debugger.hpp"
 
+#include "devtools/RenderVision.hpp"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -286,6 +288,7 @@ bool Debugger::onScriptLine(const SourceLoc& loc) {
         pauseLoc_    = loc;
         reason_.store(PauseReason::Breakpoint);
         mode_.store(RunMode::Paused);
+        RenderVision::instance().notifyPending("breakpoint", loc.source, loc.line);
         return true;
     }
 
