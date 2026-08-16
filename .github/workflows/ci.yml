@@ -152,6 +152,11 @@ jobs:
         run: make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
 
       - name: Run macosx unit tests
+        # Headless runners have no stable audio device; the real CoreAudio
+        # backend makes the ModPlug MIDI test flaky (segfault/mutex). Use the
+        # OpenAL Soft null backend like the Windows/Linux jobs.
+        env:
+          ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
 
       - name: Build ios debug
