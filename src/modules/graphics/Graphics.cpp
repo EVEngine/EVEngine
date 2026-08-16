@@ -33,6 +33,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cstdint>
+#include <filesystem>
+#include <fstream>
 #include <functional>
 #include <memory>
 
@@ -416,6 +418,73 @@ void Graphics::expose(ssq::Table &table) {
     grassField.addFunc("getDenseCount", &GrassField::getDenseCount);
     grassField.addFunc("getSparseCount", &GrassField::getSparseCount);
 
+    auto waterfall = table.addClass<Waterfall>(
+        "Waterfall",
+        std::function<Waterfall *()>([]() -> Waterfall * { return nullptr; }), true);
+    waterfall.addFunc("createSheet", &Waterfall::createSheet);
+    waterfall.addFunc("update", &Waterfall::update);
+    waterfall.addFunc("setTime", &Waterfall::setTime);
+    waterfall.addFunc("getTime", &Waterfall::getTime);
+    waterfall.addFunc("setFlowSpeed", &Waterfall::setFlowSpeed);
+    waterfall.addFunc("getFlowSpeed", &Waterfall::getFlowSpeed);
+    waterfall.addFunc("setTurbulence", &Waterfall::setTurbulence);
+    waterfall.addFunc("getTurbulence", &Waterfall::getTurbulence);
+    waterfall.addFunc("setStreakCount", &Waterfall::setStreakCount);
+    waterfall.addFunc("getStreakCount", &Waterfall::getStreakCount);
+    waterfall.addFunc("setStreakScale", &Waterfall::setStreakScale);
+    waterfall.addFunc("getStreakScale", &Waterfall::getStreakScale);
+    waterfall.addFunc("setTopFoam", &Waterfall::setTopFoam);
+    waterfall.addFunc("getTopFoam", &Waterfall::getTopFoam);
+    waterfall.addFunc("setBottomFoam", &Waterfall::setBottomFoam);
+    waterfall.addFunc("getBottomFoam", &Waterfall::getBottomFoam);
+    waterfall.addFunc("setFoamAmount", &Waterfall::setFoamAmount);
+    waterfall.addFunc("getFoamAmount", &Waterfall::getFoamAmount);
+    waterfall.addFunc("setWaterColor", &Waterfall::setWaterColor);
+    waterfall.addFunc("setReflectionIntensity", &Waterfall::setReflectionIntensity);
+    waterfall.addFunc("getReflectionIntensity", &Waterfall::getReflectionIntensity);
+    waterfall.addFunc("setSunIntensity", &Waterfall::setSunIntensity);
+    waterfall.addFunc("getSunIntensity", &Waterfall::getSunIntensity);
+    waterfall.addFunc("bindParams", &Waterfall::bindParams);
+    waterfall.addFunc("draw", &Waterfall::draw);
+    waterfall.addFunc("getShader", &Waterfall::getShader);
+    waterfall.addFunc("getMesh", &Waterfall::getMesh);
+    auto water = table.addClass<Water>(
+        "Water", std::function<Water *()>([]() -> Water * { return nullptr; }), true);
+    water.addFunc("createPlane", &Water::createPlane);
+    water.addFunc("update", &Water::update);
+    water.addFunc("setTime", &Water::setTime);
+    water.addFunc("getTime", &Water::getTime);
+    water.addFunc("setWaveSpeed", &Water::setWaveSpeed);
+    water.addFunc("getWaveSpeed", &Water::getWaveSpeed);
+    water.addFunc("setWaveAmplitude", &Water::setWaveAmplitude);
+    water.addFunc("getWaveAmplitude", &Water::getWaveAmplitude);
+    water.addFunc("setRippleAmplitude", &Water::setRippleAmplitude);
+    water.addFunc("getRippleAmplitude", &Water::getRippleAmplitude);
+    water.addFunc("setEdgeFalloff", &Water::setEdgeFalloff);
+    water.addFunc("getEdgeFalloff", &Water::getEdgeFalloff);
+    water.addFunc("setRippleCount", &Water::setRippleCount);
+    water.addFunc("getRippleCount", &Water::getRippleCount);
+    water.addFunc("setRippleInterval", &Water::setRippleInterval);
+    water.addFunc("getRippleInterval", &Water::getRippleInterval);
+    water.addFunc("setWaveScale", &Water::setWaveScale);
+    water.addFunc("getWaveScale", &Water::getWaveScale);
+    water.addFunc("setWaterColor", &Water::setWaterColor);
+    water.addFunc("setReflectionTint", &Water::setReflectionTint);
+    water.addFunc("setReflectionIntensity", &Water::setReflectionIntensity);
+    water.addFunc("getReflectionIntensity", &Water::getReflectionIntensity);
+    water.addFunc("setSunIntensity", &Water::setSunIntensity);
+    water.addFunc("getSunIntensity", &Water::getSunIntensity);
+    water.addFunc("setScreenSpaceReflection", &Water::setScreenSpaceReflection);
+    water.addFunc("getScreenSpaceReflection", &Water::getScreenSpaceReflection);
+    water.addFunc("getScreenSpaceReflectionStrength", &Water::getScreenSpaceReflectionStrength);
+    water.addFunc("setViewport", &Water::setViewport);
+    water.addFunc("getViewportWidth", &Water::getViewportWidth);
+    water.addFunc("getViewportHeight", &Water::getViewportHeight);
+    water.addFunc("bindParams", &Water::bindParams);
+    water.addFunc("draw", &Water::draw);
+    water.addFunc("getShader", &Water::getShader);
+    water.addFunc("getMesh", &Water::getMesh);
+
     auto ao = table.addClass<AmbientOcclusion>(
         "AmbientOcclusion",
         std::function<AmbientOcclusion *()>([]() -> AmbientOcclusion * { return nullptr; }), true);
@@ -502,6 +571,26 @@ void Graphics::expose(ssq::Table &table) {
     gi.addFunc("applyFromScene", &GlobalIllumination::applyFromScene);
     gi.addFunc("getShader", &GlobalIllumination::getShader);
 
+    auto ssr = table.addClass<ScreenSpaceReflection>(
+        "ScreenSpaceReflection",
+        std::function<ScreenSpaceReflection *()>([]() -> ScreenSpaceReflection * { return nullptr; }),
+        true);
+    ssr.addFunc("setCamera", &ScreenSpaceReflection::setCamera);
+    ssr.addFunc("setEnabled", &ScreenSpaceReflection::setEnabled);
+    ssr.addFunc("getEnabled", &ScreenSpaceReflection::getEnabled);
+    ssr.addFunc("setMaxDistance", &ScreenSpaceReflection::setMaxDistance);
+    ssr.addFunc("setStepLength", &ScreenSpaceReflection::setStepLength);
+    ssr.addFunc("setMaxSteps", &ScreenSpaceReflection::setMaxSteps);
+    ssr.addFunc("setThickness", &ScreenSpaceReflection::setThickness);
+    ssr.addFunc("setStrength", &ScreenSpaceReflection::setStrength);
+    ssr.addFunc("getStrength", &ScreenSpaceReflection::getStrength);
+    ssr.addFunc("hasParam", &ScreenSpaceReflection::hasParam);
+    ssr.addFunc("setFloat", &ScreenSpaceReflection::setFloat);
+    ssr.addFunc("getFloat", &ScreenSpaceReflection::getFloat);
+    ssr.addFunc("applyFromScene", &ScreenSpaceReflection::applyFromScene);
+    ssr.addFunc("applyFromSceneTo", &ScreenSpaceReflection::applyFromSceneTo);
+    ssr.addFunc("getShader", &ScreenSpaceReflection::getShader);
+
     auto aa = table.addClass<AntiAliasing>(
         "AntiAliasing", std::function<AntiAliasing *()>([]() -> AntiAliasing * { return nullptr; }),
         true);
@@ -553,11 +642,13 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
-    cls.addFunc("newShaderFromSpvFile",
+    cls.addFunc("newWaterfall", &Graphics::newWaterfall);    cls.addFunc("newShaderFromSpvFile",
+    cls.addFunc("newWater", &Graphics::newWater);    cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
+    cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
     cls.addFunc("drawCanvas", &Graphics::drawCanvas);
     cls.addFunc("newCanvas", &Graphics::newCanvas);
@@ -577,6 +668,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newOutline", &Graphics::newOutline);
     cls.addFunc("getOutline", &Graphics::pipelineOutline);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
+    cls.addFunc("newScreenSpaceReflection", &Graphics::newScreenSpaceReflection);
     cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
     cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
     cls.addFunc("drawOcclusionTexture", &Graphics::drawOcclusionTexture);
@@ -598,6 +690,10 @@ AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(
 Outline *Graphics::newOutline() { return new Outline(this); }
 
 GlobalIllumination *Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
+
+ScreenSpaceReflection *Graphics::newScreenSpaceReflection() {
+    return new ScreenSpaceReflection(this);
+}
 
 AmbientOcclusion *Graphics::pipelineAmbientOcclusion() {
     if (!pipelineAO_) pipelineAO_ = std::make_unique<AmbientOcclusion>(this);
@@ -626,6 +722,9 @@ Shader *Graphics::newHairShader() { return hair::createShader(this); }
 Shader *Graphics::newGrassShader() { return grass::createShader(this); }
 
 GrassField *Graphics::newGrassField() { return new GrassField(this); }
+
+Waterfall *Graphics::newWaterfall() { return new Waterfall(this); }
+Water *Graphics::newWater() { return new Water(this); }
 
 Mesh *Graphics::newMeshCube(float size) {
     const float h = size * 0.5f;
@@ -663,6 +762,27 @@ Mesh *Graphics::newMeshCube(float size) {
     }
     return newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
                              indices.data(), int(indices.size()));
+}
+
+bool Graphics::saveFramePng(const std::string &path) {
+    if (!screenReadbackEnabled) setScreenReadbackEnabled(true);
+    std::unique_ptr<eve::image::ImageData> frame;
+    try {
+        frame.reset(newImageData());
+    } catch (...) {
+        return false;  // no presented frame yet
+    }
+    if (!frame) return false;
+    std::unique_ptr<eve::filesystem::FileData> png(
+        frame->encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false));
+    if (!png) return false;
+    std::error_code ec;
+    std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
+    std::ofstream out(path, std::ios::binary);
+    if (!out.good()) return false;
+    out.write(static_cast<const char *>(png->getData()),
+              static_cast<std::streamsize>(png->getSize()));
+    return out.good();
 }
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {

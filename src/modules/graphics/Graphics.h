@@ -14,9 +14,12 @@
 #include "graphics/Shadow.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
+#include "graphics/Water.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Grass.h"
+#include "graphics/Waterfall.h"
 #include "graphics/Outline.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
@@ -322,6 +325,16 @@ public:
      */
     virtual void begin3DFrame() = 0;
 
+    /**
+     * Open a 3D render pass targeting an offscreen Canvas (color + depth) at
+     * the canvas size. Uses setMesh3DViewProj/View/CameraPos/Env as the camera.
+     * Draw meshes with drawMeshShader, then call end3DFrameToCanvas(). The
+     * canvas texture then holds the rendered scene (e.g. a planar reflection).
+     * Unsupported if `canvas` is not an offscreen canvas (screen).
+     */
+    virtual void begin3DFrameToCanvas(Canvas *canvas) = 0;
+    virtual void end3DFrameToCanvas() = 0;
+
     /** viewProj used by subsequent drawMesh (mvp = viewProj * model).
      *  Expect RH + ZO with Vulkan NDC Y (see perspectiveVulkanRH_ZO). */
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
@@ -337,6 +350,38 @@ public:
      * Valid after begin3DFrame until present; nullptr when 3D did not run offscreen.
      */
     virtual Texture *getSceneColorTexture() { return nullptr; }
+
+    /**
+     * Per-pixel mesh entity-ID pass. Renders each EntityIdDraw's mesh with the
+     * given flat idColor (RGB encodes a stable entity id) into an offscreen
+     * target using the same viewProj, then reads it back to CPU. Pixels not
+     * covered by any entity are (0,0,0,0). Caller owns the returned ImageData*.
+     * Returns nullptr when the backend does not support offscreen ID capture.
+     */
+    struct EntityIdDraw {
+        Mesh *mesh = nullptr;
+        glm::mat4 model{1.f};
+        glm::vec4 idColor{0.f, 0.f, 0.f, 1.f};
+    };
+    virtual image::ImageData *renderEntityIdMask(const std::vector<EntityIdDraw> &draws,
+                                                 const glm::mat4 &viewProj, int width, int height) {
+        (void)draws;
+        (void)viewProj;
+        (void)width;
+        (void)height;
+        return nullptr;
+    }
+
+    /**
+     * Read a G-buffer attachment back to CPU as RGBA8. name is one of
+     * "depth" (RGBA8 linear depth), "normal" (world normal*0.5+0.5), "albedo".
+     * Valid only after a G-buffer or entity-ID offscreen pass filled it.
+     * Caller owns the returned ImageData*. Returns nullptr when unsupported.
+     */
+    virtual image::ImageData *readGBufferToImageData(const std::string &name) {
+        (void)name;
+        return nullptr;
+    }
 
     /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
@@ -377,6 +422,14 @@ public:
 
     /** Per-frame ambient + up to 8 lights packed into Mesh3DUBO. */
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;
+
+    /**
+     * Dynamic cloud shadows cast on the ground by the default PBR mesh path.
+     * strength 0 disables (no change to rendering). time advances wind drift.
+     * Packed into Mesh3DUBO.cloud / cloudWind and consumed by mesh3d shaders.
+     */
+    virtual void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                                 float windAngle, float coverage, float detail) = 0;
 
     /**
      * Enable clustered forward path for subsequent default mesh draws (SSBO light lists).
@@ -438,6 +491,12 @@ public:
      */
     virtual void setScreenReadbackEnabled(bool enabled) { screenReadbackEnabled = enabled; }
     bool isScreenReadbackEnabled() const { return screenReadbackEnabled; }
+
+    /**
+     * Save the last presented frame to a PNG at @p path. Enables screen readback
+     * if needed. Returns false if no presented frame is available or encoding fails.
+     */
+    bool saveFramePng(const std::string &path);
 
     /**
      * Prefer uncapped present (IMMEDIATE/MAILBOX) when false, vsync (MAILBOX/FIFO)
@@ -604,6 +663,17 @@ public:
      */
     GrassField *newGrassField();
 
+    /**
+     * Flowing waterfall (falling water sheet) with sky reflection, downward
+     * velocity streaks and animated foam at the top lip and bottom splash pool.
+     * Caller owns Waterfall*; its Mesh / Shader are owned by Graphics.
+     */
+    Waterfall *newWaterfall();
+     * Dynamic water surface (sky reflection + animated edge waves + middle
+     * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
+     */
+    Water *newWater();
+
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
 
@@ -637,6 +707,12 @@ public:
      * its Shaders are owned by Graphics.
      */
     GlobalIllumination *newGlobalIllumination();
+
+    /**
+     * Screen-space reflections (ray-marched over scene color + hw depth).
+     * Caller owns ScreenSpaceReflection*; its Shader is owned by Graphics.
+     */
+    ScreenSpaceReflection *newScreenSpaceReflection();
 
     /**
      * Pipeline-owned AO / GI / AA used by RenderSystem3D when features

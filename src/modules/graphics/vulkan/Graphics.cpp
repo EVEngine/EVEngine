@@ -228,6 +228,7 @@ Graphics::~Graphics() {
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
+    destroyOffscreen3DResources();
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
     mesh3dSetLayoutUnique.reset();
@@ -425,12 +426,15 @@ size_t Graphics::currentFrameSlot() const {
 }
 
 vk::CommandBuffer &Graphics::currentPresentCb() {
+    if (offscreen3DPassOpen && offscreen3DCB)
+        return offscreen3DCB;
     if (swapchainPass)
         return swapchainPass.commandBuffer();
     return presentRecording.commandBuffer();
 }
 
 vkb::FrameSlot Graphics::frameToken() const {
+    if (offscreen3DPassOpen) return vkb::FrameSlot{0};
     if (presentRecording) return presentRecording.slot();
     return vkb::FrameSlot::gpuIdle();
 }
@@ -1994,6 +1998,158 @@ Color Graphics::getPixel(int x, int y) {
     return Color(r, g, b, a);
 }
 
+image::ImageData *Graphics::renderEntityIdMask(
+    const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
+    int width, int height) {
+    if (!initialized || width <= 0 || height <= 0) return nullptr;
+    // G-buffer pipeline / render pass are created lazily by createGBufferResources,
+    // so that must run before the availability check.
+    createGBufferResources(width, height);
+    if (!gbufferPipeline || !gbufferRenderPass) return nullptr;
+    auto *slot = currentGBufferSlot();
+    if (!slot || !slot->framebuffer || !whiteTexture) return nullptr;
+
+    // Render each mesh with a flat idColor into the G-buffer albedo attachment
+    // (location 2) by reusing the G-buffer pipeline (its fragment shader writes
+    // outAlbedo = albedo * tint, so passing a white texture + idColor tint gives
+    // a per-pixel flat entity-ID color).
+    std::vector<GBufferDraw> idDraws;
+    idDraws.reserve(draws.size());
+    auto u8 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
+    };
+    for (const auto &d : draws) {
+        if (!d.mesh || !d.mesh->gpuHandle) continue;
+        GBufferDraw gd{};
+        gd.mesh = d.mesh;
+        gd.albedo = whiteTexture;
+        gd.push.mvp = viewProj * d.model;
+        gd.push.modelR0 = glm::vec4(d.model[0][0], d.model[1][0], d.model[2][0], d.model[3][0]);
+        gd.push.modelR1 = glm::vec4(d.model[0][1], d.model[1][1], d.model[2][1], d.model[3][1]);
+        gd.push.modelR2 = glm::vec4(d.model[0][2], d.model[1][2], d.model[2][2], d.model[3][2]);
+        const uint32_t packed = u8(d.idColor.r) | (u8(d.idColor.g) << 8) |
+                                (u8(d.idColor.b) << 16) | (u8(d.idColor.a) << 24);
+        gd.push.clip = glm::vec4(0.1f, 100.f, glm::uintBitsToFloat(packed), 0.f);
+        idDraws.push_back(gd);
+    }
+    if (idDraws.empty()) return nullptr;
+
+    const uint32_t w = uint32_t(width);
+    const uint32_t h = uint32_t(height);
+    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                std::array<vk::ClearValue, 4> clears{};
+                                clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[1].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                vk::RenderPassBeginInfo rpBegin{};
+                                rpBegin.renderPass = gbufferRenderPass;
+                                rpBegin.framebuffer = slot->framebuffer;
+                                rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+                                rpBegin.clearValueCount = uint32_t(clears.size());
+                                rpBegin.pClearValues = clears.data();
+                                slot->normal.beginColorAttachment();
+                                slot->depthColor.beginColorAttachment();
+                                slot->albedo.beginColorAttachment();
+                                slot->depth.beginDepthAttachment();
+                                cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+                                setViewportAndScissor(cb, w, h);
+                                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
+                                for (const auto &d : idDraws) {
+                                    auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+                                    if (!gpuMesh) continue;
+                                    if (whiteTexture && whiteTexture->gpuHandle && texSetLayout) {
+                                        auto *gpuTex = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                              gbufferPipelineLayout, 0, 1,
+                                                              gpuTex->descriptorSet.ptr(), 0, nullptr);
+                                    }
+                                    cb.pushConstants(gbufferPipelineLayout,
+                                                     vk::ShaderStageFlagBits::eVertex |
+                                                         vk::ShaderStageFlagBits::eFragment,
+                                                     0, sizeof(GBufferPush), &d.push);
+                                    drawIndexedMesh(cb, *gpuMesh);
+                                }
+                                cb.endRenderPass();
+                                slot->normal.endSampledLayout();
+                                slot->depthColor.endSampledLayout();
+                                slot->albedo.endSampledLayout();
+                                slot->depth.endSampledLayout();
+
+                                // Copy the albedo attachment (location 2 = ID colors) to CPU.
+                                slot->albedo.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                                region.imageExtent = vk::Extent3D{w, h, 1};
+                                cb.copyImageToBuffer(slot->albedo.image(),
+                                                     vk::ImageLayout::eTransferSrcOptimal, staging.buffer,
+                                                     region);
+                                slot->albedo.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+
+    auto *img = new image::ImageData(int(w), int(h), "RGBA8");
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    std::memcpy(img->getData(), mapped, size_t(byteSize));
+    device->unmapMemory(staging.memory);
+    staging.release();
+
+    // 让 RenderControl 的 GBuffer 也指向该槽位（镜像 endGBufferPass），这样
+    // 上层可通过 getDepthTexture()/getNormalTexture() 读取本次离屏 ID 渲染
+    // 生成的深度/法线（供 capture_render_frame 的 depth/normal 复用）。
+    if (RenderControl *rc = getRenderControl()) {
+        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex,
+                                     &slot->albedoTex, &slot->depthTex);
+    }
+    return img;
+}
+
+image::ImageData *Graphics::readGBufferToImageData(const std::string &name) {
+    if (!initialized) return nullptr;
+    auto *slot = currentGBufferSlot();
+    if (!slot) return nullptr;
+    vkb::ColorTarget *src = nullptr;
+    if (name == "depth")
+        src = &slot->depthColor;  // RGBA8 linear depth
+    else if (name == "normal")
+        src = &slot->normal;
+    else if (name == "albedo")
+        src = &slot->albedo;
+    else
+        return nullptr;
+
+    const uint32_t w = uint32_t(gbufferWidth);
+    const uint32_t h = uint32_t(gbufferHeight);
+    if (w == 0 || h == 0) return nullptr;
+
+    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                                region.imageExtent = vk::Extent3D{w, h, 1};
+                                cb.copyImageToBuffer(src->image(), vk::ImageLayout::eTransferSrcOptimal,
+                                                     staging.buffer, region);
+                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+
+    auto *img = new image::ImageData(int(w), int(h), "RGBA8");
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    std::memcpy(img->getData(), mapped, size_t(byteSize));
+    device->unmapMemory(staging.memory);
+    staging.release();
+    return img;
+}
+
 Canvas *Graphics::newCanvas(int w, int h) {
     ASSERT(initialized);
     ASSERT_GT(w, 0);
@@ -3322,6 +3478,130 @@ void Graphics::begin3DFrame() {
     hasPendingClear = false;
 }
 
+void Graphics::ensureOffscreen3DResources() {
+    auto &device = getDevice();
+    if (!offscreen3DRenderPass) {
+        offscreen3DRenderPass =
+            device.createRenderPass()
+                .addSampledColorAttachment(vk::Format::eR8G8B8A8Unorm)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addExternalShaderReadDependencies()
+                .build();
+        offscreen3DMeshPipeline = createMesh3DStylePipeline(
+            embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
+            offscreen3DRenderPass, vk::SampleCountFlagBits::e1);
+    }
+    if (!offscreen3DPool) {
+        vk::CommandPoolCreateInfo poolInfo{};
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        offscreen3DPool = device->createCommandPool(poolInfo);
+        vk::CommandBufferAllocateInfo allocInfo{};
+        allocInfo.commandPool = offscreen3DPool;
+        allocInfo.level = vk::CommandBufferLevel::ePrimary;
+        allocInfo.commandBufferCount = 1;
+        auto bufs = device->allocateCommandBuffers(allocInfo);
+        offscreen3DCB = bufs[0];
+        vk::FenceCreateInfo fenceInfo{};
+        fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;  // first wait passes immediately
+        offscreen3DFence = device->createFence(fenceInfo);
+    }
+}
+
+void Graphics::destroyOffscreen3DResources() {
+    auto &device = getDevice();
+    if (offscreen3DFence) {
+        device->destroyFence(offscreen3DFence);
+        offscreen3DFence = nullptr;
+    }
+    if (offscreen3DPool) {
+        device->destroyCommandPool(offscreen3DPool);
+        offscreen3DPool = nullptr;
+    }
+    offscreen3DCB = nullptr;
+    if (offscreen3DMeshPipeline) {
+        device->destroyPipeline(offscreen3DMeshPipeline);
+        offscreen3DMeshPipeline = nullptr;
+    }
+    if (offscreen3DRenderPass) {
+        device->destroyRenderPass(offscreen3DRenderPass);
+        offscreen3DRenderPass = {};
+    }
+}
+
+void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("begin3DFrameToCanvas: graphics not initialized");
+    if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
+    auto *oc = dynamic_cast<OffscreenCanvas *>(canvas);
+    if (!oc) throw Exception("begin3DFrameToCanvas: not an offscreen canvas");
+    if (offscreen3DPassOpen) throw Exception("begin3DFrameToCanvas: already open");
+    if (swapchainPassOpen) {
+        try {
+            flushToSwapchain();
+        } catch (...) {
+            abortOpen3DFrame();
+        }
+    }
+    clearColor = backgroundColor;
+    ensureOffscreen3DResources();
+    oc->ensure3D();
+    offscreen3DCanvas = oc;
+
+    if (offscreen3DFence) (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+    vk::CommandBufferBeginInfo beginInfo{};
+    offscreen3DCB.begin(beginInfo);
+    std::array<vk::ClearValue, 2> clears{};
+    clears[0].color =
+        vk::ClearColorValue(std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
+    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = offscreen3DRenderPass;
+    rpBegin.framebuffer = oc->framebuffer3D();
+    rpBegin.renderArea =
+        vk::Rect2D{{0, 0}, {uint32_t(oc->getWidth()), uint32_t(oc->getHeight())}};
+    rpBegin.clearValueCount = uint32_t(clears.size());
+    rpBegin.pClearValues = clears.data();
+    oc->colorImage().beginColorAttachment();
+    oc->depthImage().beginDepthAttachment();
+    offscreen3DCB.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(offscreen3DCB, oc->getWidth(), oc->getHeight());
+
+    currentMesh3dFrameSlots().drawIndex = 0;
+    currentMesh3dClusteredFrameSlots().drawIndex = 0;
+    offscreen3DPassOpen = true;
+    frameHad3D = true;
+    hasPendingClear = false;
+}
+
+void Graphics::end3DFrameToCanvas() {
+    if (!offscreen3DPassOpen || !offscreen3DCB) return;
+    offscreen3DCB.endRenderPass();
+    if (offscreen3DCanvas) {
+        offscreen3DCanvas->colorImage().setLayout(offscreen3DCB,
+                                                  vk::ImageLayout::eShaderReadOnlyOptimal);
+    }
+    offscreen3DCB.end();
+
+    // Submit the offscreen render directly to the graphics queue (no present),
+    // then wait for it so it is fully drained before any subsequent render or
+    // teardown.
+    vk::SubmitInfo submitInfo{};
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &offscreen3DCB;
+    if (offscreen3DFence) (void)device->resetFences(1, &offscreen3DFence);
+    (void)device.getQueue(vkb::QueueType::graphics).submit(1, &submitInfo, offscreen3DFence);
+    if (offscreen3DFence)
+        (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+
+    offscreen3DPassOpen = false;
+    offscreen3DCanvas = nullptr;
+}
+
 void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     glm::vec3 d = glm::normalize(dir);
     if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
@@ -3676,8 +3956,7 @@ void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) 
 
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
     mesh3dLighting = pack;
-    mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);
-    const int n = std::max(0, std::min(pack.count, Lighting3DPack::kMaxLights));
+    mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);    const int n = std::max(0, std::min(pack.count, Lighting3DPack::kMaxLights));
     mesh3dFrameUbo.lightDir.w = float(n);
     int dirI = -1;
     for (int i = 0; i < n; ++i) {
@@ -3699,6 +3978,15 @@ void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
         mesh3dFrameUbo.lightColor =
             glm::vec4(0.f, 0.f, 0.f, mesh3dFrameUbo.lightColor.w);
     }
+}
+
+void Graphics::setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                               float windAngle, float coverage, float detail) {
+    mesh3dFrameUbo.cloud = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f),
+                                     time, 0.f);
+    mesh3dFrameUbo.cloudWind = glm::vec4(std::cos(windAngle) * windSpeed,
+                                         std::sin(windAngle) * windSpeed,
+                                         std::clamp(coverage, 0.f, 1.f), std::clamp(detail, 0.f, 1.f));
 }
 
 void Graphics::ensureFlatNormalTexture3D() {
@@ -4200,7 +4488,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ASSERT(mesh != nullptr);
     if (!initialized) throw Exception("drawMesh: graphics not initialized");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMesh: null mesh");
-    if (!swapchainPassOpen) throw Exception("drawMesh: call begin3DFrame first");
+    if (!swapchainPassOpen && !offscreen3DPassOpen)
+        throw Exception("drawMesh: call begin3DFrame first");
     if (!mesh3dPipeline) throw Exception("drawMesh: mesh3d pipeline missing");
 
     if (shader) {
@@ -4316,6 +4605,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     fslots.slots[slot].shadowUbo.updateLocal(frameToken(), makeShadowUbo());
 
     if (shader) {
+        if (offscreen3DPassOpen)
+            throw Exception("drawMeshShader: custom mesh shader in offscreen 3D pass is unsupported");
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
         vk::Pipeline pipeline = gs->mesh3dPipeline;
         if (shader->isXray()) {
@@ -4336,7 +4627,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dPipeline);
+        const vk::Pipeline pipe = offscreen3DPassOpen ? offscreen3DMeshPipeline : mesh3dPipeline;
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 0,
                               nullptr);
     }

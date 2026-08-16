@@ -1,0 +1,7 @@
+# Lightweight CPU client dependencies (artist machine, no torch).
+# ffmpeg on PATH is recommended for PNG-dir <-> mp4 bridging.
+requests
+numpy
+opencv-python
+pillow
+ffmpy

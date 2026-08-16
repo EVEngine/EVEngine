@@ -1,8 +1,12 @@
 # Continuous integration: build + test on every push/PR, plus a nightly run.
-# Matrix mirrors SDK release hosts:
-#   windows → win32 debug (+ unit tests) + android debug
-#   macos   → macosx debug (+ unit tests) + ios debug
+# Each platform runs as its own parallel job so mobile (android/ios) and host
+# builds don't serialize on a single runner:
+#   windows → win32 debug (+ unit tests)
+#   android → android debug
+#   macos   → macosx debug (+ unit tests)
+#   ios     → ios debug
 #   linux   → linux debug (+ unit tests)
+#   webgpu  → webgpu (Emscripten/WASM) release
 #
 # iOS signing (optional repo secrets):
 #   IOS_CERTIFICATE_P12_BASE64, IOS_CERTIFICATE_PASSWORD, IOS_DEVELOPMENT_TEAM
@@ -35,9 +39,9 @@ env:
 
 jobs:
   windows:
-    name: Windows + Android
+    name: Windows
     runs-on: windows-latest
-    timeout-minutes: 240
+    timeout-minutes: 60
     defaults:
       run:
         shell: bash
@@ -67,6 +71,34 @@ jobs:
       - name: Setup software Vulkan ICD (SwiftShader)
         run: bash .github/scripts/setup-software-vulkan.sh
 
+      - name: Build win32 debug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Run win32 unit tests
+        # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: make test/win32-debug
+
+  android:
+    name: Android
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build tools
+        shell: pwsh
+        run: choco install make ninja -y --no-progress
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
@@ -94,17 +126,6 @@ jobs:
           echo "ANDROID_NDK=$ANDROID_NDK"
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
-      - name: Build win32 debug
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"
-
-      - name: Run win32 unit tests
-        # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
-        env:
-          ALSOFT_DRIVERS: "null"
-        run: make test/win32-debug
-
       - name: Build android debug
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
@@ -115,9 +136,46 @@ jobs:
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
   macos:
-    name: macOS + iOS
+    name: macOS
     runs-on: macos-latest
-    timeout-minutes: 240
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install tools
+        run: brew install ninja || true
+
+      - name: Install Vulkan SDK (MoltenVK + iOS)
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve VULKAN_SDK
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Build macosx debug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+
+      - name: Run macosx unit tests
+        # Headless runners have no stable audio device; the real CoreAudio
+        # backend makes the ModPlug MIDI test flaky (segfault/mutex). Use the
+        # OpenAL Soft null backend like the Windows/Linux jobs.
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: make test/macosx-debug
+
+  ios:
+    name: iOS
+    runs-on: macos-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -146,14 +204,6 @@ jobs:
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: bash .github/scripts/setup-ios-signing.sh
 
-      - name: Build macosx debug
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
-
-      - name: Run macosx unit tests
-        run: make test/macosx-debug
-
       - name: Build ios debug
         run: |
           set -euo pipefail
@@ -173,7 +223,7 @@ jobs:
   linux:
     name: Linux
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -216,3 +266,48 @@ jobs:
           # Some graphics/window tests may need a display; xvfb covers headless runners.
           # VK_ICD_FILENAMES (Lavapipe) comes from setup-software-vulkan.sh.
           xvfb-run -a make test/linux-debug
+
+  webgpu:
+    name: WebGPU (WASM)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            git ninja-build python3 python3-pip
+
+      - name: Install CMake 3.29 (Emscripten is incompatible with CMake 4.x)
+        run: |
+          python3 -m pip install --user cmake==3.29.6
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install Emscripten SDK
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          "$HOME/emsdk/emsdk" install latest
+          "$HOME/emsdk/emsdk" activate latest
+
+      - name: Configure webgpu (Emscripten/WASM)
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          source "$HOME/emsdk/emsdk_env.sh"
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build webgpu (Emscripten/WASM)
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          source "$HOME/emsdk/emsdk_env.sh"
+          cmake --build build/webgpu-web --parallel "$(nproc)"
+
+      - name: Verify webgpu artifacts
+        run: |
+          test -f build/webgpu-web/src/engine/eve.html
+          test -f build/webgpu-web/src/engine/eve.wasm
+          ls -lh build/webgpu-web/src/engine/eve.*

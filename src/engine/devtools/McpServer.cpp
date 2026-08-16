@@ -5,6 +5,8 @@
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/McpDevBridge.hpp"
+#include "devtools/SceneInspect.hpp"
+#include "devtools/RenderVision.hpp"
 #include "devtools/Snapshot.hpp"
 
 #include "common/Module.h"
@@ -31,11 +33,13 @@
 #include <Poco/Timespan.h>
 
 #include <squirrel.h>
+#include <glm/glm.hpp>
 
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <sstream>
+#include <vector>
 
 namespace eve::dev {
 namespace {
@@ -173,10 +177,32 @@ int argInt(Poco::JSON::Object::Ptr args, const char* key, int def = 0) {
 float argFloat(Poco::JSON::Object::Ptr args, const char* key, float def = 0.f) {
     if (!args || !args->has(key)) return def;
     try {
-        return args->get(key).convert<float>();
+        return static_cast<float>(args->get(key).convert<double>());
     } catch (...) {
         return def;
     }
+}
+
+glm::vec3 argVec3(Poco::JSON::Object::Ptr args, const char* key, const glm::vec3& def = {}) {
+    if (!args || !args->has(key)) return def;
+    try {
+        auto arr = args->getArray(key);
+        if (arr && arr->size() >= 3) {
+            return glm::vec3(static_cast<float>(arr->get(0).convert<double>()),
+                             static_cast<float>(arr->get(1).convert<double>()),
+                             static_cast<float>(arr->get(2).convert<double>()));
+        }
+    } catch (...) {
+    }
+    return def;
+}
+
+Poco::JSON::Array::Ptr vec3ToArray(const glm::vec3& v) {
+    Poco::JSON::Array::Ptr arr = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+    arr->add(v.x);
+    arr->add(v.y);
+    arr->add(v.z);
+    return arr;
 }
 
 bool argBool(Poco::JSON::Object::Ptr args, const char* key, bool def = false) {
@@ -197,6 +223,26 @@ std::vector<eve::physics::World*>& mcpPhysicsWorlds() {
 eve::physics::World* mcpPhysicsWorld(int id) {
     auto& ws = mcpPhysicsWorlds();
     return (id >= 0 && id < static_cast<int>(ws.size())) ? ws[static_cast<size_t>(id)] : nullptr;
+}
+
+std::string renderStatusText(eve::graphics::Graphics* gfx) {
+    Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    if (!gfx) {
+        o->set("error", "Graphics module not available");
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+    o->set("width", gfx->getWidth());
+    o->set("height", gfx->getHeight());
+    o->set("pixelWidth", gfx->getPixelWidth());
+    o->set("pixelHeight", gfx->getPixelHeight());
+    o->set("had3DThisFrame", gfx->had3DThisFrame());
+    o->set("readbackEnabled", gfx->isScreenReadbackEnabled());
+    o->set("renderFlowEvents", static_cast<int>(DevTool::instance().renderFlow().eventCount()));
+    return mcpStringify(Poco::Dynamic::Var(o));
+}
+
+eve::graphics::Graphics* mcpGraphics() {
+    return eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
 }
 
 std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object::Ptr args) {
@@ -412,20 +458,24 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     // ============================= Render =============================
     if (name == "eve_render_status") {
-        auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        if (!gfx) {
-            o->set("error", "Graphics module not available");
-            return mcpStringify(Poco::Dynamic::Var(o));
-        }
-        o->set("width", gfx->getWidth());
-        o->set("height", gfx->getHeight());
-        o->set("pixelWidth", gfx->getPixelWidth());
-        o->set("pixelHeight", gfx->getPixelHeight());
-        o->set("had3DThisFrame", gfx->had3DThisFrame());
-        o->set("readbackEnabled", gfx->isScreenReadbackEnabled());
-        o->set("renderFlowEvents", static_cast<int>(DevTool::instance().renderFlow().eventCount()));
-        return mcpStringify(Poco::Dynamic::Var(o));
+        return renderStatusText(mcpGraphics());
+    }
+
+    if (name == "eve_render_describe") {
+        const bool fresh = argBool(args, "fresh", false);
+        const std::string reason = argString(args, "reason");
+        return RenderVision::instance().describe(mcpGraphics(), renderStatusText(mcpGraphics()),
+                                                 fresh, reason);
+    }
+
+    if (name == "eve_render_vision_config") {
+        auto& rv = RenderVision::instance();
+        if (args && args->has("baseUrl")) rv.setBaseUrl(argString(args, "baseUrl"));
+        if (args && args->has("apiKey")) rv.setApiKey(argString(args, "apiKey"));
+        if (args && args->has("model")) rv.setModel(argString(args, "model"));
+        if (args && args->has("path")) rv.setPath(argString(args, "path"));
+        if (args && args->has("timeoutMs")) rv.setTimeoutMs(argInt(args, "timeoutMs", 20000));
+        return rv.configJson();
     }
 
     if (name == "eve_screenshot") {
@@ -689,6 +739,96 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
     if (name == "eve_ai_log") return AiPanel::instance().formatLog(100);
 
+    // ---- 场景巡检工具集（图像与 3D 几何数据严格同步） ----
+    if (name == "inspect_generate_scene_camera_views") {
+        const glm::vec3 center = argVec3(args, "center");
+        const float     fov    = argFloat(args, "fov", 60.f);
+        auto            views  = SceneInspect::instance().generateViews(center, fov);
+        Poco::JSON::Object::Ptr root = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        Poco::JSON::Array::Ptr  arr  = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+        for (const auto& v : views) {
+            Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            o->set("name", v.name);
+            o->set("kind", v.kind);
+            o->set("eye", vec3ToArray(v.eye));
+            o->set("target", vec3ToArray(v.target));
+            o->set("fov", static_cast<double>(v.fovYDeg));
+            arr->add(o);
+        }
+        root->set("views", arr);
+        return mcpStringify(Poco::Dynamic::Var(root));
+    }
+
+    if (name == "set_camera_pose") {
+        const glm::vec3 pos = argVec3(args, "pos", glm::vec3(0.f, 1.8f, 0.f));
+        const glm::vec3 rot = argVec3(args, "rot", glm::vec3(0.f));
+        const float     fov = argFloat(args, "fov", 0.f);
+        const bool      ok  = SceneInspect::instance().setCameraPose(pos, rot, fov);
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("ok", ok);
+        if (!ok) {
+            o->set("error", "failed to set camera pose (no Graphics/Camera3D)");
+        } else {
+            try {
+                Poco::JSON::Parser parser;
+                o->set("pose", parser.parse(SceneInspect::instance().currentPoseJson()));
+            } catch (...) {
+            }
+        }
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "capture_render_frame") {
+        const std::string dir = argString(args, "dir");
+        const std::string tag = argString(args, "tag", "frame");
+        std::vector<std::string> buffers;
+        if (args && args->has("buffers")) {
+            try {
+                auto arr = args->getArray("buffers");
+                if (arr) {
+                    for (size_t i = 0; i < arr->size(); ++i)
+                        buffers.push_back(arr->get(i).convert<std::string>());
+                }
+            } catch (...) {
+            }
+        }
+        const auto res = SceneInspect::instance().capture(dir, tag, buffers);
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("ok", res.ok);
+        if (res.ok) {
+            o->set("png", res.pngPath);
+            o->set("json", res.jsonPath);
+            o->set("width", res.width);
+            o->set("height", res.height);
+            o->set("entityCount", res.entityCount);
+            if (!res.depthPngPath.empty()) o->set("depthPng", res.depthPngPath);
+            if (!res.normalPngPath.empty()) o->set("normalPng", res.normalPngPath);
+            if (!res.idPngPath.empty()) o->set("idPng", res.idPngPath);
+            if (!res.idJsonPath.empty()) o->set("idJson", res.idJsonPath);
+            if (!res.unsupported.empty()) {
+                Poco::JSON::Array::Ptr uns = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+                for (const auto& u : res.unsupported) uns->add(u);
+                o->set("unsupported", uns);
+            }
+        } else {
+            o->set("error", res.error);
+        }
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "get_visible_entities_screen_bbox") {
+        const bool hasPos    = args && args->has("pos");
+        const bool hasTarget = args && args->has("target");
+        if (hasPos && hasTarget) {
+            const glm::vec3 eye = argVec3(args, "pos");
+            const glm::vec3 tgt = argVec3(args, "target");
+            const float     fov = argFloat(args, "fov", 0.f);
+            return SceneInspect::instance().visibleEntitiesJson(&eye, &tgt, fov);
+        }
+        const float fov = argFloat(args, "fov", 0.f);
+        return SceneInspect::instance().visibleEntitiesJson(nullptr, nullptr, fov);
+    }
+
     return "error: unknown tool " + name;
 }
 
@@ -770,6 +910,18 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}},"
         "{\"name\":\"eve_ai_log\",\"description\":\"Read the DevTools AI session log.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"inspect_generate_scene_camera_views\",\"description\":\"Generate a standard set of inspection camera views (road-level, bird's-eye, corner close-up, vista) around a center point.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"center\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"[x,y,z] center point to orbit (default [0,0,0])\"},\"fov\":{\"type\":\"number\",\"description\":\"base vertical FOV in degrees (default 60)\"}}}}"
+        ","
+        "{\"name\":\"set_camera_pose\",\"description\":\"Set the active camera pose from position + Euler rotation + optional FOV.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"pos\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"[x,y,z] camera position\"},\"rot\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"[yawDeg,pitchDeg] facing\"},\"fov\":{\"type\":\"number\",\"description\":\"vertical FOV in degrees (0=keep current)\"}},\"required\":[\"pos\",\"rot\"]}}"
+        ","
+        "{\"name\":\"capture_render_frame\",\"description\":\"Atomically capture the current view and export matching buffers. PNG color frame + geometry JSON always; 'buffers' may add depth/normal (GBuffer), id (per-pixel render ID mask with JSON mapping) — shadow is unsupported on current backend.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"dir\":{\"type\":\"string\",\"description\":\"output directory (default: cache dir)\"},\"tag\":{\"type\":\"string\",\"description\":\"file name tag (default 'frame')\"},\"buffers\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"optional: 'color'|'depth'|'normal'|'id' (default ['color'])\"}}}"
+        ","
+        "{\"name\":\"get_visible_entities_screen_bbox\",\"description\":\"Return visible scene entities in the frustum with their screen-space bbox, world AABB, id and asset label.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"pos\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"optional [x,y,z] camera eye override\"},\"target\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"optional [x,y,z] look target override\"},\"fov\":{\"type\":\"number\",\"description\":\"optional FOV override (degrees)\"}}}}"
+        ","
         "{\"name\":\"eve_scene_status\",\"description\":\"Active scene host name, node count and root id.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_scene_nodes\",\"description\":\"List nodes of the active scene host (id/name/path/visible).\","
@@ -796,6 +948,10 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_screenshot\",\"description\":\"Capture the current frame to a PNG file (enables readback).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_render_describe\",\"description\":\"Capture the current frame and ask the configured vision model to describe it and relate it to render parameters. Cached unless fresh=true.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"fresh\":{\"type\":\"boolean\"},\"reason\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_render_vision_config\",\"description\":\"Set/read the vision model config (baseUrl/apiKey/model/path/timeoutMs). No args returns current config (key masked).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"baseUrl\":{\"type\":\"string\"},\"apiKey\":{\"type\":\"string\"},\"model\":{\"type\":\"string\"},\"path\":{\"type\":\"string\"},\"timeoutMs\":{\"type\":\"integer\"}}}},"
         "{\"name\":\"eve_particles_status\",\"description\":\"Report live particle emitter count.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_particles_emit\",\"description\":\"Spawn a particle emitter at a position (optionally a preset) and emit particles.\","
@@ -1056,6 +1212,12 @@ void McpServer::poll() {
     if (!listening_.load()) return;
     acceptNonBlocking();
     readAndDispatch();
+    // Main-thread hook: run a pending breakpoint/error vision dump (if any) on
+    // the render thread where Graphics readback is safe.
+    if (RenderVision::instance().pending()) {
+        auto* gfx = mcpGraphics();
+        if (gfx) RenderVision::instance().pollPending(gfx, renderStatusText(gfx));
+    }
 }
 
 void McpServer::acceptNonBlocking() {

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evengine.dev/schema/creative-brain-assets.json",
+  "title": "EVEngine Creative Brain asset catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assets"],
+  "properties": {
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "category", "tags"],
+        "properties": {
+          "id": {"type": "string", "description": "Unique asset id; used as the batch 'place' target."},
+          "category": {
+            "type": "string",
+            "enum": ["material", "plant", "prop", "decoration", "mesh", "character"]
+          },
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "style_tags": {"type": "array", "items": {"type": "string"}, "description": "Lower-case style keywords matched against the scene style string."},
+          "recipe": {"type": ["string", "null"], "description": "Optional procgen recipe id (tex.* / pbr.* / mesh.*)."},
+          "source": {"type": "string", "enum": ["local", "remote"], "default": "local"}
+        }
+      }
+    }
+  }
+}

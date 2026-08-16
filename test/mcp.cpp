@@ -173,6 +173,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundShot   = false;
     bool foundParticles = false;
     bool foundAudio  = false;
+    bool foundVision = false;
+    bool foundVcfg   = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto t = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
@@ -184,6 +186,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_screenshot") foundShot = true;
         if (name == "eve_particles_emit") foundParticles = true;
         if (name == "eve_audio_set_volume") foundAudio = true;
+        if (name == "eve_render_describe") foundVision = true;
+        if (name == "eve_render_vision_config") foundVcfg = true;
     }
     CHECK(foundStatus);
     CHECK(foundEval);
@@ -193,6 +197,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundShot);
     CHECK(foundParticles);
     CHECK(foundAudio);
+    CHECK(foundVision);
+    CHECK(foundVcfg);
 
     client.sendRequest(3, "tools/call",
                        "{\"name\":\"eve_status\",\"arguments\":{}}");
@@ -246,6 +252,11 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string physText =
         textOf(9, "{\"name\":\"eve_physics_list_worlds\",\"arguments\":{}}");
     CHECK(physText.find("[") != std::string::npos);
+    // Vision config tool returns JSON config (no network call, no crash).
+    const std::string vcfgText =
+        textOf(10, "{\"name\":\"eve_render_vision_config\",\"arguments\":{}}");
+    CHECK(vcfgText.find("{") != std::string::npos);
+    CHECK(vcfgText.find("apiKeySet") != std::string::npos);
 
     mcp.stop();
     dt.detach();

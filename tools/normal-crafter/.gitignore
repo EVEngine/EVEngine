@@ -1,0 +1,9 @@
+# NormalCrafter
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+models/
+*.mp4
+*.png
+*.zip

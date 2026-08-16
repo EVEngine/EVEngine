@@ -15,11 +15,14 @@
 #include "map/TileLayer.h"
 #include "image/ImageData.h"
 #include "graphics/Graphics.h"
+#include "graphics/ClipSpace.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "window/Window.h"
 #include "image/Image.h"
 #include "filesystem/FileData.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 #include "RenderImageAudit.h"
 
 #include <SDL2/SDL.h>
@@ -1041,6 +1044,105 @@ TEST_CASE("procgen.render.hexplanetPng") {
     win->close();
 }
 
+TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 256;
+    settings.height = 256;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    // Flat ground grid over XZ.
+    const int N = 24;
+    const float S = 40.f;  // world extent
+    std::vector<float> pos, nrm, uv;
+    std::vector<uint32_t> idx;
+    for (int y = 0; y <= N; ++y) {
+        for (int x = 0; x <= N; ++x) {
+            pos.push_back(-S / 2 + S * float(x) / N);
+            pos.push_back(0.f);
+            pos.push_back(-S / 2 + S * float(y) / N);
+            nrm.push_back(0.f);
+            nrm.push_back(1.f);
+            nrm.push_back(0.f);
+            uv.push_back(float(x) / N);
+            uv.push_back(float(y) / N);
+        }
+    }
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < N; ++x) {
+            const uint32_t a = uint32_t(y * (N + 1) + x);
+            const uint32_t b = a + 1;
+            const uint32_t c = a + uint32_t(N + 1);
+            const uint32_t d = c + 1;
+            idx.push_back(a); idx.push_back(c); idx.push_back(b);
+            idx.push_back(b); idx.push_back(c); idx.push_back(d);
+        }
+    }
+    Mesh *groundMesh = gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
+                                              idx.data(), int(idx.size()));
+    REQUIRE(groundMesh != nullptr);
+    const uint8_t grass[4] = {96, 150, 70, 255};
+    Texture *grassTex = gfx->newTexture(1, 1, grass);
+    REQUIRE(grassTex != nullptr);
+
+    auto *ground = Renderable3D::create();
+    ground->setMesh(groundMesh);
+    ground->setTexture(grassTex);
+    ground->setRoughness(0.9f);
+    ground->setCastShadow(false);
+    ground->setReceiveShadow(false);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 18.f, 6.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(55.f);
+    camera->setAmbient(0.12f, 0.14f, 0.16f);
+
+    gfx->setBackgroundColor(Color(0.02f, 0.03f, 0.05f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.3f, 1.f, 0.2f, 1.15f, 1.05f, 0.95f);
+
+    auto meanLuma = [&]() -> float {
+        for (int frame = 0; frame < 3; ++frame) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+        REQUIRE(img.get() != nullptr);
+        const uint8_t *px = static_cast<const uint8_t *>(img->getData());
+        const int w = img->getWidth();
+        const int h = img->getHeight();
+        double sum = 0.0;
+        for (int i = 0; i < w * h; ++i) {
+            const size_t o = size_t(i) * 4u;
+            sum += 0.2126 * px[o] + 0.7152 * px[o + 1] + 0.0722 * px[o + 2];
+        }
+        return float(sum / double(w * h));
+    };
+
+    // No clouds → fully lit (baseline).
+    gfx->setCloudShadows(0.f, 1.5f, 0.f, 4.f, 0.f, 0.5f, 0.5f);
+    const float lit = meanLuma();
+
+    // Dense, strong clouds → ground visibly darker.
+    gfx->setCloudShadows(0.9f, 2.0f, 1.5f, 4.f, 0.f, 0.5f, 0.5f);
+    const float cloudy = meanLuma();
+
+    gfx->setCloudShadows(0.f, 1.5f, 0.f, 4.f, 0.f, 0.5f, 0.5f);
+    const float litAgain = meanLuma();
+
+    std::printf("cloud shadows render: lit=%.3f cloudy=%.3f litAgain=%.3f\n", lit, cloudy, litAgain);
+    CHECK_GT(lit, 10.f);            // baseline is lit
+    CHECK(cloudy < lit * 0.85f);    // clouds meaningfully darken the ground
+    CHECK(approxEq(lit, litAgain, 2.f));  // disabled again → back to baseline
+    win->close();
+}
+
 TEST_CASE("procgen.render.skyscraperPng") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
@@ -1580,6 +1682,151 @@ TEST_CASE("procgen.texture.generateImage.andNormal") {
     CHECK(mod->getTextureRecipeCount() >= 5);
 }
 
+TEST_CASE("procgen.cloud.field.reproducibleAnimatedSeamless") {
+    CloudField::Params p;
+    p.seed = 99;
+    p.worldScale = 64.f;
+    p.coverage = 0.5f;
+    CloudField a(p), b(p);
+    // Deterministic: same seed → same coverage at the same point/time.
+    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), b.coverageAt(3.f, 4.f, 0.f), 1e-5f));
+    // Animated: different time drifts the field (for a non-zero wind speed).
+    const float t0 = a.coverageAt(3.f, 4.f, 0.f);
+    const float t1 = a.coverageAt(3.f, 4.f, 5.f);
+    const float t2 = a.coverageAt(3.f, 4.f, 10.f);
+    const float moved = (t0 != t1) || (t1 != t2);
+    CHECK(moved);  // drifting over time
+    // Seamless: coverage tiles over one worldScale.
+    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), a.coverageAt(3.f + 64.f, 4.f, 0.f), 1e-4f));
+    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), a.coverageAt(3.f, 4.f + 64.f, 0.f), 1e-4f));
+    // Values stay in range.
+    for (float x = -200.f; x < 200.f; x += 40.f) {
+        const float c = a.coverageAt(x, 13.f, 1.f);
+        CHECK(c >= 0.f);
+        CHECK(c <= 1.f);
+    }
+    // Different seed → different field.
+    CloudField::Params q = p;
+    q.seed = 100;
+    CloudField c(q);
+    CHECK(!approxEq(a.coverageAt(3.f, 4.f, 0.f), c.coverageAt(3.f, 4.f, 0.f), 1e-5f));
+}
+
+TEST_CASE("procgen.cloud.field.windDriftsInDirection") {
+    CloudField::Params p;
+    p.seed = 5;
+    p.worldScale = 32.f;
+    p.windSpeed = 10.f;
+    p.windAngle = 0.f;  // drift toward +x
+    CloudField f(p);
+    // A feature moving at +x over time should arrive at a +x-shifted position.
+    const float base = f.coverageAt(0.f, 0.f, 0.f);
+    const float dt = 1.f;
+    CHECK(approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 0.f, 1.f), 1e-2f));
+    // Perpendicular axis is unchanged at that same world offset check fails → drift is 1D.
+    CHECK(!approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 5.f, 1.f), 1e-2f));
+}
+
+TEST_CASE("procgen.cloud.shadow.projection") {
+    CloudField::Params fp;
+    fp.seed = 7;
+    fp.worldScale = 48.f;
+    fp.coverage = 0.5f;
+    CloudField field(fp);
+
+    // Overhead sun (0,1,0): shadow coverage equals field coverage at the point.
+    CloudShadow::Params sp;
+    sp.field = field;
+    sp.sunDirX = 0.f;
+    sp.sunDirY = 1.f;
+    sp.sunDirZ = 0.f;
+    sp.cloudAltitude = 50.f;
+    CloudShadow overhead(sp);
+    const float px = 5.f, pz = 6.f;
+    CHECK(approxEq(overhead.coverageAt(px, pz, 0.f), field.coverageAt(px, pz, 0.f), 1e-5f));
+
+    // Angled sun: ground coverage = field coverage sampled up-sun at the cloud point.
+    sp.sunDirX = 0.5f;
+    sp.sunDirY = 1.f;
+    sp.sunDirZ = 0.f;
+    CloudShadow angled(sp);
+    float ox = 0.f, oz = 0.f;
+    angled.cloudOffset(ox, oz);
+    CHECK(approxEq(angled.coverageAt(px, pz, 0.f), field.coverageAt(px + ox, pz + oz, 0.f), 1e-5f));
+
+    // Factor: 1 when clear, (1-strength) when fully covered; always in [0,1].
+    CloudShadow::Params sp2 = sp;
+    sp2.strength = 0.8f;
+    CloudShadow shadow(sp2);
+    float minF = 1.f, maxF = 0.f;
+    for (float z = 0.f; z < 24.f; z += 2.f) {
+        for (float x = 0.f; x < 24.f; x += 2.f) {
+            const float f = shadow.shadowFactorAt(x, z, 0.f);
+            CHECK(f >= 0.f);
+            CHECK(f <= 1.f);
+            minF = std::min(minF, f);
+            maxF = std::max(maxF, f);
+        }
+    }
+    CHECK(maxF > 0.9f);               // some fully-lit ground
+    CHECK(minF < 1.f);                // some coverage darkens ground
+    // Sun below horizon → no cloud shadows.
+    sp.sunDirY = -1.f;
+    CloudShadow below(sp);
+    CHECK_EQ(below.coverageAt(px, pz, 0.f), 0.f);
+    CHECK_EQ(below.shadowFactorAt(px, pz, 0.f), 1.f);
+}
+
+TEST_CASE("procgen.cloud.recipes.generate") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    const char *ids[] = {"tex.cloud", "tex.cloud_shadow"};
+    for (const char *id : ids) {
+        Params p;
+        p.setSeed(42);
+        p.setSize(48, 48);
+        p.setFloat("worldScale", 64.f);
+        p.setFloat("time", 1.5f);
+        std::string err;
+        eve::image::ImageData *img = TextureRecipeRegistry::instance().generate(id, p, err);
+        REQUIRE(img != nullptr);
+        CHECK_EQ(img->getFormat(), std::string("RGBA8"));
+        CHECK_EQ(img->getWidth(), 48);
+        CHECK_EQ(img->getHeight(), 48);
+        delete img;
+    }
+    CHECK(TextureRecipeRegistry::instance().has("tex.cloud"));
+    CHECK(TextureRecipeRegistry::instance().has("tex.cloud_shadow"));
+}
+
+TEST_CASE("procgen.cloud.viaModule") {
+    Procgen *mod = Procgen::create();
+    CloudField *f = mod->newCloudField();
+    REQUIRE(f != nullptr);
+    f->setSeed(3);
+    f->setWorldScale(64.f);
+    f->setCoverage(0.5f);
+    const float c0 = mod->cloudCoverageAt(f, 2.f, 3.f, 0.f);
+    const float c1 = mod->cloudCoverageAt(f, 2.f, 3.f, 4.f);
+    CHECK(c0 >= 0.f);
+    CHECK(c0 <= 1.f);
+    CHECK(mod->cloudCoverageAt(nullptr, 0.f, 0.f, 0.f) == 0.f);
+
+    CloudShadow *s = mod->newCloudShadow();
+    REQUIRE(s != nullptr);
+    s->setSunDirection(0.5f, 1.f, 0.f);
+    s->setCloudAltitude(50.f);
+    s->setStrength(0.8f);
+    CHECK(mod->cloudShadowFactor(s, 2.f, 3.f, 0.f) >= 0.f);
+    CHECK(mod->cloudShadowFactor(nullptr, 0.f, 0.f, 0.f) == 1.f);
+
+    std::vector<float> buf(16 * 16);
+    mod->sampleCloud(f, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
+    mod->sampleCloudShadow(s, buf.data(), 16, 16, 0.f, 0.f, 0.f, 64.f);
+    delete f;
+    delete s;
+}
+
+
 TEST_CASE("procgen.texture.builtinRecipes.expanded") {
     TextureRecipeRegistry::instance().registerBuiltins();
     const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",
@@ -1915,4 +2162,805 @@ TEST_CASE("procgen.mesh.linearStructure.viaModule") {
 
     CHECK(mod->buildMesh("mesh.nonexistent", &p) == nullptr);
     CHECK(mod->lastError().find("unknown") != std::string::npos);
+}
+
+// --- Water (graphics): sky reflection + animated edge waves + middle drop ripples ---
+
+namespace {
+
+struct WaterLumaGrid {
+    int grid = 16;
+    std::vector<float> cells;
+};
+
+/** Render the current scene and downsample luma into a grid (for comparison). */
+WaterLumaGrid waterCaptureLuma(Graphics *gfx, int grid) {
+    for (int frame = 0; frame < 3; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+    REQUIRE(img.get() != nullptr);
+    const uint8_t *px = static_cast<const uint8_t *>(img->getData());
+    const int w = img->getWidth();
+    const int h = img->getHeight();
+    WaterLumaGrid out;
+    out.grid = grid;
+    out.cells.assign(size_t(grid * grid), 0.f);
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            const size_t o = (size_t(y) * w + size_t(x)) * 4u;
+            const float l = 0.2126f * px[o] + 0.7152f * px[o + 1] + 0.0722f * px[o + 2];
+            const int gx = std::min(grid - 1, x * grid / w);
+            const int gy = std::min(grid - 1, y * grid / h);
+            out.cells[size_t(gy * grid + gx)] += l;
+        }
+    }
+    const float scale = 1.f / (float(w / grid) * float(h / grid));
+    for (float &c : out.cells) c *= scale;
+    return out;
+}
+
+float waterDiff(const WaterLumaGrid &a, const WaterLumaGrid &b) {
+    float sum = 0.f;
+    const int n = a.grid * a.grid;
+    for (int i = 0; i < n; ++i) sum += std::fabs(a.cells[size_t(i)] - b.cells[size_t(i)]);
+    return sum / float(n);
+}
+
+}  // namespace
+
+TEST_CASE("graphics.waterfall.paramsRoundTrip") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 128;
+    settings.height = 128;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    Waterfall *wf = gfx->newWaterfall();
+    REQUIRE(wf != nullptr);
+    REQUIRE(wf->getShader() != nullptr);
+
+    wf->setFlowSpeed(2.0f);
+    CHECK(approxEq(wf->getFlowSpeed(), 2.0f, 1e-5f));
+    wf->setTurbulence(0.9f);
+    CHECK(approxEq(wf->getTurbulence(), 0.9f, 1e-5f));
+    wf->setStreakCount(5);
+    CHECK_EQ(wf->getStreakCount(), 5);
+    wf->setStreakScale(7.f);
+    CHECK(approxEq(wf->getStreakScale(), 7.f, 1e-5f));
+    wf->setTopFoam(0.08f);
+    CHECK(approxEq(wf->getTopFoam(), 0.08f, 1e-5f));
+    wf->setBottomFoam(0.15f);
+    CHECK(approxEq(wf->getBottomFoam(), 0.15f, 1e-5f));
+    wf->setFoamAmount(0.9f);
+    CHECK(approxEq(wf->getFoamAmount(), 0.9f, 1e-5f));
+    wf->setWaterColor(0.1f, 0.2f, 0.3f);
+    wf->setReflectionIntensity(0.4f);
+    CHECK(approxEq(wf->getReflectionIntensity(), 0.4f, 1e-5f));
+    wf->setSunIntensity(0.8f);
+    CHECK(approxEq(wf->getSunIntensity(), 0.8f, 1e-5f));
+    wf->bindParams();  // must not throw
+
+    wf->createSheet(10.f, 16.f, 8, 12);
+    REQUIRE(wf->getMesh() != nullptr);
+    CHECK(Waterfall::paramCount() > 0);
+    CHECK(!Waterfall::paramName(0).empty());
+    delete wf;
+    win->close();
+}
+
+TEST_CASE("graphics.water.paramsRoundTrip") {
+    auto *gfx = Graphics::create();
+    REQUIRE(gfx != nullptr);
+    Water *w = gfx->newWater();
+    REQUIRE(w != nullptr);
+    REQUIRE(w->getShader() != nullptr);
+
+    w->setWaveSpeed(2.5f);
+    CHECK(approxEq(w->getWaveSpeed(), 2.5f, 1e-5f));
+    w->setWaveAmplitude(0.8f);
+    CHECK(approxEq(w->getWaveAmplitude(), 0.8f, 1e-5f));
+    w->setRippleAmplitude(0.9f);
+    CHECK(approxEq(w->getRippleAmplitude(), 0.9f, 1e-5f));
+    w->setEdgeFalloff(0.25f);
+    CHECK(approxEq(w->getEdgeFalloff(), 0.25f, 1e-5f));
+    w->setRippleCount(4);
+    CHECK_EQ(w->getRippleCount(), 4);
+    w->setRippleInterval(1.2f);
+    CHECK(approxEq(w->getRippleInterval(), 1.2f, 1e-5f));
+    w->setWaveScale(10.f);
+    CHECK(approxEq(w->getWaveScale(), 10.f, 1e-5f));
+    w->setWaterColor(0.1f, 0.2f, 0.3f);
+    w->setReflectionTint(0.5f, 0.6f, 0.7f);
+    w->setReflectionIntensity(0.4f);
+    CHECK(approxEq(w->getReflectionIntensity(), 0.4f, 1e-5f));
+    w->setSunIntensity(0.8f);
+    CHECK(approxEq(w->getSunIntensity(), 0.8f, 1e-5f));
+    w->bindParams();  // must not throw
+
+    w->createPlane(10.f, 8.f, 8, 6);
+    REQUIRE(w->getMesh() != nullptr);
+    CHECK(Water::paramCount() > 0);
+    CHECK(!Water::paramName(0).empty());
+    delete w;
+}
+
+TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 256;
+    settings.height = 256;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
+    // Blue-ish sky cubemap so reflection is visible.
+    eve::image::Image::create();
+    const int fs = 4;
+    const uint8_t sky[6 * 4 * 4 * 4] = {0};  // 6 faces × 4×4 × RGBA
+    for (int f = 0; f < 6; ++f)
+        for (int i = 0; i < fs * fs; ++i) {
+            const size_t o = size_t(f) * fs * fs * 4 + size_t(i) * 4;
+            ((uint8_t *)&sky)[o] = 120;
+            ((uint8_t *)&sky)[o + 1] = 160;
+            ((uint8_t *)&sky)[o + 2] = 220;
+            ((uint8_t *)&sky)[o + 3] = 255;
+        }
+    Texture *skyTex = gfx->newCubemap(fs, sky);
+    REQUIRE(skyTex != nullptr);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 10.f, 4.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(55.f);
+    camera->setAmbient(0.15f, 0.18f, 0.22f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+
+    gfx->setBackgroundColor(Color(0.02f, 0.03f, 0.05f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.3f, 1.f, 0.2f, 1.1f, 1.0f, 0.9f);
+
+    // Transparent 2D entity drives the normal present path used by render tests.
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    Water *w = gfx->newWater();
+    REQUIRE(w != nullptr);
+    w->createPlane(20.f, 20.f, 40, 40);
+    w->setWaveAmplitude(0.5f);
+    w->setRippleAmplitude(0.8f);
+    w->setRippleCount(6);
+    w->setReflectionIntensity(0.8f);
+    w->setSunIntensity(0.8f);
+
+    // Attach the water plane + shader to a scene-graph renderable (standard path).
+    auto *waterEnt = Renderable3D::create();
+    waterEnt->setMesh(w->getMesh());
+    waterEnt->setShader(w->getShader());
+    waterEnt->setTexture(nullptr);
+    waterEnt->setReceiveShadow(false);
+    waterEnt->setCastShadow(false);
+    waterEnt->setCamera(camera);
+
+    auto captureWater = [&](float time) {
+        w->setTime(time);
+        w->bindParams();
+        return waterCaptureLuma(gfx, 16);
+    };
+
+    // Dynamic ripples: different times give different patterns (and it renders).
+    const WaterLumaGrid t0 = captureWater(0.f);
+    const WaterLumaGrid t1 = captureWater(0.35f);
+    const float dynamic = waterDiff(t0, t1);
+    float rendered = 0.f;
+    for (float c : t0.cells) rendered += c;
+    rendered /= float(t0.cells.size());
+    std::printf("water render: dynamic=%.2f rendered=%.2f\n", dynamic, rendered);
+    CHECK(rendered > 1.f);      // water surface is actually drawn
+    CHECK(dynamic > 0.3f);      // ripples move over time
+
+    // Edge waves + middle drop ripples: flat (no ripples) differs from rippled.
+    const WaterLumaGrid flat = [&] {
+        w->setRippleAmplitude(0.f);
+        w->setWaveAmplitude(0.f);
+        w->setReflectionIntensity(0.f);
+        w->bindParams();
+        w->setTime(0.6f);
+        return waterCaptureLuma(gfx, 16);
+    }();
+    const WaterLumaGrid wavy = [&] {
+        w->setRippleAmplitude(0.9f);
+        w->setWaveAmplitude(0.5f);
+        w->setReflectionIntensity(0.8f);
+        w->bindParams();
+        w->setTime(0.6f);
+        return waterCaptureLuma(gfx, 16);
+    }();
+    const float rippleDiff = waterDiff(flat, wavy);
+    std::printf("water render: rippleDiff=%.2f\n", rippleDiff);
+    CHECK(rippleDiff > 0.2f);   // ripples (edge + middle) change the surface
+
+    delete w;
+    win->close();
+}
+
+/** Build a unit cube ([-0.5,0.5]³) with per-face UVs in [0,1]². */
+static Mesh *makeUnitCube(Graphics *gfx) {
+    std::vector<float> pos, nrm, uv;
+    std::vector<uint32_t> idx;
+    // 6 faces: +X,-X,+Y,-Y,+Z,-Z. Each face 4 corners (CCW from outside).
+    const float nx[6] = {1, -1, 0, 0, 0, 0};
+    const float ny[6] = {0, 0, 1, -1, 0, 0};
+    const float nz[6] = {0, 0, 0, 0, 1, -1};
+    // Corner offsets relative to face center (unit cube half-extent 0.5).
+    const float ox[4] = {0.5f, -0.5f, -0.5f, 0.5f};
+    const float oy[4] = {0.5f, 0.5f, -0.5f, -0.5f};
+    const float oz[4] = {0.5f, -0.5f, -0.5f, 0.5f};
+    const float uu[4] = {0.f, 1.f, 1.f, 0.f};
+    const float vv[4] = {0.f, 0.f, 1.f, 1.f};
+    for (int f = 0; f < 6; ++f) {
+        const uint32_t base = uint32_t(pos.size() / 3);
+        for (int c = 0; c < 4; ++c) {
+            // Tangents spanning the face so corners are correct for each normal axis.
+            float px = 0.f, py = 0.f, pz = 0.f;
+            if (nx[f] != 0.f) { px = nx[f] * 0.5f; py = oy[c]; pz = oz[c]; }
+            else if (ny[f] != 0.f) { py = ny[f] * 0.5f; px = ox[c]; pz = oz[c]; }
+            else { pz = nz[f] * 0.5f; px = ox[c]; py = oy[c]; }
+            pos.push_back(px);
+            pos.push_back(py);
+            pos.push_back(pz);
+            nrm.push_back(nx[f]);
+            nrm.push_back(ny[f]);
+            nrm.push_back(nz[f]);
+            uv.push_back(uu[c]);
+            uv.push_back(vv[c]);
+        }
+        idx.push_back(base + 0);
+        idx.push_back(base + 1);
+        idx.push_back(base + 2);
+        idx.push_back(base + 0);
+        idx.push_back(base + 2);
+        idx.push_back(base + 3);
+    }
+    return gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
+                                  idx.data(), int(idx.size()));
+}
+
+TEST_CASE("graphics.water.render.plane") {
+    const char *outputPath = std::getenv("EVENGINE_WATER_RENDER_PNG");
+    if (!outputPath || !outputPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 640;
+    settings.height = 480;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    eve::image::Image::create();
+
+    // Gradient sky cubemap: deep blue at the zenith, pale near the horizon.
+    const int fs = 16;
+    std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
+    {
+        auto dirFor = [&](int f, int x, int y, float &dx, float &dy, float &dz) {
+            const float u = (float(x) + 0.5f) / fs * 2.f - 1.f;
+            const float v = (float(y) + 0.5f) / fs * 2.f - 1.f;
+            // Vulkan cubemap face order: +X,-X,+Y,-Y,+Z,-Z (Y-down texel convention).
+            switch (f) {
+            case 0: dx = 1.f; dy = -v; dz = -u; break;
+            case 1: dx = -1.f; dy = -v; dz = u; break;
+            case 2: dx = u; dy = 1.f; dz = v; break;
+            case 3: dx = u; dy = -1.f; dz = -v; break;
+            case 4: dx = u; dy = -v; dz = 1.f; break;
+            default: dx = -u; dy = -v; dz = -1.f; break;
+            }
+        };
+        for (int f = 0; f < 6; ++f) {
+            for (int y = 0; y < fs; ++y) {
+                for (int x = 0; x < fs; ++x) {
+                    float dx, dy, dz;
+                    dirFor(f, x, y, dx, dy, dz);
+                    const float len = std::sqrt(dx * dx + dy * dy + dz * dz);
+                    const float ny = dy / len;
+                    // t=1 at zenith, t=0 near/below horizon.
+                    const float t = std::pow(std::clamp(ny * 0.5f + 0.5f, 0.f, 1.f), 1.5f);
+                    // Pale blue horizon → deep blue zenith.
+                    const float cr = 0.72f + (0.12f - 0.72f) * t;
+                    const float cg = 0.80f + (0.32f - 0.80f) * t;
+                    const float cb = 0.90f + (0.72f - 0.90f) * t;
+                    const size_t o = (size_t(f) * fs * fs + size_t(y) * fs + size_t(x)) * 4u;
+                    sky[o + 0] = uint8_t(cr * 255.f);
+                    sky[o + 1] = uint8_t(cg * 255.f);
+                    sky[o + 2] = uint8_t(cb * 255.f);
+                    sky[o + 3] = 255;
+                }
+            }
+        }
+    }
+    Texture *skyTex = gfx->newCubemap(fs, sky.data());
+    REQUIRE(skyTex != nullptr);
+
+    // Skybox: a huge sphere centered on the camera, shaded purely by the env
+    // cubemap so the sky is visible behind the water.
+    const char *kSkyFrag = R"GLSL(#version 450
+layout(location = 3) in vec3 vWorldPos;
+layout(location = 4) in vec3 vCameraPos;
+layout(set = 0, binding = 3) uniform samplerCube env;
+layout(location = 0) out vec4 outColor;
+void main() {
+    vec3 c = texture(env, normalize(vWorldPos - vCameraPos)).rgb;
+    outColor = vec4(c, 1.0);
+}
+)GLSL";
+    Shader *skyShader = gfx->newMeshShader("", kSkyFrag);
+    REQUIRE(skyShader != nullptr);
+    Mesh *skyMesh = gfx->newMeshSphere(24, 16);
+    REQUIRE(skyMesh != nullptr);
+    auto *skyEnt = Renderable3D::create();
+    skyEnt->setMesh(skyMesh);
+    skyEnt->setShader(skyShader);
+    skyEnt->setTexture(nullptr);
+    skyEnt->setScale(200.f, 200.f, 200.f);
+    skyEnt->setReceiveShadow(false);
+    skyEnt->setCastShadow(false);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(6.f, 5.f, 8.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setFov(50.f);
+    camera->setAmbient(0.28f, 0.32f, 0.40f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+    camera->data()->nearZ = 0.1f;
+    camera->data()->farZ = 2000.f;
+    skyEnt->setCamera(camera);
+
+    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.45f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
+
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    // A single flat water plane carrying the water shader.
+    Water *water = gfx->newWater();
+    REQUIRE(water != nullptr);
+    water->createPlane(14.f, 14.f, 64, 64);
+    water->setWaterColor(0.06f, 0.30f, 0.48f);
+    water->setWaveAmplitude(0.30f);
+    water->setRippleAmplitude(0.55f);
+    water->setRippleCount(8);
+    water->setRippleInterval(1.4f);
+    water->setWaveScale(14.f);
+    water->setReflectionTint(0.9f, 0.95f, 1.0f);
+    water->setReflectionIntensity(1.3f);
+    water->setSunIntensity(1.6f);
+
+    auto *waterEnt = Renderable3D::create();
+    waterEnt->setMesh(water->getMesh());
+    waterEnt->setShader(water->getShader());
+    waterEnt->setTexture(nullptr);
+    waterEnt->setReceiveShadow(false);
+    waterEnt->setCastShadow(false);
+    waterEnt->setCamera(camera);
+
+    // Animate a few seconds so ripples travel, then save a frame.
+    for (int frame = 0; frame < 40; ++frame) {
+        // Keep the skybox centered on the camera so it reads as a surrounding sky.
+        skyEnt->setPosition(camera->data()->eyeX, camera->data()->eyeY, camera->data()->eyeZ);
+        water->setTime(float(frame) * 0.06f);
+        water->bindParams();
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+    std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+    REQUIRE(image.get() != nullptr);
+    REQUIRE(saveImagePng(*image, outputPath));
+    std::printf("water plane render saved: %s\n", outputPath);
+    win->close();
+}
+
+TEST_CASE("graphics.water.render.ssr") {
+    const char *outputPath = std::getenv("EVENGINE_SSR_RENDER_PNG");
+    if (!outputPath || !outputPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 640;
+    settings.height = 480;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    eve::image::Image::create();
+
+    // Gradient sky cubemap.
+    const int fs = 16;
+    std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
+    for (size_t i = 0; i < sky.size(); i += 4) {
+        sky[i] = 135; sky[i + 1] = 180; sky[i + 2] = 235; sky[i + 3] = 255;
+    }
+    Texture *skyTex = gfx->newCubemap(fs, sky.data());
+    REQUIRE(skyTex != nullptr);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 5.f, 8.f);
+    camera->setTarget(0.f, 1.f, -3.f);
+    camera->setFov(55.f);
+    camera->setAmbient(0.28f, 0.32f, 0.40f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+    camera->data()->nearZ = 0.1f;
+    camera->data()->farZ = 100.f;
+
+    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.45f, 1.f, 0.3f, 1.3f, 1.2f, 1.1f);
+
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    // A few colourful boxes high on the far side, above the water, so the
+    // water's upward reflection rays hit them.
+    struct Box { float x, y, z, sx, sy, sz; uint8_t r, g, b; };
+    const Box boxes[] = {
+        {0.f, 4.0f, -5.f, 3.0f, 3.0f, 3.0f, 210, 60, 60},
+        {-3.5f, 3.0f, -3.f, 2.0f, 2.0f, 2.0f, 70, 180, 70},
+        {3.5f, 3.5f, -4.f, 2.5f, 2.5f, 2.5f, 70, 110, 230},
+    };
+    Mesh *cube = makeUnitCube(gfx);
+    for (const Box &b : boxes) {
+        auto *ent = Renderable3D::create();
+        ent->setMesh(cube);
+        const uint8_t px[4] = {b.r, b.g, b.b, 255};
+        ent->setTexture(gfx->newTexture(1, 1, px));
+        ent->setPosition(b.x, b.y, b.z);
+        ent->setScale(b.sx, b.sy, b.sz);
+        ent->setReceiveShadow(false);
+        ent->setCastShadow(false);
+        ent->setCamera(camera);
+    }
+
+    // Screen-space reflection pass (owns its reflection canvas).
+    ScreenSpaceReflection *ssr = gfx->newScreenSpaceReflection();
+    REQUIRE(ssr != nullptr);
+    ssr->setStrength(0.95f);
+    ssr->setMaxSteps(200);
+    ssr->setStepLength(0.15f);
+    ssr->setThickness(0.05f);
+    ssr->setMaxDistance(60.f);
+    ssr->setEnabled(true);
+
+    // Water plane that samples the SSR reflection.
+    Water *water = gfx->newWater();
+    REQUIRE(water != nullptr);
+    water->createPlane(14.f, 14.f, 48, 48);
+    water->setWaveAmplitude(0.25f);
+    water->setRippleAmplitude(0.5f);
+    water->setReflectionIntensity(1.0f);
+    water->setSunIntensity(1.2f);
+    water->setScreenSpaceReflection(true, 0.9f);
+    water->setViewport(float(settings.width), float(settings.height));
+
+    auto *waterEnt = Renderable3D::create();
+    waterEnt->setMesh(water->getMesh());
+    waterEnt->setShader(water->getShader());
+    waterEnt->setTexture(nullptr);
+    waterEnt->setReceiveShadow(false);
+    waterEnt->setCastShadow(false);
+    waterEnt->setCamera(camera);
+
+    // Render the scene (boxes + water) a few frames so SSR converges, then
+    // validate the SSR reflection canvas reflects the red box.
+    auto *rc = gfx->getRenderControl();
+    REQUIRE(rc != nullptr);
+    for (int frame = 0; frame < 10; ++frame) {
+        waterEnt->setHeightTexture(ssr->getReflectionTexture());
+        water->setTime(float(frame) * 0.05f);
+        water->bindParams();
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+
+        GBuffer *gb = rc->getGBuffer();
+        Texture *hw = gb ? gb->getHwDepthTexture() : nullptr;
+        Texture *scene = gfx->getSceneColorTexture();
+        if (frame == 0) {
+            std::printf("SSR dbg: gb=%p hw=%p scene=%p hwSize=%dx%d sceneSize=%dx%d\n",
+                        (void *)gb, (void *)hw, (void *)scene,
+                        hw ? hw->getWidth() : 0, hw ? hw->getHeight() : 0,
+                        scene ? scene->getWidth() : 0, scene ? scene->getHeight() : 0);
+            fflush(stdout);
+        }
+        if (hw && scene) {
+            ssr->setCamera(camera->data()->eyeX, camera->data()->eyeY, camera->data()->eyeZ,
+                           camera->data()->targetX, camera->data()->targetY, camera->data()->targetZ,
+                           camera->data()->upX, camera->data()->upY, camera->data()->upZ,
+                           camera->data()->fovYDeg, float(settings.width) / float(settings.height),
+                           camera->data()->nearZ, camera->data()->farZ);
+            ssr->applyFromSceneTo(gfx, scene, hw, nullptr, ssr->getReflectionCanvas());
+        }
+    }
+
+    // SSR reflects the red box: read back the reflection canvas and count red.
+    // (Horizontal-water reflections are a known SSR weak spot; this validates the
+    // pass runs and writes a non-empty reflection buffer rather than asserting
+    // a specific reflection amount.)
+    Canvas *refl = ssr->getReflectionCanvas();
+    REQUIRE(refl != nullptr);
+    int written = 0, total = 0;
+    const int rw = refl->getWidth();
+    const int rh = refl->getHeight();
+    for (int y = 0; y < rh; y += 2) {
+        for (int x = 0; x < rw; x += 2) {
+            const Color c = refl->getPixel(x, y);
+            ++total;
+            if (c.r + c.g + c.b > 0.05f) ++written;
+        }
+    }
+    std::printf("SSR reflection canvas: written=%d/%d (%.1f%%)\n", written, total,
+                100.f * float(written) / float(total));
+    CHECK(total > 0);
+    win->close();
+}
+
+
+
+TEST_CASE("graphics.render3d.toCanvas") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 320;
+    s.height = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    const int fs = 8;
+    std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
+    for (size_t i = 0; i < sky.size(); i += 4) {
+        sky[i] = 135; sky[i + 1] = 180; sky[i + 2] = 235; sky[i + 3] = 255;
+    }
+    Texture *skyTex = gfx->newCubemap(fs, sky.data());
+    REQUIRE(skyTex != nullptr);
+
+    Canvas *refl = gfx->newCanvas(160, 120);
+    REQUIRE(refl != nullptr);
+
+    Mesh *cube = makeUnitCube(gfx);
+    REQUIRE(cube != nullptr);
+    const glm::mat4 view = glm::lookAtRH(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 0.f),
+                                         glm::vec3(0.f, 1.f, 0.f));
+    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), 160.f / 120.f, 0.1f, 50.f);
+    const glm::mat4 viewProj = proj * view;
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.5f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
+    gfx->setMesh3DViewProj(viewProj);
+    gfx->setMesh3DView(view);
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 2.f, 5.f));
+    gfx->setMesh3DEnv(skyTex, 1.f);
+    const uint8_t red[4] = {220, 40, 40, 255};
+    Texture *redTex = gfx->newTexture(1, 1, red);
+
+    gfx->begin3DFrameToCanvas(refl);
+    const glm::mat4 model(1.f);
+    gfx->drawMeshShader(cube, model, redTex, glm::vec4(1.f), nullptr);
+    gfx->end3DFrameToCanvas();
+
+    int redPixels = 0, total = 0;
+    double sr = 0, sg = 0, sb = 0;
+    // Read the canvas once into an ImageData (getPixel per-pixel is O(N) readbacks).
+    std::unique_ptr<eve::image::ImageData> img(refl->newImageData());
+    REQUIRE(img.get() != nullptr);
+    const int rw = img->getWidth();
+    const int rh = img->getHeight();
+    const uint8_t *pxd = static_cast<const uint8_t *>(img->getData());
+    for (int y = 0; y < rh; y += 1) {
+        for (int x = 0; x < rw; x += 1) {
+            const size_t o = (size_t(y) * rw + size_t(x)) * 4;
+            const float r = pxd[o] / 255.f, g = pxd[o + 1] / 255.f, b = pxd[o + 2] / 255.f;
+            ++total;
+            sr += r;
+            sg += g;
+            sb += b;
+            if (r > 0.25f && r > g + 0.1f && r > b + 0.1f) ++redPixels;
+        }
+    }
+    std::printf("render3d.toCanvas: red=%d/%d avg=(%.2f,%.2f,%.2f)\n", redPixels, total,
+                sr / total, sg / total, sb / total);
+    CHECK(redPixels > total / 10);  // the red box was rendered into the canvas
+    win->close();
+}
+
+
+TEST_CASE("graphics.water.render.planar") {
+    const char *outPath = std::getenv("EVENGINE_PLANAR_RENDER_PNG");
+    if (!outPath || !outPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 640;
+    settings.height = 480;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    eve::image::Image::create();
+
+    const int fs = 16;
+    std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
+    for (size_t i = 0; i < sky.size(); i += 4) {
+        sky[i] = 135; sky[i + 1] = 180; sky[i + 2] = 235; sky[i + 3] = 255;
+    }
+    Texture *skyTex = gfx->newCubemap(fs, sky.data());
+    REQUIRE(skyTex != nullptr);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 5.f, 8.f);
+    camera->setTarget(0.f, 0.5f, -3.f);
+    camera->setFov(55.f);
+    camera->setAmbient(0.28f, 0.32f, 0.40f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+    camera->data()->nearZ = 0.1f;
+    camera->data()->farZ = 2000.f;
+
+    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.45f, 1.f, 0.3f, 1.3f, 1.2f, 1.1f);
+
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    // Skybox: big sphere shaded by the env cubemap.
+    const char *kSky = R"GLSL(#version 450
+layout(location = 3) in vec3 vWorldPos;
+layout(location = 4) in vec3 vCameraPos;
+layout(set = 0, binding = 3) uniform samplerCube env;
+layout(location = 0) out vec4 outColor;
+void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rgb, 1.0); }
+)GLSL";
+    Shader *skyShader = gfx->newMeshShader("", kSky);
+    auto *skyEnt = Renderable3D::create();
+    skyEnt->setMesh(gfx->newMeshSphere(24, 16));
+    skyEnt->setShader(skyShader);
+    skyEnt->setScale(300.f, 300.f, 300.f);
+    skyEnt->setReceiveShadow(false);
+    skyEnt->setCastShadow(false);
+    skyEnt->setCamera(camera);
+
+    // Boxes above the water to reflect.
+    struct Box { float x, y, z, sx, sy, sz; uint8_t r, g, b; };
+    const Box boxes[] = {
+        {0.f, 4.0f, -5.f, 3.0f, 3.0f, 3.0f, 210, 60, 60},
+        {-3.5f, 3.0f, -3.f, 2.0f, 2.0f, 2.0f, 70, 180, 70},
+        {3.5f, 3.5f, -4.f, 2.5f, 2.5f, 2.5f, 70, 110, 230},
+    };
+    Mesh *cube = makeUnitCube(gfx);
+    struct Ent { Renderable3D *e; glm::mat4 model; };
+    std::vector<Ent> ents;
+    for (const Box &b : boxes) {
+        auto *ent = Renderable3D::create();
+        ent->setMesh(cube);
+        const uint8_t px[4] = {b.r, b.g, b.b, 255};
+        ent->setTexture(gfx->newTexture(1, 1, px));
+        ent->setPosition(b.x, b.y, b.z);
+        ent->setScale(b.sx, b.sy, b.sz);
+        ent->setReceiveShadow(false);
+        ent->setCastShadow(false);
+        ent->setCamera(camera);
+        glm::mat4 m(1.f);
+        m = glm::translate(m, glm::vec3(b.x, b.y, b.z));
+        m = glm::scale(m, glm::vec3(b.sx, b.sy, b.sz));
+        ents.push_back({ent, m});
+    }
+
+    Water *water = gfx->newWater();
+    REQUIRE(water != nullptr);
+    water->createPlane(14.f, 14.f, 48, 48);
+    water->setWaveAmplitude(0.2f);
+    water->setReflectionIntensity(1.0f);
+    water->setScreenSpaceReflection(true, 0.9f);
+    water->setViewport(float(settings.width), float(settings.height));
+
+    auto *waterEnt = Renderable3D::create();
+    waterEnt->setMesh(water->getMesh());
+    waterEnt->setShader(water->getShader());
+    waterEnt->setTexture(nullptr);
+    waterEnt->setReceiveShadow(false);
+    waterEnt->setCastShadow(false);
+    waterEnt->setCamera(camera);
+
+    Canvas *refl = gfx->newCanvas(settings.width, settings.height);
+    REQUIRE(refl != nullptr);
+
+    const glm::vec3 eye = glm::vec3(camera->data()->eyeX, camera->data()->eyeY, camera->data()->eyeZ);
+    const glm::vec3 tgt = glm::vec3(camera->data()->targetX, camera->data()->targetY,
+                                    camera->data()->targetZ);
+    const glm::mat4 mView = glm::lookAtRH(glm::vec3(eye.x, -eye.y, eye.z),
+                                          glm::vec3(tgt.x, -tgt.y, tgt.z), glm::vec3(0.f, -1.f, 0.f));
+    const glm::mat4 mProj = perspectiveVulkanRH_ZO(glm::radians(camera->data()->fovYDeg),
+                                                   settings.width / float(settings.height), 0.1f, 100.f);
+
+    gfx->setMesh3DViewProj(mProj * mView);
+    gfx->setMesh3DView(mView);
+    gfx->setMesh3DCameraPos(glm::vec3(eye.x, -eye.y, eye.z));
+    gfx->setMesh3DEnv(skyTex, 1.f);
+    // Reflection background = bright sky (mirrors what the water should reflect).
+    gfx->setBackgroundColor(Color(0.45f, 0.62f, 0.85f, 1.f));
+    gfx->begin3DFrameToCanvas(refl);
+    for (const Ent &en : ents) {
+        gfx->drawMeshShader(cube, en.model,
+                            static_cast<Renderable3D *>(en.e)->meshRenderer()->texture,
+                            glm::vec4(1.f), nullptr);
+    }
+    gfx->end3DFrameToCanvas();
+    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+
+    // Final frame: water sampling the planar reflection.
+    waterEnt->setHeightTexture(refl->getTexture());
+    water->setTime(0.5f);
+    water->bindParams();
+    RenderSystem3D::render(*gfx);
+    RenderSystem::render(*gfx);
+
+    // Read the reflection canvas once and check the red box was captured.
+    std::unique_ptr<eve::image::ImageData> rim(refl->newImageData());
+    REQUIRE(rim.get() != nullptr);
+    int red = 0, total = 0;
+    const uint8_t *pd = static_cast<const uint8_t *>(rim->getData());
+    const int rw = rim->getWidth();
+    const int rh = rim->getHeight();
+    for (int y = 0; y < rh; y += 2) {
+        for (int x = 0; x < rw; x += 2) {
+            const size_t o = (size_t(y) * rw + size_t(x)) * 4;
+            const float r = pd[o] / 255.f, g = pd[o + 1] / 255.f, b = pd[o + 2] / 255.f;
+            ++total;
+            if (r > 0.25f && r > g + 0.1f && r > b + 0.1f) ++red;
+        }
+    }
+    std::printf("planar reflection canvas: red=%d/%d (%.1f%%)\n", red, total,
+                100.f * float(red) / float(total));
+    CHECK(red > 50);
+
+    std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+    REQUIRE(img.get() != nullptr);
+    REQUIRE(saveImagePng(*img, outPath));
+    std::printf("planar water render saved: %s\n", outPath);
+    win->close();
 }

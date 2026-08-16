@@ -96,6 +96,10 @@ struct Mesh3DUBO {
     glm::vec4 parallax{0.f, 8.f, 32.f, 0.f}; // x=scale (0=off), y=minLayers, z=maxLayers
     glm::mat4 view{1.f};                     // camera view (CSM / view-space depth)
     glm::vec4 clipInfo{0.1f, 100.f, 0.f, 0.f}; // x=near, y=far (linear depth in scene color A)
+    // Dynamic cloud shadows on ground. cloud.x=strength (0=off), y=world cell size,
+    // z=time, w=unused; cloudWind.xy=wind velocity (world/s), z=coverage, w=detail.
+    glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};
+    glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};
 };
 
 struct Mesh3DClusteredUBO {
@@ -225,10 +229,16 @@ public:
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     void begin3DFrame() override;
+    void begin3DFrameToCanvas(Canvas *canvas) override;
+    void end3DFrameToCanvas() override;
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
     void setMesh3DView(const glm::mat4 &view) override;
     void setMesh3DClip(float nearZ, float farZ) override;
     Texture *getSceneColorTexture() override;
+    image::ImageData *renderEntityIdMask(
+        const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
+        int width, int height) override;
+    image::ImageData *readGBufferToImageData(const std::string &name) override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
@@ -242,6 +252,8 @@ public:
     void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
     void setMesh3DLighting(const Lighting3DPack &pack) override;
+    void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                         float windAngle, float coverage, float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
@@ -276,6 +288,8 @@ public:
     vk::DescriptorSetLayout getTexSetLayout() const { return texSetLayout; }
     vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
     const vkb::BuiltRenderPass &getOffscreenRenderPass() const { return offscreenRenderPass; }
+    const vkb::BuiltRenderPass &getOffscreen3DRenderPass() { return offscreen3DRenderPass; }
+    vk::Format getDepthFormat() const { return depthFormat; }
     vk::RenderPass getSwapchainRenderPass() const { return renderpass; }
     vk::RenderPass getUiMsaaRenderPass() const { return uiRenderPass; }
     /** Sample count the UI MSAA pass runs with (matches getUiMsaaRenderPass). */
@@ -332,6 +346,8 @@ private:
     void beginSwapchainColorPass();
     bool beginSceneColorRenderPass();
     void endSceneColorRenderPass();
+    void ensureOffscreen3DResources();
+    void destroyOffscreen3DResources();
     void queueSceneColorResolve();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
@@ -620,6 +636,17 @@ private:
     vk::SampleCountFlagBits scenePassPipelineSamples = vk::SampleCountFlagBits::e1;
     int appliedMsaa = -1;
     SceneColorSlot *currentSceneColorSlot();
+
+    // Offscreen 3D render-to-canvas (color + D32 depth) used for planar
+    // reflection / render targets. Rendered on a dedicated command buffer and
+    // submitted directly to the graphics queue (no swapchain / present).
+    vkb::BuiltRenderPass offscreen3DRenderPass{};
+    vk::Pipeline offscreen3DMeshPipeline = nullptr;
+    vk::CommandPool offscreen3DPool = nullptr;
+    vk::CommandBuffer offscreen3DCB = nullptr;
+    vk::Fence offscreen3DFence = nullptr;
+    bool offscreen3DPassOpen = false;
+    OffscreenCanvas *offscreen3DCanvas = nullptr;
 
     // Dedicated 4x-MSAA color target for the UI overlay (ImGui), resolved to a
     // single-sample texture that is composited as the top-most fullscreen quad.
