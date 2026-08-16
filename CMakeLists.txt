@@ -204,6 +204,11 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
+        # Header-only VKBuilder: graphics/vulkan/Graphics.h includes vkbuilder.hpp,
+        # and that header is pulled in by modules that do not link EVGraphics
+        # (e.g. EVSystem). Expose it globally so the build works from a fresh
+        # third-party install that no longer vendors VKBuilder.
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include
         # medialoader public headers (image/pixelformat.h etc.) — needed by
         # ImageData.h; the vendored tree is present even when the library is
         # not linked (Emscripten trim).
