@@ -181,6 +181,7 @@ list(APPEND EVELIBS
     EVScripts
     EVCommon
     EVGraphics
+    EVWeather
     EVImage
     EVDatabase
     EVFileSystem
@@ -191,6 +192,7 @@ list(APPEND EVELIBS
     EVUI
     eve_imgui
     EVScene
+    EVCamera
     EVParticles
     EVMap
     EVGpgpu
