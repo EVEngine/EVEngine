@@ -17,6 +17,7 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Grass.h"
+#include "graphics/Outline.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
 #include "graphics/RenderControl.h"
@@ -243,6 +244,12 @@ public:
      * Owned by Graphics.
      */
     virtual Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) = 0;
+
+    /**
+     * Procedural cube (edge length `size`, centered at origin, outward CCW for RH
+     * Y-up), with per-face normals and a full 0..1 UV per face. Owned by Graphics.
+     */
+    Mesh *newMeshCube(float size = 1.f);
 
     /** Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     void render3D();
@@ -597,6 +604,12 @@ public:
     AmbientOcclusion *newAmbientOcclusion();
 
     /**
+     * Screen-space model outline (t3ssel8r-style) from GBuffer depth + normal.
+     * Caller owns Outline*; its Shader is owned by Graphics.
+     */
+    Outline *newOutline();
+
+    /**
      * Screen-space single-bounce GI. Caller owns GlobalIllumination*;
      * its Shaders are owned by Graphics.
      */
@@ -609,6 +622,8 @@ public:
     AmbientOcclusion *pipelineAmbientOcclusion();
     GlobalIllumination *pipelineGlobalIllumination();
     AntiAliasing *pipelineAntiAliasing();
+    /** Pipeline-owned Outline used by RenderSystem3D when the "outline" feature is on. */
+    Outline *pipelineOutline();
 
     /**
      * Classic image-space AA (FXAA / SMAA / SSAA / NFAA). Caller owns AntiAliasing*;
@@ -755,6 +770,7 @@ protected:
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
     std::unique_ptr<AntiAliasing> pipelineAA_;
+    std::unique_ptr<Outline> pipelineOutline_;
 
     /** FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */
     Shader *prepareSceneColorResolveShader(Texture *scene);

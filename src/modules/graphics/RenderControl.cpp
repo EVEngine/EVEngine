@@ -4,7 +4,8 @@ namespace eve::graphics {
 namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
-                                "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa"};
+                                "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
+                                "outline"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -27,6 +28,7 @@ RenderControl::RenderControl() {
     features_["gi"] = true;
     features_["aa"] = true;
     features_["msaa"] = true;
+    features_["outline"] = false;
     dirty_ = true;
     compiled_ = false;
 }
@@ -46,6 +48,7 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     features_[feature] = enabled;
     if (feature == "gbufferAlbedo" && enabled) features_["gbuffer"] = true;
     if (feature == "ao" && enabled) features_["gbuffer"] = true;
+    if (feature == "outline" && enabled) features_["gbuffer"] = true;
     if (feature == "gi" && enabled) {
         features_["gbuffer"] = true;
         features_["gbufferAlbedo"] = true;
@@ -54,6 +57,7 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
         features_["gbufferAlbedo"] = false;
         features_["ao"] = false;
         features_["gi"] = false;
+        features_["outline"] = false;
     }
     dirty_ = true;
 }

@@ -746,6 +746,18 @@ void RenderSystem3D::render(Graphics &gfx) {
             // Mesh shaders still add hemispheric sky/ground + wrap fill.
         }
     }
+
+    const bool doOutline = rc->isEnabled("outline");
+    if (doOutline && defaultCam && gfx.had3DThisFrame()) {
+        GBuffer *gb = rc->getGBuffer();
+        if (gb && gb->isValid()) {
+            Outline *outline = gfx.pipelineOutline();
+            auto cd = defaultCam->data();
+            outline->setClip(cd->nearZ, cd->farZ);
+            if (Texture *depth = gb->getHwDepthTexture())
+                outline->apply(&gfx, depth, gb->getNormalTexture());
+        }
+    }
 }
 
 } // namespace eve::graphics
