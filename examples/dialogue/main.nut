@@ -209,6 +209,7 @@ function tryChoice(index) {
 }
 
 function eve_init() {
+    gfx.setBackgroundColor(0.12, 0.14, 0.18, 1.0);
     if (dlg == null) dlg = dialogue;
     if (aliceAv == null) aliceAv = makePortrait("happy", 0.35, 0.55, 0.85);
     if (bobAv == null) bobAv = makePortrait("neutral", 0.55, 0.40, 0.65);
@@ -240,7 +241,7 @@ function eve_update(dt) {
 }
 
 function eve_render() {
-    gfx.clear(0.12, 0.14, 0.18, 1.0);
+    gfx.clear();
     // soft stage floor
     gfx.drawSolidRect(0.0, config.height - 80.0, config.width.tofloat(), 80.0, 0.16, 0.18, 0.22, 1.0);
     avatar.render(gfx);

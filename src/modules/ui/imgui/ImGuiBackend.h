@@ -33,8 +33,10 @@ private:
     static void presentOverlayThunk(void *userdata, void *commandBuffer);
     static void windowDestroyedThunk(void *userdata);
     void applyScale(float scale);
-    /** Initial UI scale derived from window DPI (desktop) or display DPI (mobile). */
+    /** Logical (point-space) UI scale; 1.0 on desktop where ImGui handles DPI. */
     float computeInitialScale() const;
+    /** Display/framebuffer DPI ratio used to bake the font atlas at native res. */
+    float computeDpiScale() const;
     /** Clear the font atlas and re-add fonts at the current physical-pixel size. */
     void loadFonts();
     /** Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
@@ -44,6 +46,7 @@ private:
     bool fontsUploaded_ = false;
     bool frameOpen_ = false;
     float uiScale_ = 1.f;
+    float dpiScale_ = 1.f;
     eve::graphics::Graphics *gfx_ = nullptr;
     SDL_Window *window_ = nullptr;
     void *imguiDescriptorPool_ = nullptr;   // VkDescriptorPool

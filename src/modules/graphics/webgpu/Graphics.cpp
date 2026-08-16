@@ -312,6 +312,32 @@ void Graphics::createDefaultTextures() {
     uint8_t flatH[4] = {0, 0, 0, 255};
     flatHeightTexture3D = static_cast<GpuTexture *>(newTexture(1, 1, flatH, false, false)->gpuHandle);
 
+    // 1x1 depth placeholder for the mesh3d scene-depth binding (9). Only X-ray
+    // shaders sample it; every other mesh draw binds this unused depth view.
+    {
+        auto *gpu = new GpuTexture();
+        WGPUTextureDescriptor td{};
+        td.label = sv("eve_flat_depth");
+        td.dimension = WGPUTextureDimension_2D;
+        td.size = {1, 1, 1};
+        td.sampleCount = 1;
+        td.format = WGPUTextureFormat_Depth32Float;
+        td.mipLevelCount = 1;
+        td.usage = WGPUTextureUsage_TextureBinding;
+        gpu->texture = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+        WGPUTextureViewDescriptor vd{};
+        vd.format = WGPUTextureFormat_Depth32Float;
+        vd.dimension = WGPUTextureViewDimension_2D;
+        vd.baseMipLevel = 0;
+        vd.mipLevelCount = 1;
+        vd.baseArrayLayer = 0;
+        vd.arrayLayerCount = 1;
+        gpu->view = gpu->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&vd));
+        gpu->width = 1;
+        gpu->height = 1;
+        flatDepthTexture3D = gpu;
+    }
+
     // 1x1 white cubemap.
     uint8_t cubeFace[4] = {255, 255, 255, 255};
     uint8_t cubeData[24];
@@ -378,7 +404,7 @@ wgpu::BindGroupLayout Graphics::make2DBindGroupLayout() {
 }
 
 wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
-    WGPUBindGroupLayoutEntry entries[9]{};
+    WGPUBindGroupLayoutEntry entries[10]{};
     // 0: Frame UBO (dynamic)
     entries[0].binding = 0;
     entries[0].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
@@ -424,10 +450,16 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
     entries[8].binding = 8;
     entries[8].visibility = WGPUShaderStage_Fragment;
     entries[8].sampler.type = WGPUSamplerBindingType_Comparison;
+    // 9: scene depth (G-buffer hwDepth; X-ray shaders sample it). Depth view,
+    // sampled via textureSampleLevel with the shared mainSamp (binding 7).
+    entries[9].binding = 9;
+    entries[9].visibility = WGPUShaderStage_Fragment;
+    entries[9].texture.sampleType = WGPUTextureSampleType_Depth;
+    entries[9].texture.viewDimension = WGPUTextureViewDimension_2D;
 
     WGPUBindGroupLayoutDescriptor desc{};
     desc.label = sv("eve_mesh3d");
-    desc.entryCount = 9;
+    desc.entryCount = 10;
     desc.entries = entries;
     return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
 }
@@ -1369,14 +1401,16 @@ wgpu::BindGroup Graphics::makeTex2DBindGroup(GpuTexture *color, GpuTexture *dept
 }
 
 wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
-                                            GpuTexture *height, uint32_t frameUboOffset,
-                                            uint32_t shadowUboOffset, uint32_t pushUboOffset) {
+                                            GpuTexture *height, GpuTexture *depth,
+                                            uint32_t frameUboOffset, uint32_t shadowUboOffset,
+                                            uint32_t pushUboOffset) {
     GpuTexture *a = albedo ? albedo : whiteTexture;
     GpuTexture *n = normal ? normal : flatNormalTexture;
     GpuTexture *e = env ? env : defaultEnvCubemap;
     GpuTexture *h = height ? height : flatHeightTexture3D;
+    GpuTexture *d = depth ? depth : flatDepthTexture3D;
 
-    WGPUBindGroupEntry entries[9]{};
+    WGPUBindGroupEntry entries[10]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DUBO);
@@ -1397,6 +1431,8 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[7].sampler = mainSampler.Get();
     entries[8].binding = 8;
     entries[8].sampler = shadowDepthArray ? shadowDepthArray->sampler.Get() : nullptr;
+    entries[9].binding = 9;
+    entries[9].textureView = d->view.Get();
 
     (void)frameUboOffset;
     (void)shadowUboOffset;
@@ -1404,7 +1440,7 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh_group");
     desc.layout = mesh3dSetLayout.Get();
-    desc.entryCount = 9;
+    desc.entryCount = 10;
     desc.entries = entries;
     return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
 }
@@ -2032,6 +2068,12 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
 
 void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = normal; }
 void Graphics::setMesh3DHeightTexture(Texture *height) { mesh3dHeightTexture = height; }
+void Graphics::setMesh3DSceneDepth(Texture *depth) {
+    // Custom SPIR-V mesh shaders (incl. xray) are unsupported on the WebGPU
+    // backend (newMeshShaderFromSpv throws); store the handle for API parity so
+    // callers work unchanged and a future WGSL xray path can sample it.
+    mesh3dSceneDepthTexture = depth;
+}
 void Graphics::setMesh3DMaterial(float metallic, float roughness) {
     mesh3dMetallic = metallic;
     mesh3dRoughness = roughness;
@@ -2119,7 +2161,16 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     gbufferPassDraws.push_back(d);
 }
 
-void Graphics::endGBufferPass() { gbufferPassActive = false; }
+void Graphics::endGBufferPass() {
+    gbufferPassActive = false;
+    // Expose the G-buffer textures (depth/normal/albedo/hwDepth) to RenderControl
+    // so post passes (AO, X-ray scene depth) can sample them this frame.
+    if (renderControl_ && !gbufferSlots.empty()) {
+        GbufferSlot &slot = gbufferSlots[currentFrameSlot()];
+        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex,
+                                                 &slot.normalTex, &slot.albedoTex, &slot.depthTex);
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Voxel
@@ -2307,7 +2358,8 @@ void Graphics::createGbufferResources(int width, int height) {
     dd.sampleCount = 1;
     dd.format = WGPUTextureFormat_Depth32Float;
     dd.mipLevelCount = 1;
-    dd.usage = WGPUTextureUsage_RenderAttachment;
+    // TextureBinding so X-ray (and AO) can sample the scene depth in a later pass.
+    dd.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
 
     for (int s = 0; s < int(kFramesInFlight); ++s) {
         GbufferSlot slot;
@@ -2329,6 +2381,9 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoGpu.texture = slot.albedo;
         slot.albedoGpu.view = slot.albedoView;
         slot.albedoGpu.sampler = createLinearSampler(device);
+        slot.depthGpu.texture = slot.depth;
+        slot.depthGpu.view = slot.depthView;
+        slot.depthGpu.sampler = createLinearSampler(device);
 
         slot.normalTex.gpuHandle = &slot.normalGpu;
         slot.normalTex.width = width;
@@ -2339,6 +2394,9 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoTex.gpuHandle = &slot.albedoGpu;
         slot.albedoTex.width = width;
         slot.albedoTex.height = height;
+        slot.depthTex.gpuHandle = &slot.depthGpu;
+        slot.depthTex.width = width;
+        slot.depthTex.height = height;
 
         gbufferSlots.push_back(std::move(slot));
     }
@@ -2385,6 +2443,15 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         ubo.cloud = mesh3dCloud;
         ubo.cloudWind = mesh3dCloudWind;
         ubo.lightColor.w = mesh3dEnvIntensity;
+        // X-ray params travel through the Frame UBO (no extra binding). Packed
+        // in bindMeshUniforms("xray") order: colorR..G..B, bias, screenW, screenH,
+        // rimPower, rimStrength, alpha.
+        if (d.shader && d.shader->isXray() && d.shader->pushConstantSize() >= 9 * sizeof(float)) {
+            const float *pc = d.shader->pushConstantData();
+            ubo.texBomb = glm::vec4(pc[0], pc[1], pc[2], pc[8]);    // color.xyz + alpha
+            ubo.parallax = glm::vec4(pc[3], pc[4], pc[5], pc[7]);   // bias, screenW, screenH, rimStrength
+            ubo.clipInfo.z = pc[6];                                 // rimPower
+        }
         queue.WriteBuffer(uboArena.buffer, d.frameUboOffset, &ubo, sizeof(ubo));
     }
 
@@ -2401,7 +2468,12 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         wgpu::RenderPipeline pipe = mesh3dPipeline;
         if (d.shader && d.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(d.shader->gpuHandle);
-            if (gs->isMesh3D && gs->mesh3dPipeline) pipe = gs->mesh3dPipeline;
+            if (gs->isMesh3D && gs->mesh3dPipeline) {
+                if (d.shader->isXray() && gs->mesh3dXrayPipeline)
+                    pipe = gs->mesh3dXrayPipeline;
+                else
+                    pipe = gs->mesh3dPipeline;
+            }
         }
         if (!pipe) continue;
         pass.SetPipeline(pipe);
@@ -2410,8 +2482,11 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         GpuTexture *normal = gpuForTexture(mesh3dNormalTexture);
         GpuTexture *env = gpuForTexture(mesh3dEnvTexture);
         GpuTexture *height = gpuForTexture(mesh3dHeightTexture);
-        wgpu::BindGroup bg = makeMeshBindGroup(albedo, normal, env, height, d.frameUboOffset,
-                                               d.shadowUboOffset, d.pushUboOffset);
+        GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
+                                                    : flatDepthTexture3D;
+        wgpu::BindGroup bg = makeMeshBindGroup(albedo, normal, env, height, depth,
+                                               d.frameUboOffset, d.shadowUboOffset,
+                                               d.pushUboOffset);
         uint32_t offsets[2] = {d.frameUboOffset, d.shadowUboOffset};
         pass.SetBindGroup(0, bg, 2, offsets);
 
@@ -3123,6 +3198,38 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     (void)fragSpv;
     throw Exception("newMeshShaderFromSpv: SPIR-V custom mesh shaders are not supported on the "
                     "WebGPU backend. Use WGSL shaders instead.");
+}
+
+Shader *Graphics::newMeshShaderFromWgsl(const std::string &vertWgsl, const std::string &fragWgsl) {
+    if (!device) throw Exception("newMeshShaderFromWgsl: device not initialized");
+    if (fragWgsl.empty()) throw Exception("newMeshShaderFromWgsl: empty fragment WGSL");
+    if (!mesh3dSetLayout) throw Exception("newMeshShaderFromWgsl: mesh3d layout missing");
+
+    std::string vert = vertWgsl.empty() ? kMesh3DVertWgsl : vertWgsl;
+
+    auto gpu = std::make_unique<GpuShader>();
+    gpu->isMesh3D = true;
+    gpu->wgslVert = vert;
+    gpu->wgslFrag = fragWgsl;
+    gpu->mesh3dPipeline =
+        buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, fragWgsl,
+                              /*depth*/ true, /*blend*/ false, /*mesh3d*/ true, /*hair*/ false,
+                              /*shadow*/ false, /*gbuffer*/ false, /*sampleCount*/ 1);
+    // X-ray variant: depth test/write off + alpha blend so occluded silhouettes
+    // paint over the building (the shader discards visible fragments itself).
+    gpu->mesh3dXrayPipeline =
+        buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, fragWgsl,
+                              /*depth*/ false, /*blend*/ true, /*mesh3d*/ true, /*hair*/ false,
+                              /*shadow*/ false, /*gbuffer*/ false, /*sampleCount*/ 1);
+
+    auto sh = std::make_unique<Shader>();
+    sh->setKind(Shader::Kind::eMesh3D);
+    sh->gpuHandle = gpu.get();
+
+    Shader *raw = sh.get();
+    ownedShaders.push_back(std::move(sh));
+    ownedGpuShaders.push_back(std::move(gpu));
+    return raw;
 }
 
 Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) {

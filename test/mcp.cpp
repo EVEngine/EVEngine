@@ -167,14 +167,32 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     REQUIRE(tools);
     bool foundStatus = false;
     bool foundEval   = false;
+    bool foundScene  = false;
+    bool foundProc   = false;
+    bool foundPhys   = false;
+    bool foundShot   = false;
+    bool foundParticles = false;
+    bool foundAudio  = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto t = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
         if (name == "eve_status") foundStatus = true;
         if (name == "eve_eval") foundEval = true;
+        if (name == "eve_scene_status") foundScene = true;
+        if (name == "eve_procgen_recipes") foundProc = true;
+        if (name == "eve_physics_raycast") foundPhys = true;
+        if (name == "eve_screenshot") foundShot = true;
+        if (name == "eve_particles_emit") foundParticles = true;
+        if (name == "eve_audio_set_volume") foundAudio = true;
     }
     CHECK(foundStatus);
     CHECK(foundEval);
+    CHECK(foundScene);
+    CHECK(foundProc);
+    CHECK(foundPhys);
+    CHECK(foundShot);
+    CHECK(foundParticles);
+    CHECK(foundAudio);
 
     client.sendRequest(3, "tools/call",
                        "{\"name\":\"eve_status\",\"arguments\":{}}");
@@ -208,6 +226,26 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     auto prompts = promptsMsg->getObject("result")->getArray("prompts");
     REQUIRE(prompts);
     CHECK(prompts->size() >= 1);
+
+    // New game-feature tools must return JSON text (not a hard JSON-RPC error),
+    // even when the backing module is not mounted in this test process.
+    auto textOf = [&](int id, const std::string& call) -> std::string {
+        client.sendRequest(id, "tools/call", call);
+        auto msg = client.expectResult(id);
+        REQUIRE(msg);
+        auto c = msg->getObject("result")->getArray("content");
+        REQUIRE(c);
+        REQUIRE(c->size() >= 1);
+        return c->getObject(0)->getValue<std::string>("text");
+    };
+    const std::string sceneText = textOf(7, "{\"name\":\"eve_scene_status\",\"arguments\":{}}");
+    CHECK(sceneText.find("eve_scene_status") == std::string::npos);  // tool names never echoed back
+    CHECK(sceneText.find("{") != std::string::npos);
+    const std::string procText = textOf(8, "{\"name\":\"eve_procgen_recipes\",\"arguments\":{}}");
+    CHECK(procText.find("{") != std::string::npos);
+    const std::string physText =
+        textOf(9, "{\"name\":\"eve_physics_list_worlds\",\"arguments\":{}}");
+    CHECK(physText.find("[") != std::string::npos);
 
     mcp.stop();
     dt.detach();

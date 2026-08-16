@@ -32,6 +32,7 @@ file(GLOB all_test_cpp
   Volumetric.cpp
   TextureSampler.cpp
   AmbientOcclusion.cpp
+  Outline.cpp
   AntiAliasing.cpp
   GlobalIllumination.cpp
   UISystem.cpp
@@ -40,6 +41,7 @@ file(GLOB all_test_cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
   scene.cpp
+  sceneloader.cpp
   particles.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
@@ -62,6 +64,7 @@ file(GLOB all_test_cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp
+  Xray.cpp
   voxel.cpp
   voxel_render.cpp
   gpgpu.cpp
@@ -71,6 +74,8 @@ file(GLOB all_test_cpp
   hotreload.cpp
   shader.cpp
   grass.cpp
+  daynight.cpp
+  weather.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -250,6 +255,8 @@ set(EVELIBS
   EVTouch
   EVGraphics
   EVImage
+  EVDayNight
+  EVWeather
   EVCommon
   EVEvent
   EVTimer
@@ -268,6 +275,7 @@ set(EVELIBS
   EVUI
   eve_imgui
   EVScene
+  EVSceneLoader
   EVParticles
   EVPhysics
   EVMap
