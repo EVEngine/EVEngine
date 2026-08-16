@@ -3,7 +3,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 COMPAT="$ROOT/src/modules/procgen/dtl_compat"
-DTL="$ROOT/external/DungeonTemplateLibrary/include"
+DTL="$ROOT/third-party/DungeonTemplateLibrary/include"
 WORKDIR="${TMPDIR:-/tmp}/eve-procgen-dtl-smoke"
 mkdir -p "$WORKDIR"
 

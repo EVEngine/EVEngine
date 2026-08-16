@@ -86,6 +86,13 @@ jobs:
       - name: Build win32 SDK
         run: make sdk/win32 VS_GENERATOR="$VS_GENERATOR" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
+      - name: Setup software Vulkan (SwiftShader, best-effort)
+        run: |
+          bash .github/scripts/setup-software-vulkan.sh || echo "WARN: software Vulkan unavailable; in-memory run skipped"
+
+      - name: Test win32 SDK usability
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/win32 win32
+
       - name: Build android SDK
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
@@ -153,6 +160,9 @@ jobs:
       - name: Build macosx SDK
         run: make sdk/macosx CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(sysctl -n hw.ncpu)"
 
+      - name: Test macosx SDK usability
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/macosx macosx
+
       - name: Build ios SDK
         run: |
           set -euo pipefail
@@ -208,7 +218,9 @@ jobs:
             libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
             libgl1-mesa-dev \
             libbz2-dev libpng-dev \
-            libwayland-dev libxkbcommon-dev libasound2-dev
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
+            xvfb
 
       - name: Install Vulkan SDK
         uses: jakoch/install-vulkan-sdk-action@v1
@@ -217,8 +229,15 @@ jobs:
           cache: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup software Vulkan ICD (Lavapipe, best-effort)
+        run: |
+          bash .github/scripts/setup-software-vulkan.sh || echo "WARN: software Vulkan unavailable; in-memory run skipped"
+
       - name: Build linux SDK
         run: make sdk/linux CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(nproc)"
+
+      - name: Test linux SDK usability
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/linux linux
 
       - name: Package SDK zip
         env:

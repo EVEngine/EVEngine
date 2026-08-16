@@ -176,8 +176,8 @@ eve_render = function() {
     gfx.clear();
     gfx.render3D();
     // Copper datum lines make the viewport read like a geological instrument.
-    gfx.drawSolidRect(54, 650, 720, 1, 0.55, 0.34, 0.18, 0.55);
-    gfx.drawSolidRect(54, 646, 1, 9, 0.55, 0.34, 0.18, 0.75);
-    gfx.drawSolidRect(774, 646, 1, 9, 0.55, 0.34, 0.18, 0.75);
+    gfx.drawSolidRect(54.0, 650.0, 720.0, 1.0, 0.55, 0.34, 0.18, 0.55);
+    gfx.drawSolidRect(54.0, 646.0, 1.0, 9.0, 0.55, 0.34, 0.18, 0.75);
+    gfx.drawSolidRect(774.0, 646.0, 1.0, 9.0, 0.55, 0.34, 0.18, 0.75);
     ui.beginFrameAndRender();
 };
