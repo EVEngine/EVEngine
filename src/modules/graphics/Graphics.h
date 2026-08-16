@@ -17,6 +17,7 @@
 #include "graphics/Water.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Grass.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
@@ -608,6 +609,12 @@ public:
      * its Shaders are owned by Graphics.
      */
     GlobalIllumination *newGlobalIllumination();
+
+    /**
+     * Screen-space reflections (ray-marched over scene color + hw depth).
+     * Caller owns ScreenSpaceReflection*; its Shader is owned by Graphics.
+     */
+    ScreenSpaceReflection *newScreenSpaceReflection();
 
     /**
      * Pipeline-owned AO / GI / AA used by RenderSystem3D when features

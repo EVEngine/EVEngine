@@ -81,6 +81,21 @@ public:
     void setSunIntensity(float intensity);
     float getSunIntensity() const { return sunIntensity_; }
 
+    /**
+     * Optional screen-space reflection overlay. When enabled, the shader
+     * samples the SSR pass result (bound via the renderable's height-texture
+     * slot, binding 6) at the fragment's screen UV and blends it over the env
+     * cubemap reflection. Call setViewport before drawing so screen UVs map.
+     */
+    void setScreenSpaceReflection(bool enabled, float strength = 0.85f);
+    bool getScreenSpaceReflection() const { return ssrEnabled_; }
+    float getScreenSpaceReflectionStrength() const { return ssrStrength_; }
+
+    /** Window / target size in pixels, used to compute screen-space UVs. */
+    void setViewport(float width, float height);
+    float getViewportWidth() const { return viewportW_; }
+    float getViewportHeight() const { return viewportH_; }
+
     /** Upload current params to the shader push constants. */
     void bindParams();
 
@@ -111,6 +126,10 @@ private:
     float reflectionTint_[3] = {0.7f, 0.85f, 1.0f};
     float reflectionIntensity_ = 0.6f;
     float sunIntensity_ = 0.9f;
+    bool ssrEnabled_ = false;
+    float ssrStrength_ = 0.85f;
+    float viewportW_ = 0.f;
+    float viewportH_ = 0.f;
 };
 
 /** Create the embedded water fragment shader (owned by Graphics). */

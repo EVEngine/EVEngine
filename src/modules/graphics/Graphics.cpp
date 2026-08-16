@@ -441,6 +441,12 @@ void Graphics::expose(ssq::Table &table) {
     water.addFunc("getReflectionIntensity", &Water::getReflectionIntensity);
     water.addFunc("setSunIntensity", &Water::setSunIntensity);
     water.addFunc("getSunIntensity", &Water::getSunIntensity);
+    water.addFunc("setScreenSpaceReflection", &Water::setScreenSpaceReflection);
+    water.addFunc("getScreenSpaceReflection", &Water::getScreenSpaceReflection);
+    water.addFunc("getScreenSpaceReflectionStrength", &Water::getScreenSpaceReflectionStrength);
+    water.addFunc("setViewport", &Water::setViewport);
+    water.addFunc("getViewportWidth", &Water::getViewportWidth);
+    water.addFunc("getViewportHeight", &Water::getViewportHeight);
     water.addFunc("bindParams", &Water::bindParams);
     water.addFunc("draw", &Water::draw);
     water.addFunc("getShader", &Water::getShader);
@@ -506,6 +512,26 @@ void Graphics::expose(ssq::Table &table) {
     gi.addFunc("applyFromDepthTo", &GlobalIllumination::applyFromDepthTo);
     gi.addFunc("applyFromScene", &GlobalIllumination::applyFromScene);
     gi.addFunc("getShader", &GlobalIllumination::getShader);
+
+    auto ssr = table.addClass<ScreenSpaceReflection>(
+        "ScreenSpaceReflection",
+        std::function<ScreenSpaceReflection *()>([]() -> ScreenSpaceReflection * { return nullptr; }),
+        true);
+    ssr.addFunc("setCamera", &ScreenSpaceReflection::setCamera);
+    ssr.addFunc("setEnabled", &ScreenSpaceReflection::setEnabled);
+    ssr.addFunc("getEnabled", &ScreenSpaceReflection::getEnabled);
+    ssr.addFunc("setMaxDistance", &ScreenSpaceReflection::setMaxDistance);
+    ssr.addFunc("setStepLength", &ScreenSpaceReflection::setStepLength);
+    ssr.addFunc("setMaxSteps", &ScreenSpaceReflection::setMaxSteps);
+    ssr.addFunc("setThickness", &ScreenSpaceReflection::setThickness);
+    ssr.addFunc("setStrength", &ScreenSpaceReflection::setStrength);
+    ssr.addFunc("getStrength", &ScreenSpaceReflection::getStrength);
+    ssr.addFunc("hasParam", &ScreenSpaceReflection::hasParam);
+    ssr.addFunc("setFloat", &ScreenSpaceReflection::setFloat);
+    ssr.addFunc("getFloat", &ScreenSpaceReflection::getFloat);
+    ssr.addFunc("applyFromScene", &ScreenSpaceReflection::applyFromScene);
+    ssr.addFunc("applyFromSceneTo", &ScreenSpaceReflection::applyFromSceneTo);
+    ssr.addFunc("getShader", &ScreenSpaceReflection::getShader);
 
     auto aa = table.addClass<AntiAliasing>(
         "AntiAliasing", std::function<AntiAliasing *()>([]() -> AntiAliasing * { return nullptr; }),
@@ -579,6 +605,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
+    cls.addFunc("newScreenSpaceReflection", &Graphics::newScreenSpaceReflection);
     cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
     cls.addFunc("drawOcclusionSolid", &Graphics::drawOcclusionSolid);
     cls.addFunc("drawOcclusionTexture", &Graphics::drawOcclusionTexture);
@@ -598,6 +625,10 @@ Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
 AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
 GlobalIllumination *Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
+
+ScreenSpaceReflection *Graphics::newScreenSpaceReflection() {
+    return new ScreenSpaceReflection(this);
+}
 
 AmbientOcclusion *Graphics::pipelineAmbientOcclusion() {
     if (!pipelineAO_) pipelineAO_ = std::make_unique<AmbientOcclusion>(this);

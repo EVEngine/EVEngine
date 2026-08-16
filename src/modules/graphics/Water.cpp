@@ -14,7 +14,8 @@ namespace {
 // Push-constant layout (data[32]):
 //   0 time, 1 waveSpeed, 2 waveAmp, 3 rippleAmp, 4 edgeFalloff,
 //   5 reflIntensity, 6 rippleCount, 7 rippleInterval, 8 waveScale,
-//   9..11 waterColor, 12..14 reflTint, 15 sunIntensity.
+//   9..11 waterColor, 12..14 reflTint, 15 sunIntensity,
+//   16 viewportW, 17 viewportH, 18 ssrEnabled, 19 ssrStrength.
 const char *kWtrShaderFrag = R"GLSL(#version 450
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -41,6 +42,7 @@ layout(set = 0, binding = 0, std140) uniform Frame {
 
 layout(set = 0, binding = 1) uniform sampler2D albedo;
 layout(set = 0, binding = 3) uniform samplerCube env;
+layout(set = 0, binding = 6) uniform sampler2D ssrTex;  // screen-space reflection (optional)
 
 layout(push_constant) uniform Externals { float data[32]; } u;
 layout(location = 0) out vec4 outColor;
@@ -129,6 +131,15 @@ void main() {
     float edgeFactor = 1.0 - clamp(min(edgeDist.x, edgeDist.y) / max(u.data[4], 1e-4), 0.0, 1.0);
     color = mix(color, vec3(0.85, 0.93, 1.0), edgeFactor * 0.22);
 
+    // Optional screen-space reflection overlay (bound via the height slot,
+    // binding 6). Sample the SSR pass result at this fragment's screen UV and
+    // blend it over the env reflection where SSR found a hit (ssr.a > 0).
+    if (u.data[18] > 0.5 && u.data[16] > 1.0 && u.data[17] > 1.0) {
+        vec2 sUV = vec2(gl_FragCoord.x / u.data[16], gl_FragCoord.y / u.data[17]);
+        vec4 ssr = texture(ssrTex, sUV);
+        color = mix(color, ssr.rgb, clamp(ssr.a * u.data[19], 0.0, 1.0));
+    }
+
     outColor = vec4(color, 1.0);
 }
 )GLSL";
@@ -136,7 +147,8 @@ void main() {
 const char *kUniformNames[] = {
     "time",      "waveSpeed", "waveAmp",  "rippleAmp",   "edgeFalloff",
     "reflInten", "rippleCnt", "rippleInt", "waveScale",   "waterCol",
-    "reflTint",  "sunInten",
+    "reflTint",  "sunInten",  "viewportW", "viewportH",   "ssrEnabled",
+    "ssrStrength",
 };
 const int kUniformCount = int(sizeof(kUniformNames) / sizeof(kUniformNames[0]));
 
@@ -231,6 +243,14 @@ void Water::setReflectionTint(float r, float g, float b) {
 }
 void Water::setReflectionIntensity(float v) { reflectionIntensity_ = std::max(0.f, v); }
 void Water::setSunIntensity(float v) { sunIntensity_ = std::max(0.f, v); }
+void Water::setScreenSpaceReflection(bool enabled, float strength) {
+    ssrEnabled_ = enabled;
+    ssrStrength_ = std::max(0.f, strength);
+}
+void Water::setViewport(float w, float h) {
+    viewportW_ = std::max(0.f, w);
+    viewportH_ = std::max(0.f, h);
+}
 
 void Water::bindParams() {
     if (!shader_) return;
@@ -246,6 +266,10 @@ void Water::bindParams() {
     shader_->sendVec3("waterCol", waterColor_[0], waterColor_[1], waterColor_[2]);
     shader_->sendVec3("reflTint", reflectionTint_[0], reflectionTint_[1], reflectionTint_[2]);
     shader_->sendFloat("sunInten", sunIntensity_);
+    shader_->sendFloat("viewportW", viewportW_);
+    shader_->sendFloat("viewportH", viewportH_);
+    shader_->sendFloat("ssrEnabled", ssrEnabled_ ? 1.f : 0.f);
+    shader_->sendFloat("ssrStrength", ssrStrength_);
 }
 
 void Water::draw() {
