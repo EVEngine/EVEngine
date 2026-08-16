@@ -1,0 +1,86 @@
+{
+  "license": {
+    "allowed": ["cc0", "cc-by", "cc-by-sa"],
+    "allow_cc_by": true,
+    "allow_cc_by_sa": true
+  },
+  "models": {
+    "parser": {
+      "enabled": true,
+      "base_url": "https://api.openai.com/v1",
+      "model": "gpt-4o-mini",
+      "api_key": "",
+      "vision": false,
+      "temperature": 0.0,
+      "max_tokens": 1024
+    },
+    "selector": {
+      "enabled": true,
+      "base_url": "https://api.openai.com/v1",
+      "model": "gpt-4o-mini",
+      "api_key": "",
+      "vision": false,
+      "temperature": 0.0,
+      "max_tokens": 512
+    }
+  },
+  "sources": {
+    "poly_haven": {
+      "enabled": true,
+      "index_url": "https://api.polyhaven.com/assets",
+      "file_root": "https://dl.polyhaven.org/file/ph-assets",
+      "type": "model",
+      "timeout_s": 30
+    },
+    "sketchfab": {
+      "enabled": false,
+      "search_url": "https://api.sketchfab.com/v3/search",
+      "download_url": "https://api.sketchfab.com/v3/models/{uid}/download",
+      "token_env": "SKETCHFAB_TOKEN",
+      "timeout_s": 30
+    }
+  },
+  "cache": {
+    "dir": "asset_cache",
+    "keep_archives": true
+  },
+  "blender": {
+    "python": "py -3.13",
+    "script": "blender_scripts/standardize.py",
+    "timeout_s": 600,
+    "defaults": {
+      "up_axis": "Y",
+      "scale": 1.0,
+      "max_triangles": 200000,
+      "decimate": true,
+      "recalc_normals": true,
+      "fix_pivot": true,
+      "clean_mesh": true,
+      "standardize_material": true,
+      "compress_textures": true,
+      "texture_max_size": 2048,
+      "output_format": "glb"
+    }
+  },
+  "mcp": {
+    "transport": "bridge",
+    "host": "127.0.0.1",
+    "port": 7529,
+    "bridge_js": "../eve-mcp/server.js",
+    "node": "node",
+    "connect_timeout_ms": 5000,
+    "tools": {
+      "ingest": { "name": "eve_asset_ingest", "args": { "uri": "", "tags": [], "metadata": {} } },
+      "notify": { "name": "eve_asset_notify", "args": { "callback": "", "status": "", "payload": {} } }
+    }
+  },
+  "iteration": {
+    "max_candidates": 5,
+    "max_react_steps": 8
+  },
+  "output": {
+    "work_dir": "asset_work",
+    "report_path": "asset_pipeline_report.json",
+    "trace": false
+  }
+}

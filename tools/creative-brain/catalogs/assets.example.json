@@ -1,0 +1,24 @@
+{
+  "$schema": "./assets.schema.json",
+  "description": "Example asset catalog for the Creative Brain. Style tags are lower-case keywords matched against the scene style string.",
+  "assets": [
+    {"id": "pbr.soil", "category": "material", "tags": ["material", "ground", "soil"], "recipe": "pbr.soil", "style_tags": ["forest", "fantasy", "desert", "field"]},
+    {"id": "pbr.stone", "category": "material", "tags": ["material", "ground", "stone"], "recipe": "pbr.stone", "style_tags": ["dungeon", "cave", "ruins", "city", "arctic", "snow"]},
+    {"id": "pbr.water", "category": "material", "tags": ["material", "water"], "recipe": "pbr.water", "style_tags": ["underwater", "fantasy", "forest"]},
+    {"id": "tex.grass", "category": "material", "tags": ["material", "ground", "grass"], "recipe": "pbr.soil", "style_tags": ["forest", "field", "fantasy"]},
+
+    {"id": "tree", "category": "plant", "tags": ["plant", "tree"], "recipe": null, "style_tags": ["forest", "fantasy", "woodland"]},
+    {"id": "bush", "category": "plant", "tags": ["plant", "bush"], "recipe": null, "style_tags": ["forest", "woodland", "fantasy"]},
+    {"id": "cactus", "category": "plant", "tags": ["plant", "cactus"], "recipe": null, "style_tags": ["desert"]},
+    {"id": "pine", "category": "plant", "tags": ["plant", "tree"], "recipe": null, "style_tags": ["snow", "arctic", "forest"]},
+
+    {"id": "rock", "category": "prop", "tags": ["prop", "rock", "boulder"], "recipe": null, "style_tags": ["cave", "desert", "dungeon"]},
+    {"id": "pillar", "category": "prop", "tags": ["prop", "pillar", "architecture"], "recipe": null, "style_tags": ["ruins", "dungeon", "city", "fantasy"]},
+    {"id": "torch", "category": "prop", "tags": ["prop", "torch", "light"], "recipe": null, "style_tags": ["dungeon", "fantasy", "ruins"]},
+    {"id": "lantern", "category": "prop", "tags": ["prop", "lantern", "light"], "recipe": null, "style_tags": ["cyberpunk", "city"]},
+    {"id": "chest", "category": "prop", "tags": ["prop", "chest", "treasure"], "recipe": null, "style_tags": ["dungeon", "fantasy", "ruins"]},
+
+    {"id": "decoration.banner", "category": "decoration", "tags": ["decoration", "banner"], "recipe": null, "style_tags": ["fantasy", "medieval", "city"]},
+    {"id": "decoration.sign", "category": "decoration", "tags": ["decoration", "sign"], "recipe": null, "style_tags": ["city", "cyberpunk"]}
+  ]
+}

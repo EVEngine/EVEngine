@@ -76,11 +76,11 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVDatabase database)
   target_compile_definitions(EVDatabase PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVSound sound)
+  # Only the mpg123 header needs a shim (install exposes a flat mpg123.h, while
+  # medialoader's Mpg123Decoder.h includes <libmpg123/mpg123.h>). Everything else
+  # resolves from the install tree: Wuff/, modplug.h, dr_flac/, vorbis/.
   target_include_directories(EVSound PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/sound/include_shim
-    ${CMAKE_SOURCE_DIR}/third-party/medialoader/sound-libs
-    ${CMAKE_SOURCE_DIR}/third-party/medialoader/sound-libs/libmodplug/src
-    ${CMAKE_SOURCE_DIR}/third-party/medialoader/sound-libs/libogg/include
   )
   create_module(EVAudio audio)
   target_compile_definitions(EVAudio PRIVATE AL_LIBTYPE_STATIC)
