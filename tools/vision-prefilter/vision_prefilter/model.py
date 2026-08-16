@@ -1,24 +1,27 @@
-"""Qwen2-VL-2B 4-bit inference wrapper.
+"""Lightweight backend client for the vision pre-filter.
 
-Responsibilities:
-    * lazy-load Qwen2-VL-2B-Instruct with 4-bit quantization (bitsandbytes).
-    * build a fixed task prompt + per-scene geometry text + image.
-    * force the model to emit ONLY the standard JSON object (no free text).
-    * hard-parse the output; anything unparseable becomes a structured error
-      result rather than leaking raw model text back to the caller.
+Backend: llama.cpp ``llama-server`` (OpenAI-compatible API) serving a GGUF
+Qwen2-VL-2B model. No PyTorch / transformers / bitsandbytes are used at all.
 
-The fixed task prompt lives in this module so consumers do not have to repeat
-it; a per-scene ``prompt`` may be supplied to *override* only the task section.
+JSON-only enforcement happens at the token-sampling level via a GBNF grammar
+(see ``grammar.GBNF_JSON_SCHEMA``), so the model physically cannot emit free
+text or markdown. We still hard-parse the reply so any unexpected shape
+becomes a structured error rather than leaking raw model text to callers.
+
+The fixed task prompt lives here so consumers do not repeat it; a per-scene
+``prompt`` may override only the task section.
 """
 
 from __future__ import annotations
 
 import base64
-import io
 import json
 import re
 from typing import Optional, Sequence
 
+import requests
+
+from .grammar import GBNF_JSON_SCHEMA
 from .protocol import ProblemType, SceneInput, error_result, ok_result
 
 # ---- fixed task prompt ---------------------------------------------------
@@ -27,15 +30,8 @@ FIXED_PROMPT = """You are a lightweight visual pre-filter for a 3D game scene.
 Look at the provided render screenshot and the compact geometry text.
 Judge scene quality and layout risks ONLY.
 
-Return EXACTLY ONE JSON object and NOTHING ELSE. No prose, no markdown, no
-code fence. The object MUST match this schema exactly:
-
-{
-  "risk_score": 0,
-  "has_problem": false,
-  "problem_regions": [],
-  "need_high_precision_review": false
-}
+Return the scene risk assessment as JSON. Obey the schema exactly: fields
+risk_score, has_problem, problem_regions, need_high_precision_review.
 
 Rules:
 - risk_score: 0 = balanced layout / no problem; 1 = low; 2 = medium; 3 = high.
@@ -44,8 +40,7 @@ Rules:
   bbox is in image pixels. Empty list if no problem.
 - need_high_precision_review: true when risk_score >= 3 (e.g. road occlusion).
 
-If the image is unreadable, still return the JSON object with risk_score 0 and
-has_problem false.
+Only output the JSON object. No prose, no markdown, no code fence.
 """
 
 # ---- JSON extraction ------------------------------------------------------
@@ -58,9 +53,7 @@ def _extract_json(text: str) -> Optional[str]:
     """Return the best-guess JSON object substring from model text."""
     if not text:
         return None
-    # Strip BOM / whitespace.
     t = text.strip().lstrip("\ufeff")
-    # Try a fenced block first (shouldn't happen, but be tolerant).
     m = _JSON_FENCE.search(t)
     if m:
         t = m.group(1)
@@ -69,7 +62,7 @@ def _extract_json(text: str) -> Optional[str]:
         if m:
             t = m.group(1)
     try:
-        json.loads(t)  # validate
+        json.loads(t)
         return t
     except json.JSONDecodeError:
         return None
@@ -97,9 +90,7 @@ def parse_model_result(raw: str) -> dict:
         ptype = r.get("type", ProblemType.OCCLUSION.value)
         if ptype not in {p.value for p in ProblemType}:
             ptype = ProblemType.OCCLUSION.value
-        regions.append(
-            {"bbox": bbox, "type": ptype, "note": r.get("note")}
-        )
+        regions.append({"bbox": bbox, "type": ptype, "note": r.get("note")})
     return {
         "risk_score": risk,
         "has_problem": has_problem,
@@ -108,112 +99,64 @@ def parse_model_result(raw: str) -> dict:
     }
 
 
-# ---- model wrapper ---------------------------------------------------------
+# ---- llama-server client ----------------------------------------------------
 
-class QwenVL:
-    """Lazy Qwen2-VL-2B-Instruct 4-bit wrapper."""
+class LlamaServer:
+    """Thin client over llama.cpp ``llama-server`` OpenAI-compatible API."""
 
-    def __init__(
-        self,
-        model_id: str = "Qwen/Qwen2-VL-2B-Instruct",
-        device: str = "auto",
-        trust_remote_code: bool = False,
-    ) -> None:
-        self.model_id = model_id
-        self.device = device
-        self.trust_remote_code = trust_remote_code
-        self._processor = None
-        self._model = None
-
-    def load(self) -> None:
-        if self._model is not None:
-            return
-        import torch  # heavy; import lazily
-        from transformers import AutoProcessor, BitsAndBytesConfig, Qwen2VLForConditionalGeneration
-
-        bnb = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_use_double_quant=True,
-        )
-        self._model = Qwen2VLForConditionalGeneration.from_pretrained(
-            self.model_id,
-            quantization_config=bnb,
-            device_map=self.device,
-            torch_dtype=torch.float16,
-            trust_remote_code=self.trust_remote_code,
-        )
-        self._processor = AutoProcessor.from_pretrained(
-            self.model_id, trust_remote_code=self.trust_remote_code
-        )
+    def __init__(self, base_url: str = "http://127.0.0.1:8080", timeout: float = 120.0) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
 
     @property
     def ready(self) -> bool:
-        return self._model is not None
+        try:
+            r = requests.get(f"{self.base_url}/health", timeout=2.0)
+            return r.status_code == 200
+        except requests.RequestException:
+            return False
 
-    def _decode_image(self, scene: SceneInput) -> "PIL.Image.Image":
-        from PIL import Image
-
-        data = scene.image
-        if data.startswith("data:"):
-            data = data.split(",", 1)[1]
-        raw = base64.b64decode(data)
-        return Image.open(io.BytesIO(raw)).convert("RGB")
+    def _image_data_url(self, scene: SceneInput) -> str:
+        if scene.image.startswith("data:"):
+            return scene.image
+        return "data:image/png;base64," + scene.image
 
     def generate(self, scene: SceneInput) -> dict:
-        """Run one scene and return the standard result dict (or raise)."""
-        self.load()
-        image = self._decode_image(scene)
-
+        """Run one scene; return the standard result dict (or raise)."""
         prompt = scene.prompt or FIXED_PROMPT
         if scene.geometry:
-            prompt = (
-                f"{prompt}\n\nScene geometry:\n{scene.geometry}"
-            )
+            prompt = f"{prompt}\n\nScene geometry:\n{scene.geometry}"
 
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image", "image": image},
-                    {"type": "text", "text": prompt},
-                ],
-            }
-        ]
-        text = self._processor.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-        inputs = self._processor(text=[text], images=[image], return_tensors="pt").to(
-            self._model.device
-        )
-
-        with __import__("torch").no_grad():
-            out = self._model.generate(
-                **inputs,
-                max_new_tokens=256,
-                do_sample=False,
-                temperature=None,
-                top_p=None,
-            )
-        generated = out[0][inputs["input_ids"].shape[-1]:]
-        raw = self._processor.tokenizer.decode(generated, skip_special_tokens=True)
+        payload = {
+            "model": "qwen2-vl",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": self._image_data_url(scene)}},
+                        {"type": "text", "text": prompt},
+                    ],
+                }
+            ],
+            "max_tokens": 256,
+            "temperature": 0.0,
+            "grammar": GBNF_JSON_SCHEMA,
+        }
+        r = requests.post(f"{self.base_url}/v1/chat/completions", json=payload, timeout=self.timeout)
+        r.raise_for_status()
+        raw = r.json()["choices"][0]["message"]["content"]
         return parse_model_result(raw)
 
-    def close(self) -> None:
-        self._model = None
-        self._processor = None
+    def close(self) -> None:  # noqa: D401 - no persistent resources
+        return None
 
 
-def screen_batch(
-    model: QwenVL,
-    scenes: Sequence[SceneInput],
-) -> list:
+def screen_batch(backend: LlamaServer, scenes: Sequence[SceneInput]) -> list:
     """Screen a batch; per-scene errors become structured error results."""
     results = []
     for scene in scenes:
         try:
-            data = model.generate(scene)
+            data = backend.generate(scene)
             results.append(ok_result(scene.id, model_result_from_dict(data)))
         except Exception as exc:  # noqa: BLE001 - keep service alive per scene
             results.append(error_result(scene.id, f"inference failed: {exc}"))
@@ -221,14 +164,13 @@ def screen_batch(
 
 
 def model_result_from_dict(data: dict):
-    """Re-validate a parsed dict through the pydantic model."""
     from .protocol import ModelResult
 
     return ModelResult(**data)
 
 
 __all__ = [
-    "QwenVL",
+    "LlamaServer",
     "FIXED_PROMPT",
     "parse_model_result",
     "screen_batch",
