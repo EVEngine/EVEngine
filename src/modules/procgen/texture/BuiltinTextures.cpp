@@ -481,11 +481,6 @@ const std::vector<TextureRecipeDef> &builtinTextureDefs() {
 
 void TextureRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
-    registerRecipe("tex.soil", genSoil);
-    registerRecipe("tex.stone", genStone);
-    registerRecipe("tex.marble", genMarble);
-    registerRecipe("tex.water", genWater);
-    registerRecipe("tex.sky_cloud", genSkyCloud);
     registerRecipe("tex.cloud", genCloud);
     registerRecipe("tex.cloud_shadow", genCloudShadow);
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
