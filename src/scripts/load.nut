@@ -70,6 +70,7 @@ dialogue <- eve.Dialogue();
 anim <- eve.Animation();
 stylize <- eve.Stylize();
 gpgpu <- eve.Gpgpu();
+daynight <- eve.DayNight();
 weather <- eve.Weather();
 physics <- eve.Physics();
 keyboard <- eve.Keyboard();

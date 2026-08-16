@@ -71,6 +71,12 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_error_slice` | 最近错误后向切片 |
 | `eve_run_script` | 在活 VM 上跑短片段 |
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
+| `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
+| `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
+| `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
+| `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG） |
+| `eve_particles_status` / `eve_particles_emit` | 粒子系统状态与发射 |
+| `eve_audio_status` / `eve_audio_set_volume` / `eve_audio_stop_all` | 音频主控 |
 
 ### Resources
 
@@ -116,6 +122,8 @@ eve.dev.ai.draw(); // load.nut 每帧在 present 前调用
 ## 后续可扩展
 
 - Streamable HTTP 传输（多客户端）
-- `eve_screenshot` / 渲染资源绑定列表
+- GPU 资源绑定列表枚举（纹理/网格/着色器；当前后端未暴露公开查询 API）
+- 3D 物理世界与 Box3D 工具（当前仅 2D World）
+- 音频波形 / 素材来源加载类工具（当前为主音量、停止控制）
 - 与 `eve test` 场景脚本联动的 MCP 资源
 - AI 生成内容的静态校验（nut AST / 资源清单）

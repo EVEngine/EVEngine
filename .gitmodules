@@ -7,10 +7,6 @@
 [submodule "external/ik.hpp"]
 	path = external/ik.hpp
 	url = https://github.com/sunxfancy/ik.hpp.git
-[submodule "external/DungeonTemplateLibrary"]
-	path = external/DungeonTemplateLibrary
-	url = https://github.com/AsPJT/DungeonTemplateLibrary.git
-[submodule "external/box3d"]
-	path = external/box3d
-	url = https://github.com/erincatto/box3d.git
-	branch = main
+[submodule "external/VKBuilder"]
+	path = external/VKBuilder
+	url = https://github.com/sunxfancy/VKBuilder

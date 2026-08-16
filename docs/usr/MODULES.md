@@ -42,6 +42,7 @@
 ## 表现与场景
 
 - [图形渲染](modules/graphics.md)：清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染；Camera2D/3D 提供屏幕↔世界与拾取射线。
+- [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。
 - [天气系统](modules/weather.md)：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。
 - [声明式 UI](modules/ui.md)：构建并挂载保留式控件树，通过稳定 ID 消费点击和更改事件。
 - [声明式场景树](modules/scene.md)：用节点描述构建 2D/3D 层级，维护 local/world 变换并连接渲染实体。

@@ -204,13 +204,17 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/external/zeroerr/include
+        # sunxfancy/VKBuilder (git submodule) — header-only Vulkan wrapper. Exposed
+        # globally (like the old third-party flattened install) so any module that
+        # pulls in Graphics.h can resolve <vkbuilder.hpp>.
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include
         # medialoader public headers (image/pixelformat.h etc.) — needed by
         # ImageData.h; the vendored tree is present even when the library is
         # not linked (Emscripten trim).
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
         # Dungeon Template Library (header-only)
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/DungeonTemplateLibrary/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include
     )
 
     # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.

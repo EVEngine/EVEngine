@@ -4,11 +4,13 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVFileSystem PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
 create_module(EVGraphics graphics)
+# Day/night cycle: solar orbit + procedural skybox + night lighting systems.
+create_module(EVDayNight daynight)
 # Weather system: rain / snow / lightning / wind built on the 3D mesh pipeline.
 create_module(EVWeather weather)
 # Header-only VKBuilder: prefer the source tree over a stale third-party install.
 target_include_directories(EVGraphics BEFORE PUBLIC
-  ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
+  ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 if(EVENGINE_WEBGPU_TRIM)
   # Graphics.h includes <assimp/matrix4x4.h> (header-only usage). The vendored
   # assimp headers live in medialoader (skipped on WASM) but the interface is
@@ -127,10 +129,14 @@ create_module(EVUI ui)
 target_link_libraries(EVUI PUBLIC eve_imgui)
 target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
 target_include_directories(EVUI BEFORE PUBLIC
-  ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
+  ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 
 create_module(EVScene scene)
 create_module(EVCamera camera)
+# 3D scene loader (SceneLoader): decode a model into an ECS GameObject tree and
+# hot-reload it via a fast diff. Depends on scene / model3d / graphics symbols,
+# which all resolve at the final link of the host target.
+create_module(EVSceneLoader sceneloader)
 
 if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVParticles particles)
@@ -139,21 +145,15 @@ endif()
 create_module(EVPhysics physics)
 # Box2D headers use <Box2D/Common/...>; prefer source tree over flattened install.
 target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
-# Box3D (Erin Catto) — 3D rigid bodies; submodule under external/box3d.
-set(BOX3D_SAMPLES OFF CACHE BOOL "" FORCE)
-set(BOX3D_UNIT_TESTS OFF CACHE BOOL "" FORCE)
-set(BOX3D_BENCHMARKS OFF CACHE BOOL "" FORCE)
-set(BOX3D_DOCS OFF CACHE BOOL "" FORCE)
-set(BOX3D_VALIDATE OFF CACHE BOOL "" FORCE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/box3d ${CMAKE_BINARY_DIR}/external/box3d)
-target_link_libraries(EVPhysics PUBLIC box3d::box3d)
+# Box3D (Erin Catto) is a compiled library built by the third-party ExternalProject
+# and linked by name (box3d / box3dmd / box3dd) in src/engine/CMakeLists.txt.
 if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVMap map)
   target_compile_definitions(EVMap PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
 create_module(EVGpgpu gpgpu)
 target_include_directories(EVGpgpu BEFORE PRIVATE
-  ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
+  ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVModel3D model3d)
   create_module(EVFont font)
@@ -189,7 +189,7 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   target_include_directories(EVProcgen BEFORE PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
   target_include_directories(EVProcgen PUBLIC
-    ${CMAKE_SOURCE_DIR}/external/DungeonTemplateLibrary/include)
+    ${CMAKE_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
   create_module(EVHouseGen housegen)
   target_compile_definitions(EVHouseGen PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVVoxel voxel)
