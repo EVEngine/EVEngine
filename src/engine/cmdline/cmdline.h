@@ -34,7 +34,7 @@ public:
     int Build(std::string path, std::string output, std::string platform);
 
     // package game into a single executable file / apk
-    int Package(std::string path, std::string output);
+    int Package(std::string path, std::string output, std::string sdk);
 
     // run test if it has
     int Test(std::string path);

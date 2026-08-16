@@ -1963,8 +1963,16 @@ float fallDiff(const FallLumaGrid &a, const FallLumaGrid &b) {
 }  // namespace
 
 TEST_CASE("graphics.waterfall.paramsRoundTrip") {
+    auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 128;
+    settings.height = 128;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
     Waterfall *wf = gfx->newWaterfall();
     REQUIRE(wf != nullptr);
     REQUIRE(wf->getShader() != nullptr);
@@ -1995,6 +2003,7 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
     CHECK(Waterfall::paramCount() > 0);
     CHECK(!Waterfall::paramName(0).empty());
     delete wf;
+    win->close();
 }
 
 TEST_CASE("graphics.waterfall.render.fallingFoam") {

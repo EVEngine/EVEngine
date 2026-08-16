@@ -18,6 +18,7 @@
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Grass.h"
 #include "graphics/Waterfall.h"
+#include "graphics/Outline.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
 #include "graphics/RenderControl.h"
@@ -73,6 +74,13 @@ public:
 
     /** Renderer backend id used by sibling modules (e.g. Gpgpu). */
     virtual std::string getBackendName() const = 0;
+
+    /**
+     * Whether gbuffer-based post-process shaders (AO, GI) can be created on this
+     * backend. False on WebGPU, whose custom post shaders are WGSL-only (the
+     * built-in AO/GI use SPIR-V), so RenderSystem3D skips them there.
+     */
+    virtual bool supportsGBufferPost() const { return true; }
 
     /**
      * Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
@@ -245,6 +253,12 @@ public:
      */
     virtual Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) = 0;
 
+    /**
+     * Procedural cube (edge length `size`, centered at origin, outward CCW for RH
+     * Y-up), with per-face normals and a full 0..1 UV per face. Owned by Graphics.
+     */
+    Mesh *newMeshCube(float size = 1.f);
+
     /** Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     void render3D();
     void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
@@ -337,6 +351,13 @@ public:
 
     /** Optional height map for parallax (R channel; nullptr = flat / off). */
     virtual void setMesh3DHeightTexture(Texture *height) = 0;
+
+    /**
+     * Optional scene hardware depth (G-buffer hwDepth, Vulkan NDC z) bound to
+     * mesh3d shader binding 7. X-ray mesh shaders sample it to discard visible
+     * (non-occluded) fragments. nullptr falls back to a placeholder.
+     */
+    virtual void setMesh3DSceneDepth(Texture *depth) = 0;
 
     /** Metallic (0..1) and roughness (0..1) for the next default mesh draw. */
     virtual void setMesh3DMaterial(float metallic, float roughness) = 0;
@@ -555,6 +576,15 @@ public:
      */
     virtual Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
+    /**
+     * Create a Mesh3D custom shader from WGSL source (WebGPU backend).
+     * The WGSL must declare the engine's Frame UBO (group 0 binding 0) and the
+     * shared mesh3d bindings (albedo 1, normal 2, env 3, shadow UBO 4,
+     * shadow depth 5, height 6, main sampler 7, shadow compare sampler 8,
+     * scene depth 9). Vulkan throws (uses SPIR-V via newMeshShaderFromSpv).
+     */
+    virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
+                                          const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     Shader *newMeshShader(const std::string &fragGlsl) {
         return newMeshShader(std::string(), fragGlsl);
@@ -611,6 +641,12 @@ public:
     AmbientOcclusion *newAmbientOcclusion();
 
     /**
+     * Screen-space model outline (t3ssel8r-style) from GBuffer depth + normal.
+     * Caller owns Outline*; its Shader is owned by Graphics.
+     */
+    Outline *newOutline();
+
+    /**
      * Screen-space single-bounce GI. Caller owns GlobalIllumination*;
      * its Shaders are owned by Graphics.
      */
@@ -623,6 +659,8 @@ public:
     AmbientOcclusion *pipelineAmbientOcclusion();
     GlobalIllumination *pipelineGlobalIllumination();
     AntiAliasing *pipelineAntiAliasing();
+    /** Pipeline-owned Outline used by RenderSystem3D when the "outline" feature is on. */
+    Outline *pipelineOutline();
 
     /**
      * Classic image-space AA (FXAA / SMAA / SSAA / NFAA). Caller owns AntiAliasing*;
@@ -769,6 +807,7 @@ protected:
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
     std::unique_ptr<AntiAliasing> pipelineAA_;
+    std::unique_ptr<Outline> pipelineOutline_;
 
     /** FXAA resolve shader that writes opaque RGB (ignores scene-color depth alpha). */
     Shader *prepareSceneColorResolveShader(Texture *scene);

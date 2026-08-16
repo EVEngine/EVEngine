@@ -141,6 +141,7 @@ struct GpuShader {
     vk::Pipeline swapchainPipeline;
     vk::Pipeline offscreenPipeline;
     vk::Pipeline mesh3dPipeline;
+    vk::Pipeline mesh3dXrayPipeline;
     vk::PipelineLayout pipelineLayout;
     bool isMesh3D = false;
     bool isHair3D = false;
@@ -211,6 +212,8 @@ public:
     Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
+                                  const std::string &fragWgsl) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
@@ -234,6 +237,7 @@ public:
                                 int tilesPerRow = 16) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
+    void setMesh3DSceneDepth(Texture *depth) override;
     void setMesh3DMaterial(float metallic, float roughness) override;
     void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
@@ -344,6 +348,12 @@ private:
                                            vk::PipelineLayout layout,
                                            const vkb::BuiltRenderPass &rp,
                                            vk::SampleCountFlagBits samples);
+    /** X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
+    vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
+                                          const std::vector<uint32_t> &frag,
+                                          vk::PipelineLayout layout,
+                                          const vkb::BuiltRenderPass &rp,
+                                          vk::SampleCountFlagBits samples);
     vk::Pipeline createMesh3DHairPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
                                           vk::PipelineLayout layout,
@@ -380,7 +390,8 @@ private:
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
     vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                              GpuTexture *heightTex, Mesh3dFrameSlots &fslots, size_t uboSlot);
+                              GpuTexture *heightTex, GpuTexture *depthTex,
+                              Mesh3dFrameSlots &fslots, size_t uboSlot);
     void ensureDefaultEnvCubemap();
     void ensureFlatNormalTexture3D();
     void ensureFlatHeightTexture3D();
@@ -448,8 +459,10 @@ private:
         GpuTexture *normal = nullptr;
         GpuTexture *env = nullptr;
         GpuTexture *height = nullptr;
+        GpuTexture *depth = nullptr;
         bool operator==(const Mesh3dSetKey &o) const {
-            return albedo == o.albedo && normal == o.normal && env == o.env && height == o.height;
+            return albedo == o.albedo && normal == o.normal && env == o.env && height == o.height &&
+                   depth == o.depth;
         }
     };
     struct Mesh3dSetKeyHash {
@@ -457,7 +470,8 @@ private:
             return std::hash<GpuTexture *>()(k.albedo) ^
                    (std::hash<GpuTexture *>()(k.normal) << 1) ^
                    (std::hash<GpuTexture *>()(k.env) << 2) ^
-                   (std::hash<GpuTexture *>()(k.height) << 3);
+                   (std::hash<GpuTexture *>()(k.height) << 3) ^
+                   (std::hash<GpuTexture *>()(k.depth) << 4);
         }
     };
     struct Mesh3dUboSlot {
@@ -479,6 +493,7 @@ private:
     Texture *mesh3dNormalTexture = nullptr;
     Texture *mesh3dHeightTexture = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
+    Texture *mesh3dSceneDepthTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
     float mesh3dMetallic = 0.f;
     float mesh3dRoughness = 0.45f;
