@@ -64,8 +64,8 @@ struct Theme {
     float scrollbarSize = 14.f;
     float grabMinSize = 12.f;
 
-    /** Font size multiplier relative to the base UI font (FontGlobalScale). DPI is
-     *  baked into the font atlas at rasterization time, not via FontGlobalScale. */
+    /** Font size multiplier relative to the base UI font (FontGlobalScale).
+     *  Display DPI is cancelled out of FontGlobalScale so this stays logical. */
     float fontScale = 1.f;
     bool navEnableKeyboard = true;
 
@@ -84,9 +84,16 @@ void setGlobalTheme(const Theme &theme, const std::string &name);
 /** Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown. */
 bool setThemeByName(const std::string &name);
 
-/** UI DPI scale used when applying geometry / font size. */
+/** Logical (point-space) UI scale. Default 1.0. */
 void setThemeUiScale(float scale);
 float themeUiScale();
+
+/** Display/framebuffer DPI ratio (e.g. 2.0 on Retina). The font atlas is
+ *  rasterized at this resolution so glyphs stay crisp, but ImGui already
+ *  scales the whole frame by io.DisplayFramebufferScale (the same ratio), so
+ *  applyThemeToImGui cancels it via FontGlobalScale to avoid double scaling. */
+void setThemeDpiScale(float dpiScale);
+float themeDpiScale();
 
 /** Push tokens into ImGui style. Metrics are multiplied by uiScale (default: themeUiScale()). */
 void applyThemeToImGui(const Theme &theme);

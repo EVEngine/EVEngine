@@ -17,6 +17,7 @@ FRAGS = [
     "ink_post.frag",
     "pixel_post.frag",
     "ink_mesh.frag",
+    "xray_mesh.frag",
 ]
 
 

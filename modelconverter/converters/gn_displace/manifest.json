@@ -1,0 +1,12 @@
+{
+  "id": "gn_displace",
+  "name": "Geometry Node Displace (demo)",
+  "kind": "nodegroup",
+  "blend": "gn_displace.blend",
+  "group": "EVE_Displace",
+  "description": "Demonstrates node-group converters: appends the EVE_Displace geometry node group to the input and applies it. Requires building gn_displace.blend first (see scripts/build_nodegroup_blend.py).",
+  "params": [
+    {"key": "seed",   "type": "int",   "default": "1"},
+    {"key": "strength", "type": "float", "default": "0.4"}
+  ]
+}

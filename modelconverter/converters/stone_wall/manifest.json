@@ -1,0 +1,14 @@
+{
+  "id": "stone_wall",
+  "name": "Stone Wall (seamless)",
+  "kind": "script",
+  "entry": "convert.py",
+  "description": "Turns a primitive box into a stone wall: laid out to length/height/depth, subdivided into courses, with subtle brick-face jitter.",
+  "params": [
+    {"key": "seed",   "type": "int",   "default": "1"},
+    {"key": "length", "type": "float", "default": "3.0"},
+    {"key": "height", "type": "float", "default": "2.0"},
+    {"key": "depth",  "type": "float", "default": "0.6"},
+    {"key": "detail", "type": "float", "default": "0.5"}
+  ]
+}

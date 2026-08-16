@@ -1,0 +1,12 @@
+{
+  "id": "stone",
+  "name": "Low-poly Stone",
+  "kind": "script",
+  "entry": "convert.py",
+  "description": "Turns a primitive box into a deterministic low-poly stone using a seeded vertex-group displacement.",
+  "params": [
+    {"key": "seed",   "type": "int",   "default": "1"},
+    {"key": "size",   "type": "float", "default": "1.2"},
+    {"key": "detail", "type": "float", "default": "0.6"}
+  ]
+}
