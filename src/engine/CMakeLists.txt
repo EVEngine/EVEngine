@@ -128,7 +128,7 @@ elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     # GNU ld needs dependents before providers: vorbisfile -> vorbis -> ogg;
     # PocoNet/XML/JSON -> PocoFoundation.
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
+        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D box3d
         vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
         PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
