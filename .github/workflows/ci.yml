@@ -6,6 +6,7 @@
 #   macos   → macosx debug (+ unit tests)
 #   ios     → ios debug
 #   linux   → linux debug (+ unit tests)
+#   webgpu  → webgpu (Emscripten/WASM) release
 #
 # iOS signing (optional repo secrets):
 #   IOS_CERTIFICATE_P12_BASE64, IOS_CERTIFICATE_PASSWORD, IOS_DEVELOPMENT_TEAM
@@ -265,3 +266,48 @@ jobs:
           # Some graphics/window tests may need a display; xvfb covers headless runners.
           # VK_ICD_FILENAMES (Lavapipe) comes from setup-software-vulkan.sh.
           xvfb-run -a make test/linux-debug
+
+  webgpu:
+    name: WebGPU (WASM)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            git ninja-build python3 python3-pip
+
+      - name: Install CMake 3.29 (Emscripten is incompatible with CMake 4.x)
+        run: |
+          python3 -m pip install --user cmake==3.29.6
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install Emscripten SDK
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          "$HOME/emsdk/emsdk" install latest
+          "$HOME/emsdk/emsdk" activate latest
+
+      - name: Configure webgpu (Emscripten/WASM)
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          source "$HOME/emsdk/emsdk_env.sh"
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build webgpu (Emscripten/WASM)
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          source "$HOME/emsdk/emsdk_env.sh"
+          cmake --build build/webgpu-web --parallel "$(nproc)"
+
+      - name: Verify webgpu artifacts
+        run: |
+          test -f build/webgpu-web/src/engine/eve.html
+          test -f build/webgpu-web/src/engine/eve.wasm
+          ls -lh build/webgpu-web/src/engine/eve.*
