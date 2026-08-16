@@ -26,6 +26,10 @@ test/assets/classic/.downloaded
 artifacts-local-test/
 third-party/
 third-party-binary/
+# Moved into the third-party/ aggregate (cloned by CMake); the stale on-disk
+# submodule checkouts must not be re-added as gitlinks by `git add -A`.
+external/DungeonTemplateLibrary/
+external/box3d/
 .history/
 docs/superpowers/
 .worktrees/
