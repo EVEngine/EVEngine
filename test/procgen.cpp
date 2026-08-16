@@ -2490,25 +2490,189 @@ TEST_CASE("graphics.render3d.toCanvas") {
 
     int redPixels = 0, total = 0;
     double sr = 0, sg = 0, sb = 0;
-    const int rw = refl->getWidth();
-    const int rh = refl->getHeight();
+    // Read the canvas once into an ImageData (getPixel per-pixel is O(N) readbacks).
+    std::unique_ptr<eve::image::ImageData> img(refl->newImageData());
+    REQUIRE(img.get() != nullptr);
+    const int rw = img->getWidth();
+    const int rh = img->getHeight();
+    const uint8_t *pxd = static_cast<const uint8_t *>(img->getData());
     for (int y = 0; y < rh; y += 1) {
         for (int x = 0; x < rw; x += 1) {
-            const Color c = refl->getPixel(x, y);
+            const size_t o = (size_t(y) * rw + size_t(x)) * 4;
+            const float r = pxd[o] / 255.f, g = pxd[o + 1] / 255.f, b = pxd[o + 2] / 255.f;
             ++total;
-            sr += c.r;
-            sg += c.g;
-            sb += c.b;
-            if (c.r > 0.25f && c.r > c.g + 0.1f && c.r > c.b + 0.1f) ++redPixels;
+            sr += r;
+            sg += g;
+            sb += b;
+            if (r > 0.25f && r > g + 0.1f && r > b + 0.1f) ++redPixels;
         }
     }
     std::printf("render3d.toCanvas: red=%d/%d avg=(%.2f,%.2f,%.2f)\n", redPixels, total,
                 sr / total, sg / total, sb / total);
-    const Color center = refl->getPixel(rw / 2, rh / 2);
-    const Color off = refl->getPixel(rw / 2, rh / 4);
-    std::printf("  center=(%.2f,%.2f,%.2f) upper=(%.2f,%.2f,%.2f)\n", center.r, center.g, center.b,
-                off.r, off.g, off.b);
     CHECK(redPixels > total / 10);  // the red box was rendered into the canvas
     win->close();
 }
 
+
+TEST_CASE("graphics.water.render.planar") {
+    const char *outPath = std::getenv("EVENGINE_PLANAR_RENDER_PNG");
+    if (!outPath || !outPath[0]) return;
+
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 640;
+    settings.height = 480;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    eve::image::Image::create();
+
+    const int fs = 16;
+    std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
+    for (size_t i = 0; i < sky.size(); i += 4) {
+        sky[i] = 135; sky[i + 1] = 180; sky[i + 2] = 235; sky[i + 3] = 255;
+    }
+    Texture *skyTex = gfx->newCubemap(fs, sky.data());
+    REQUIRE(skyTex != nullptr);
+
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 5.f, 8.f);
+    camera->setTarget(0.f, 0.5f, -3.f);
+    camera->setFov(55.f);
+    camera->setAmbient(0.28f, 0.32f, 0.40f);
+    camera->setEnvMap(skyTex);
+    camera->setEnvIntensity(1.f);
+    camera->data()->nearZ = 0.1f;
+    camera->data()->farZ = 2000.f;
+
+    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.45f, 1.f, 0.3f, 1.3f, 1.2f, 1.1f);
+
+    auto *present = Renderable2D::create();
+    present->transform()->x = 0.f;
+    present->transform()->y = 0.f;
+    present->sprite()->width = 1.f;
+    present->sprite()->height = 1.f;
+    present->sprite()->a = 0.f;
+
+    // Skybox: big sphere shaded by the env cubemap.
+    const char *kSky = R"GLSL(#version 450
+layout(location = 3) in vec3 vWorldPos;
+layout(location = 4) in vec3 vCameraPos;
+layout(set = 0, binding = 3) uniform samplerCube env;
+layout(location = 0) out vec4 outColor;
+void main() { outColor = vec4(texture(env, normalize(vWorldPos - vCameraPos)).rgb, 1.0); }
+)GLSL";
+    Shader *skyShader = gfx->newMeshShader("", kSky);
+    auto *skyEnt = Renderable3D::create();
+    skyEnt->setMesh(gfx->newMeshSphere(24, 16));
+    skyEnt->setShader(skyShader);
+    skyEnt->setScale(300.f, 300.f, 300.f);
+    skyEnt->setReceiveShadow(false);
+    skyEnt->setCastShadow(false);
+    skyEnt->setCamera(camera);
+
+    // Boxes above the water to reflect.
+    struct Box { float x, y, z, sx, sy, sz; uint8_t r, g, b; };
+    const Box boxes[] = {
+        {0.f, 4.0f, -5.f, 3.0f, 3.0f, 3.0f, 210, 60, 60},
+        {-3.5f, 3.0f, -3.f, 2.0f, 2.0f, 2.0f, 70, 180, 70},
+        {3.5f, 3.5f, -4.f, 2.5f, 2.5f, 2.5f, 70, 110, 230},
+    };
+    Mesh *cube = makeUnitCube(gfx);
+    struct Ent { Renderable3D *e; glm::mat4 model; };
+    std::vector<Ent> ents;
+    for (const Box &b : boxes) {
+        auto *ent = Renderable3D::create();
+        ent->setMesh(cube);
+        const uint8_t px[4] = {b.r, b.g, b.b, 255};
+        ent->setTexture(gfx->newTexture(1, 1, px));
+        ent->setPosition(b.x, b.y, b.z);
+        ent->setScale(b.sx, b.sy, b.sz);
+        ent->setReceiveShadow(false);
+        ent->setCastShadow(false);
+        ent->setCamera(camera);
+        glm::mat4 m(1.f);
+        m = glm::translate(m, glm::vec3(b.x, b.y, b.z));
+        m = glm::scale(m, glm::vec3(b.sx, b.sy, b.sz));
+        ents.push_back({ent, m});
+    }
+
+    Water *water = gfx->newWater();
+    REQUIRE(water != nullptr);
+    water->createPlane(14.f, 14.f, 48, 48);
+    water->setWaveAmplitude(0.2f);
+    water->setReflectionIntensity(1.0f);
+    water->setScreenSpaceReflection(true, 0.9f);
+    water->setViewport(float(settings.width), float(settings.height));
+
+    auto *waterEnt = Renderable3D::create();
+    waterEnt->setMesh(water->getMesh());
+    waterEnt->setShader(water->getShader());
+    waterEnt->setTexture(nullptr);
+    waterEnt->setReceiveShadow(false);
+    waterEnt->setCastShadow(false);
+    waterEnt->setCamera(camera);
+
+    Canvas *refl = gfx->newCanvas(settings.width, settings.height);
+    REQUIRE(refl != nullptr);
+
+    const glm::vec3 eye = glm::vec3(camera->data()->eyeX, camera->data()->eyeY, camera->data()->eyeZ);
+    const glm::vec3 tgt = glm::vec3(camera->data()->targetX, camera->data()->targetY,
+                                    camera->data()->targetZ);
+    const glm::mat4 mView = glm::lookAtRH(glm::vec3(eye.x, -eye.y, eye.z),
+                                          glm::vec3(tgt.x, -tgt.y, tgt.z), glm::vec3(0.f, -1.f, 0.f));
+    const glm::mat4 mProj = perspectiveVulkanRH_ZO(glm::radians(camera->data()->fovYDeg),
+                                                   settings.width / float(settings.height), 0.1f, 100.f);
+
+    gfx->setMesh3DViewProj(mProj * mView);
+    gfx->setMesh3DView(mView);
+    gfx->setMesh3DCameraPos(glm::vec3(eye.x, -eye.y, eye.z));
+    gfx->setMesh3DEnv(skyTex, 1.f);
+    // Reflection background = bright sky (mirrors what the water should reflect).
+    gfx->setBackgroundColor(Color(0.45f, 0.62f, 0.85f, 1.f));
+    gfx->begin3DFrameToCanvas(refl);
+    for (const Ent &en : ents) {
+        gfx->drawMeshShader(cube, en.model,
+                            static_cast<Renderable3D *>(en.e)->meshRenderer()->texture,
+                            glm::vec4(1.f), nullptr);
+    }
+    gfx->end3DFrameToCanvas();
+    gfx->setBackgroundColor(Color(0.05f, 0.09f, 0.14f, 1.f));
+
+    // Final frame: water sampling the planar reflection.
+    waterEnt->setHeightTexture(refl->getTexture());
+    water->setTime(0.5f);
+    water->bindParams();
+    RenderSystem3D::render(*gfx);
+    RenderSystem::render(*gfx);
+
+    // Read the reflection canvas once and check the red box was captured.
+    std::unique_ptr<eve::image::ImageData> rim(refl->newImageData());
+    REQUIRE(rim.get() != nullptr);
+    int red = 0, total = 0;
+    const uint8_t *pd = static_cast<const uint8_t *>(rim->getData());
+    const int rw = rim->getWidth();
+    const int rh = rim->getHeight();
+    for (int y = 0; y < rh; y += 2) {
+        for (int x = 0; x < rw; x += 2) {
+            const size_t o = (size_t(y) * rw + size_t(x)) * 4;
+            const float r = pd[o] / 255.f, g = pd[o + 1] / 255.f, b = pd[o + 2] / 255.f;
+            ++total;
+            if (r > 0.25f && r > g + 0.1f && r > b + 0.1f) ++red;
+        }
+    }
+    std::printf("planar reflection canvas: red=%d/%d (%.1f%%)\n", red, total,
+                100.f * float(red) / float(total));
+    CHECK(red > 50);
+
+    std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
+    REQUIRE(img.get() != nullptr);
+    REQUIRE(saveImagePng(*img, outPath));
+    std::printf("planar water render saved: %s\n", outPath);
+    win->close();
+}
