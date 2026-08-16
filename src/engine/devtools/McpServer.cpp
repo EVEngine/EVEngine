@@ -436,14 +436,9 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         gfx->setScreenReadbackEnabled(true);
         eve::image::ImageData* img = gfx->newImageData();
         if (!img) return "error: readback returned no image";
-        eve::image::ImageData::FormatHandler::EncodedFormat fmt;
-        if (!eve::image::ImageData::getConstant("PNG", fmt)) {
-            delete img;
-            return "error: no PNG encoder";
-        }
         const int w = gfx->getPixelWidth();
         const int h = gfx->getPixelHeight();
-        img->encode(fmt, path.c_str(), true);
+        img->encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, path.c_str(), true);
         delete img;
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("path", path);
