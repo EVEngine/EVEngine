@@ -74,6 +74,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   shader.cpp
   grass.cpp
+  daynight.cpp
   weather.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
@@ -254,6 +255,7 @@ set(EVELIBS
   EVTouch
   EVGraphics
   EVImage
+  EVDayNight
   EVWeather
   EVCommon
   EVEvent

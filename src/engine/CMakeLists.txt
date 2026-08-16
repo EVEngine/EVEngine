@@ -181,6 +181,7 @@ list(APPEND EVELIBS
     EVScripts
     EVCommon
     EVGraphics
+    EVDayNight
     EVWeather
     EVImage
     EVDatabase

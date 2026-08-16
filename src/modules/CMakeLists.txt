@@ -4,6 +4,8 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVFileSystem PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
 create_module(EVGraphics graphics)
+# Day/night cycle: solar orbit + procedural skybox + night lighting systems.
+create_module(EVDayNight daynight)
 # Weather system: rain / snow / lightning / wind built on the 3D mesh pipeline.
 create_module(EVWeather weather)
 # Header-only VKBuilder: prefer the source tree over a stale third-party install.
