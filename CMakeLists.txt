@@ -210,7 +210,7 @@ function(set_include)
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/include
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include
         # Dungeon Template Library (header-only)
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/DungeonTemplateLibrary/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include
     )
 
     # Prefer system Vulkan SDK (find_package). No vendored vulkan-1.lib fallback.
