@@ -1,0 +1,13 @@
+# Vision pre-filter runtime deps. Python 3.10+ recommended.
+# Qwen2-VL requires torch + transformers; 4-bit needs bitsandbytes (and a CUDA GPU).
+# Install with a torch build matching your CUDA first, e.g.:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+Pillow>=10.0
+requests>=2.31
+transformers>=4.45
+torch>=2.3
+bitsandbytes>=0.43
