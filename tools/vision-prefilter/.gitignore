@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+vision-prefilter.pid
+vision-prefilter.log
+llama-server.pid
+llama-server.log
+models/
+
