@@ -3,9 +3,9 @@
 Backend: llama.cpp ``llama-server`` (OpenAI-compatible API) serving a GGUF
 Qwen2-VL-2B model. No PyTorch / transformers / bitsandbytes are used at all.
 
-JSON-only enforcement happens at the token-sampling level via a GBNF grammar
-(see ``grammar.GBNF_JSON_SCHEMA``), so the model physically cannot emit free
-text or markdown. We still hard-parse the reply so any unexpected shape
+JSON-only enforcement happens at the token-sampling level via a JSON schema
+(see ``grammar.JSON_SCHEMA``), so the model physically cannot emit free text
+or markdown. We still hard-parse the reply so any unexpected shape
 becomes a structured error rather than leaking raw model text to callers.
 
 The fixed task prompt lives here so consumers do not repeat it; a per-scene
@@ -21,24 +21,26 @@ from typing import Optional, Sequence
 
 import requests
 
-from .grammar import GBNF_JSON_SCHEMA
+from .grammar import JSON_SCHEMA
 from .protocol import ProblemType, SceneInput, error_result, ok_result
 
 # ---- fixed task prompt ---------------------------------------------------
 
 FIXED_PROMPT = """You are a lightweight visual pre-filter for a 3D game scene.
 Look at the provided render screenshot and the compact geometry text.
-Judge scene quality and layout risks ONLY.
+Judge scene quality and layout risks ONLY. Be conservative: a normal, balanced
+game scene should score 0. Only flag an issue when it is clearly visible.
 
 Return the scene risk assessment as JSON. Obey the schema exactly: fields
 risk_score, has_problem, problem_regions, need_high_precision_review.
 
 Rules:
-- risk_score: 0 = balanced layout / no problem; 1 = low; 2 = medium; 3 = high.
-- has_problem: true if risk_score >= 1.
+- risk_score: 0 = balanced / normal layout; 1 = low; 2 = medium; 3 = high.
+- has_problem: true only if a real problem is visible (leave false for normal scenes).
 - problem_regions: list of { "bbox": [x1,y1,x2,y2], "type": "遮挡|过密|空旷|穿插|道路遮挡|植被扎堆", "note": "..." }.
-  bbox is in image pixels. Empty list if no problem.
-- need_high_precision_review: true when risk_score >= 3 (e.g. road occlusion).
+  bbox is in image pixels. Leave EMPTY for a normal, balanced scene. A sparse
+  tree or bush at the edge/corner is normal, NOT "植被扎堆".
+- need_high_precision_review: true only when risk_score >= 3 (e.g. road occlusion).
 
 Only output the JSON object. No prose, no markdown, no code fence.
 """
@@ -138,9 +140,9 @@ class LlamaServer:
                     ],
                 }
             ],
-            "max_tokens": 256,
+            "max_tokens": 512,
             "temperature": 0.0,
-            "grammar": GBNF_JSON_SCHEMA,
+            "json_schema": JSON_SCHEMA,
         }
         r = requests.post(f"{self.base_url}/v1/chat/completions", json=payload, timeout=self.timeout)
         r.raise_for_status()

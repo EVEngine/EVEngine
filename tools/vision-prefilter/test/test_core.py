@@ -38,11 +38,19 @@ def test_parse_rejects_non_json():
 
 
 def test_rule_road_occlusion_high_risk():
-    geom = "road=(0,0)->(100,0)"
+    geom = "road=(0,0)->(100,0); road blocked at x=50"
     out = evaluate(geom, "", [])
     assert out.risk_score == 3
     assert out.has_problem is True
     assert out.need_high_precision_review is True
+
+
+def test_rule_road_presence_alone_not_high_risk():
+    geom = "road=(0,0)->(100,0)"
+    out = evaluate(geom, "", [])
+    assert out.risk_score == 0
+    assert out.has_problem is False
+    assert out.need_high_precision_review is False
 
 
 def test_rule_vegetation_cluster_medium_risk():

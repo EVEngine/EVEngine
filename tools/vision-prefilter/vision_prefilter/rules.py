@@ -62,13 +62,16 @@ def evaluate(geometry: str, prompt: str, model_regions: List[ProblemRegion]) -> 
     """Combine geometry hint + model perception into a deterministic rating."""
     ctx = RuleContext(geometry=geometry, prompt=prompt, model_regions=model_regions)
     out = RuleOutcome()
+    road_present = _geometry_mentions_road(geometry)
 
-    # 1. Rule: road occlusion in geometry hint => HIGH risk.
-    if _geometry_mentions_road(geometry):
+    # 1. Rule: explicit road occlusion in geometry hint => HIGH risk.
+    #    Merely mentioning a road is not an occlusion -- only a clear
+    #    "blocked / occluded" signal warrants the high rating.
+    if _geometry_mentions_road_blocked(geometry):
         out.regions.append(
-            ProblemRegion(bbox=[0, 0, 0, 0], type=ProblemType.ROAD_BLOCKED, note="geometry hint mentions road")
+            ProblemRegion(bbox=[0, 0, 0, 0], type=ProblemType.ROAD_BLOCKED, note="geometry hints road occlusion")
         )
-        out.reasons.append("road present in geometry; treat any occlusion as high risk")
+        out.reasons.append("road occlusion in geometry -> high risk")
         out.risk_score = max(out.risk_score, 3)
 
     # 2. Model perceived problem regions.
@@ -85,10 +88,13 @@ def evaluate(geometry: str, prompt: str, model_regions: List[ProblemRegion]) -> 
             out.risk_score = max(out.risk_score, 2)
             out.reasons.append(f"{t.value} -> medium risk")
 
-    # 3. Geometry clustering hint bumps to medium.
+    # 3. Vegetation clustering in geometry bumps to medium (road present also
+    #    raises attention but never alone to high).
     if _geometry_mentions_vegetation_cluster(geometry):
         out.risk_score = max(out.risk_score, 2)
         out.reasons.append("vegetation cluster in geometry -> medium risk")
+    elif road_present and out.risk_score >= 2:
+        out.reasons.append("road present with detected issues -> keep risk")
 
     # 4. Balanced layout (nothing detected) -> no risk.
     if out.risk_score == 0:
@@ -104,12 +110,21 @@ def evaluate(geometry: str, prompt: str, model_regions: List[ProblemRegion]) -> 
 
 def _geometry_mentions_road(geometry: str) -> bool:
     g = (geometry or "").lower()
-    return any(k in g for k in ("road", "road_blocked", "道路", "road=(", "roadstart"))
+    return any(k in g for k in ("road", "道路", "road=(", "roadstart"))
+
+
+def _geometry_mentions_road_blocked(geometry: str) -> bool:
+    g = (geometry or "").lower()
+    return any(k in g for k in ("blocked", "occluded", "occlusion", "road_blocked", "遮挡"))
 
 
 def _geometry_mentions_vegetation_cluster(geometry: str) -> bool:
     g = (geometry or "").lower()
-    return any(k in g for k in ("cluster", "vegetation", "植被", "bush", "tree"))
+    # Only a *cluster* of vegetation is a medium-risk signal; a single sparse
+    # tree / bush at a corner is normal layout and must not bump the score.
+    return any(k in g for k in ("cluster", "vegetation", "植被", "dense", "密集")) or (
+        "tree" in g and any(k in g for k in ("n=", "n =", "x", "group", "patch"))
+    )
 
 
 __all__ = ["evaluate", "RuleOutcome", "RuleContext", "BASE_RISK", "EMPTY_MODEL_RESULT"]

@@ -13,7 +13,7 @@
 地狱、脆弱性）。推理交给 llama.cpp `llama-server`（纯 C/C++ 单二进制 + 一个 GGUF
 模型文件），本服务只是它前面的一个薄 FastAPI 网关。
 
-`llama.cpp` 的 **GBNF grammar 在 token 采样层强制输出**，从根上杜绝模型吐出自由
+llama.cpp 的 **JSON Schema 约束在 token 采样层强制输出**，从根上杜绝模型吐出自由
 文本或 markdown —— 这比 prompt 约束硬得多，正好满足「只输出标准 JSON」的硬需求。
 
 ## 定位
@@ -43,7 +43,7 @@ vision-prefilter/
 ├── vision_prefilter/
 │   ├── __init__.py        # 常量 / 元信息
 │   ├── protocol.py        # 标准化输入输出 schema（pydantic）+ 校验
-│   ├── grammar.py         # GBNF grammar：token 采样层强制标准 JSON
+│   ├── grammar.py         # JSON Schema：token 采样层强制标准 JSON
 │   ├── rules.py           # 内置业务判定规则（道路/植被/均衡）
 │   ├── model.py           # llama-server OpenAI 兼容 API 客户端 + 解析
 │   ├── server.py          # FastAPI HTTP 网关
@@ -175,7 +175,7 @@ python -m vision_prefilter --host 127.0.0.1 --port 8531 --backend http://127.0.0
 
 ## 输出契约（模型侧）
 
-GBNF grammar（`grammar.py`）在 token 采样层强制模型只输出该 JSON，禁止自由文本：
+JSON Schema（`grammar.py`）在 token 采样层强制模型只输出该 JSON，禁止自由文本：
 
 ```json
 {
