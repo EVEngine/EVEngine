@@ -128,6 +128,7 @@ target_include_directories(EVUI BEFORE PUBLIC
   ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
 
 create_module(EVScene scene)
+create_module(EVCamera camera)
 
 if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVParticles particles)
