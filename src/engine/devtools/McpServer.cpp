@@ -4,6 +4,7 @@
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/McpDevBridge.hpp"
+#include "devtools/SceneInspect.hpp"
 #include "devtools/Snapshot.hpp"
 
 #include <Poco/Dynamic/Var.h>
@@ -19,11 +20,13 @@
 #include <Poco/Timespan.h>
 
 #include <squirrel.h>
+#include <glm/glm.hpp>
 
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <sstream>
+#include <vector>
 
 namespace eve::dev {
 namespace {
@@ -156,6 +159,37 @@ int argInt(Poco::JSON::Object::Ptr args, const char* key, int def = 0) {
     } catch (...) {
         return def;
     }
+}
+
+float argFloat(Poco::JSON::Object::Ptr args, const char* key, float def = 0.f) {
+    if (!args || !args->has(key)) return def;
+    try {
+        return static_cast<float>(args->get(key).convert<double>());
+    } catch (...) {
+        return def;
+    }
+}
+
+glm::vec3 argVec3(Poco::JSON::Object::Ptr args, const char* key, const glm::vec3& def = {}) {
+    if (!args || !args->has(key)) return def;
+    try {
+        auto arr = args->getArray(key);
+        if (arr && arr->size() >= 3) {
+            return glm::vec3(static_cast<float>(arr->get(0).convert<double>()),
+                             static_cast<float>(arr->get(1).convert<double>()),
+                             static_cast<float>(arr->get(2).convert<double>()));
+        }
+    } catch (...) {
+    }
+    return def;
+}
+
+Poco::JSON::Array::Ptr vec3ToArray(const glm::vec3& v) {
+    Poco::JSON::Array::Ptr arr = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+    arr->add(v.x);
+    arr->add(v.y);
+    arr->add(v.z);
+    return arr;
 }
 
 std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object::Ptr args) {
@@ -351,6 +385,96 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
     if (name == "eve_ai_log") return AiPanel::instance().formatLog(100);
 
+    // ---- 场景巡检工具集（图像与 3D 几何数据严格同步） ----
+    if (name == "inspect_generate_scene_camera_views") {
+        const glm::vec3 center = argVec3(args, "center");
+        const float     fov    = argFloat(args, "fov", 60.f);
+        auto            views  = SceneInspect::instance().generateViews(center, fov);
+        Poco::JSON::Object::Ptr root = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        Poco::JSON::Array::Ptr  arr  = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+        for (const auto& v : views) {
+            Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            o->set("name", v.name);
+            o->set("kind", v.kind);
+            o->set("eye", vec3ToArray(v.eye));
+            o->set("target", vec3ToArray(v.target));
+            o->set("fov", static_cast<double>(v.fovYDeg));
+            arr->add(o);
+        }
+        root->set("views", arr);
+        return mcpStringify(Poco::Dynamic::Var(root));
+    }
+
+    if (name == "set_camera_pose") {
+        const glm::vec3 pos = argVec3(args, "pos", glm::vec3(0.f, 1.8f, 0.f));
+        const glm::vec3 rot = argVec3(args, "rot", glm::vec3(0.f));
+        const float     fov = argFloat(args, "fov", 0.f);
+        const bool      ok  = SceneInspect::instance().setCameraPose(pos, rot, fov);
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("ok", ok);
+        if (!ok) {
+            o->set("error", "failed to set camera pose (no Graphics/Camera3D)");
+        } else {
+            try {
+                Poco::JSON::Parser parser;
+                o->set("pose", parser.parse(SceneInspect::instance().currentPoseJson()));
+            } catch (...) {
+            }
+        }
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "capture_render_frame") {
+        const std::string dir = argString(args, "dir");
+        const std::string tag = argString(args, "tag", "frame");
+        std::vector<std::string> buffers;
+        if (args && args->has("buffers")) {
+            try {
+                auto arr = args->getArray("buffers");
+                if (arr) {
+                    for (size_t i = 0; i < arr->size(); ++i)
+                        buffers.push_back(arr->get(i).convert<std::string>());
+                }
+            } catch (...) {
+            }
+        }
+        const auto res = SceneInspect::instance().capture(dir, tag, buffers);
+        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("ok", res.ok);
+        if (res.ok) {
+            o->set("png", res.pngPath);
+            o->set("json", res.jsonPath);
+            o->set("width", res.width);
+            o->set("height", res.height);
+            o->set("entityCount", res.entityCount);
+            if (!res.depthPngPath.empty()) o->set("depthPng", res.depthPngPath);
+            if (!res.normalPngPath.empty()) o->set("normalPng", res.normalPngPath);
+            if (!res.idPngPath.empty()) o->set("idPng", res.idPngPath);
+            if (!res.idJsonPath.empty()) o->set("idJson", res.idJsonPath);
+            if (!res.unsupported.empty()) {
+                Poco::JSON::Array::Ptr uns = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+                for (const auto& u : res.unsupported) uns->add(u);
+                o->set("unsupported", uns);
+            }
+        } else {
+            o->set("error", res.error);
+        }
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+
+    if (name == "get_visible_entities_screen_bbox") {
+        const bool hasPos    = args && args->has("pos");
+        const bool hasTarget = args && args->has("target");
+        if (hasPos && hasTarget) {
+            const glm::vec3 eye = argVec3(args, "pos");
+            const glm::vec3 tgt = argVec3(args, "target");
+            const float     fov = argFloat(args, "fov", 0.f);
+            return SceneInspect::instance().visibleEntitiesJson(&eye, &tgt, fov);
+        }
+        const float fov = argFloat(args, "fov", 0.f);
+        return SceneInspect::instance().visibleEntitiesJson(nullptr, nullptr, fov);
+    }
+
     return "error: unknown tool " + name;
 }
 
@@ -431,7 +555,18 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_ai_note\",\"description\":\"Append a note to the DevTools AI session log.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}},"
         "{\"name\":\"eve_ai_log\",\"description\":\"Read the DevTools AI session log.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}"
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"inspect_generate_scene_camera_views\",\"description\":\"Generate a standard set of inspection camera views (road-level, bird's-eye, corner close-up, vista) around a center point.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"center\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"[x,y,z] center point to orbit (default [0,0,0])\"},\"fov\":{\"type\":\"number\",\"description\":\"base vertical FOV in degrees (default 60)\"}}}}"
+        ","
+        "{\"name\":\"set_camera_pose\",\"description\":\"Set the active camera pose from position + Euler rotation + optional FOV.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"pos\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"[x,y,z] camera position\"},\"rot\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"[yawDeg,pitchDeg] facing\"},\"fov\":{\"type\":\"number\",\"description\":\"vertical FOV in degrees (0=keep current)\"}},\"required\":[\"pos\",\"rot\"]}}"
+        ","
+        "{\"name\":\"capture_render_frame\",\"description\":\"Atomically capture the current view and export matching buffers. PNG color frame + geometry JSON always; 'buffers' may add depth/normal (GBuffer), id (per-pixel render ID mask with JSON mapping) — shadow is unsupported on current backend.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"dir\":{\"type\":\"string\",\"description\":\"output directory (default: cache dir)\"},\"tag\":{\"type\":\"string\",\"description\":\"file name tag (default 'frame')\"},\"buffers\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"optional: 'color'|'depth'|'normal'|'id' (default ['color'])\"}}}"
+        ","
+        "{\"name\":\"get_visible_entities_screen_bbox\",\"description\":\"Return visible scene entities in the frustum with their screen-space bbox, world AABB, id and asset label.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"pos\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"optional [x,y,z] camera eye override\"},\"target\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"optional [x,y,z] look target override\"},\"fov\":{\"type\":\"number\",\"description\":\"optional FOV override (degrees)\"}}}}"
         "]}";
     return makeResult(idJson, kToolsJson);
 }

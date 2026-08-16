@@ -15,8 +15,17 @@
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ClipSpace.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
+#include "medialoader/image/FormatHandler.h"
 #include "medialoader/model/ModelLoader.h"
 #include "window/Window.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <filesystem>
+#include <fstream>
 
 using namespace eve::graphics;
 
@@ -665,4 +674,147 @@ TEST_CASE("Camera3D.screenToRayPick") {
                           cam->getScreenRayDirY() * cam->getScreenRayDirY() +
                           cam->getScreenRayDirZ() * cam->getScreenRayDirZ());
     CHECK(std::fabs(len - 1.f) < 1e-4f);
+}
+
+// ---------------------------------------------------------------------------
+// GPU 验证：逐像素实体 ID mask（renderEntityIdMask）与通用纹理读回
+// （readTextureToImageData）。这两条路径支撑 capture_render_frame 的
+// "id" / "depth" / "normal" 缓冲区，必须在真实 Vulkan 设备上跑通。
+// ---------------------------------------------------------------------------
+TEST_CASE("RenderSystem3D.entityIdMaskPixels") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    resetScene3D();
+
+    Mesh *mesh = loadUvCube(gfx);  // 单位立方体（半边长 0.5）
+    REQUIRE(mesh != nullptr);
+
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeZ = 3.f;  // 看向原点
+    auto d = cam->data();
+    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
+    const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
+    const glm::vec3 up(0.f, 1.f, 0.f);
+    const float aspect = float(gfx->getWidth()) / float(gfx->getHeight());
+    const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
+    const glm::mat4 projM = eve::graphics::perspectiveVulkanRH_ZO(
+        glm::radians(d->fovYDeg), aspect, d->nearZ, d->farZ);
+    const glm::mat4 viewProj = projM * viewM;
+
+    // 两个立方体：左侧 id=1（红），右侧 id=2（绿）。
+    std::vector<Graphics::EntityIdDraw> draws;
+    Graphics::EntityIdDraw a;
+    a.mesh = mesh;
+    a.model = glm::translate(glm::mat4(1.f), glm::vec3(-1.f, 0.f, 0.f));
+    a.idColor = glm::vec4(1.f, 0.f, 0.f, 1.f);
+    draws.push_back(a);
+    Graphics::EntityIdDraw b;
+    b.mesh = mesh;
+    b.model = glm::translate(glm::mat4(1.f), glm::vec3(1.f, 0.f, 0.f));
+    b.idColor = glm::vec4(0.f, 1.f, 0.f, 1.f);
+    draws.push_back(b);
+
+    const int w = gfx->getWidth();
+    const int h = gfx->getHeight();
+    eve::image::ImageData *img = gfx->renderEntityIdMask(draws, viewProj, w, h);
+    REQUIRE(img != nullptr);
+    REQUIRE(img->getWidth() == w);
+    REQUIRE(img->getHeight() == h);
+
+    auto *px = static_cast<const uint8_t *>(img->getData());
+    bool sawRed = false, sawGreen = false, sawBg = false;
+    for (int y = 8; y < h - 8; y += 4) {
+        for (int x = 8; x < w - 8; x += 4) {
+            const size_t i = (size_t(y) * size_t(w) + size_t(x)) * 4;
+            const uint8_t r = px[i], g = px[i + 1], b = px[i + 2];
+            if (r > 200 && g < 60 && b < 60) sawRed = true;
+            else if (g > 200 && r < 60 && b < 60) sawGreen = true;
+            else if (r == 0 && g == 0 && b == 0) sawBg = true;
+        }
+    }
+    CHECK(sawRed);    // 左立方体被渲染为 id=1（红）
+    CHECK(sawGreen);  // 右立方体被渲染为 id=2（绿）
+    CHECK(sawBg);     // 背景为 (0,0,0,0)
+
+    // 保存 ID mask PNG 供人工核对（可选）。
+    eve::image::Image::create();
+    eve::filesystem::FileData *png =
+        img->encode(medialoader::FormatHandler::ENCODED_PNG, "entity_id_mask.png", false);
+    if (png) {
+        const std::filesystem::path outDir =
+            std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
+        std::filesystem::create_directories(outDir);
+        std::ofstream out(outDir / "entity_id_mask.png", std::ios::binary);
+        if (out.good()) {
+            out.write(static_cast<const char *>(png->getData()),
+                      static_cast<std::streamsize>(png->getSize()));
+            std::printf("entity_id_mask saved: %s\n", (outDir / "entity_id_mask.png").string().c_str());
+        }
+        delete png;
+    }
+    delete img;
+
+    win->close();
+}
+
+TEST_CASE("RenderSystem3D.readTextureBackPixels") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    resetScene3D();
+
+    // 用 renderEntityIdMask（离屏，不经过 present）往 G-buffer 槽写入真实立方体
+    // 几何，再通过 readTextureToImageData 读回深度/法线纹理 —— 即
+    // capture_render_frame 的 depth/normal 路径。
+    Mesh *mesh = loadUvCube(gfx);
+    REQUIRE(mesh != nullptr);
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeZ = 3.f;
+    auto d = cam->data();
+    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
+    const glm::mat4 viewM = glm::lookAtRH(eye, glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
+    const glm::mat4 projM = eve::graphics::perspectiveVulkanRH_ZO(
+        glm::radians(d->fovYDeg), 320.f / 240.f, d->nearZ, d->farZ);
+    const glm::mat4 viewProj = projM * viewM;
+
+    std::vector<Graphics::EntityIdDraw> draws;
+    Graphics::EntityIdDraw a;
+    a.mesh = mesh;
+    a.model = glm::mat4(1.f);
+    a.idColor = glm::vec4(1.f, 0.f, 0.f, 1.f);
+    draws.push_back(a);
+    eve::image::ImageData *idImg = gfx->renderEntityIdMask(draws, viewProj, 320, 240);
+    REQUIRE(idImg != nullptr);
+    delete idImg;
+
+    auto *gb = gfx->getRenderControl()->getGBuffer();
+    REQUIRE(gb != nullptr);
+    REQUIRE(gb->isValid());
+
+    const int cx = 320 / 2;
+    const int cy = 240 / 2;
+
+    eve::image::ImageData *depth = gfx->readGBufferToImageData("depth");
+    REQUIRE(depth != nullptr);
+    {
+        auto *px = static_cast<const uint8_t *>(depth->getData());
+        const size_t c = (size_t(cy) * size_t(depth->getWidth()) + size_t(cx)) * 4;
+        const size_t e = (size_t(3) * size_t(depth->getWidth()) + size_t(3)) * 4;
+        // 立方体在中心（有几何）→ 中心线性深度 > 背景（清空为 0）深度。
+        CHECK(px[c + 0] > px[e + 0]);
+    }
+    delete depth;
+
+    eve::image::ImageData *normal = gfx->readGBufferToImageData("normal");
+    REQUIRE(normal != nullptr);
+    {
+        auto *px = static_cast<const uint8_t *>(normal->getData());
+        const size_t c = (size_t(cy) * size_t(normal->getWidth()) + size_t(cx)) * 4;
+        // 立方体正对相机的前脸法线 ≈ (0,0,1) → B 通道接近 255。
+        CHECK(px[c + 2] > 200);
+    }
+    delete normal;
+
+    win->close();
 }

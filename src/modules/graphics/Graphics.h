@@ -338,6 +338,38 @@ public:
      */
     virtual Texture *getSceneColorTexture() { return nullptr; }
 
+    /**
+     * Per-pixel mesh entity-ID pass. Renders each EntityIdDraw's mesh with the
+     * given flat idColor (RGB encodes a stable entity id) into an offscreen
+     * target using the same viewProj, then reads it back to CPU. Pixels not
+     * covered by any entity are (0,0,0,0). Caller owns the returned ImageData*.
+     * Returns nullptr when the backend does not support offscreen ID capture.
+     */
+    struct EntityIdDraw {
+        Mesh *mesh = nullptr;
+        glm::mat4 model{1.f};
+        glm::vec4 idColor{0.f, 0.f, 0.f, 1.f};
+    };
+    virtual image::ImageData *renderEntityIdMask(const std::vector<EntityIdDraw> &draws,
+                                                 const glm::mat4 &viewProj, int width, int height) {
+        (void)draws;
+        (void)viewProj;
+        (void)width;
+        (void)height;
+        return nullptr;
+    }
+
+    /**
+     * Read a G-buffer attachment back to CPU as RGBA8. name is one of
+     * "depth" (RGBA8 linear depth), "normal" (world normal*0.5+0.5), "albedo".
+     * Valid only after a G-buffer or entity-ID offscreen pass filled it.
+     * Caller owns the returned ImageData*. Returns nullptr when unsupported.
+     */
+    virtual image::ImageData *readGBufferToImageData(const std::string &name) {
+        (void)name;
+        return nullptr;
+    }
+
     /** Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
 
