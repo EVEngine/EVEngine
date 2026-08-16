@@ -1,0 +1,33 @@
+# Local deployment of the NormalCrafter GPU server (single replica).
+# Requires an NVIDIA GPU host. Weights are fetched from HuggingFace at first run
+# (or pre-baked into the image; see Dockerfile).
+services:
+  normal-crafter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eve/normal-crafter:latest
+    runtime: nvidia
+    environment:
+      - NORMAL_CRAFTER_WINDOW_SIZE=14
+      - NORMAL_CRAFTER_TIME_STEP_SIZE=10
+      - NORMAL_CRAFTER_DECODE_CHUNK_SIZE=7
+      - NORMAL_CRAFTER_MAX_RES=1024
+      - NORMAL_CRAFTER_CPU_OFFLOAD=model
+      - NORMAL_CRAFTER_WEIGHT_DTYPE=float16
+      # HF cache persisted so weights download once:
+      - HF_HOME=/models
+    volumes:
+      - normalcrafter-models:/models
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  normalcrafter-models:
