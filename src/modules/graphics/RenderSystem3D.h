@@ -91,6 +91,15 @@ public:
         Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
         /** Optional packed material; when set, overrides texture/shader/PBR fields below. */
         Material *material = nullptr;
+        /**
+         * Optional X-ray shader used to paint this entity's occluded silhouette
+         * (see Shader::setXray). When xrayHighlight is set, the entity is skipped
+         * from the G-buffer (so its pixels record occluder depth) and drawn a
+         * second time over the scene with the X-ray shader. Only the part hidden
+         * behind buildings shows the highlight; visible parts render normally.
+         */
+        Shader *xrayShader = nullptr;
+        bool xrayHighlight = false;
         float r = 1, g = 1, b = 1, a = 1;
         float metallic = 0.f;
         float roughness = 0.45f;
@@ -171,6 +180,16 @@ public:
     /** Attach a Material that packages shading method + surface params. */
     void setMaterial(Material *material);
     Material *getMaterial();
+    /** Attach an X-ray mesh shader (see Shader::setXray) for occluded silhouettes. */
+    void setXRayShader(Shader *shader);
+    Shader *getXRayShader();
+    /**
+     * When true, this entity is an X-ray target: its G-buffer pixels are replaced
+     * by occluders and it is redrawn with xrayShader so the part hidden behind
+     * buildings shows as a highlight silhouette (visible parts stay normal).
+     */
+    void setXRayHighlight(bool on);
+    bool getXRayHighlight();
     /**
      * Bind a named mesh+material part (e.g. Assimp submesh / body region).
      * index 0..kMaxParts-1. Passing nullptr mesh clears that slot and trims partCount.
