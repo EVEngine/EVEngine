@@ -669,6 +669,8 @@ public:
      * Caller owns Waterfall*; its Mesh / Shader are owned by Graphics.
      */
     Waterfall *newWaterfall();
+    
+    /**
      * Dynamic water surface (sky reflection + animated edge waves + middle
      * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
      */

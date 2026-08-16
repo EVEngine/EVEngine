@@ -1,34 +1,37 @@
 #include "graphics/Graphics.h"
-#include "graphics/HairShader.h"
-#include "graphics/Grass.h"
 #include "common/config.h"
+#include "graphics/Grass.h"
+#include "graphics/HairShader.h"
+
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
 #else
 #include "graphics/vulkan/Graphics.h"
 #endif
-#include "graphics/RenderSystem3D.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/Light.h"
-#include "graphics/Mesh.h"
-#include "graphics/Texture.h"
-#include "graphics/Quad.h"
-#include "graphics/Font.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Font.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Outline.h"
+#include "graphics/Light.h"
 #include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+
 #ifndef EVENGINE_WEBGPU
 #include "font/FontData.h"
 #endif
-#include "image/ImageData.h"
-#include "image/Image.h"
-#include "filesystem/Filesystem.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
+#include "filesystem/Filesystem.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
+
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -56,9 +59,9 @@ void Graphics::render3D() {
     popValidationScope();
 }
 
-Shader *Graphics::prepareSceneColorResolveShader(Texture *scene) {
+Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {
     if (!scene) return nullptr;
-    AntiAliasing *aa = pipelineAntiAliasing();
+    AntiAliasing* aa = pipelineAntiAliasing();
     aa->setMode("fxaa");
     const bool doAA = !renderControl_ || renderControl_->isEnabled("aa");
     if (doAA) {
@@ -72,24 +75,22 @@ Shader *Graphics::prepareSceneColorResolveShader(Texture *scene) {
     return aa->getShader();
 }
 
-void Graphics::drawScene3DRGBA(float x, float y, float w, float h, float r, float g, float b,
-                               float a) {
-    Texture *scene = getSceneColorTexture();
+void Graphics::drawScene3DRGBA(float x, float y, float w, float h, float r, float g, float b, float a) {
+    Texture* scene = getSceneColorTexture();
     if (!scene) return;
     // Scene color A is linear view-depth, not opacity. The default textured
     // blit multiplies that into SrcAlpha, so the planet composites against
     // the dark clear color and looks dim. Use the same opaque FXAA resolve
     // as the engine auto-composite path (aa shader writes alpha = 1).
-    if (Shader *sh = prepareSceneColorResolveShader(scene))
+    if (Shader* sh = prepareSceneColorResolveShader(scene))
         drawTexturedRectShader(scene, sh, x, y, w, h, Color(r, g, b, a));
     else
         drawTexturedRect(scene, x, y, w, h, Color(r, g, b, a));
 }
 
-void Graphics::drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r, float g,
-                              float b, float a) {
+void Graphics::drawCanvasRGBA(Canvas* canvas, float x, float y, float w, float h, float r, float g, float b, float a) {
     if (!canvas) return;
-    Texture *tex = canvas->getTexture();
+    Texture* tex = canvas->getTexture();
     if (!tex) return;
     drawTexturedRect(tex, x, y, w, h, Color(r, g, b, a));
 }
@@ -98,9 +99,9 @@ void Graphics::setDirectionalLight(float dx, float dy, float dz, float r, float 
     RenderSystem3D::setDirectionalLight(dx, dy, dz, r, g, b);
 }
 
-Material *Graphics::newMaterial() { return new Material(); }
+Material* Graphics::newMaterial() { return new Material(); }
 
-RenderControl *Graphics::getRenderControl() {
+RenderControl* Graphics::getRenderControl() {
     if (!renderControl_) {
         renderControl_ = std::make_unique<RenderControl>();
         renderControl_->attach(this);
@@ -109,20 +110,18 @@ RenderControl *Graphics::getRenderControl() {
     return renderControl_.get();
 }
 
-void Graphics::expose(ssq::Table &table) {
+void Graphics::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Graphics::create, false);
     expose(cls);
 
     auto canvasCls =
-        table.addClass<Canvas>("Canvas", std::function<Canvas *()>([]() -> Canvas * { return nullptr; }),
-                               true);
+        table.addClass<Canvas>("Canvas", std::function<Canvas*()>([]() -> Canvas* { return nullptr; }), true);
     canvasCls.addFunc("getWidth", &Canvas::getWidth);
     canvasCls.addFunc("getHeight", &Canvas::getHeight);
     canvasCls.addFunc("getTexture", &Canvas::getTexture);
 
     auto texCls =
-        table.addClass<Texture>("Texture", std::function<Texture *()>([]() -> Texture * { return nullptr; }),
-                                true);
+        table.addClass<Texture>("Texture", std::function<Texture*()>([]() -> Texture* { return nullptr; }), true);
     texCls.addFunc("setCastOcclusion", &Texture::setCastOcclusion);
     texCls.addFunc("getCastOcclusion", &Texture::getCastOcclusion);
     texCls.addFunc("getWidth", &Texture::getWidth);
@@ -132,8 +131,7 @@ void Graphics::expose(ssq::Table &table) {
     // Texture / Mesh expose occlusion flags used by volumetric light shafts.
     // (create returns null — instances come from Graphics::newTexture / newMesh*)
 
-    auto meshCls =
-        table.addClass<Mesh>("Mesh", std::function<Mesh *()>([]() -> Mesh * { return nullptr; }), true);
+    auto meshCls = table.addClass<Mesh>("Mesh", std::function<Mesh*()>([]() -> Mesh* { return nullptr; }), true);
     meshCls.addFunc("getVertexCount", &Mesh::getVertexCount);
     meshCls.addFunc("getMorphCount", &Mesh::getMorphCount);
     meshCls.addFunc("getMorphName", &Mesh::getMorphName);
@@ -146,16 +144,14 @@ void Graphics::expose(ssq::Table &table) {
     meshCls.addFunc("setCastOcclusion", &Mesh::setCastOcclusion);
     meshCls.addFunc("getCastOcclusion", &Mesh::getCastOcclusion);
 
-    auto quad = table.addClass<Quad>(
-        "Quad", std::function<Quad *()>([]() -> Quad * { return nullptr; }), true);
+    auto quad = table.addClass<Quad>("Quad", std::function<Quad*()>([]() -> Quad* { return nullptr; }), true);
     quad.addFunc("setViewport", &Quad::setViewport);
     quad.addFunc("getX", &Quad::getX);
     quad.addFunc("getY", &Quad::getY);
     quad.addFunc("getWidth", &Quad::getWidth);
     quad.addFunc("getHeight", &Quad::getHeight);
 
-    auto shader = table.addClass<Shader>(
-        "Shader", std::function<Shader *()>([]() -> Shader * { return nullptr; }), true);
+    auto shader = table.addClass<Shader>("Shader", std::function<Shader*()>([]() -> Shader* { return nullptr; }), true);
     shader.addFunc("declareFloat", &Shader::declareFloat);
     shader.addFunc("declareVec2", &Shader::declareVec2);
     shader.addFunc("declareVec3", &Shader::declareVec3);
@@ -171,8 +167,8 @@ void Graphics::expose(ssq::Table &table) {
     // ECS entities live in the registry buffer (not standalone new/delete).
     // Squirrel must not delete them on VM shutdown or close asserts
     // _CrtIsValidHeapPointer.
-    auto cam2d = table.addClass<Camera2D>(
-        "Camera2D", std::function<Camera2D *()>([]() { return Camera2D::createCamera(); }), false);
+    auto cam2d = table.addClass<Camera2D>("Camera2D",
+                                          std::function<Camera2D*()>([]() { return Camera2D::createCamera(); }), false);
     cam2d.addFunc("setAmbient", &Camera2D::setAmbient);
     cam2d.addFunc("setPosition", &Camera2D::setPosition);
     cam2d.addFunc("getX", &Camera2D::getX);
@@ -185,7 +181,7 @@ void Graphics::expose(ssq::Table &table) {
     cam2d.addFunc("worldToScreenY", &Camera2D::worldToScreenY);
 
     auto light = table.addClass<Light2D>(
-        "Light2D", std::function<Light2D *()>([]() { return Light2D::createLight("point"); }), false);
+        "Light2D", std::function<Light2D*()>([]() { return Light2D::createLight("point"); }), false);
     light.addFunc("setType", &Light2D::setType);
     light.addFunc("getType", &Light2D::getType);
     light.addFunc("setPosition", &Light2D::setPosition);
@@ -205,8 +201,8 @@ void Graphics::expose(ssq::Table &table) {
     light.addFunc("getVolumetricIntensity", &Light2D::getVolumetricIntensity);
     light.addFunc("setCanvas", &Light2D::setCanvas);
 
-    auto cam = table.addClass<Camera3D>(
-        "Camera3D", std::function<Camera3D *()>([]() { return Camera3D::createCamera(); }), false);
+    auto cam = table.addClass<Camera3D>("Camera3D",
+                                        std::function<Camera3D*()>([]() { return Camera3D::createCamera(); }), false);
     cam.addFunc("setEye", &Camera3D::setEye);
     cam.addFunc("setTarget", &Camera3D::setTarget);
     cam.addFunc("setUp", &Camera3D::setUp);
@@ -224,7 +220,7 @@ void Graphics::expose(ssq::Table &table) {
     cam.addFunc("getScreenRayDirZ", &Camera3D::getScreenRayDirZ);
 
     auto light3d = table.addClass<Light3D>(
-        "Light3D", std::function<Light3D *()>([]() { return Light3D::createLight("point"); }), false);
+        "Light3D", std::function<Light3D*()>([]() { return Light3D::createLight("point"); }), false);
     light3d.addFunc("setType", &Light3D::setType);
     light3d.addFunc("getType", &Light3D::getType);
     light3d.addFunc("setPosition", &Light3D::setPosition);
@@ -252,8 +248,7 @@ void Graphics::expose(ssq::Table &table) {
     light3d.addFunc("getVolumetricIntensity", &Light3D::getVolumetricIntensity);
 
     auto ent = table.addClass<Renderable3D>(
-        "Renderable3D", std::function<Renderable3D *()>([]() { return Renderable3D::create(); }),
-        false);
+        "Renderable3D", std::function<Renderable3D*()>([]() { return Renderable3D::create(); }), false);
     ent.addFunc("setPosition", &Renderable3D::setPosition);
     ent.addFunc("setRotation", &Renderable3D::setRotation);
     ent.addFunc("setYaw", &Renderable3D::setYaw);
@@ -297,8 +292,8 @@ void Graphics::expose(ssq::Table &table) {
     ent.addFunc("getMeshLodCount", &Renderable3D::getMeshLodCount);
     ent.addFunc("getMeshLodLevelAtDistance", &Renderable3D::getMeshLodLevelAtDistance);
 
-    auto material = table.addClass<Material>(
-        "Material", std::function<Material *()>([]() -> Material * { return nullptr; }), true);
+    auto material =
+        table.addClass<Material>("Material", std::function<Material*()>([]() -> Material* { return nullptr; }), true);
     material.addFunc("setShadingModel", &Material::setShadingModel);
     material.addFunc("getShadingModel", &Material::getShadingModel);
     material.addFunc("setAlbedoTexture", &Material::setAlbedoTexture);
@@ -330,8 +325,8 @@ void Graphics::expose(ssq::Table &table) {
     material.addFunc("setFloat", &Material::setFloat);
     material.addFunc("getFloat", &Material::getFloat);
 
-    auto gbuffer = table.addClass<GBuffer>(
-        "GBuffer", std::function<GBuffer *()>([]() -> GBuffer * { return nullptr; }), true);
+    auto gbuffer =
+        table.addClass<GBuffer>("GBuffer", std::function<GBuffer*()>([]() -> GBuffer* { return nullptr; }), true);
     gbuffer.addFunc("isValid", &GBuffer::isValid);
     gbuffer.addFunc("getWidth", &GBuffer::getWidth);
     gbuffer.addFunc("getHeight", &GBuffer::getHeight);
@@ -343,8 +338,7 @@ void Graphics::expose(ssq::Table &table) {
     gbuffer.addFunc("getBuffer", &GBuffer::getBuffer);
 
     auto rctrl = table.addClass<RenderControl>(
-        "RenderControl", std::function<RenderControl *()>([]() -> RenderControl * { return nullptr; }),
-        true);
+        "RenderControl", std::function<RenderControl*()>([]() -> RenderControl* { return nullptr; }), true);
     rctrl.addFunc("supports", &RenderControl::supports);
     rctrl.addFunc("enable", &RenderControl::enable);
     rctrl.addFunc("disable", &RenderControl::disable);
@@ -354,10 +348,10 @@ void Graphics::expose(ssq::Table &table) {
     rctrl.addFunc("getPassCount", &RenderControl::getPassCount);
     rctrl.addFunc("getPassName", &RenderControl::getPassName);
     rctrl.addFunc("hasPass", &RenderControl::hasPass);
-    rctrl.addFunc("getGBuffer", static_cast<GBuffer *(RenderControl::*)()>(&RenderControl::getGBuffer));
+    rctrl.addFunc("getGBuffer", static_cast<GBuffer* (RenderControl::*)()>(&RenderControl::getGBuffer));
 
-    auto vol = table.addClass<Volumetric>(
-        "Volumetric", std::function<Volumetric *()>([]() -> Volumetric * { return nullptr; }), true);
+    auto vol = table.addClass<Volumetric>("Volumetric",
+                                          std::function<Volumetric*()>([]() -> Volumetric* { return nullptr; }), true);
     vol.addFunc("setQuality", &Volumetric::setQuality);
     vol.addFunc("getQuality", &Volumetric::getQuality);
     vol.addFunc("setMode", &Volumetric::setMode);
@@ -402,9 +396,8 @@ void Graphics::expose(ssq::Table &table) {
     vol.addFunc("getFogShader", &Volumetric::getFogShader);
 
     auto grassField = table.addClass<GrassField>(
-        "GrassField", std::function<GrassField *()>([]() -> GrassField * { return nullptr; }), true);
-    grassField.addFunc("bakePlane",
-                       static_cast<void (GrassField::*)(float, float, int, int)>(&GrassField::bakePlane));
+        "GrassField", std::function<GrassField*()>([]() -> GrassField* { return nullptr; }), true);
+    grassField.addFunc("bakePlane", static_cast<void (GrassField::*)(float, float, int, int)>(&GrassField::bakePlane));
     grassField.addFunc("update", &GrassField::update);
     grassField.addFunc("setTime", &GrassField::setTime);
     grassField.addFunc("getTime", &GrassField::getTime);
@@ -419,8 +412,7 @@ void Graphics::expose(ssq::Table &table) {
     grassField.addFunc("getSparseCount", &GrassField::getSparseCount);
 
     auto waterfall = table.addClass<Waterfall>(
-        "Waterfall",
-        std::function<Waterfall *()>([]() -> Waterfall * { return nullptr; }), true);
+        "Waterfall", std::function<Waterfall*()>([]() -> Waterfall* { return nullptr; }), true);
     waterfall.addFunc("createSheet", &Waterfall::createSheet);
     waterfall.addFunc("update", &Waterfall::update);
     waterfall.addFunc("setTime", &Waterfall::setTime);
@@ -448,8 +440,7 @@ void Graphics::expose(ssq::Table &table) {
     waterfall.addFunc("draw", &Waterfall::draw);
     waterfall.addFunc("getShader", &Waterfall::getShader);
     waterfall.addFunc("getMesh", &Waterfall::getMesh);
-    auto water = table.addClass<Water>(
-        "Water", std::function<Water *()>([]() -> Water * { return nullptr; }), true);
+    auto water = table.addClass<Water>("Water", std::function<Water*()>([]() -> Water* { return nullptr; }), true);
     water.addFunc("createPlane", &Water::createPlane);
     water.addFunc("update", &Water::update);
     water.addFunc("setTime", &Water::setTime);
@@ -486,8 +477,7 @@ void Graphics::expose(ssq::Table &table) {
     water.addFunc("getMesh", &Water::getMesh);
 
     auto ao = table.addClass<AmbientOcclusion>(
-        "AmbientOcclusion",
-        std::function<AmbientOcclusion *()>([]() -> AmbientOcclusion * { return nullptr; }), true);
+        "AmbientOcclusion", std::function<AmbientOcclusion*()>([]() -> AmbientOcclusion* { return nullptr; }), true);
     ao.addFunc("setQuality", &AmbientOcclusion::setQuality);
     ao.addFunc("getQuality", &AmbientOcclusion::getQuality);
     ao.addFunc("setMode", &AmbientOcclusion::setMode);
@@ -525,9 +515,8 @@ void Graphics::expose(ssq::Table &table) {
     ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
     ao.addFunc("getFromDepthShader", &AmbientOcclusion::getFromDepthShader);
 
-    auto outline = table.addClass<Outline>(
-        "Outline",
-        std::function<Outline *()>([]() -> Outline * { return nullptr; }), true);
+    auto outline =
+        table.addClass<Outline>("Outline", std::function<Outline*()>([]() -> Outline* { return nullptr; }), true);
     outline.addFunc("setColor", &Outline::setColor);
     outline.addFunc("getColorR", &Outline::getColorR);
     outline.addFunc("getColorG", &Outline::getColorG);
@@ -551,8 +540,8 @@ void Graphics::expose(ssq::Table &table) {
     outline.addFunc("getShader", &Outline::getShader);
 
     auto gi = table.addClass<GlobalIllumination>(
-        "GlobalIllumination",
-        std::function<GlobalIllumination *()>([]() -> GlobalIllumination * { return nullptr; }), true);
+        "GlobalIllumination", std::function<GlobalIllumination*()>([]() -> GlobalIllumination* { return nullptr; }),
+        true);
     gi.addFunc("setQuality", &GlobalIllumination::setQuality);
     gi.addFunc("getQuality", &GlobalIllumination::getQuality);
     gi.addFunc("setCamera", &GlobalIllumination::setCamera);
@@ -573,8 +562,7 @@ void Graphics::expose(ssq::Table &table) {
 
     auto ssr = table.addClass<ScreenSpaceReflection>(
         "ScreenSpaceReflection",
-        std::function<ScreenSpaceReflection *()>([]() -> ScreenSpaceReflection * { return nullptr; }),
-        true);
+        std::function<ScreenSpaceReflection*()>([]() -> ScreenSpaceReflection* { return nullptr; }), true);
     ssr.addFunc("setCamera", &ScreenSpaceReflection::setCamera);
     ssr.addFunc("setEnabled", &ScreenSpaceReflection::setEnabled);
     ssr.addFunc("getEnabled", &ScreenSpaceReflection::getEnabled);
@@ -592,8 +580,7 @@ void Graphics::expose(ssq::Table &table) {
     ssr.addFunc("getShader", &ScreenSpaceReflection::getShader);
 
     auto aa = table.addClass<AntiAliasing>(
-        "AntiAliasing", std::function<AntiAliasing *()>([]() -> AntiAliasing * { return nullptr; }),
-        true);
+        "AntiAliasing", std::function<AntiAliasing*()>([]() -> AntiAliasing* { return nullptr; }), true);
     aa.addFunc("setQuality", &AntiAliasing::setQuality);
     aa.addFunc("getQuality", &AntiAliasing::getQuality);
     aa.addFunc("setMode", &AntiAliasing::setMode);
@@ -614,7 +601,7 @@ void Graphics::expose(ssq::Table &table) {
     aa.addFunc("getNfaaShader", &AntiAliasing::getNfaaShader);
 }
 
-void Graphics::expose(ssq::Class &cls) {
+void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Graphics::getName);
     cls.addFunc("reset", &Graphics::reset);
     cls.addFunc("present", &Graphics::present);
@@ -624,8 +611,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTexture",
-                static_cast<Texture *(Graphics::*)(image::ImageData *, bool, bool)>(
-                    &Graphics::newTextureFromImageData));
+                static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTextureFromFileRepeated", &Graphics::newTextureFromFileRepeated);
     cls.addFunc("newTextureWithSampler", &Graphics::newTextureWithSampler);
@@ -635,24 +621,23 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newMeshCylinder", &Graphics::newMeshCylinder);
     cls.addFunc("newMeshCube", &Graphics::newMeshCube);
     cls.addFunc("bakeMeshMorph", &Graphics::bakeMeshMorph);
-    cls.addFunc("newShader",
-                static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShader));
-    cls.addFunc("newMeshShader",
-                static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newMeshShader));
+    cls.addFunc("newShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShader));
+    cls.addFunc("newMeshShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newMeshShader));
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
-    cls.addFunc("newWaterfall", &Graphics::newWaterfall);    cls.addFunc("newShaderFromSpvFile",
-    cls.addFunc("newWater", &Graphics::newWater);    cls.addFunc("newShaderFromSpvFile",
-                static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
-    cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
+    cls.addFunc("newWaterfall", &Graphics::newWaterfall);
+    cls.addFunc("newWater", &Graphics::newWater);
+    cls.addFunc("newShaderFromSpvFile",
+                static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShaderFromSpvFile));
+    cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader*)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
     cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
     cls.addFunc("drawCanvas", &Graphics::drawCanvas);
     cls.addFunc("newCanvas", &Graphics::newCanvas);
-    cls.addFunc("setCanvas", static_cast<void (Graphics::*)(Canvas *)>(&Graphics::setCanvas));
+    cls.addFunc("setCanvas", static_cast<void (Graphics::*)(Canvas*)>(&Graphics::setCanvas));
     cls.addFunc("getCanvas", &Graphics::getCanvas);
     cls.addFunc("getWidth", &Graphics::getWidth);
     cls.addFunc("getHeight", &Graphics::getHeight);
@@ -679,65 +664,63 @@ void Graphics::reset() {
     currentFont   = nullptr;
 }
 
-void Graphics::setShader(Shader *shader) { currentShader = shader; }
+void Graphics::setShader(Shader* shader) { currentShader = shader; }
 
 void Graphics::setShader() { currentShader = nullptr; }
 
-Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
+Volumetric* Graphics::newVolumetric() { return new Volumetric(this); }
 
-AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
+AmbientOcclusion* Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
-Outline *Graphics::newOutline() { return new Outline(this); }
+Outline* Graphics::newOutline() { return new Outline(this); }
 
-GlobalIllumination *Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
+GlobalIllumination* Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
 
-ScreenSpaceReflection *Graphics::newScreenSpaceReflection() {
-    return new ScreenSpaceReflection(this);
-}
+ScreenSpaceReflection* Graphics::newScreenSpaceReflection() { return new ScreenSpaceReflection(this); }
 
-AmbientOcclusion *Graphics::pipelineAmbientOcclusion() {
+AmbientOcclusion* Graphics::pipelineAmbientOcclusion() {
     if (!pipelineAO_) pipelineAO_ = std::make_unique<AmbientOcclusion>(this);
     return pipelineAO_.get();
 }
 
-GlobalIllumination *Graphics::pipelineGlobalIllumination() {
+GlobalIllumination* Graphics::pipelineGlobalIllumination() {
     if (!pipelineGI_) pipelineGI_ = std::make_unique<GlobalIllumination>(this);
     return pipelineGI_.get();
 }
 
-AntiAliasing *Graphics::pipelineAntiAliasing() {
+AntiAliasing* Graphics::pipelineAntiAliasing() {
     if (!pipelineAA_) pipelineAA_ = std::make_unique<AntiAliasing>(this);
     return pipelineAA_.get();
 }
 
-Outline *Graphics::pipelineOutline() {
+Outline* Graphics::pipelineOutline() {
     if (!pipelineOutline_) pipelineOutline_ = std::make_unique<Outline>(this);
     return pipelineOutline_.get();
 }
 
-AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
+AntiAliasing* Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 
-Shader *Graphics::newHairShader() { return hair::createShader(this); }
+Shader* Graphics::newHairShader() { return hair::createShader(this); }
 
-Shader *Graphics::newGrassShader() { return grass::createShader(this); }
+Shader* Graphics::newGrassShader() { return grass::createShader(this); }
 
-GrassField *Graphics::newGrassField() { return new GrassField(this); }
+GrassField* Graphics::newGrassField() { return new GrassField(this); }
 
-Waterfall *Graphics::newWaterfall() { return new Waterfall(this); }
-Water *Graphics::newWater() { return new Water(this); }
+Waterfall* Graphics::newWaterfall() { return new Waterfall(this); }
+Water*     Graphics::newWater() { return new Water(this); }
 
-Mesh *Graphics::newMeshCube(float size) {
+Mesh* Graphics::newMeshCube(float size) {
     const float h = size * 0.5f;
     // 6 faces x 4 corners (per-face normal + full 0..1 UV), outward CCW for RH Y-up.
     const float kFaces[6][4][3] = {
-        {{-h, -h, h}, {h, -h, h}, {h, h, h}, {-h, h, h}},   // +Z
-        {{h, -h, -h}, {-h, -h, -h}, {-h, h, -h}, {h, h, -h}}, // -Z
-        {{h, -h, h}, {h, -h, -h}, {h, h, -h}, {h, h, h}},   // +X
-        {{-h, -h, -h}, {-h, -h, h}, {-h, h, h}, {-h, h, -h}}, // -X
-        {{-h, h, h}, {h, h, h}, {h, h, -h}, {-h, h, -h}},   // +Y
-        {{-h, -h, -h}, {h, -h, -h}, {h, -h, h}, {-h, -h, h}}, // -Y
+        {{-h, -h, h}, {h, -h, h}, {h, h, h}, {-h, h, h}},      // +Z
+        {{h, -h, -h}, {-h, -h, -h}, {-h, h, -h}, {h, h, -h}},  // -Z
+        {{h, -h, h}, {h, -h, -h}, {h, h, -h}, {h, h, h}},      // +X
+        {{-h, -h, -h}, {-h, -h, h}, {-h, h, h}, {-h, h, -h}},  // -X
+        {{-h, h, h}, {h, h, h}, {h, h, -h}, {-h, h, -h}},      // +Y
+        {{-h, -h, -h}, {h, -h, -h}, {h, -h, h}, {-h, -h, h}},  // -Y
     };
-    const float kN[6][3] = {{0, 0, 1}, {0, 0, -1}, {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}};
+    const float kN[6][3]  = {{0, 0, 1}, {0, 0, -1}, {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}};
     const float kUV[4][2] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
 
     std::vector<float> pos, nrm, uv;
@@ -760,11 +743,11 @@ Mesh *Graphics::newMeshCube(float size) {
         indices.push_back(base + 2);
         indices.push_back(base + 3);
     }
-    return newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
-                             indices.data(), int(indices.size()));
+    return newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), indices.data(),
+                             int(indices.size()));
 }
 
-bool Graphics::saveFramePng(const std::string &path) {
+bool Graphics::saveFramePng(const std::string& path) {
     if (!screenReadbackEnabled) setScreenReadbackEnabled(true);
     std::unique_ptr<eve::image::ImageData> frame;
     try {
@@ -780,16 +763,15 @@ bool Graphics::saveFramePng(const std::string &path) {
     std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
     std::ofstream out(path, std::ios::binary);
     if (!out.good()) return false;
-    out.write(static_cast<const char *>(png->getData()),
-              static_cast<std::streamsize>(png->getSize()));
+    out.write(static_cast<const char*>(png->getData()), static_cast<std::streamsize>(png->getSize()));
     return out.good();
 }
 
-void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
+void Graphics::draw(Drawable* drawable, const glm::mat4& m) {
     if (drawable) drawable->draw(this, m);
 }
 
-void Graphics::drawOcclusion(Drawable *drawable, const glm::mat4 &m) {
+void Graphics::drawOcclusion(Drawable* drawable, const glm::mat4& m) {
     if (drawable && drawable->getCastOcclusion()) drawable->drawOcclusion(this, m);
 }
 
@@ -797,99 +779,83 @@ void Graphics::drawOcclusionSolid(float x, float y, float w, float h) {
     drawSolidRect(x, y, w, h, Color(0.f, 0.f, 0.f, 1.f));
 }
 
-void Graphics::drawOcclusionTexture(Texture *texture, float x, float y, float w, float h) {
+void Graphics::drawOcclusionTexture(Texture* texture, float x, float y, float w, float h) {
     // Black RGB keeps silhouette; texture alpha cuts soft edges (same idea as shadow masks).
     drawTexturedRect(texture, x, y, w, h, Color(0.f, 0.f, 0.f, 1.f));
 }
 
-void Graphics::clearScreen() {
-    clear(std::nullopt, std::nullopt, std::nullopt);
-}
+void Graphics::clearScreen() { clear(std::nullopt, std::nullopt, std::nullopt); }
 
-void Graphics::setBackgroundColorRGBA(float r, float g, float b, float a) {
-    setBackgroundColor(Color(r, g, b, a));
-}
+void Graphics::setBackgroundColorRGBA(float r, float g, float b, float a) { setBackgroundColor(Color(r, g, b, a)); }
 
-void Graphics::drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b,
-                                 float a) {
+void Graphics::drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b, float a) {
     drawSolidRect(x, y, w, h, Color(r, g, b, a));
 }
 
-void Graphics::drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r,
-                                    float g, float b, float a) {
+void Graphics::drawTexturedRectRGBA(Texture* texture, float x, float y, float w, float h, float r, float g, float b,
+                                    float a) {
     drawTexturedRect(texture, x, y, w, h, Color(r, g, b, a));
 }
 
-Texture *Graphics::newTextureFromImageData(image::ImageData *data, bool repeatU, bool repeatV) {
+Texture* Graphics::newTextureFromImageData(image::ImageData* data, bool repeatU, bool repeatV) {
     if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
-    if (data->getFormat() != "RGBA8")
-        throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
+    if (data->getFormat() != "RGBA8") throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
     TextureCreateInfo info;
     info.sampler.repeatU = repeatU;
     info.sampler.repeatV = repeatV;
-    return newTexture(data->getWidth(), data->getHeight(),
-                      static_cast<const uint8_t *>(data->getData()), info);
+    return newTexture(data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()), info);
 }
 
-Texture *Graphics::newTextureFromImageData(image::ImageData *data, const TextureCreateInfo &info) {
+Texture* Graphics::newTextureFromImageData(image::ImageData* data, const TextureCreateInfo& info) {
     if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
-    if (data->getFormat() != "RGBA8")
-        throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
-    return newTexture(data->getWidth(), data->getHeight(),
-                      static_cast<const uint8_t *>(data->getData()), info);
+    if (data->getFormat() != "RGBA8") throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
+    return newTexture(data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()), info);
 }
 
-Texture *Graphics::newTextureFromFileRepeated(const std::string &filename, bool repeatU,
-                                              bool repeatV) {
+Texture* Graphics::newTextureFromFileRepeated(const std::string& filename, bool repeatU, bool repeatV) {
     if (filename.empty()) throw eve::Exception("newTextureFromFileRepeated: empty filename");
-    auto *fs = eve::filesystem::Filesystem::create();
+    auto*                                      fs = eve::filesystem::Filesystem::create();
     std::unique_ptr<eve::filesystem::FileData> fileData(fs->read(filename));
-    if (!fileData)
-        throw eve::Exception("newTextureFromFileRepeated: failed to read '%s'", filename.c_str());
-    auto *imgMod = eve::image::Image::create();
+    if (!fileData) throw eve::Exception("newTextureFromFileRepeated: failed to read '%s'", filename.c_str());
+    auto*                                  imgMod = eve::image::Image::create();
     std::unique_ptr<eve::image::ImageData> data(imgMod->newImageData(fileData.get()));
     return newTextureFromImageData(data.get(), repeatU, repeatV);
 }
 
-Texture *Graphics::newTextureWithSampler(image::ImageData *data, bool repeatU, bool repeatV,
-                                         bool generateMipmaps, float maxAnisotropy,
-                                         const std::string &filter, const std::string &mipmap,
+Texture* Graphics::newTextureWithSampler(image::ImageData* data, bool repeatU, bool repeatV, bool generateMipmaps,
+                                         float maxAnisotropy, const std::string& filter, const std::string& mipmap,
                                          float lodBias) {
     TextureCreateInfo info;
     info.generateMipmaps = generateMipmaps;
-    info.sampler.min = TextureSampler::parseFilter(filter);
-    info.sampler.mag = info.sampler.min;
-    info.sampler.mipmap = TextureSampler::parseMipmap(mipmap);
-    if (generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled)
-        info.sampler.mipmap = MipmapMode::Linear;
-    info.sampler.repeatU = repeatU;
-    info.sampler.repeatV = repeatV;
+    info.sampler.min     = TextureSampler::parseFilter(filter);
+    info.sampler.mag     = info.sampler.min;
+    info.sampler.mipmap  = TextureSampler::parseMipmap(mipmap);
+    if (generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled) info.sampler.mipmap = MipmapMode::Linear;
+    info.sampler.repeatU       = repeatU;
+    info.sampler.repeatV       = repeatV;
     info.sampler.maxAnisotropy = maxAnisotropy;
-    info.sampler.lodBias = lodBias;
+    info.sampler.lodBias       = lodBias;
     return newTextureFromImageData(data, info);
 }
 
-void Graphics::setTextureSamplerParams(Texture *texture, const std::string &filter,
-                                       const std::string &mipmap, float maxAnisotropy,
-                                       float lodBias) {
+void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filter, const std::string& mipmap,
+                                       float maxAnisotropy, float lodBias) {
     if (!texture) return;
     TextureSampler s = texture->getSampler();
-    s.min = TextureSampler::parseFilter(filter);
-    s.mag = s.min;
-    s.mipmap = TextureSampler::parseMipmap(mipmap);
-    s.maxAnisotropy = maxAnisotropy;
-    s.lodBias = lodBias;
+    s.min            = TextureSampler::parseFilter(filter);
+    s.mag            = s.min;
+    s.mipmap         = TextureSampler::parseMipmap(mipmap);
+    s.maxAnisotropy  = maxAnisotropy;
+    s.lodBias        = lodBias;
     setTextureSampler(texture, s);
 }
 
-Quad *Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
+Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
 
 #ifndef EVENGINE_WEBGPU
-Font *Graphics::newFont(font::FontData *data, std::string charset) {
-    return new Font(this, data, std::move(charset));
-}
+Font* Graphics::newFont(font::FontData* data, std::string charset) { return new Font(this, data, std::move(charset)); }
 
-void Graphics::print(const std::string &text, float x, float y, const Color &color, float scale) {
+void Graphics::print(const std::string& text, float x, float y, const Color& color, float scale) {
     if (currentFont == nullptr) {
         eve::debug::rtDraw("print", "no-font");
         throw eve::Exception("Graphics::print: no font set (call setFont first)");
@@ -897,10 +863,10 @@ void Graphics::print(const std::string &text, float x, float y, const Color &col
     eve::debug::rtBind("font", "current");
     eve::debug::rtDraw("print", text.empty() ? "" : "text");
 
-    font::FontData *data     = currentFont->getData();
-    float            penX     = x;
-    float            baseline = y + currentFont->getBaseline() * scale;
-    int              prevCodepoint = -1;
+    font::FontData* data          = currentFont->getData();
+    float           penX          = x;
+    float           baseline      = y + currentFont->getBaseline() * scale;
+    int             prevCodepoint = -1;
 
     size_t i = 0;
     while (i < text.size()) {
@@ -910,7 +876,7 @@ void Graphics::print(const std::string &text, float x, float y, const Color &col
 
         if (prevCodepoint >= 0) penX += data->getKerning(prevCodepoint, code) * scale;
 
-        if (const Font::Glyph *g = currentFont->findGlyph(code)) {
+        if (const Font::Glyph* g = currentFont->findGlyph(code)) {
             if (g->width > 0 && g->height > 0) {
                 float gx = penX + static_cast<float>(g->bearingX) * scale;
                 float gy = baseline - static_cast<float>(g->bearingY) * scale;
