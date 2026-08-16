@@ -16,7 +16,9 @@ if (!("texRecipes" in getroottable())) texRecipes <- ["tex.soil", "tex.stone", "
 if (!("texIndex" in getroottable())) texIndex <- 0;
 if (!("wfcPreset" in getroottable())) wfcPreset <- "dungeon";
 
-TILE = 12;
+TILE <- 12.0;
+
+gfx.setBackgroundColor(0.08, 0.09, 0.12, 1.0);
 
 function keyPressed(name) {
     local down = keyboard.isDown(name);
@@ -28,7 +30,7 @@ function keyPressed(name) {
 function ensureLayer(w, h) {
     if (layer == null) {
         layer = map.newLayer(w, h, TILE, TILE);
-        layer.setOrigin(16, 48);
+        layer.setOrigin(16.0, 48.0);
         layer.setLayer(0);
         layer.setVisible(true);
     } else if (layer.getMapWidth() != w || layer.getMapHeight() != h) {
@@ -128,7 +130,7 @@ if (layer == null) {
     regenerateTexture();
 }
 
-function update(dt) {
+function eve_update(dt) {
     if (keyPressed("r") || keyPressed("R")) {
         seed = seed + 1;
         regenerateMap();
@@ -164,11 +166,11 @@ function update(dt) {
     map.update(dt);
 }
 
-function draw() {
-    gfx.clear(0.08, 0.09, 0.12, 1.0);
+function eve_render() {
+    gfx.clear();
     map.render(gfx);
     if (tex != null) {
         // Preview panel on the right
-        gfx.drawTexturedRect(tex, 800, 48, 144, 144, 1, 1, 1, 1);
+        gfx.drawTexturedRect(tex, 800.0, 48.0, 144.0, 144.0, 1.0, 1.0, 1.0, 1.0);
     }
 }

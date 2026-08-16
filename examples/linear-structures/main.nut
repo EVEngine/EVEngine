@@ -169,14 +169,14 @@ eve_update = function(dt) {
     if (tabPressed) { active = (active + 1) % STRUCT_RECIPES.len(); rebuild(); }
 
     local plus = keyboard.isDown("plus") || keyboard.isDown("equals");
-    local plusWas = ("plusWas" in getroottable() ? plusWas : false);
+    local wasPlus = ("plusWas" in getroottable() ? plusWas : false);
     plusWas <- plus;
-    if (plus && !plusWas) { segments = segments + 1; rebuild(); }
+    if (plus && !wasPlus) { segments = segments + 1; rebuild(); }
 
     local minus = keyboard.isDown("minus");
-    local minusWas = ("minusWas" in getroottable() ? minusWas : false);
+    local wasMinus = ("minusWas" in getroottable() ? minusWas : false);
     minusWas <- minus;
-    if (minus && !minusWas) { if (segments > 1) { segments = segments - 1; rebuild(); } }
+    if (minus && !wasMinus) { if (segments > 1) { segments = segments - 1; rebuild(); } }
 };
 
 eve_render = function() {
