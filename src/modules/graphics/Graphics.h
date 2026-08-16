@@ -391,6 +391,14 @@ public:
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;
 
     /**
+     * Dynamic cloud shadows cast on the ground by the default PBR mesh path.
+     * strength 0 disables (no change to rendering). time advances wind drift.
+     * Packed into Mesh3DUBO.cloud / cloudWind and consumed by mesh3d shaders.
+     */
+    virtual void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                                 float windAngle, float coverage, float detail) = 0;
+
+    /**
      * Enable clustered forward path for subsequent default mesh draws (SSBO light lists).
      * Pass upload.active=false (or empty) to disable and return to the ≤8 UBO path.
      */

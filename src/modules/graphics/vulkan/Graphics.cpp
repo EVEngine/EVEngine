@@ -3804,8 +3804,7 @@ void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) 
 
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
     mesh3dLighting = pack;
-    mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);
-    const int n = std::max(0, std::min(pack.count, Lighting3DPack::kMaxLights));
+    mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);    const int n = std::max(0, std::min(pack.count, Lighting3DPack::kMaxLights));
     mesh3dFrameUbo.lightDir.w = float(n);
     int dirI = -1;
     for (int i = 0; i < n; ++i) {
@@ -3827,6 +3826,15 @@ void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
         mesh3dFrameUbo.lightColor =
             glm::vec4(0.f, 0.f, 0.f, mesh3dFrameUbo.lightColor.w);
     }
+}
+
+void Graphics::setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                               float windAngle, float coverage, float detail) {
+    mesh3dFrameUbo.cloud = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f),
+                                     time, 0.f);
+    mesh3dFrameUbo.cloudWind = glm::vec4(std::cos(windAngle) * windSpeed,
+                                         std::sin(windAngle) * windSpeed,
+                                         std::clamp(coverage, 0.f, 1.f), std::clamp(detail, 0.f, 1.f));
 }
 
 void Graphics::ensureFlatNormalTexture3D() {
