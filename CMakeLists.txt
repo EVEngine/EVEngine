@@ -59,6 +59,16 @@ function(main)
     if(MSVC)
         # /FS serializes writes to a target PDB when MSBuild schedules several cl.exe jobs.
         add_compile_options(/utf-8 /EHsc /FS)
+        # /Gy (function-level linking) puts each function in its own COMDAT so the
+        # linker (/OPT:REF) can drop unused functions instead of whole objects.
+        add_compile_options(/Gy)
+        add_link_options(/OPT:REF)
+    elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        # GCC/Clang equivalent of /Gy + /OPT:REF: put each function/data symbol in
+        # its own section at compile time, then let the linker's --gc-sections drop
+        # the unused ones instead of keeping whole objects.
+        add_compile_options(-ffunction-sections -fdata-sections)
+        add_link_options(-Wl,--gc-sections)
     endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
@@ -588,6 +598,22 @@ function(check_third_party_project name repo)
             -DCMAKE_MINSIZEREL_POSTFIX=md
             -DCMAKE_RELWITHDEBINFO_POSTFIX=md
         )
+    endif()
+    # Function-level dead-code stripping on every third-party TU so the final
+    # link can drop unused functions inside each object (not just whole objects).
+    # MSVC: /Gy -> COMDAT; GCC/Clang: -ffunction-sections/-fdata-sections.
+    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        if(MSVC)
+            list(APPEND _eve_tp_cmake_args
+                -DCMAKE_C_FLAGS=/Gy
+                -DCMAKE_CXX_FLAGS=/Gy
+            )
+        else()
+            list(APPEND _eve_tp_cmake_args
+                -DCMAKE_C_FLAGS=-ffunction-sections\ -fdata-sections
+                -DCMAKE_CXX_FLAGS=-ffunction-sections\ -fdata-sections
+            )
+        endif()
     endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
