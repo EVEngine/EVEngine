@@ -1,0 +1,16 @@
+# GPU inference server dependencies (installed in the server image / pod).
+torch>=2.0.1
+torchvision
+diffusers==0.29.1
+accelerate==0.30.1
+xformers>=0.0.20
+transformers==4.41.2
+safetensors
+einops
+numpy==1.26.4
+opencv-python
+pillow
+huggingface-hub>=0.30.1
+fastapi
+uvicorn[standard]
+python-multipart
