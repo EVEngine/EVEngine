@@ -1,0 +1,8 @@
+# Blender's Python package (full Blender as an importable module, incl.
+# Geometry Nodes). Install on the Python used by the EVEngine plugin:
+#   pip install -r modelconverter/python/requirements.txt
+#
+# NOTE: recent bpy releases (>= 5.x) ship wheels for a single CPython version.
+# bpy 5.2.0 requires CPython == 3.13.*. Use `py -3.13` if you have multiple
+# Pythons installed.
+bpy>=5.0.0

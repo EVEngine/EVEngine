@@ -216,6 +216,7 @@ Graphics::~Graphics() {
         if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);
         if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
         if (g->mesh3dPipeline) device->destroyPipeline(g->mesh3dPipeline);
+        if (g->mesh3dXrayPipeline) device->destroyPipeline(g->mesh3dXrayPipeline);
         // pipelineLayout is shared; do not destroy per-shader
     }
     ownedGpuShaders.clear();
@@ -919,6 +920,7 @@ void Graphics::createMesh3DPipeline() {
             .buffer(4, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, 1)
             .image(5, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+            .image(7, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
@@ -1515,6 +1517,8 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     for (auto &g : ownedGpuShaders) {
         if (!g->isMesh3D) continue;
         destroyPipeline(device, g->mesh3dPipeline);
+        destroyPipeline(device, g->mesh3dXrayPipeline);
+        g->mesh3dXrayPipeline = nullptr;
         if (!g->owner) continue;
         if (g->isHair3D) {
             g->mesh3dPipeline =
@@ -1697,7 +1701,7 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
     auto &slot = fslots.slots[uboSlot];
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex};
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, nullptr};
     auto it = slot.sets.find(key);
     if (it != slot.sets.end()) return it->second;
 
@@ -1784,6 +1788,35 @@ vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &ver
             .setMultisampler(false, samples)
             .setDepthStencil(true, false, vk::CompareOp::eLess)
             .setAlphaBlending(1)
+            .build(rp);
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
+    return pipeline;
+}
+
+vk::Pipeline Graphics::createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
+                                                const std::vector<uint32_t> &frag,
+                                                vk::PipelineLayout layout,
+                                                const vkb::BuiltRenderPass &rp,
+                                                vk::SampleCountFlagBits samples) {
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+    vk::Pipeline pipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(layout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setMultisampler(false, samples)
+            // Depth test/write off: the shader discards visible fragments itself
+            // (sampling G-buffer scene depth), so occluded ones can paint over walls.
+            .setDepthStencil(false, false, vk::CompareOp::eLess)
+            .setAlphaBlending(1)
+            .setColorAttachmentCount(1)
             .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
@@ -2850,6 +2883,11 @@ Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &
     return newMeshShaderFromSpv(vert, frag);
 }
 
+Shader *Graphics::newMeshShaderFromWgsl(const std::string &, const std::string &) {
+    throw Exception("newMeshShaderFromWgsl: WGSL mesh shaders are only supported on the "
+                    "WebGPU backend; use newMeshShaderFromSpv on Vulkan.");
+}
+
 void Graphics::flushBatch() {
     if (!initialized) return;
     if (isCanvasActive()) {
@@ -3501,6 +3539,8 @@ void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = n
 
 void Graphics::setMesh3DHeightTexture(Texture *height) { mesh3dHeightTexture = height; }
 
+void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
+
 void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
     mesh3dEnvTexture = cube;
     mesh3dEnvIntensity = intensity < 0.f ? 0.f : intensity;
@@ -3675,8 +3715,8 @@ void Graphics::ensureFlatHeightTexture3D() {
 }
 
 vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                     GpuTexture *heightTex, Mesh3dFrameSlots &fslots,
-                                     size_t uboSlot) {
+                                     GpuTexture *heightTex, GpuTexture *depthTex,
+                                     Mesh3dFrameSlots &fslots, size_t uboSlot) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
@@ -3693,7 +3733,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
                                  vk::MemoryPropertyFlagBits::eHostCoherent);
     }
     auto &slot = fslots.slots[uboSlot];
-    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex};
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, depthTex};
     auto it = slot.sets.find(key);
     if (it != slot.sets.end()) return it->second;
 
@@ -3719,6 +3759,8 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
         .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
         .beginImages(6, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(heightTex->sampler, heightTex->imageView()))
+        .beginImages(7, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(depthTex->sampler, depthTex->imageView()))
         .update(device.instance);
 
     vkb::BoundSet bound = std::move(unbound).publish();
@@ -4182,6 +4224,10 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     if (!htex || !htex->gpuHandle) throw Exception("drawMesh: missing height texture");
     auto *gpuHeight = static_cast<GpuTexture *>(htex->gpuHandle);
 
+    Texture *depthTex = mesh3dSceneDepthTexture ? mesh3dSceneDepthTexture : whiteTexture;
+    if (!depthTex || !depthTex->gpuHandle) throw Exception("drawMesh: missing scene depth texture");
+    auto *gpuDepth = static_cast<GpuTexture *>(depthTex->gpuHandle);
+
     ensureDefaultEnvCubemap();
     Texture *envTex = mesh3dEnvTexture ? mesh3dEnvTexture : defaultEnvCubemap;
     if (!envTex || !envTex->gpuHandle) throw Exception("drawMesh: missing env cubemap");
@@ -4265,13 +4311,25 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
 
     auto &fslots = currentMesh3dFrameSlots();
     const size_t slot = fslots.drawIndex++;
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, fslots, slot);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots, slot);
     fslots.slots[slot].ubo.updateLocal(frameToken(), ubo);
     fslots.slots[slot].shadowUbo.updateLocal(frameToken(), makeShadowUbo());
 
     if (shader) {
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->mesh3dPipeline);
+        vk::Pipeline pipeline = gs->mesh3dPipeline;
+        if (shader->isXray()) {
+            // X-ray silhouette pass: depth test/write off + alpha blend so the
+            // occluded part paints over the building. Lazy so only xray shaders
+            // pay for the extra pipeline (and MSAA/RP changes re-create it).
+            if (!gs->mesh3dXrayPipeline)
+                gs->mesh3dXrayPipeline =
+                    createMesh3DXrayPipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
+                                             mesh3dShaderPipelineLayout, activeScenePass(),
+                                             activeSceneSamples());
+            pipeline = gs->mesh3dXrayPipeline;
+        }
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
                               0, nullptr);
         cb.pushConstants(mesh3dShaderPipelineLayout,

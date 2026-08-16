@@ -100,11 +100,13 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
 
     gfx_ = gfx;
     window_ = window;
+    dpiScale_ = computeDpiScale();
     uiScale_ = computeInitialScale();
 
     IMGUI_CHECKVERSION();
     ctx_ = ::ImGui::CreateContext();
     // Start from unified theme tokens (not a one-off ImGui palette).
+    setThemeDpiScale(dpiScale_);
     setThemeUiScale(uiScale_);
     applyThemeToImGui(globalTheme(), uiScale_);
 
@@ -266,6 +268,7 @@ void ImGuiBackend::applyScale(float scale) {
     scale = std::clamp(scale, 0.5f, 5.f);
     const bool changed = scale != uiScale_;
     uiScale_ = scale;
+    setThemeDpiScale(dpiScale_);
     setThemeUiScale(scale);
     applyThemeToImGui(globalTheme(), scale);
     if (changed) rebuildFonts();
@@ -283,6 +286,16 @@ float ImGuiBackend::computeInitialScale() const {
     float s = ddpi / 160.f;
     return std::clamp(s, 1.75f, 3.25f);
 #else
+    // Desktop: ImGui's backend already applies the display density via
+    // io.DisplayFramebufferScale, so the logical (point-space) UI scale stays
+    // 1.0. Keeping it constant makes the UI match the OS UI size on
+    // high-resolution displays instead of growing with the pixel ratio.
+    (void)window_;
+    return 1.f;
+#endif
+}
+
+float ImGuiBackend::computeDpiScale() const {
     int logicalW = 0, logicalH = 0, pixelW = 0, pixelH = 0;
     SDL_GetWindowSize(window_, &logicalW, &logicalH);
 #ifdef EVENGINE_WEBGPU
@@ -296,7 +309,6 @@ float ImGuiBackend::computeInitialScale() const {
         if (s > 0.f) return std::clamp(s, 1.f, 4.f);
     }
     return 1.f;
-#endif
 }
 
 void ImGuiBackend::loadFonts() {
@@ -304,7 +316,10 @@ void ImGuiBackend::loadFonts() {
     ImFontAtlas *atlas = io.Fonts;
     if (!atlas) return;
 
-    const float sizePx = kBaseFontSizePx * uiScale_;
+    // Rasterize at the physical DPI resolution so glyphs stay crisp; the
+    // FontGlobalScale set in applyThemeToImGui cancels this so the logical
+    // text size stays constant regardless of display density.
+    const float sizePx = kBaseFontSizePx * dpiScale_;
 
     ImFontConfig cfg{};
     cfg.OversampleH = 2;
