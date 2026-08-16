@@ -4,6 +4,8 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVFileSystem PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
 create_module(EVGraphics graphics)
+# Weather system: rain / snow / lightning / wind built on the 3D mesh pipeline.
+create_module(EVWeather weather)
 # Header-only VKBuilder: prefer the source tree over a stale third-party install.
 target_include_directories(EVGraphics BEFORE PUBLIC
   ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)

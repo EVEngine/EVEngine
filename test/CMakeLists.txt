@@ -72,6 +72,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   shader.cpp
   grass.cpp
+  weather.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -251,6 +252,7 @@ set(EVELIBS
   EVTouch
   EVGraphics
   EVImage
+  EVWeather
   EVCommon
   EVEvent
   EVTimer
