@@ -52,6 +52,15 @@ public:
     Kind getKind() const { return kind_; }
     void setKind(Kind k) { kind_ = k; }
 
+    /**
+     * X-ray mesh shader. When true, drawMeshShader renders this mesh a second
+     * pass over the already-lit scene with depth test/write disabled and alpha
+     * blending, letting occluded (behind-building) silhouettes show through.
+     * The shader itself samples G-buffer scene depth to discard visible pixels.
+     */
+    void setXray(bool x) { isXray_ = x; }
+    bool isXray() const { return isXray_; }
+
     /** Reserve sequential float slots in the push-constant block. Returns start index. */
     int declareFloat(const std::string &name);
     int declareVec2(const std::string &name);
@@ -99,6 +108,7 @@ private:
     const Uniform *findUniform(const std::string &name) const;
 
     Kind kind_ = Kind::eSprite2D;
+    bool isXray_ = false;
     std::vector<uint32_t> vertSpv_;
     std::vector<uint32_t> fragSpv_;
     std::map<std::string, Uniform> uniforms_;

@@ -18,6 +18,7 @@
 #include "graphics/Volumetric.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Outline.h"
 #include "graphics/Material.h"
 #include "graphics/RenderControl.h"
 #ifndef EVENGINE_WEBGPU
@@ -492,6 +493,31 @@ void Graphics::expose(ssq::Table &table) {
     ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
     ao.addFunc("getFromDepthShader", &AmbientOcclusion::getFromDepthShader);
 
+    auto outline = table.addClass<Outline>(
+        "Outline",
+        std::function<Outline *()>([]() -> Outline * { return nullptr; }), true);
+    outline.addFunc("setColor", &Outline::setColor);
+    outline.addFunc("getColorR", &Outline::getColorR);
+    outline.addFunc("getColorG", &Outline::getColorG);
+    outline.addFunc("getColorB", &Outline::getColorB);
+    outline.addFunc("setWidth", &Outline::setWidth);
+    outline.addFunc("getWidth", &Outline::getWidth);
+    outline.addFunc("setDepthThreshold", &Outline::setDepthThreshold);
+    outline.addFunc("getDepthThreshold", &Outline::getDepthThreshold);
+    outline.addFunc("setDepthSensitivity", &Outline::setDepthSensitivity);
+    outline.addFunc("getDepthSensitivity", &Outline::getDepthSensitivity);
+    outline.addFunc("setNormalThreshold", &Outline::setNormalThreshold);
+    outline.addFunc("getNormalThreshold", &Outline::getNormalThreshold);
+    outline.addFunc("setSoftness", &Outline::setSoftness);
+    outline.addFunc("getSoftness", &Outline::getSoftness);
+    outline.addFunc("setClip", &Outline::setClip);
+    outline.addFunc("hasParam", &Outline::hasParam);
+    outline.addFunc("setFloat", &Outline::setFloat);
+    outline.addFunc("getFloat", &Outline::getFloat);
+    outline.addFunc("apply", &Outline::apply);
+    outline.addFunc("applyTo", &Outline::applyTo);
+    outline.addFunc("getShader", &Outline::getShader);
+
     auto gi = table.addClass<GlobalIllumination>(
         "GlobalIllumination",
         std::function<GlobalIllumination *()>([]() -> GlobalIllumination * { return nullptr; }), true);
@@ -575,6 +601,7 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("getMaxAnisotropy", &Graphics::getMaxAnisotropy);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
     cls.addFunc("newMeshCylinder", &Graphics::newMeshCylinder);
+    cls.addFunc("newMeshCube", &Graphics::newMeshCube);
     cls.addFunc("bakeMeshMorph", &Graphics::bakeMeshMorph);
     cls.addFunc("newShader",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShader));
@@ -604,6 +631,8 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
+    cls.addFunc("newOutline", &Graphics::newOutline);
+    cls.addFunc("getOutline", &Graphics::pipelineOutline);
     cls.addFunc("newGlobalIllumination", &Graphics::newGlobalIllumination);
     cls.addFunc("newScreenSpaceReflection", &Graphics::newScreenSpaceReflection);
     cls.addFunc("newAntiAliasing", &Graphics::newAntiAliasing);
@@ -623,6 +652,8 @@ void Graphics::setShader() { currentShader = nullptr; }
 Volumetric *Graphics::newVolumetric() { return new Volumetric(this); }
 
 AmbientOcclusion *Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
+
+Outline *Graphics::newOutline() { return new Outline(this); }
 
 GlobalIllumination *Graphics::newGlobalIllumination() { return new GlobalIllumination(this); }
 
@@ -645,6 +676,11 @@ AntiAliasing *Graphics::pipelineAntiAliasing() {
     return pipelineAA_.get();
 }
 
+Outline *Graphics::pipelineOutline() {
+    if (!pipelineOutline_) pipelineOutline_ = std::make_unique<Outline>(this);
+    return pipelineOutline_.get();
+}
+
 AntiAliasing *Graphics::newAntiAliasing() { return new AntiAliasing(this); }
 
 Shader *Graphics::newHairShader() { return hair::createShader(this); }
@@ -654,6 +690,44 @@ Shader *Graphics::newGrassShader() { return grass::createShader(this); }
 GrassField *Graphics::newGrassField() { return new GrassField(this); }
 
 Water *Graphics::newWater() { return new Water(this); }
+
+Mesh *Graphics::newMeshCube(float size) {
+    const float h = size * 0.5f;
+    // 6 faces x 4 corners (per-face normal + full 0..1 UV), outward CCW for RH Y-up.
+    const float kFaces[6][4][3] = {
+        {{-h, -h, h}, {h, -h, h}, {h, h, h}, {-h, h, h}},   // +Z
+        {{h, -h, -h}, {-h, -h, -h}, {-h, h, -h}, {h, h, -h}}, // -Z
+        {{h, -h, h}, {h, -h, -h}, {h, h, -h}, {h, h, h}},   // +X
+        {{-h, -h, -h}, {-h, -h, h}, {-h, h, h}, {-h, h, -h}}, // -X
+        {{-h, h, h}, {h, h, h}, {h, h, -h}, {-h, h, -h}},   // +Y
+        {{-h, -h, -h}, {h, -h, -h}, {h, -h, h}, {-h, -h, h}}, // -Y
+    };
+    const float kN[6][3] = {{0, 0, 1}, {0, 0, -1}, {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}};
+    const float kUV[4][2] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+
+    std::vector<float> pos, nrm, uv;
+    pos.reserve(6 * 4 * 3);
+    nrm.reserve(6 * 4 * 3);
+    uv.reserve(6 * 4 * 2);
+    std::vector<uint32_t> indices;
+    indices.reserve(6 * 6);
+    for (int f = 0; f < 6; ++f) {
+        const uint32_t base = uint32_t(f * 4);
+        for (int c = 0; c < 4; ++c) {
+            pos.insert(pos.end(), kFaces[f][c], kFaces[f][c] + 3);
+            nrm.insert(nrm.end(), kN[f], kN[f] + 3);
+            uv.insert(uv.end(), kUV[c], kUV[c] + 2);
+        }
+        indices.push_back(base + 0);
+        indices.push_back(base + 1);
+        indices.push_back(base + 2);
+        indices.push_back(base + 0);
+        indices.push_back(base + 2);
+        indices.push_back(base + 3);
+    }
+    return newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
+                             indices.data(), int(indices.size()));
+}
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {
     if (drawable) drawable->draw(this, m);

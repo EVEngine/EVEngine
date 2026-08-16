@@ -10,6 +10,7 @@
 #include "stylize/shaders/ink_post_frag_spv.inc"
 #include "stylize/shaders/pixel_post_frag_spv.inc"
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
+#include "stylize/shaders/xray_mesh_frag_spv.inc"
 
 #include <algorithm>
 #include <array>
@@ -19,11 +20,135 @@
 namespace eve::stylize {
 namespace {
 
-const std::array<const char *, 4> kStyles = {"cartoon", "watercolor", "ink", "pixel"};
+const std::array<const char *, 5> kStyles = {"cartoon", "watercolor", "ink", "pixel", "xray"};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
 }
+
+// WebGPU (WGSL) X-ray mesh shaders. Must match the engine's mesh3d Frame UBO
+// (group 0 binding 0, std140 = Mesh3DUBO) and shared bindings (main sampler 7,
+// scene depth 9). X-ray params are packed into texBomb/parallax/clipInfo by the
+// backend flush (see bindMeshUniforms("xray") ordering below).
+const char *kXrayMeshVertWgsl = R"wgsl(
+struct VSIn {
+    @location(0) pos: vec3f,
+    @location(1) normal: vec3f,
+    @location(2) uv: vec2f,
+};
+struct Light3D {
+    posRadius: vec4f,
+    color: vec4f,
+};
+struct Frame {
+    mvp: mat4x4f,
+    model: mat4x4f,
+    lightDir: vec4f,
+    lightColor: vec4f,
+    tint: vec4f,
+    cameraPos: vec4f,
+    ambient: vec4f,
+    lights: array<Light3D, 8>,
+    texBomb: vec4f,
+    parallax: vec4f,
+    view: mat4x4f,
+    clipInfo: vec4f,
+};
+struct VSOut {
+    @builtin(position) pos: vec4f,
+    @location(0) vNormal: vec3f,
+    @location(1) vUV: vec2f,
+    @location(2) vTint: vec4f,
+    @location(3) vWorldPos: vec3f,
+    @location(4) vCameraPos: vec3f,
+};
+@group(0) @binding(0) var<uniform> ubo: Frame;
+fn inverse3x3(m: mat3x3f) -> mat3x3f {
+    let a = m[0].x; let b = m[1].x; let c = m[2].x;
+    let d = m[0].y; let e = m[1].y; let f = m[2].y;
+    let g = m[0].z; let h = m[1].z; let i = m[2].z;
+    let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    return mat3x3f(
+        vec3f((e * i - f * h) / det, (f * g - d * i) / det, (d * h - e * g) / det),
+        vec3f((c * h - b * i) / det, (a * i - c * g) / det, (b * g - a * h) / det),
+        vec3f((b * f - c * e) / det, (c * d - a * f) / det, (a * e - b * d) / det),
+    );
+}
+@vertex
+fn vs_main(in: VSIn) -> VSOut {
+    var out: VSOut;
+    out.pos = ubo.mvp * vec4f(in.pos, 1.0);
+    let world = ubo.model * vec4f(in.pos, 1.0);
+    out.vWorldPos = world.xyz;
+    let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * in.normal;
+    out.vNormal = normalize(nrm);
+    out.vUV = in.uv;
+    out.vTint = ubo.tint;
+    out.vCameraPos = ubo.cameraPos.xyz;
+    return out;
+}
+)wgsl";
+
+const char *kXrayMeshFragWgsl = R"wgsl(
+struct Light3D {
+    posRadius: vec4f,
+    color: vec4f,
+};
+struct Frame {
+    mvp: mat4x4f,
+    model: mat4x4f,
+    lightDir: vec4f,
+    lightColor: vec4f,
+    tint: vec4f,
+    cameraPos: vec4f,
+    ambient: vec4f,
+    lights: array<Light3D, 8>,
+    texBomb: vec4f,
+    parallax: vec4f,
+    view: mat4x4f,
+    clipInfo: vec4f,
+};
+struct FSIn {
+    @location(0) vNormal: vec3f,
+    @location(1) vUV: vec2f,
+    @location(2) vTint: vec4f,
+    @location(3) vWorldPos: vec3f,
+    @location(4) vCameraPos: vec3f,
+};
+@group(0) @binding(0) var<uniform> ubo: Frame;
+@group(0) @binding(7) var mainSamp: sampler;
+@group(0) @binding(9) var sceneDepth: texture_depth_2d;
+
+struct FSOut {
+    @location(0) color: vec4f,
+};
+
+@fragment
+fn fs_main(in: FSIn, @builtin(position) fragPos: vec4f) -> FSOut {
+    let color = ubo.texBomb.xyz;
+    let alpha = clamp(ubo.texBomb.w, 0.0, 1.0);
+    let bias = max(ubo.parallax.x, 0.0);
+    let screenW = max(ubo.parallax.y, 1.0);
+    let screenH = max(ubo.parallax.z, 1.0);
+    let rimStrength = clamp(ubo.parallax.w, 0.0, 1.0);
+    let rimPower = max(ubo.clipInfo.z, 0.1);
+
+    let uv = fragPos.xy / vec2f(screenW, screenH);
+    let sceneZ = textureSampleLevel(sceneDepth, mainSamp, uv, 0.0);
+    let charZ = fragPos.z;
+    let occ = smoothstep(sceneZ, sceneZ + bias, charZ);
+    if (occ < 0.5) {
+        discard;
+    }
+    let N = normalize(in.vNormal);
+    let V = normalize(in.vCameraPos - in.vWorldPos);
+    let rim = pow(clamp(1.0 - max(dot(N, V), 0.0), 0.0, 1.0), rimPower);
+    let edge = mix(1.0, rim, rimStrength);
+    var out: FSOut;
+    out.color = vec4f(color, alpha * edge * occ);
+    return out;
+}
+)wgsl";
 
 }  // namespace
 
@@ -41,7 +166,7 @@ std::string styleIdAt(int index) {
 bool styleSupports(const std::string &style, const std::string &feature) {
     if (!isKnownStyle(style)) return false;
     if (feature == "post" || feature == "cpu") return true;
-    if (feature == "mesh") return style == "cartoon" || style == "ink";
+    if (feature == "mesh") return style == "cartoon" || style == "ink" || style == "xray";
     if (feature == "gbuffer") return true;  // depth/normal available via graphics.RenderControl
     return false;
 }
@@ -59,6 +184,8 @@ const char *kInkParams[] = {"inkContrast", "washLevels", "edgeThreshold", "diffu
 const char *kPixelParams[] = {"pixelSize", "paletteSteps", "ditherStrength", "toonBands",
                               "sharpness", "texelW",       "texelH",         "time",
                               "screenW",   "screenH",      "outline"};
+const char *kXrayParams[] = {"colorR", "colorG", "colorB", "bias",
+                             "screenW", "screenH", "rimPower", "rimStrength", "alpha"};
 }  // namespace
 
 int styleParamCount(const std::string &style) {
@@ -66,6 +193,7 @@ int styleParamCount(const std::string &style) {
     if (style == "watercolor") return int(sizeof(kWatercolorParams) / sizeof(kWatercolorParams[0]));
     if (style == "ink") return int(sizeof(kInkParams) / sizeof(kInkParams[0]));
     if (style == "pixel") return int(sizeof(kPixelParams) / sizeof(kPixelParams[0]));
+    if (style == "xray") return int(sizeof(kXrayParams) / sizeof(kXrayParams[0]));
     return 0;
 }
 
@@ -75,6 +203,7 @@ std::string styleParamName(const std::string &style, int index) {
     if (style == "watercolor") return kWatercolorParams[index];
     if (style == "ink") return kInkParams[index];
     if (style == "pixel") return kPixelParams[index];
+    if (style == "xray") return kXrayParams[index];
     return {};
 }
 
@@ -215,6 +344,27 @@ void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
         shader->sendFloat("rimBoost", 0.65f);
         return;
     }
+    if (style == "xray") {
+        shader->declareFloat("colorR");
+        shader->declareFloat("colorG");
+        shader->declareFloat("colorB");
+        shader->declareFloat("bias");
+        shader->declareFloat("screenW");
+        shader->declareFloat("screenH");
+        shader->declareFloat("rimPower");
+        shader->declareFloat("rimStrength");
+        shader->declareFloat("alpha");
+        shader->sendFloat("colorR", 1.f);
+        shader->sendFloat("colorG", 0.62f);
+        shader->sendFloat("colorB", 0.12f);
+        shader->sendFloat("bias", 0.0002f);
+        shader->sendFloat("screenW", 256.f);
+        shader->sendFloat("screenH", 256.f);
+        shader->sendFloat("rimPower", 2.2f);
+        shader->sendFloat("rimStrength", 0.7f);
+        shader->sendFloat("alpha", 0.82f);
+        return;
+    }
     throw eve::Exception("bindMeshUniforms: style '%s' has no mesh shader", style.c_str());
 }
 
@@ -258,6 +408,25 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
         graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
         if (!sh || !sh->gpuHandle)
             throw eve::Exception("createMeshShader: failed to create ink mesh shader");
+        bindMeshUniforms(sh, style);
+        return sh;
+    }
+    if (style == "xray") {
+        // WebGPU has no SPIR-V mesh shaders (WGSL only); Vulkan uses SPIR-V.
+        if (gfx->getBackendName() == "webgpu") {
+            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(kXrayMeshVertWgsl, kXrayMeshFragWgsl);
+            if (!sh || !sh->gpuHandle)
+                throw eve::Exception("createMeshShader: failed to create xray mesh shader (wgsl)");
+            sh->setXray(true);
+            bindMeshUniforms(sh, style);
+            return sh;
+        }
+        auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
+        auto frag = copySpv(xray_mesh_frag_spv, xray_mesh_frag_spv_count);
+        graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
+        if (!sh || !sh->gpuHandle)
+            throw eve::Exception("createMeshShader: failed to create xray mesh shader");
+        sh->setXray(true);
         bindMeshUniforms(sh, style);
         return sh;
     }

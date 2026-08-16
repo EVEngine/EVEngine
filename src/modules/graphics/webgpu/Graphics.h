@@ -81,6 +81,7 @@ struct GpuShader {
     wgpu::RenderPipeline swapchainPipeline;   // 2D/offscreen color format
     wgpu::RenderPipeline offscreenPipeline;   // RGBA8Unorm canvas format
     wgpu::RenderPipeline mesh3dPipeline;      // scene color format
+    wgpu::RenderPipeline mesh3dXrayPipeline;  // depth test/write off + alpha blend
     wgpu::RenderPipeline shadowPipeline;      // depth-only
     wgpu::RenderPipeline gbufferPipeline;     // MRT gbuffer
     wgpu::PipelineLayout pipelineLayout;
@@ -99,6 +100,7 @@ public:
     ~Graphics() override;
 
     std::string getBackendName() const override { return "webgpu"; }
+    bool supportsGBufferPost() const override { return false; }
 
     void initWithWindow(void *nativeWindow) override;
     void present() override;
@@ -149,6 +151,8 @@ public:
     Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
+                                  const std::string &fragWgsl) override;
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
@@ -176,6 +180,7 @@ public:
                                 int tilesPerRow = 16) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
+    void setMesh3DSceneDepth(Texture *depth) override;
     void setMesh3DMaterial(float metallic, float roughness) override;
     void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
@@ -315,8 +320,9 @@ private:
     GpuTexture *gpuForTextureOrWhite(Texture *t) const;
     wgpu::BindGroup makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth);
     wgpu::BindGroup makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env,
-                                      GpuTexture *height, uint32_t frameUboOffset,
-                                      uint32_t shadowUboOffset, uint32_t pushUboOffset);
+                                      GpuTexture *height, GpuTexture *depth,
+                                      uint32_t frameUboOffset, uint32_t shadowUboOffset,
+                                      uint32_t pushUboOffset);
     void ensureMeshBindGroupsForDraw(Mesh3dDraw &d);
     wgpu::Sampler makeSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
 
@@ -396,6 +402,7 @@ private:
     GpuTexture *flatNormalTexture = nullptr;
     GpuTexture *flatNormalTexture3D = nullptr;
     GpuTexture *flatHeightTexture3D = nullptr;
+    GpuTexture *flatDepthTexture3D = nullptr;
     GpuTexture *defaultEnvCubemap = nullptr;
     GpuTexture *shadowDepthArray = nullptr;
 
@@ -457,6 +464,7 @@ private:
     Texture *mesh3dNormalTexture = nullptr;
     Texture *mesh3dHeightTexture = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
+    Texture *mesh3dSceneDepthTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
     float mesh3dMetallic = 0.f;
     float mesh3dRoughness = 0.45f;
@@ -527,9 +535,11 @@ private:
         GpuTexture normalGpu;
         GpuTexture depthColorGpu;
         GpuTexture albedoGpu;
+        GpuTexture depthGpu;
         Texture normalTex;
         Texture depthColorTex;
         Texture albedoTex;
+        Texture depthTex;
     };
     int gbufferWidth = 0, gbufferHeight = 0;
     std::vector<GbufferSlot> gbufferSlots;

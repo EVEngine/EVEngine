@@ -62,6 +62,7 @@ spatial <- eve.Spatial();
 editor <- eve.Editor();
 ui <- eve.UI();
 scene <- eve.Scene();
+camera <- eve.Camera();
 physics <- eve.Physics();
 keyboard <- eve.Keyboard();
 mouse <- eve.Mouse();
