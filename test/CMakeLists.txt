@@ -41,6 +41,7 @@ file(GLOB all_test_cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
   scene.cpp
+  sceneloader.cpp
   particles.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
@@ -272,6 +273,7 @@ set(EVELIBS
   EVUI
   eve_imgui
   EVScene
+  EVSceneLoader
   EVParticles
   EVPhysics
   EVMap

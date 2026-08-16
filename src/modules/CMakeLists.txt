@@ -131,6 +131,10 @@ target_include_directories(EVUI BEFORE PUBLIC
 
 create_module(EVScene scene)
 create_module(EVCamera camera)
+# 3D scene loader (SceneLoader): decode a model into an ECS GameObject tree and
+# hot-reload it via a fast diff. Depends on scene / model3d / graphics symbols,
+# which all resolve at the final link of the host target.
+create_module(EVSceneLoader sceneloader)
 
 if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVParticles particles)

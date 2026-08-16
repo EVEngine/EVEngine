@@ -193,6 +193,7 @@ list(APPEND EVELIBS
     eve_imgui
     EVScene
     EVCamera
+    EVSceneLoader
     EVParticles
     EVMap
     EVGpgpu
@@ -217,7 +218,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     foreach(_eve_trimmed IN ITEMS
         EVAnimation EVAudio EVAvatar EVBuilding EVDatabase EVFont EVInventory
         EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVStylize EVVoxel
-        EVDialogue EVProcgen)
+        EVDialogue EVProcgen EVSceneLoader)
         list(REMOVE_ITEM EVELIBS ${_eve_trimmed})
     endforeach()
 endif()
