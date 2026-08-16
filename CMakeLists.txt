@@ -63,10 +63,12 @@ function(main)
         # linker (/OPT:REF) can drop unused functions instead of whole objects.
         add_compile_options(/Gy)
         add_link_options(/OPT:REF)
-    elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    elseif(NOT APPLE AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # GCC/Clang equivalent of /Gy + /OPT:REF: put each function/data symbol in
         # its own section at compile time, then let the linker's --gc-sections drop
         # the unused ones instead of keeping whole objects.
+        # Apple's ld64 doesn't understand --gc-sections (it uses -dead_strip), so
+        # this GNU-style dead-code stripping is skipped there.
         add_compile_options(-ffunction-sections -fdata-sections)
         add_link_options(-Wl,--gc-sections)
     endif()
@@ -606,7 +608,8 @@ function(check_third_party_project name repo)
     # Function-level dead-code stripping on every third-party TU so the final
     # link can drop unused functions inside each object (not just whole objects).
     # MSVC: /Gy -> COMDAT; GCC/Clang: -ffunction-sections/-fdata-sections.
-    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # Apple is skipped: ld64 doesn't accept --gc-sections.
+    if(NOT APPLE AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         if(MSVC)
             list(APPEND _eve_tp_cmake_args
                 -DCMAKE_C_FLAGS=/Gy
