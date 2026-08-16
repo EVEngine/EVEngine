@@ -5,6 +5,7 @@
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/McpDevBridge.hpp"
+#include "devtools/RenderVision.hpp"
 #include "devtools/Snapshot.hpp"
 
 #include "common/Module.h"
@@ -197,6 +198,26 @@ std::vector<eve::physics::World*>& mcpPhysicsWorlds() {
 eve::physics::World* mcpPhysicsWorld(int id) {
     auto& ws = mcpPhysicsWorlds();
     return (id >= 0 && id < static_cast<int>(ws.size())) ? ws[static_cast<size_t>(id)] : nullptr;
+}
+
+std::string renderStatusText(eve::graphics::Graphics* gfx) {
+    Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    if (!gfx) {
+        o->set("error", "Graphics module not available");
+        return mcpStringify(Poco::Dynamic::Var(o));
+    }
+    o->set("width", gfx->getWidth());
+    o->set("height", gfx->getHeight());
+    o->set("pixelWidth", gfx->getPixelWidth());
+    o->set("pixelHeight", gfx->getPixelHeight());
+    o->set("had3DThisFrame", gfx->had3DThisFrame());
+    o->set("readbackEnabled", gfx->isScreenReadbackEnabled());
+    o->set("renderFlowEvents", static_cast<int>(DevTool::instance().renderFlow().eventCount()));
+    return mcpStringify(Poco::Dynamic::Var(o));
+}
+
+eve::graphics::Graphics* mcpGraphics() {
+    return eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
 }
 
 std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object::Ptr args) {
@@ -412,20 +433,24 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     // ============================= Render =============================
     if (name == "eve_render_status") {
-        auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        if (!gfx) {
-            o->set("error", "Graphics module not available");
-            return mcpStringify(Poco::Dynamic::Var(o));
-        }
-        o->set("width", gfx->getWidth());
-        o->set("height", gfx->getHeight());
-        o->set("pixelWidth", gfx->getPixelWidth());
-        o->set("pixelHeight", gfx->getPixelHeight());
-        o->set("had3DThisFrame", gfx->had3DThisFrame());
-        o->set("readbackEnabled", gfx->isScreenReadbackEnabled());
-        o->set("renderFlowEvents", static_cast<int>(DevTool::instance().renderFlow().eventCount()));
-        return mcpStringify(Poco::Dynamic::Var(o));
+        return renderStatusText(mcpGraphics());
+    }
+
+    if (name == "eve_render_describe") {
+        const bool fresh = argBool(args, "fresh", false);
+        const std::string reason = argString(args, "reason");
+        return RenderVision::instance().describe(mcpGraphics(), renderStatusText(mcpGraphics()),
+                                                 fresh, reason);
+    }
+
+    if (name == "eve_render_vision_config") {
+        auto& rv = RenderVision::instance();
+        if (args && args->has("baseUrl")) rv.setBaseUrl(argString(args, "baseUrl"));
+        if (args && args->has("apiKey")) rv.setApiKey(argString(args, "apiKey"));
+        if (args && args->has("model")) rv.setModel(argString(args, "model"));
+        if (args && args->has("path")) rv.setPath(argString(args, "path"));
+        if (args && args->has("timeoutMs")) rv.setTimeoutMs(argInt(args, "timeoutMs", 20000));
+        return rv.configJson();
     }
 
     if (name == "eve_screenshot") {
@@ -796,6 +821,10 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_screenshot\",\"description\":\"Capture the current frame to a PNG file (enables readback).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_render_describe\",\"description\":\"Capture the current frame and ask the configured vision model to describe it and relate it to render parameters. Cached unless fresh=true.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"fresh\":{\"type\":\"boolean\"},\"reason\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_render_vision_config\",\"description\":\"Set/read the vision model config (baseUrl/apiKey/model/path/timeoutMs). No args returns current config (key masked).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"baseUrl\":{\"type\":\"string\"},\"apiKey\":{\"type\":\"string\"},\"model\":{\"type\":\"string\"},\"path\":{\"type\":\"string\"},\"timeoutMs\":{\"type\":\"integer\"}}}},"
         "{\"name\":\"eve_particles_status\",\"description\":\"Report live particle emitter count.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_particles_emit\",\"description\":\"Spawn a particle emitter at a position (optionally a preset) and emit particles.\","
@@ -1056,6 +1085,12 @@ void McpServer::poll() {
     if (!listening_.load()) return;
     acceptNonBlocking();
     readAndDispatch();
+    // Main-thread hook: run a pending breakpoint/error vision dump (if any) on
+    // the render thread where Graphics readback is safe.
+    if (RenderVision::instance().pending()) {
+        auto* gfx = mcpGraphics();
+        if (gfx) RenderVision::instance().pollPending(gfx, renderStatusText(gfx));
+    }
 }
 
 void McpServer::acceptNonBlocking() {

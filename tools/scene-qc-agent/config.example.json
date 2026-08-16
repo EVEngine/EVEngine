@@ -1,0 +1,67 @@
+{
+  "engine": {
+    "transport": "bridge",
+    "host": "127.0.0.1",
+    "port": 7529,
+    "bridge_js": "../eve-mcp/server.js",
+    "node": "node",
+    "connect_timeout_ms": 5000
+  },
+  "mcp_tools": {
+    "status": { "name": "eve_status", "args": {} },
+    "eval": { "name": "eve_eval", "args": { "expression": "" } },
+    "camera_generate": { "name": "eve_camera_generate", "args": { "targets": [], "count": 6 } },
+    "screenshot": { "name": "eve_screenshot", "args": { "camera": {} } },
+    "scene_info": { "name": "eve_scene_info", "args": { "frame_id": "", "targets": [] } },
+    "scene_modify": { "name": "eve_scene_modify", "args": { "action": "", "target": "", "params": {} } },
+    "run_script": { "name": "eve_run_script", "args": { "source": "" } }
+  },
+  "models": {
+    "local_screen": {
+      "enabled": true,
+      "base_url": "http://127.0.0.1:11434/v1",
+      "model": "qwen2.5-vl:3b",
+      "api_key": "ollama",
+      "vision": true,
+      "temperature": 0.2,
+      "max_tokens": 512
+    },
+    "vlm_review": {
+      "enabled": true,
+      "base_url": "https://api.openai.com/v1",
+      "model": "gpt-4o",
+      "api_key": "",
+      "vision": true,
+      "temperature": 0.2,
+      "max_tokens": 1024
+    },
+    "fix_planner": {
+      "enabled": true,
+      "base_url": "https://api.openai.com/v1",
+      "model": "gpt-4o",
+      "api_key": "",
+      "vision": false,
+      "temperature": 0.0,
+      "max_tokens": 1024
+    }
+  },
+  "fusion": {
+    "weights": { "geometry": 0.35, "local": 0.35, "vlm": 0.3 },
+    "screen_escalate": 0.7,
+    "pass_threshold": 0.75,
+    "severity_order": ["critical", "high", "medium", "low"]
+  },
+  "iteration": {
+    "max_rounds": 3,
+    "max_react_steps": 8
+  },
+  "cameras": {
+    "count": 6,
+    "jitter": 0.15
+  },
+  "output": {
+    "report_path": "scene_qc_report.json",
+    "save_snapshots": false,
+    "trace": false
+  }
+}

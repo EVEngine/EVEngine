@@ -14,8 +14,10 @@
 #include "graphics/Shadow.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
+#include "graphics/Water.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Grass.h"
 #include "graphics/Waterfall.h"
 #include "graphics/Outline.h"
@@ -323,6 +325,16 @@ public:
      */
     virtual void begin3DFrame() = 0;
 
+    /**
+     * Open a 3D render pass targeting an offscreen Canvas (color + depth) at
+     * the canvas size. Uses setMesh3DViewProj/View/CameraPos/Env as the camera.
+     * Draw meshes with drawMeshShader, then call end3DFrameToCanvas(). The
+     * canvas texture then holds the rendered scene (e.g. a planar reflection).
+     * Unsupported if `canvas` is not an offscreen canvas (screen).
+     */
+    virtual void begin3DFrameToCanvas(Canvas *canvas) = 0;
+    virtual void end3DFrameToCanvas() = 0;
+
     /** viewProj used by subsequent drawMesh (mvp = viewProj * model).
      *  Expect RH + ZO with Vulkan NDC Y (see perspectiveVulkanRH_ZO). */
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;
@@ -378,6 +390,14 @@ public:
 
     /** Per-frame ambient + up to 8 lights packed into Mesh3DUBO. */
     virtual void setMesh3DLighting(const Lighting3DPack &pack) = 0;
+
+    /**
+     * Dynamic cloud shadows cast on the ground by the default PBR mesh path.
+     * strength 0 disables (no change to rendering). time advances wind drift.
+     * Packed into Mesh3DUBO.cloud / cloudWind and consumed by mesh3d shaders.
+     */
+    virtual void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                                 float windAngle, float coverage, float detail) = 0;
 
     /**
      * Enable clustered forward path for subsequent default mesh draws (SSBO light lists).
@@ -617,6 +637,10 @@ public:
      * Caller owns Waterfall*; its Mesh / Shader are owned by Graphics.
      */
     Waterfall *newWaterfall();
+     * Dynamic water surface (sky reflection + animated edge waves + middle
+     * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
+     */
+    Water *newWater();
 
     /** Create an offscreen render target (sampleable). Owned by Graphics. */
     virtual Canvas *newCanvas(int width, int height) = 0;
@@ -651,6 +675,12 @@ public:
      * its Shaders are owned by Graphics.
      */
     GlobalIllumination *newGlobalIllumination();
+
+    /**
+     * Screen-space reflections (ray-marched over scene color + hw depth).
+     * Caller owns ScreenSpaceReflection*; its Shader is owned by Graphics.
+     */
+    ScreenSpaceReflection *newScreenSpaceReflection();
 
     /**
      * Pipeline-owned AO / GI / AA used by RenderSystem3D when features

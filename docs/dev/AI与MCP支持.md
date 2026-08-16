@@ -75,6 +75,8 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
 | `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG） |
+| `eve_render_describe` | 采集当前帧 + 渲染参数，交给配置的视觉模型，返回文字描述与「渲染参数↔画面效果」对应关系 |
+| `eve_render_vision_config` | 设置 / 读取视觉模型配置（baseUrl/apiKey/model/path/timeoutMs，密钥掩码） |
 | `eve_particles_status` / `eve_particles_emit` | 粒子系统状态与发射 |
 | `eve_audio_status` / `eve_audio_set_volume` / `eve_audio_stop_all` | 音频主控 |
 
@@ -108,6 +110,29 @@ eve.dev.ai.draw(); // load.nut 每帧在 present 前调用
 ```
 
 面板显示 MCP 端口 / 连接状态、客户端名、最近 tool 调用与笔记。
+
+## 视觉模型描述（RenderVision）
+
+引擎可把当前帧截图 + 渲染参数交给一个 **OpenAI 兼容** 的视觉模型，返回文字描述，
+并说明「渲染参数 ↔ 画面效果」的对应关系，供其他 LLM 调试渲染问题。
+
+- **按需**：调用 MCP 工具 `eve_render_describe`（`fresh=false` 返回上次缓存，
+  `fresh=true` 重新采集+推理；可选 `reason` 备注触发原因）。
+- **断点 / 错误自动触发**：调试器命中脚本断点或运行时错误暂停时，会记录一个待处理
+  标记，随后在 `McpServer::poll`（主线程，读回安全）自动完成一次采集+推理，结果缓存。
+- 配置：`eve_render_vision_config` 或环境变量（首次使用生效）：
+
+```text
+EVE_VISION_BASE_URL   e.g. http://127.0.0.1:11434/v1  （须为明文 HTTP；
+                       引擎未链接 TLS/OpenSSL）
+EVE_VISION_API_KEY    可选 Bearer
+EVE_VISION_MODEL      e.g. llava / gpt-4o-mini / qwen2-vl
+EVE_VISION_PATH       默认 /chat/completions
+EVE_VISION_TIMEOUT_MS 默认 20000
+```
+
+说明：请求走 `HTTPClientSession`（无 TLS），用 base64 data URL 的 JSON body
+（`POST {baseURL}{path}`），兼容 Ollama / vLLM / LM Studio 等本地 OpenAI 兼容服务。
 
 ## Cursor 接入
 

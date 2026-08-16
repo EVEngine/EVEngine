@@ -26,10 +26,12 @@ layout(set = 0, binding = 0, std140) uniform Frame {
     vec4 cameraPos;         // xyz = eye; w = roughness
     vec4 ambient;           // rgb = ambient; w = metallic
     Light3D lights[8];
-    vec4 texBomb;           // x = cellScale, y = strength (0=off), z = rotAmount, w unused
+    vec4     texBomb;           // x = cellScale, y = strength (0=off), z = rotAmount, w unused
     vec4 parallax;          // x = scale (0=off), y = minLayers, z = maxLayers, w unused
     mat4 view;
     vec4 clipInfo;          // x = near, y = far
+    vec4 cloud;             // x = strength (0=off), y = world cell size, z = time, w unused
+    vec4 cloudWind;         // xy = wind velocity (world/s), z = coverage, w = detail
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
@@ -118,6 +120,47 @@ vec3 shadeLight(vec3 N, vec3 V, vec3 albedo, float metallic, float roughness, ve
 }
 
 /** Hardware-PCF shadow lookup for a single cascade. Returns lit fraction in [0,1]. */
+float cloudHash(vec2 p) {
+    ivec2 ip = ivec2(floor(mod(p, 64.0)));
+    uint h = uint(ip.x) * 374761393u ^ uint(ip.y) * 668265263u;
+    h = (h ^ (h >> 13)) * 1274126177u;
+    h ^= h >> 16;
+    return float(h & 0x00FFFFFFu) / float(0x00FFFFFFu);
+}
+float cloudNoise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = cloudHash(i);
+    float b = cloudHash(i + vec2(1.0, 0.0));
+    float c = cloudHash(i + vec2(0.0, 1.0));
+    float d = cloudHash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+float cloudFbm(vec2 p) {
+    float sum = 0.0;
+    float amp = 0.5;
+    float freq = 1.0;
+    for (int i = 0; i < 4; ++i) {
+        sum += amp * cloudNoise(p * freq);
+        amp *= 0.5;
+        freq *= 2.0;
+    }
+    return sum * 2.0;
+}
+float cloudShadowFactor(vec3 worldPos) {
+    if (ubo.cloud.x < 1e-4)
+        return 1.0;
+    float cell = 1.0 / max(ubo.cloud.y, 1e-4);
+    vec2 drift = (ubo.cloudWind.xy * cell) * ubo.cloud.z;
+    vec2 p = worldPos.xz * cell - drift;
+    float f = cloudFbm(p);
+    float c = smoothstep(ubo.cloudWind.z - 0.1, ubo.cloudWind.z + 0.1, f);
+    float d = cloudNoise(p * 3.0 + vec2(11.7, 5.3));
+    float covered = mix(c, c * d, ubo.cloudWind.w);
+    return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
+}
+
 float sampleShadowCascade(vec3 worldPos, int cascade, float bias) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
     vec3 ndc = lightClip.xyz / max(lightClip.w, 1e-6);
@@ -238,7 +281,7 @@ void main() {
     // Primary directional (legacy slot). Packing zeros lightColor when no dir exists
     // so a point in lights[0] is never treated as a sun direction.
     if (length(ubo.lightColor.rgb) > 1e-6) {
-        Lo += shadeLight(N, V, albedo, metallic, roughness, primaryL, ubo.lightColor.rgb) * shadowVis;
+        Lo += shadeLight(N, V, albedo, metallic, roughness, primaryL, ubo.lightColor.rgb) * shadowVis * cloudShadowFactor(vWorldPos);
     }
 
     for (int i = 0; i < 8; ++i) {

@@ -222,6 +222,48 @@ bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
+CloudField *Procgen::newCloudField() { return new CloudField(); }
+
+CloudShadow *Procgen::newCloudShadow() { return new CloudShadow(); }
+
+float Procgen::cloudCoverageAt(CloudField *field, float x, float z, float time) {
+    lastError_.clear();
+    if (!field) {
+        lastError_ = "cloudCoverageAt: null field";
+        return 0.f;
+    }
+    return field->coverageAt(x, z, time);
+}
+
+float Procgen::cloudShadowFactor(CloudShadow *shadow, float x, float z, float time) {
+    lastError_.clear();
+    if (!shadow) {
+        lastError_ = "cloudShadowFactor: null shadow";
+        return 1.f;
+    }
+    return shadow->shadowFactorAt(x, z, time);
+}
+
+void Procgen::sampleCloud(CloudField *field, float *out, int w, int h, float time, float x0,
+                          float z0, float extent) {
+    lastError_.clear();
+    if (!field) {
+        lastError_ = "sampleCloud: null field";
+        return;
+    }
+    field->sample(out, w, h, time, x0, z0, extent);
+}
+
+void Procgen::sampleCloudShadow(CloudShadow *shadow, float *out, int w, int h, float time,
+                                float x0, float z0, float extent) {
+    lastError_.clear();
+    if (!shadow) {
+        lastError_ = "sampleCloudShadow: null shadow";
+        return;
+    }
+    shadow->sampleCoverage(out, w, h, time, x0, z0, extent);
+}
+
 PbrTextureSet *Procgen::generatePbrMaterial(const std::string &recipeId, Params *params) {
     lastError_.clear();
     if (!params) {
@@ -467,6 +509,28 @@ void Procgen::expose(ssq::Table &table) {
     heightmap.addFunc("sampleBilinear", &Heightmap::sampleBilinear);
     heightmap.addFunc("sampleBilinearSeamless", &Heightmap::sampleBilinearSeamless);
 
+    auto cloud = table.addClass<CloudField>(
+        "ProcgenCloudField",
+        std::function<CloudField *()>([]() -> CloudField * { return nullptr; }), true);
+    cloud.addFunc("setSeed", &CloudField::setSeed);
+    cloud.addFunc("setWorldScale", &CloudField::setWorldScale);
+    cloud.addFunc("setCoverage", &CloudField::setCoverage);
+    cloud.addFunc("setSoftness", &CloudField::setSoftness);
+    cloud.addFunc("setDetail", &CloudField::setDetail);
+    cloud.addFunc("setWind", &CloudField::setWind);
+    cloud.addFunc("setOctaves", &CloudField::setOctaves);
+    cloud.addFunc("setWarp", &CloudField::setWarp);
+    cloud.addFunc("setSeamless", &CloudField::setSeamless);
+    cloud.addFunc("coverageAt", &CloudField::coverageAt);
+
+    auto cloudShadow = table.addClass<CloudShadow>(
+        "ProcgenCloudShadow",
+        std::function<CloudShadow *()>([]() -> CloudShadow * { return nullptr; }), true);
+    cloudShadow.addFunc("setSunDirection", &CloudShadow::setSunDirection);
+    cloudShadow.addFunc("setCloudAltitude", &CloudShadow::setCloudAltitude);
+    cloudShadow.addFunc("setStrength", &CloudShadow::setStrength);
+    cloudShadow.addFunc("coverageAt", &CloudShadow::coverageAt);
+    cloudShadow.addFunc("shadowFactorAt", &CloudShadow::shadowFactorAt);
     auto pbr = table.addClass<PbrTextureSet>(
         "ProcgenPbrMaterial",
         std::function<PbrTextureSet *()>([]() -> PbrTextureSet * { return nullptr; }), true);
@@ -519,6 +583,12 @@ void Procgen::expose(ssq::Class &cls) {
     cls.addFunc("newHeightmap", &Procgen::newHeightmap);
     cls.addFunc("generateHeightmap", &Procgen::generateHeightmap);
     cls.addFunc("heightmapToGrid", &Procgen::heightmapToGrid);
+    cls.addFunc("newCloudField", &Procgen::newCloudField);
+    cls.addFunc("newCloudShadow", &Procgen::newCloudShadow);
+    cls.addFunc("cloudCoverageAt", &Procgen::cloudCoverageAt);
+    cls.addFunc("cloudShadowFactor", &Procgen::cloudShadowFactor);
+    cls.addFunc("sampleCloud", &Procgen::sampleCloud);
+    cls.addFunc("sampleCloudShadow", &Procgen::sampleCloudShadow);
 }
 
 }  // namespace eve::procgen
