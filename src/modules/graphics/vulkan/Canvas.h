@@ -29,9 +29,14 @@ public:
     void draw(Canvas *, const glm::mat4 &) const override {}
 
     vk::Framebuffer framebuffer() const { return fb; }
+    vk::Framebuffer framebuffer3D() const { return fb3D; }
     vkb::ColorAttachmentImage &colorImage() { return color; }
+    vkb::DepthTarget &depthImage() { return depth; }
     Color pendingClearColor() const { return clearColor; }
     bool takePendingClear();
+
+    /** Ensure a D32 depth attachment + 3D (color+depth) framebuffer exist. */
+    void ensure3D();
 
 private:
     void readAllPixels(std::vector<uint8_t> &outRgba);
@@ -41,6 +46,8 @@ private:
     int height = 0;
     vkb::ColorAttachmentImage color;
     vk::Framebuffer fb = nullptr;
+    vkb::DepthTarget depth;
+    vk::Framebuffer fb3D = nullptr;
     GpuTexture sampleGpu;
     Texture sampleTexture;
 
