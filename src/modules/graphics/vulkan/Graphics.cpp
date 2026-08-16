@@ -1998,6 +1998,158 @@ Color Graphics::getPixel(int x, int y) {
     return Color(r, g, b, a);
 }
 
+image::ImageData *Graphics::renderEntityIdMask(
+    const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
+    int width, int height) {
+    if (!initialized || width <= 0 || height <= 0) return nullptr;
+    // G-buffer pipeline / render pass are created lazily by createGBufferResources,
+    // so that must run before the availability check.
+    createGBufferResources(width, height);
+    if (!gbufferPipeline || !gbufferRenderPass) return nullptr;
+    auto *slot = currentGBufferSlot();
+    if (!slot || !slot->framebuffer || !whiteTexture) return nullptr;
+
+    // Render each mesh with a flat idColor into the G-buffer albedo attachment
+    // (location 2) by reusing the G-buffer pipeline (its fragment shader writes
+    // outAlbedo = albedo * tint, so passing a white texture + idColor tint gives
+    // a per-pixel flat entity-ID color).
+    std::vector<GBufferDraw> idDraws;
+    idDraws.reserve(draws.size());
+    auto u8 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
+    };
+    for (const auto &d : draws) {
+        if (!d.mesh || !d.mesh->gpuHandle) continue;
+        GBufferDraw gd{};
+        gd.mesh = d.mesh;
+        gd.albedo = whiteTexture;
+        gd.push.mvp = viewProj * d.model;
+        gd.push.modelR0 = glm::vec4(d.model[0][0], d.model[1][0], d.model[2][0], d.model[3][0]);
+        gd.push.modelR1 = glm::vec4(d.model[0][1], d.model[1][1], d.model[2][1], d.model[3][1]);
+        gd.push.modelR2 = glm::vec4(d.model[0][2], d.model[1][2], d.model[2][2], d.model[3][2]);
+        const uint32_t packed = u8(d.idColor.r) | (u8(d.idColor.g) << 8) |
+                                (u8(d.idColor.b) << 16) | (u8(d.idColor.a) << 24);
+        gd.push.clip = glm::vec4(0.1f, 100.f, glm::uintBitsToFloat(packed), 0.f);
+        idDraws.push_back(gd);
+    }
+    if (idDraws.empty()) return nullptr;
+
+    const uint32_t w = uint32_t(width);
+    const uint32_t h = uint32_t(height);
+    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                std::array<vk::ClearValue, 4> clears{};
+                                clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[1].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                vk::RenderPassBeginInfo rpBegin{};
+                                rpBegin.renderPass = gbufferRenderPass;
+                                rpBegin.framebuffer = slot->framebuffer;
+                                rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+                                rpBegin.clearValueCount = uint32_t(clears.size());
+                                rpBegin.pClearValues = clears.data();
+                                slot->normal.beginColorAttachment();
+                                slot->depthColor.beginColorAttachment();
+                                slot->albedo.beginColorAttachment();
+                                slot->depth.beginDepthAttachment();
+                                cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+                                setViewportAndScissor(cb, w, h);
+                                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
+                                for (const auto &d : idDraws) {
+                                    auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+                                    if (!gpuMesh) continue;
+                                    if (whiteTexture && whiteTexture->gpuHandle && texSetLayout) {
+                                        auto *gpuTex = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+                                        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                              gbufferPipelineLayout, 0, 1,
+                                                              gpuTex->descriptorSet.ptr(), 0, nullptr);
+                                    }
+                                    cb.pushConstants(gbufferPipelineLayout,
+                                                     vk::ShaderStageFlagBits::eVertex |
+                                                         vk::ShaderStageFlagBits::eFragment,
+                                                     0, sizeof(GBufferPush), &d.push);
+                                    drawIndexedMesh(cb, *gpuMesh);
+                                }
+                                cb.endRenderPass();
+                                slot->normal.endSampledLayout();
+                                slot->depthColor.endSampledLayout();
+                                slot->albedo.endSampledLayout();
+                                slot->depth.endSampledLayout();
+
+                                // Copy the albedo attachment (location 2 = ID colors) to CPU.
+                                slot->albedo.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                                region.imageExtent = vk::Extent3D{w, h, 1};
+                                cb.copyImageToBuffer(slot->albedo.image(),
+                                                     vk::ImageLayout::eTransferSrcOptimal, staging.buffer,
+                                                     region);
+                                slot->albedo.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+
+    auto *img = new image::ImageData(int(w), int(h), "RGBA8");
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    std::memcpy(img->getData(), mapped, size_t(byteSize));
+    device->unmapMemory(staging.memory);
+    staging.release();
+
+    // 让 RenderControl 的 GBuffer 也指向该槽位（镜像 endGBufferPass），这样
+    // 上层可通过 getDepthTexture()/getNormalTexture() 读取本次离屏 ID 渲染
+    // 生成的深度/法线（供 capture_render_frame 的 depth/normal 复用）。
+    if (RenderControl *rc = getRenderControl()) {
+        rc->getGBuffer()->setTargets(int(w), int(h), &slot->depthColorTex, &slot->normalTex,
+                                     &slot->albedoTex, &slot->depthTex);
+    }
+    return img;
+}
+
+image::ImageData *Graphics::readGBufferToImageData(const std::string &name) {
+    if (!initialized) return nullptr;
+    auto *slot = currentGBufferSlot();
+    if (!slot) return nullptr;
+    vkb::ColorTarget *src = nullptr;
+    if (name == "depth")
+        src = &slot->depthColor;  // RGBA8 linear depth
+    else if (name == "normal")
+        src = &slot->normal;
+    else if (name == "albedo")
+        src = &slot->albedo;
+    else
+        return nullptr;
+
+    const uint32_t w = uint32_t(gbufferWidth);
+    const uint32_t h = uint32_t(gbufferHeight);
+    if (w == 0 || h == 0) return nullptr;
+
+    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+                            [&](vk::CommandBuffer cb) {
+                                src->setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
+                                vk::BufferImageCopy region{};
+                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                                region.imageExtent = vk::Extent3D{w, h, 1};
+                                cb.copyImageToBuffer(src->image(), vk::ImageLayout::eTransferSrcOptimal,
+                                                     staging.buffer, region);
+                                src->setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
+                            });
+
+    auto *img = new image::ImageData(int(w), int(h), "RGBA8");
+    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
+    std::memcpy(img->getData(), mapped, size_t(byteSize));
+    device->unmapMemory(staging.memory);
+    staging.release();
+    return img;
+}
+
 Canvas *Graphics::newCanvas(int w, int h) {
     ASSERT(initialized);
     ASSERT_GT(w, 0);

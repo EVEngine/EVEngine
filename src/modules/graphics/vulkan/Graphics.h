@@ -235,6 +235,10 @@ public:
     void setMesh3DView(const glm::mat4 &view) override;
     void setMesh3DClip(float nearZ, float farZ) override;
     Texture *getSceneColorTexture() override;
+    image::ImageData *renderEntityIdMask(
+        const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
+        int width, int height) override;
+    image::ImageData *readGBufferToImageData(const std::string &name) override;
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;

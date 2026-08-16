@@ -37,6 +37,14 @@ eve run --debug --mcp-port=7529 examples/basic
 3. Use tools such as `eve_status`, `eve_eval`, `eve_pause`, `eve_snapshot_capture`,
    `eve_error_slice`, or prompts `debug_failure` / `test_scenario`.
 
+   Scene-inspection tools (camera + synchronized image/geometry snapshots):
+   - `inspect_generate_scene_camera_views` — standard inspection camera poses
+   - `set_camera_pose` — position + Euler rotation + FOV
+   - `capture_render_frame` — atomic PNG + matching 3D geometry JSON
+     (`buffers` option: `color` / `depth` / `normal` / `id` per-pixel entity-ID
+     mask; `shadow` is unsupported on the current backend)
+   - `get_visible_entities_screen_bbox` — frustum entities with screen bbox / world AABB
+
 ## Env
 
 | Variable | Default | Meaning |
