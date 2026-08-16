@@ -67,6 +67,8 @@ file(GLOB all_test_cpp
   Xray.cpp
   voxel.cpp
   voxel_render.cpp
+  virtualgeometry_builder.cpp
+  virtualgeometry_gpu.cpp
   gpgpu.cpp
   box2d.cpp
   box3d.cpp
@@ -280,6 +282,7 @@ set(EVELIBS
   EVPhysics
   EVMap
   EVGpgpu
+  EVVirtualGeometry
   EVModel3D
   EVFont
   EVThread
