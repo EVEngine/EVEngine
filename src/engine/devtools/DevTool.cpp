@@ -3,6 +3,7 @@
 #include "devtools/AiPanel.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/RenderVision.hpp"
 
 #include "common/Module.h"
 #include "common/RenderTrace.h"
@@ -540,6 +541,7 @@ std::string DevTool::notifyError(const std::string& errorMessage,
 
     debugger().pause(PauseReason::Exception);
     dap().notifyStopped(PauseReason::Exception, site);
+    RenderVision::instance().notifyPending("error", site.source, site.line);
 
     return lastReport_;
 }
