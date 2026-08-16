@@ -32,6 +32,7 @@ file(GLOB all_test_cpp
   Volumetric.cpp
   TextureSampler.cpp
   AmbientOcclusion.cpp
+  Outline.cpp
   AntiAliasing.cpp
   GlobalIllumination.cpp
   UISystem.cpp
@@ -62,6 +63,7 @@ file(GLOB all_test_cpp
   procgen_simulation.cpp
   roguelike_generator.cpp
   stylize.cpp
+  Xray.cpp
   voxel.cpp
   voxel_render.cpp
   gpgpu.cpp
@@ -72,6 +74,7 @@ file(GLOB all_test_cpp
   shader.cpp
   grass.cpp
   daynight.cpp
+  weather.cpp
   simplesquirrel.cpp
   ScriptECS.cpp
   sound.cpp
@@ -252,6 +255,7 @@ set(EVELIBS
   EVGraphics
   EVImage
   EVDayNight
+  EVWeather
   EVCommon
   EVEvent
   EVTimer

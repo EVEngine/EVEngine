@@ -29,6 +29,7 @@ public:
     std::string getIdentity() const override;
 
     bool setSource(std::string source) override;
+    bool setSourceFromMemory(const void* data, size_t size) override;
 
     std::string getSource() const override;
 
@@ -115,6 +116,9 @@ private:
     std::unique_ptr<FileWatch> fileWatch_;
     std::string lastWatchPath_;
     std::string lastWatchRealPath_;
+
+    // Owns the bytes backing a memory-mounted game archive (see setSourceFromMemory).
+    void* memoryArchive_ = nullptr;
 
 };  // Filesystem
 

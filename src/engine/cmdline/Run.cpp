@@ -4,6 +4,7 @@
 #include "common/Runtime.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
+#include "filesystem/physfs/FileApi.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
@@ -13,6 +14,7 @@
 #include <CLI11.hpp>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <filesystem>
 
 #if defined(EVENGINE_WEBGPU)
@@ -108,26 +110,67 @@ CMD_REG(RunArgs);
 // create a new project
 int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, int mcpPort) {
     try {
-        // Switch to the game directory so load.nut can dofile("config.nut") / "main.nut".
-        if (!path.empty() && path != ".") {
+        // Resolve the game directory. A packaged game ships a game.eve archive next to
+        // the executable; we mount it into memory and run without extracting to disk.
+        std::string gameDir = path;
+        std::string archivePath;
+
+        {
             std::error_code ec;
-            std::filesystem::current_path(path, ec);
+            if (path.empty() || path == ".")
+                gameDir = std::filesystem::current_path(ec).string();
+            else
+                gameDir = std::filesystem::absolute(path, ec).string();
+            if (ec) gameDir = path;
+
+            std::filesystem::path gp(gameDir);
+            if (std::filesystem::is_regular_file(gp, ec) && gp.extension() == ".eve") {
+                // `eve run <path>.eve` — the archive itself is the game.
+                archivePath = gp.string();
+                gameDir = gp.parent_path().string();
+            } else {
+                std::filesystem::path bundled = gp / "game.eve";
+                if (std::filesystem::is_regular_file(bundled, ec))
+                    archivePath = bundled.string();
+            }
+        }
+
+        // Switch to the game directory so relative plugin/asset paths resolve next to
+        // the executable (the packaged game's scripts live in the memory-mounted archive).
+        if (!gameDir.empty() && gameDir != ".") {
+            std::error_code ec;
+            std::filesystem::current_path(gameDir, ec);
             if (ec) {
-                cerr << "Cannot chdir to game path '" << path << "': " << ec.message() << endl;
-                EVE_ANDROID_LOGE("Cannot chdir to game path '%s': %s", path.c_str(), ec.message().c_str());
+                cerr << "Cannot chdir to game path '" << gameDir << "': " << ec.message() << endl;
+                EVE_ANDROID_LOGE("Cannot chdir to game path '%s': %s", gameDir.c_str(), ec.message().c_str());
                 return 2;
             }
         }
 
-        // Mount game dir for PhysFS so relative watch/read resolve (hot reload).
+        // Mount game source for PhysFS so relative watch/read resolve (hot reload).
         {
             auto *fs = eve::filesystem::Filesystem::create();
             if (fs) {
-                std::error_code ec;
-                auto cwd = std::filesystem::current_path(ec);
-                if (!ec) {
-                    // setSource only succeeds once; ignore failure if already mounted.
-                    fs->setSource(cwd.string());
+                if (!archivePath.empty()) {
+                    // Read the packaged archive into memory and mount it there.
+                    std::ifstream ifs(archivePath, std::ios::binary);
+                    if (!ifs) {
+                        cerr << "Cannot open game archive: " << archivePath << endl;
+                        return 2;
+                    }
+                    std::vector<char> bytes((std::istreambuf_iterator<char>(ifs)),
+                                            std::istreambuf_iterator<char>());
+                    if (bytes.empty() || !fs->setSourceFromMemory(bytes.data(), bytes.size())) {
+                        cerr << "Failed to mount game archive from memory: " << archivePath << endl;
+                        return 2;
+                    }
+                } else {
+                    std::error_code ec;
+                    auto cwd = std::filesystem::current_path(ec);
+                    if (!ec) {
+                        // setSource only succeeds once; ignore failure if already mounted.
+                        fs->setSource(cwd.string());
+                    }
                 }
             }
         }
@@ -178,6 +221,9 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             eve.set("asyncScript", std::string(async_content ? async_content : ""));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
+        // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in
+        // memory) can load its scripts without extracting to disk.
+        eve::filesystem::physfs::installScriptFileApi(runtime.vm());
         runtime.runSource(root, "load.nut");
 #if defined(EVENGINE_WEBGPU)
         // Instead of a blocking while(running) Squirrel loop (which the browser

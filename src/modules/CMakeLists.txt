@@ -6,6 +6,8 @@ endif()
 create_module(EVGraphics graphics)
 # Day/night cycle: solar orbit + procedural skybox + night lighting systems.
 create_module(EVDayNight daynight)
+# Weather system: rain / snow / lightning / wind built on the 3D mesh pipeline.
+create_module(EVWeather weather)
 # Header-only VKBuilder: prefer the source tree over a stale third-party install.
 target_include_directories(EVGraphics BEFORE PUBLIC
   ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
@@ -130,6 +132,7 @@ target_include_directories(EVUI BEFORE PUBLIC
   ${CMAKE_SOURCE_DIR}/third-party/VKBuilder/include)
 
 create_module(EVScene scene)
+create_module(EVCamera camera)
 
 if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVParticles particles)
