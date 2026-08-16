@@ -227,6 +227,7 @@ Graphics::~Graphics() {
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
+    destroyOffscreen3DResources();
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
     mesh3dSetLayoutUnique.reset();
@@ -424,12 +425,15 @@ size_t Graphics::currentFrameSlot() const {
 }
 
 vk::CommandBuffer &Graphics::currentPresentCb() {
+    if (offscreen3DPassOpen && offscreen3DCB)
+        return offscreen3DCB;
     if (swapchainPass)
         return swapchainPass.commandBuffer();
     return presentRecording.commandBuffer();
 }
 
 vkb::FrameSlot Graphics::frameToken() const {
+    if (offscreen3DPassOpen) return vkb::FrameSlot{0};
     if (presentRecording) return presentRecording.slot();
     return vkb::FrameSlot::gpuIdle();
 }
@@ -3284,6 +3288,130 @@ void Graphics::begin3DFrame() {
     hasPendingClear = false;
 }
 
+void Graphics::ensureOffscreen3DResources() {
+    auto &device = getDevice();
+    if (!offscreen3DRenderPass) {
+        offscreen3DRenderPass =
+            device.createRenderPass()
+                .addSampledColorAttachment(vk::Format::eR8G8B8A8Unorm)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addExternalShaderReadDependencies()
+                .build();
+        offscreen3DMeshPipeline = createMesh3DStylePipeline(
+            embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
+            offscreen3DRenderPass, vk::SampleCountFlagBits::e1);
+    }
+    if (!offscreen3DPool) {
+        vk::CommandPoolCreateInfo poolInfo{};
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient;
+        offscreen3DPool = device->createCommandPool(poolInfo);
+        vk::CommandBufferAllocateInfo allocInfo{};
+        allocInfo.commandPool = offscreen3DPool;
+        allocInfo.level = vk::CommandBufferLevel::ePrimary;
+        allocInfo.commandBufferCount = 1;
+        auto bufs = device->allocateCommandBuffers(allocInfo);
+        offscreen3DCB = bufs[0];
+        vk::FenceCreateInfo fenceInfo{};
+        fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;  // first wait passes immediately
+        offscreen3DFence = device->createFence(fenceInfo);
+    }
+}
+
+void Graphics::destroyOffscreen3DResources() {
+    auto &device = getDevice();
+    if (offscreen3DFence) {
+        device->destroyFence(offscreen3DFence);
+        offscreen3DFence = nullptr;
+    }
+    if (offscreen3DPool) {
+        device->destroyCommandPool(offscreen3DPool);
+        offscreen3DPool = nullptr;
+    }
+    offscreen3DCB = nullptr;
+    if (offscreen3DMeshPipeline) {
+        device->destroyPipeline(offscreen3DMeshPipeline);
+        offscreen3DMeshPipeline = nullptr;
+    }
+    if (offscreen3DRenderPass) {
+        device->destroyRenderPass(offscreen3DRenderPass);
+        offscreen3DRenderPass = {};
+    }
+}
+
+void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("begin3DFrameToCanvas: graphics not initialized");
+    if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
+    auto *oc = dynamic_cast<OffscreenCanvas *>(canvas);
+    if (!oc) throw Exception("begin3DFrameToCanvas: not an offscreen canvas");
+    if (offscreen3DPassOpen) throw Exception("begin3DFrameToCanvas: already open");
+    if (swapchainPassOpen) {
+        try {
+            flushToSwapchain();
+        } catch (...) {
+            abortOpen3DFrame();
+        }
+    }
+    clearColor = backgroundColor;
+    ensureOffscreen3DResources();
+    oc->ensure3D();
+    offscreen3DCanvas = oc;
+
+    if (offscreen3DFence) (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+    vk::CommandBufferBeginInfo beginInfo{};
+    offscreen3DCB.begin(beginInfo);
+    std::array<vk::ClearValue, 2> clears{};
+    clears[0].color =
+        vk::ClearColorValue(std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
+    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = offscreen3DRenderPass;
+    rpBegin.framebuffer = oc->framebuffer3D();
+    rpBegin.renderArea =
+        vk::Rect2D{{0, 0}, {uint32_t(oc->getWidth()), uint32_t(oc->getHeight())}};
+    rpBegin.clearValueCount = uint32_t(clears.size());
+    rpBegin.pClearValues = clears.data();
+    oc->colorImage().beginColorAttachment();
+    oc->depthImage().beginDepthAttachment();
+    offscreen3DCB.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(offscreen3DCB, oc->getWidth(), oc->getHeight());
+
+    currentMesh3dFrameSlots().drawIndex = 0;
+    currentMesh3dClusteredFrameSlots().drawIndex = 0;
+    offscreen3DPassOpen = true;
+    frameHad3D = true;
+    hasPendingClear = false;
+}
+
+void Graphics::end3DFrameToCanvas() {
+    if (!offscreen3DPassOpen || !offscreen3DCB) return;
+    offscreen3DCB.endRenderPass();
+    if (offscreen3DCanvas) {
+        offscreen3DCanvas->colorImage().setLayout(offscreen3DCB,
+                                                  vk::ImageLayout::eShaderReadOnlyOptimal);
+    }
+    offscreen3DCB.end();
+
+    // Submit the offscreen render directly to the graphics queue (no present),
+    // then wait for it so it is fully drained before any subsequent render or
+    // teardown.
+    vk::SubmitInfo submitInfo{};
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &offscreen3DCB;
+    if (offscreen3DFence) (void)device->resetFences(1, &offscreen3DFence);
+    (void)device.getQueue(vkb::QueueType::graphics).submit(1, &submitInfo, offscreen3DFence);
+    if (offscreen3DFence)
+        (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+
+    offscreen3DPassOpen = false;
+    offscreen3DCanvas = nullptr;
+}
+
 void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     glm::vec3 d = glm::normalize(dir);
     if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
@@ -4158,7 +4286,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     ASSERT(mesh != nullptr);
     if (!initialized) throw Exception("drawMesh: graphics not initialized");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMesh: null mesh");
-    if (!swapchainPassOpen) throw Exception("drawMesh: call begin3DFrame first");
+    if (!swapchainPassOpen && !offscreen3DPassOpen)
+        throw Exception("drawMesh: call begin3DFrame first");
     if (!mesh3dPipeline) throw Exception("drawMesh: mesh3d pipeline missing");
 
     if (shader) {
@@ -4270,6 +4399,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     fslots.slots[slot].shadowUbo.updateLocal(frameToken(), makeShadowUbo());
 
     if (shader) {
+        if (offscreen3DPassOpen)
+            throw Exception("drawMeshShader: custom mesh shader in offscreen 3D pass is unsupported");
         auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gs->mesh3dPipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
@@ -4278,7 +4409,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dPipeline);
+        const vk::Pipeline pipe = offscreen3DPassOpen ? offscreen3DMeshPipeline : mesh3dPipeline;
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 0,
                               nullptr);
     }

@@ -310,6 +310,16 @@ public:
      */
     virtual void begin3DFrame() = 0;
 
+    /**
+     * Open a 3D render pass targeting an offscreen Canvas (color + depth) at
+     * the canvas size. Uses setMesh3DViewProj/View/CameraPos/Env as the camera.
+     * Draw meshes with drawMeshShader, then call end3DFrameToCanvas(). The
+     * canvas texture then holds the rendered scene (e.g. a planar reflection).
+     * Unsupported if `canvas` is not an offscreen canvas (screen).
+     */
+    virtual void begin3DFrameToCanvas(Canvas *canvas) = 0;
+    virtual void end3DFrameToCanvas() = 0;
+
     /** viewProj used by subsequent drawMesh (mvp = viewProj * model).
      *  Expect RH + ZO with Vulkan NDC Y (see perspectiveVulkanRH_ZO). */
     virtual void setMesh3DViewProj(const glm::mat4 &viewProj) = 0;

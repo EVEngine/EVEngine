@@ -162,6 +162,8 @@ public:
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
 
     void begin3DFrame() override;
+    void begin3DFrameToCanvas(Canvas *canvas) override;
+    void end3DFrameToCanvas() override;
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
     void setMesh3DView(const glm::mat4 &view) override;
     void setMesh3DClip(float nearZ, float farZ) override;

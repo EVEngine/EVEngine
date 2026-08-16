@@ -222,6 +222,8 @@ public:
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     void begin3DFrame() override;
+    void begin3DFrameToCanvas(Canvas *canvas) override;
+    void end3DFrameToCanvas() override;
     void setMesh3DViewProj(const glm::mat4 &viewProj) override;
     void setMesh3DView(const glm::mat4 &view) override;
     void setMesh3DClip(float nearZ, float farZ) override;
@@ -272,6 +274,8 @@ public:
     vk::DescriptorSetLayout getTexSetLayout() const { return texSetLayout; }
     vk::DescriptorPool getDescriptorPool() const { return descriptorPool; }
     const vkb::BuiltRenderPass &getOffscreenRenderPass() const { return offscreenRenderPass; }
+    const vkb::BuiltRenderPass &getOffscreen3DRenderPass() { return offscreen3DRenderPass; }
+    vk::Format getDepthFormat() const { return depthFormat; }
     vk::RenderPass getSwapchainRenderPass() const { return renderpass; }
     vk::RenderPass getUiMsaaRenderPass() const { return uiRenderPass; }
     /** Sample count the UI MSAA pass runs with (matches getUiMsaaRenderPass). */
@@ -328,6 +332,8 @@ private:
     void beginSwapchainColorPass();
     bool beginSceneColorRenderPass();
     void endSceneColorRenderPass();
+    void ensureOffscreen3DResources();
+    void destroyOffscreen3DResources();
     void queueSceneColorResolve();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
@@ -605,6 +611,17 @@ private:
     vk::SampleCountFlagBits scenePassPipelineSamples = vk::SampleCountFlagBits::e1;
     int appliedMsaa = -1;
     SceneColorSlot *currentSceneColorSlot();
+
+    // Offscreen 3D render-to-canvas (color + D32 depth) used for planar
+    // reflection / render targets. Rendered on a dedicated command buffer and
+    // submitted directly to the graphics queue (no swapchain / present).
+    vkb::BuiltRenderPass offscreen3DRenderPass{};
+    vk::Pipeline offscreen3DMeshPipeline = nullptr;
+    vk::CommandPool offscreen3DPool = nullptr;
+    vk::CommandBuffer offscreen3DCB = nullptr;
+    vk::Fence offscreen3DFence = nullptr;
+    bool offscreen3DPassOpen = false;
+    OffscreenCanvas *offscreen3DCanvas = nullptr;
 
     // Dedicated 4x-MSAA color target for the UI overlay (ImGui), resolved to a
     // single-sample texture that is composited as the top-most fullscreen quad.

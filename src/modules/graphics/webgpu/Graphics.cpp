@@ -2003,6 +2003,11 @@ void Graphics::begin3DFrame() {
     rebuildSwapchainIfNeeded();
 }
 
+void Graphics::begin3DFrameToCanvas(Canvas *) {
+    throw eve::Exception("begin3DFrameToCanvas: not supported on the webgpu backend");
+}
+void Graphics::end3DFrameToCanvas() {}
+
 void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) { mesh3dViewProj = viewProj; }
 void Graphics::setMesh3DView(const glm::mat4 &view) { mesh3dView = view; }
 void Graphics::setMesh3DClip(float nearZ, float farZ) {

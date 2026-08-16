@@ -15,11 +15,14 @@
 #include "map/TileLayer.h"
 #include "image/ImageData.h"
 #include "graphics/Graphics.h"
+#include "graphics/ClipSpace.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "window/Window.h"
 #include "image/Image.h"
 #include "filesystem/FileData.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 #include "RenderImageAudit.h"
 
 #include <SDL2/SDL.h>
@@ -2439,4 +2442,73 @@ TEST_CASE("graphics.water.render.ssr") {
     win->close();
 }
 
+
+
+TEST_CASE("graphics.render3d.toCanvas") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 320;
+    s.height = 240;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    const int fs = 8;
+    std::vector<uint8_t> sky(size_t(fs * fs * 4 * 6));
+    for (size_t i = 0; i < sky.size(); i += 4) {
+        sky[i] = 135; sky[i + 1] = 180; sky[i + 2] = 235; sky[i + 3] = 255;
+    }
+    Texture *skyTex = gfx->newCubemap(fs, sky.data());
+    REQUIRE(skyTex != nullptr);
+
+    Canvas *refl = gfx->newCanvas(160, 120);
+    REQUIRE(refl != nullptr);
+
+    Mesh *cube = makeUnitCube(gfx);
+    REQUIRE(cube != nullptr);
+    const glm::mat4 view = glm::lookAtRH(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 0.f),
+                                         glm::vec3(0.f, 1.f, 0.f));
+    const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), 160.f / 120.f, 0.1f, 50.f);
+    const glm::mat4 viewProj = proj * view;
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderSystem3D::setDirectionalLight(0.5f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
+    gfx->setMesh3DViewProj(viewProj);
+    gfx->setMesh3DView(view);
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 2.f, 5.f));
+    gfx->setMesh3DEnv(skyTex, 1.f);
+    const uint8_t red[4] = {220, 40, 40, 255};
+    Texture *redTex = gfx->newTexture(1, 1, red);
+
+    gfx->begin3DFrameToCanvas(refl);
+    const glm::mat4 model(1.f);
+    gfx->drawMeshShader(cube, model, redTex, glm::vec4(1.f), nullptr);
+    gfx->end3DFrameToCanvas();
+
+    int redPixels = 0, total = 0;
+    double sr = 0, sg = 0, sb = 0;
+    const int rw = refl->getWidth();
+    const int rh = refl->getHeight();
+    for (int y = 0; y < rh; y += 1) {
+        for (int x = 0; x < rw; x += 1) {
+            const Color c = refl->getPixel(x, y);
+            ++total;
+            sr += c.r;
+            sg += c.g;
+            sb += c.b;
+            if (c.r > 0.25f && c.r > c.g + 0.1f && c.r > c.b + 0.1f) ++redPixels;
+        }
+    }
+    std::printf("render3d.toCanvas: red=%d/%d avg=(%.2f,%.2f,%.2f)\n", redPixels, total,
+                sr / total, sg / total, sb / total);
+    const Color center = refl->getPixel(rw / 2, rh / 2);
+    const Color off = refl->getPixel(rw / 2, rh / 4);
+    std::printf("  center=(%.2f,%.2f,%.2f) upper=(%.2f,%.2f,%.2f)\n", center.r, center.g, center.b,
+                off.r, off.g, off.b);
+    CHECK(redPixels > total / 10);  // the red box was rendered into the canvas
+    win->close();
+}
 

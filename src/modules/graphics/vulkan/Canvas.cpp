@@ -62,6 +62,10 @@ OffscreenCanvas::~OffscreenCanvas() {
         device->destroyFramebuffer(fb);
         fb = nullptr;
     }
+    if (fb3D) {
+        device->destroyFramebuffer(fb3D);
+        fb3D = nullptr;
+    }
     if (sampleGpu.sampler) {
         device->destroySampler(sampleGpu.sampler);
         sampleGpu.sampler = nullptr;
@@ -73,6 +77,15 @@ bool OffscreenCanvas::takePendingClear() {
     bool v = hasPendingClear;
     hasPendingClear = false;
     return v;
+}
+
+void OffscreenCanvas::ensure3D() {
+    if (fb3D) return;
+    auto &device = owner->getDevice();
+    depth = device.createDepthTarget(uint32_t(width), uint32_t(height), owner->getDepthFormat(),
+                                     true);
+    fb3D = owner->getOffscreen3DRenderPass().createFramebuffer(
+        device, uint32_t(width), uint32_t(height), {color.asAttachment(), depth.asAttachment()});
 }
 
 void OffscreenCanvas::clear(std::optional<Color> colorOpt, std::optional<int>, std::optional<double>) {
