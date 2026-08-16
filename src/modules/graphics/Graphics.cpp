@@ -33,6 +33,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cstdint>
+#include <filesystem>
+#include <fstream>
 #include <functional>
 #include <memory>
 
@@ -416,6 +418,36 @@ void Graphics::expose(ssq::Table &table) {
     grassField.addFunc("getDenseCount", &GrassField::getDenseCount);
     grassField.addFunc("getSparseCount", &GrassField::getSparseCount);
 
+    auto waterfall = table.addClass<Waterfall>(
+        "Waterfall",
+        std::function<Waterfall *()>([]() -> Waterfall * { return nullptr; }), true);
+    waterfall.addFunc("createSheet", &Waterfall::createSheet);
+    waterfall.addFunc("update", &Waterfall::update);
+    waterfall.addFunc("setTime", &Waterfall::setTime);
+    waterfall.addFunc("getTime", &Waterfall::getTime);
+    waterfall.addFunc("setFlowSpeed", &Waterfall::setFlowSpeed);
+    waterfall.addFunc("getFlowSpeed", &Waterfall::getFlowSpeed);
+    waterfall.addFunc("setTurbulence", &Waterfall::setTurbulence);
+    waterfall.addFunc("getTurbulence", &Waterfall::getTurbulence);
+    waterfall.addFunc("setStreakCount", &Waterfall::setStreakCount);
+    waterfall.addFunc("getStreakCount", &Waterfall::getStreakCount);
+    waterfall.addFunc("setStreakScale", &Waterfall::setStreakScale);
+    waterfall.addFunc("getStreakScale", &Waterfall::getStreakScale);
+    waterfall.addFunc("setTopFoam", &Waterfall::setTopFoam);
+    waterfall.addFunc("getTopFoam", &Waterfall::getTopFoam);
+    waterfall.addFunc("setBottomFoam", &Waterfall::setBottomFoam);
+    waterfall.addFunc("getBottomFoam", &Waterfall::getBottomFoam);
+    waterfall.addFunc("setFoamAmount", &Waterfall::setFoamAmount);
+    waterfall.addFunc("getFoamAmount", &Waterfall::getFoamAmount);
+    waterfall.addFunc("setWaterColor", &Waterfall::setWaterColor);
+    waterfall.addFunc("setReflectionIntensity", &Waterfall::setReflectionIntensity);
+    waterfall.addFunc("getReflectionIntensity", &Waterfall::getReflectionIntensity);
+    waterfall.addFunc("setSunIntensity", &Waterfall::setSunIntensity);
+    waterfall.addFunc("getSunIntensity", &Waterfall::getSunIntensity);
+    waterfall.addFunc("bindParams", &Waterfall::bindParams);
+    waterfall.addFunc("draw", &Waterfall::draw);
+    waterfall.addFunc("getShader", &Waterfall::getShader);
+    waterfall.addFunc("getMesh", &Waterfall::getMesh);
     auto water = table.addClass<Water>(
         "Water", std::function<Water *()>([]() -> Water * { return nullptr; }), true);
     water.addFunc("createPlane", &Water::createPlane);
@@ -610,11 +642,13 @@ void Graphics::expose(ssq::Class &cls) {
     cls.addFunc("newHairShader", &Graphics::newHairShader);
     cls.addFunc("newGrassShader", &Graphics::newGrassShader);
     cls.addFunc("newGrassField", &Graphics::newGrassField);
+    cls.addFunc("newWaterfall", &Graphics::newWaterfall);    cls.addFunc("newShaderFromSpvFile",
     cls.addFunc("newWater", &Graphics::newWater);    cls.addFunc("newShaderFromSpvFile",
                 static_cast<Shader *(Graphics::*)(const std::string &)>(&Graphics::newShaderFromSpvFile));
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader *)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
+    cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
     cls.addFunc("drawCanvas", &Graphics::drawCanvas);
     cls.addFunc("newCanvas", &Graphics::newCanvas);
@@ -689,6 +723,7 @@ Shader *Graphics::newGrassShader() { return grass::createShader(this); }
 
 GrassField *Graphics::newGrassField() { return new GrassField(this); }
 
+Waterfall *Graphics::newWaterfall() { return new Waterfall(this); }
 Water *Graphics::newWater() { return new Water(this); }
 
 Mesh *Graphics::newMeshCube(float size) {
@@ -727,6 +762,27 @@ Mesh *Graphics::newMeshCube(float size) {
     }
     return newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3),
                              indices.data(), int(indices.size()));
+}
+
+bool Graphics::saveFramePng(const std::string &path) {
+    if (!screenReadbackEnabled) setScreenReadbackEnabled(true);
+    std::unique_ptr<eve::image::ImageData> frame;
+    try {
+        frame.reset(newImageData());
+    } catch (...) {
+        return false;  // no presented frame yet
+    }
+    if (!frame) return false;
+    std::unique_ptr<eve::filesystem::FileData> png(
+        frame->encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false));
+    if (!png) return false;
+    std::error_code ec;
+    std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
+    std::ofstream out(path, std::ios::binary);
+    if (!out.good()) return false;
+    out.write(static_cast<const char *>(png->getData()),
+              static_cast<std::streamsize>(png->getSize()));
+    return out.good();
 }
 
 void Graphics::draw(Drawable *drawable, const glm::mat4 &m) {

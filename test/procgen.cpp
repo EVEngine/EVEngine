@@ -2210,6 +2210,50 @@ float waterDiff(const WaterLumaGrid &a, const WaterLumaGrid &b) {
 
 }  // namespace
 
+TEST_CASE("graphics.waterfall.paramsRoundTrip") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 128;
+    settings.height = 128;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+    Waterfall *wf = gfx->newWaterfall();
+    REQUIRE(wf != nullptr);
+    REQUIRE(wf->getShader() != nullptr);
+
+    wf->setFlowSpeed(2.0f);
+    CHECK(approxEq(wf->getFlowSpeed(), 2.0f, 1e-5f));
+    wf->setTurbulence(0.9f);
+    CHECK(approxEq(wf->getTurbulence(), 0.9f, 1e-5f));
+    wf->setStreakCount(5);
+    CHECK_EQ(wf->getStreakCount(), 5);
+    wf->setStreakScale(7.f);
+    CHECK(approxEq(wf->getStreakScale(), 7.f, 1e-5f));
+    wf->setTopFoam(0.08f);
+    CHECK(approxEq(wf->getTopFoam(), 0.08f, 1e-5f));
+    wf->setBottomFoam(0.15f);
+    CHECK(approxEq(wf->getBottomFoam(), 0.15f, 1e-5f));
+    wf->setFoamAmount(0.9f);
+    CHECK(approxEq(wf->getFoamAmount(), 0.9f, 1e-5f));
+    wf->setWaterColor(0.1f, 0.2f, 0.3f);
+    wf->setReflectionIntensity(0.4f);
+    CHECK(approxEq(wf->getReflectionIntensity(), 0.4f, 1e-5f));
+    wf->setSunIntensity(0.8f);
+    CHECK(approxEq(wf->getSunIntensity(), 0.8f, 1e-5f));
+    wf->bindParams();  // must not throw
+
+    wf->createSheet(10.f, 16.f, 8, 12);
+    REQUIRE(wf->getMesh() != nullptr);
+    CHECK(Waterfall::paramCount() > 0);
+    CHECK(!Waterfall::paramName(0).empty());
+    delete wf;
+    win->close();
+}
+
 TEST_CASE("graphics.water.paramsRoundTrip") {
     auto *gfx = Graphics::create();
     REQUIRE(gfx != nullptr);

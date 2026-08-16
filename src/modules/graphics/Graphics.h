@@ -19,6 +19,7 @@
 #include "graphics/GlobalIllumination.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Grass.h"
+#include "graphics/Waterfall.h"
 #include "graphics/Outline.h"
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
@@ -492,6 +493,12 @@ public:
     bool isScreenReadbackEnabled() const { return screenReadbackEnabled; }
 
     /**
+     * Save the last presented frame to a PNG at @p path. Enables screen readback
+     * if needed. Returns false if no presented frame is available or encoding fails.
+     */
+    bool saveFramePng(const std::string &path);
+
+    /**
      * Prefer uncapped present (IMMEDIATE/MAILBOX) when false, vsync (MAILBOX/FIFO)
      * when true. Takes effect on the next swapchain recreate.
      */
@@ -657,6 +664,11 @@ public:
     GrassField *newGrassField();
 
     /**
+     * Flowing waterfall (falling water sheet) with sky reflection, downward
+     * velocity streaks and animated foam at the top lip and bottom splash pool.
+     * Caller owns Waterfall*; its Mesh / Shader are owned by Graphics.
+     */
+    Waterfall *newWaterfall();
      * Dynamic water surface (sky reflection + animated edge waves + middle
      * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.
      */
