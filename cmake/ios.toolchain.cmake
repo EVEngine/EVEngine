@@ -16,8 +16,10 @@ set(CMAKE_MACOSX_BUNDLE OFF CACHE BOOL "" FORCE)
 
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_OBJC_COMPILER clang)
-set(CMAKE_OBJCXX_COMPILER clang++)
+# Do not preset CMAKE_OBJC_COMPILER/CMAKE_OBJCXX_COMPILER: a bare compiler name
+# (e.g. "clang") makes enable_language(OBJC) fail with "not a full path and was
+# not found in the PATH". Leaving them unset lets CMake auto-detect the host
+# toolchain (e.g. /usr/bin/clang) when SDL2's .m/.mm sources enable OBJC.
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
