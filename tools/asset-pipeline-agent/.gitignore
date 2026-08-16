@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+asset_cache/
+asset_work/
+asset_pipeline_report.json
