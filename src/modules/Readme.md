@@ -114,7 +114,7 @@
     碰撞事件：2D `begincontact` / `endcontact`；3D `begincontact3d` / `endcontact3d` → `event`
     可选：`world.drawDebug(gfx)`；布料/流体用自带 `draw(gfx)`
     代码：`src/modules/physics/`（避免与第三方 `Box2D/` 在大小写不敏感文件系统上冲突）
-    依赖：`external/box3d`（submodule）
+    依赖：`third-party/box3d`（submodule）
     示例：`examples/softbody/`
 
 11b. 声明式场景树 - scene（`eve.Scene`）

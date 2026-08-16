@@ -112,6 +112,7 @@ if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
         medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd physfsmdd lz4mdd Box2Dmdd
         vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd
         freetyped
+        box3dd
         PocoDataSQLitemdd PocoDatamdd PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
         ${SystemLibraries})
 elseif(WIN32)
@@ -119,6 +120,7 @@ elseif(WIN32)
         medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic physfsmd lz4md Box2Dmd
         vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md
         freetypemd
+        box3dmd
         PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
         ${SystemLibraries})
 elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
@@ -133,7 +135,7 @@ elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         ${SystemLibraries})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS OR APPLE)
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
+        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D box3d
         vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
         PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
@@ -144,11 +146,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     # zlib come from Emscripten ports (-sUSE_SDL=2 / -sUSE_ZLIB); Poco/OpenAL/
     # medialoader/assimp/freetype are skipped (their modules are compiled out).
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static
-        medialoader_image physfs lz4 Box2D xxHash
+        medialoader_image physfs lz4 Box2D box3d xxHash
         ${SystemLibraries})
 else()
     set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D
+        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D box3d
         vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
         freetype
         PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
