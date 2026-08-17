@@ -2,9 +2,13 @@
 
 #include "common/ECS.h"
 #include "graphics/Canvas.h"
+#include "graphics/BlendMode.h"
 #include "graphics/Texture.h"
+#include "gpgpu/GpuBuffer.h"
+#include "particles/ParticleCurve.h"
 
 #include <cstdint>
+#include <memory>
 #include <random>
 #include <string>
 #include <vector>
@@ -13,6 +17,8 @@ namespace eve::graphics {
 class Graphics;
 class Camera2D;
 class Canvas;
+class Light2D;
+class Shader;
 }
 
 namespace eve::animation {
@@ -44,6 +50,10 @@ struct Particle {
     float size = 1.f;
     float rot = 0.f;
     float spin = 0.f;
+    /** Flipbook frame progress (float frame index; grid resolved at render). */
+    float frame = 0.f;
+    /** Random noise phase per particle (turbulence offset). */
+    float noisePhase = 0.f;
 };
 
 /**
@@ -57,6 +67,13 @@ public:
     void release() override {}
 
     struct Config {
+        /** Timed burst emission (fired once while the emitter is active). */
+        struct Burst {
+            float time = 0.f;
+            int count = 0;
+            bool emitted = false;
+        };
+
         float x = 0.f;
         float y = 0.f;
         float emissionRate = 0.f;
@@ -78,6 +95,88 @@ public:
         float sizeVariation = 0.f;  // 0..1
         float spinMin = 0.f;
         float spinMax = 0.f;
+        /** Gravity applied every step (world units/s²). */
+        float gravityX = 0.f;
+        float gravityY = 0.f;
+        /** Per-second velocity damping fraction in [0,1]. */
+        float damping = 0.f;
+        /** Max speed; 0 = unlimited. Applied after forces each step. */
+        float limitVelocity = 0.f;
+        /** Optional speed multiplier curve over lifetime. */
+        ParticleCurve velocityCurve;
+        /** Fraction [0,1] of the emitter's current velocity added to new particles. */
+        float inheritVelocity = 0.f;
+        /** "world" (default) or "local" (particles track the emitter). */
+        std::string simSpace = "world";
+        /** Turbulence: random per-particle acceleration scaled by strength. */
+        float noiseStrength = 0.f;
+        float noiseFrequency = 1.f;
+        float noiseSpeed = 1.f;
+        /** "none" | "kill" | "bounce" | "stop" on collision. */
+        std::string collisionMode = "none";
+        float collisionRadius = 0.f;          // 0 = particle size/2
+        float collisionRestitution = 0.6f;
+        float collisionLifetimeLoss = 0.f;    // fraction of life removed per hit
+        bool collisionBoundsEnabled = false;
+        float boundsMinX = 0.f;
+        float boundsMinY = 0.f;
+        float boundsMaxX = 0.f;
+        float boundsMaxY = 0.f;
+        /** Query the engine-level world collision resolver each step. */
+        bool worldCollision = false;
+        /** "billboard" (default) | "stretched" (elongate along velocity). */
+        std::string renderMode = "billboard";
+        float stretchFactor = 1.f;
+        /** Buffer-full strategy: "drop" (default) | "pause" | "warn". */
+        std::string overflowMode = "drop";
+        /** Cap per-step delta time (0 = unlimited). */
+        float maxDeltaTime = 0.f;
+        /** Prewarm seconds simulated in start() so the effect is pre-filled. */
+        float prewarmSeconds = 0.f;
+        /** Opt-in GPU-accelerated simulation (falls back to CPU when unavailable). */
+        bool gpuSimulation = false;
+        std::vector<Burst> bursts;
+        /** Radial attract/repel force fields (strength > 0 attract, < 0 repel). */
+        struct ForceField {
+            float x = 0.f;
+            float y = 0.f;
+            float radius = 0.f;
+            float strength = 0.f;
+            float falloff = 1.f;  // exponent; 1 = linear
+        };
+        std::vector<ForceField> forceFields;
+        /** Emitter-level 2D light emission (pooled Light2D entities). */
+        struct LightCfg {
+            bool enabled = false;
+            int max = 4;              // capped at 8 per emitter (engine limit per canvas)
+            float radius = 120.f;
+            float intensity = 1.f;
+            float r = 1.f;
+            float g = 1.f;
+            float b = 1.f;
+        } lights;
+        /** Script-linked sub-emitters (birth / death / collision triggers). */
+        struct SubEmitter {
+            ParticleEmitter *target = nullptr;
+            std::string trigger = "birth";  // "birth" | "death" | "collision"
+            float inheritVelocity = 0.f;
+        };
+        std::vector<SubEmitter> subEmitters;
+        /** Initial rotation in degrees (random between min/max; radians at sim time). */
+        float startRotMin = 0.f;
+        float startRotMax = 0.f;
+        /** Flipbook grid. 1x1 = static full texture. frameRate = frames/sec (0 = static). */
+        int hframes = 1;
+        int vframes = 1;
+        float frameRate = 0.f;
+        /** 0..1 fraction: randomize the starting frame up to this fraction of the sheet. */
+        float frameRandomStart = 0.f;
+        /** Optional multi-stop gradient; overrides colorStart/colorEnd when non-empty. */
+        ParticleGradient colorGradient;
+        /** Optional size scale curve over lifetime; overrides sizeStart/sizeEnd. */
+        ParticleCurve sizeCurve;
+        /** Optional extra rotation (degrees) over lifetime; added on top of spin. */
+        ParticleCurve rotationCurve;
         /** "none" | "ellipse" | "rect" (≤15). */
         std::string areaType = "none";
         float areaX = 0.f;
@@ -94,6 +193,10 @@ public:
         float emitterAge = 0.f;
         bool active = false;
         bool paused = false;
+        bool hasLastPos = false;
+        float lastX = 0.f;
+        float lastY = 0.f;
+        bool overflowWarned = false;
         std::mt19937 rng;
     };
 
@@ -101,6 +204,8 @@ public:
         graphics::Texture *texture = nullptr;
         graphics::Canvas *canvas = nullptr;     // nullptr → screen
         graphics::Camera2D *camera = nullptr;   // nullptr → screen space (no camera)
+        graphics::BlendMode blend = graphics::BlendMode::Alpha;
+        graphics::Shader *shader = nullptr;     // custom fragment pipeline (textured quads only)
         int layer = 0;
         bool visible = true;
     };
@@ -163,12 +268,28 @@ public:
         int lastSkinnedFrame = -1;
     };
 
+    /** Pooled Light2D entities driven by ParticleLightSystem (lights.enabled). */
+    struct Lights {
+        std::vector<graphics::Light2D *> pool;
+    };
+
+    /** GPU-accelerated simulation state (see ParticleGpuKernel.h for layout). */
+    struct GpuSim {
+        bool enabled = false;
+        bool initialized = false;
+        bool failed = false;
+        std::shared_ptr<eve::gpgpu::GpuBuffer> buffer;
+        std::vector<float> mirror;  // CPU staging for pack/upload and readback
+    };
+
     COMPONENT(Config, config)
     COMPONENT(Sim, sim)
     COMPONENT(Draw, draw)
     COMPONENT(Resource, resource)
     COMPONENT(Attach, attach)
     COMPONENT(SkinSource, skinSource)
+    COMPONENT(Lights, lights)
+    COMPONENT(GpuSim, gpuSim)
 
     static ParticleEmitter *createEmitter(int bufferSize = 1000);
 
@@ -212,6 +333,59 @@ public:
     float getSizeVariation();
 
     void setSpin(float minSpin, float maxSpin);
+    void setStartRotation(float minDeg, float maxDeg);
+
+    void addBurst(float time, int count);
+    void clearBursts();
+    void setPrewarm(float seconds);
+    float getPrewarmSeconds();
+
+    void setGravity(float x, float y);
+    void setDamping(float perSecond);
+    void setLimitVelocity(float maxSpeed);
+    void clearVelocityCurve();
+    void addVelocityCurvePoint(float t, float v);
+    void setInheritVelocity(float fraction);
+    void setSimulationSpace(const std::string &space);
+    void setNoise(float strength, float frequency = 1.f, float speed = 1.f);
+    void setGpuSimulation(bool enable);
+    bool getGpuSimulation();
+
+    void setCollision(const std::string &mode, float radius = 0.f, float restitution = 0.6f,
+                      float lifetimeLoss = 0.f);
+    void setCollisionBounds(bool enabled, float minX, float minY, float maxX, float maxY);
+    void setWorldCollision(bool enabled);
+
+    void setRenderMode(const std::string &mode, float stretchFactor = 1.f);
+    void setOverflowMode(const std::string &mode);
+    void setMaxDeltaTime(float seconds);
+
+    void addSubEmitter(ParticleEmitter *target, const std::string &trigger,
+                       float inheritVelocity = 0.f);
+    void clearSubEmitters();
+
+    void addForceField(float x, float y, float radius, float strength, float falloff = 1.f);
+    void clearForceFields();
+
+    void setShader(graphics::Shader *shader);
+    graphics::Shader *getShader();
+
+    void setLights(bool enabled, float radius = 120.f, float intensity = 1.f, float r = 1.f,
+                   float g = 1.f, float b = 1.f, int maxLights = 4);
+    bool getLightsEnabled();
+
+    void setBlendMode(const std::string &mode);
+    std::string getBlendMode();
+
+    void setFlipbook(int hframes, int vframes, float framesPerSecond = 0.f,
+                     float randomStart = 0.f);
+
+    void clearColorGradient();
+    void addColorStop(float t, float r, float g, float b, float a);
+    void clearSizeCurve();
+    void addSizeCurvePoint(float t, float v);
+    void clearRotationCurve();
+    void addRotationCurvePoint(float t, float v);
 
     void setColorStart(float r, float g, float b, float a = 1.f);
     void setColorEnd(float r, float g, float b, float a = 1.f);
@@ -287,6 +461,13 @@ public:
 void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
 void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
+/** GPU-accelerated integration step; false = unavailable, caller falls back to CPU. */
+bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
+                       ParticleEmitter::GpuSim &gpu, float dt);
+/** World collision query used by emitters with worldCollision enabled. */
+using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
+void setWorldCollisionResolver(WorldCollisionFn fn);
+WorldCollisionFn getWorldCollisionResolver();
 /** Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource. */
 void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
                         ParticleEmitter::Attach &attach, ParticleEmitter::SkinSource &skinSrc);
