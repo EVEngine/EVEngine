@@ -232,6 +232,8 @@ public:
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
     bool bakeMeshMorph(Mesh *mesh) override;
+    bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                            int vertexCount, const uint32_t *indices, int indexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     void begin3DFrame() override;
@@ -268,12 +270,17 @@ public:
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
     void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
+    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
+                             Texture *albedo = nullptr) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;
     void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
                          float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
                          float tintB = 1.f) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
+                              float farZ, Texture *albedo = nullptr, float tintR = 1.f,
+                              float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
 
     Canvas *newCanvas(int width, int height) override;
@@ -582,10 +589,14 @@ private:
     vkb::BuiltRenderPass shadowRenderPass{};
     vk::PipelineLayout shadowPipelineLayout{};
     vk::Pipeline shadowPipeline{};
+    vk::PipelineLayout shadowAlphaPipelineLayout{};
+    vk::Pipeline shadowAlphaPipeline{};
     int shadowPassCascade = -1;
     struct ShadowDraw {
         Mesh *mesh = nullptr;
         glm::mat4 mvp{1.f};
+        Texture *albedo = nullptr;
+        bool alphaTest = false;  // use the alpha-cutout shadow pipeline
     };
     std::vector<ShadowDraw> shadowPassDraws;
     std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
@@ -606,6 +617,7 @@ private:
         Mesh *mesh = nullptr;
         Texture *albedo = nullptr;
         GBufferPush push{};
+        bool alphaTest = false;  // use the alpha-cutout gbuffer pipeline
     };
     struct GBufferSlot {
         vkb::ColorTarget normal;
@@ -628,6 +640,7 @@ private:
     vkb::BuiltRenderPass gbufferRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
+    vk::Pipeline gbufferAlphaPipeline{};
     bool gbufferPassActive = false;
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;

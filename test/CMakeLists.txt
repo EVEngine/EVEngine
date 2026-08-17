@@ -76,6 +76,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   shader.cpp
   grass.cpp
+  spritestack.cpp
   daynight.cpp
   weather.cpp
   simplesquirrel.cpp
@@ -296,6 +297,7 @@ set(EVELIBS
   EVHouseGen
   EVVoxel
   EVStylize
+  EVSpriteStack
   EVEditor)
 
 if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")))

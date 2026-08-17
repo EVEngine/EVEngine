@@ -220,13 +220,14 @@ list(APPEND EVELIBS
     EVHouseGen
     EVVoxel
     EVStylize
+    EVSpriteStack
     EVEditor)
 
 # WASM (Emscripten) trims the modules whose third-party deps were dropped.
 if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     foreach(_eve_trimmed IN ITEMS
         EVAnimation EVAudio EVAvatar EVBuilding EVDatabase EVFont EVInventory
-        EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVStylize EVVoxel
+        EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVSpriteStack EVStylize EVVoxel
         EVDialogue EVProcgen EVSceneLoader EVHouseGen)
         list(REMOVE_ITEM EVELIBS ${_eve_trimmed})
     endforeach()
