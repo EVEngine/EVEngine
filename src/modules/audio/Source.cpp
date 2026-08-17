@@ -63,11 +63,11 @@ Source::~Source() {
         streamBufferCount = 0;
     }
     {
-        // audio->unregisterSource() above (under Audio::mutex) guarantees no *new*
-        // call to fillPendingFromDecoder() will be dispatched for this Source, but
-        // one may already be in flight on the worker thread using a snapshot taken
-        // before the unregister. Taking decoderMutex here blocks until that call
-        // (which also holds decoderMutex) has finished before we free the decoder.
+        // Audio::workerMain()/pump()/stopAll() hold Audio::mutex across the whole
+        // dispatch loop, and unregisterSource() above took that same mutex, so no
+        // in-flight fillPendingFromDecoder() can still reference this Source. The
+        // decoderMutex lock below remains as defense in depth before freeing the
+        // decoder (and the mutexes themselves are destroyed only after this body).
         std::lock_guard<std::mutex> lock(decoderMutex);
         if (ownsDecoder) {
             delete decoder;
