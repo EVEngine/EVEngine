@@ -4,6 +4,7 @@
 #include "virtualgeometry/Builder.h"
 #include "virtualgeometry/LodSelection.h"
 
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -37,9 +38,9 @@ struct IcoMesh {
     }
     void build(int subdiv) {
         const float t = (1.f + std::sqrt(5.f)) * 0.5f;
-        std::vector<std::array<float, 3>> base = {{-1, t, 0}, {1, t, 0}, {-1, -t, 0}, {1, -t, 0},
-                                                  {0, -1, t}, {0, 1, t}, {0, -1, -t}, {0, 1, -t},
-                                                  {t, 0, -1}, {t, 0, 1}, {-t, 0, -1}, {-t, 0, 1}};
+        std::vector<std::array<float, 3>> base = {{{-1, t, 0}, {1, t, 0}, {-1, -t, 0}, {1, -t, 0},
+                                                   {0, -1, t}, {0, 1, t}, {0, -1, -t}, {0, 1, -t},
+                                                   {t, 0, -1}, {t, 0, 1}, {-t, 0, -1}, {-t, 0, 1}}};
         int idx[12];
         for (int i = 0; i < 12; ++i) idx[i] = addVtx(base[i][0], base[i][1], base[i][2]);
         int faces[20][3] = {{0, 11, 5}, {0, 5, 1},   {0, 1, 7},  {0, 7, 10}, {0, 10, 11},
