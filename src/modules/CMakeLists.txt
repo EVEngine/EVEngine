@@ -157,6 +157,11 @@ create_module(EVGpgpu gpgpu)
 target_include_directories(EVGpgpu BEFORE PRIVATE
   ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 if(NOT EVENGINE_WEBGPU_TRIM)
+  create_module(EVVirtualGeometry virtualgeometry)
+  target_include_directories(EVVirtualGeometry BEFORE PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+endif()
+if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVModel3D model3d)
   create_module(EVFont font)
   # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
