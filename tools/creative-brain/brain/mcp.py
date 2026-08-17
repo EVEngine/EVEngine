@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import socket
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from brain.schema import GenerationPlan
@@ -129,49 +130,95 @@ def _squirrel_literal(obj: Any) -> str:
 
 
 def snippet_install_plan(plan: GenerationPlan) -> str:
-    """Squirrel snippet that publishes the plan into the VM roottable."""
+    """Publish the plan JSON into the VM roottable for traceability.
+
+    Execution itself goes through `::scene_director.modify` (see
+    `snippet_for_step`); the plan is kept as a roottable string so downstream
+    tools (`eve_ai_log`, scene-qc) can attribute the build to a story intent.
+    """
     payload = json.dumps(plan.to_dict(), ensure_ascii=False)
-    # Squirrel string: avoid embedded quotes by building from a single-line JSON.
     lit = '"' + payload.replace("\\", "\\\\").replace('"', '\\"') + '"'
     return (
-        "local _json <- " + lit + ";\n"
-        "local _parsed <- null;\n"
-        "try { _parsed = _json.len() > 0 ? {}.fromJson(_json) : null; }"
-        " catch(e) { _parsed = null; }\n"
-        "::_cb_plan <- _parsed;\n"
-        'print("creative-brain: plan installed, steps=" + '
-        "(typeof _parsed == \"table\" && _parsed.rawin(\"steps\") ? "
-        "_parsed.steps.len() : -1));\n"
+        "::_cb_plan_json <- " + lit + ";\n"
+        "::_cb_plan <- null;\n"
+        'print("creative-brain: plan installed, steps=' + str(len(plan.steps)) + '");\n'
     )
+
+
+def _modify_snippet(action: str, target: str, params: Dict[str, Any]) -> str:
+    """Build a snippet that dispatches through the scene_director kit."""
+    act = _squirrel_literal(action)
+    tgt = _squirrel_literal(target)
+    par = _squirrel_literal(params or {})
+    return (
+        "if (\"scene_director\" in getroottable() && scene_director != null) {\n"
+        f"  return ::scene_director.modify({act}, {tgt}, {par});\n"
+        "} else {\n"
+        '  return { ok = false, error = "scene_director not installed" };\n'
+        "}\n"
+    )
+
+
+def _cell_to_world(x: int, y: int, width: int, height: int, tile: float = 2.0) -> Dict[str, float]:
+    """Map a creative-brain layout cell (grid) to a 3D stage position (Y-up)."""
+    return {
+        "x": round((x - width / 2.0) * tile, 3),
+        "y": 0.0,
+        "z": round((y - height / 2.0) * tile, 3),
+    }
 
 
 def snippet_for_step(action: str, target: str, params: Dict[str, Any]) -> str:
-    """Best-effort Squirrel snippet for one generation step (defensive)."""
-    t = _squirrel_literal(target)
-    p = _squirrel_literal(params)
-    guards = {
-        "terrain": '::eve != null && "procgen" in ::eve',
-        "texture": '::eve != null && "procgen" in ::eve',
-        "mesh": '::eve != null && "procgen" in ::eve',
-        "place": "::_cb_plan != null",
-        "set_lighting": "::_cb_plan != null",
-    }
-    guard = guards.get(action, "true")
-    body = (
-        f'local _t = {t};\n'
-        f'local _p = {p};\n'
-        "if (" + guard + ") {\n"
-        f'  print("creative-brain: {action} " + _t + " ok");\n'
-        "} else {\n"
-        f'  print("creative-brain: {action} skipped (engine API unavailable)");\n'
-        "}\n"
-    )
-    return body
+    """Translate one GenerationPlan step into a real scene-director action."""
+    p = dict(params or {})
+
+    if action == "terrain":
+        w = int(p.get("width", 32))
+        h = int(p.get("height", 32))
+        return _modify_snippet(
+            "add_object",
+            "terrain",
+            {
+                "id": "terrain",
+                "kind": "ground",
+                "pos": [0.0, 0.0, 0.0],
+                "scale": [max(8.0, w * 2.0), 1.0, max(8.0, h * 2.0)],
+                "tint": [0.42, 0.46, 0.40],
+                "roughness": 0.95,
+            },
+        )
+
+    if action == "set_lighting":
+        return _modify_snippet("lighting", "scene", {
+            "timeOfDay": p.get("timeOfDay", "day"),
+            "atmosphere": p.get("atmosphere", "sunny midday"),
+            "intensity": float(p.get("intensity", 1.0)),
+        })
+
+    if action == "place":
+        w = int(p.get("mapWidth", 32))
+        h = int(p.get("mapHeight", 32))
+        pos = _cell_to_world(int(p.get("x", 0)), int(p.get("y", 0)), w, h)
+        return _modify_snippet(
+            "add_object",
+            str(target),
+            {
+                "id": f"{target}_{p.get('x', 0)}_{p.get('y', 0)}",
+                "kind": str(target),
+                "pos": [pos["x"], pos["y"], pos["z"]],
+                "seed": int(p.get("seed", 1)),
+            },
+        )
+
+    # Fallback: forward the raw action through the kit's dispatcher.
+    return _modify_snippet(action, str(target), p)
 
 
 def run_batch(plan: GenerationPlan, mcp: McpClient) -> List[dict]:
     """Push a plan + run its steps against the engine, returning per-step results."""
     results: List[dict] = []
+    install_result = install_kit(mcp)
+    results.append({"action": "install_scene_director", "ok": install_result})
     mcp.run_script(snippet_install_plan(plan))
     results.append({"action": "install_plan", "ok": True})
     for step in plan.steps:
@@ -182,3 +229,17 @@ def run_batch(plan: GenerationPlan, mcp: McpClient) -> List[dict]:
         except McpError as e:
             results.append({"action": step.action, "target": step.target, "ok": False, "error": str(e)})
     return results
+
+
+def install_kit(mcp: McpClient) -> bool:
+    """Push the scene-director Squirrel kit into the live VM (idempotent)."""
+    kit = Path(__file__).resolve().parents[3] / "src" / "scripts" / "scene_director.nut"
+    try:
+        source = kit.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    try:
+        mcp.run_script(source)
+        return True
+    except McpError:
+        return False

@@ -101,10 +101,19 @@ def test_resource_broker_roundtrip(tmp_path):
 def test_snippet_generation():
     plan = build_plan("cave dungeon", seed=1)
     src = mcp.snippet_install_plan(plan)
-    assert "::_cb_plan" in src
+    assert "::_cb_plan_json" in src
+    # Plan steps now dispatch through the scene_director kit (real actions).
     step_src = mcp.snippet_for_step("terrain", "cave.cellular", {"seed": 1})
-    assert "cave.cellular" in step_src
-    assert "print(" in step_src
+    assert "scene_director.modify" in step_src
+    assert "add_object" in step_src
+    assert "terrain" in step_src
+    place_src = mcp.snippet_for_step(
+        "place", "rock", {"x": 4, "y": 5, "mapWidth": 32, "mapHeight": 32, "seed": 3})
+    assert "scene_director.modify" in place_src
+    assert "add_object" in place_src
+    assert "rock" in place_src
+    lit_src = mcp.snippet_for_step("set_lighting", "scene", {"timeOfDay": "night"})
+    assert '"lighting"' in lit_src
 
 
 def _fake_engine_server(result_text):
@@ -157,6 +166,8 @@ def test_run_batch_no_engine_missing():
     plan = build_plan("forest", seed=1)
     with mcp.McpClient("127.0.0.1", port) as c:
         results = mcp.run_batch(plan, c)
-    assert results[0]["action"] == "install_plan"
+    assert results[0]["action"] == "install_scene_director"
     assert results[0]["ok"] is True
-    assert len(results) == 1 + len(plan.steps)
+    assert results[1]["action"] == "install_plan"
+    assert results[1]["ok"] is True
+    assert len(results) == 2 + len(plan.steps)
