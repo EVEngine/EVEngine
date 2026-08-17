@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "graphics/BlendMode.h"
 #include "graphics/Shader.h"
 #include "graphics/Drawable.h"
 #include "graphics/Canvas.h"
@@ -106,7 +107,21 @@ public:
     double getScreenDPIScale() const { return getCurrentDPIScale(); }
 
     /** Internal immediate-mode helper used by RenderSystem / Batcher. */
-    virtual void drawSolidRect(float x, float y, float w, float h, const Color &color) = 0;
+    virtual void drawSolidRect(float x, float y, float w, float h, const Color &color,
+                               BlendMode blend = BlendMode::Alpha) = 0;
+
+    /** Rotated solid quad `degrees` clockwise (screen Y-down) around (cx, cy). */
+    virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
+                                      const Color &color,
+                                      BlendMode blend = BlendMode::Alpha) {
+        (void)cx;
+        (void)cy;
+        (void)w;
+        (void)h;
+        (void)degrees;
+        (void)color;
+        (void)blend;
+    }
 
     /** Create RGBA8 texture from CPU pixels (size = width*height*4). Caller owns Texture*. */
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
@@ -168,7 +183,8 @@ public:
     /** UV draw with an explicit Shader (nullptr = default textured pipeline). */
     virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y,
                                           float w, float h, float u0, float v0, float u1, float v1,
-                                          const Color &color, bool rotatedUV = false) = 0;
+                                          const Color &color, bool rotatedUV = false,
+                                          BlendMode blend = BlendMode::Alpha) = 0;
 
     /**
      * UV draw rotated `degrees` clockwise (screen Y-down) around the rect center.
@@ -177,7 +193,8 @@ public:
     virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
                                                  float w, float h, float degrees, float u0, float v0,
                                                  float u1, float v1, const Color &color,
-                                                 bool rotatedUV = false) {
+                                                 bool rotatedUV = false,
+                                                 BlendMode blend = BlendMode::Alpha) {
         (void)texture;
         (void)shader;
         (void)cx;
@@ -191,6 +208,7 @@ public:
         (void)v1;
         (void)color;
         (void)rotatedUV;
+        (void)blend;
     }
 
     /**

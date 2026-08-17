@@ -346,18 +346,22 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
                                    it.shader ? "shader" : "textured");
                 gfx.drawTexturedRectShaderUVRotated(it.texture, it.shader, sx + sw * 0.5f,
                                                     sy + sh * 0.5f, sw, sh, it.rotation, u0, v0, u1,
-                                                    v1, c, it.rotatedUV);
+                                                    v1, c, it.rotatedUV, it.blend);
             } else {
                 eve::debug::rtDraw("drawTexturedRectShaderUV", it.shader ? "shader" : "textured");
                 gfx.drawTexturedRectShaderUV(it.texture, it.shader, sx, sy, sw, sh, u0, v0, u1, v1, c,
-                                             it.rotatedUV);
+                                             it.rotatedUV, it.blend);
             }
         } else {
             Color c = it.color;
             if (it.receiveLight)
                 c = modulateUnlit(c, sx + sw * 0.5f, sy + sh * 0.5f, true, currentLights);
             eve::debug::rtDraw("drawSolidRect", "solid");
-            gfx.drawSolidRect(sx, sy, sw, sh, c);
+            if (it.rotation != 0.f)
+                gfx.drawSolidRectRotated(sx + sw * 0.5f, sy + sh * 0.5f, sw, sh, it.rotation, c,
+                                         it.blend);
+            else
+                gfx.drawSolidRect(sx, sy, sw, sh, c, it.blend);
         }
     }
 

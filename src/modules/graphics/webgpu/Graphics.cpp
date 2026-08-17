@@ -635,11 +635,23 @@ WGPUBlendState noBlend() {
     return b;
 }
 
+WGPUBlendState additiveBlend() {
+    WGPUBlendState b{};
+    b.color.srcFactor = WGPUBlendFactor_SrcAlpha;
+    b.color.dstFactor = WGPUBlendFactor_One;
+    b.color.operation = WGPUBlendOperation_Add;
+    b.alpha.srcFactor = WGPUBlendFactor_One;
+    b.alpha.dstFactor = WGPUBlendFactor_One;
+    b.alpha.operation = WGPUBlendOperation_Add;
+    return b;
+}
+
 }  // namespace
 
 namespace {
 
-wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat format, bool blend) {
+wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat format,
+                                         BlendMode mode) {
     WGPUVertexAttribute attrs[2] = {};
     attrs[0].format = WGPUVertexFormat_Float32x2;
     attrs[0].offset = 0;
@@ -659,7 +671,11 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
     // JS default of "all".
     target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
-    if (blend) target.blend = &bs;
+    if (mode == BlendMode::Additive)
+        bs = additiveBlend();
+    else if (mode == BlendMode::Opaque)
+        bs = noBlend();
+    if (mode != BlendMode::Opaque) target.blend = &bs;
 
     // The solid-color shader declares no bindings, so it must use an empty
     // pipeline layout. Reusing the textured 2D layout here would require a
@@ -701,7 +717,7 @@ wgpu::RenderPipeline make2DColorPipeline(wgpu::Device &dev, WGPUTextureFormat fo
 }
 
 wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLayout layout,
-                                            WGPUTextureFormat format, bool blend) {
+                                            WGPUTextureFormat format, BlendMode mode) {
     WGPUVertexAttribute attrs[3] = {};
     attrs[0].format = WGPUVertexFormat_Float32x2;
     attrs[0].offset = 0;
@@ -719,7 +735,11 @@ wgpu::RenderPipeline make2DTexturedPipeline(wgpu::Device &dev, wgpu::PipelineLay
     target.format = format;
     target.writeMask = WGPUColorWriteMask_All;
     WGPUBlendState bs = alphaBlend();
-    if (blend) target.blend = &bs;
+    if (mode == BlendMode::Additive)
+        bs = additiveBlend();
+    else if (mode == BlendMode::Opaque)
+        bs = noBlend();
+    if (mode != BlendMode::Opaque) target.blend = &bs;
 
     WGPURenderPipelineDescriptor pd{};
     pd.label = sv("eve_textured2d");
@@ -802,13 +822,34 @@ void Graphics::create2DPipelines() {
     tex2DSetLayout = make2DBindGroupLayout();
     tex2DPipelineLayout = make2DPipelineLayout();
 
-    colorPipeline = make2DColorPipeline(device, surfaceFormat, true);
-    texturedPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat, true);
+    colorPipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Alpha);
+    texturedPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
+                                              BlendMode::Alpha);
+    colorAdditivePipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Additive);
+    texturedAdditivePipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
+                                                      BlendMode::Additive);
+    colorOpaquePipeline = make2DColorPipeline(device, surfaceFormat, BlendMode::Opaque);
+    texturedOpaquePipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat,
+                                                    BlendMode::Opaque);
     lit2dPipeline = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, true);
 
-    offscreenColorPipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm, true);
-    offscreenTexturedPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, true);
-    offscreenLitPipeline = make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, true);
+    offscreenColorPipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm,
+                                                 BlendMode::Alpha);
+    offscreenTexturedPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout,
+                                                       WGPUTextureFormat_RGBA8Unorm,
+                                                       BlendMode::Alpha);
+    offscreenColorAdditivePipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm,
+                                                         BlendMode::Additive);
+    offscreenTexturedAdditivePipeline =
+        make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
+                               BlendMode::Additive);
+    offscreenColorOpaquePipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm,
+                                                       BlendMode::Opaque);
+    offscreenTexturedOpaquePipeline =
+        make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
+                               BlendMode::Opaque);
+    offscreenLitPipeline = make2DLitPipeline(device, tex2DPipelineLayout,
+                                             WGPUTextureFormat_RGBA8Unorm, true);
 }
 
 void Graphics::createMesh3DPipelines() {
@@ -1723,7 +1764,7 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
 // ---------------------------------------------------------------------------
 
 void Graphics::clear2DBatches() {
-    solidBatch.clear();
+    solidBatches.clear();
     texturedBatches.clear();
     litBatches.clear();
     overlaySpans.clear();
@@ -1731,13 +1772,16 @@ void Graphics::clear2DBatches() {
 }
 
 void Graphics::noteSolidOverlay() {
-    const uint32_t n = uint32_t(solidBatch.vertices().size());
-    if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Solid) {
+    if (solidBatches.empty()) return;
+    const uint32_t idx = uint32_t(solidBatches.size() - 1);
+    const uint32_t n = uint32_t(solidBatches.back().batch.vertices().size());
+    if (!overlaySpans.empty() && overlaySpans.back().kind == OverlayKind::Solid &&
+        overlaySpans.back().index == idx) {
         overlaySpans.back().vertCount = n - overlaySpans.back().vertBegin;
         return;
     }
     const uint32_t begin = n >= 6u ? n - 6u : 0u;
-    overlaySpans.push_back({OverlayKind::Solid, 0, begin, n - begin});
+    overlaySpans.push_back({OverlayKind::Solid, idx, begin, n - begin});
 }
 
 void Graphics::noteTexturedOverlay(Texture *tex) {
@@ -1749,8 +1793,27 @@ void Graphics::noteTexturedOverlay(Texture *tex) {
     overlaySpans.push_back({OverlayKind::Textured, idx, 0, 0});
 }
 
-void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &color) {
-    solidBatch.addRect(x, y, w, h, color);
+void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &color,
+                             BlendMode blend) {
+    auto it = std::find_if(solidBatches.begin(), solidBatches.end(),
+                           [&](const SolidBatch &sb) { return sb.blend == blend; });
+    if (it == solidBatches.end()) {
+        solidBatches.push_back(SolidBatch{blend, Batcher{}});
+        it = solidBatches.end() - 1;
+    }
+    it->batch.addRect(x, y, w, h, color);
+    noteSolidOverlay();
+}
+
+void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
+                                    const Color &color, BlendMode blend) {
+    auto it = std::find_if(solidBatches.begin(), solidBatches.end(),
+                           [&](const SolidBatch &sb) { return sb.blend == blend; });
+    if (it == solidBatches.end()) {
+        solidBatches.push_back(SolidBatch{blend, Batcher{}});
+        it = solidBatches.end() - 1;
+    }
+    it->batch.addRectRotated(cx, cy, w, h, degrees, color);
     noteSolidOverlay();
 }
 
@@ -1771,14 +1834,15 @@ void Graphics::drawTexturedRectUV(Texture *texture, float x, float y, float w, f
 
 void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
                                         float h, float u0, float v0, float u1, float v1,
-                                        const Color &color, bool rotatedUV) {
+                                        const Color &color, bool rotatedUV, BlendMode blend) {
     if (!texture) {
-        drawSolidRect(x, y, w, h, color);
+        drawSolidRect(x, y, w, h, color, blend);
         return;
     }
     if (texturedBatches.empty() || texturedBatches.back().texture != texture ||
-        texturedBatches.back().shader != shader || texturedBatches.back().depth != nullptr) {
-        texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
+        texturedBatches.back().shader != shader || texturedBatches.back().depth != nullptr ||
+        texturedBatches.back().blend != blend) {
+        texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, blend, Batcher{}});
     }
     texturedBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, rotatedUV);
     noteTexturedOverlay(texture);
@@ -1787,18 +1851,18 @@ void Graphics::drawTexturedRectShaderUV(Texture *texture, Shader *shader, float 
 void Graphics::drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
                                                float w, float h, float degrees, float u0, float v0,
                                                float u1, float v1, const Color &color,
-                                               bool rotatedUV) {
+                                               bool rotatedUV, BlendMode blend) {
     if (!texture) {
-        drawSolidRect(cx - w * 0.5f, cy - h * 0.5f, w, h, color);
+        drawSolidRect(cx - w * 0.5f, cy - h * 0.5f, w, h, color, blend);
         return;
     }
     auto it = std::find_if(texturedBatches.begin(), texturedBatches.end(),
                            [&](const TexturedBatch &tb) {
                                return tb.texture == texture && tb.shader == shader &&
-                                      tb.depth == nullptr;
+                                      tb.depth == nullptr && tb.blend == blend;
                            });
     if (it == texturedBatches.end()) {
-        texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, Batcher{}});
+        texturedBatches.push_back(TexturedBatch{texture, nullptr, shader, blend, Batcher{}});
         it = texturedBatches.end() - 1;
     }
     it->batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1, rotatedUV);
@@ -1817,7 +1881,7 @@ void Graphics::drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shade
                                       tb.depth == depth;
                            });
     if (it == texturedBatches.end()) {
-        texturedBatches.push_back(TexturedBatch{color, depth, shader, Batcher{}});
+        texturedBatches.push_back(TexturedBatch{color, depth, shader, BlendMode::Alpha, Batcher{}});
         it = texturedBatches.end() - 1;
     }
     it->batch.addTexturedRect(x, y, w, h, tint, 0.f, 0.f, 1.f, 1.f, false);
@@ -1852,56 +1916,78 @@ void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH,
     auto spans = std::move(overlaySpans);
     const bool offscreen = uint32_t(format) != uint32_t(surfaceFormat);
 
-    uint64_t solidOffset = 0;
-    uint64_t solidBytes = 0;
-    wgpu::RenderPipeline solidPipe =
-        offscreen ? offscreenColorPipeline : colorPipeline;
-    if (!solidBatch.empty() && solidPipe) {
-        Batcher ndc = solidBatch;
+    struct SolidUpload {
+        BlendMode blend = BlendMode::Alpha;
+        uint64_t offset = 0;
+        uint64_t bytes = 0;
+    };
+    std::vector<SolidUpload> solidUploads;
+    solidUploads.reserve(solidBatches.size());
+    for (const auto &sb : solidBatches) {
+        if (sb.batch.empty()) {
+            solidUploads.push_back(SolidUpload{sb.blend, 0, 0});
+            continue;
+        }
+        Batcher ndc = sb.batch;
         ndc.toNDC(viewW, viewH);
         auto verts = ndc.vertices();
         // Batcher::toNDC targets Vulkan's Y-down NDC ((-1,-1)=top-left), but
         // WebGPU's clip space is Y-up ((-1,-1)=bottom-left). Flip Y so logical
         // top-left maps to the swapchain's top-left.
         for (auto &v : verts) v.pos.y = -v.pos.y;
-        if (!verts.empty()) {
-            std::vector<float> data;
-            data.reserve(verts.size() * 6);
-            for (const auto &v : verts) {
-                data.push_back(v.pos.x);
-                data.push_back(v.pos.y);
-                data.push_back(v.color.r);
-                data.push_back(v.color.g);
-                data.push_back(v.color.b);
-                data.push_back(v.color.a);
-            }
-            solidBytes = data.size() * sizeof(float);
-            auto &arena = currentVertexArena();
-            ensureVertexArena(arena, arena.used + solidBytes);
-            solidOffset = arena.alloc(solidBytes);
-            queue.WriteBuffer(arena.buffer, solidOffset, data.data(), solidBytes);
+        std::vector<float> data;
+        data.reserve(verts.size() * 6);
+        for (const auto &v : verts) {
+            data.push_back(v.pos.x);
+            data.push_back(v.pos.y);
+            data.push_back(v.color.r);
+            data.push_back(v.color.g);
+            data.push_back(v.color.b);
+            data.push_back(v.color.a);
         }
+        const uint64_t bytes = data.size() * sizeof(float);
+        auto &arena = currentVertexArena();
+        ensureVertexArena(arena, arena.used + bytes);
+        const uint64_t offset = arena.alloc(bytes);
+        queue.WriteBuffer(arena.buffer, offset, data.data(), bytes);
+        solidUploads.push_back(SolidUpload{sb.blend, offset, bytes});
     }
 
-    auto drawSolid = [&](uint32_t first, uint32_t count) {
-        if (!solidPipe || solidBytes == 0 || count == 0) return;
-        pass.SetPipeline(solidPipe);
-        pass.SetVertexBuffer(0, currentVertexArena().buffer, solidOffset, solidBytes);
+    auto solidPipe = [&](BlendMode mode) -> wgpu::RenderPipeline {
+        switch (mode) {
+            case BlendMode::Additive:
+                return offscreen ? offscreenColorAdditivePipeline : colorAdditivePipeline;
+            case BlendMode::Opaque:
+                return offscreen ? offscreenColorOpaquePipeline : colorOpaquePipeline;
+            case BlendMode::Alpha:
+            default:
+                return offscreen ? offscreenColorPipeline : colorPipeline;
+        }
+    };
+
+    auto drawSolid = [&](uint32_t batchIndex, uint32_t first, uint32_t count) {
+        if (batchIndex >= solidUploads.size()) return;
+        const SolidUpload &u = solidUploads[batchIndex];
+        if (u.bytes == 0 || count == 0) return;
+        pass.SetPipeline(solidPipe(u.blend));
+        pass.SetVertexBuffer(0, currentVertexArena().buffer, u.offset, u.bytes);
         pass.Draw(count, 1, first, 0);
     };
 
     if (!spans.empty()) {
         for (const auto &sp : spans) {
             if (sp.kind == OverlayKind::Solid)
-                drawSolid(sp.vertBegin, sp.vertCount);
+                drawSolid(sp.index, sp.vertBegin, sp.vertCount);
             else if (sp.kind == OverlayKind::Textured && sp.index < texturedBatches.size())
                 drawTexturedBatch(pass, texturedBatches[sp.index], viewW, viewH, format, offscreen);
             else if (sp.kind == OverlayKind::Lit && sp.index < litBatches.size())
                 drawLitBatch(pass, litBatches[sp.index], viewW, viewH, format);
         }
     } else {
-        if (solidBytes > 0)
-            drawSolid(0, uint32_t(solidBatch.vertices().size()));
+        for (size_t i = 0; i < solidUploads.size(); ++i) {
+            if (solidUploads[i].bytes > 0)
+                drawSolid(uint32_t(i), 0, uint32_t(solidBatches[i].batch.vertices().size()));
+        }
         for (auto &tb : texturedBatches) {
             if (tb.batch.empty()) continue;
             drawTexturedBatch(pass, tb, viewW, viewH, format, offscreen);
@@ -1961,7 +2047,18 @@ void Graphics::drawTexturedBatch(wgpu::RenderPassEncoder pass, TexturedBatch &tb
         auto *gs = static_cast<GpuShader *>(tb.shader->gpuHandle);
         pipe = offscreen ? gs->offscreenPipeline : gs->swapchainPipeline;
     } else {
-        pipe = offscreen ? offscreenTexturedPipeline : texturedPipeline;
+        switch (tb.blend) {
+            case BlendMode::Additive:
+                pipe = offscreen ? offscreenTexturedAdditivePipeline : texturedAdditivePipeline;
+                break;
+            case BlendMode::Opaque:
+                pipe = offscreen ? offscreenTexturedOpaquePipeline : texturedOpaquePipeline;
+                break;
+            case BlendMode::Alpha:
+            default:
+                pipe = offscreen ? offscreenTexturedPipeline : texturedPipeline;
+                break;
+        }
     }
     if (!pipe) return;
     pass.SetPipeline(pipe);
