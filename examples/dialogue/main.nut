@@ -1,8 +1,9 @@
 // ============================================================================
 // EVEngine Dialogue + Avatar demo — visual-novel style, still pure Squirrel.
 //
-//   eve.Dialogue  —— 台词打字机 / 选项 / 舞台槽位
-//   eve.Avatar    —— Image 分层人物（Live2D / VRoid API 见设计文档）
+//   eve.Dialogue  ——  台词打字机 / 选项 / 舞台槽位
+//   eve.Avatar    ——  Image 分层人物（Live2D / VRoid API 见设计文档）
+//   eve.I18n      ——  对话文案走翻译表（locales/en.json, locales/zh.json）
 //
 // 剧情用 Squirrel generator 编写（yield "wait" / yield "choice"），
 // 不引入第二套脚本 DSL。
@@ -12,6 +13,7 @@
 // ============================================================================
 
 if (!("dlg" in getroottable())) dlg <- null;
+if (!("i18n" in getroottable())) i18n <- eve.I18n();
 if (!("aliceAv" in getroottable())) aliceAv <- null;
 if (!("bobAv" in getroottable())) bobAv <- null;
 if (!("vnGen" in getroottable())) vnGen <- null;
@@ -70,42 +72,48 @@ function makePortrait(kind, bodyR, bodyG, bodyB) {
 }
 
 // ---- VN script: still Squirrel (generator), not a new language ----
+// 文案全部来自 i18n 翻译表（默认中文，按 数字键 1 / 2 切换语言）。
+function tr(key, params = null) {
+    if (params == null) return i18n.get(key);
+    return i18n.getWithParams(key, params);
+}
+
 function scene_intro() {
     dlg.show("alice", "left");
     dlg.setExpression("alice", "happy");
-    dlg.say("alice", "你好！我是 Alice。");
+    dlg.say("alice", tr("line.hello", { name = "Alice" }));
     yield "wait";
 
     dlg.show("bob", "right");
-    dlg.say("bob", "我是 Bob。这是用 Squirrel 写的对话脚本。");
+    dlg.say("bob", tr("line.intro"));
     yield "wait";
 
     dlg.setExpression("alice", "shy");
-    dlg.say("alice", "神态和动作都走 Avatar 分层；没有另发明脚本语言。");
+    dlg.say("alice", tr("line.avatar"));
     yield "wait";
 
-    dlg.narrate("要不要继续听他们聊天？");
+    dlg.narrate(tr("line.continue_ask"));
     yield "wait";
 
     dlg.clearChoices();
-    dlg.addChoice("yes", "继续");
-    dlg.addChoice("no", "先这样");
+    dlg.addChoice("yes", tr("choice.yes"));
+    dlg.addChoice("no", tr("choice.no"));
     dlg.presentChoices();
     yield "choice";
 
     if (dlg.getSelectedChoiceId() == "yes") {
         dlg.setExpression("alice", "happy");
         dlg.setMotion("alice", "wave");
-        dlg.say("alice", "太好了！Live2D / VRoid 也可以挂到同一套 API 上。");
+        dlg.say("alice", tr("line.backends"));
         yield "wait";
-        dlg.say("bob", "Image 层是基础；其它后端按需接入。");
+        dlg.say("bob", tr("line.image_layers"));
         yield "wait";
     } else {
-        dlg.say("bob", "好的，下次再见。");
+        dlg.say("bob", tr("line.bye"));
         yield "wait";
     }
 
-    dlg.narrate("（演示结束 —— 空格可重开）");
+    dlg.narrate(tr("line.end"));
     yield "wait";
 }
 
@@ -128,8 +136,8 @@ function resumeVn() {
 
 function startScene() {
     dlg.reset();
-    dlg.registerCharacter("alice", "Alice");
-    dlg.registerCharacter("bob", "Bob");
+    dlg.registerCharacter("alice", tr("name.alice"));
+    dlg.registerCharacter("bob", tr("name.bob"));
     dlg.bindAvatar("alice", aliceAv);
     dlg.bindAvatar("bob", bobAv);
     dlg.setTypeSpeed(48.0);
@@ -154,7 +162,7 @@ function buildUI() {
     ui.text("", "speaker");
     ui.text("", "line");
     ui.separator("sep");
-    ui.text("空格 / 点击 继续", "hint");
+    ui.text("", "hint");
     ui.text("", "c1");
     ui.text("", "c2");
     ui.end();
@@ -179,11 +187,11 @@ function refreshUI() {
         local b = n > 1 ? ("[2] " + dlg.getChoiceLabel(1)) : "";
         ui.setText("c1", a);
         ui.setText("c2", b);
-        ui.setText("hint", "按 1 / 2 选择");
+        ui.setText("hint", tr("hint.choose"));
     } else {
         ui.setText("c1", "");
         ui.setText("c2", "");
-        ui.setText("hint", vnDone ? "空格重开" : "空格 / 点击 继续");
+        ui.setText("hint", vnDone ? tr("hint.restart") : tr("hint.advance"));
     }
 }
 
@@ -211,6 +219,14 @@ function tryChoice(index) {
 function eve_init() {
     gfx.setBackgroundColor(0.12, 0.14, 0.18, 1.0);
     if (dlg == null) dlg = dialogue;
+    // 载入翻译表：en / zh，默认中文；1 / 2 键可切换（热重载开）。
+    if (!i18n.hasLanguage("en")) {
+        i18n.loadFromFile("en", "locales/en.json");
+        i18n.loadFromFile("zh", "locales/zh.json");
+        i18n.setDefaultLanguage("en");
+        i18n.setLanguage("zh");
+        i18n.setAutoReload(true);
+    }
     if (aliceAv == null) aliceAv = makePortrait("happy", 0.35, 0.55, 0.85);
     if (bobAv == null) bobAv = makePortrait("neutral", 0.55, 0.40, 0.65);
     buildUI();
@@ -224,6 +240,16 @@ function eve_reload() {
 function eve_update(dt) {
     if ("anim" in getroottable())
         anim.update(dt);
+    i18n.update(dt);
+    // 语言热切换：1 = 英文，2 = 中文（重跑当前场景刷新文案）。
+    if (keyPressed("1") && i18n.setLanguage("en")) {
+        dlg.reset();
+        startScene();
+    }
+    if (keyPressed("2") && i18n.setLanguage("zh")) {
+        dlg.reset();
+        startScene();
+    }
     dlg.update(dt);
     avatar.update(dt);
     dlg.syncStage(config.width.tofloat(), config.height.tofloat());

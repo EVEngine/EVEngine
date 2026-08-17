@@ -56,6 +56,8 @@ file(GLOB all_test_cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
+  i18n.cpp
+  i18n_script.cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
@@ -74,6 +76,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   shader.cpp
   grass.cpp
+  spritestack.cpp
   daynight.cpp
   weather.cpp
   simplesquirrel.cpp
@@ -126,6 +129,7 @@ endif()
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
+  i18n.nut
   model.nut
   model2.nut
   mouse.nut
@@ -270,6 +274,7 @@ set(EVELIBS
   EVNetwork
   EVDatabase
   EVData
+  EVI18n
   EVSound
   EVAudio
   EVUI
@@ -292,6 +297,7 @@ set(EVELIBS
   EVHouseGen
   EVVoxel
   EVStylize
+  EVSpriteStack
   EVEditor)
 
 if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")))

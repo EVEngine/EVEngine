@@ -1,7 +1,8 @@
-# The exclude lists arrive '|'-joined (semicolons would be split by the shell
-# running this script on Linux/macOS Ninja builds).
-string(REPLACE "|" ";" exclude_dirs "${exclude_dirs}")
-string(REPLACE "|" ";" exclude_files "${exclude_files}")
+# The exclude lists arrive ','-joined (semicolons and pipes are shell
+# metacharacters, so they would be split/executed by the shell running this
+# script on Linux/macOS Ninja builds).
+string(REPLACE "," ";" exclude_dirs "${exclude_dirs}")
+string(REPLACE "," ";" exclude_files "${exclude_files}")
 
 file(GLOB_RECURSE source_files ${CMAKE_CURRENT_SOURCE_DIR}/${module_name}/*.cpp)
 file(GLOB_RECURSE sub_source_files ${CMAKE_CURRENT_SOURCE_DIR}/${module_name}/**/*.cpp)

@@ -410,3 +410,213 @@ TEST_CASE("devtools.debugger.stepOverSkipsSameLine") {
     CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
     d.resume();
 }
+
+TEST_CASE("devtools.debugger.conditionalBreakpoint") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.attach(v);
+
+    // Seed roottable flag used by the condition.
+    {
+        const SQInteger top = sq_gettop(v);
+        sq_pushroottable(v);
+        sq_pushstring(v, "flag", -1);
+        sq_pushinteger(v, 1);
+        sq_newslot(v, -3, SQFalse);
+        sq_settop(v, top);
+    }
+
+    d.setBreakpoint("t.nut", 10, true, "flag == 2");
+    SourceLoc loc;
+    loc.source = "t.nut";
+    loc.line   = 10;
+
+    // flag == 1: condition false -> keep running.
+    CHECK(!d.onScriptLine(loc));
+    CHECK(!d.isPaused());
+
+    // flag == 2: condition true -> stop.
+    {
+        const SQInteger top = sq_gettop(v);
+        sq_pushroottable(v);
+        sq_pushstring(v, "flag", -1);
+        sq_pushinteger(v, 2);
+        sq_newslot(v, -3, SQFalse);
+        sq_settop(v, top);
+    }
+    CHECK(d.onScriptLine(loc));
+    CHECK(d.isPaused());
+    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Breakpoint));
+
+    d.resume();
+    d.detach();
+}
+
+TEST_CASE("devtools.debugger.expressionEvaluateAndVariableTree") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.attach(v);
+    {
+        const SQInteger top = sq_gettop(v);
+        sq_pushroottable(v);
+
+        sq_pushstring(v, "score", -1);
+        sq_pushinteger(v, 7);
+        sq_newslot(v, -3, SQFalse);
+
+        sq_pushstring(v, "cfg", -1);
+        sq_newtable(v);
+        sq_pushstring(v, "max", -1);
+        sq_pushinteger(v, 3);
+        sq_newslot(v, -3, SQFalse);
+        sq_newslot(v, -3, SQFalse);
+
+        sq_pushstring(v, "list", -1);
+        sq_newarray(v, 0);
+        sq_pushinteger(v, 10);
+        sq_arrayappend(v, -2);
+        sq_pushinteger(v, 20);
+        sq_arrayappend(v, -2);
+        sq_pushinteger(v, 30);
+        sq_arrayappend(v, -2);
+        sq_newslot(v, -3, SQFalse);
+
+        sq_settop(v, top);
+    }
+
+    // Full expression evaluation (arithmetic + member access + calls).
+    auto r1 = d.evaluate("score * 2");
+    CHECK_EQ(r1.type, std::string("integer"));
+    CHECK(r1.value.find("14") != std::string::npos);
+
+    auto r2 = d.evaluate("cfg.max + 1");
+    CHECK_EQ(r2.type, std::string("integer"));
+    CHECK(r2.value.find("4") != std::string::npos);
+
+    auto r3 = d.evaluate("list.len()");
+    CHECK_EQ(r3.type, std::string("integer"));
+    CHECK(r3.value.find("3") != std::string::npos);
+
+    // Globals tree: containers are expandable.
+    auto g = d.globals();
+    bool foundCfg = false;
+    for (const auto& vv : g) {
+        if (vv.name == "cfg") {
+            foundCfg = vv.expandable;
+        }
+    }
+    CHECK(foundCfg);
+
+    auto cfgKids = d.containerChildren(VarKind::Globals, 0, {"cfg"});
+    REQUIRE(cfgKids.size() >= 1u);
+    bool foundMax = false;
+    for (const auto& vv : cfgKids) {
+        if (vv.name == "max" && vv.value.find("3") != std::string::npos) foundMax = true;
+    }
+    CHECK(foundMax);
+
+    auto listKids = d.containerChildren(VarKind::Globals, 0, {"list"});
+    REQUIRE(listKids.size() == 3u);
+    CHECK(listKids[0].value.find("10") != std::string::npos);
+    CHECK(listKids[2].value.find("30") != std::string::npos);
+
+    d.detach();
+}
+
+TEST_CASE("devtools.debugger.evaluateLocalsInFrame") {
+    struct St {
+        Debugger* dbg = nullptr;
+        bool      captured = false;
+        std::string type;
+        std::string value;
+    };
+    auto hook = [](HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQInteger line,
+                   const SQChar* funcname) {
+        auto* st = static_cast<St*>(sq_getforeignptr(v));
+        if (!st || !st->dbg || type != 'l') return;
+        SourceLoc loc;
+        loc.source   = sourcename ? sourcename : "";
+        loc.line     = static_cast<int>(line);
+        loc.function = funcname ? funcname : "";
+        if (st->dbg->onScriptLine(loc)) {
+            auto r = st->dbg->evaluate("x + y", 0);
+            st->type     = r.type;
+            st->value    = r.value;
+            st->captured = true;
+            st->dbg->resume();
+        }
+    };
+
+    const char* src =
+        "function f() {\n"     // line 1
+        "    local x = 5\n"    // line 2
+        "    local y = 10\n"   // line 3
+        "    local z = x + y\n"  // line 4 <-- breakpoint
+        "}\n"                  // line 5
+        "f()\n";               // line 6
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.attach(v);
+    d.setBreakpoint("buffer", 4);
+
+    St st;
+    st.dbg = &d;
+    sq_setforeignptr(v, &st);
+    sq_enabledebuginfo(v, SQTrue);
+    sq_setnativedebughook(v, +hook);
+
+    REQUIRE(SQ_SUCCEEDED(
+        sq_compilebuffer(v, src, static_cast<SQInteger>(std::strlen(src)), _SC("buffer"), SQTrue)));
+    sq_pushroottable(v);
+    REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+    sq_poptop(v);
+
+    CHECK(st.captured);
+    CHECK_EQ(st.type, std::string("integer"));
+    CHECK(st.value.find("15") != std::string::npos);
+
+    sq_setnativedebughook(v, nullptr);
+    sq_setforeignptr(v, nullptr);
+    d.detach();
+}
+
+TEST_CASE("devtools.debugger.breakOnErrorFlag") {
+    Debugger& d = Debugger::instance();
+    d.detach();
+    CHECK(!d.breakOnError());
+    d.setBreakOnError(true);
+    CHECK(d.breakOnError());
+    d.setBreakOnError(false);
+    CHECK(!d.breakOnError());
+}
+
+TEST_CASE("devtools.debugger.breakpointsEnabledMasterSwitch") {
+    Debugger& d = Debugger::instance();
+    d.detach();
+    d.clearBreakpoints();
+    d.setBreakpoint("t.nut", 3);
+    d.setBreakpointsEnabled(false);
+
+    SourceLoc loc;
+    loc.source = "t.nut";
+    loc.line   = 3;
+    CHECK(!d.onScriptLine(loc));  // skipped while master switch is off
+    CHECK(!d.isPaused());
+
+    d.setBreakpointsEnabled(true);
+    CHECK(d.onScriptLine(loc));
+    CHECK(d.isPaused());
+    d.resume();
+}

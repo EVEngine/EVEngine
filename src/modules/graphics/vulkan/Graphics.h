@@ -178,7 +178,11 @@ public:
     }
     int getMsaaSamples() const override { return msaaSamples; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
-    void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
+    void drawSolidRect(float x, float y, float w, float h, const Color &color,
+                       BlendMode blend = BlendMode::Alpha) override;
+    void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
+                              const Color &color,
+                              BlendMode blend = BlendMode::Alpha) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                         bool repeatV = false) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba,
@@ -200,11 +204,13 @@ public:
                             float u1, float v1, const Color &color) override;
     void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
                                   float h, float u0, float v0, float u1, float v1,
-                                  const Color &color, bool rotatedUV = false) override;
+                                  const Color &color, bool rotatedUV = false,
+                                  BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
                                          float w, float h, float degrees, float u0, float v0,
                                          float u1, float v1, const Color &color,
-                                         bool rotatedUV = false) override;
+                                         bool rotatedUV = false,
+                                         BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
                                      float w, float h, const Color &tint) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
@@ -226,6 +232,8 @@ public:
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
     bool bakeMeshMorph(Mesh *mesh) override;
+    bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                            int vertexCount, const uint32_t *indices, int indexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     void begin3DFrame() override;
@@ -262,12 +270,17 @@ public:
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
     void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
+    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
+                             Texture *albedo = nullptr) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;
     void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
                          float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
                          float tintB = 1.f) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
+                              float farZ, Texture *albedo = nullptr, float tintR = 1.f,
+                              float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
 
     Canvas *newCanvas(int width, int height) override;
@@ -358,7 +371,9 @@ private:
     void ensureShaderOffscreenPipeline(Shader *shader);
     vk::Pipeline createTexturedStylePipeline(const std::vector<uint32_t> &vert,
                                              const std::vector<uint32_t> &frag,
-                                             const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout);
+                                             const vkb::BuiltRenderPass &rp,
+                                             vk::PipelineLayout layout,
+                                             BlendMode mode = BlendMode::Alpha);
     vk::Pipeline createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
                                            const std::vector<uint32_t> &frag,
                                            vk::PipelineLayout layout,
@@ -449,18 +464,26 @@ private:
 
     vk::Pipeline pipeline;
     vk::PipelineLayout pipelineLayout;
+    vk::Pipeline solidAlphaPipeline;       // alpha-blended solid (BlendMode::Alpha)
+    vk::Pipeline additiveSolidPipeline;    // additive solid (BlendMode::Additive)
 
     vk::DescriptorSetLayout texSetLayout;
     vk::UniqueDescriptorSetLayout texSetLayoutUnique;
     vk::DescriptorPool descriptorPool;
     vk::Pipeline texPipeline;
+    vk::Pipeline additiveTexPipeline;
+    vk::Pipeline opaqueTexPipeline;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
 
     vkb::BuiltRenderPass offscreenRenderPass;
     vk::Pipeline offscreenSolidPipeline;
+    vk::Pipeline offscreenSolidAlphaPipeline;
+    vk::Pipeline offscreenAdditiveSolidPipeline;
     vk::Pipeline offscreenTexPipeline;
+    vk::Pipeline offscreenAdditiveTexPipeline;
+    vk::Pipeline offscreenOpaqueTexPipeline;
 
     vk::DescriptorSetLayout mesh3dSetLayout;
     vk::UniqueDescriptorSetLayout mesh3dSetLayoutUnique;
@@ -566,10 +589,14 @@ private:
     vkb::BuiltRenderPass shadowRenderPass{};
     vk::PipelineLayout shadowPipelineLayout{};
     vk::Pipeline shadowPipeline{};
+    vk::PipelineLayout shadowAlphaPipelineLayout{};
+    vk::Pipeline shadowAlphaPipeline{};
     int shadowPassCascade = -1;
     struct ShadowDraw {
         Mesh *mesh = nullptr;
         glm::mat4 mvp{1.f};
+        Texture *albedo = nullptr;
+        bool alphaTest = false;  // use the alpha-cutout shadow pipeline
     };
     std::vector<ShadowDraw> shadowPassDraws;
     std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
@@ -590,6 +617,7 @@ private:
         Mesh *mesh = nullptr;
         Texture *albedo = nullptr;
         GBufferPush push{};
+        bool alphaTest = false;  // use the alpha-cutout gbuffer pipeline
     };
     struct GBufferSlot {
         vkb::ColorTarget normal;
@@ -612,6 +640,7 @@ private:
     vkb::BuiltRenderPass gbufferRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
+    vk::Pipeline gbufferAlphaPipeline{};
     bool gbufferPassActive = false;
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
@@ -671,11 +700,16 @@ private:
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
 
-    Batcher solidBatch;
+    struct SolidBatch {
+        BlendMode blend = BlendMode::Alpha;
+        Batcher batch;
+    };
+    std::vector<SolidBatch> solidBatches;
     struct TexturedBatch {
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;
+        BlendMode blend = BlendMode::Alpha;
         Batcher batch;
     };
     std::vector<TexturedBatch> texturedBatches;
@@ -698,7 +732,7 @@ private:
     // Persistent host-visible vertex buffers for 2D batching, reused across
     // frames. GenericBuffer now owns the Vulkan handles.
     struct Frame2DBuffers {
-        vkb::HostVertexBuffer solidBuf;
+        std::vector<vkb::HostVertexBuffer> solidBufs;
         std::vector<vkb::HostVertexBuffer> texBufs;
     };
     std::vector<Frame2DBuffers> frame2dBuffers;  // per swapchain frame slot

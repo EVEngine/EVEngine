@@ -11,9 +11,15 @@
 #include <unordered_map>
 #include <vector>
 
+#include <Poco/SharedPtr.h>
+
 namespace Poco::Net {
 class ServerSocket;
 class StreamSocket;
+}
+
+namespace Poco::JSON {
+class Object;
 }
 
 namespace eve::dev {
@@ -45,6 +51,8 @@ public:
     /** Game directory used to resolve relative script paths in stack frames. */
     void setSourceRoot(std::string root);
     const std::string& sourceRoot() const { return sourceRoot_; }
+    /** Register virtual source content for compiled buffers (compilestring). */
+    void registerSource(std::string name, std::string content);
 
     /** Accept clients + process one request batch (non-blocking). */
     void poll();
@@ -60,9 +68,12 @@ public:
     bool waitUntilConfigured(int timeoutMs = 15000);
 
     /** Emit stopped event to the connected client (if any). */
-    void notifyStopped(PauseReason reason, const SourceLoc& loc);
+    void notifyStopped(PauseReason reason, const SourceLoc& loc,
+                       const std::string& description = {});
     void notifyContinued();
     void notifyTerminated();
+    /** Last exception message delivered via notifyStopped(Exception, ...). */
+    const std::string& lastException() const { return lastException_; }
 
 private:
     // Defined in .cpp so unique_ptr<incomplete Poco sockets> is legal on MSVC.
@@ -83,12 +94,26 @@ private:
     void rememberSourcePath(const std::string& path);
     /** Best-effort: map embedded `load.nut` to repo `src/scripts/load.nut`. */
     void discoverEngineScriptAliases();
+    /** DAP `breakpoint` event: verification state changed for a breakpoint. */
+    void handleBreakpointEvent(int id, const std::string& source, int line, bool verified);
+    /** DAP variablesReference for a call-stack frame's locals scope. */
+    int varRefForFrame(int frameId);
+    /** Register an expandable child scope and return its variablesReference. */
+    int allocVarRef(int kind, int frame, std::vector<std::string> path);
+    /** Source object for a stack frame / stopped event (path or virtual ref). */
+    Poco::SharedPtr<Poco::JSON::Object> makeSourceObject(const std::string& source) const;
+
+    struct VarScope {
+        int kind = 0;  // 0 = locals, 1 = globals
+        int frame = 0;
+        std::vector<std::string> path;
+    };
 
     std::atomic<bool> listening_{false};
     std::atomic<bool> hasClient_{false};
     std::atomic<int>  port_{0};
     std::atomic<int>  seq_{1};
-    std::mutex        ioMu_;
+    std::recursive_mutex ioMu_;
     std::unique_ptr<Poco::Net::ServerSocket> server_;
     std::unique_ptr<Poco::Net::StreamSocket> client_;
     std::string       recvBuf_;
@@ -99,7 +124,14 @@ private:
     bool              stopOnEntry_ = false;
     int               varRefLocals_ = 1;
     int               varRefWatches_ = 2;
+    int               varRefGlobals_ = 5000;
+    int               varRefFrameBase_ = 1000;
+    int               nextVarRef_ = 10000;
     std::vector<VariableInfo> varCache_;
+    std::unordered_map<int, VarScope> varScopes_;
+    std::string       lastException_;
+    std::unordered_map<std::string, std::string> sourceContents_;
+    std::unordered_map<int, std::string> sourceRefContents_;
 };
 
 }  // namespace eve::dev

@@ -70,6 +70,7 @@ touch <- eve.Touch();
 gpgpu <- eve.Gpgpu();
 thread <- eve.Thread();
 fs <- eve.Filesystem();
+i18n <- eve.I18n();
 
 eve_init <- function() {};
 eve_update <- function(dt) {};

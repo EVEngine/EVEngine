@@ -74,6 +74,80 @@ bool readVec4(Poco::JSON::Object::Ptr o, const char *key, float &a, float &b, fl
     return true;
 }
 
+bool readVec3(Poco::JSON::Object::Ptr o, const char *key, float &a, float &b, float &c) {
+    if (!o || !o->has(key)) return false;
+    Poco::JSON::Array::Ptr arr;
+    try {
+        arr = o->getArray(key);
+    } catch (...) {
+        return false;
+    }
+    if (!arr || arr->size() < 3) return false;
+    a = asFloat(arr->get(0), a);
+    b = asFloat(arr->get(1), b);
+    c = asFloat(arr->get(2), c);
+    return true;
+}
+
+bool readCurveArray(Poco::JSON::Array::Ptr arr, ParticleCurve &curve) {
+    if (!arr) return false;
+    bool any = false;
+    for (size_t i = 0; i < arr->size(); ++i) {
+        try {
+            if (arr->isObject(int(i))) {
+                auto obj = arr->getObject(int(i));
+                if (obj) {
+                    curve.add(asFloat(obj->get("t"), 0.f), asFloat(obj->get("v"), 0.f));
+                    any = true;
+                }
+            } else if (arr->isArray(int(i))) {
+                auto sub = arr->getArray(int(i));
+                if (sub && sub->size() >= 2) {
+                    curve.add(asFloat(sub->get(0), 0.f), asFloat(sub->get(1), 0.f));
+                    any = true;
+                }
+            }
+        } catch (...) {
+        }
+    }
+    return any;
+}
+
+bool readGradientArray(Poco::JSON::Array::Ptr arr, ParticleGradient &gradient) {
+    if (!arr) return false;
+    bool any = false;
+    for (size_t i = 0; i < arr->size(); ++i) {
+        float t = 0.f, r = 1.f, g = 1.f, b = 1.f, a = 1.f;
+        try {
+            if (arr->isObject(int(i))) {
+                auto obj = arr->getObject(int(i));
+                if (obj) {
+                    t = asFloat(obj->get("t"), t);
+                    r = asFloat(obj->get("r"), r);
+                    g = asFloat(obj->get("g"), g);
+                    b = asFloat(obj->get("b"), b);
+                    a = obj->has("a") ? asFloat(obj->get("a"), a) : a;
+                    gradient.add(t, r, g, b, a);
+                    any = true;
+                }
+            } else if (arr->isArray(int(i))) {
+                auto sub = arr->getArray(int(i));
+                if (sub && sub->size() >= 5) {
+                    t = asFloat(sub->get(0), t);
+                    r = asFloat(sub->get(1), r);
+                    g = asFloat(sub->get(2), g);
+                    b = asFloat(sub->get(3), b);
+                    a = asFloat(sub->get(4), a);
+                    gradient.add(t, r, g, b, a);
+                    any = true;
+                }
+            }
+        } catch (...) {
+        }
+    }
+    return any;
+}
+
 void tryLoadTexture(ParticleEmitter *emitter, const std::string &path) {
     if (path.empty()) return;
     auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
@@ -188,11 +262,251 @@ bool applyConfigDocument(ParticleEmitter *emitter, data::JsonDocument *doc) {
     float spin0 = 0, spin1 = 0;
     if (readVec2(obj, "spin", spin0, spin1)) emitter->setSpin(spin0, spin1);
 
+    float sr0 = 0, sr1 = 0;
+    if (readVec2(obj, "startRotation", sr0, sr1))
+        emitter->setStartRotation(sr0, sr1);
+
+    if (obj->has("bursts")) {
+        try {
+            auto arr = obj->getArray("bursts");
+            if (arr) {
+                emitter->clearBursts();
+                for (size_t i = 0; i < arr->size(); ++i) {
+                    float t = 0.f;
+                    int count = 0;
+                    if (arr->isObject(int(i))) {
+                        auto b = arr->getObject(int(i));
+                        if (!b) continue;
+                        t = asFloat(b->get("time"), 0.f);
+                        count = int(asFloat(b->get("count"), 0.f));
+                    } else if (arr->isArray(int(i))) {
+                        auto sub = arr->getArray(int(i));
+                        if (!sub || sub->size() < 2) continue;
+                        t = asFloat(sub->get(0), 0.f);
+                        count = int(asFloat(sub->get(1), 0.f));
+                    }
+                    if (count > 0) emitter->addBurst(t, count);
+                }
+            }
+        } catch (...) {
+        }
+    }
+
+    if (obj->has("prewarm"))
+        emitter->setPrewarm(asFloat(obj->get("prewarm"), 0.f));
+
+    float gx = 0, gy = 0;
+    if (readVec2(obj, "gravity", gx, gy)) emitter->setGravity(gx, gy);
+    if (obj->has("damping"))
+        emitter->setDamping(asFloat(obj->get("damping"), 0.f));
+    if (obj->has("limitVelocity"))
+        emitter->setLimitVelocity(asFloat(obj->get("limitVelocity"), 0.f));
+    if (obj->has("velocityOverLifetime")) {
+        try {
+            auto arr = obj->getArray("velocityOverLifetime");
+            if (arr) {
+                emitter->clearVelocityCurve();
+                readCurveArray(arr, emitter->config()->velocityCurve);
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("inheritVelocity"))
+        emitter->setInheritVelocity(asFloat(obj->get("inheritVelocity"), 0.f));
+    if (obj->has("simulationSpace"))
+        emitter->setSimulationSpace(asString(obj->get("simulationSpace")));
+
+    if (obj->has("noise")) {
+        try {
+            auto n = obj->getObject("noise");
+            if (n) {
+                float strength = n->has("strength") ? asFloat(n->get("strength"), 0.f)
+                                                    : emitter->config()->noiseStrength;
+                float freq = n->has("frequency") ? asFloat(n->get("frequency"), 1.f)
+                                                 : emitter->config()->noiseFrequency;
+                float speed = n->has("speed") ? asFloat(n->get("speed"), 1.f)
+                                              : emitter->config()->noiseSpeed;
+                emitter->setNoise(strength, freq, speed);
+            }
+        } catch (...) {
+        }
+    } else if (obj->has("noiseStrength")) {
+        emitter->setNoise(asFloat(obj->get("noiseStrength"), 0.f),
+                          obj->has("noiseFrequency") ? asFloat(obj->get("noiseFrequency"), 1.f)
+                                                     : emitter->config()->noiseFrequency,
+                          obj->has("noiseSpeed") ? asFloat(obj->get("noiseSpeed"), 1.f)
+                                                 : emitter->config()->noiseSpeed);
+    }
+
+    if (obj->has("collision")) {
+        try {
+            auto col = obj->getObject("collision");
+            if (col) {
+                std::string mode = col->has("mode") ? asString(col->get("mode")) : "none";
+                float radius = col->has("radius") ? asFloat(col->get("radius"), 0.f)
+                                                  : emitter->config()->collisionRadius;
+                float restitution =
+                    col->has("restitution") ? asFloat(col->get("restitution"), 0.6f)
+                                            : emitter->config()->collisionRestitution;
+                float loss = col->has("lifetimeLoss")
+                                 ? asFloat(col->get("lifetimeLoss"), 0.f)
+                                 : emitter->config()->collisionLifetimeLoss;
+                emitter->setCollision(mode, radius, restitution, loss);
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("collisionBounds")) {
+        try {
+            auto cb = obj->getObject("collisionBounds");
+            if (cb) {
+                bool enabled = cb->has("enabled") ? asBool(cb->get("enabled"), false)
+                                                  : emitter->config()->collisionBoundsEnabled;
+                float minX = cb->has("minX") ? asFloat(cb->get("minX"), 0.f)
+                                             : emitter->config()->boundsMinX;
+                float minY = cb->has("minY") ? asFloat(cb->get("minY"), 0.f)
+                                             : emitter->config()->boundsMinY;
+                float maxX = cb->has("maxX") ? asFloat(cb->get("maxX"), 0.f)
+                                             : emitter->config()->boundsMaxX;
+                float maxY = cb->has("maxY") ? asFloat(cb->get("maxY"), 0.f)
+                                             : emitter->config()->boundsMaxY;
+                emitter->setCollisionBounds(enabled, minX, minY, maxX, maxY);
+            }
+        } catch (...) {
+        }
+    }
+    if (obj->has("worldCollision"))
+        emitter->setWorldCollision(asBool(obj->get("worldCollision"), false));
+
+    if (obj->has("renderMode")) {
+        float stretch = obj->has("stretch") ? asFloat(obj->get("stretch"), 1.f)
+                                            : emitter->config()->stretchFactor;
+        emitter->setRenderMode(asString(obj->get("renderMode")), stretch);
+    } else if (obj->has("stretch")) {
+        emitter->setRenderMode("stretched", asFloat(obj->get("stretch"), 1.f));
+    }
+    if (obj->has("overflowMode"))
+        emitter->setOverflowMode(asString(obj->get("overflowMode")));
+    if (obj->has("maxDeltaTime"))
+        emitter->setMaxDeltaTime(asFloat(obj->get("maxDeltaTime"), 0.f));
+    if (obj->has("gpuSimulation"))
+        emitter->setGpuSimulation(asBool(obj->get("gpuSimulation"), false));
+
+    if (obj->has("forceFields")) {
+        try {
+            auto arr = obj->getArray("forceFields");
+            if (arr) {
+                emitter->clearForceFields();
+                for (size_t i = 0; i < arr->size(); ++i) {
+                    if (!arr->isObject(int(i))) continue;
+                    auto f = arr->getObject(int(i));
+                    if (!f) continue;
+                    float x = asFloat(f->get("x"), 0.f);
+                    float y = asFloat(f->get("y"), 0.f);
+                    float radius = asFloat(f->get("radius"), 0.f);
+                    float strength = asFloat(f->get("strength"), 0.f);
+                    float falloff = f->has("falloff") ? asFloat(f->get("falloff"), 1.f) : 1.f;
+                    emitter->addForceField(x, y, radius, strength, falloff);
+                }
+            }
+        } catch (...) {
+        }
+    }
+
+    if (obj->has("lights")) {
+        try {
+            auto lg = obj->getObject("lights");
+            if (lg) {
+                bool enabled = lg->has("enabled") ? asBool(lg->get("enabled"), false)
+                                                  : emitter->config()->lights.enabled;
+                float radius = lg->has("radius") ? asFloat(lg->get("radius"), 120.f)
+                                                 : emitter->config()->lights.radius;
+                float intensity = lg->has("intensity") ? asFloat(lg->get("intensity"), 1.f)
+                                                       : emitter->config()->lights.intensity;
+                float lr = emitter->config()->lights.r;
+                float lg2 = emitter->config()->lights.g;
+                float lb = emitter->config()->lights.b;
+                if (readVec3(lg, "color", lr, lg2, lb)) {
+                }
+                if (lg->has("r")) lr = asFloat(lg->get("r"), lr);
+                if (lg->has("g")) lg2 = asFloat(lg->get("g"), lg2);
+                if (lg->has("b")) lb = asFloat(lg->get("b"), lb);
+                int maxL = lg->has("max") ? int(asFloat(lg->get("max"), 4.f))
+                                          : emitter->config()->lights.max;
+                emitter->setLights(enabled, radius, intensity, lr, lg2, lb, maxL);
+            }
+        } catch (...) {
+        }
+    }
+
     float r = 1, g = 1, b = 1, a = 1;
     if (readVec4(obj, "colorStart", r, g, b, a))
         emitter->setColorStart(r, g, b, a);
     if (readVec4(obj, "colorEnd", r, g, b, a))
         emitter->setColorEnd(r, g, b, a);
+
+    if (obj->has("colorOverLifetime")) {
+        try {
+            auto arr = obj->getArray("colorOverLifetime");
+            if (arr) {
+                emitter->clearColorGradient();
+                readGradientArray(arr, emitter->config()->colorGradient);
+            }
+        } catch (...) {
+        }
+    }
+
+    if (obj->has("sizeOverLifetime")) {
+        try {
+            auto arr = obj->getArray("sizeOverLifetime");
+            if (arr) {
+                emitter->clearSizeCurve();
+                readCurveArray(arr, emitter->config()->sizeCurve);
+            }
+        } catch (...) {
+        }
+    }
+
+    if (obj->has("rotationOverLifetime")) {
+        try {
+            auto arr = obj->getArray("rotationOverLifetime");
+            if (arr) {
+                emitter->clearRotationCurve();
+                readCurveArray(arr, emitter->config()->rotationCurve);
+            }
+        } catch (...) {
+        }
+    }
+
+    if (obj->has("blendMode"))
+        emitter->setBlendMode(asString(obj->get("blendMode")));
+
+    if (obj->has("flipbook")) {
+        try {
+            auto fb = obj->getObject("flipbook");
+            if (fb) {
+                auto c = emitter->config();
+                int h = fb->has("hframes") ? int(asFloat(fb->get("hframes"), 1.f)) : c->hframes;
+                int v = fb->has("vframes") ? int(asFloat(fb->get("vframes"), 1.f)) : c->vframes;
+                float rate = fb->has("frameRate") ? asFloat(fb->get("frameRate"), 0.f)
+                                                  : c->frameRate;
+                float rs = fb->has("frameRandomStart")
+                               ? asFloat(fb->get("frameRandomStart"), 0.f)
+                               : c->frameRandomStart;
+                emitter->setFlipbook(h, v, rate, rs);
+            }
+        } catch (...) {
+        }
+    } else if (obj->has("hframes") || obj->has("vframes") || obj->has("frameRate") ||
+               obj->has("frameRandomStart")) {
+        auto c = emitter->config();
+        int h = obj->has("hframes") ? int(asFloat(obj->get("hframes"), 1.f)) : c->hframes;
+        int v = obj->has("vframes") ? int(asFloat(obj->get("vframes"), 1.f)) : c->vframes;
+        float rate = obj->has("frameRate") ? asFloat(obj->get("frameRate"), 0.f) : c->frameRate;
+        float rs = obj->has("frameRandomStart") ? asFloat(obj->get("frameRandomStart"), 0.f)
+                                                : c->frameRandomStart;
+        emitter->setFlipbook(h, v, rate, rs);
+    }
 
     if (obj->has("layer"))
         emitter->setLayer(static_cast<int>(asFloat(obj->get("layer"), float(emitter->getLayer()))));

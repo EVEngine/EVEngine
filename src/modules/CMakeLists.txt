@@ -62,6 +62,8 @@ create_module(EVData data)
 if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVData PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
+# Localization: self-contained JSON parser (no Poco), so it also builds on WASM.
+create_module(EVI18n i18n)
 create_module(EVImage image)
 if(EVENGINE_WEBGPU_TRIM)
   # ImageData.h includes medialoader/image/pixelformat.h; the vendored
@@ -195,6 +197,10 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVVoxel voxel)
   target_compile_definitions(EVVoxel PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVStylize stylize)
+  # Sprite-stacking pseudo-3D: CPU mesh slicing + billboard-slice rendering.
+  # Vulkan-only (custom hair-style mesh shader) and depends on model3d, so it
+  # is trimmed from the WebGPU/WASM build alongside those modules.
+  create_module(EVSpriteStack spritestack)
 endif()
 create_module(EVEditor editor)
 if(EVENGINE_BUILD_DEMO AND NOT EVENGINE_WEBGPU_TRIM)

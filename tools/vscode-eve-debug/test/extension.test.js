@@ -412,10 +412,28 @@ async function testPackageJsonKeybindings() {
   console.log('  package.json keybindings ok');
 }
 
+async function testPackageJsonInspectMenu() {
+  const pkg = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')
+  );
+  const cmds = (pkg.contributes.commands || []).map((c) => c.command);
+  assert.ok(cmds.includes('eve-debug.inspectVariable'), 'inspectVariable command');
+  const menu = (pkg.contributes.menus || {})['debug/variables/context'] || [];
+  const item = menu.find((m) => m.command === 'eve-debug.inspectVariable');
+  assert.ok(item, 'debug/variables/context menu entry');
+  assert.ok(
+    item.when.includes("debugType == 'eve'") &&
+      item.when.includes("__vscodeVariableMenuContext == 'object'"),
+    'inspect menu when clause'
+  );
+  console.log('  package.json inspect menu ok');
+}
+
 async function main() {
   let failed = 0;
   const cases = [
     ['package.json keybindings', testPackageJsonKeybindings],
+    ['package.json inspect menu', testPackageJsonInspectMenu],
     ['resolveEvePath', testResolveEvePath],
     ['waitForPort', testWaitForPort],
     ['live eve DAP', testLiveEveDap],

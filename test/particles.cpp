@@ -214,6 +214,425 @@ TEST_CASE("particles.config.applyAreaAndAccel") {
     CHECK(std::abs(e->getSizeVariation() - 0.2f) < 1e-4f);
 }
 
+TEST_CASE("particles.emitter.blendAndFlipbookSetters") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+
+    e->setBlendMode("additive");
+    CHECK_EQ(e->getBlendMode(), std::string("additive"));
+    CHECK(int(e->draw()->blend) == int(eve::graphics::BlendMode::Additive));
+    e->setBlendMode("alpha");
+    CHECK(int(e->draw()->blend) == int(eve::graphics::BlendMode::Alpha));
+    e->setBlendMode("opaque");
+    CHECK(int(e->draw()->blend) == int(eve::graphics::BlendMode::Opaque));
+    e->setBlendMode("bogus");
+    CHECK(int(e->draw()->blend) == int(eve::graphics::BlendMode::Alpha));
+
+    e->setFlipbook(4, 2, 12.f, 0.5f);
+    CHECK_EQ(e->config()->hframes, 4);
+    CHECK_EQ(e->config()->vframes, 2);
+    CHECK(std::abs(e->config()->frameRate - 12.f) < 1e-5f);
+    CHECK(std::abs(e->config()->frameRandomStart - 0.5f) < 1e-5f);
+
+    e->setStartRotation(-45.f, 45.f);
+    CHECK(std::abs(e->config()->startRotMin + 45.f) < 1e-5f);
+    CHECK(std::abs(e->config()->startRotMax - 45.f) < 1e-5f);
+}
+
+TEST_CASE("particles.emitter.gradientAndCurves") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+
+    e->addColorStop(0.f, 1.f, 0.f, 0.f, 1.f);
+    e->addColorStop(0.5f, 0.f, 1.f, 0.f, 1.f);
+    e->addColorStop(1.f, 0.f, 0.f, 1.f, 1.f);
+    CHECK_EQ(e->config()->colorGradient.size(), size_t(3));
+    float r = 0, g = 0, b = 0, a = 0;
+    e->config()->colorGradient.sample(0.25f, r, g, b, a);
+    CHECK(std::abs(r - 0.5f) < 1e-4f);
+    CHECK(std::abs(g - 0.5f) < 1e-4f);
+    e->config()->colorGradient.sample(0.75f, r, g, b, a);
+    CHECK(std::abs(g - 0.5f) < 1e-4f);
+    CHECK(std::abs(b - 0.5f) < 1e-4f);
+
+    e->addSizeCurvePoint(0.f, 0.2f);
+    e->addSizeCurvePoint(1.f, 2.f);
+    CHECK(std::abs(e->config()->sizeCurve.sample(0.5f, 1.f) - 1.1f) < 1e-4f);
+    CHECK(std::abs(e->config()->sizeCurve.sample(0.f, 1.f) - 0.2f) < 1e-5f);
+    CHECK(std::abs(e->config()->sizeCurve.sample(1.f, 1.f) - 2.f) < 1e-5f);
+
+    e->addRotationCurvePoint(0.f, 0.f);
+    e->addRotationCurvePoint(1.f, 90.f);
+    CHECK(std::abs(e->config()->rotationCurve.sample(0.5f, 0.f) - 45.f) < 1e-4f);
+}
+
+TEST_CASE("particles.config.applyBlendFlipbookGradient") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    const char *json = R"({
+      "blendMode": "additive",
+      "flipbook": {"hframes": 4, "vframes": 2, "frameRate": 15, "frameRandomStart": 0.25},
+      "startRotation": [-30, 30],
+      "colorOverLifetime": [{"t":0,"r":1,"g":0.5,"b":0,"a":1},{"t":1,"r":1,"g":0,"b":0,"a":0}],
+      "sizeOverLifetime": [[0, 0.5], [1, 1.5]],
+      "rotationOverLifetime": [{"t":0,"v":0},{"t":1,"v":120}]
+    })";
+    CHECK(e->applyConfig(json));
+    CHECK_EQ(e->getBlendMode(), std::string("additive"));
+    CHECK_EQ(e->config()->hframes, 4);
+    CHECK_EQ(e->config()->vframes, 2);
+    CHECK(std::abs(e->config()->frameRate - 15.f) < 1e-5f);
+    CHECK(std::abs(e->config()->frameRandomStart - 0.25f) < 1e-5f);
+    CHECK(std::abs(e->config()->startRotMin + 30.f) < 1e-5f);
+    CHECK(std::abs(e->config()->startRotMax - 30.f) < 1e-5f);
+    CHECK_EQ(e->config()->colorGradient.size(), size_t(2));
+    CHECK_EQ(e->config()->sizeCurve.size(), size_t(2));
+    CHECK_EQ(e->config()->rotationCurve.size(), size_t(2));
+    float r = 0, g = 0, b = 0, a = 0;
+    e->config()->colorGradient.sample(0.5f, r, g, b, a);
+    CHECK(std::abs(r - 1.f) < 1e-4f);
+    CHECK(std::abs(g - 0.25f) < 1e-4f);
+}
+
+TEST_CASE("particles.sim.startRotationAndFlipbookAdvance") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(32);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setStartRotation(90.f, 90.f);
+    e->setFlipbook(8, 8, 16.f, 0.f);
+    e->emit(4);
+    for (int i = 0; i < 4; ++i) {
+        CHECK(std::abs(e->sim()->particles[size_t(i)].rot -
+                       static_cast<float>(3.14159265358979323846) * 0.5f) < 1e-4f);
+    }
+
+    ParticleSimSystem::update(0.25f);
+    for (int i = 0; i < 4; ++i) {
+        CHECK(std::abs(e->sim()->particles[size_t(i)].frame - 4.f) < 1e-4f);
+        CHECK(std::abs(e->sim()->particles[size_t(i)].rot -
+                       (static_cast<float>(3.14159265358979323846) * 0.5f)) < 1e-4f);
+    }
+}
+
+TEST_CASE("particles.emitter.bursts") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(64);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->addBurst(0.1f, 20);
+    e->start();
+
+    ParticleSimSystem::update(0.05f);
+    CHECK_EQ(e->getCount(), 0);
+    ParticleSimSystem::update(0.06f);
+    CHECK_EQ(e->getCount(), 20);
+    // Bursts fire only once.
+    ParticleSimSystem::update(0.2f);
+    CHECK_EQ(e->getCount(), 20);
+}
+
+TEST_CASE("particles.emitter.gravityDampingLimit") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setGravity(0.f, 100.f);
+    e->emit(1);
+    ParticleSimSystem::update(1.f);
+    CHECK(std::abs(e->sim()->particles[0].vy - 100.f) < 1e-3f);
+
+    ParticleEmitter *d = mod->newEmitter(16);
+    d->setParticleLifetime(5.f, 5.f);
+    d->setSpeed(100.f, 100.f);
+    d->setDamping(1.f);
+    d->emit(1);
+    ParticleSimSystem::update(0.5f);
+    CHECK(std::abs(d->sim()->particles[0].vx - 50.f) < 1e-3f);
+
+    ParticleEmitter *l = mod->newEmitter(16);
+    l->setParticleLifetime(5.f, 5.f);
+    l->setSpeed(100.f, 100.f);
+    l->setLimitVelocity(30.f);
+    l->emit(1);
+    ParticleSimSystem::update(0.1f);
+    const float sp = std::sqrt(l->sim()->particles[0].vx * l->sim()->particles[0].vx +
+                               l->sim()->particles[0].vy * l->sim()->particles[0].vy);
+    CHECK_LE(sp, 30.001f);
+}
+
+TEST_CASE("particles.emitter.inheritVelocity") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(64);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setEmissionRate(10.f);
+    e->setInheritVelocity(0.5f);
+    e->setPosition(0.f, 0.f);
+    e->start();
+    ParticleSimSystem::update(0.1f);
+    e->setPosition(10.f, 0.f);
+    ParticleSimSystem::update(0.1f);
+    REQUIRE_GT(e->getCount(), 1);
+    const auto &p = e->sim()->particles[size_t(e->sim()->alive - 1)];
+    CHECK(std::abs(p.vx - 50.f) < 1e-3f);
+}
+
+TEST_CASE("particles.emitter.localSpace") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setSimulationSpace("local");
+    e->setPosition(0.f, 0.f);
+    e->emit(1);
+    ParticleSimSystem::update(0.1f);
+    e->setPosition(100.f, 50.f);
+    ParticleSimSystem::update(0.1f);
+    const auto &p = e->sim()->particles[0];
+    CHECK(std::abs(p.x - 100.f) < 1e-3f);
+    CHECK(std::abs(p.y - 50.f) < 1e-3f);
+}
+
+TEST_CASE("particles.emitter.collisionBounds") {
+    auto *mod = Particles::create();
+    ParticleEmitter *k = mod->newEmitter(16);
+    k->setParticleLifetime(5.f, 5.f);
+    k->setSpeed(0.f, 0.f);
+    k->setPosition(0.f, 0.f);
+    k->setCollision("kill");
+    k->setCollisionBounds(true, 10.f, 0.f, 100.f, 100.f);
+    k->emit(1);
+    ParticleSimSystem::update(0.1f);
+    CHECK_EQ(k->getCount(), 0);
+
+    ParticleEmitter *b = mod->newEmitter(16);
+    b->setParticleLifetime(5.f, 5.f);
+    b->setSpeed(100.f, 100.f);
+    b->setDirection(0.f);
+    b->setSpread(0.f);
+    b->setPosition(0.f, 0.f);
+    b->setCollision("bounce", 4.f, 1.f);
+    b->setCollisionBounds(true, 0.f, -1000.f, 15.f, 1000.f);
+    b->emit(1);
+    ParticleSimSystem::update(0.2f);
+    CHECK_LT(b->sim()->particles[0].vx, 0.f);
+}
+
+TEST_CASE("particles.emitter.overflowPauseAndMaxDelta") {
+    auto *mod = Particles::create();
+    ParticleEmitter *p = mod->newEmitter(4);
+    p->setParticleLifetime(5.f, 5.f);
+    p->setSpeed(0.f, 0.f);
+    p->setEmissionRate(100.f);
+    p->setOverflowMode("pause");
+    p->start();
+    ParticleSimSystem::update(0.1f);
+    CHECK_EQ(p->getCount(), 4);
+    CHECK_GT(p->sim()->emitAccum, 0.f);
+
+    ParticleEmitter *m = mod->newEmitter(4);
+    m->setParticleLifetime(5.f, 5.f);
+    m->setSpeed(100.f, 100.f);
+    m->setMaxDeltaTime(0.1f);
+    m->emit(1);
+    ParticleSimSystem::update(10.f);
+    CHECK(std::abs(m->sim()->particles[0].x - 10.f) < 1e-2f);
+}
+
+TEST_CASE("particles.emitter.subEmitter") {
+    auto *mod = Particles::create();
+    ParticleEmitter *parent = mod->newEmitter(32);
+    ParticleEmitter *child = mod->newEmitter(32);
+    ParticleEmitter *ashes = mod->newEmitter(32);
+    parent->setParticleLifetime(5.f, 5.f);
+    parent->setSpeed(0.f, 0.f);
+    child->setParticleLifetime(5.f, 5.f);
+    child->setSpeed(0.f, 0.f);
+    ashes->setParticleLifetime(5.f, 5.f);
+    ashes->setSpeed(0.f, 0.f);
+    parent->addSubEmitter(child, "birth");
+    parent->addSubEmitter(ashes, "death");
+    parent->emit(5);
+    CHECK_EQ(child->getCount(), 5);
+    CHECK_EQ(ashes->getCount(), 0);
+
+    parent->setParticleLifetime(0.2f, 0.2f);
+    parent->emit(1);
+    ParticleSimSystem::update(0.3f);
+    CHECK_EQ(ashes->getCount(), 1);
+}
+
+TEST_CASE("particles.emitter.forceFields") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setPosition(0.f, 0.f);
+    e->emit(1);
+    e->sim()->particles[0].x = 100.f;
+    e->addForceField(0.f, 0.f, 200.f, 50.f, 1.f);  // attract toward origin
+    ParticleSimSystem::update(1.f);
+    CHECK(std::abs(e->sim()->particles[0].vx + 25.f) < 1e-3f);
+
+    ParticleEmitter *r = mod->newEmitter(16);
+    r->setParticleLifetime(5.f, 5.f);
+    r->setSpeed(0.f, 0.f);
+    r->setPosition(0.f, 0.f);
+    r->emit(1);
+    r->sim()->particles[0].x = 100.f;
+    r->addForceField(0.f, 0.f, 200.f, -50.f, 1.f);  // repel
+    ParticleSimSystem::update(1.f);
+    CHECK(std::abs(r->sim()->particles[0].vx - 25.f) < 1e-3f);
+}
+
+TEST_CASE("particles.draw.shaderStorage") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    CHECK(e->getShader() == nullptr);
+    auto *fake = reinterpret_cast<eve::graphics::Shader *>(uintptr_t(0x1234));
+    e->setShader(fake);
+    CHECK(e->getShader() == fake);
+    e->setShader(nullptr);
+    CHECK(e->getShader() == nullptr);
+}
+
+TEST_CASE("particles.lights.followParticles") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(8);
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(0.f, 0.f);
+    e->setPosition(30.f, 40.f);
+    e->setLights(true, 50.f, 2.f, 1.f, 0.5f, 0.2f, 3);
+    e->emit(2);
+    ParticleLightSystem::update();
+    REQUIRE_EQ(e->lights()->pool.size(), size_t(3));
+    CHECK(std::abs(e->lights()->pool[0]->getX() - 30.f) < 1e-3f);
+    CHECK(std::abs(e->lights()->pool[0]->getY() - 40.f) < 1e-3f);
+    CHECK(std::abs(e->lights()->pool[0]->getRadius() - 50.f) < 1e-3f);
+    CHECK(e->lights()->pool[0]->isEnabled());
+    CHECK(e->lights()->pool[1]->isEnabled());
+    CHECK(!e->lights()->pool[2]->isEnabled());
+
+    e->setLights(false);
+    ParticleLightSystem::update();
+    CHECK(!e->lights()->pool[0]->isEnabled());
+}
+
+TEST_CASE("particles.gpu.configAndFallback") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    e->setGpuSimulation(true);
+    CHECK(e->getGpuSimulation());
+    e->setParticleLifetime(5.f, 5.f);
+    e->setSpeed(100.f, 100.f);
+    e->setDirection(0.f);
+    e->setSpread(0.f);
+    e->emit(1);
+    ParticleSimSystem::update(0.1f);
+    // Headless CI has no GPU device → the emitter must fall back to the CPU
+    // integrator; either path moves the particle forward.
+    CHECK_GT(e->sim()->particles[0].x, 1.f);
+    CHECK_GT(e->getCount(), 0);
+
+    ParticleEmitter *c = mod->newEmitter(16);
+    const char *json = R"({"gpuSimulation": true})";
+    CHECK(c->applyConfig(json));
+    CHECK(c->getGpuSimulation());
+}
+
+TEST_CASE("particles.scale.manyEmitters") {
+    // Regression guard for ECS view iteration / simulation at scale: a few
+    // hundred emitters sharing one ECS table must update without stalling or
+    // losing emitters. (Output-volume note: this suite must be run with
+    // redirected output — a full pipe blocks once it fills.)
+    auto *mod = Particles::create();
+    constexpr int kEmitters = 128;
+    std::vector<ParticleEmitter *> emitters;
+    emitters.reserve(size_t(kEmitters));
+    for (int i = 0; i < kEmitters; ++i) {
+        ParticleEmitter *e = mod->newEmitter(32);
+        e->setParticleLifetime(2.f, 2.f);
+        e->setEmissionRate(10.f);
+        e->setSpeed(10.f, 20.f);
+        e->setPosition(float(i % 16) * 10.f, float(i / 16) * 10.f);
+        e->start();
+        emitters.push_back(e);
+    }
+    for (int frame = 0; frame < 10; ++frame) ParticleSimSystem::update(0.016f);
+
+    int totalAlive = 0;
+    for (auto *e : emitters) totalAlive += e->getCount();
+    CHECK_GT(totalAlive, 0);
+    // First and last emitters must both have been iterated by the system view.
+    CHECK_GT(emitters[0]->getCount(), 0);
+    CHECK_GT(emitters[size_t(kEmitters) - 1]->getCount(), 0);
+    CHECK(emitters[size_t(kEmitters) - 1]->isActive());
+}
+
+TEST_CASE("particles.config.applyForceFieldsLights") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(16);
+    const char *json = R"({
+      "forceFields": [{"x":0,"y":0,"radius":200,"strength":50,"falloff":2}],
+      "lights": {"enabled":true,"max":6,"radius":80,"intensity":1.5,"color":[1,0.5,0.2]}
+    })";
+    CHECK(e->applyConfig(json));
+    CHECK_EQ(e->config()->forceFields.size(), size_t(1));
+    CHECK(std::abs(e->config()->forceFields[0].strength - 50.f) < 1e-5f);
+    CHECK(std::abs(e->config()->forceFields[0].falloff - 2.f) < 1e-5f);
+    CHECK(e->config()->lights.enabled);
+    CHECK_EQ(e->config()->lights.max, 6);
+    CHECK(std::abs(e->config()->lights.r - 1.f) < 1e-5f);
+    CHECK(std::abs(e->config()->lights.g - 0.5f) < 1e-5f);
+    CHECK(std::abs(e->config()->lights.b - 0.2f) < 1e-5f);
+    CHECK(std::abs(e->config()->lights.intensity - 1.5f) < 1e-5f);
+}
+
+TEST_CASE("particles.config.applyP1Json") {
+    auto *mod = Particles::create();
+    ParticleEmitter *e = mod->newEmitter(32);
+    const char *json = R"({
+      "bursts": [{"time":0.05,"count":12}],
+      "prewarm": 0.5,
+      "gravity": [0, 50],
+      "damping": 0.2,
+      "limitVelocity": 40,
+      "velocityOverLifetime": [[0, 1], [1, 0.2]],
+      "inheritVelocity": 0.4,
+      "simulationSpace": "local",
+      "noise": {"strength": 3, "frequency": 2, "speed": 1.5},
+      "collision": {"mode":"bounce","radius":6,"restitution":0.8,"lifetimeLoss":0.1},
+      "collisionBounds": {"enabled":true,"minX":0,"minY":0,"maxX":640,"maxY":480},
+      "worldCollision": true,
+      "renderMode": "stretched",
+      "stretch": 1.5,
+      "overflowMode": "pause",
+      "maxDeltaTime": 0.05
+    })";
+    CHECK(e->applyConfig(json));
+    CHECK_EQ(e->config()->bursts.size(), size_t(1));
+    CHECK(std::abs(e->config()->prewarmSeconds - 0.5f) < 1e-5f);
+    CHECK(std::abs(e->config()->gravityY - 50.f) < 1e-5f);
+    CHECK(std::abs(e->config()->damping - 0.2f) < 1e-5f);
+    CHECK(std::abs(e->config()->limitVelocity - 40.f) < 1e-5f);
+    CHECK_EQ(e->config()->velocityCurve.size(), size_t(2));
+    CHECK(std::abs(e->config()->inheritVelocity - 0.4f) < 1e-5f);
+    CHECK_EQ(e->config()->simSpace, std::string("local"));
+    CHECK(std::abs(e->config()->noiseStrength - 3.f) < 1e-5f);
+    CHECK(std::abs(e->config()->noiseFrequency - 2.f) < 1e-5f);
+    CHECK_EQ(e->config()->collisionMode, std::string("bounce"));
+    CHECK(std::abs(e->config()->collisionRadius - 6.f) < 1e-5f);
+    CHECK(std::abs(e->config()->collisionRestitution - 0.8f) < 1e-5f);
+    CHECK(e->config()->collisionBoundsEnabled);
+    CHECK(std::abs(e->config()->boundsMaxX - 640.f) < 1e-5f);
+    CHECK(e->config()->worldCollision);
+    CHECK_EQ(e->config()->renderMode, std::string("stretched"));
+    CHECK(std::abs(e->config()->stretchFactor - 1.5f) < 1e-5f);
+    CHECK_EQ(e->config()->overflowMode, std::string("pause"));
+    CHECK(std::abs(e->config()->maxDeltaTime - 0.05f) < 1e-5f);
+}
+
 TEST_CASE("particles.renderSystem.cameraTransform") {
     auto *mod = Particles::create();
     ParticleEmitter *e = mod->newEmitter(8);

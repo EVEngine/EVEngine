@@ -9,8 +9,13 @@
 #include "animation/SpineSkeletonData.h"
 #include "ik/Skeleton2D.h"
 #include "ik/Skeleton3D.h"
+#include "gpgpu/ComputeShader.h"
+#include "gpgpu/Gpgpu.h"
+#include "gpgpu/GpuBuffer.h"
+#include "particles/ParticleGpuKernel.h"
 
 #include <cmath>
+#include <cstdio>
 #include <random>
 #include <string>
 
@@ -30,6 +35,29 @@ int randIndex(std::mt19937 &rng, int n) {
     if (n <= 1) return 0;
     std::uniform_int_distribution<int> dist(0, n - 1);
     return dist(rng);
+}
+
+float hashNoise2(int ix, int iy) {
+    unsigned h = unsigned(ix) * 374761393u + unsigned(iy) * 668265263u;
+    h = (h ^ (h >> 13)) * 1274126177u;
+    return (float((h ^ (h >> 16)) & 0xFFFFFFu) / float(0x1000000u)) * 2.f - 1.f;
+}
+
+/** Smooth 2D value noise in roughly [-1, 1] (cheap CPU turbulence). */
+float smoothNoise2(float x, float y) {
+    const int ix = int(std::floor(x));
+    const int iy = int(std::floor(y));
+    const float fx = x - float(ix);
+    const float fy = y - float(iy);
+    const float sx = fx * fx * (3.f - 2.f * fx);
+    const float sy = fy * fy * (3.f - 2.f * fy);
+    const float n00 = hashNoise2(ix, iy);
+    const float n10 = hashNoise2(ix + 1, iy);
+    const float n01 = hashNoise2(ix, iy + 1);
+    const float n11 = hashNoise2(ix + 1, iy + 1);
+    const float a = n00 + (n10 - n00) * sx;
+    const float b = n01 + (n11 - n01) * sx;
+    return a + (b - a) * sy;
 }
 
 std::string normalizePlane(const std::string &plane) {
@@ -75,6 +103,15 @@ void sampleEmissionOffset(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &si
     } else if (cfg.areaType == "rect") {
         ox = randRange(sim.rng, -cfg.areaX, cfg.areaX);
         oy = randRange(sim.rng, -cfg.areaY, cfg.areaY);
+    } else if (cfg.areaType == "line") {
+        ox = randRange(sim.rng, -cfg.areaX, cfg.areaX);
+        oy = 0.f;
+    } else if (cfg.areaType == "ring") {
+        const float a = randRange(sim.rng, 0.f, kPi * 2.f);
+        const float rx = cfg.areaX > 0.f ? cfg.areaX : 1.f;
+        const float ry = cfg.areaY > 0.f ? cfg.areaY : rx;
+        ox = std::cos(a) * rx;
+        oy = std::sin(a) * ry;
     }
 }
 
@@ -121,7 +158,16 @@ void fillParticleMotion(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
     p.radial = randRange(sim.rng, cfg.radialMin, cfg.radialMax);
     p.tangential = randRange(sim.rng, cfg.tangentialMin, cfg.tangentialMax);
     p.spin = randRange(sim.rng, cfg.spinMin, cfg.spinMax);
-    p.rot = 0.f;
+    p.rot = randRange(sim.rng, cfg.startRotMin, cfg.startRotMax) * (kPi / 180.f);
+
+    const int totalFrames = cfg.hframes > 0 && cfg.vframes > 0 ? cfg.hframes * cfg.vframes : 1;
+    if (cfg.frameRandomStart > 0.f && totalFrames > 1) {
+        const float frac = cfg.frameRandomStart > 1.f ? 1.f : cfg.frameRandomStart;
+        p.frame = randRange(sim.rng, 0.f, frac) * float(totalFrames);
+    } else {
+        p.frame = 0.f;
+    }
+    p.noisePhase = randRange(sim.rng, 0.f, 1000.f);
 
     float sizeMul = 1.f;
     if (cfg.sizeVariation > 0.f) {
@@ -241,7 +287,37 @@ void syncIk3DAttach(ParticleEmitter::Config &cfg, ParticleEmitter::Attach &attac
                    cfg.y);
 }
 
+void fireSubEmitter(ParticleEmitter::Config &cfg, const std::string &trigger, float x, float y,
+                    float vx, float vy) {
+    static int g_subDepth = 0;
+    if (g_subDepth >= 8) return;  // cycle guard (A→B→A chains)
+    for (const auto &se : cfg.subEmitters) {
+        if (!se.target || se.trigger != trigger) continue;
+        // Self-referencing sub-emitters would corrupt the compaction loop.
+        if (se.target == cfg.entity) continue;
+        auto tc = se.target->config();
+        auto ts = se.target->sim();
+        if (ts->alive >= int(ts->particles.size())) continue;
+        ++g_subDepth;
+        spawnParticleAt(*tc, *ts, x, y);
+        --g_subDepth;
+        if (se.inheritVelocity > 0.f) {
+            Particle &p = ts->particles[size_t(ts->alive - 1)];
+            p.vx += vx * se.inheritVelocity;
+            p.vy += vy * se.inheritVelocity;
+        }
+    }
+}
+
 }  // namespace
+
+namespace {
+WorldCollisionFn g_worldCollision = nullptr;
+}  // namespace
+
+void setWorldCollisionResolver(WorldCollisionFn fn) { g_worldCollision = fn; }
+
+WorldCollisionFn getWorldCollisionResolver() { return g_worldCollision; }
 
 void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y) {
     if (sim.alive >= int(sim.particles.size())) return;
@@ -252,6 +328,7 @@ void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, fl
     p.x = x + ox;
     p.y = y + oy;
     fillParticleMotion(cfg, sim, p);
+    fireSubEmitter(cfg, "birth", p.x, p.y, p.vx, p.vy);
 }
 
 void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
@@ -309,15 +386,45 @@ void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim & /*s
 
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt) {
     if (sim.paused || dt <= 0.f) return;
+    if (cfg.maxDeltaTime > 0.f && dt > cfg.maxDeltaTime) dt = cfg.maxDeltaTime;
+
+    // Emitter velocity for inheritVelocity (before lastX/lastY refresh).
+    float emitVx = 0.f, emitVy = 0.f;
+    if (cfg.inheritVelocity > 0.f && sim.hasLastPos) {
+        emitVx = (cfg.x - sim.lastX) / dt;
+        emitVy = (cfg.y - sim.lastY) / dt;
+    }
+    const bool localSpace = cfg.simSpace == "local";
+    const float localDx = localSpace && sim.hasLastPos ? cfg.x - sim.lastX : 0.f;
+    const float localDy = localSpace && sim.hasLastPos ? cfg.y - sim.lastY : 0.f;
+
+    const float damp = cfg.damping > 0.f ? (cfg.damping > 1.f ? 1.f : cfg.damping) : 0.f;
+    const float dampFactor = damp > 0.f ? std::max(0.f, 1.f - damp * dt) : 1.f;
+    const float noiseFreq = cfg.noiseFrequency > 0.f ? cfg.noiseFrequency : 1.f;
+    const bool hasCollision =
+        cfg.collisionMode != "none" && (cfg.worldCollision || cfg.collisionBoundsEnabled);
+    const bool bounce = cfg.collisionMode == "bounce";
+    const bool killMode = cfg.collisionMode == "kill";
+    const bool stopMode = cfg.collisionMode == "stop";
+    const float cRadius = cfg.collisionRadius;
+    const float lifeLoss = cfg.collisionLifetimeLoss;
 
     int write = 0;
     for (int i = 0; i < sim.alive; ++i) {
         Particle &p = sim.particles[size_t(i)];
         p.life -= dt;
-        if (p.life <= 0.f) continue;
+        if (p.life <= 0.f) {
+            fireSubEmitter(cfg, "death", p.x, p.y, p.vx, p.vy);
+            continue;
+        }
 
-        float ax = p.ax;
-        float ay = p.ay;
+        if (localSpace && (localDx != 0.f || localDy != 0.f)) {
+            p.x += localDx;
+            p.y += localDy;
+        }
+
+        float ax = p.ax + cfg.gravityX;
+        float ay = p.ay + cfg.gravityY;
         const float dx = p.x - cfg.x;
         const float dy = p.y - cfg.y;
         const float len2 = dx * dx + dy * dy;
@@ -329,38 +436,466 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
             ay += rdy * p.radial + rdx * p.tangential;
         }
 
+        if (cfg.noiseStrength != 0.f) {
+            const float t = sim.emitterAge * cfg.noiseSpeed;
+            ax += smoothNoise2(p.x * noiseFreq + t, p.y * noiseFreq + p.noisePhase) *
+                  cfg.noiseStrength;
+            ay += smoothNoise2(p.y * noiseFreq + t, p.x * noiseFreq - p.noisePhase) *
+                  cfg.noiseStrength;
+        }
+
+        // Radial force fields (strength > 0 attract, < 0 repel).
+        for (const auto &f : cfg.forceFields) {
+            if (f.radius <= 0.f || f.strength == 0.f) continue;
+            const float fdx = f.x - p.x;
+            const float fdy = f.y - p.y;
+            const float dist = std::sqrt(fdx * fdx + fdy * fdy);
+            if (dist >= f.radius) continue;
+            const float fall = std::pow(1.f - dist / f.radius, f.falloff > 0.f ? f.falloff : 1.f);
+            const float inv = dist > kEps ? 1.f / dist : 0.f;
+            ax += fdx * inv * f.strength * fall;
+            ay += fdy * inv * f.strength * fall;
+        }
+
         p.vx += ax * dt;
         p.vy += ay * dt;
+
+        // Velocity-over-lifetime multiplier (applied as a smooth ratio).
+        if (!cfg.velocityCurve.empty() && p.lifetime > 0.f) {
+            const float tNew = 1.f - (p.life / p.lifetime);
+            const float tOld = tNew - dt / p.lifetime;
+            const float vOld = cfg.velocityCurve.sample(tOld, 1.f);
+            const float vNew = cfg.velocityCurve.sample(tNew, 1.f);
+            if (vOld > 1e-4f) {
+                const float ratio = vNew / vOld;
+                p.vx *= ratio;
+                p.vy *= ratio;
+            }
+        }
+
+        if (dampFactor != 1.f) {
+            p.vx *= dampFactor;
+            p.vy *= dampFactor;
+        }
+        if (cfg.limitVelocity > 0.f) {
+            const float sp2 = p.vx * p.vx + p.vy * p.vy;
+            const float max2 = cfg.limitVelocity * cfg.limitVelocity;
+            if (sp2 > max2) {
+                const float s = std::sqrt(max2 / sp2);
+                p.vx *= s;
+                p.vy *= s;
+            }
+        }
+
         p.x += p.vx * dt;
         p.y += p.vy * dt;
         p.rot += p.spin * dt;
+        p.frame += cfg.frameRate * dt;
+
+        if (hasCollision) {
+            const float scale = p.size > 0.f ? p.size : 1.f;
+            const float rad =
+                cRadius > 0.f ? cRadius : std::max(cfg.particleW, cfg.particleH) * 0.5f * scale;
+            float nx = 0.f, ny = 0.f;
+            bool hit = false;
+            if (cfg.worldCollision) {
+                if (WorldCollisionFn fn = getWorldCollisionResolver())
+                    if (fn(p.x, p.y, rad, nx, ny)) hit = true;
+            }
+            if (!hit && cfg.collisionBoundsEnabled) {
+                if (p.x - rad < cfg.boundsMinX) {
+                    nx += 1.f;
+                    p.x = cfg.boundsMinX + rad;
+                    hit = true;
+                } else if (p.x + rad > cfg.boundsMaxX) {
+                    nx += -1.f;
+                    p.x = cfg.boundsMaxX - rad;
+                    hit = true;
+                }
+                if (p.y - rad < cfg.boundsMinY) {
+                    ny += 1.f;
+                    p.y = cfg.boundsMinY + rad;
+                    hit = true;
+                } else if (p.y + rad > cfg.boundsMaxY) {
+                    ny += -1.f;
+                    p.y = cfg.boundsMaxY - rad;
+                    hit = true;
+                }
+                const float nlen = std::sqrt(nx * nx + ny * ny);
+                if (nlen > kEps) {
+                    nx /= nlen;
+                    ny /= nlen;
+                }
+            }
+            if (hit) {
+                fireSubEmitter(cfg, "collision", p.x, p.y, p.vx, p.vy);
+                if (killMode) continue;
+                if (stopMode) {
+                    p.vx = 0.f;
+                    p.vy = 0.f;
+                } else if (bounce && (nx != 0.f || ny != 0.f)) {
+                    const float dot = p.vx * nx + p.vy * ny;
+                    p.vx = (p.vx - 2.f * dot * nx) * cfg.collisionRestitution;
+                    p.vy = (p.vy - 2.f * dot * ny) * cfg.collisionRestitution;
+                }
+                if (lifeLoss > 0.f) {
+                    p.life -= p.lifetime * lifeLoss;
+                    if (p.life <= 0.f) continue;
+                }
+            }
+        }
 
         if (write != i) sim.particles[size_t(write)] = p;
         ++write;
     }
     sim.alive = write;
 
-    if (!sim.active) return;
-
-    if (cfg.emitterLife >= 0.f) {
-        sim.emitterAge += dt;
-        if (sim.emitterAge >= cfg.emitterLife) {
-            sim.active = false;
-            sim.emitAccum = 0.f;
-            return;
-        }
+    if (!sim.active) {
+        sim.lastX = cfg.x;
+        sim.lastY = cfg.y;
+        sim.hasLastPos = true;
+        return;
     }
 
-    if (cfg.emissionRate <= 0.f) return;
-    sim.emitAccum += cfg.emissionRate * dt;
-    while (sim.emitAccum >= 1.f) {
+    sim.emitterAge += dt;
+
+    // Timed bursts fire once while the emitter is active.
+    auto spawnWithInherit = [&]() {
         spawnParticle(cfg, sim);
-        sim.emitAccum -= 1.f;
-        if (sim.alive >= int(sim.particles.size())) {
-            sim.emitAccum = 0.f;
-            break;
+        if (cfg.inheritVelocity > 0.f && sim.alive > 0) {
+            Particle &np = sim.particles[size_t(sim.alive - 1)];
+            np.vx += emitVx * cfg.inheritVelocity;
+            np.vy += emitVy * cfg.inheritVelocity;
+        }
+    };
+    for (auto &b : cfg.bursts) {
+        if (!b.emitted && b.count > 0 && sim.emitterAge >= b.time) {
+            b.emitted = true;
+            for (int k = 0; k < b.count; ++k) {
+                if (sim.alive >= int(sim.particles.size())) break;
+                spawnWithInherit();
+            }
         }
     }
+
+    if (cfg.emissionRate > 0.f) {
+        sim.emitAccum += cfg.emissionRate * dt;
+        while (sim.emitAccum >= 1.f) {
+            if (sim.alive >= int(sim.particles.size())) {
+                if (cfg.overflowMode == "pause") break;  // keep accum; retry next frame
+                if (cfg.overflowMode == "warn" && !sim.overflowWarned) {
+                    sim.overflowWarned = true;
+                    std::fprintf(stderr,
+                                 "[particles] buffer overflow (emissionRate=%.1f, buffer=%d)\n",
+                                 cfg.emissionRate, int(sim.particles.size()));
+                }
+                sim.emitAccum = 0.f;
+                break;
+            }
+            spawnWithInherit();
+            sim.emitAccum -= 1.f;
+        }
+    }
+
+    // Expire AFTER this frame's emission so a short-lived emitter still
+    // releases the particles due during its final frame.
+    if (cfg.emitterLife >= 0.f && sim.emitterAge >= cfg.emitterLife) {
+        sim.active = false;
+        sim.emitAccum = 0.f;
+    }
+
+    sim.lastX = cfg.x;
+    sim.lastY = cfg.y;
+    sim.hasLastPos = true;
+}
+
+namespace {
+
+constexpr int kGpuStride = 16;
+
+eve::gpgpu::ComputeShader *sharedGpuParticleShader(eve::gpgpu::Gpgpu *gpgpu) {
+    static eve::gpgpu::ComputeShader *s_shader = nullptr;
+    static eve::gpgpu::Gpgpu *s_gpgpu = nullptr;
+    if (!s_shader || s_gpgpu != gpgpu) {
+        delete s_shader;
+        s_shader = nullptr;
+        try {
+            s_shader = gpgpu->newShader(kParticleGpuKernel);
+        } catch (...) {
+            s_shader = nullptr;
+        }
+        s_gpgpu = gpgpu;
+    }
+    return s_shader;
+}
+
+void packParticles(const ParticleEmitter::Sim &sim, std::vector<float> &mirror) {
+    const size_t n = sim.particles.size();
+    mirror.assign(n * size_t(kGpuStride), 0.f);
+    for (size_t i = 0; i < n && int(i) < sim.alive; ++i) {
+        const Particle &p = sim.particles[i];
+        float *m = mirror.data() + i * size_t(kGpuStride);
+        m[0] = p.x;
+        m[1] = p.y;
+        m[2] = p.vx;
+        m[3] = p.vy;
+        m[4] = p.life;
+        m[5] = p.lifetime;
+        m[6] = p.size;
+        m[7] = p.rot;
+        m[8] = p.spin;
+        m[9] = p.frame;
+        m[10] = p.radial;
+        m[11] = p.tangential;
+        m[12] = p.ax;
+        m[13] = p.ay;
+        m[14] = p.noisePhase;
+    }
+}
+
+void unpackParticles(const std::vector<float> &mirror, ParticleEmitter::Sim &sim) {
+    const size_t n = sim.particles.size();
+    sim.alive = 0;
+    for (size_t i = 0; i < n; ++i) {
+        const float *m = mirror.data() + i * size_t(kGpuStride);
+        Particle &p = sim.particles[i];
+        p.x = m[0];
+        p.y = m[1];
+        p.vx = m[2];
+        p.vy = m[3];
+        p.life = m[4];
+        p.lifetime = m[5];
+        p.size = m[6];
+        p.rot = m[7];
+        p.spin = m[8];
+        p.frame = m[9];
+        p.radial = m[10];
+        p.tangential = m[11];
+        p.ax = m[12];
+        p.ay = m[13];
+        p.noisePhase = m[14];
+        if (p.life > 0.f) ++sim.alive;
+    }
+}
+
+}  // namespace
+
+/**
+ * GPU-accelerated variant of stepEmitterSim. The per-particle integration loop
+ * runs in a compute shader; spawning / death compaction / collision stay on
+ * the CPU. Returns false when the GPU path is unavailable — the caller then
+ * falls back to stepEmitterSim.
+ */
+bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
+                       ParticleEmitter::GpuSim &gpu, float dt) {
+    if (sim.paused || dt <= 0.f) return true;
+    if (cfg.maxDeltaTime > 0.f && dt > cfg.maxDeltaTime) dt = cfg.maxDeltaTime;
+
+    auto *gpgpu = eve::gpgpu::Gpgpu::create();
+    if (!gpgpu || !gpgpu->isAvailable()) return false;
+
+    if (!gpu.initialized) {
+        gpu.initialized = true;
+        const size_t n = sim.particles.size();
+        gpu.mirror.assign(n * size_t(kGpuStride), 0.f);
+        try {
+            gpu.buffer.reset(
+                gpgpu->newBuffer(int(n * size_t(kGpuStride) * sizeof(float)), "storage"));
+        } catch (...) {
+            gpu.failed = true;
+            return false;
+        }
+        if (!gpu.buffer) {
+            gpu.failed = true;
+            return false;
+        }
+    }
+    if (gpu.failed) return false;
+
+    auto *shader = sharedGpuParticleShader(gpgpu);
+    if (!shader) {
+        gpu.failed = true;
+        return false;
+    }
+
+    // Emitter velocity for inheritVelocity (before lastX/lastY refresh).
+    float emitVx = 0.f, emitVy = 0.f;
+    if (cfg.inheritVelocity > 0.f && sim.hasLastPos) {
+        emitVx = (cfg.x - sim.lastX) / dt;
+        emitVy = (cfg.y - sim.lastY) / dt;
+    }
+    const bool localSpace = cfg.simSpace == "local";
+    const float localDx = localSpace && sim.hasLastPos ? cfg.x - sim.lastX : 0.f;
+    const float localDy = localSpace && sim.hasLastPos ? cfg.y - sim.lastY : 0.f;
+
+    // 1) Upload the current CPU state, 2) dispatch the integration kernel,
+    // 3) read back the integrated state.
+    packParticles(sim, gpu.mirror);
+    try {
+        gpu.buffer->writeFloat32s(gpu.mirror.data(), int(gpu.mirror.size()), 0);
+        const int alive = sim.alive;
+        if (alive > 0) {
+            shader->bindBuffer(0, gpu.buffer.get());
+            shader->setFloat(0, float(alive));
+            shader->setFloat(1, dt);
+            shader->setFloat(2, cfg.x);
+            shader->setFloat(3, cfg.y);
+            shader->setFloat(4, cfg.gravityX);
+            shader->setFloat(5, cfg.gravityY);
+            shader->setFloat(6, cfg.damping);
+            shader->setFloat(7, cfg.limitVelocity);
+            shader->setFloat(8, cfg.noiseStrength);
+            shader->setFloat(9, cfg.noiseFrequency > 0.f ? cfg.noiseFrequency : 1.f);
+            shader->setFloat(10, cfg.noiseSpeed);
+            shader->setFloat(11, sim.emitterAge);
+            shader->setFloat(12, cfg.frameRate);
+            const int groups = (alive + 63) / 64;
+            gpgpu->dispatch(shader, groups, 1, 1);
+        }
+        gpu.buffer->readFloat32s(gpu.mirror.data(), int(gpu.mirror.size()), 0);
+    } catch (...) {
+        gpu.failed = true;
+        return false;
+    }
+    unpackParticles(gpu.mirror, sim);
+    const int gpuAlive = sim.alive;
+
+    // 4) CPU-side post-integration: local-space tracking, collision, death
+    //    compaction (fire death sub-emitters), emitter age, bursts, emission.
+    const bool hasCollision =
+        cfg.collisionMode != "none" && (cfg.worldCollision || cfg.collisionBoundsEnabled);
+    const bool bounce = cfg.collisionMode == "bounce";
+    const bool killMode = cfg.collisionMode == "kill";
+    const bool stopMode = cfg.collisionMode == "stop";
+    const float cRadius = cfg.collisionRadius;
+    const float lifeLoss = cfg.collisionLifetimeLoss;
+
+    int write = 0;
+    for (int i = 0; i < int(sim.particles.size()); ++i) {
+        Particle &p = sim.particles[size_t(i)];
+        if (p.life <= 0.f) {
+            if (i < gpuAlive) fireSubEmitter(cfg, "death", p.x, p.y, p.vx, p.vy);
+            continue;
+        }
+        if (localSpace && (localDx != 0.f || localDy != 0.f)) {
+            p.x += localDx;
+            p.y += localDy;
+        }
+        if (hasCollision) {
+            const float scale = p.size > 0.f ? p.size : 1.f;
+            const float rad =
+                cRadius > 0.f ? cRadius : std::max(cfg.particleW, cfg.particleH) * 0.5f * scale;
+            float nx = 0.f, ny = 0.f;
+            bool hit = false;
+            if (cfg.worldCollision) {
+                if (WorldCollisionFn fn = getWorldCollisionResolver())
+                    if (fn(p.x, p.y, rad, nx, ny)) hit = true;
+            }
+            if (!hit && cfg.collisionBoundsEnabled) {
+                if (p.x - rad < cfg.boundsMinX) {
+                    nx += 1.f;
+                    p.x = cfg.boundsMinX + rad;
+                    hit = true;
+                } else if (p.x + rad > cfg.boundsMaxX) {
+                    nx += -1.f;
+                    p.x = cfg.boundsMaxX - rad;
+                    hit = true;
+                }
+                if (p.y - rad < cfg.boundsMinY) {
+                    ny += 1.f;
+                    p.y = cfg.boundsMinY + rad;
+                    hit = true;
+                } else if (p.y + rad > cfg.boundsMaxY) {
+                    ny += -1.f;
+                    p.y = cfg.boundsMaxY - rad;
+                    hit = true;
+                }
+                const float nlen = std::sqrt(nx * nx + ny * ny);
+                if (nlen > kEps) {
+                    nx /= nlen;
+                    ny /= nlen;
+                }
+            }
+            if (hit) {
+                fireSubEmitter(cfg, "collision", p.x, p.y, p.vx, p.vy);
+                if (killMode) continue;
+                if (stopMode) {
+                    p.vx = 0.f;
+                    p.vy = 0.f;
+                } else if (bounce && (nx != 0.f || ny != 0.f)) {
+                    const float dot = p.vx * nx + p.vy * ny;
+                    p.vx = (p.vx - 2.f * dot * nx) * cfg.collisionRestitution;
+                    p.vy = (p.vy - 2.f * dot * ny) * cfg.collisionRestitution;
+                }
+                if (lifeLoss > 0.f) {
+                    p.life -= p.lifetime * lifeLoss;
+                    if (p.life <= 0.f) continue;
+                }
+            }
+        }
+        if (write != i) sim.particles[size_t(write)] = p;
+        ++write;
+    }
+    sim.alive = write;
+    // Mark stale tail slots dead so the next readback never re-fires death subs.
+    for (int i = write; i < int(sim.particles.size()); ++i)
+        sim.particles[size_t(i)].life = -1.f;
+
+    if (!sim.active) {
+        sim.lastX = cfg.x;
+        sim.lastY = cfg.y;
+        sim.hasLastPos = true;
+        return true;
+    }
+
+    sim.emitterAge += dt;
+
+    auto spawnWithInherit = [&]() {
+        spawnParticle(cfg, sim);
+        if (cfg.inheritVelocity > 0.f && sim.alive > 0) {
+            Particle &np = sim.particles[size_t(sim.alive - 1)];
+            np.vx += emitVx * cfg.inheritVelocity;
+            np.vy += emitVy * cfg.inheritVelocity;
+        }
+    };
+    for (auto &b : cfg.bursts) {
+        if (!b.emitted && b.count > 0 && sim.emitterAge >= b.time) {
+            b.emitted = true;
+            for (int k = 0; k < b.count; ++k) {
+                if (sim.alive >= int(sim.particles.size())) break;
+                spawnWithInherit();
+            }
+        }
+    }
+    if (cfg.emissionRate > 0.f) {
+        sim.emitAccum += cfg.emissionRate * dt;
+        while (sim.emitAccum >= 1.f) {
+            if (sim.alive >= int(sim.particles.size())) {
+                if (cfg.overflowMode == "pause") break;
+                if (cfg.overflowMode == "warn" && !sim.overflowWarned) {
+                    sim.overflowWarned = true;
+                    std::fprintf(stderr,
+                                 "[particles] buffer overflow (emissionRate=%.1f, buffer=%d)\n",
+                                 cfg.emissionRate, int(sim.particles.size()));
+                }
+                sim.emitAccum = 0.f;
+                break;
+            }
+            spawnWithInherit();
+            sim.emitAccum -= 1.f;
+        }
+    }
+
+    // Expire AFTER this frame's emission (see stepEmitterSim).
+    if (cfg.emitterLife >= 0.f && sim.emitterAge >= cfg.emitterLife) {
+        sim.active = false;
+        sim.emitAccum = 0.f;
+    }
+
+    sim.lastX = cfg.x;
+    sim.lastY = cfg.y;
+    sim.hasLastPos = true;
+    return true;
 }
 
 ParticleEmitter *ParticleEmitter::createEmitter(int bufferSize) {
@@ -374,6 +909,8 @@ ParticleEmitter *ParticleEmitter::createEmitter(int bufferSize) {
     (void)e->draw();
     (void)e->attach();
     (void)e->skinSource();
+    (void)e->lights();
+    (void)e->gpuSim();
     return e;
 }
 
@@ -441,7 +978,7 @@ void ParticleEmitter::setTangentialAcceleration(float minA, float maxA) {
 
 void ParticleEmitter::setEmissionArea(const std::string &type, float x, float y) {
     auto c = config();
-    if (type == "ellipse" || type == "rect")
+    if (type == "ellipse" || type == "rect" || type == "line" || type == "ring")
         c->areaType = type;
     else
         c->areaType = "none";
@@ -478,6 +1015,194 @@ void ParticleEmitter::setSpin(float minSpin, float maxSpin) {
     c->spinMax = maxSpin < minSpin ? minSpin : maxSpin;
 }
 
+void ParticleEmitter::setStartRotation(float minDeg, float maxDeg) {
+    auto c = config();
+    c->startRotMin = minDeg;
+    c->startRotMax = maxDeg < minDeg ? minDeg : maxDeg;
+}
+
+void ParticleEmitter::addBurst(float time, int count) {
+    if (count <= 0) return;
+    config()->bursts.push_back(Config::Burst{time < 0.f ? 0.f : time, count, false});
+}
+
+void ParticleEmitter::clearBursts() { config()->bursts.clear(); }
+
+void ParticleEmitter::setPrewarm(float seconds) {
+    config()->prewarmSeconds = seconds < 0.f ? 0.f : seconds;
+}
+
+float ParticleEmitter::getPrewarmSeconds() { return config()->prewarmSeconds; }
+
+void ParticleEmitter::setGravity(float x, float y) {
+    auto c = config();
+    c->gravityX = x;
+    c->gravityY = y;
+}
+
+void ParticleEmitter::setDamping(float perSecond) {
+    config()->damping = perSecond < 0.f ? 0.f : perSecond;
+}
+
+void ParticleEmitter::setLimitVelocity(float maxSpeed) {
+    config()->limitVelocity = maxSpeed < 0.f ? 0.f : maxSpeed;
+}
+
+void ParticleEmitter::clearVelocityCurve() { config()->velocityCurve.clear(); }
+
+void ParticleEmitter::addVelocityCurvePoint(float t, float v) {
+    config()->velocityCurve.add(t, v);
+}
+
+void ParticleEmitter::setInheritVelocity(float fraction) {
+    config()->inheritVelocity =
+        fraction < 0.f ? 0.f : (fraction > 1.f ? 1.f : fraction);
+}
+
+void ParticleEmitter::setSimulationSpace(const std::string &space) {
+    config()->simSpace = space == "local" ? "local" : "world";
+}
+
+void ParticleEmitter::setNoise(float strength, float frequency, float speed) {
+    auto c = config();
+    c->noiseStrength = strength;
+    c->noiseFrequency = frequency > 0.f ? frequency : 1.f;
+    c->noiseSpeed = speed;
+}
+
+void ParticleEmitter::setGpuSimulation(bool enable) {
+    config()->gpuSimulation = enable;
+    gpuSim()->enabled = enable;
+}
+
+bool ParticleEmitter::getGpuSimulation() { return config()->gpuSimulation; }
+
+void ParticleEmitter::setCollision(const std::string &mode, float radius, float restitution,
+                                   float lifetimeLoss) {
+    auto c = config();
+    c->collisionMode =
+        (mode == "kill" || mode == "bounce" || mode == "stop") ? mode : "none";
+    c->collisionRadius = radius < 0.f ? 0.f : radius;
+    c->collisionRestitution = restitution < 0.f ? 0.f : restitution;
+    c->collisionLifetimeLoss =
+        lifetimeLoss < 0.f ? 0.f : (lifetimeLoss > 1.f ? 1.f : lifetimeLoss);
+}
+
+void ParticleEmitter::setCollisionBounds(bool enabled, float minX, float minY, float maxX,
+                                         float maxY) {
+    auto c = config();
+    c->collisionBoundsEnabled = enabled;
+    c->boundsMinX = minX;
+    c->boundsMinY = minY;
+    c->boundsMaxX = maxX;
+    c->boundsMaxY = maxY;
+}
+
+void ParticleEmitter::setWorldCollision(bool enabled) { config()->worldCollision = enabled; }
+
+void ParticleEmitter::setRenderMode(const std::string &mode, float stretchFactor) {
+    auto c = config();
+    c->renderMode = mode == "stretched" ? "stretched" : "billboard";
+    c->stretchFactor = stretchFactor < 0.f ? 0.f : stretchFactor;
+}
+
+void ParticleEmitter::setOverflowMode(const std::string &mode) {
+    config()->overflowMode =
+        (mode == "pause" || mode == "warn") ? mode : "drop";
+}
+
+void ParticleEmitter::setMaxDeltaTime(float seconds) {
+    config()->maxDeltaTime = seconds < 0.f ? 0.f : seconds;
+}
+
+void ParticleEmitter::addSubEmitter(ParticleEmitter *target, const std::string &trigger,
+                                    float inheritVelocity) {
+    if (!target || target == this) return;
+    Config::SubEmitter se;
+    se.target = target;
+    se.trigger = (trigger == "death" || trigger == "collision") ? trigger : "birth";
+    se.inheritVelocity = inheritVelocity < 0.f ? 0.f : (inheritVelocity > 1.f ? 1.f : inheritVelocity);
+    config()->subEmitters.push_back(se);
+}
+
+void ParticleEmitter::clearSubEmitters() { config()->subEmitters.clear(); }
+
+void ParticleEmitter::addForceField(float x, float y, float radius, float strength,
+                                    float falloff) {
+    if (radius <= 0.f || strength == 0.f) return;
+    Config::ForceField f;
+    f.x = x;
+    f.y = y;
+    f.radius = radius;
+    f.strength = strength;
+    f.falloff = falloff > 0.f ? falloff : 1.f;
+    config()->forceFields.push_back(f);
+}
+
+void ParticleEmitter::clearForceFields() { config()->forceFields.clear(); }
+
+void ParticleEmitter::setShader(graphics::Shader *shader) { draw()->shader = shader; }
+graphics::Shader *ParticleEmitter::getShader() { return draw()->shader; }
+
+void ParticleEmitter::setLights(bool enabled, float radius, float intensity, float r, float g,
+                                float b, int maxLights) {
+    auto c = config();
+    c->lights.enabled = enabled;
+    c->lights.radius = radius > 0.f ? radius : 0.f;
+    c->lights.intensity = intensity;
+    c->lights.r = r;
+    c->lights.g = g;
+    c->lights.b = b;
+    c->lights.max = maxLights > 0 ? maxLights : 0;
+}
+
+bool ParticleEmitter::getLightsEnabled() { return config()->lights.enabled; }
+
+void ParticleEmitter::setBlendMode(const std::string &mode) {
+    if (mode == "additive")
+        draw()->blend = graphics::BlendMode::Additive;
+    else if (mode == "opaque")
+        draw()->blend = graphics::BlendMode::Opaque;
+    else
+        draw()->blend = graphics::BlendMode::Alpha;
+}
+
+std::string ParticleEmitter::getBlendMode() {
+    switch (draw()->blend) {
+        case graphics::BlendMode::Additive:
+            return "additive";
+        case graphics::BlendMode::Opaque:
+            return "opaque";
+        case graphics::BlendMode::Alpha:
+        default:
+            return "alpha";
+    }
+}
+
+void ParticleEmitter::setFlipbook(int h, int v, float framesPerSecond, float randomStart) {
+    auto c = config();
+    c->hframes = h > 0 ? h : 1;
+    c->vframes = v > 0 ? v : 1;
+    c->frameRate = framesPerSecond;
+    c->frameRandomStart = randomStart < 0.f ? 0.f : (randomStart > 1.f ? 1.f : randomStart);
+}
+
+void ParticleEmitter::clearColorGradient() { config()->colorGradient.clear(); }
+
+void ParticleEmitter::addColorStop(float t, float r, float g, float b, float a) {
+    config()->colorGradient.add(t, r, g, b, a);
+}
+
+void ParticleEmitter::clearSizeCurve() { config()->sizeCurve.clear(); }
+
+void ParticleEmitter::addSizeCurvePoint(float t, float v) { config()->sizeCurve.add(t, v); }
+
+void ParticleEmitter::clearRotationCurve() { config()->rotationCurve.clear(); }
+
+void ParticleEmitter::addRotationCurvePoint(float t, float v) {
+    config()->rotationCurve.add(t, v);
+}
+
 void ParticleEmitter::setColorStart(float r, float g, float b, float a) {
     config()->colorStart = Color(r, g, b, a);
 }
@@ -503,6 +1228,13 @@ void ParticleEmitter::start() {
     s->active = true;
     s->paused = false;
     s->emitterAge = 0.f;
+    for (auto &b : config()->bursts) b.emitted = false;
+    const float prewarm = config()->prewarmSeconds;
+    if (prewarm > 0.f) {
+        constexpr float kPrewarmDt = 1.f / 60.f;
+        const int steps = int(std::ceil(prewarm / kPrewarmDt));
+        for (int i = 0; i < steps; ++i) stepEmitterSim(*config(), *s, kPrewarmDt);
+    }
 }
 
 void ParticleEmitter::stop() {
@@ -511,6 +1243,9 @@ void ParticleEmitter::stop() {
     s->paused = false;
     s->emitAccum = 0.f;
     s->emitterAge = 0.f;
+    s->lastX = config()->x;
+    s->lastY = config()->y;
+    s->hasLastPos = true;
 }
 
 void ParticleEmitter::pause() {
@@ -523,13 +1258,28 @@ void ParticleEmitter::reset() {
     s->alive = 0;
     s->emitAccum = 0.f;
     s->emitterAge = 0.f;
+    s->hasLastPos = false;
+    s->overflowWarned = false;
+    for (auto &b : config()->bursts) b.emitted = false;
     for (auto &p : s->particles) p.life = 0.f;
+    auto g = gpuSim();
+    if (g->buffer) {
+        try {
+            g->buffer->fillFloat32(0.f);
+        } catch (...) {
+        }
+    }
+    if (!g->mirror.empty()) std::fill(g->mirror.begin(), g->mirror.end(), 0.f);
 }
 
 void ParticleEmitter::emit(int count) {
     if (count <= 0) return;
     auto c = config();
     auto s = sim();
+    // Spawn at the CURRENT attached position: refresh bone/skin sync so a
+    // script that moves the pose then emits gets the new origin (no one-frame
+    // lag). No-op for unattached emitters.
+    syncAttach();
     for (int i = 0; i < count; ++i) spawnParticle(*c, *s);
 }
 

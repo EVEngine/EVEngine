@@ -18,6 +18,12 @@ public:
     static void render(graphics::Graphics *gfx);
 };
 
+/** Syncs pooled Light2D entities with alive particles (emitters with lights.enabled). */
+class ParticleLightSystem {
+public:
+    static void update();
+};
+
 /**
  * Polls bound config files (Resource.path) and hot-reloads when modtime changes.
  * Returns number of emitters reloaded.
