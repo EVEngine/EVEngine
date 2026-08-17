@@ -52,6 +52,19 @@ void linkAsLastChild(SceneHost::Tree &tree, int parentIndex, int childIndex) {
     tree.nodes[size_t(c)].nextSibling = childIndex;
 }
 
+/** Add a link of a kind, replacing an existing same-kind link (keep others). */
+bool setLink(SceneNode &n, LinkKind kind, void *target, int syncMode) {
+    for (auto &l : n.links) {
+        if (l.kind == kind) {
+            l.target = target;
+            l.syncMode = syncMode;
+            return true;
+        }
+    }
+    n.links.push_back(SceneLink{kind, target, syncMode});
+    return true;
+}
+
 void forEachDepthFirstImpl(SceneHost *host, int nodeIndex, void (*fn)(SceneHost *, int, void *),
                            void *user) {
     if (!host || nodeIndex < 0) return;
@@ -161,10 +174,16 @@ SceneNode *SceneHost::findByPath(const std::string &path) {
 int SceneHost::findIndexById(const std::string &id) {
     if (id.empty()) return -1;
     auto t = tree();
-    for (int i = 0; i < int(t->nodes.size()); ++i) {
-        if (t->nodes[size_t(i)].id == id) return i;
+    if (!t->indexValid) {
+        t->idIndex.clear();
+        for (int i = 0; i < int(t->nodes.size()); ++i) {
+            const auto &nid = t->nodes[size_t(i)].id;
+            if (!nid.empty()) t->idIndex[nid] = i;
+        }
+        t->indexValid = true;
     }
-    return -1;
+    auto it = t->idIndex.find(id);
+    return it != t->idIndex.end() ? it->second : -1;
 }
 
 int SceneHost::findIndexByKey(const std::string &key) {
@@ -348,13 +367,15 @@ bool SceneHost::setParent(int childIndex, int parentIndex) {
     if (parentIndex < 0) {
         t->nodes[size_t(childIndex)].parent = -1;
         t->nodes[size_t(childIndex)].nextSibling = -1;
-        t->nodes[size_t(childIndex)].localDirty = true;
-        t->transformDirty = true;
+        markSubtreeDirty(childIndex);
+        fireEvent("node_moved", t->nodes[size_t(childIndex)].id, "");
         return true;
     }
     linkAsLastChild(*t, parentIndex, childIndex);
-    t->nodes[size_t(childIndex)].localDirty = true;
-    t->transformDirty = true;
+    markSubtreeDirty(childIndex);
+    markSubtreeDirty(parentIndex);
+    fireEvent("node_moved", t->nodes[size_t(childIndex)].id,
+              t->nodes[size_t(parentIndex)].id);
     return true;
 }
 
@@ -365,9 +386,22 @@ bool SceneHost::removeChild(int parentIndex, int childIndex) {
     if (childIndex < 0 || childIndex >= int(t->nodes.size())) return false;
     if (t->nodes[size_t(childIndex)].parent != parentIndex) return false;
     unlinkFromParent(*t, childIndex);
-    t->nodes[size_t(childIndex)].localDirty = true;
-    t->transformDirty = true;
+    markSubtreeDirty(childIndex);
+    markSubtreeDirty(parentIndex);
+    fireEvent("node_moved", t->nodes[size_t(childIndex)].id, "");
     return true;
+}
+
+void SceneHost::markSubtreeDirty(int nodeIndex) {
+    auto t = tree();
+    if (nodeIndex < 0 || nodeIndex >= int(t->nodes.size())) return;
+    t->nodes[size_t(nodeIndex)].subtreeDirty = true;
+    t->nodes[size_t(nodeIndex)].localDirty = true;
+}
+
+void SceneHost::fireEvent(const std::string &action, const std::string &nodeId,
+                          const std::string &parentId) {
+    if (eventHandler_) eventHandler_(this, action, nodeId, parentId);
 }
 
 void SceneHost::forEachDepthFirst(int nodeIndex, void (*fn)(SceneHost *, int, void *), void *user) {
@@ -460,7 +494,7 @@ std::vector<SceneNode *> SceneHost::findAllBySpace(const std::string &space) {
 
 std::vector<SceneNode *> SceneHost::findAllLinked() {
     return filter([&](SceneHost *, int, const SceneNode &n) {
-        return n.linkTarget != nullptr && !n.linkKind.empty();
+        return !n.links.empty();
     });
 }
 
@@ -490,26 +524,124 @@ std::vector<std::string> SceneHost::collectIdsVisible(bool visible) {
 
 bool SceneHost::linkRenderable2D(const std::string &nodeId, graphics::Renderable2D *r) {
     SceneNode *n = findById(nodeId);
-    if (!n || !r) return false;
-    n->linkKind = "renderable2d";
-    n->linkTarget = r;
-    return true;
+    return n ? setLink(*n, LinkKind::Renderable2D, r, 0) : false;
 }
 
 bool SceneHost::linkRenderable3D(const std::string &nodeId, graphics::Renderable3D *r) {
     SceneNode *n = findById(nodeId);
-    if (!n || !r) return false;
-    n->linkKind = "renderable3d";
-    n->linkTarget = r;
-    return true;
+    return n ? setLink(*n, LinkKind::Renderable3D, r, 0) : false;
+}
+
+bool SceneHost::linkPhysics2D(const std::string &nodeId, physics::Body *b, int syncMode) {
+    SceneNode *n = findById(nodeId);
+    return n ? setLink(*n, LinkKind::Physics2D, b, syncMode) : false;
+}
+
+bool SceneHost::linkPhysics3D(const std::string &nodeId, physics::Body3D *b, int syncMode) {
+    SceneNode *n = findById(nodeId);
+    return n ? setLink(*n, LinkKind::Physics3D, b, syncMode) : false;
+}
+
+bool SceneHost::linkCamera3D(const std::string &nodeId, graphics::Camera3D *c) {
+    SceneNode *n = findById(nodeId);
+    return n ? setLink(*n, LinkKind::Camera3D, c, 0) : false;
+}
+
+bool SceneHost::linkAudio3D(const std::string &nodeId, audio::Source *s) {
+    SceneNode *n = findById(nodeId);
+    return n ? setLink(*n, LinkKind::Audio3D, s, 0) : false;
+}
+
+bool SceneHost::unlink(const std::string &nodeId, LinkKind kind) {
+    SceneNode *n = findById(nodeId);
+    if (!n) return false;
+    for (auto it = n->links.begin(); it != n->links.end(); ++it) {
+        if (it->kind == kind) {
+            n->links.erase(it);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool SceneHost::unlink(const std::string &nodeId) {
     SceneNode *n = findById(nodeId);
     if (!n) return false;
-    n->linkKind.clear();
-    n->linkTarget = nullptr;
+    n->links.clear();
     return true;
+}
+
+SceneLink *SceneHost::findLink(SceneNode *node, LinkKind kind) {
+    if (!node) return nullptr;
+    for (auto &l : node->links) {
+        if (l.kind == kind) return &l;
+    }
+    return nullptr;
+}
+
+const SceneLink *SceneHost::findLink(const SceneNode *node, LinkKind kind) const {
+    if (!node) return nullptr;
+    for (const auto &l : node->links) {
+        if (l.kind == kind) return &l;
+    }
+    return nullptr;
+}
+
+int SceneHost::linkCount(const std::string &nodeId) {
+    SceneNode *n = findById(nodeId);
+    return n ? int(n->links.size()) : 0;
+}
+
+bool SceneHost::setParentById(const std::string &childId, const std::string &parentId) {
+    const int childIndex = findIndexById(childId);
+    if (childIndex < 0) return false;
+    const int parentIndex = parentId.empty() ? -1 : findIndexById(parentId);
+    if (parentIndex < 0 && !parentId.empty()) return false;
+    return setParent(childIndex, parentIndex);
+}
+
+bool SceneHost::removeChildById(const std::string &parentId, const std::string &childId) {
+    const int parentIndex = findIndexById(parentId);
+    const int childIndex = findIndexById(childId);
+    if (parentIndex < 0 || childIndex < 0) return false;
+    return removeChild(parentIndex, childIndex);
+}
+
+bool SceneHost::addTag(SceneNode *node, const std::string &tag) {
+    if (!node || tag.empty()) return false;
+    for (const auto &t : node->tags) {
+        if (t == tag) return false;
+    }
+    node->tags.push_back(tag);
+    return true;
+}
+
+bool SceneHost::removeTag(SceneNode *node, const std::string &tag) {
+    if (!node) return false;
+    for (auto it = node->tags.begin(); it != node->tags.end(); ++it) {
+        if (*it == tag) {
+            node->tags.erase(it);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SceneHost::hasTag(const SceneNode *node, const std::string &tag) const {
+    if (!node) return false;
+    for (const auto &t : node->tags) {
+        if (t == tag) return true;
+    }
+    return false;
+}
+
+std::vector<SceneNode *> SceneHost::findAllByTag(const std::string &tag) {
+    return filter([&](SceneHost *, int, const SceneNode &n) {
+        for (const auto &t : n.tags) {
+            if (t == tag) return true;
+        }
+        return false;
+    });
 }
 
 }  // namespace eve::scene

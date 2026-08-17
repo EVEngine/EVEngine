@@ -73,7 +73,9 @@ fs <- eve.Filesystem();
 i18n <- eve.I18n();
 
 eve_init <- function() {};
-eve_update <- function(dt) {};
+eve_update <- function(dt) {
+    scene.updateTransformsAll();
+};
 eve_render <- function() {
     gfx.clear();
 };

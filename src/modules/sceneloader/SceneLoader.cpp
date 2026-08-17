@@ -25,7 +25,10 @@
 #include <assimp/texture.h>
 
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+
+#include <limits>
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -168,14 +171,104 @@ void destroyRenderable(graphics::Renderable3D *r) {
     if (r) ecs::DestroyEntity(r);
 }
 
+// ---- mesh AABB bounds (picking / culling) ----
+
+glm::mat4 nodeLocalMatrix(const scene::SceneNode &n) {
+    glm::mat4 m(1.f);
+    m = glm::translate(m, glm::vec3(n.x, n.y, n.z));
+    if (n.space == "2d") {
+        m = glm::rotate(m, n.roll, glm::vec3(0.f, 0.f, 1.f));
+    } else {
+        m = glm::rotate(m, n.yaw, glm::vec3(0.f, 1.f, 0.f));
+        m = glm::rotate(m, n.pitch, glm::vec3(1.f, 0.f, 0.f));
+        m = glm::rotate(m, n.roll, glm::vec3(0.f, 0.f, 1.f));
+    }
+    m = glm::scale(m, glm::vec3(n.sx, n.sy, n.sz));
+    return m;
+}
+
+void fillMeshBoundsFromSlot(scene::SceneNode &n, const MeshSlot &slot) {
+    const aiMesh *mesh = slot.mesh;
+    if (!mesh || !mesh->mVertices || mesh->mNumVertices == 0) return;
+    float mn[3] = {std::numeric_limits<float>::max(),
+                   std::numeric_limits<float>::max(),
+                   std::numeric_limits<float>::max()};
+    float mx[3] = {std::numeric_limits<float>::lowest(),
+                   std::numeric_limits<float>::lowest(),
+                   std::numeric_limits<float>::lowest()};
+    for (unsigned i = 0; i < mesh->mNumVertices; ++i) {
+        const aiVector3D &v = mesh->mVertices[i];
+        for (int c = 0; c < 3; ++c) {
+            const float f = v[c];
+            mn[c] = std::min(mn[c], f);
+            mx[c] = std::max(mx[c], f);
+        }
+    }
+    n.bminX = mn[0];
+    n.bminY = mn[1];
+    n.bminZ = mn[2];
+    n.bmaxX = mx[0];
+    n.bmaxY = mx[1];
+    n.bmaxZ = mx[2];
+    n.hasBounds = true;
+}
+
+/** Post-order: union children bounds into the parent's local space. */
+void unionChildBounds(scene::SceneHost::Tree &tree, int nodeIndex) {
+    scene::SceneNode &n = tree.nodes[size_t(nodeIndex)];
+    for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
+        unionChildBounds(tree, c);
+    }
+
+    bool any = false;
+    float mn[3] = {std::numeric_limits<float>::max(),
+                   std::numeric_limits<float>::max(),
+                   std::numeric_limits<float>::max()};
+    float mx[3] = {std::numeric_limits<float>::lowest(),
+                   std::numeric_limits<float>::lowest(),
+                   std::numeric_limits<float>::lowest()};
+    for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
+        scene::SceneNode &ch = tree.nodes[size_t(c)];
+        if (!ch.hasBounds) continue;
+        any = true;
+        const glm::mat4 lm = nodeLocalMatrix(ch);
+        for (int i = 0; i < 8; ++i) {
+            const glm::vec3 p((i & 1) ? ch.bmaxX : ch.bminX,
+                              (i & 2) ? ch.bmaxY : ch.bminY,
+                              (i & 4) ? ch.bmaxZ : ch.bminZ);
+            const glm::vec4 w = lm * glm::vec4(p, 1.f);
+            for (int k = 0; k < 3; ++k) {
+                mn[k] = std::min(mn[k], w[k]);
+                mx[k] = std::max(mx[k], w[k]);
+            }
+        }
+    }
+    if (!any) return;
+    if (!n.hasBounds) {
+        n.bminX = mn[0];
+        n.bminY = mn[1];
+        n.bminZ = mn[2];
+        n.bmaxX = mx[0];
+        n.bmaxY = mx[1];
+        n.bmaxZ = mx[2];
+        n.hasBounds = true;
+    } else {
+        n.bminX = std::min(n.bminX, mn[0]);
+        n.bminY = std::min(n.bminY, mn[1]);
+        n.bminZ = std::min(n.bminZ, mn[2]);
+        n.bmaxX = std::max(n.bmaxX, mx[0]);
+        n.bmaxY = std::max(n.bmaxY, mx[1]);
+        n.bmaxZ = std::max(n.bmaxZ, mx[2]);
+    }
+}
+
 void linkAllMeshNodes(scene::SceneHost *host, graphics::Graphics *gfx, const MeshSlotMap &slots) {
     for (const auto &kv : slots) {
         scene::SceneNode *n = host->findById(kv.first);
         if (!n) continue;
         graphics::Renderable3D *r = makeRenderable(gfx, kv.second[0]);
         if (!r) continue;
-        n->linkKind = "renderable3d";
-        n->linkTarget = r;
+        n->links.push_back(scene::SceneLink{scene::LinkKind::Renderable3D, r, 0});
     }
 }
 
@@ -323,8 +416,10 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
 
     // Destroy Renderable3D of removed GameObjects.
     for (const auto &kv : oldNodes) {
-        if (!newIds.count(kv.first) && kv.second->linkKind == "renderable3d" && kv.second->linkTarget) {
-            destroyRenderable(static_cast<graphics::Renderable3D *>(kv.second->linkTarget));
+        if (!newIds.count(kv.first)) {
+            if (const auto *l = host->findLink(kv.second, scene::LinkKind::Renderable3D)) {
+                destroyRenderable(static_cast<graphics::Renderable3D *>(l->target));
+            }
         }
     }
 
@@ -358,8 +453,15 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
 
         auto oldIt = oldNodes.find(d.id);
         if (oldIt != oldNodes.end()) {
-            n.linkKind = oldIt->second->linkKind;
-            n.linkTarget = oldIt->second->linkTarget;
+            n.links = oldIt->second->links;
+            n.objectId = oldIt->second->objectId;
+            n.bminX = oldIt->second->bminX;
+            n.bminY = oldIt->second->bminY;
+            n.bminZ = oldIt->second->bminZ;
+            n.bmaxX = oldIt->second->bmaxX;
+            n.bmaxY = oldIt->second->bmaxY;
+            n.bmaxZ = oldIt->second->bmaxZ;
+            n.hasBounds = oldIt->second->hasBounds;
         }
 
         nodes.push_back(std::move(n));
@@ -380,7 +482,7 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
     // Fresh Renderable3D for newly added mesh GameObjects (only changed ones).
     if (gfx && slots) {
         for (auto &n : nodes) {
-            if (n.linkTarget) continue;
+            if (!n.links.empty()) continue;
             auto sit = slots->find(n.id);
             if (sit == slots->end() || sit->second.empty()) continue;
             graphics::Renderable3D *r = nullptr;
@@ -390,16 +492,28 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
                 r = nullptr;
             }
             if (r) {
-                n.linkKind = "renderable3d";
-                n.linkTarget = r;
+                n.links.push_back(scene::SceneLink{scene::LinkKind::Renderable3D, r, 0});
             }
         }
     }
 
     host->tree()->nodes = std::move(nodes);
     host->tree()->root = root;
+    host->invalidateIndex();
     host->markTransformDirty();
+    if (slots) fillSceneBounds(host, *slots);
     return true;
+}
+
+void SceneLoader::fillSceneBounds(scene::SceneHost *host, const MeshSlotMap &slots) {
+    if (!host) return;
+    auto t = host->tree();
+    for (auto &n : t->nodes) {
+        auto it = slots.find(n.id);
+        if (it == slots.end() || it->second.empty()) continue;
+        fillMeshBoundsFromSlot(n, it->second[0]);
+    }
+    if (t->root >= 0) unionChildBounds(*t, t->root);
 }
 
 // ---- public: file / lifecycle ----
@@ -422,6 +536,7 @@ scene::SceneHost *SceneLoader::load(const std::string &path, bool linkRenderable
 
     graphics::Graphics *gfx = currentGraphics();
     if (linkRenderables && gfx && !slots.empty()) linkAllMeshNodes(host, gfx, slots);
+    if (!slots.empty()) fillSceneBounds(host, slots);
 
     scene::TransformSystem::updateHost(host);
     scenes_[key] = Loaded{key, host, gfx};
@@ -511,11 +626,10 @@ void SceneLoader::unload(const std::string &path) {
     if (it->second.host) {
         auto t = it->second.host->tree();
         for (auto &n : t->nodes) {
-            if (n.linkKind == "renderable3d" && n.linkTarget) {
-                destroyRenderable(static_cast<graphics::Renderable3D *>(n.linkTarget));
-                n.linkTarget = nullptr;
-                n.linkKind.clear();
+            if (const auto *l = it->second.host->findLink(&n, scene::LinkKind::Renderable3D)) {
+                destroyRenderable(static_cast<graphics::Renderable3D *>(l->target));
             }
+            n.links.clear();
         }
         ecs::DestroyEntity(it->second.host);
     }

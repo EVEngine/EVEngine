@@ -106,7 +106,11 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
 }
 
 eve_init <- function() {};
-eve_update <- function(dt) {};
+eve_update <- function(dt) {
+    // Keep scene node world transforms fresh for games that mutate nodes from
+    // scripts. Clean trees skip the pass entirely (incremental transform).
+    scene.updateTransformsAll();
+};
 eve_render <- function() {
     gfx.clear();
 };

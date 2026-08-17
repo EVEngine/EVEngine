@@ -5,6 +5,7 @@
 #include <cstring>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace eve {
 namespace {
@@ -36,6 +37,11 @@ int allocEntityId() { return nextEntityId()++; }
 std::unordered_map<size_t, CppEntityViewFn>& cppEntityViews() {
     static std::unordered_map<size_t, CppEntityViewFn> views;
     return views;
+}
+
+std::vector<std::function<void(ssq::Table&)>>& postEcsHooks() {
+    static std::vector<std::function<void(ssq::Table&)>> hooks;
+    return hooks;
 }
 
 // ---------------------------------------------------------------------------
@@ -148,6 +154,12 @@ if (!("String" in eve)) eve.String <- "string"
 
 eve._ecsTypes <- {}   // EntityClass -> { cls, instances }
 
+// --- 性能缓存（万级实体稳态零分配） ---
+// view 结果缓存：create/destroy 时按类链失效；C++ 桥接类（_cppHasView=true）不缓存。
+eve._ecsViewCache <- {}       // EntityClass -> array
+eve._ecsSlotsCache <- {}      // EntityClass -> { fieldName = ComponentClass }
+eve._ecsCompDefaults <- {}    // ComponentClass -> { fieldName = resolvedDefault }
+
 function eve::_ecsResolveMarker(v) {
     if (v == eve.Number || v == "number") return 0.0
     if (v == eve.Boolean || v == "boolean") return false
@@ -162,19 +174,27 @@ function eve::_ecsIsComponentClass(obj) {
 
 function eve::_ecsInstantiateComponent(compClass) {
     local c = compClass()
-    local fields = eve.inspectClassFields(compClass)
-    foreach (name, val in fields) {
-        local cur = null
-        try { cur = c[name] } catch (e) { cur = null }
-        if (cur == eve.Number || cur == eve.Boolean || cur == eve.String
-            || cur == "number" || cur == "boolean" || cur == "string") {
-            c[name] = eve._ecsResolveMarker(cur)
+    if (compClass in eve._ecsCompDefaults) {
+        foreach (name, val in eve._ecsCompDefaults[compClass]) c[name] = val
+    } else {
+        local fields = eve.inspectClassFields(compClass)
+        local resolved = {}
+        foreach (name, val in fields) {
+            local cur = null
+            try { cur = c[name] } catch (e) { cur = null }
+            if (cur == eve.Number || cur == eve.Boolean || cur == eve.String
+                || cur == "number" || cur == "boolean" || cur == "string") {
+                c[name] = eve._ecsResolveMarker(cur)
+                resolved[name] <- c[name]
+            }
         }
+        eve._ecsCompDefaults[compClass] <- resolved
     }
     return c
 }
 
 function eve::_ecsCollectSlots(cls) {
+    if (cls in eve._ecsSlotsCache) return eve._ecsSlotsCache[cls]
     // { fieldName = ComponentClass } walking base classes (Entity → … → cls).
     local slots = {}
     local cur = cls
@@ -201,7 +221,19 @@ function eve::_ecsCollectSlots(cls) {
         cur = eve.getClassBase(cur)
         guard += 1
     }
+    eve._ecsSlotsCache[cls] <- slots
     return slots
+}
+
+function eve::_ecsInvalidateViews(cls) {
+    local cur = cls
+    local guard = 0
+    while (cur != null && guard < 64) {
+        if (cur in eve._ecsViewCache) delete eve._ecsViewCache[cur]
+        if (!eve.isSubclass(cur, eve.Entity)) break
+        cur = eve.getClassBase(cur)
+        guard += 1
+    }
 }
 
 function eve::_ecsEnsureType(cls) {
@@ -213,14 +245,22 @@ function eve::_ecsEnsureType(cls) {
 
 function eve::_ecsRegisterInstance(entity, cls) {
     eve._ecsEnsureType(cls).instances.push(entity)
+    eve._ecsInvalidateViews(cls)
 }
 
 function eve::_ecsUnregisterInstance(entity, cls) {
     if (!(cls in eve._ecsTypes)) return
     local arr = eve._ecsTypes[cls].instances
     for (local i = arr.len() - 1; i >= 0; --i) {
-        if (arr[i] == entity) { arr.remove(i); break }
+        if (arr[i] == entity) {
+            // O(1) swap-remove（顺序不保证）；视图缓存随后失效重建
+            local last = arr.len() - 1
+            if (i != last) arr[i] = arr[last]
+            arr.pop()
+            break
+        }
     }
+    eve._ecsInvalidateViews(cls)
 }
 
 function eve::_ecsCollectInstances(cls, out) {
@@ -418,10 +458,15 @@ eve.ShaderSystem <- class extends eve.System {
 }
 
 function eve::view(entityClass) {
+    if (entityClass == null) return []
+    // C++ 桥接类的实体在脚本外增删（无法通知脚本），不缓存，每次新鲜收集
+    local cppBacked = false
+    if ("_cppHasView" in eve) cppBacked = eve._cppHasView(entityClass)
+    if (!cppBacked && (entityClass in eve._ecsViewCache)) return eve._ecsViewCache[entityClass]
     local out = []
-    if (entityClass == null) return out
     eve._ecsCollectInstances(entityClass, out)
     if ("_cppCollect" in eve) eve._cppCollect(entityClass, out)
+    if (!cppBacked) eve._ecsViewCache[entityClass] <- out
     return out
 }
 
@@ -474,6 +519,34 @@ void cppCollect(ssq::Class cls, ssq::Array out) {
     sq_settop(vm, top);
 }
 
+/**
+ * Script hook for view-cache policy: returns true when any class on the chain
+ * (cls → base → …) is registered via registerCppEntityView(). C++ entities can
+ * appear/disappear outside script knowledge, so such views must not be cached.
+ */
+bool cppHasView(ssq::Object cls) {
+    if (cls.getType() != ssq::Type::CLASS) return false;
+    HSQUIRRELVM vm = cls.getHandle();
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, cls.getRaw());
+    for (int guard = 0; guard < 64; ++guard) {
+        if (sq_gettype(vm, -1) != OT_CLASS) break;
+        HSQOBJECT cur;
+        sq_getstackobj(vm, -1, &cur);
+        SQUserPointer tag = nullptr;
+        if (SQ_SUCCEEDED(sq_getobjtypetag(&cur, &tag))) {
+            if (cppEntityViews().find(reinterpret_cast<size_t>(tag)) != cppEntityViews().end()) {
+                sq_settop(vm, top);
+                return true;
+            }
+        }
+        if (SQ_FAILED(sq_getbase(vm, -1))) break;
+        sq_remove(vm, -2);  // drop current class, keep base
+    }
+    sq_settop(vm, top);
+    return false;
+}
+
 }  // namespace
 
 void exposeECS(ssq::Table& table) {
@@ -486,16 +559,30 @@ void exposeECS(ssq::Table& table) {
     table.addFunc("isSubclass", scriptIsSubclass);
     table.addFunc("getClassBase", getClassBase);
     table.addFunc("allocEntityId", allocEntityId);
+    table.addFunc("_cppHasView", cppHasView);
     table.addFunc("component", [](std::string name, ssq::Object cls) {
         registerScriptComponent(name, cls);
     });
     table.addFunc("_cppCollect", std::function<void(ssq::Class, ssq::Array)>(cppCollect));
 
     injectEcsScript(table);
+
+    // After script ECS classes exist: run module hooks (e.g. eve.SceneEntity).
+    for (auto &hook : postEcsHooks()) {
+        try {
+            hook(table);
+        } catch (...) {
+            // A failing module hook must not break VM exposure.
+        }
+    }
 }
 
 void registerCppEntityView(size_t typeHash, CppEntityViewFn fn) {
     cppEntityViews()[typeHash] = std::move(fn);
+}
+
+void registerPostEcsHook(PostEcsHook fn) {
+    postEcsHooks().push_back(std::move(fn));
 }
 
 void exposeECSToVM(ssq::VM& vm) {

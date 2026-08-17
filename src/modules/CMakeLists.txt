@@ -134,6 +134,9 @@ target_include_directories(EVUI BEFORE PUBLIC
   ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 
 create_module(EVScene scene)
+# Scene serialization includes Poco/JSON: disable Poco's MSVC auto-link pragma
+# (names libs without the mdd postfix) and use the static build like EVFileSystem.
+target_compile_definitions(EVScene PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 create_module(EVCamera camera)
 # 3D scene loader (SceneLoader): decode a model into an ECS GameObject tree and
 # hot-reload it via a fast diff. Depends on scene / model3d / graphics symbols,
