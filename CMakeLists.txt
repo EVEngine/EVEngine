@@ -156,12 +156,13 @@ endfunction()
 # if there is any change. If there is, it will rescan the source code 
 
 macro(create_module libname folder)
-    # Join the exclude lists with '|' instead of ';': the rescan target below is
-    # run through a shell (Ninja on Linux/macOS), where ';' would split the
-    # -D argument into multiple commands (cmd.exe tolerates ';', so Windows was
-    # the only platform that worked). The scan/rescan scripts split on '|'.
-    string(JOIN "|" _eve_excl_dirs_arg ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS})
-    string(JOIN "|" _eve_excl_files_arg ${EVENGINE_EXCLUDED_MODULE_FILES})
+    # Join the exclude lists with ',' instead of ';': the rescan target below is
+    # run through a shell (Ninja on Linux/macOS), where both ';' and '|' are
+    # shell metacharacters (command separator / pipe) that would split or
+    # execute the -D argument. ',' is safe unquoted on every shell (POSIX sh,
+    # cmd.exe, emcc). The scan/rescan scripts split on ','.
+    string(JOIN "," _eve_excl_dirs_arg ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS})
+    string(JOIN "," _eve_excl_files_arg ${EVENGINE_EXCLUDED_MODULE_FILES})
     execute_process(COMMAND ${CMAKE_COMMAND}
         -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
         -Dmodule_name=${folder}
