@@ -6,12 +6,14 @@ if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME S
     create_module(EVDevTools devtools)
     # Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
     # (would request PocoFoundationd.lib instead of our *mdd postfix).
-    target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+    # NOMINMAX: Poco headers pull in windows.h; without it the min/max macros
+    # break later includes such as CLI11 in cmdline/Run.cpp.
+    target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
 endif()
 create_module(EVCmdLine cmdline)
 # DevTool.hpp (pulled in by cmdline/Run.cpp) includes Poco JSON/Net headers;
 # keep the same no-auto-link contract so the debug Poco libs (*mdd) are used.
-target_compile_definitions(EVCmdLine PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+target_compile_definitions(EVCmdLine PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 
