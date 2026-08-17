@@ -1606,6 +1606,20 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     return true;
 }
 
+bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
+                                  const float *uvST, int vertexCount, const uint32_t *indices,
+                                  int indexCount) {
+    // WebGPU backend keeps mesh buffers immutable; rebuild via newMeshFromArrays.
+    (void)mesh;
+    (void)posXYZ;
+    (void)nrmXYZ;
+    (void)uvST;
+    (void)vertexCount;
+    (void)indices;
+    (void)indexCount;
+    return false;
+}
+
 Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     std::vector<float> pos, nrm, uv;
     std::vector<uint32_t> idx;
@@ -2129,6 +2143,13 @@ void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) {
     shadowPassDraws.push_back(d);
 }
 
+void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo) {
+    // WebGPU shadow pipeline has no alpha-cutout variant; fall back to the
+    // regular solid-quad shadow so callers keep working.
+    drawMeshShadow(mesh, lightMVP);
+    (void)albedo;
+}
+
 void Graphics::endShadowPass() {
     if (shadowPassCascade < 0 || shadowPassCascade >= ShadowConfig::kCascades) {
         shadowPassCascade = -1;
@@ -2164,6 +2185,14 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     d.farZ = farZ;
     d.tint = glm::vec4(tintR, tintG, tintB, 1.f);
     gbufferPassDraws.push_back(d);
+}
+
+void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
+                                    float nearZ, float farZ, Texture *albedo, float tintR,
+                                    float tintG, float tintB) {
+    // WebGPU gbuffer pipeline has no alpha-cutout variant; fall back to the
+    // regular fill (full quad depth) so callers keep working.
+    drawMeshGBuffer(mesh, mvp, model, nearZ, farZ, albedo, tintR, tintG, tintB);
 }
 
 void Graphics::endGBufferPass() {

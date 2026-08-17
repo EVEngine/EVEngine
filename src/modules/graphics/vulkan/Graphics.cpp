@@ -40,8 +40,11 @@
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
@@ -550,10 +553,27 @@ void Graphics::recordPendingShadowPasses() {
         cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
         setViewportAndScissor(cb, size, size);
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
+        bool alphaBound = false;
         for (const auto &d : shadowCascadeDraws[c]) {
             if (!d.mesh || !d.mesh->gpuHandle) continue;
+            const bool wantAlpha = d.alphaTest && shadowAlphaPipeline;
+            if (wantAlpha != alphaBound) {
+                cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                wantAlpha ? shadowAlphaPipeline : shadowPipeline);
+                alphaBound = wantAlpha;
+            }
             auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-            cb.pushConstants(shadowPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0,
+            if (wantAlpha) {
+                Texture *alb = d.albedo ? d.albedo : whiteTexture;
+                if (alb && alb->gpuHandle && texSetLayout) {
+                    auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
+                    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                          shadowAlphaPipelineLayout, 0, 1,
+                                          gpuTex->descriptorSet.ptr(), 0, nullptr);
+                }
+            }
+            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
+                             vk::ShaderStageFlagBits::eVertex, 0,
                              sizeof(glm::mat4), &d.mvp);
             drawIndexedMesh(cb, *gpuMesh);
         }
@@ -593,8 +613,15 @@ void Graphics::recordPendingGBufferPass() {
     cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     setViewportAndScissor(cb, w, h);
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
+    bool alphaBound = false;
     for (const auto &d : gbufferPassDraws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
+        const bool wantAlpha = d.alphaTest && gbufferAlphaPipeline;
+        if (wantAlpha != alphaBound) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                            wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
+            alphaBound = wantAlpha;
+        }
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         Texture *alb = d.albedo ? d.albedo : whiteTexture;
         if (alb && alb->gpuHandle && texSetLayout) {
@@ -978,6 +1005,8 @@ void Graphics::createMesh3DClusteredPipeline() {
 void Graphics::destroyShadowResources() {
     destroyPipeline(device, shadowPipeline);
     destroyPipelineLayout(device, shadowPipelineLayout);
+    destroyPipeline(device, shadowAlphaPipeline);
+    destroyPipelineLayout(device, shadowAlphaPipelineLayout);
     for (auto &slot : shadowMaps) {
         for (int i = 0; i < ShadowConfig::kCascades; ++i) {
             if (slot.framebuffers[i]) {
@@ -1022,6 +1051,7 @@ void Graphics::destroyGBufferResources() {
     gbufferSlots.clear();
     post2Sets.clear();
     destroyPipeline(device, gbufferPipeline);
+    destroyPipeline(device, gbufferAlphaPipeline);
     destroyPipelineLayout(device, gbufferPipelineLayout);
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
@@ -1301,6 +1331,29 @@ void Graphics::createGBufferResources(int width, int height) {
                           .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
+
+    // Alpha-cutout variant for billboard/card geometry (sprite-stack slices):
+    // same layout/push constants, fragment discards transparent texels.
+    vk::ShaderModule alphaVertModule =
+        vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    std::vector<uint32_t> alphaFrag(mesh3d_gbuffer_alpha_frag_spv,
+                                    mesh3d_gbuffer_alpha_frag_spv +
+                                        mesh3d_gbuffer_alpha_frag_spv_count);
+    vk::ShaderModule alphaFragModule =
+        vkb::PipelineBuilder::createShaderModule(device.instance, alphaFrag);
+    gbufferAlphaPipeline = device.createPipeline()
+                               .useClassicPipeline(alphaVertModule, alphaFragModule)
+                               .setPipelineLayout(gbufferPipelineLayout)
+                               .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                        .addInputBinding<MeshVertex>()
+                                                        .addAttributeDescription<MeshVertex>())
+                               .setDynamicStatesViewportScissor()
+                               .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                              vk::CullModeFlagBits::eNone,
+                                              vk::FrontFace::eClockwise)
+                               .build(gbufferPass);
+    device->destroyShaderModule(alphaVertModule);
+    device->destroyShaderModule(alphaFragModule);
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
         vkb::SamplerBuilder sb;
@@ -1611,6 +1664,38 @@ void Graphics::createShadowResources() {
             .build(shadowPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
+
+    // Alpha-cutout variant for billboard/card shadow casters (sprite-stack
+    // slices): same transform push constant, fragment samples the albedo and
+    // discards transparent texels so shadows follow the silhouette.
+    shadowAlphaPipelineLayout = device.createPipelineLayout()
+                                    .set(texSetLayout)
+                                    .push<glm::mat4>(vk::ShaderStageFlagBits::eVertex)
+                                    .build();
+    std::vector<uint32_t> alphaVert(mesh3d_shadow_alpha_vert_spv,
+                                    mesh3d_shadow_alpha_vert_spv +
+                                        mesh3d_shadow_alpha_vert_spv_count);
+    std::vector<uint32_t> alphaFrag(mesh3d_shadow_alpha_frag_spv,
+                                    mesh3d_shadow_alpha_frag_spv +
+                                        mesh3d_shadow_alpha_frag_spv_count);
+    vk::ShaderModule alphaVertModule =
+        vkb::PipelineBuilder::createShaderModule(device.instance, alphaVert);
+    vk::ShaderModule alphaFragModule =
+        vkb::PipelineBuilder::createShaderModule(device.instance, alphaFrag);
+    shadowAlphaPipeline =
+        device.createPipeline()
+            .useClassicPipeline(alphaVertModule, alphaFragModule)
+            .setPipelineLayout(shadowAlphaPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(0.0f, 0.5f)
+            .build(shadowPass);
+    device->destroyShaderModule(alphaVertModule);
+    device->destroyShaderModule(alphaFragModule);
 
     // Clear every ping-pong copy so sampling before the first real shadow pass
     // sees SHADER_READ_ONLY rather than UNDEFINED.
@@ -3847,6 +3932,17 @@ void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) {
     shadowPassDraws.push_back(ShadowDraw{mesh, lightMVP});
 }
 
+void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo) {
+    if (shadowPassCascade < 0) throw Exception("drawMeshShadowAlpha: call beginShadowPass first");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshShadowAlpha: null mesh");
+    ShadowDraw d;
+    d.mesh = mesh;
+    d.mvp = lightMVP;
+    d.albedo = albedo;
+    d.alphaTest = true;
+    shadowPassDraws.push_back(d);
+}
+
 void Graphics::endShadowPass() {
     if (shadowPassCascade < 0) throw Exception("endShadowPass: no active shadow pass");
     if (!shadowPipeline || !shadowRenderPass) {
@@ -3883,7 +3979,27 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     d.mesh = mesh;
     d.albedo = albedo;
     d.push.mvp = mvp;
-    // Pack model rows (column-major glm → row vectors with translation in .w).
+    d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
+    d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
+    d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
+    auto u8 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
+    };
+    const uint32_t packedTint = u8(tintR) | (u8(tintG) << 8) | (u8(tintB) << 16) | (255u << 24);
+    d.push.clip = glm::vec4(nearZ, farZ, glm::uintBitsToFloat(packedTint), 0.f);
+    gbufferPassDraws.push_back(d);
+}
+
+void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
+                                    float nearZ, float farZ, Texture *albedo, float tintR,
+                                    float tintG, float tintB) {
+    if (!gbufferPassActive) throw Exception("drawMeshGBufferAlpha: call beginGBufferPass first");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBufferAlpha: null mesh");
+    GBufferDraw d{};
+    d.mesh = mesh;
+    d.albedo = albedo;
+    d.alphaTest = true;
+    d.push.mvp = mvp;
     d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
     d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
     d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
@@ -4284,6 +4400,46 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     waitForSharedGpuResources();
     gpu->vertices.updateLocal(vkb::FrameSlot::gpuIdle(), verts);
     mesh->markMorphClean();
+    return true;
+}
+
+bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
+                                  const float *uvST, int vertexCount, const uint32_t *indices,
+                                  int indexCount) {
+    if (!initialized || !mesh || !mesh->gpuHandle) return false;
+    if (!posXYZ || vertexCount <= 0) return false;
+    if (indexCount > 0 && (indexCount % 3 != 0 || !indices)) return false;
+
+    std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
+    for (int i = 0; i < vertexCount; ++i) {
+        MeshVertex &v = verts[static_cast<size_t>(i)];
+        v.pos = {posXYZ[size_t(i) * 3u], posXYZ[size_t(i) * 3u + 1u], posXYZ[size_t(i) * 3u + 2u]};
+        if (nrmXYZ)
+            v.normal = {nrmXYZ[size_t(i) * 3u], nrmXYZ[size_t(i) * 3u + 1u],
+                        nrmXYZ[size_t(i) * 3u + 2u]};
+        else
+            v.normal = {0.f, 1.f, 0.f};
+        if (uvST)
+            v.uv = {uvST[size_t(i) * 2u], uvST[size_t(i) * 2u + 1u]};
+        else
+            v.uv = {0.f, 0.f};
+    }
+
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    // The host-visible buffers may be reallocated (grow) or still be read by an
+    // in-flight frame; synchronize like bakeMeshMorph before overwriting.
+    waitForSharedGpuResources();
+    gpu->vertices.allocate<MeshVertex>(vkb::FrameSlot::gpuIdle(), getDevice(), verts);
+    if (indices && indexCount > 0) {
+        std::vector<uint32_t> idx(indices, indices + indexCount);
+        gpu->indices.allocate(vkb::FrameSlot::gpuIdle(), getDevice(),
+                              vk::BufferUsageFlagBits::eIndexBuffer,
+                              idx.size() * sizeof(uint32_t), kHostVisibleCoherent);
+        gpu->indices.updateLocal(vkb::FrameSlot::gpuIdle(), idx.data(),
+                                 idx.size() * sizeof(uint32_t));
+        gpu->indexCount = uint32_t(indexCount);
+        mesh->indexCount = indexCount;
+    }
     return true;
 }
 

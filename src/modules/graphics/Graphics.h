@@ -237,6 +237,19 @@ public:
                                     int vertexCount, const uint32_t *indices, int indexCount) = 0;
 
     /**
+     * In-place update of a mesh's vertex/index data (CPU -> host-visible VBO).
+     * Mirrors bakeMeshMorph: the update synchronizes with in-flight GPU work,
+     * so prefer rebuilding only when content actually changes. The mesh's
+     * buffer is reused while it fits (stable GPU handle) and reallocated when
+     * the new size grows. Returns false when unsupported (WebGPU backend).
+     * posXYZ/nrmXYZ follow newMeshFromArrays layout (uvST may be null);
+     * indices/indexCount may be null/0 to keep the mesh's existing indices.
+     */
+    virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
+                                    const float *uvST, int vertexCount, const uint32_t *indices,
+                                    int indexCount) = 0;
+
+    /**
      * If mesh morph weights are dirty, bake blended positions and upload to the GPU VBO.
      * Returns true when an upload happened. No-op when no morph data / not dirty / null.
      */
@@ -314,6 +327,16 @@ public:
     virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                  float nearZ, float farZ, Texture *albedo = nullptr,
                                  float tintR = 1.f, float tintG = 1.f, float tintB = 1.f) = 0;
+    /**
+     * GBuffer fill with alpha-cutout discard (card/billboard geometry such as
+     * sprite-stack slices): same outputs as drawMeshGBuffer, but transparent
+     * texels are discarded so depth/normal follow the silhouette. No-op on
+     * backends without the alpha pipeline (WebGPU).
+     */
+    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
+                                      float nearZ, float farZ, Texture *albedo = nullptr,
+                                      float tintR = 1.f, float tintG = 1.f,
+                                      float tintB = 1.f) = 0;
     virtual void endGBufferPass() = 0;
 
     /**
@@ -473,6 +496,15 @@ public:
      */
     virtual void beginShadowPass(int cascadeIndex) = 0;
     virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
+    /**
+     * Shadow pass draw with alpha-cutout discard (card/billboard geometry such
+     * as sprite-stack slices): transparent texels of `albedo` are discarded so
+     * the slice casts a silhouette shadow instead of a solid quad. Requires an
+     * active shadow pass (beginShadowPass). No-op on backends without the
+     * alpha shadow pipeline (WebGPU).
+     */
+    virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
+                                     Texture *albedo = nullptr) = 0;
     virtual void endShadowPass() = 0;
 
     /** True after begin3DFrame until present completes. */

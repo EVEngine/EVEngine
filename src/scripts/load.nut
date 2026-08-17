@@ -69,6 +69,7 @@ avatar <- eve.Avatar();
 dialogue <- eve.Dialogue();
 anim <- eve.Animation();
 stylize <- eve.Stylize();
+spritestack <- eve.SpriteStack();
 gpgpu <- eve.Gpgpu();
 daynight <- eve.DayNight();
 weather <- eve.Weather();
