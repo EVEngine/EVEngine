@@ -58,7 +58,9 @@ function(main)
     # with exceptions off. clangd then errors on try/throw (zeroerr ASSERT, Exception).
     if(MSVC)
         # /FS serializes writes to a target PDB when MSBuild schedules several cl.exe jobs.
-        add_compile_options(/utf-8 /EHsc /FS)
+        # /bigobj: large translation units (e.g. graphics/Graphics.cpp) exceed the default
+        # COMDAT section limit (C1128) without it; standard for MSVC C++20 projects.
+        add_compile_options(/utf-8 /EHsc /FS /bigobj)
     endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
