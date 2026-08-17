@@ -93,6 +93,7 @@ file(GLOB all_test_cpp
   window_cpp.cpp
   image.cpp
   event.cpp
+  rx.cpp
   timer.cpp
   timer_cpp.cpp
   system.cpp
@@ -265,6 +266,7 @@ set(EVELIBS
   EVWeather
   EVCommon
   EVEvent
+  EVRx
   EVTimer
   EVSystem
   EVMath

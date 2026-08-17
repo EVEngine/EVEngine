@@ -173,6 +173,7 @@ set(EVELIBS
     EVKeyboard
     EVJoystick
     EVEvent
+    EVRx
     EVTimer
     EVSystem
     EVAnimation

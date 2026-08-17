@@ -20,6 +20,7 @@
 |---|---|---|---|
 | Window | `src/modules/window/Window.cpp` | `test/window.nut`、`test/window_cpp.cpp` | 补齐 Graphics → Settings → 回读尺寸顺序与移动端差异 |
 | Event | `src/modules/event/*/Event.cpp` | `test/event.cpp` | 区分平台 pump、一次性消息和持久状态 |
+| Rx | `src/modules/rx/Rx.cpp` | `test/rx.cpp` | 区分推送流/事件桥接；脚本闭包仅主线程调用；subscribe 与 subscribe3 参数必填 |
 | Timer | `src/modules/timer/Timer.cpp` | `test/timer.nut`、`test/timer_cpp.cpp` | 确认秒单位、单次 step 与暂停大 dt 风险 |
 | System | `src/modules/system/System.cpp` | `test/system.cpp` | 区分 wall time、帧计时和阻塞 sleep |
 | Keyboard | `src/modules/keyboard/Keyboard.cpp` | `test/keyboard_cpp.cpp` | 说明状态查询、边沿检测、key/scancode 和文本输入 |
