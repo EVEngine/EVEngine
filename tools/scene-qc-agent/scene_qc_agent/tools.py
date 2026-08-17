@@ -121,19 +121,48 @@ class ToolRegistry:
         return parsed if isinstance(parsed, list) else [{"id": "cam_0"}]
 
     def screenshot(self, camera: dict) -> tuple:
-        """返回 (frame_id, base64_bytes, meta)。"""
-        raw = self._call("screenshot", camera=camera)
+        """返回 (frame_id, base64_bytes, meta)。
+
+        兼容两种引擎契约：
+          - 直接返回 image_b64（如 dry-run / 模拟源）；
+          - 返回磁盘 path（如 eve_screenshot），此处读文件并 base64 编码。
+
+        若配置了绝对 output.screenshot_dir，截图写在该目录下（引擎与
+        Agent 进程的 cwd 可能不同，必须用绝对路径对齐）。
+        """
+        frame_id = camera.get("id", "frame")
+        shot_dir = (self.cfg.get("output") or {}).get("screenshot_dir") or ""
+        if shot_dir:
+            os.makedirs(shot_dir, exist_ok=True)
+            path = os.path.join(shot_dir, f"eve_screenshot_{frame_id}.png")
+        else:
+            path = camera.get("path") or f"eve_screenshot_{frame_id}.png"
+        raw = self._call("screenshot", camera=camera, path=path)
         parsed = parse_json_block(raw)
         if isinstance(parsed, dict):
-            return parsed.get("frame_id", camera.get("id", "")), parsed.get("image_b64", ""), parsed
-        return camera.get("id", ""), "", {}
+            image_b64 = parsed.get("image_b64", "")
+            if not image_b64 and parsed.get("path"):
+                image_b64 = self._b64_of_file(str(parsed["path"]))
+            return parsed.get("frame_id", frame_id), image_b64, parsed
+        return frame_id, "", {}
+
+    @staticmethod
+    def _b64_of_file(path: str) -> str:
+        try:
+            with open(path, "rb") as f:
+                data = f.read()
+            import base64
+
+            return base64.b64encode(data).decode("ascii")
+        except OSError:
+            return ""
 
     def scene_info(self, frame_id: str, targets: List[str]) -> GeometryInfo:
         raw = self._call("scene_info", frame_id=frame_id, targets=targets)
         parsed = parse_json_block(raw)
         if isinstance(parsed, dict):
             gi = GeometryInfo(frame_id=frame_id)
-            for o in parsed.get("objects", []):
+            for o in parsed.get("objects", []) or parsed.get("props", []):
                 gi.objects.append(o)
             for it in parsed.get("issues", []):
                 gi.issues.append(Issue(**{k: it[k] for k in ("code", "message", "severity", "target", "suggestion")

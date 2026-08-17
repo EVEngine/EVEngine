@@ -10,8 +10,8 @@
   "mcp_tools": {
     "status": { "name": "eve_status", "args": {} },
     "eval": { "name": "eve_eval", "args": { "expression": "" } },
-    "camera_generate": { "name": "eve_camera_generate", "args": { "targets": [], "count": 6 } },
-    "screenshot": { "name": "eve_screenshot", "args": { "camera": {} } },
+    "camera_generate": { "name": "eve_camera_generate", "args": { "count": 6 } },
+    "screenshot": { "name": "eve_screenshot", "args": { "path": "mcp_screenshot.png" } },
     "scene_info": { "name": "eve_scene_info", "args": { "frame_id": "", "targets": [] } },
     "scene_modify": { "name": "eve_scene_modify", "args": { "action": "", "target": "", "params": {} } },
     "run_script": { "name": "eve_run_script", "args": { "source": "" } }
@@ -46,7 +46,7 @@
     }
   },
   "fusion": {
-    "weights": { "geometry": 0.35, "local": 0.35, "vlm": 0.3 },
+    "weights": { "geometry": 0.2, "local": 0.4, "vlm": 0.4 },
     "screen_escalate": 0.7,
     "pass_threshold": 0.75,
     "severity_order": ["critical", "high", "medium", "low"]
