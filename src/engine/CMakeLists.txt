@@ -188,6 +188,9 @@ set(EVELIBS
 if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS
         OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
     list(APPEND EVELIBS EVDevTools)
+    # DevTools ImGui host panels (AI + console) compile into the host binary —
+    # not EVDevTools (which avoids imgui.h to protect MSVC export limits).
+    target_sources(eve PRIVATE devtools/ImGuiHostPanels.cpp)
 endif()
 
 list(APPEND EVELIBS
