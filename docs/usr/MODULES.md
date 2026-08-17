@@ -9,6 +9,7 @@
 
 - [窗口](modules/window.md)：创建和配置单一游戏窗口。
 - [事件](modules/event.md)：泵送平台事件，并用字符串消息队列在模块或线程之间传递通知。
+- [响应式编程](modules/rx.md)：UniRx 风格推送流，Subject 家族 + LINQ 操作符 + ReactiveProperty + 事件桥接。
 - [计时器](modules/timer.md)：读取启动后的高精度时间和帧间隔。
 - [系统信息](modules/system.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
 - [键盘](modules/keyboard.md)：查询按键状态、键盘重复和文本输入。
