@@ -1,0 +1,24 @@
+{
+  "engine": {
+    "host": "127.0.0.1",
+    "port": 7529
+  },
+  "creative": {
+    "catalog": "../creative-brain/catalogs/assets.example.json",
+    "seed": 2026,
+    "tile": 2.0
+  },
+  "stage": {
+    "default_camera": { "eye": [0.0, 12.0, 22.0], "target": [0.0, 1.0, 0.0], "fov": 55.0 }
+  },
+  "qc": {
+    "config": "../scene-qc-agent/config.example.json",
+    "max_rounds": 3,
+    "targets": ["scene"],
+    "save_snapshots": true
+  },
+  "output": {
+    "out_dir": "ai_stage_out",
+    "report": "story_scene_report.json"
+  }
+}

@@ -1,0 +1,4 @@
+# story-scene-agent 只需 Python 标准库（std / socket / urllib）。
+# 可选用 openai 与 OPENAI_API_KEY 让 creative-brain 意图解析与 story 舞台解析走 LLM。
+# 单元测试用 pytest。
+pytest
