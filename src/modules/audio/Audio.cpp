@@ -52,16 +52,18 @@ Audio::~Audio() {
 
 void Audio::workerMain() {
     while (running.load()) {
-        std::vector<Source *> copy;
-        {
-            std::unique_lock<std::mutex> lock(mutex);
-            cv.wait_for(lock, std::chrono::milliseconds(10),
-                        [this] { return !running.load() || !streamSources.empty(); });
-            if (!running.load())
-                break;
-            copy = streamSources;
-        }
-        for (Source *s : copy) {
+        std::unique_lock<std::mutex> lock(mutex);
+        cv.wait_for(lock, std::chrono::milliseconds(10),
+                    [this] { return !running.load() || !streamSources.empty(); });
+        if (!running.load())
+            break;
+        // Keep Audio::mutex held while filling. Source::~Source() removes the
+        // source from streamSources under the same mutex, so a source cannot be
+        // destroyed (and its decoderMutex/pendingMutex freed) while the worker
+        // is mid-fill. A snapshot-then-release pattern would let the destructor
+        // finish between the snapshot and the fill; the worker would then lock
+        // mutexes that no longer exist (std::system_error: mutex lock failed).
+        for (Source *s : streamSources) {
             if (s)
                 s->fillPendingFromDecoder();
         }
@@ -142,13 +144,11 @@ void Audio::pause(Source *s) {
         s->pause();
 }
 void Audio::stopAll() {
-    // Copy under lock, then stop outside — avoids deadlock with Source::~Source → unregisterSource.
-    std::vector<Source *> copy;
-    {
-        std::lock_guard<std::mutex> lock(mutex);
-        copy = allSources;
-    }
-    for (Source *s : copy) {
+    // Hold the mutex while stopping: Source::~Source() → unregisterSource()
+    // blocks on the same mutex, so a concurrently destroyed source cannot be
+    // touched here after it has been removed from allSources.
+    std::lock_guard<std::mutex> lock(mutex);
+    for (Source *s : allSources) {
         if (s)
             s->stop();
     }
@@ -168,12 +168,10 @@ void Audio::setOrientation(float fx, float fy, float fz, float ux, float uy, flo
 }
 
 void Audio::pump() {
-    std::vector<Source *> copy;
-    {
-        std::lock_guard<std::mutex> lock(mutex);
-        copy = streamSources;
-    }
-    for (Source *s : copy) {
+    // Same guarantee as workerMain: destruction removes the source under this
+    // mutex, so the pointer stays valid for the whole iteration.
+    std::lock_guard<std::mutex> lock(mutex);
+    for (Source *s : streamSources) {
         if (s)
             s->pump();
     }
