@@ -109,6 +109,7 @@ file(GLOB all_test_cpp
   debugger_audit.cpp
   dap.cpp
   mcp.cpp
+  console.cpp
   main.cpp
 )
 
@@ -120,7 +121,7 @@ endif()
 # compiled into the Android runtime, so their test files cannot link there.
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp)
+  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp console.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Android test: removed devtools test files, remaining=${all_test_cpp}")

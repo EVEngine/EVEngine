@@ -41,6 +41,7 @@
 | Snapshot | JSON 序列化标记根（或 `gameState` / `eve_state` / 启发式非引擎槽） |
 | Profiler | line hook 计时：`eve.dev.profileReport()` / `profileClear()`（按函数统计调用次数、行数、耗时） |
 | MCP / AI | `--mcp-port` 嵌入 MCP；`AiPanel` 会话日志；F9 切换 ImGui「AI / MCP」面板 |
+| 运行时控制台 | `ConsolePanel`: print 捕获 + 级别化日志 + Squirrel REPL; F4 切换 ImGui「Console」面板 |
 
 ### C++ API
 
@@ -51,7 +52,8 @@
 - `eve::dev::Snapshot`：脚本状态 capture / restore / 文件
 - `eve::dev::DebugAdapter`：DAP TCP（供 VS Code 插件连接）
 - `eve::dev::McpServer`：MCP JSON-RPC TCP（AI Agent 测试 / 辅助开发）
-- `eve::dev::AiPanel`：AI 会话日志；ImGui 绘制由 `ImGuiBackend` 注册（避免 EVDevTools 拉入 imgui.h）
+- `eve::dev::AiPanel`: AI 会话日志；ImGui 绘制由 `ImGuiHostPanels.cpp` 注册（避免 EVDevTools 拉入 imgui.h）
+- `eve::dev::ConsolePanel`: 运行时控制台环形缓冲（线程安全）+ Squirrel `print` 捕获 + REPL 求值；ImGui 绘制同样由 `ImGuiHostPanels.cpp` 注册
 - `eve::dev::DevTool`：`attach` + `exposeScriptApi` + 可选 `startDap` / `startMcp`
 
 ### 脚本 API（`eve.dev`，仅 `--debug`）
@@ -79,6 +81,17 @@ eve.dev.loadSnapshot("boss.json");
 eve.dev.ai.status();
 eve.dev.ai.note("reached boss");
 eve.dev.ai.toggleVisible();  // F9
+// Runtime console / log / REPL
+eve.dev.console.log("hello");       // level: info
+eve.dev.console.info("hi");         // info
+eve.dev.console.warn("careful");    // warn
+eve.dev.console.error("boom");      // error
+eve.dev.console.debug("trace");     // debug
+eve.dev.console.eval("score + 1");  // Squirrel expression evaluation
+eve.dev.console.recent(64);         // recent log entries
+eve.dev.console.format(64);         // recent log text
+eve.dev.console.clear();
+eve.dev.console.toggleVisible();    // F4
 ```
 
 ### 使用方式
