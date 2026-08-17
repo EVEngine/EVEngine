@@ -1,0 +1,25 @@
+{
+  "menu": {
+    "title": "本地化演示",
+    "hint": "按 1 / 2 / 3 切换语言，空格切换自动重载"
+  },
+  "greeting": "你好，{name}！",
+  "items": {
+    "one": "{n} 个物品",
+    "other": "{n} 个物品"
+  },
+  "apples": {
+    "one": "{n} 个苹果",
+    "other": "{n} 个苹果"
+  },
+  "buttons": {
+    "start": "开始游戏",
+    "quit": "退出",
+    "continue": "继续"
+  },
+  "status": {
+    "language": "语言：{lang}",
+    "reload": "自动重载：{on}",
+    "reloaded": "本帧重载了 {n} 个翻译表"
+  }
+}

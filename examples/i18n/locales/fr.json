@@ -1,0 +1,25 @@
+{
+  "menu": {
+    "title": "Localisation Demo",
+    "hint": "Appuyez sur 1 / 2 / 3 pour changer de langue, Espace bascule l'auto-rechargement"
+  },
+  "greeting": "Bonjour, {name} !",
+  "items": {
+    "one": "{n} objet",
+    "other": "{n} objets"
+  },
+  "apples": {
+    "one": "{n} pomme",
+    "other": "{n} pommes"
+  },
+  "buttons": {
+    "start": "D\u00e9marrer",
+    "quit": "Quitter",
+    "continue": "Continuer"
+  },
+  "status": {
+    "language": "Langue : {lang}",
+    "reload": "Auto-rechargement : {on}",
+    "reloaded": "{n} traduction(s) recharg\u00e9e(s) cette frame"
+  }
+}

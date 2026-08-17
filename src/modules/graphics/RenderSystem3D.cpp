@@ -19,6 +19,9 @@ namespace eve::graphics {
 
 namespace {
 
+std::vector<RenderSystem3D::GBufferExtraDrawer> g_gbufferDrawers;
+std::vector<RenderSystem3D::ShadowExtraDrawer> g_shadowDrawers;
+
 glm::vec3 gLightDir = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
 
@@ -398,6 +401,16 @@ void RenderSystem3D::setDirectionalLight(float dx, float dy, float dz, float r, 
     gLightColor = glm::vec3(r, g, b);
 }
 
+void RenderSystem3D::addGBufferExtraDrawer(GBufferExtraDrawer drawer) {
+    if (!drawer) return;
+    g_gbufferDrawers.push_back(std::move(drawer));
+}
+
+void RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
+    if (!drawer) return;
+    g_shadowDrawers.push_back(std::move(drawer));
+}
+
 namespace {
 
 Light3D::Data *findShadowCasterDir(const std::vector<PackedLight3D> &packed) {
@@ -441,25 +454,29 @@ void RenderSystem3D::render(Graphics &gfx) {
     promoteDirectional(packed);
     Light3D::Data *shadowCaster = doShadow ? findShadowCasterDir(packed) : nullptr;
     prioritizeShadowCaster(packed, shadowCaster);
+    const bool haveExtraShadowCasters = doShadow && !g_shadowDrawers.empty();
 
     const float aspect =
         (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
 
     ShadowUpload shadowUpload{};
     shadowUpload.active = false;
-    if (shadowCaster && defaultCam) {
+    if ((shadowCaster || haveExtraShadowCasters) && defaultCam) {
         auto cd = defaultCam->data();
-        glm::vec3 dir(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
+        glm::vec3 dir = shadowCaster ? glm::vec3(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz)
+                                     : gLightDir;
         if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
         else dir = glm::normalize(dir);
+        const float shadowBias = shadowCaster ? shadowCaster->shadowBias : 0.003f;
+        const float shadowStrength = shadowCaster ? shadowCaster->shadowStrength : 1.f;
         const float fovRad = cd->fovYDeg * 0.017453292519943295f;
         shadowUpload =
             buildDirectionalCSM(dir, glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ),
                                 glm::vec3(cd->targetX, cd->targetY, cd->targetZ),
                                 glm::vec3(cd->upX, cd->upY, cd->upZ), fovRad, aspect, cd->nearZ,
-                                cd->farZ, shadowCaster->shadowBias, shadowCaster->shadowStrength);
+                                cd->farZ, shadowBias, shadowStrength);
 
-        if (ecs::current()->getManager<Renderable3D>() != nullptr) {
+        if (ecs::current()->getManager<Renderable3D>() != nullptr || haveExtraShadowCasters) {
             auto casterView =
                 ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
             for (int c = 0; c < ShadowConfig::kCascades; ++c) {
@@ -481,9 +498,9 @@ void RenderSystem3D::render(Graphics &gfx) {
                             if (mat && !mat->getCastShadow()) continue;
                             drawShadowMesh(mr->parts[p].mesh);
                         }
-                    } else {
-                        Mesh *drawMesh = mr->mesh;
-                        if (defaultCam) {
+                } else {
+                    Mesh *drawMesh = mr->mesh;
+                    if (defaultCam) {
                             auto cdd = defaultCam->data();
                             const float dx = xf->x - cdd->eyeX;
                             const float dy = xf->y - cdd->eyeY;
@@ -493,6 +510,9 @@ void RenderSystem3D::render(Graphics &gfx) {
                         drawShadowMesh(drawMesh);
                     }
                 }
+                // Extra shadow casters (billboard/card geometry not in the ECS).
+                for (const auto &drawer : g_shadowDrawers)
+                    drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
                 gfx.endShadowPass();
                 eve::debug::rtPassEnd("ShadowPass");
             }
@@ -511,7 +531,8 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
 
     // G-buffer fill (sampleable depth/normal) — before the forward swapchain pass.
-    if (doGBuffer && defaultCam && ecs::current()->getManager<Renderable3D>() != nullptr) {
+    if (doGBuffer && defaultCam &&
+        (ecs::current()->getManager<Renderable3D>() != nullptr || !g_gbufferDrawers.empty())) {
         eve::debug::rtPassBegin("GBufferPass");
         auto cd = defaultCam->data();
         const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
@@ -564,6 +585,8 @@ void RenderSystem3D::render(Graphics &gfx) {
                      tg, tb);
             }
         }
+        // Extra G-buffer contributors (billboard/card geometry not in the ECS).
+        for (const auto &drawer : g_gbufferDrawers) drawer(gfx, *cd, viewProj, aspect);
         gfx.endGBufferPass();
         eve::debug::rtPassEnd("GBufferPass");
     } else if (!doGBuffer) {

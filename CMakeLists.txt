@@ -58,22 +58,9 @@ function(main)
     # with exceptions off. clangd then errors on try/throw (zeroerr ASSERT, Exception).
     if(MSVC)
         # /FS serializes writes to a target PDB when MSBuild schedules several cl.exe jobs.
-        add_compile_options(/utf-8 /EHsc /FS)
-        # /Gy (function-level linking) puts each function in its own COMDAT so the
-        # linker (/OPT:REF) can drop unused functions instead of whole objects.
-        add_compile_options(/Gy)
-        add_link_options(/OPT:REF)
-    elseif(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        # GCC/Clang equivalent of /Gy + /OPT:REF: put each function/data symbol in
-        # its own section at compile time, then let the linker's --gc-sections drop
-        # the unused ones instead of keeping whole objects. Apple's ld does not
-        # accept --gc-sections; use -dead_strip instead.
-        add_compile_options(-ffunction-sections -fdata-sections)
-        if(APPLE)
-            add_link_options(-Wl,-dead_strip)
-        else()
-            add_link_options(-Wl,--gc-sections)
-        endif()
+        # /bigobj: /GL (LTO, check_ipo()) puts every function into a COMDAT section,
+        # and large TUs (e.g. Graphics.cpp) exceed the default COFF section limit (C1128).
+        add_compile_options(/utf-8 /EHsc /FS /bigobj)
     endif()
 
     # zeroerr before modules so Debug ASSERT headers/defs are available when compiling engine code.
@@ -169,11 +156,18 @@ endfunction()
 # if there is any change. If there is, it will rescan the source code 
 
 macro(create_module libname folder)
+    # Join the exclude lists with ',' instead of ';': the rescan target below is
+    # run through a shell (Ninja on Linux/macOS), where both ';' and '|' are
+    # shell metacharacters (command separator / pipe) that would split or
+    # execute the -D argument. ',' is safe unquoted on every shell (POSIX sh,
+    # cmd.exe, emcc). The scan/rescan scripts split on ','.
+    string(JOIN "," _eve_excl_dirs_arg ${EVENGINE_EXCLUDED_BACKEND_SUBDIRS})
+    string(JOIN "," _eve_excl_files_arg ${EVENGINE_EXCLUDED_MODULE_FILES})
     execute_process(COMMAND ${CMAKE_COMMAND}
         -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
         -Dmodule_name=${folder}
-        -Dexclude_dirs=${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}
-        "-Dexclude_files=${EVENGINE_EXCLUDED_MODULE_FILES}"
+        -Dexclude_dirs=${_eve_excl_dirs_arg}
+        -Dexclude_files=${_eve_excl_files_arg}
         -P ${CMAKE_SOURCE_DIR}/cmake/scan_source.cmake
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -195,8 +189,8 @@ macro(create_module libname folder)
         -Doutput_dir=${CMAKE_CURRENT_BINARY_DIR}
         -Dbuild_dir=${CMAKE_BINARY_DIR}
         -Dmodule_name=${folder}
-        -Dexclude_dirs=${EVENGINE_EXCLUDED_BACKEND_SUBDIRS}
-        "-Dexclude_files=${EVENGINE_EXCLUDED_MODULE_FILES}"
+        -Dexclude_dirs=${_eve_excl_dirs_arg}
+        -Dexclude_files=${_eve_excl_files_arg}
         -P ${CMAKE_SOURCE_DIR}/cmake/rescan_source.cmake
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
@@ -607,22 +601,6 @@ function(check_third_party_project name repo)
             -DCMAKE_MINSIZEREL_POSTFIX=md
             -DCMAKE_RELWITHDEBINFO_POSTFIX=md
         )
-    endif()
-    # Function-level dead-code stripping on every third-party TU so the final
-    # link can drop unused functions inside each object (not just whole objects).
-    # MSVC: /Gy -> COMDAT; GCC/Clang: -ffunction-sections/-fdata-sections.
-    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-        if(MSVC)
-            list(APPEND _eve_tp_cmake_args
-                -DCMAKE_C_FLAGS=/Gy
-                -DCMAKE_CXX_FLAGS=/Gy
-            )
-        else()
-            list(APPEND _eve_tp_cmake_args
-                -DCMAKE_C_FLAGS=-ffunction-sections\ -fdata-sections
-                -DCMAKE_CXX_FLAGS=-ffunction-sections\ -fdata-sections
-            )
-        endif()
     endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args

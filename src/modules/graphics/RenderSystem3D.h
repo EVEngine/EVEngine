@@ -7,6 +7,7 @@
 #include "graphics/Texture.h"
 #include "zeroerr/assert.h"
 
+#include <functional>
 #include <string>
 
 namespace eve::graphics {
@@ -243,6 +244,31 @@ public:
 class RenderSystem3D {
 public:
     static void render(Graphics &gfx);
+
+    /**
+     * Register a callback that fills the G-buffer (depth/normal/albedo) for
+     * geometry outside the Renderable3D ECS (e.g. sprite-stack slices). Called
+     * inside the GBuffer pass after opaque meshes, before endGBufferPass.
+     * The camera data and view-projection match the pass camera.
+     */
+    using GBufferExtraDrawer =
+        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
+                           const glm::mat4 &viewProj, float aspect)>;
+    static void addGBufferExtraDrawer(GBufferExtraDrawer drawer);
+
+    /**
+     * Register a callback that casts shadows for geometry outside the
+     * Renderable3D ECS (e.g. sprite-stack slices). Invoked inside each CSM
+     * cascade pass with that cascade's light-view-projection; call
+     * gfx.drawMeshShadowAlpha(...) / drawMeshShadow(...) there. When no Light3D
+     * casts shadows but drawers are registered, the legacy directional light is
+     * used as the shadow source.
+     */
+    using ShadowExtraDrawer =
+        std::function<void(Graphics &gfx, const glm::mat4 &lightVP,
+                           const Camera3D::Data &cam)>;
+    static void addShadowExtraDrawer(ShadowExtraDrawer drawer);
+
     /** Legacy single directional light used when no enabled Light3D exists. */
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);
 };

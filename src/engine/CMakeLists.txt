@@ -1,9 +1,19 @@
 create_module(EVCommon common)
-create_module(EVDevTools devtools)
-# Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
-# (would request PocoFoundationd.lib instead of our *mdd postfix).
-target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+# Desktop only: DAP / MCP / DevTools rely on Poco JSON+Net and are trimmed out
+# of Android / iOS / browser runtimes (kept in sync with the EVELIBS guard).
+if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS
+        OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
+    create_module(EVDevTools devtools)
+    # Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
+    # (would request PocoFoundationd.lib instead of our *mdd postfix).
+    # NOMINMAX: Poco headers pull in windows.h; without it the min/max macros
+    # break later includes such as CLI11 in cmdline/Run.cpp.
+    target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+endif()
 create_module(EVCmdLine cmdline)
+# DevTool.hpp (pulled in by cmdline/Run.cpp) includes Poco JSON/Net headers;
+# keep the same no-auto-link contract so the debug Poco libs (*mdd) are used.
+target_compile_definitions(EVCmdLine PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 
@@ -190,6 +200,7 @@ list(APPEND EVELIBS
     EVFileSystem
     EVNetwork
     EVData
+    EVI18n
     EVSound
     EVAudio
     EVUI
@@ -215,14 +226,15 @@ list(APPEND EVELIBS
     EVHouseGen
     EVVoxel
     EVStylize
+    EVSpriteStack
     EVEditor)
 
 # WASM (Emscripten) trims the modules whose third-party deps were dropped.
 if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     foreach(_eve_trimmed IN ITEMS
         EVAnimation EVAudio EVAvatar EVBuilding EVDatabase EVFont EVInventory
-        EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVStylize EVVoxel
-        EVDialogue EVProcgen EVSceneLoader EVVirtualGeometry)
+        EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVSpriteStack EVStylize EVVoxel
+        EVDialogue EVProcgen EVSceneLoader EVHouseGen EVVirtualGeometry)
         list(REMOVE_ITEM EVELIBS ${_eve_trimmed})
     endforeach()
 endif()

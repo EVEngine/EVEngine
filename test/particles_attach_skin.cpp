@@ -284,6 +284,9 @@ TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
 
     std::unique_ptr<AnimPose> pose(new AnimPose());
     sk->applyBindPose(pose.get());
+    // The attach sync reads the pose's world transforms — compute them first
+    // (matches the documented frame order: computeWorld → attach/emit).
+    pose->computeWorld(sk.get());
 
     auto *mod = Particles::create();
     ParticleEmitter *e = mod->newEmitter(64);
