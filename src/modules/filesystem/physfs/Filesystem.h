@@ -4,7 +4,9 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <vector>
 
 #include "filesystem/Filesystem.h"
 #include "filesystem/FileWatch.h"
@@ -35,6 +37,8 @@ public:
 
     bool mount(std::string archive, std::string mountpoint, bool appendToPath = false) override;
     bool mount(Data *data, std::string archivename, std::string mountpoint, bool appendToPath = false) override;
+    bool mountRealDirectory(std::string realDir, std::string mountpoint, bool appendToPath = false) override;
+    bool unmountRealDirectory(std::string realDir) override;
 
     bool unmount(std::string archive) override;
     bool unmount(Data *data) override;
@@ -116,6 +120,10 @@ private:
     std::unique_ptr<FileWatch> fileWatch_;
     std::string lastWatchPath_;
     std::string lastWatchRealPath_;
+
+    // Real directories mounted as virtual overlays (see mountRealDirectory).
+    std::vector<std::string> mountedRealDirs_;
+    std::mutex mountMu_;
 
     // Owns the bytes backing a memory-mounted game archive (see setSourceFromMemory).
     void* memoryArchive_ = nullptr;
