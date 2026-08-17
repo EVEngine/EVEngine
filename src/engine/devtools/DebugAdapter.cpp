@@ -86,6 +86,34 @@ void DebugAdapter::setSourceRoot(std::string root) {
     discoverEngineScriptAliases();
 }
 
+void DebugAdapter::registerSource(std::string name, std::string content) {
+    name = Debugger::normalizeSource(std::move(name));
+    if (name.empty() || content.empty()) return;
+    std::lock_guard<std::recursive_mutex> lock(ioMu_);
+    sourceContents_[name] = std::move(content);
+}
+
+Poco::JSON::Object::Ptr DebugAdapter::makeSourceObject(const std::string& source) const {
+    Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
+    const std::string norm = Debugger::normalizeSource(source);
+    const auto it = sourceContents_.find(norm);
+    if (it != sourceContents_.end()) {
+        // Virtual source: hand VS Code the reference + inline content so it can
+        // render scripts compiled from memory (compilestring / packaged archives).
+        const int ref = 900000 + static_cast<int>(std::hash<std::string>{}(norm) % 100000);
+        const_cast<DebugAdapter*>(this)->sourceRefContents_[ref] = it->second;
+        src->set("name", Debugger::sourceBasename(norm));
+        src->set("sourceReference", ref);
+        src->set("content", it->second);
+        return src;
+    }
+    const std::string resolved = resolveSourcePath(norm);
+    const auto slash = resolved.find_last_of('/');
+    src->set("name", slash == std::string::npos ? resolved : resolved.substr(slash + 1));
+    src->set("path", resolved);
+    return src;
+}
+
 void DebugAdapter::discoverEngineScriptAliases() {
     namespace fs = std::filesystem;
     std::error_code ec;
@@ -161,8 +189,44 @@ std::string DebugAdapter::resolveSourcePath(std::string source) const {
     }
 }
 
+int DebugAdapter::varRefForFrame(int frameId) {
+    if (frameId <= 0) return varRefLocals_;
+    const int ref = varRefFrameBase_ + frameId;
+    varScopes_[ref] = VarScope{0, frameId, {}};
+    return ref;
+}
+
+int DebugAdapter::allocVarRef(int kind, int frame, std::vector<std::string> path) {
+    const int ref = nextVarRef_++;
+    varScopes_[ref] = VarScope{kind, frame, std::move(path)};
+    return ref;
+}
+
+void DebugAdapter::handleBreakpointEvent(int id, const std::string& source, int line,
+                                         bool verified) {
+    Poco::JSON::Object::Ptr bp = new Poco::JSON::Object();
+    bp->set("id", id);
+    bp->set("verified", verified);
+    if (!source.empty() && line > 0) {
+        const std::string resolved = resolveSourcePath(source);
+        Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
+        src->set("name", Debugger::sourceBasename(resolved));
+        src->set("path", resolved);
+        bp->set("source", src);
+        bp->set("line", line);
+    }
+    Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+    body->set("reason", "changed");
+    body->set("breakpoint", bp);
+    sendMessage(makeEvent("breakpoint", stringify(Poco::Dynamic::Var(body))));
+}
+
 int DebugAdapter::listen(uint16_t port) {
     stop();
+    Debugger::instance().setBreakpointEventFn(
+        [this](int id, const std::string& source, int line, bool verified) {
+            handleBreakpointEvent(id, source, line, verified);
+        });
     try {
         Poco::Net::SocketAddress addr("127.0.0.1", port);
         server_ = std::make_unique<Poco::Net::ServerSocket>(addr);
@@ -186,7 +250,8 @@ int DebugAdapter::listen(uint16_t port) {
 }
 
 void DebugAdapter::stop() {
-    std::lock_guard<std::mutex> lock(ioMu_);
+    std::lock_guard<std::recursive_mutex> lock(ioMu_);
+    Debugger::instance().setBreakpointEventFn(nullptr);
     if (client_) {
         try {
             client_->close();
@@ -208,6 +273,8 @@ void DebugAdapter::stop() {
     configured_  = false;
     stopOnEntry_ = false;
     sourceAliases_.clear();
+    varScopes_.clear();
+    lastException_.clear();
 }
 
 void DebugAdapter::acceptNonBlocking() {
@@ -229,6 +296,7 @@ void DebugAdapter::acceptNonBlocking() {
 }
 
 bool DebugAdapter::sendMessage(const std::string& json) {
+    std::lock_guard<std::recursive_mutex> lock(ioMu_);
     if (!client_) return false;
     const std::string frame =
         "Content-Length: " + std::to_string(json.size()) + "\r\n\r\n" + json;
@@ -280,18 +348,22 @@ std::string DebugAdapter::reasonString(PauseReason r) {
     }
 }
 
-void DebugAdapter::notifyStopped(PauseReason reason, const SourceLoc& loc) {
+void DebugAdapter::notifyStopped(PauseReason reason, const SourceLoc& loc,
+                                 const std::string& description) {
     Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
     body->set("reason", reasonString(reason));
     body->set("threadId", 1);
     body->set("allThreadsStopped", true);
+    if (reason == PauseReason::Exception) {
+        lastException_ = description.empty() ? lastException_ : description;
+        if (!lastException_.empty()) {
+            body->set("description", lastException_);
+            body->set("text", lastException_);
+        }
+    }
     if (!loc.source.empty() && loc.line > 0) {
         // Hint the IDE; stackTrace still provides the authoritative source.
-        Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
-        const std::string resolved = resolveSourcePath(loc.source);
-        src->set("name", Debugger::sourceBasename(resolved));
-        src->set("path", resolved);
-        body->set("source", src);
+        body->set("source", makeSourceObject(loc.source));
         body->set("line", loc.line);
         body->set("column", 1);
     }
@@ -385,6 +457,23 @@ void DebugAdapter::handleRequest(const std::string& json) {
             body->set("supportsStepBack", false);
             body->set("supportTerminateDebuggee", true);
             body->set("supportsCancelRequest", false);
+            body->set("supportsExceptionInfoRequest", true);
+            body->set("supportsConditionalBreakpoints", true);
+            // Expose "Break on Error" as an exception filter so VS Code renders a
+            // checkbox in the BREAKPOINTS panel (Godot's Break on Error).
+            {
+                Poco::JSON::Object::Ptr filter = new Poco::JSON::Object();
+                filter->set("filter", "script_error");
+                filter->set("label", "Script Errors");
+                filter->set("default", false);
+                filter->set("supportsCondition", false);
+                filter->set(
+                    "description",
+                    "Break when a script error is raised (caught or uncaught)");
+                Poco::JSON::Array::Ptr filters = new Poco::JSON::Array();
+                filters->add(filter);
+                body->set("exceptionBreakpointFilters", filters);
+            }
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             sendMessage(makeEvent("initialized", "{}"));
             return;
@@ -441,11 +530,16 @@ void DebugAdapter::handleRequest(const std::string& json) {
                         auto bp = arr->getObject(i);
                         if (!bp) continue;
                         const int line = bp->optValue<int>("line", 0);
-                        const int id   = dbg.setBreakpoint(sourcePath, line, true);
+                        const std::string condition =
+                            bp->optValue<std::string>("condition", "");
+                        const int id = dbg.setBreakpoint(sourcePath, line, true, condition);
                         Poco::JSON::Object::Ptr ob = new Poco::JSON::Object();
                         ob->set("id", id);
-                        ob->set("verified", id > 0);
+                        // Verified lazily: the line hook marks the breakpoint real
+                        // and we emit a `breakpoint` event once the line runs.
+                        ob->set("verified", false);
                         ob->set("line", line);
+                        if (id > 0) ob->set("message", "waiting for line to execute");
                         if (id > 0 && !sourcePath.empty()) {
                             Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
                             const std::string resolved = resolveSourcePath(sourcePath);
@@ -490,12 +584,7 @@ void DebugAdapter::handleRequest(const std::string& json) {
                 fo->set("name", f.name);
                 fo->set("line", f.loc.line);
                 fo->set("column", 1);
-                Poco::JSON::Object::Ptr src = new Poco::JSON::Object();
-                const std::string resolved = resolveSourcePath(f.loc.source);
-                const auto slash = resolved.find_last_of('/');
-                src->set("name", slash == std::string::npos ? resolved : resolved.substr(slash + 1));
-                src->set("path", resolved);
-                fo->set("source", src);
+                fo->set("source", makeSourceObject(f.loc.source));
                 arr->add(fo);
             }
             Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
@@ -505,17 +594,24 @@ void DebugAdapter::handleRequest(const std::string& json) {
             return;
         }
         if (command == "scopes") {
+            const int frameId = args ? args->optValue<int>("frameId", 0) : 0;
+            const int localsRef = varRefForFrame(frameId);
             Poco::JSON::Object::Ptr locals = new Poco::JSON::Object();
             locals->set("name", "Locals");
-            locals->set("variablesReference", varRefLocals_);
+            locals->set("variablesReference", localsRef);
             locals->set("expensive", false);
             Poco::JSON::Object::Ptr watches = new Poco::JSON::Object();
             watches->set("name", "Watches");
             watches->set("variablesReference", varRefWatches_);
             watches->set("expensive", false);
+            Poco::JSON::Object::Ptr globals = new Poco::JSON::Object();
+            globals->set("name", "Globals");
+            globals->set("variablesReference", varRefGlobals_);
+            globals->set("expensive", false);
             Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
             arr->add(locals);
             arr->add(watches);
+            arr->add(globals);
             Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("scopes", arr);
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
@@ -524,15 +620,30 @@ void DebugAdapter::handleRequest(const std::string& json) {
         if (command == "variables") {
             const int ref = args ? args->optValue<int>("variablesReference", 0) : 0;
             Poco::JSON::Array::Ptr arr = new Poco::JSON::Array();
-            if (ref == varRefLocals_) {
-                for (const auto& v : dbg.locals(0)) {
-                    Poco::JSON::Object::Ptr o = new Poco::JSON::Object();
-                    o->set("name", v.name);
-                    o->set("value", v.value);
-                    o->set("type", v.type);
+            const auto addChild = [&](const VariableInfo& v, const VarScope& base) {
+                Poco::JSON::Object::Ptr o = new Poco::JSON::Object();
+                o->set("name", v.name);
+                o->set("value", v.value);
+                o->set("type", v.type);
+                if (v.expandable) {
+                    auto child = base;
+                    child.path.push_back(v.name);
+                    o->set("variablesReference", allocVarRef(child.kind, child.frame, child.path));
+                    // VS Code VARIABLES context menu: only offer "Inspect
+                    // Instance" on objects that can be expanded. Drives the
+                    // `__vscodeVariableMenuContext == 'object'` when-clause in
+                    // tools/vscode-eve-debug/package.json.
+                    o->set("__vscodeVariableMenuContext", "object");
+                } else {
                     o->set("variablesReference", 0);
-                    arr->add(o);
                 }
+                arr->add(o);
+            };
+
+            if (ref == varRefLocals_) {
+                VarScope base;
+                base.kind  = 0;
+                for (const auto& v : dbg.locals(0)) addChild(v, base);
             } else if (ref == varRefWatches_) {
                 dbg.refreshWatches();
                 for (const auto& w : dbg.watches()) {
@@ -542,6 +653,17 @@ void DebugAdapter::handleRequest(const std::string& json) {
                     o->set("type", w.ok ? "watch" : "error");
                     o->set("variablesReference", 0);
                     arr->add(o);
+                }
+            } else if (ref == varRefGlobals_) {
+                VarScope base;
+                base.kind = 1;
+                for (const auto& v : dbg.globals()) addChild(v, base);
+            } else {
+                const auto it = varScopes_.find(ref);
+                if (it != varScopes_.end()) {
+                    const auto children = dbg.containerChildren(
+                        static_cast<VarKind>(it->second.kind), it->second.frame, it->second.path);
+                    for (const auto& v : children) addChild(v, it->second);
                 }
             }
             Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
@@ -594,17 +716,29 @@ void DebugAdapter::handleRequest(const std::string& json) {
             return;
         }
         if (command == "pause") {
-            // DAP pause = break at next script statement (not frame-level pause with
-            // an empty source). stopped event is emitted from the line hook.
-            if (!dbg.isPaused()) dbg.stepInto();
+            // DAP pause = break at next script statement. Reply immediately with a
+            // stopped event so the IDE is not left hanging while the engine runs
+            // native code; the next script line emits a second stopped with a real
+            // source location once the line hook arms.
+            if (!dbg.isPaused()) {
+                dbg.stepInto();
+                Poco::JSON::Object::Ptr stoppedBody = new Poco::JSON::Object();
+                stoppedBody->set("reason", "pause");
+                stoppedBody->set("threadId", 1);
+                stoppedBody->set("allThreadsStopped", true);
+                sendMessage(makeEvent("stopped", stringify(Poco::Dynamic::Var(stoppedBody))));
+            }
             sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
             return;
         }
         if (command == "evaluate") {
             const std::string expr = args ? args->optValue<std::string>("expression", "") : "";
-            // Treat evaluate as an implicit watch registration for the Watches scope.
-            if (!expr.empty()) dbg.addWatch(expr);
-            auto info = dbg.evaluate(expr);
+            const int frameId = args ? args->optValue<int>("frameId", 0) : 0;
+            const std::string context = args ? args->optValue<std::string>("context", "") : "";
+            auto info = dbg.evaluate(expr, frameId);
+            // Only the Watch pane registers persistent expressions; hover / repl
+            // evaluations are transient.
+            if (context == "watch" && info.type != "error") dbg.addWatch(expr);
             Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
             body->set("result", info.value);
             body->set("type", info.type);
@@ -612,14 +746,58 @@ void DebugAdapter::handleRequest(const std::string& json) {
             sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
             return;
         }
+        if (command == "source") {
+            const int ref = args ? args->optValue<int>("sourceReference", 0) : 0;
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            const auto it = sourceRefContents_.find(ref);
+            if (it != sourceRefContents_.end()) {
+                body->set("content", it->second);
+                body->set("mimeType", "text/plain");
+            } else {
+                body->set("content", "");
+            }
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
+            return;
+        }
+        if (command == "setExceptionBreakpoints") {
+            // Filters: "all" / "uncaught" / "script_error" enable breaking on
+            // script errors (Godot "Break on Error"); empty disables it.
+            bool on  = false;
+            Poco::JSON::Array::Ptr applied = new Poco::JSON::Array();
+            if (args && args->has("filters")) {
+                auto filters = args->getArray("filters");
+                if (filters) {
+                    for (size_t i = 0; i < filters->size(); ++i) {
+                        const std::string f = filters->get(i).convert<std::string>();
+                        if (f == "all" || f == "uncaught" || f == "script_error" ||
+                            f == "runtime_error") {
+                            on = true;
+                            applied->add(f);
+                        }
+                    }
+                }
+            }
+            dbg.setBreakOnError(on);
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            body->set("filters", applied);
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
+            return;
+        }
+        if (command == "exceptionInfo") {
+            Poco::JSON::Object::Ptr body = new Poco::JSON::Object();
+            body->set("exceptionId", "script_error");
+            body->set("description", lastException_.empty() ? "script error" : lastException_);
+            body->set("breakMode", dbg.breakOnError() ? "always" : "never");
+            Poco::JSON::Object::Ptr details = new Poco::JSON::Object();
+            details->set("message", lastException_);
+            body->set("details", details);
+            sendMessage(makeResponse(0, reqSeq, command, true, stringify(Poco::Dynamic::Var(body))));
+            return;
+        }
         if (command == "disconnect" || command == "terminate") {
             dbg.resume();
             sendMessage(makeResponse(0, reqSeq, command, true, "{}"));
             notifyTerminated();
-            return;
-        }
-        if (command == "setExceptionBreakpoints") {
-            sendMessage(makeResponse(0, reqSeq, command, true, "{\"filters\":[]}"));
             return;
         }
         // Custom: snapshot helpers via evaluate-like extensions are enough;
@@ -635,7 +813,7 @@ void DebugAdapter::handleRequest(const std::string& json) {
 
 void DebugAdapter::poll() {
     if (!listening_.load()) return;
-    std::lock_guard<std::mutex> lock(ioMu_);
+    std::lock_guard<std::recursive_mutex> lock(ioMu_);
     acceptNonBlocking();
     readAndDispatch();
 }

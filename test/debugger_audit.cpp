@@ -261,7 +261,13 @@ TEST_CASE("devtools.audit.localsAtBreakpoint") {
     driver.actions = {[]() { Debugger::instance().resume(); }};
 
     std::vector<VariableInfo> locals;
-    driver.capture = [&]() { locals = Debugger::instance().locals(0); };
+    VariableInfo ev;
+    driver.capture = [&]() {
+        locals = Debugger::instance().locals(0);
+        // evaluate() must read the CURRENT frame's locals (regression: it used
+        // to read the caller's frame at level 1). Called while still attached.
+        ev = Debugger::instance().evaluate("z");
+    };
 
     Debugger& d = Debugger::instance();
     d.clearBreakpoints();
@@ -291,9 +297,6 @@ TEST_CASE("devtools.audit.localsAtBreakpoint") {
     CHECK(sawZ);
     CHECK(sawName);
 
-    // evaluate() must read the CURRENT frame's locals (regression: it used to
-    // read the caller's frame at level 1).
-    auto ev = Debugger::instance().evaluate("z");
     CHECK_EQ(ev.type, std::string("integer"));
     CHECK(ev.value.find("7") != std::string::npos);
 }

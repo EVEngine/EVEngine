@@ -198,6 +198,9 @@ TEST_CASE("devtools.dap.initializeLaunchContinueStep") {
     REQUIRE(initBody);
     CHECK(initBody->optValue<bool>("supportsConfigurationDoneRequest", false));
     CHECK(initBody->optValue<bool>("supportsTerminateRequest", false));
+    CHECK(initBody->optValue<bool>("supportsConditionalBreakpoints", false));
+    CHECK(initBody->optValue<bool>("supportsExceptionInfoRequest", false));
+    CHECK(initBody->has("exceptionBreakpointFilters"));
     // `initialized` is sent right after the initialize response; drain it.
     REQUIRE(client.expectEvent("initialized", 1000));
 
@@ -278,14 +281,19 @@ TEST_CASE("devtools.dap.initializeLaunchContinueStep") {
     CHECK(!dbg.isPaused());
     REQUIRE(client.findEvent("continued"));
 
-    // ---- pause (arms break-on-next-line; stopped comes from the line hook) ----
+    // ---- pause (replies immediately; next script line emits a located stop) ----
     client.clearEvents();
     client.sendRequest("pause", "{\"threadId\":1}");
     auto pauseResp = client.expectResponse("pause");
     REQUIRE(pauseResp);
     CHECK(pauseResp->optValue<bool>("success", false));
     CHECK(static_cast<int>(dbg.mode()) == static_cast<int>(RunMode::StepInto));
-    CHECK(!client.findEvent("stopped"));
+    // The IDE must not wait on a script line (native code may run a while), so
+    // pause emits a stopped event with no source immediately.
+    auto pauseStopped = client.expectEvent("stopped", 1000);
+    REQUIRE(pauseStopped);
+    CHECK_EQ(pauseStopped->getObject("body")->optValue<std::string>("reason", ""),
+             std::string("pause"));
     {
         SourceLoc hit;
         hit.source   = "main.nut";
@@ -577,5 +585,506 @@ TEST_CASE("devtools.dap.realScriptBreakpointAndCallStack") {
     CHECK(done);
     CHECK(!dbg.isPaused());
 
+    dap.stop();
+}
+
+TEST_CASE("devtools.dap.exceptionBreakpoints") {
+    auto& dap = DebugAdapter::instance();
+    auto& dbg = Debugger::instance();
+    dbg.detach();
+    dbg.clearBreakpoints();
+    dbg.setBreakOnError(false);
+    dap.stop();
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+    DapClient client(port);
+    pump(20);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+    client.clearEvents();
+
+    // Empty filters -> break on error off.
+    client.sendRequest("setExceptionBreakpoints", "{\"filters\":[]}");
+    auto offResp = client.expectResponse("setExceptionBreakpoints");
+    REQUIRE(offResp);
+    CHECK(offResp->optValue<bool>("success", false));
+    CHECK(!dbg.breakOnError());
+
+    client.sendRequest("setExceptionBreakpoints",
+                       "{\"filters\":[\"uncaught\",\"script_error\"]}");
+    auto onResp = client.expectResponse("setExceptionBreakpoints");
+    REQUIRE(onResp);
+    CHECK(onResp->optValue<bool>("success", false));
+    CHECK(dbg.breakOnError());
+
+    // exceptionInfo reflects the last exception + break mode.
+    SourceLoc loc;
+    loc.source = "boom.nut";
+    loc.line   = 9;
+    dap.notifyStopped(PauseReason::Exception, loc, "index error on boom");
+    client.sendRequest("exceptionInfo", "{\"threadId\":1}");
+    auto infoResp = client.expectResponse("exceptionInfo");
+    REQUIRE(infoResp);
+    auto body = infoResp->getObject("body");
+    REQUIRE(body);
+    CHECK_EQ(body->optValue<std::string>("exceptionId", ""), std::string("script_error"));
+    CHECK(body->optValue<std::string>("description", "").find("index error") !=
+          std::string::npos);
+    CHECK_EQ(body->optValue<std::string>("breakMode", ""), std::string("always"));
+
+    dbg.setBreakOnError(false);
+    dap.stop();
+}
+
+TEST_CASE("devtools.dap.uncaughtErrorPausesAtThrowSite") {
+    auto& dap = DebugAdapter::instance();
+    auto& dbg = Debugger::instance();
+    auto& dt  = DevTool::instance();
+
+    dap.stop();
+    dt.detach();
+    dbg.clearBreakpoints();
+    dbg.setBreakOnError(true);
+
+    // boom.nut line 3 is the throw site; the error hook must report exactly
+    // that line (not the sq_call / report site).
+    const char* src =
+        "function boom() {\n"   // line 1
+        "    local x = 1\n"     // line 2
+        "    throw \"kaboom\"\n" // line 3
+        "}\n"                   // line 4
+        "boom()\n";             // line 5
+
+    std::atomic<bool> attached{false};
+    std::atomic<bool> go{false};
+    std::atomic<bool> scriptDone{false};
+    std::atomic<bool> callFailed{false};
+
+    std::thread scriptThread([&] {
+        ssq::VM vm(1024, ssq::Libs::ALL);
+        HSQUIRRELVM v = vm.getHandle();
+        dt.attach(v, /*sampleLocals=*/false);
+        attached = true;
+        while (!go.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        REQUIRE(SQ_SUCCEEDED(sq_compilebuffer(v, src, static_cast<SQInteger>(std::strlen(src)),
+                                              _SC("boom.nut"), SQTrue)));
+        sq_pushroottable(v);
+        // Uncaught: the error hook fires at the throw site and blocks
+        // (break-on-error), so sq_call returns SQ_ERROR only after resume.
+        callFailed = SQ_FAILED(sq_call(v, 1, SQFalse, SQTrue));
+        sq_poptop(v);
+        dt.detach();
+        scriptDone = true;
+    });
+
+    while (!attached.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+    DapClient client(port);
+    pump(20);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+    client.sendRequest("launch", "{\"program\":\".\"}");
+    REQUIRE(client.expectResponse("launch"));
+    client.sendRequest("setExceptionBreakpoints",
+                       "{\"filters\":[\"script_error\"]}");
+    REQUIRE(client.expectResponse("setExceptionBreakpoints"));
+    CHECK(dbg.breakOnError());
+    client.sendRequest("configurationDone");
+    REQUIRE(client.expectResponse("configurationDone"));
+
+    client.clearEvents();
+    go = true;
+    auto stopped = client.expectEvent("stopped", 8000);
+    REQUIRE(stopped);
+    auto body = stopped->getObject("body");
+    REQUIRE(body);
+    CHECK_EQ(body->optValue<std::string>("reason", ""), std::string("exception"));
+    CHECK(body->optValue<std::string>("description", "").find("kaboom") !=
+          std::string::npos);
+    // The pause must be at the THROW line, not the catch / report site.
+    auto srcObj = body->getObject("source");
+    REQUIRE(srcObj);
+    CHECK(srcObj->optValue<std::string>("name", "").find("boom.nut") != std::string::npos);
+    CHECK_EQ(body->optValue<int>("line", -1), 3);
+
+    // Call stack: the native error hook frame is skipped, so frame 0 is the
+    // throwing script function with its locals intact.
+    client.sendRequest("stackTrace", "{\"threadId\":1,\"startFrame\":0,\"levels\":8}");
+    auto stackResp = client.expectResponse("stackTrace");
+    REQUIRE(stackResp);
+    auto frames = stackResp->getObject("body")->getArray("stackFrames");
+    REQUIRE(frames);
+    REQUIRE(frames->size() >= 2u);
+    auto f0 = frames->getObject(0);
+    REQUIRE(f0);
+    CHECK(f0->optValue<std::string>("name", "").find("boom") != std::string::npos);
+    CHECK_EQ(f0->optValue<int>("id", -1), 1);  // stack level 1 (hook skipped)
+    CHECK_EQ(f0->optValue<int>("line", -1), 3);
+    auto f1 = frames->getObject(1);
+    REQUIRE(f1);
+    CHECK(f1->optValue<std::string>("name", "").find("main") != std::string::npos);
+    CHECK_EQ(f1->optValue<int>("line", -1), 5);
+
+    // Frame 0 (boom) locals: x == 1.
+    client.sendRequest("scopes", "{\"frameId\":1}");
+    auto scResp = client.expectResponse("scopes");
+    REQUIRE(scResp);
+    auto scopes = scResp->getObject("body")->getArray("scopes");
+    REQUIRE(scopes);
+    int localsRef = -1;
+    for (size_t i = 0; i < scopes->size(); ++i) {
+        auto s = scopes->getObject(i);
+        if (s->optValue<std::string>("name", "") == "Locals")
+            localsRef = s->optValue<int>("variablesReference", -1);
+    }
+    REQUIRE(localsRef > 0);
+    client.sendRequest("variables",
+                       "{\"variablesReference\":" + std::to_string(localsRef) + "}");
+    auto varsResp = client.expectResponse("variables");
+    REQUIRE(varsResp);
+    auto vars = varsResp->getObject("body")->getArray("variables");
+    REQUIRE(vars);
+    bool foundX = false;
+    for (size_t i = 0; i < vars->size(); ++i) {
+        auto vv = vars->getObject(i);
+        if (vv->optValue<std::string>("name", "") == "x" &&
+            vv->optValue<std::string>("value", "").find("1") != std::string::npos)
+            foundX = true;
+    }
+    CHECK(foundX);
+
+    client.sendRequest("continue", "{\"threadId\":1}");
+    REQUIRE(client.expectResponse("continue"));
+
+    for (int i = 0; i < 200 && !scriptDone.load(); ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        dap.poll();
+    }
+    if (scriptThread.joinable()) {
+        if (scriptDone.load())
+            scriptThread.join();
+        else
+            scriptThread.detach();
+    }
+    CHECK(scriptDone.load());
+    CHECK(callFailed.load());  // the error did propagate after resume
+    CHECK(!dbg.isPaused());
+    dbg.setBreakOnError(false);
+    dap.stop();
+}
+
+TEST_CASE("devtools.dap.caughtErrorPausesAtReportSite") {
+    auto& dap = DebugAdapter::instance();
+    auto& dbg = Debugger::instance();
+    auto& dt  = DevTool::instance();
+
+    dap.stop();
+    dt.detach();
+    dbg.clearBreakpoints();
+    dbg.setBreakOnError(true);
+
+    // Mirrors the load.nut pattern: the catch block reports the error by
+    // calling the native `eve.dev.reportError` directly. The pause lands on
+    // that catch statement (the deepest script frame), not on engine internals.
+    const char* src =
+        "function boom() {\n"                                   // line 1
+        "    throw \"kaboom\"\n"                                // line 2
+        "}\n"                                                   // line 3
+        "function caller() {\n"                                 // line 4
+        "    try {\n"                                           // line 5
+        "        boom()\n"                                      // line 6
+        "    } catch (e) {\n"                                   // line 7
+        "        if (\"dev\" in eve) eve.dev.reportError(\"\" + e)\n"  // line 8
+        "    }\n"                                               // line 9
+        "}\n"                                                   // line 10
+        "caller()\n";                                           // line 11
+
+    std::atomic<bool> attached{false};
+    std::atomic<bool> go{false};
+    std::atomic<bool> scriptDone{false};
+
+    std::thread scriptThread([&] {
+        ssq::VM vm(1024, ssq::Libs::ALL);
+        HSQUIRRELVM v = vm.getHandle();
+        dt.attach(v, /*sampleLocals=*/false);
+        // Provide the `eve` root table the dev script API binds into.
+        const char* pre = "eve <- {};\n";
+        REQUIRE(SQ_SUCCEEDED(
+            sq_compilebuffer(v, pre, static_cast<SQInteger>(std::strlen(pre)), _SC("pre.nut"),
+                             SQTrue)));
+        sq_pushroottable(v);
+        REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+        sq_poptop(v);
+        dt.exposeScriptApi(vm);
+        attached = true;
+        while (!go.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        REQUIRE(SQ_SUCCEEDED(sq_compilebuffer(v, src, static_cast<SQInteger>(std::strlen(src)),
+                                              _SC("caught.nut"), SQTrue)));
+        sq_pushroottable(v);
+        REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+        sq_poptop(v);
+        dt.detach();
+        scriptDone = true;
+    });
+
+    while (!attached.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+    DapClient client(port);
+    pump(20);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+    client.sendRequest("launch", "{\"program\":\".\"}");
+    REQUIRE(client.expectResponse("launch"));
+    client.sendRequest("setExceptionBreakpoints",
+                       "{\"filters\":[\"script_error\"]}");
+    REQUIRE(client.expectResponse("setExceptionBreakpoints"));
+    client.sendRequest("configurationDone");
+    REQUIRE(client.expectResponse("configurationDone"));
+
+    client.clearEvents();
+    go = true;
+    auto stopped = client.expectEvent("stopped", 8000);
+    REQUIRE(stopped);
+    auto body = stopped->getObject("body");
+    REQUIRE(body);
+    CHECK_EQ(body->optValue<std::string>("reason", ""), std::string("exception"));
+    auto srcObj = body->getObject("source");
+    REQUIRE(srcObj);
+    CHECK(srcObj->optValue<std::string>("name", "").find("caught.nut") != std::string::npos);
+    // The deepest script frame is the game's catch statement calling the
+    // native reporter (line 8), not load.nut internals.
+    CHECK_EQ(body->optValue<int>("line", -1), 8);
+
+    client.sendRequest("continue", "{\"threadId\":1}");
+    REQUIRE(client.expectResponse("continue"));
+
+    for (int i = 0; i < 200 && !scriptDone.load(); ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        dap.poll();
+    }
+    if (scriptThread.joinable()) {
+        if (scriptDone.load())
+            scriptThread.join();
+        else
+            scriptThread.detach();
+    }
+    CHECK(scriptDone.load());
+    CHECK(!dbg.isPaused());
+    dbg.setBreakOnError(false);
+    dap.stop();
+}
+
+TEST_CASE("devtools.dap.breakpointVerificationEvent") {
+    auto& dap = DebugAdapter::instance();
+    auto& dbg = Debugger::instance();
+    dbg.detach();
+    dbg.clearBreakpoints();
+    dbg.setBreakpointsEnabled(true);
+    dap.stop();
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+    DapClient client(port);
+    pump(20);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+    client.clearEvents();
+
+    client.sendRequest("setBreakpoints",
+                       "{\"source\":{\"path\":\"verify.nut\",\"name\":\"verify.nut\"},"
+                       "\"breakpoints\":[{\"line\":5}]}");
+    auto bpResp = client.expectResponse("setBreakpoints");
+    REQUIRE(bpResp);
+    auto arr = bpResp->getObject("body")->getArray("breakpoints");
+    REQUIRE(arr);
+    REQUIRE(arr->size() == 1u);
+    auto bp0 = arr->getObject(0);
+    // Unverified until the line is observed by the line hook.
+    CHECK(!bp0->optValue<bool>("verified", true));
+    const int id = bp0->optValue<int>("id", 0);
+    REQUIRE(id > 0);
+
+    // Disable the master switch so the observation does not pause; the
+    // verification event must still fire.
+    dbg.setBreakpointsEnabled(false);
+    SourceLoc loc;
+    loc.source = "verify.nut";
+    loc.line   = 5;
+    CHECK(!dbg.onScriptLine(loc));
+    REQUIRE(client.expectEvent("breakpoint", 1000));
+    auto evBp = client.findEvent("breakpoint")->getObject("body")->getObject("breakpoint");
+    REQUIRE(evBp);
+    CHECK(evBp->optValue<bool>("verified", false));
+    CHECK_EQ(evBp->optValue<int>("id", 0), id);
+
+    dbg.setBreakpointsEnabled(true);
+    dap.stop();
+}
+
+TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
+    auto& dap = DebugAdapter::instance();
+    auto& dbg = Debugger::instance();
+    auto& dt  = DevTool::instance();
+
+    dap.stop();
+    dt.detach();
+    dbg.clearBreakpoints();
+
+    const char* src =
+        "function inner() {\n"          // line 1
+        "    local a = 1\n"             // line 2
+        "    local tab = { x = 5 }\n"   // line 3
+        "    local arr = [1, 2, 3]\n"   // line 4
+        "    local b = a + 1\n"         // line 5 <-- breakpoint
+        "}\n"                           // line 6
+        "function outer() {\n"          // line 7
+        "    local o1 = 99\n"           // line 8
+        "    inner()\n"                 // line 9
+        "}\n"                           // line 10
+        "outer()\n";                    // line 11
+
+    std::atomic<bool> attached{false};
+    std::atomic<bool> go{false};
+    std::atomic<bool> scriptDone{false};
+
+    std::thread scriptThread([&] {
+        ssq::VM vm(1024, ssq::Libs::ALL);
+        HSQUIRRELVM v = vm.getHandle();
+        dt.attach(v, /*sampleLocals=*/false);
+        attached = true;
+        while (!go.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        REQUIRE(SQ_SUCCEEDED(sq_compilebuffer(v, src, static_cast<SQInteger>(std::strlen(src)),
+                                              _SC("scopes.nut"), SQTrue)));
+        sq_pushroottable(v);
+        REQUIRE(SQ_SUCCEEDED(sq_call(v, 1, SQFalse, SQTrue)));
+        sq_poptop(v);
+        dt.detach();
+        scriptDone = true;
+    });
+
+    while (!attached.load()) std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
+    const int port = dap.listen(0);
+    REQUIRE(port > 0);
+    DapClient client(port);
+    pump(20);
+    client.sendRequest("initialize", "{\"adapterID\":\"eve\"}");
+    REQUIRE(client.expectResponse("initialize"));
+    client.sendRequest("launch", "{\"program\":\".\"}");
+    REQUIRE(client.expectResponse("launch"));
+    client.sendRequest("setBreakpoints",
+                       "{\"source\":{\"path\":\"scopes.nut\",\"name\":\"scopes.nut\"},"
+                       "\"breakpoints\":[{\"line\":5}]}");
+    REQUIRE(client.expectResponse("setBreakpoints"));
+    client.sendRequest("configurationDone");
+    REQUIRE(client.expectResponse("configurationDone"));
+
+    client.clearEvents();
+    go = true;
+    REQUIRE(client.expectEvent("stopped", 8000));
+
+    // Frame 1 = outer: has o1; frame 0 = inner: has tab/arr.
+    client.sendRequest("scopes", "{\"frameId\":1}");
+    auto scResp = client.expectResponse("scopes");
+    REQUIRE(scResp);
+    auto scopes = scResp->getObject("body")->getArray("scopes");
+    REQUIRE(scopes);
+    int localsRef = -1;
+    for (size_t i = 0; i < scopes->size(); ++i) {
+        auto s = scopes->getObject(i);
+        if (s->optValue<std::string>("name", "") == "Locals")
+            localsRef = s->optValue<int>("variablesReference", -1);
+    }
+    REQUIRE(localsRef > 1);  // differs from frame-0 locals ref (1)
+
+    client.sendRequest("variables",
+                       "{\"variablesReference\":" + std::to_string(localsRef) + "}");
+    auto varsResp = client.expectResponse("variables");
+    REQUIRE(varsResp);
+    auto vars = varsResp->getObject("body")->getArray("variables");
+    REQUIRE(vars);
+    bool foundO1 = false;
+    for (size_t i = 0; i < vars->size(); ++i) {
+        auto vv = vars->getObject(i);
+        const std::string name = vv->optValue<std::string>("name", "");
+        if (name == "o1" && vv->optValue<std::string>("value", "").find("99") !=
+                                std::string::npos)
+            foundO1 = true;
+        // Leaf variables must NOT carry the inspect marker.
+        if (name == "o1")
+            CHECK(!vv->has("__vscodeVariableMenuContext"));
+    }
+    CHECK(foundO1);
+
+    // Frame 0 (inner) locals: tab and arr are expandable containers.
+    client.sendRequest("variables", "{\"variablesReference\":1}");
+    auto innerResp = client.expectResponse("variables");
+    REQUIRE(innerResp);
+    auto innerVars = innerResp->getObject("body")->getArray("variables");
+    REQUIRE(innerVars);
+    int tabRef = -1;
+    int arrRef = -1;
+    for (size_t i = 0; i < innerVars->size(); ++i) {
+        auto vv = innerVars->getObject(i);
+        const std::string name = vv->optValue<std::string>("name", "");
+        if (name == "tab") tabRef = vv->optValue<int>("variablesReference", -1);
+        if (name == "arr") arrRef = vv->optValue<int>("variablesReference", -1);
+        // Expandable containers expose the marker so the VS Code VARIABLES
+        // context menu can offer "查看实例" only for objects.
+        if (name == "tab" || name == "arr") {
+            CHECK_EQ(vv->optValue<std::string>("__vscodeVariableMenuContext", ""),
+                     std::string("object"));
+        }
+    }
+    REQUIRE(tabRef > 0);
+    REQUIRE(arrRef > 0);
+
+    // Expand tab -> x = 5.
+    client.sendRequest("variables", "{\"variablesReference\":" + std::to_string(tabRef) + "}");
+    auto tabResp = client.expectResponse("variables");
+    REQUIRE(tabResp);
+    auto tabVars = tabResp->getObject("body")->getArray("variables");
+    REQUIRE(tabVars);
+    bool foundX = false;
+    for (size_t i = 0; i < tabVars->size(); ++i) {
+        auto vv = tabVars->getObject(i);
+        if (vv->optValue<std::string>("name", "") == "x" &&
+            vv->optValue<std::string>("value", "").find("5") != std::string::npos)
+            foundX = true;
+        // Children of a container are leaves here: no inspect marker.
+        CHECK(!vv->has("__vscodeVariableMenuContext"));
+    }
+    CHECK(foundX);
+
+    // Expand arr -> three indexed children.
+    client.sendRequest("variables", "{\"variablesReference\":" + std::to_string(arrRef) + "}");
+    auto arrResp = client.expectResponse("variables");
+    REQUIRE(arrResp);
+    auto arrVars = arrResp->getObject("body")->getArray("variables");
+    REQUIRE(arrVars);
+    REQUIRE(arrVars->size() == 3u);
+    CHECK(arrVars->getObject(2)->optValue<std::string>("value", "").find("3") !=
+          std::string::npos);
+
+    client.sendRequest("continue", "{\"threadId\":1}");
+    REQUIRE(client.expectResponse("continue"));
+
+    for (int i = 0; i < 200 && !scriptDone.load(); ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        dap.poll();
+    }
+    if (scriptThread.joinable()) {
+        if (scriptDone.load())
+            scriptThread.join();
+        else
+            scriptThread.detach();
+    }
+    CHECK(scriptDone.load());
+    CHECK(!dbg.isPaused());
     dap.stop();
 }

@@ -37,6 +37,8 @@ struct EVENGINE_API Breakpoint {
     std::string source;  // normalized path or basename
     int         line    = 0;
     bool        enabled = true;
+    bool        verified = false;
+    std::string condition;  // optional GDScript-style condition; empty = always
     int         id      = 0;
 };
 
@@ -57,6 +59,14 @@ struct EVENGINE_API VariableInfo {
     std::string value;
     std::string type;
     bool        expensive = false;
+    bool        expandable = false;  // container / instance: children available
+    int         childCount = -1;     // -1 = unknown
+};
+
+/** Where a variable tree node is rooted (used by containerChildren/resolvePath). */
+enum class VarKind : uint8_t {
+    Locals   = 0,  // frame locals
+    Globals  = 1,  // roottable
 };
 
 /**
@@ -120,7 +130,8 @@ public:
     void waitWhilePaused(const std::function<void()>& pump = {});
 
     // ---- breakpoints ----
-    int  setBreakpoint(std::string source, int line, bool enabled = true);
+    int  setBreakpoint(std::string source, int line, bool enabled = true,
+                       std::string condition = {});
     bool clearBreakpoint(std::string source, int line);
     void clearBreakpoints(const std::string& source = {});
     std::vector<Breakpoint> breakpoints() const;
@@ -133,11 +144,36 @@ public:
     std::vector<WatchEntry> watches() const;
     /** Re-evaluate all watches against current VM (paused preferred). */
     void refreshWatches();
-    /** Evaluate a single expression (local name, or roottable slot). */
-    VariableInfo evaluate(const std::string& expression) const;
+    /**
+     * Evaluate an expression in the given frame's scope.
+     * Understands plain names, `a.b` paths, and full Squirrel expressions
+     * (arithmetic / calls / indexing) compiled against a locals+roottable env.
+     */
+    VariableInfo evaluate(const std::string& expression, int frameLevel = 0) const;
     /** Locals of the given call-stack level (0 = current script frame). */
     std::vector<VariableInfo> locals(int stackLevel = 0) const;
+    /** Root-table slots (globals). */
+    std::vector<VariableInfo> globals() const;
+    /**
+     * Children of a container variable. `path` is the key chain that locates
+     * the container from its root (locals frame / roottable / upvalues).
+     * Empty `path` lists the root entries themselves.
+     */
+    std::vector<VariableInfo> containerChildren(VarKind kind, int frame,
+                                                const std::vector<std::string>& path) const;
     std::vector<StackFrameInfo> stackTrace(int maxFrames = 32) const;
+
+    // ---- error / breakpoint policy ----
+    /** Break on script errors (Godot "Break on Error"). Default off. */
+    void setBreakOnError(bool on) { breakOnError_.store(on); }
+    bool breakOnError() const { return breakOnError_.load(); }
+    /** Master switch for all breakpoints ("skip all breakpoints"). */
+    void setBreakpointsEnabled(bool on) { bpsEnabled_.store(on); }
+    bool breakpointsEnabled() const { return bpsEnabled_.load(); }
+    /** Called once when a breakpoint line is first observed by the line hook. */
+    using BreakpointEventFn = std::function<void(int id, const std::string& source, int line,
+                                                 bool verified)>;
+    void setBreakpointEventFn(BreakpointEventFn fn) { bpEventFn_ = std::move(fn); }
 
     using PumpFn = std::function<void()>;
     void setPump(PumpFn pump) { pump_ = std::move(pump); }
@@ -156,13 +192,21 @@ private:
     Debugger() = default;
 
     bool matchBreakpoint(const std::string& source, int line) const;
+    bool matchBreakpointAny(const std::string& source, int line) const;
+    bool conditionHolds(const Breakpoint& bp) const;
+    bool pushPathValue(HSQUIRRELVM vm, VarKind kind, int frame,
+                       const std::vector<std::string>& path) const;
     VariableInfo readLocal(HSQUIRRELVM vm, unsigned level, const std::string& name) const;
     VariableInfo readRoot(HSQUIRRELVM vm, const std::string& name) const;
+    VariableInfo evaluateLegacy(const std::string& expression) const;
+    bool pushLocalValue(HSQUIRRELVM vm, unsigned level, const std::string& name) const;
     void beginScriptStep(RunMode mode);
 
     HSQUIRRELVM           vm_ = nullptr;
     std::atomic<RunMode>  mode_{RunMode::Running};
     std::atomic<PauseReason> reason_{PauseReason::None};
+    std::atomic<bool>     breakOnError_{false};
+    std::atomic<bool>     bpsEnabled_{true};
     SourceLoc             pauseLoc_;
     mutable std::mutex    mu_;
     std::vector<Breakpoint> bps_;
@@ -174,6 +218,7 @@ private:
     int                   stepStartDepth_ = 0;
     /** While set, step filters ignore this exact source+line (multi-_OP_LINE). */
     SourceLoc             stepSkipLoc_;
+    BreakpointEventFn     bpEventFn_;
 };
 
 }  // namespace eve::dev
