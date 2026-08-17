@@ -5,6 +5,7 @@
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
+#include "ui/EditorHost.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -19,6 +20,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -321,4 +324,156 @@ TEST_CASE("devtools.ai.panelLog") {
     CHECK(ai.isVisible());
     ai.clearLog();
     ai.setMcpPort(0);
+}
+
+TEST_CASE("devtools.mcp.stdioTransport") {
+    auto& mcp = McpServer::instance();
+    mcp.stop();
+
+    std::stringstream in, out;
+    REQUIRE(mcp.listenStdio(in, out));
+    in << "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{"
+          "\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+          "\"clientInfo\":{\"name\":\"stdio-test\",\"version\":\"0\"}}}\n";
+    in << "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n";
+    in << "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{"
+          "\"name\":\"eve_host_status\",\"arguments\":{}}}\n";
+
+    for (int i = 0; i < 100; ++i) {
+        mcp.poll();
+        if (out.str().find("\"id\":3") != std::string::npos) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    const std::string resp = out.str();
+    CHECK(resp.find("\"id\":1") != std::string::npos);
+    CHECK(resp.find("evengine") != std::string::npos);
+    CHECK(resp.find("\"id\":2") != std::string::npos);
+    CHECK(resp.find("eve_host_editor_apply") != std::string::npos);
+    CHECK(resp.find("eve_host_shutdown") != std::string::npos);
+    CHECK(resp.find("\"id\":3") != std::string::npos);
+    CHECK(resp.find("eve_host_status") != std::string::npos);
+
+    in.setstate(std::ios::eofbit);
+    mcp.stop();
+}
+
+TEST_CASE("devtools.mcp.hostEditorBinding") {
+    auto& mcp = McpServer::instance();
+    auto& dt  = DevTool::instance();
+    auto& host = eve::ui::EditorHost::instance();
+    mcp.stop();
+    dt.detach();
+    host.stop();
+
+    const auto tmp = std::filesystem::temp_directory_path() /
+                     ("eve_host_test_" +
+                      std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(tmp);
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    dt.attach(vm, false);
+    dt.exposeScriptApi(vm);
+    host.start(vm, tmp.string(), /*allowWindow=*/false);
+    host.exposeScriptApi(vm);
+
+    const int port = mcp.listen(0);
+    REQUIRE(port > 0);
+    McpClient client(port);
+    client.sendRequest(1, "initialize",
+                       "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+                       "\"clientInfo\":{\"name\":\"host-test\"}}");
+    REQUIRE(client.expectResult(1));
+    client.sendNotification("notifications/initialized");
+
+    auto textOf = [&](int id, const std::string& call) -> std::string {
+        client.sendRequest(id, "tools/call", call);
+        auto msg = client.expectResult(id);
+        REQUIRE(msg);
+        auto c = msg->getObject("result")->getArray("content");
+        REQUIRE(c);
+        REQUIRE(c->size() >= 1);
+        return c->getObject(0)->getValue<std::string>("text");
+    };
+
+    // Register a Squirrel ViewModel with a bound property + onChange callback.
+    const std::string vmSource =
+        "::TerrainVM <- {"
+        "  brushSize = 5,"
+        "  changedCount = 0,"
+        "  onChange = function(widget, value) {"
+        "    if (widget == \"brushSize\") this.changedCount++;"
+        "  }"
+        "};";
+    std::string vmSourceEscaped;
+    for (char c : vmSource) {
+        if (c == '\\') vmSourceEscaped += "\\\\";
+        else if (c == '"') vmSourceEscaped += "\\\"";
+        else vmSourceEscaped += c;
+    }
+    const std::string vmText = textOf(
+        2, "{\"name\":\"eve_host_vm_register\",\"arguments\":{\"name\":\"TerrainVM\","
+           "\"source\":\"" +
+               vmSourceEscaped + "\"}}");
+    CHECK(vmText == "ok");
+
+    const std::string editorJson =
+        "{\"id\":\"terrain\",\"title\":\"Terrain Editor\",\"vm\":\"TerrainVM\","
+        "\"children\":["
+        "{\"type\":\"slider\",\"id\":\"brushSize\",\"label\":\"Brush\",\"min\":0,\"max\":64,"
+        "\"value\":5,\"bind\":\"vm.brushSize\",\"onChange\":\"vm.onChange\"},"
+        "{\"type\":\"button\",\"id\":\"apply\",\"label\":\"Apply\",\"command\":\"vm.apply\"}"
+        "]}";
+    const std::string applyText = textOf(
+        3, "{\"name\":\"eve_host_editor_apply\",\"arguments\":{\"editor\":" + editorJson + "}}");
+    CHECK(applyText.find("\"id\":\"terrain\"") != std::string::npos);
+    CHECK(applyText.find("\"brushSize\"") != std::string::npos);
+
+    // set_value must write the VM, fire onChange, and emit a change event.
+    const std::string setText = textOf(
+        4, "{\"name\":\"eve_host_editor_set_value\",\"arguments\":{"
+           "\"editor\":\"terrain\",\"widget\":\"brushSize\",\"value\":12}}");
+    CHECK(setText == "ok");
+
+    const std::string stateText = textOf(
+        5, "{\"name\":\"eve_host_editor_state\",\"arguments\":{\"id\":\"terrain\"}}");
+    CHECK(stateText.find("\"brushSize\":12") != std::string::npos);
+
+    const std::string evalText = textOf(
+        6, "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"TerrainVM.brushSize\"}}");
+    CHECK(evalText.find("12") != std::string::npos);
+
+    const std::string countText = textOf(
+        7, "{\"name\":\"eve_eval\",\"arguments\":{\"expression\":\"TerrainVM.changedCount\"}}");
+    CHECK(countText.find("1") != std::string::npos);
+
+    const std::string eventsText = textOf(
+        8, "{\"name\":\"eve_host_events\",\"arguments\":{\"editor\":\"terrain\"}}");
+    CHECK(eventsText.find("\"type\":\"change\"") != std::string::npos);
+    CHECK(eventsText.find("\"brushSize\"") != std::string::npos);
+
+    // Persistence: save -> unload -> reload from disk.
+    CHECK(textOf(9, "{\"name\":\"eve_host_editor_save\",\"arguments\":{\"id\":\"terrain\"}}") ==
+          "ok");
+    CHECK(std::filesystem::is_regular_file(tmp / "editors" / "terrain.editor.json"));
+    CHECK(std::filesystem::is_regular_file(tmp / "editors" / "terrain.vm.nut"));
+
+    CHECK(textOf(10, "{\"name\":\"eve_host_editor_unload\",\"arguments\":{\"id\":\"terrain\"}}") ==
+          "ok");
+    const std::string listText =
+        textOf(11, "{\"name\":\"eve_host_editor_list\",\"arguments\":{}}");
+    CHECK(listText.find("terrain") == std::string::npos);
+
+    host.loadEditorsFromDisk();
+    const std::string reloadList =
+        textOf(12, "{\"name\":\"eve_host_editor_list\",\"arguments\":{}}");
+    CHECK(reloadList.find("terrain") != std::string::npos);
+    const std::string reloadState = textOf(
+        13, "{\"name\":\"eve_host_editor_state\",\"arguments\":{\"id\":\"terrain\"}}");
+    // Persistence stores the original View + VM source; runtime values reset.
+    CHECK(reloadState.find("\"brushSize\":5") != std::string::npos);
+
+    host.stop();
+    mcp.stop();
+    dt.detach();
+    std::filesystem::remove_all(tmp);
 }

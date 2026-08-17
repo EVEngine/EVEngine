@@ -19,6 +19,7 @@
 #include "procgen/Procgen.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
+#include "ui/EditorHost.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -43,6 +44,8 @@
 
 namespace eve::dev {
 namespace {
+
+using eve::ui::EditorHost;
 
 std::string mcpStringify(const Poco::Dynamic::Var& v) {
     std::ostringstream oss;
@@ -149,11 +152,32 @@ std::string engineStatusJson(const McpServer& mcp) {
     o->set("function", loc.function);
     o->set("mcpPort", mcp.port());
     o->set("mcpConnected", mcp.hasClient());
+    switch (mcp.transport()) {
+        case McpServer::Transport::Stdio:
+            o->set("transport", "stdio");
+            break;
+        case McpServer::Transport::Tcp:
+            o->set("transport", "tcp");
+            break;
+        default:
+            o->set("transport", "none");
+            break;
+    }
     o->set("dapPort", DebugAdapter::instance().port());
     o->set("gameRoot", mcp.gameRoot());
+    o->set("host", EditorHost::instance().status());
     o->set("callgraphEvents", static_cast<int>(mcpCallgraphEvents()));
     o->set("ai", AiPanel::instance().statusLine());
     return mcpStringify(Poco::Dynamic::Var(o));
+}
+
+Poco::Dynamic::Var argVar(Poco::JSON::Object::Ptr args, const char* key) {
+    if (!args || !args->has(key)) return Poco::Dynamic::Var();
+    try {
+        return args->get(key);
+    } catch (...) {
+        return Poco::Dynamic::Var();
+    }
 }
 
 std::string argString(Poco::JSON::Object::Ptr args, const char* key, const std::string& def = {}) {
@@ -552,6 +576,83 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         return "ok";
     }
 
+    // ============================= Host UI (headless MCP editor host) =====
+    if (name == "eve_host_status") {
+        return EditorHost::instance().status();
+    }
+    if (name == "eve_host_window_open") {
+        const std::string title = argString(args, "title", "EVEngine AI Host");
+        return EditorHost::instance().openWindow(title, argInt(args, "width", 1280),
+                                                 argInt(args, "height", 800));
+    }
+    if (name == "eve_host_window_close") {
+        return EditorHost::instance().closeWindow();
+    }
+    if (name == "eve_host_window_state") {
+        return EditorHost::instance().windowState();
+    }
+    if (name == "eve_host_editor_apply") {
+        std::string json;
+        if (args && args->has("editor")) {
+            try {
+                Poco::JSON::Object::Ptr o = args->getObject("editor");
+                if (o)
+                    json = mcpStringify(Poco::Dynamic::Var(o));
+                else
+                    json = argString(args, "editor");
+            } catch (...) {
+                json = argString(args, "editor");
+            }
+        }
+        if (json.empty()) return "error: missing editor";
+        return EditorHost::instance().applyEditor(json);
+    }
+    if (name == "eve_host_editor_remove") {
+        return EditorHost::instance().removeEditor(argString(args, "id"));
+    }
+    if (name == "eve_host_editor_list") {
+        return EditorHost::instance().listEditors();
+    }
+    if (name == "eve_host_editor_state") {
+        return EditorHost::instance().editorState(argString(args, "id"));
+    }
+    if (name == "eve_host_editor_set_value") {
+        if (!args || !args->has("value")) return "error: missing value";
+        return EditorHost::instance().setEditorValue(
+            argString(args, "editor"), argString(args, "widget"),
+            mcpStringify(argVar(args, "value")));
+    }
+    if (name == "eve_host_editor_save") {
+        return EditorHost::instance().saveEditor(argString(args, "id"));
+    }
+    if (name == "eve_host_editor_unload") {
+        return EditorHost::instance().unloadEditor(argString(args, "id"));
+    }
+    if (name == "eve_host_vm_register") {
+        return EditorHost::instance().registerVM(argString(args, "name"),
+                                                 argString(args, "source"));
+    }
+    if (name == "eve_host_vm_unregister") {
+        return EditorHost::instance().unregisterVM(argString(args, "name"));
+    }
+    if (name == "eve_host_events") {
+        return EditorHost::instance().consumeEvents(argString(args, "editor"));
+    }
+    if (name == "eve_host_widget_rect") {
+        return EditorHost::instance().widgetRect(argString(args, "editor"),
+                                                 argString(args, "widget"));
+    }
+    if (name == "eve_host_capture") {
+        return EditorHost::instance().capture(argString(args, "path"));
+    }
+    if (name == "eve_host_script") {
+        return EditorHost::instance().runScript(argString(args, "source"));
+    }
+    if (name == "eve_host_shutdown") {
+        EditorHost::instance().requestExit();
+        return "ok";
+    }
+
     if (name == "eve_eval") {
         const std::string expr = argString(args, "expression");
         if (expr.empty()) return "error: missing expression";
@@ -857,12 +958,12 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson,
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
         "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.1.0\"},"
-        "\"instructions\":\"EVEngine runtime MCP for AI-assisted game development and testing.\"}";
+        "\"instructions\":\"EVEngine MCP for AI-assisted game development. eve_host_* tools create JSON-defined editor windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
 }
 
 std::string handleToolsList(const std::string& idJson) {
-    static const char* kToolsJson =
+    static const char* const kToolsParts[] = {
         "{\"tools\":["
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
@@ -961,8 +1062,50 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_audio_set_volume\",\"description\":\"Set master audio volume (0..1).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"volume\":{\"type\":\"number\"}},\"required\":[\"volume\"]}},"
         "{\"name\":\"eve_audio_stop_all\",\"description\":\"Stop all playing audio sources.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}"
-        "]}";
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
+        "{\"name\":\"eve_host_status\",\"description\":\"Headless editor host status: window, editors, registered ViewModels, project root.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
+        "{\"name\":\"eve_host_window_open\",\"description\":\"Create the host OS window (lazy; editors can also auto-open it).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"},\"width\":{\"type\":\"integer\"},\"height\":{\"type\":\"integer\"}}}},"
+        "{\"name\":\"eve_host_window_close\",\"description\":\"Close the host OS window (MCP server stays alive).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
+        "{\"name\":\"eve_host_window_state\",\"description\":\"Host window open state + size.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
+        "{\"name\":\"eve_host_editor_apply\",\"description\":\"Apply an editor View (JSON widget tree). Auto-opens the host window on first use.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"editor\":{\"type\":\"object\"}},\"required\":[\"editor\"]}},",
+        "{\"name\":\"eve_host_editor_remove\",\"description\":\"Remove an editor panel from the session.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"]}},",
+        "{\"name\":\"eve_host_editor_list\",\"description\":\"List editors (id/title/vm).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
+        "{\"name\":\"eve_host_editor_state\",\"description\":\"Editor values + pending events (id omitted = all editors).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_host_editor_set_value\",\"description\":\"Set a widget value (JSON value). Writes the bound ViewModel and emits a change event.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"editor\":{\"type\":\"string\"},\"widget\":{\"type\":\"string\"},\"value\":{}},\"required\":[\"editor\",\"widget\",\"value\"]}},",
+        "{\"name\":\"eve_host_editor_save\",\"description\":\"Persist editor as editors/<id>.editor.json + <id>.vm.nut in the project.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"]}},",
+        "{\"name\":\"eve_host_editor_unload\",\"description\":\"Remove an editor from the session (files stay on disk).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"]}},",
+        "{\"name\":\"eve_host_vm_register\",\"description\":\"Compile a Squirrel ViewModel and register it by table name.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"source\":{\"type\":\"string\"}},\"required\":[\"name\",\"source\"]}},",
+        "{\"name\":\"eve_host_vm_unregister\",\"description\":\"Unregister a ViewModel table.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"}},\"required\":[\"name\"]}},",
+        "{\"name\":\"eve_host_events\",\"description\":\"Read and clear interaction events (human clicks/sliders or AI set_value).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"editor\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_host_widget_rect\",\"description\":\"Last-frame screen rect of a widget (for script drawing in viewports).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"editor\":{\"type\":\"string\"},\"widget\":{\"type\":\"string\"}},\"required\":[\"editor\",\"widget\"]}},",
+        "{\"name\":\"eve_host_capture\",\"description\":\"Capture the host window to a PNG and return path/size.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_host_script\",\"description\":\"Run a Squirrel snippet in the host VM (full engine API + eve.host).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"}},\"required\":[\"source\"]}},",
+        "{\"name\":\"eve_host_shutdown\",\"description\":\"Exit the headless MCP host process.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}",
+        "]}"
+    };
+    static const std::string kToolsJson = [] {
+        std::string out;
+        for (const char* p : kToolsParts) out += p;
+        return out;
+    }();
     return makeResult(idJson, kToolsJson);
 }
 
@@ -1141,9 +1284,11 @@ McpServer::~McpServer() {
         }
         server_.reset();
     }
+    stdioQueue_.clear();
     listening_.store(false);
     hasClient_.store(false);
     port_.store(0);
+    transport_.store(Transport::None);
 }
 
 void McpServer::setGameRoot(std::string root) {
@@ -1172,17 +1317,70 @@ int McpServer::listen(uint16_t port) {
         AiPanel::instance().setMcpConnected(false);
         AiPanel::instance().addLog("system", "mcp.listen",
                                    "listening on 127.0.0.1:" + std::to_string(bound));
+        transport_.store(Transport::Tcp);
         return bound;
     } catch (...) {
         server_.reset();
         listening_.store(false);
         port_.store(0);
+        transport_.store(Transport::None);
         AiPanel::instance().setMcpPort(0);
         return 0;
     }
 }
 
+bool McpServer::listenStdio(std::istream& in, std::ostream& out) {
+    stop();
+    {
+        std::lock_guard<std::mutex> lock(ioMu_);
+        stdioQueue_.clear();
+    }
+    transport_.store(Transport::Stdio);
+    listening_.store(true);
+    port_.store(0);
+    initialized_ = false;
+    stdinClosed_.store(false);
+    hasClient_.store(true);
+    stdioIn_  = &in;
+    stdioOut_ = &out;
+    joinReader_ = (&in != &std::cin);
+    try {
+        stdioReader_ = std::thread([this, &in]() {
+            std::string line;
+            while (listening_.load() && std::getline(in, line)) {
+                if (!line.empty() && line.back() == '\r') line.pop_back();
+                if (line.empty()) continue;
+                {
+                    std::lock_guard<std::mutex> lock(ioMu_);
+                    stdioQueue_.push_back(std::move(line));
+                }
+            }
+            stdinClosed_.store(true);
+            hasClient_.store(false);
+        });
+    } catch (...) {
+        transport_.store(Transport::None);
+        listening_.store(false);
+        hasClient_.store(false);
+        return false;
+    }
+    AiPanel::instance().setMcpPort(0);
+    AiPanel::instance().setMcpConnected(true);
+    AiPanel::instance().addLog("system", "mcp.listen",
+                               "stdio transport ready (newline JSON-RPC)");
+    return true;
+}
+
 void McpServer::stop() {
+    listening_.store(false);
+    hasClient_.store(false);
+    if (stdioReader_.joinable()) {
+        if (joinReader_) {
+            stdioReader_.join();
+        } else {
+            stdioReader_.detach();
+        }
+    }
     std::lock_guard<std::mutex> lock(ioMu_);
     if (client_) {
         try {
@@ -1198,11 +1396,13 @@ void McpServer::stop() {
         }
         server_.reset();
     }
+    stdioQueue_.clear();
     recvBuf_.clear();
-    listening_.store(false);
-    hasClient_.store(false);
     port_.store(0);
+    transport_.store(Transport::None);
     initialized_ = false;
+    stdioIn_  = nullptr;
+    stdioOut_ = nullptr;
     AiPanel::instance().setMcpPort(0);
     AiPanel::instance().setMcpConnected(false);
     AiPanel::instance().setClientName({});
@@ -1210,6 +1410,15 @@ void McpServer::stop() {
 
 void McpServer::poll() {
     if (!listening_.load()) return;
+    if (transport_.load() == Transport::Stdio) {
+        std::vector<std::string> batch;
+        {
+            std::lock_guard<std::mutex> lock(ioMu_);
+            batch.swap(stdioQueue_);
+        }
+        for (const auto& line : batch) handleMessage(line);
+        return;
+    }
     acceptNonBlocking();
     readAndDispatch();
     // Main-thread hook: run a pending breakpoint/error vision dump (if any) on
@@ -1240,6 +1449,18 @@ void McpServer::acceptNonBlocking() {
 }
 
 bool McpServer::sendLine(const std::string& json) {
+    if (transport_.load() == Transport::Stdio) {
+        std::lock_guard<std::mutex> lock(ioMu_);
+        if (!stdioOut_) return false;
+        try {
+            const std::string frame = json + "\n";
+            (*stdioOut_) << frame;
+            stdioOut_->flush();
+            return true;
+        } catch (...) {
+            return false;
+        }
+    }
     if (!client_) return false;
     const std::string frame = json + "\n";
     try {

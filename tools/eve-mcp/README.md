@@ -52,3 +52,20 @@ eve run --debug --mcp-port=7529 examples/basic
 | `EVE_MCP_HOST` | `127.0.0.1` | Engine MCP host |
 | `EVE_MCP_PORT` | `7529` | Engine MCP port |
 | `EVE_MCP_CONNECT_TIMEOUT_MS` | `5000` | Connect timeout |
+
+## Headless host (`eve mcp`)
+
+For AI-centric development (Codex / Cursor / Claude), the engine itself can run as a
+**headless MCP host** over stdio — no game process, no Node bridge, no TCP port needed:
+
+```bash
+eve mcp                    # stdio MCP (Codex: command "eve", args ["mcp"])
+eve mcp --port 7529        # TCP mode, same wire shape as the bridge
+eve mcp --root path/to/game
+```
+
+The host exposes the `eve_host_*` tool family: create windows, apply JSON-defined
+editors (View), register Squirrel ViewModel tables (MVVM two-way binding), read human
+interaction events, capture PNGs, run Squirrel snippets, persist editors to the
+project `editors/` directory. See `docs/dev/AI与MCP支持.md` for the JSON protocol,
+tool list, and terrain/material editor examples.
