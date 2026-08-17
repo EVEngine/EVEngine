@@ -190,6 +190,7 @@ list(APPEND EVELIBS
     EVFileSystem
     EVNetwork
     EVData
+    EVI18n
     EVSound
     EVAudio
     EVUI

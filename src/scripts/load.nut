@@ -83,6 +83,7 @@ font <- eve.Font();
 thread <- eve.Thread();
 fs <- eve.Filesystem();
 hot <- eve.HotReload();
+i18n <- eve.I18n();
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {

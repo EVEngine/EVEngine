@@ -56,6 +56,8 @@ file(GLOB all_test_cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
+  i18n.cpp
+  i18n_script.cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
@@ -126,6 +128,7 @@ endif()
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
+  i18n.nut
   model.nut
   model2.nut
   mouse.nut
@@ -270,6 +273,7 @@ set(EVELIBS
   EVNetwork
   EVDatabase
   EVData
+  EVI18n
   EVSound
   EVAudio
   EVUI

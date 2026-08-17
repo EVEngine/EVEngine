@@ -1,0 +1,19 @@
+{
+  "name": { "alice": "Alice", "bob": "Bob" },
+  "line": {
+    "hello": "你好！我是 {name}。",
+    "intro": "我是 Bob。这是用 Squirrel 写的对话脚本。",
+    "avatar": "神态和动作都走 Avatar 分层；没有另发明脚本语言。",
+    "continue_ask": "要不要继续听他们聊天？",
+    "backends": "太好了！Live2D / VRoid 也可以挂到同一套 API 上。",
+    "image_layers": "Image 层是基础；其它后端按需接入。",
+    "bye": "好的，下次再见。",
+    "end": "（演示结束 —— 空格可重开）"
+  },
+  "choice": { "yes": "继续", "no": "先这样" },
+  "hint": {
+    "advance": "空格 / 点击 继续",
+    "choose": "按 1 / 2 选择",
+    "restart": "空格重开"
+  }
+}
