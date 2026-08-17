@@ -9,6 +9,8 @@
 #include "devtools/RenderVision.hpp"
 #include "devtools/Snapshot.hpp"
 
+#include "scripts.h"
+
 #include "common/Module.h"
 #include "audio/Audio.h"
 #include "graphics/Graphics.h"
@@ -212,6 +214,183 @@ bool argBool(Poco::JSON::Object::Ptr args, const char* key, bool def = false) {
     } catch (...) {
         return def;
     }
+}
+
+// ============================= Scene Director (AI scene-authoring) =============
+// Thin C++ dispatchers over the Squirrel `scene_director` kit (src/scripts/
+// scene_director.nut, embedded as eve::scene_director_content). Agents build /
+// inspect scenes through `eve_scene_modify` / `eve_scene_info` /
+// `eve_camera_generate` / `eve_scene_reset`; the kit owns the live Renderable3D /
+// Camera3D / lighting state.
+
+// Escape a string as a Squirrel single-line string literal (JSON escapes are
+// a subset Squirrel understands: \n \r \t \\ \" and \uXXXX).
+std::string sqStringLiteralEscape(const std::string& s) { return mcpJsonEscape(s); }
+
+// Encode a Poco JSON value as a Squirrel literal (table/array/scalar/null).
+std::string sqLiteralValue(const Poco::Dynamic::Var& v) {
+    if (v.isEmpty()) return "null";
+    if (v.isBoolean()) return v.convert<bool>() ? "true" : "false";
+    if (v.isInteger()) return std::to_string(v.convert<Poco::Int64>());
+    if (v.isNumeric()) {
+        const double d = v.convert<double>();
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "%g", d);
+        return buf;
+    }
+    if (v.isString())
+        return std::string("\"") + sqStringLiteralEscape(v.convert<std::string>()) + "\"";
+    if (v.isArray()) {
+        std::string out = "[";
+        try {
+            auto arr = v.extract<Poco::JSON::Array::Ptr>();
+            for (size_t i = 0; i < arr->size(); ++i) {
+                if (i) out += ",";
+                out += sqLiteralValue(arr->get(i));
+            }
+        } catch (...) {
+        }
+        out += "]";
+        return out;
+    }
+    if (v.isStruct()) {
+        std::string out = "{";
+        bool first = true;
+        try {
+            auto obj = v.extract<Poco::JSON::Object::Ptr>();
+            for (const auto& kv : *obj) {
+                if (!first) out += ",";
+                first = false;
+                out += "\"" + sqStringLiteralEscape(kv.first) + "\"=" + sqLiteralValue(kv.second);
+            }
+        } catch (...) {
+        }
+        out += "}";
+        return out;
+    }
+    return "null";
+}
+
+// Compile + run a snippet against the live VM (no return value captured).
+bool runVmSnippet(HSQUIRRELVM vm, const std::string& source, std::string* err) {
+    const SQInteger top = sq_gettop(vm);
+    if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()),
+                                   _SC("mcp_snippet.nut"), SQTrue))) {
+        sq_settop(vm, top);
+        if (err) *err = "compile failed";
+        return false;
+    }
+    sq_pushroottable(vm);
+    if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
+        sq_settop(vm, top);
+        if (err) *err = "runtime failed";
+        return false;
+    }
+    sq_settop(vm, top);
+    return true;
+}
+
+// Serialize a Squirrel value (at stack idx) to compact JSON.
+std::string sqValueToJson(HSQUIRRELVM vm, SQInteger idx) {
+    if (idx < 0) idx = sq_gettop(vm) + idx + 1;  // normalize relative -> absolute
+    switch (sq_gettype(vm, idx)) {
+        case OT_NULL:
+            return "null";
+        case OT_BOOL: {
+            SQBool b = SQFalse;
+            sq_getbool(vm, idx, &b);
+            return b ? "true" : "false";
+        }
+        case OT_INTEGER: {
+            SQInteger i = 0;
+            sq_getinteger(vm, idx, &i);
+            return std::to_string(i);
+        }
+        case OT_FLOAT: {
+            SQFloat f = 0;
+            sq_getfloat(vm, idx, &f);
+            char buf[64];
+            std::snprintf(buf, sizeof(buf), "%g", static_cast<double>(f));
+            return buf;
+        }
+        case OT_STRING: {
+            const SQChar* s = nullptr;
+            sq_getstring(vm, idx, &s);
+            return std::string("\"") + mcpJsonEscape(s ? s : "") + "\"";
+        }
+        case OT_ARRAY: {
+            std::string out = "[";
+            bool first = true;
+            sq_pushnull(vm);
+            while (SQ_SUCCEEDED(sq_next(vm, idx))) {
+                if (!first) out += ",";
+                first = false;
+                out += sqValueToJson(vm, -1);
+                sq_pop(vm, 2);
+            }
+            sq_pop(vm, 1);
+            out += "]";
+            return out;
+        }
+        case OT_TABLE: {
+            std::string out = "{";
+            bool first = true;
+            sq_pushnull(vm);
+            while (SQ_SUCCEEDED(sq_next(vm, idx))) {
+                if (!first) out += ",";
+                first = false;
+                out += sqValueToJson(vm, -2);
+                out += ":";
+                out += sqValueToJson(vm, -1);
+                sq_pop(vm, 2);
+            }
+            sq_pop(vm, 1);
+            out += "}";
+            return out;
+        }
+        default:
+            return "\"<unserializable>\"";
+    }
+}
+
+// Compile a snippet that returns a value, run it, and return the JSON of the
+// return value (e.g. `return ::scene_director.info();`).
+std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string& snippet,
+                                    std::string* err) {
+    const SQInteger top = sq_gettop(vm);
+    if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()),
+                                   _SC("mcp_scene_director.nut"), SQTrue))) {
+        sq_settop(vm, top);
+        if (err) *err = "compile failed";
+        return {};
+    }
+    sq_pushroottable(vm);
+    if (SQ_FAILED(sq_call(vm, 1, SQTrue, SQTrue))) {
+        sq_settop(vm, top);
+        if (err) *err = "runtime failed (is the scene_director kit installed?)";
+        return {};
+    }
+    std::string json = sqValueToJson(vm, -1);
+    sq_settop(vm, top);
+    return json;
+}
+
+// Install the scene_director kit into the live VM (idempotent).
+bool ensureSceneDirectorInstalled(HSQUIRRELVM vm, std::string* err) {
+    const std::string check =
+        "return (\"scene_director\" in getroottable()) ? (scene_director != null) : false;";
+    const std::string out = callSceneDirectorReturn(vm, check, nullptr);
+    if (!out.empty() && out.find("true") != std::string::npos) return true;
+    const char* kit = eve::scene_director_content;
+    if (!kit || !*kit) {
+        if (err) *err = "scene_director.nut not embedded (rebuild EVScripts)";
+        return false;
+    }
+    return runVmSnippet(vm, kit, err);
+}
+
+std::string sceneDirectorToolError(const std::string& name, const std::string& err) {
+    return "error: " + name + ": " + (err.empty() ? "unknown" : err);
 }
 
 // --- Game-feature registries (MCP tools create transient worlds/emitters) ---
@@ -739,6 +918,79 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
     if (name == "eve_ai_log") return AiPanel::instance().formatLog(100);
 
+    // ===================== Scene Director (AI scene-authoring) =====================
+    // Agent-drivable scene construction backed by the `scene_director` script kit.
+    if (name == "eve_scene_director_install") {
+        HSQUIRRELVM vm = dbg.vm();
+        if (!vm) return "error: no VM";
+        std::string err;
+        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        return "ok";
+    }
+
+    if (name == "eve_scene_director_status") {
+        HSQUIRRELVM vm = dbg.vm();
+        if (!vm) return "error: no VM";
+        std::string err;
+        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        return callSceneDirectorReturn(vm, "return ::scene_director.status();", &err);
+    }
+
+    if (name == "eve_scene_reset") {
+        HSQUIRRELVM vm = dbg.vm();
+        if (!vm) return "error: no VM";
+        std::string err;
+        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
+        if (!err.empty()) return sceneDirectorToolError(name, err);
+        return out;
+    }
+
+    if (name == "eve_scene_modify") {
+        HSQUIRRELVM vm = dbg.vm();
+        if (!vm) return "error: no VM";
+        std::string err;
+        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        const std::string action = argString(args, "action");
+        const std::string target = argString(args, "target");
+        Poco::Dynamic::Var paramsVar;
+        if (args && args->has("params")) {
+            try {
+                paramsVar = Poco::Dynamic::Var(args->getObject("params"));
+            } catch (...) {
+            }
+        }
+        const std::string snippet =
+            "return ::scene_director.modify(" + sqLiteralValue(Poco::Dynamic::Var(action)) + "," +
+            sqLiteralValue(Poco::Dynamic::Var(target)) + "," + sqLiteralValue(paramsVar) + ");";
+        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
+        if (!err.empty()) return sceneDirectorToolError(name, err);
+        return out;
+    }
+
+    if (name == "eve_camera_generate") {
+        HSQUIRRELVM vm = dbg.vm();
+        if (!vm) return "error: no VM";
+        std::string err;
+        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        const int count = argInt(args, "count", 6);
+        const std::string snippet =
+            "return ::scene_director.cameras(" + std::to_string(count) + ");";
+        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
+        if (!err.empty()) return sceneDirectorToolError(name, err);
+        return out;
+    }
+
+    if (name == "eve_scene_info") {
+        HSQUIRRELVM vm = dbg.vm();
+        if (!vm) return "error: no VM";
+        std::string err;
+        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.info();", &err);
+        if (!err.empty()) return sceneDirectorToolError(name, err);
+        return out;
+    }
+
     // ---- 场景巡检工具集（图像与 3D 几何数据严格同步） ----
     if (name == "inspect_generate_scene_camera_views") {
         const glm::vec3 center = argVec3(args, "center");
@@ -909,6 +1161,18 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_ai_note\",\"description\":\"Append a note to the DevTools AI session log.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"}},\"required\":[\"text\"]}},"
         "{\"name\":\"eve_ai_log\",\"description\":\"Read the DevTools AI session log.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_scene_director_install\",\"description\":\"Install the scene-director authoring kit into the live VM (idempotent).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_scene_director_status\",\"description\":\"Scene-director kit status (installed / propCount / hasCamera).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_scene_reset\",\"description\":\"Clear all staged props, camera and reset lighting to defaults.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_scene_modify\",\"description\":\"Agent scene action: action in add_object|spawn|place|move_object|move|scale|rotate|rotation|remove_object|remove|visibility|material|lighting|set_lighting|camera|cameras|info|list|reset. spawn/move params: {id,kind,x,y,z,sx,sy,sz,yaw_deg,scale,pos,tint,seed,mesh_params,...}; lighting params: {timeOfDay,atmosphere,intensity,background}; camera params: {eye,target,fov}. Returns JSON.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"action\":{\"type\":\"string\"},\"target\":{\"type\":\"string\"},\"params\":{\"type\":\"object\"}},\"required\":[\"action\"]}},"
+        "{\"name\":\"eve_camera_generate\",\"description\":\"Generate standardized QC camera rigs (eye/target/fov) orbiting the staged scene.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\"}}}},"
+        "{\"name\":\"eve_scene_info\",\"description\":\"Authoritative staged-scene truth JSON: props (id/kind/pos/scale/yaw_deg/tint) + count.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"inspect_generate_scene_camera_views\",\"description\":\"Generate a standard set of inspection camera views (road-level, bird's-eye, corner close-up, vista) around a center point.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"center\":{\"type\":\"array\",\"items\":{\"type\":\"number\"},\"description\":\"[x,y,z] center point to orbit (default [0,0,0])\"},\"fov\":{\"type\":\"number\",\"description\":\"base vertical FOV in degrees (default 60)\"}}}}"

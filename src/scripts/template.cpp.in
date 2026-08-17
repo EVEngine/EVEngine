@@ -9,6 +9,8 @@ const char* load_web_content = R"(@load_web_content@)";
 
 const char* async_content = R"(@async_content@)";
 
+const char* scene_director_content = R"(@scene_director_content@)";
+
 const char* demo_content = R"(@demo_content@)";
 
 const char* vertex_content = R"(@vertex_content@)";
