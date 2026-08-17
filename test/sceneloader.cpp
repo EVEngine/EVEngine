@@ -11,11 +11,17 @@
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "window/Window.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
 
 #include <SDL2/SDL.h>
 
+#include <chrono>
 #include <cmath>
+#include <cstdint>
+#include <cstring>
 #include <string>
+#include <thread>
 #include <vector>
 
 using namespace eve::scene;
@@ -38,6 +44,79 @@ void openGfx(eve::window::Window *&win, eve::graphics::Graphics *&gfx, int w = 3
     s.height = h;
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
+}
+
+std::string base64Encode(const uint8_t *data, size_t len) {
+    static const char *kTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string out;
+    out.reserve(((len + 2) / 3) * 4);
+    for (size_t i = 0; i < len; i += 3) {
+        uint32_t n = uint32_t(data[i]) << 16;
+        if (i + 1 < len) n |= uint32_t(data[i + 1]) << 8;
+        if (i + 2 < len) n |= uint32_t(data[i + 2]);
+        out.push_back(kTable[(n >> 18) & 63]);
+        out.push_back(kTable[(n >> 12) & 63]);
+        out.push_back((i + 1 < len) ? kTable[(n >> 6) & 63] : '=');
+        out.push_back((i + 2 < len) ? kTable[n & 63] : '=');
+    }
+    return out;
+}
+
+std::vector<uint8_t> buildTriangleBuffer() {
+    auto pushF = [](std::vector<uint8_t> &b, float v) {
+        uint8_t bytes[4];
+        std::memcpy(bytes, &v, sizeof(v));
+        for (unsigned i = 0; i < 4; ++i) b.push_back(bytes[i]);
+    };
+    auto pushU16 = [](std::vector<uint8_t> &b, uint16_t v) {
+        b.push_back(uint8_t(v & 0xff));
+        b.push_back(uint8_t((v >> 8) & 0xff));
+    };
+    std::vector<uint8_t> buf;
+    const float positions[9] = {0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f, 0.f};
+    const float normals[9] = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const float uvs[6] = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    for (float v : positions) pushF(buf, v);
+    for (float v : normals) pushF(buf, v);
+    for (float v : uvs) pushF(buf, v);
+    pushU16(buf, 0);
+    pushU16(buf, 1);
+    pushU16(buf, 2);
+    return buf;
+}
+
+std::string buildPbrGltf() {
+    std::vector<uint8_t> buf = buildTriangleBuffer();
+    const std::string b64 = base64Encode(buf.data(), buf.size());
+    return
+        "{\"asset\":{\"version\":\"2.0\"},"
+        "\"extensionsUsed\":[\"KHR_lights_punctual\"],"
+        "\"extensions\":{\"KHR_lights_punctual\":{\"lights\":[{\"type\":\"directional\","
+        "\"color\":[1.0,0.5,0.25],\"intensity\":2.0,\"name\":\"sun\"}]}},"
+        "\"scene\":0,\"scenes\":[{\"nodes\":[0,1,2]}],"
+        "\"nodes\":["
+        "{\"name\":\"tri\",\"mesh\":0},"
+        "{\"name\":\"light\",\"extensions\":{\"KHR_lights_punctual\":{\"light\":0}}},"
+        "{\"name\":\"cam\",\"camera\":0}],"
+        "\"cameras\":[{\"type\":\"perspective\",\"perspective\":{\"yfov\":0.7,\"znear\":0.1,"
+        "\"zfar\":100.0}}],"
+        "\"meshes\":[{\"primitives\":[{\"attributes\":{\"POSITION\":0,\"NORMAL\":1,"
+        "\"TEXCOORD_0\":2},\"indices\":3,\"material\":0}]}],"
+        "\"materials\":[{\"name\":\"pbr\",\"pbrMetallicRoughness\":{\"baseColorFactor\":"
+        "[0.2,0.4,0.6,1.0],\"metallicFactor\":0.9,\"roughnessFactor\":0.25},\"doubleSided\":true}],"
+        "\"buffers\":[{\"uri\":\"data:application/octet-stream;base64," + b64 +
+        "\",\"byteLength\":" + std::to_string(buf.size()) + "}],"
+        "\"bufferViews\":["
+        "{\"buffer\":0,\"byteOffset\":0,\"byteLength\":36,\"target\":34962},"
+        "{\"buffer\":0,\"byteOffset\":36,\"byteLength\":36,\"target\":34962},"
+        "{\"buffer\":0,\"byteOffset\":72,\"byteLength\":24,\"target\":34962},"
+        "{\"buffer\":0,\"byteOffset\":96,\"byteLength\":6,\"target\":34963}],"
+        "\"accessors\":["
+        "{\"bufferView\":0,\"componentType\":5126,\"count\":3,\"type\":\"VEC3\","
+        "\"min\":[0,0,0],\"max\":[1,1,0]},"
+        "{\"bufferView\":1,\"componentType\":5126,\"count\":3,\"type\":\"VEC3\"},"
+        "{\"bufferView\":2,\"componentType\":5126,\"count\":3,\"type\":\"VEC2\"},"
+        "{\"bufferView\":3,\"componentType\":5123,\"count\":3,\"type\":\"SCALAR\"}]}";
 }
 }  // namespace
 
@@ -195,4 +274,262 @@ TEST_CASE("SceneLoader.load.buildsGameObjectTreeWithRenderables") {
     loader->unload(name);
     CHECK(!loader->loaded(name));
     win->close();
+}
+
+// ---- PBR material + texture cache + lights/cameras via a self-contained glTF ----
+
+TEST_CASE("SceneLoader.load.pbrMaterialAndLightsAndCamera") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_sceneloader_pbr", true));
+    REQUIRE(fs->setupWriteDirectory());
+    const std::string gltf = buildPbrGltf();
+    fs->write("sl_pbr.gltf", gltf.data(), gltf.size());
+
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfx(win, gfx);
+
+    auto *loader = SceneLoader::create();
+    eve::sceneloader::LoadOptions opts;
+    opts.importCameras = true;
+    SceneHost *h = loader->load("sl_pbr.gltf", opts);
+    REQUIRE(h != nullptr);
+
+    // PBR factors landed on the linked Renderable3D.
+    std::vector<SceneNode *> linked = h->findAllLinked();
+    REQUIRE_EQ(linked.size(), 1u);
+    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->linkTarget);
+    REQUIRE(r != nullptr);
+    auto mr = r->meshRenderer();
+    CHECK(approx(mr->r, 0.2f, 1e-3f));
+    CHECK(approx(mr->g, 0.4f, 1e-3f));
+    CHECK(approx(mr->b, 0.6f, 1e-3f));
+    CHECK(approx(mr->metallic, 0.9f, 1e-3f));
+    CHECK(approx(mr->roughness, 0.25f, 1e-3f));
+
+    // Lights + cameras imported.
+    CHECK(loader->lightCount("sl_pbr.gltf") == 1);
+    CHECK(loader->light("sl_pbr.gltf", 0) != nullptr);
+    CHECK(loader->cameraCount("sl_pbr.gltf") == 1);
+    eve::graphics::Camera3D *cam = loader->camera("sl_pbr.gltf", 0);
+    REQUIRE(cam != nullptr);
+    CHECK(!cam->data()->active);
+
+    loader->unload("sl_pbr.gltf");
+    CHECK(!loader->loaded("sl_pbr.gltf"));
+    win->close();
+}
+
+TEST_CASE("SceneLoader.load.pbrTextureCacheReusesTexture") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_sceneloader_texcache", true));
+    REQUIRE(fs->setupWriteDirectory());
+
+    // Encode a small PNG through the image module (PNG is the only decoder).
+    auto *img = eve::image::Image::create()->newImageData(4, 4, "RGBA8");
+    REQUIRE(img != nullptr);
+    REQUIRE(img->encode(medialoader::FormatHandler::ENCODED_PNG, "sl_cache.png", true) != nullptr);
+
+    // Two objects share one material + one map_Kd -> the same GPU Texture must
+    // be reused for both meshes (cache keyed by path + wrap mode).
+    const char kObj[] =
+        "mtllib sl_cache.mtl\n"
+        "o a\n"
+        "v -1 0 0\n"
+        "v 1 0 0\n"
+        "v 0 1 0\n"
+        "vt 0 0\n"
+        "vt 1 0\n"
+        "vt 0 1\n"
+        "usemtl m\n"
+        "f 1/1 2/2 3/3\n"
+        "o b\n"
+        "v -1 -1 0\n"
+        "v 1 -1 0\n"
+        "v 0 0 0\n"
+        "vt 0 0\n"
+        "vt 1 0\n"
+        "vt 0 1\n"
+        "usemtl m\n"
+        "f 4/4 5/5 6/6\n";
+    const char kMtl[] = "newmtl m\nKd 1 1 1\nmap_Kd sl_cache.png\n";
+    fs->write("sl_cache.obj", kObj, sizeof(kObj) - 1);
+    fs->write("sl_cache.mtl", kMtl, sizeof(kMtl) - 1);
+
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfx(win, gfx);
+
+    auto *loader = SceneLoader::create();
+    SceneHost *h = loader->load("sl_cache.obj");
+    REQUIRE(h != nullptr);
+    auto linked = h->findAllLinked();
+    REQUIRE_EQ(linked.size(), 2u);
+    auto *r0 = static_cast<eve::graphics::Renderable3D *>(linked[0]->linkTarget);
+    auto *r1 = static_cast<eve::graphics::Renderable3D *>(linked[1]->linkTarget);
+    REQUIRE(r0 != nullptr);
+    REQUIRE(r1 != nullptr);
+    REQUIRE(r0->meshRenderer()->texture != nullptr);
+    // Shared texture instance across meshes that reference the same image.
+    const bool sharedTexture = r0->meshRenderer()->texture == r1->meshRenderer()->texture;
+    CHECK(sharedTexture);
+
+    // Reload path stays healthy (diff-based) and reuses the same cached texture.
+    SceneDiff out;
+    CHECK(!loader->reload("sl_cache.obj", &out));
+    CHECK(out.empty());
+
+    loader->unload("sl_cache.obj");
+    win->close();
+}
+
+TEST_CASE("SceneLoader.load.gltfCesiumManPbrAndAnimation") {
+    const std::string dir = pathBesideThisSource("assets/skinned/cesium_man/glTF");
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_sceneloader_cesium", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(dir);
+    REQUIRE(fs->mount(dir, "", false));
+
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfx(win, gfx);
+
+    auto *loader = SceneLoader::create();
+    eve::sceneloader::LoadOptions opts;
+    opts.importCameras = true;
+    opts.mipmaps = true;
+    SceneHost *h = loader->load("CesiumMan.gltf", opts);
+    REQUIRE(h != nullptr);
+    CHECK(loader->nodeCount("CesiumMan.gltf") > 0);
+
+    std::vector<SceneNode *> linked = h->findAllLinked();
+    REQUIRE(!linked.empty());
+    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->linkTarget);
+    REQUIRE(r != nullptr);
+    // CesiumMan material: roughnessFactor = 1.0 (engine default is 0.45) and a
+    // baseColorTexture — both must have been imported.
+    CHECK(approx(r->meshRenderer()->roughness, 1.f, 1e-3f));
+    CHECK(r->meshRenderer()->texture != nullptr);
+
+    // Skinned character ships an animation; skeleton + clips must be imported.
+    CHECK(loader->animationCount("CesiumMan.gltf") >= 1);
+    REQUIRE(loader->skeleton("CesiumMan.gltf") != nullptr);
+    CHECK(loader->clip("CesiumMan.gltf", 0) != nullptr);
+
+    loader->unload("CesiumMan.gltf");
+    win->close();
+}
+
+// ---- async loading ----
+
+TEST_CASE("SceneLoader.loadAsync.mountsOnPoll") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_sceneloader_async", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->write("sl_async.obj", kCubeObj, sizeof(kCubeObj) - 1);
+
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfx(win, gfx);
+
+    auto *loader = SceneLoader::create();
+    bool called = false;
+    SceneHost *cbHost = nullptr;
+    REQUIRE(loader->loadAsync("sl_async.obj", eve::sceneloader::LoadOptions{},
+                              [&](SceneHost *h) {
+                                  called = true;
+                                  cbHost = h;
+                              }));
+
+    int applied = 0;
+    for (int i = 0; i < 100 && applied == 0; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        applied = loader->pollAsync();
+    }
+    CHECK(applied == 1);
+    CHECK(called);
+    REQUIRE(cbHost != nullptr);
+    CHECK(loader->host("sl_async.obj") == cbHost);
+    CHECK(loader->nodeCount("sl_async.obj") >= 2);
+    CHECK(loader->pendingAsyncCount() == 0);
+
+    loader->unload("sl_async.obj");
+    win->close();
+}
+
+TEST_CASE("SceneLoader.loadAsync.precodesTextures") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_sceneloader_asynctex", true));
+    REQUIRE(fs->setupWriteDirectory());
+    auto *img = eve::image::Image::create()->newImageData(4, 4, "RGBA8");
+    REQUIRE(img != nullptr);
+    REQUIRE(img->encode(medialoader::FormatHandler::ENCODED_PNG, "sl_at.png", true) != nullptr);
+    const char kObj[] =
+        "mtllib sl_at.mtl\n"
+        "o a\n"
+        "v -1 0 0\n"
+        "v 1 0 0\n"
+        "v 0 1 0\n"
+        "vt 0 0\n"
+        "vt 1 0\n"
+        "vt 0 1\n"
+        "usemtl m\n"
+        "f 1/1 2/2 3/3\n";
+    const char kMtl[] = "newmtl m\nKd 1 1 1\nmap_Kd sl_at.png\n";
+    fs->write("sl_at.obj", kObj, sizeof(kObj) - 1);
+    fs->write("sl_at.mtl", kMtl, sizeof(kMtl) - 1);
+
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfx(win, gfx);
+
+    auto *loader = SceneLoader::create();
+    bool called = false;
+    SceneHost *cbHost = nullptr;
+    REQUIRE(loader->loadAsync("sl_at.obj", eve::sceneloader::LoadOptions{},
+                              [&](SceneHost *h) {
+                                  called = true;
+                                  cbHost = h;
+                              }));
+    int applied = 0;
+    for (int i = 0; i < 100 && applied == 0; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        applied = loader->pollAsync();
+    }
+    CHECK(applied == 1);
+    CHECK(called);
+    REQUIRE(cbHost != nullptr);
+    auto linked = cbHost->findAllLinked();
+    REQUIRE_EQ(linked.size(), 1u);
+    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->linkTarget);
+    REQUIRE(r != nullptr);
+    // Texture pre-decoded off-thread and uploaded on the main thread.
+    CHECK(r->meshRenderer()->texture != nullptr);
+
+    loader->unload("sl_at.obj");
+    win->close();
+}
+
+TEST_CASE("SceneLoader.prewarmAsync.reusesDecodedScene") {
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_sceneloader_prewarm", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->write("sl_prewarm.obj", kCubeObj, sizeof(kCubeObj) - 1);
+
+    auto *loader = SceneLoader::create();
+    REQUIRE(loader->prewarmAsync("sl_prewarm.obj"));
+    int applied = 0;
+    for (int i = 0; i < 100 && applied == 0; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        applied = loader->pollAsync();
+    }
+    CHECK(applied == 1);
+    CHECK(loader->prewarmed("sl_prewarm.obj"));
+
+    SceneHost *host = loader->load("sl_prewarm.obj", false);
+    REQUIRE(host != nullptr);
+    CHECK(!loader->prewarmed("sl_prewarm.obj"));
+    CHECK(loader->nodeCount("sl_prewarm.obj") >= 2);
+    loader->unload("sl_prewarm.obj");
 }
