@@ -88,11 +88,15 @@ void IK::expose(ssq::Table &table) {
     s2.addFunc("getTolerance", &Solver2D::getTolerance);
     s2.addFunc("setForce", &Solver2D::setForce);
     s2.addFunc("getForce", &Solver2D::getForce);
+    s2.addFunc("setInfluence", &Solver2D::setInfluence);
+    s2.addFunc("getInfluence", &Solver2D::getInfluence);
     s2.addFunc("clearTargets", &Solver2D::clearTargets);
     s2.addFunc("addTarget", &Solver2D::addTarget);
     s2.addFunc("getTargetCount", &Solver2D::getTargetCount);
     s2.addFunc("solve", &Solver2D::solve);
     s2.addFunc("step", &Solver2D::step);
+    s2.addFunc("solveChain", &Solver2D::solveChain);
+    s2.addFunc("stepChain", &Solver2D::stepChain);
     s2.addFunc("getTraceSize", &Solver2D::getTraceSize);
     s2.addFunc("clearTrace", &Solver2D::clearTrace);
 
@@ -106,11 +110,22 @@ void IK::expose(ssq::Table &table) {
     s3.addFunc("getTolerance", &Solver3D::getTolerance);
     s3.addFunc("setForce", &Solver3D::setForce);
     s3.addFunc("getForce", &Solver3D::getForce);
+    s3.addFunc("setInfluence", &Solver3D::setInfluence);
+    s3.addFunc("getInfluence", &Solver3D::getInfluence);
     s3.addFunc("clearTargets", &Solver3D::clearTargets);
     s3.addFunc("addTarget", &Solver3D::addTarget);
     s3.addFunc("getTargetCount", &Solver3D::getTargetCount);
     s3.addFunc("solve", &Solver3D::solve);
     s3.addFunc("step", &Solver3D::step);
+    s3.addFunc("solveChain", &Solver3D::solveChain);
+    s3.addFunc("stepChain", &Solver3D::stepChain);
+    s3.addFunc("setPole", &Solver3D::setPole);
+    s3.addFunc("clearPole", &Solver3D::clearPole);
+    s3.addFunc("hasPole", &Solver3D::hasPole);
+    s3.addFunc("getPoleWeight", &Solver3D::getPoleWeight);
+    s3.addFunc("setTipRotation", &Solver3D::setTipRotation);
+    s3.addFunc("clearTipRotation", &Solver3D::clearTipRotation);
+    s3.addFunc("getTipRotationWeight", &Solver3D::getTipRotationWeight);
     s3.addFunc("getTraceSize", &Solver3D::getTraceSize);
     s3.addFunc("clearTrace", &Solver3D::clearTrace);
 }

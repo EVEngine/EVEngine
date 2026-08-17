@@ -119,6 +119,172 @@ TEST_CASE("ik.skeleton3d.straightPoseAndSolve") {
     CHECK(near(sk->getY(b2), 1.f, 2e-2f));
 }
 
+TEST_CASE("ik.solver2d.solveChain") {
+    std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
+    int b1 = sk->createBone(0, 1.f);
+    int b2 = sk->createBone(b1, 1.f);
+    int b3 = sk->createBone(0, 1.f);  // side branch under the skeleton root
+    // createBone renumbers the skeleton (BFS order), so re-query ids afterwards.
+    b1 = sk->getChild(0, 0);
+    b3 = sk->getChild(0, 1);
+    b2 = sk->getChild(b1, 0);
+    sk->initStraightPose(10.f, 20.f);
+    CHECK(near(sk->getX(b1), 11.f));
+    CHECK(near(sk->getX(b2), 12.f));
+    CHECK(near(sk->getX(b3), 11.f));
+
+    std::unique_ptr<Solver2D> solver(new Solver2D());
+    solver->setMaxIterations(32);
+    solver->setTolerance(1e-3f);
+    solver->addTarget(b2, 11.f, 21.f, 1.f);
+    CHECK(solver->solveChain(sk.get(), b1, b2));
+
+    // Chain root (b1) stays pinned; skeleton root and the side branch are untouched.
+    CHECK(near(sk->getX(0), 10.f));
+    CHECK(near(sk->getY(0), 20.f));
+    CHECK(near(sk->getX(b1), 11.f));
+    CHECK(near(sk->getY(b1), 20.f));
+    CHECK(near(sk->getX(b3), 11.f));
+    CHECK(near(sk->getY(b3), 20.f));
+    CHECK(near(sk->getX(b2), 11.f, 1e-2f));
+    CHECK(near(sk->getY(b2), 21.f, 1e-2f));
+}
+
+TEST_CASE("ik.solver2d.solveChain.validation") {
+    std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
+    int b1 = sk->createBone(0, 1.f);
+    int b2 = sk->createBone(b1, 1.f);
+    int b3 = sk->createBone(0, 1.f);
+    b1 = sk->getChild(0, 0);
+    b3 = sk->getChild(0, 1);
+    b2 = sk->getChild(b1, 0);
+    sk->initStraightPose(0.f, 0.f);
+
+    std::unique_ptr<Solver2D> solver(new Solver2D());
+    solver->addTarget(b3, 1.f, 1.f, 1.f);
+    // Target on the side branch is not part of the chain: nothing to solve.
+    CHECK(solver->solveChain(sk.get(), b1, b2));
+    CHECK(near(sk->getX(b2), 2.f));
+    CHECK_THROWS(solver->solveChain(sk.get(), b2, b1));  // tip not a descendant of root
+    CHECK_THROWS(solver->solveChain(sk.get(), b1, b1));  // root == tip
+    CHECK_THROWS(solver->solveChain(sk.get(), 0, 99));   // out of range
+}
+
+TEST_CASE("ik.solver2d.influence") {
+    std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
+    int b1 = sk->createBone(0, 1.f);
+    int b2 = sk->createBone(b1, 1.f);
+    sk->initStraightPose(0.f, 0.f);
+
+    std::unique_ptr<Solver2D> solver(new Solver2D());
+    solver->setMaxIterations(32);
+    solver->addTarget(b2, 0.f, 2.f, 1.f);
+
+    solver->setInfluence(0.5f);
+    solver->solve(sk.get());
+    CHECK(near(sk->getX(b2), 1.f, 1e-2f));
+    CHECK(near(sk->getY(b2), 1.f, 1e-2f));
+
+    sk->initStraightPose(0.f, 0.f);
+    solver->setInfluence(0.f);
+    solver->solve(sk.get());
+    CHECK(near(sk->getX(b2), 2.f));
+    CHECK(near(sk->getY(b2), 0.f));
+    CHECK_THROWS((solver->setInfluence(1.5f), false));
+}
+
+TEST_CASE("ik.solver3d.solveChain.pinsChainRoot") {
+    std::unique_ptr<Skeleton3D> sk(new Skeleton3D());
+    int b1 = sk->createBone(0, 1.f);
+    int b2 = sk->createBone(b1, 1.f);
+    int b3 = sk->createBone(0, 1.f);
+    b1 = sk->getChild(0, 0);
+    b3 = sk->getChild(0, 1);
+    b2 = sk->getChild(b1, 0);
+    sk->initStraightPose(0.f, 0.f, 0.f);
+
+    std::unique_ptr<Solver3D> solver(new Solver3D());
+    solver->setMaxIterations(48);
+    solver->setTolerance(1e-3f);
+    solver->addTarget(b2, 1.f, 1.f, 0.f, 1.f);
+    CHECK(solver->solveChain(sk.get(), b1, b2));
+
+    CHECK(near(sk->getX(0), 0.f));
+    CHECK(near(sk->getX(b1), 1.f));
+    CHECK(near(sk->getY(b1), 0.f));
+    CHECK(near(sk->getX(b3), 1.f));
+    CHECK(near(sk->getY(b3), 0.f));
+    CHECK(near(sk->getX(b2), 1.f, 2e-2f));
+    CHECK(near(sk->getY(b2), 1.f, 2e-2f));
+}
+
+TEST_CASE("ik.solver3d.pole") {
+    std::unique_ptr<Skeleton3D> sk(new Skeleton3D());
+    int b1 = sk->createBone(0, 1.f);
+    int b2 = sk->createBone(b1, 1.f);
+    sk->initStraightPose(0.f, 0.f, 0.f);
+
+    std::unique_ptr<Solver3D> solver(new Solver3D());
+    solver->setMaxIterations(64);
+    solver->setTolerance(1e-4f);
+    solver->addTarget(b2, 1.5f, 0.5f, 0.f, 1.f);
+
+    solver->setPole(1.f, 1.f, 0.f, 1.f);
+    CHECK(solver->hasPole());
+    CHECK(near(solver->getPoleWeight(), 1.f));
+    CHECK(solver->solveChain(sk.get(), 0, b2));
+    const float upY = sk->getY(b1);
+    CHECK(upY > 0.1f);
+
+    sk->initStraightPose(0.f, 0.f, 0.f);
+    solver->setPole(1.f, -1.f, 0.f, 1.f);
+    CHECK(solver->solveChain(sk.get(), 0, b2));
+    const float downY = sk->getY(b1);
+    CHECK(downY < -0.1f);
+
+    sk->initStraightPose(0.f, 0.f, 0.f);
+    solver->clearPole();
+    CHECK(!solver->hasPole());
+    CHECK(solver->solveChain(sk.get(), 0, b2));
+}
+
+TEST_CASE("ik.solver3d.tipRotation") {
+    std::unique_ptr<Skeleton3D> sk(new Skeleton3D());
+    int b1 = sk->createBone(0, 1.f);
+    int b2 = sk->createBone(b1, 1.f);
+    sk->initStraightPose(0.f, 0.f, 0.f);
+
+    std::unique_ptr<Solver3D> solver(new Solver3D());
+    solver->setMaxIterations(48);
+    solver->addTarget(b2, 2.f, 0.f, 0.f, 1.f);
+    solver->setTipRotation(b2, 0.f, static_cast<float>(M_PI / 2.0), 1.f);
+    CHECK(near(solver->getTipRotationWeight(), 1.f));
+    CHECK(solver->solveChain(sk.get(), 0, b2));
+
+    // Tip keeps reaching the target while its world direction is pitched up.
+    CHECK(near(sk->getX(b2), 2.f, 2e-2f));
+    CHECK(near(sk->getOrientationZ(b2), 1.f, 1e-2f));
+    CHECK(near(sk->getRotationPitch(b2), static_cast<float>(M_PI / 2.0), 1e-2f));
+
+    solver->clearTipRotation();
+    CHECK(near(solver->getTipRotationWeight(), 0.f));
+    CHECK(solver->solveChain(sk.get(), 0, b2));
+    CHECK(near(sk->getOrientationZ(b2), 0.f, 1e-2f));
+}
+
+TEST_CASE("ik.solver2d.stepChain") {
+    std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
+    int b1 = sk->createBone(0, 1.f);
+    int b2 = sk->createBone(b1, 1.f);
+    sk->initStraightPose(0.f, 0.f);
+
+    std::unique_ptr<Solver2D> solver(new Solver2D());
+    solver->addTarget(b2, 0.f, 2.f, 1.f);
+    solver->stepChain(sk.get(), 0, b2, 1.f);
+    CHECK(near(sk->getX(b2), 0.f, 1e-2f));
+    CHECK(near(sk->getY(b2), 2.f, 1e-2f));
+}
+
 TEST_CASE("ik.factory") {
     auto *mod = IK::create();
     std::unique_ptr<Skeleton2D> sk(mod->newSkeleton2D());
