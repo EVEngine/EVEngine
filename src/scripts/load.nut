@@ -89,12 +89,16 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
     try {
         compilestring(eve.asyncScript)();
     } catch (e) {
+        // Report FIRST: with "break on error" the debugger pauses at the
+        // throwing script line / catch site before stdout is flushed.
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("async runtime failed to load: " + e + "\n");
     }
 } else if (file_exists("async.nut")) {
     try {
         dofile("async.nut");
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("async.nut failed to load: " + e + "\n");
     }
 }
@@ -125,6 +129,7 @@ function soft_reload_scripts() {
             dofile(p);
             print("hot-reload script: " + p + "\n");
         } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
             print("hot-reload script failed: " + p + ": " + e + "\n");
         }
     }
@@ -132,6 +137,7 @@ function soft_reload_scripts() {
         try {
             eve_reload();
         } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
             print("eve_reload failed: " + e + "\n");
         }
     }
@@ -160,12 +166,14 @@ function poll_hot_reload() {
         try {
             hot.tryReload(p);
         } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
             print("hot-reload asset failed: " + p + ": " + e + "\n");
         }
         if ("eve_asset_reload" in getroottable()) {
             try {
                 eve_asset_reload(p);
             } catch (e) {
+                if ("dev" in eve) eve.dev.reportError("" + e);
                 print("eve_asset_reload failed: " + p + ": " + e + "\n");
             }
         }
@@ -180,6 +188,7 @@ if (file_exists("main.nut")) {
     try {
         compilestring(eve.demoScript)();
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("Embedded demo failed to load: " + e + "\n");
     }
 }
@@ -194,6 +203,7 @@ if (config.hotReload) {
             fs.watch("main.nut");
         print("hot-reload: watching " + n + " path(s)\n");
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("hot-reload watchTree failed: " + e + "\n");
     }
 }
@@ -201,6 +211,7 @@ if (config.hotReload) {
 try {
     eve_init();
 } catch (e) {
+    if ("dev" in eve) eve.dev.reportError("" + e);
     print("eve_init failed: " + e + "\n");
 }
 
@@ -329,6 +340,7 @@ while (running) {
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("frame error: " + e + "\n");
     }
     // Always present: eve_render may have opened a 3D pass (gfx.render3D)

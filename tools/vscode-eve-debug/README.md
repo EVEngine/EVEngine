@@ -96,6 +96,31 @@ Handled by `load.nut` when running with `--debug` (same semantics):
 ## Tips
 
 - Set breakpoints in `.nut` files before or during the session.
+- **Conditional breakpoints**: right-click a breakpoint → *Edit Condition…* and
+  enter any Squirrel expression (e.g. `score > 10`). Evaluated in the frame's
+  locals + global scope; a failed/unreadable condition stops (safer default).
+- **Break on error**: tick **Script Errors** under the BREAKPOINTS panel (or
+  `"filters": ["script_error"]` in `setExceptionBreakpoints`). Script errors
+  are routed to the debugger and pause (Godot-style "Break on Error"):
+  - Uncaught errors pause at the exact **throw site** (the Squirrel error hook
+    fires before the stack unwinds), and the call stack starts at the throwing
+    function with its locals intact.
+  - Caught errors (the main loop wraps `eve_init` / `eve_update` / hot-reload
+    in `try/catch`) pause at the game's catch statement that reported the
+    error — never inside `load.nut` internals.
+- **查看实例 (Inspect Instance)**: right-click an expandable object in the
+  VARIABLES view while stopped 鈫?*EVEngine: 查看实例 (Inspect Instance)* opens a
+  webview that walks the object's children through DAP `variables` requests,
+  so tables / arrays / instances / classes can be explored side-by-side with
+  the stack (Godot-style remote inspector).
+- **Breakpoint verification**: breakpoints start hollow and turn solid once the
+  line is actually executed (DAP `breakpoint` events), so a wrong line number
+  or path mismatch is visible immediately.
+- **Variables**: Locals follow the selected call-stack frame; tables, arrays,
+  classes, instances and closures expand inline; a Globals scope lists root
+  slots. Hover / Watch evaluate full expressions (arithmetic, calls, indexing).
+  Expandable variables carry a `__vscodeVariableMenuContext` marker so the
+  context menu only offers "Inspect Instance" for real objects.
 - Enable `"trace": true` in launch.json to log DAP traffic to **EVEngine Debug**.
 - `"stopOnEntry": true` pauses before the first update after attach.
 - Game stdout/stderr is mirrored to the Debug Console and the output channel.

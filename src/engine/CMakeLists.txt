@@ -9,6 +9,9 @@ if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME S
     target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
 create_module(EVCmdLine cmdline)
+# DevTool.hpp (pulled in by cmdline/Run.cpp) includes Poco JSON/Net headers;
+# keep the same no-auto-link contract so the debug Poco libs (*mdd) are used.
+target_compile_definitions(EVCmdLine PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 
