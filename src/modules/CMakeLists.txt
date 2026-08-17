@@ -62,6 +62,8 @@ create_module(EVData data)
 if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVData PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
+# Localization: self-contained JSON parser (no Poco), so it also builds on WASM.
+create_module(EVI18n i18n)
 create_module(EVImage image)
 if(EVENGINE_WEBGPU_TRIM)
   # ImageData.h includes medialoader/image/pixelformat.h; the vendored

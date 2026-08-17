@@ -22,6 +22,7 @@
 - [数据](modules/data.md)：管理 ByteData/DataView、压缩、哈希以及 JSON/XML 文档。
 - [图像](modules/image.md)：说明图像模块的脚本绑定边界，以及通过字体字形获得 ImageData 的可用路径。
 - [字体](modules/font.md)：从文件或内存创建 FontData，并读取字形度量和位图。
+- [本地化](modules/i18n.md)：按语言载入 JSON 翻译表、点号键取值、占位符与复数规则、默认语言回退。
 - [声音数据](modules/sound.md)：读取声音数据、解码器和采样信息，供 Audio 创建 Source。
 - [音频播放](modules/audio.md)：创建可播放 Source，控制音量、音高、循环、进度和 3D 声源位置。
 - [3D 模型](modules/model3d.md)：通过 medialoader/Assimp 载入模型数据，再交给图形模块渲染。
