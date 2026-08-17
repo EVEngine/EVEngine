@@ -179,6 +179,8 @@ public:
     int getMsaaSamples() const override { return msaaSamples; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
     void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
+    void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
+                              const Color &color) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                         bool repeatV = false) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba,

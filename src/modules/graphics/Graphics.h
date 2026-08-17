@@ -107,6 +107,9 @@ public:
 
     /** Internal immediate-mode helper used by RenderSystem / Batcher. */
     virtual void drawSolidRect(float x, float y, float w, float h, const Color &color) = 0;
+    /** Draw a solid rectangle rotated clockwise around its center. */
+    virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
+                                      const Color &color) = 0;
 
     /** Create RGBA8 texture from CPU pixels (size = width*height*4). Caller owns Texture*. */
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,

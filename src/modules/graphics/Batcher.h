@@ -23,6 +23,7 @@ class Batcher {
 public:
     void clear();
     void addRect(float x, float y, float w, float h, const Color &color);
+    void addRectRotated(float cx, float cy, float w, float h, float degrees, const Color &color);
     void addTexturedRect(float x, float y, float w, float h, const Color &color,
                          float u0, float v0, float u1, float v1,
                          bool rotatedUV = false);

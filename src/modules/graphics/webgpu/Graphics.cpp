@@ -1754,6 +1754,12 @@ void Graphics::drawSolidRect(float x, float y, float w, float h, const Color &co
     noteSolidOverlay();
 }
 
+void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
+                                    const Color &color) {
+    solidBatch.addRectRotated(cx, cy, w, h, degrees, color);
+    noteSolidOverlay();
+}
+
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                                 const Color &color) {
     drawTexturedRectUV(texture, x, y, w, h, 0.f, 0.f, 1.f, 1.f, color);
