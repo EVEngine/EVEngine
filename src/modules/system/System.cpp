@@ -2,11 +2,9 @@
 
 #include "common/Exception.h"
 #include "common/Module.h"
+#include "common/Capability.h"
+#include "common/GpuInfo.h"
 #include "common/config.h"
-#include "graphics/Graphics.h"
-#ifndef EVENGINE_WEBGPU
-#include "graphics/vulkan/Graphics.h"
-#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -34,50 +32,11 @@
 namespace eve::system {
 namespace {
 
-#ifndef EVENGINE_WEBGPU
-eve::graphics::vulkan::Graphics *vulkanGraphicsOrNull() {
-    auto *base = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-    if (!base) return nullptr;
-    return dynamic_cast<eve::graphics::vulkan::Graphics *>(base);
+/** The graphics backend's GPU description, or nullptr when none is linked. */
+eve::caps::IGpuInfo *gpuInfoOrNull() {
+    auto *info = eve::cap::query<eve::caps::IGpuInfo>();
+    return (info && info->gpuReady()) ? info : nullptr;
 }
-#endif
-
-#ifndef EVENGINE_WEBGPU
-bool gpuReady(eve::graphics::vulkan::Graphics *gfx) {
-    if (!gfx) return false;
-    vk::PhysicalDevice pd = gfx->getDevice().physical_device;
-    return static_cast<VkPhysicalDevice>(pd) != VK_NULL_HANDLE;
-}
-#endif
-
-std::string vendorNameFromId(uint32_t vendorID) {
-    switch (vendorID) {
-        case 0x1002: return "AMD";
-        case 0x10DE: return "NVIDIA";
-        case 0x8086: return "Intel";
-        case 0x13B5: return "ARM";
-        case 0x5143: return "Qualcomm";
-        case 0x1010: return "ImgTec";
-        case 0x106B: return "Apple";
-        default: {
-            char buf[32];
-            std::snprintf(buf, sizeof(buf), "0x%04X", vendorID);
-            return buf;
-        }
-    }
-}
-
-#ifndef EVENGINE_WEBGPU
-const char *deviceTypeName(vk::PhysicalDeviceType t) {
-    switch (t) {
-        case vk::PhysicalDeviceType::eDiscreteGpu: return "discrete";
-        case vk::PhysicalDeviceType::eIntegratedGpu: return "integrated";
-        case vk::PhysicalDeviceType::eVirtualGpu: return "virtual";
-        case vk::PhysicalDeviceType::eCpu: return "cpu";
-        default: return "other";
-    }
-}
-#endif
 
 }  // namespace
 
@@ -208,49 +167,23 @@ void System::setClipboardText(const std::string &text) {
 }
 
 std::string System::getGpuName() const {
-#ifdef EVENGINE_WEBGPU
-    return {};
-#else
-    auto *gfx = vulkanGraphicsOrNull();
-    if (!gpuReady(gfx)) return {};
-    return gfx->getDevice().physical_device.properties.deviceName.data();
-#endif
+    auto *info = gpuInfoOrNull();
+    return info ? info->gpuName() : std::string();
 }
 
 std::string System::getGpuVendor() const {
-#ifdef EVENGINE_WEBGPU
-    return {};
-#else
-    auto *gfx = vulkanGraphicsOrNull();
-    if (!gpuReady(gfx)) return {};
-    return vendorNameFromId(gfx->getDevice().physical_device.properties.vendorID);
-#endif
+    auto *info = gpuInfoOrNull();
+    return info ? info->gpuVendor() : std::string();
 }
 
 std::string System::getGpuDeviceType() const {
-#ifdef EVENGINE_WEBGPU
-    return "webgpu";
-#else
-    auto *gfx = vulkanGraphicsOrNull();
-    if (!gpuReady(gfx)) return {};
-    return deviceTypeName(gfx->getDevice().physical_device.properties.deviceType);
-#endif
+    auto *info = gpuInfoOrNull();
+    return info ? info->gpuDeviceType() : std::string();
 }
 
 int System::getGpuMemoryTotalMB() const {
-#ifdef EVENGINE_WEBGPU
-    return 0;
-#else
-    auto *gfx = vulkanGraphicsOrNull();
-    if (!gpuReady(gfx)) return 0;
-    const auto &mem = gfx->getDevice().physical_device.memory_properties;
-    uint64_t bytes  = 0;
-    for (uint32_t i = 0; i < mem.memoryHeapCount; ++i) {
-        if (mem.memoryHeaps[i].flags & vk::MemoryHeapFlagBits::eDeviceLocal)
-            bytes += mem.memoryHeaps[i].size;
-    }
-    return static_cast<int>(bytes / (1024ull * 1024ull));
-#endif
+    auto *info = gpuInfoOrNull();
+    return info ? info->gpuMemoryTotalMB() : 0;
 }
 
 void System::expose(ssq::Table &table) {

@@ -6,6 +6,11 @@ foreach(i IN LISTS scripts_src)
     file(READ ${i} ${script}_content)
 endforeach()
 
+# Generated at configure time by eve_write_module_manifest().
+if(GENERATED_DIR AND EXISTS "${GENERATED_DIR}/module_list.nut")
+    file(READ "${GENERATED_DIR}/module_list.nut" module_list_content)
+endif()
+
 foreach(i IN LISTS shaders_src)
     get_filename_component(script ${i} NAME_WE)
     file(READ ${i} ${script}_content)

@@ -204,7 +204,7 @@ TEST_CASE("SceneLoader.apply.preservesUnchangedRenderableIdentity") {
     // The unchanged GameObject keeps its linked Renderable3D — no rebuild / re-upload.
     REQUIRE_EQ(after->links.size(), 1u);
     CHECK(after->links[0].target == r);
-    CHECK(int(after->links[0].kind) == int(eve::scene::LinkKind::Renderable3D));
+    CHECK(after->links[0].kind == eve::scene::findLinkKind("renderable3d"));
     CHECK(h->findById("keep2") != nullptr);
     CHECK(h->findById("gone") == nullptr);
 
@@ -258,7 +258,7 @@ TEST_CASE("SceneLoader.load.buildsGameObjectTreeWithRenderables") {
     std::vector<SceneNode *> linked = h->findAllLinked();
     REQUIRE_EQ(linked.size(), 1u);
     REQUIRE_EQ(linked[0]->links.size(), 1u);
-    CHECK(int(linked[0]->links[0].kind) == int(eve::scene::LinkKind::Renderable3D));
+    CHECK(linked[0]->links[0].kind == eve::scene::findLinkKind("renderable3d"));
     auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->links[0].target);
     REQUIRE(r != nullptr);
     CHECK(r->meshRenderer()->mesh != nullptr);

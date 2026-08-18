@@ -5,7 +5,7 @@ const char* boot_content = R"(@boot_content@)";
 
 const char* load_content = R"(@load_content@)";
 
-const char* load_web_content = R"(@load_web_content@)";
+const char* module_list_content = R"(@module_list_content@)";
 
 const char* async_content = R"(@async_content@)";
 

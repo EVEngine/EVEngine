@@ -2,7 +2,9 @@ enable_testing()
 
 file(GLOB all_test_cpp
   ECS.cpp
+  capability.cpp
   data.cpp
+  json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
   graphic.cpp
@@ -165,6 +167,17 @@ else()
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
+endif()
+
+# Several tests include Poco headers (data, mcp, dap, remotesync). MSVC would
+# otherwise #pragma-comment PocoFoundationd.lib, which the third-party prefix
+# does not ship (it installs PocoFoundationmdd.lib).
+if(WIN32)
+  if(EVENGINE_ANDROID_TEST_APP)
+    target_compile_definitions(main PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  else()
+    target_compile_definitions(unit_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
 endif()
 
 

@@ -1,18 +1,12 @@
 #include "rpg/Effect.h"
-#include "rpg/JsonHelpers.h"
 
-#include "data/DataModule.h"
-#include "data/JsonDocument.h"
-
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
+#include "common/Json.h"
 
 #include <algorithm>
-#include <memory>
 
 namespace eve::rpg {
 
-using namespace json_helpers;
+using eve::json::Value;
 
 bool EffectDefinition::hasTag(const std::string &tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
@@ -47,40 +41,27 @@ int EffectRegistry::count() { return int(table().size()); }
 
 namespace {
 
-EffectDefinition parseEffectObject(Poco::JSON::Object::Ptr o) {
+EffectDefinition parseEffectObject(Value o) {
     EffectDefinition def;
-    if (!o) return def;
-    def.id = asString(o->get("id"));
-    def.durationPolicy = asString(o->get("durationPolicy"), "instant");
-    def.duration = asFloat(o->get("duration"), 0.f);
-    def.period = asFloat(o->get("period"), 0.f);
-    def.stackPolicy = asString(o->get("stackPolicy"), "none");
-    def.maxStacks = asInt(o->get("maxStacks"), 1);
-    def.tags = asStringArray(o, "tags");
-    def.extra = asStringMap(o, "extra");
+    if (!o.isObject()) return def;
+    def.id = o.getString("id");
+    def.durationPolicy = o.getString("durationPolicy", "instant");
+    def.duration = o.getFloat("duration", 0.f);
+    def.period = o.getFloat("period", 0.f);
+    def.stackPolicy = o.getString("stackPolicy", "none");
+    def.maxStacks = o.getInt("maxStacks", 1);
+    def.tags = o.getStringArray("tags");
+    def.extra = o.getStringMap("extra");
 
-    if (o->has("modifiers")) {
-        try {
-            auto arr = o->getArray("modifiers");
-            if (arr) {
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    Poco::JSON::Object::Ptr mo;
-                    try {
-                        mo = arr->getObject(i);
-                    } catch (...) {
-                        continue;
-                    }
-                    if (!mo) continue;
-                    EffectModifierSpec spec;
-                    spec.attribute = asString(mo->get("attribute"));
-                    spec.op = asString(mo->get("op"), "add");
-                    spec.value = asDouble(mo->get("value"), 0.0);
-                    spec.priority = asInt(mo->get("priority"), 0);
-                    if (!spec.attribute.empty()) def.modifiers.push_back(std::move(spec));
-                }
-            }
-        } catch (...) {
-        }
+    const Value mods = o.get("modifiers");
+    for (size_t i = 0; i < mods.size(); ++i) {
+        const Value mo = mods.at(i);
+        EffectModifierSpec spec;
+        spec.attribute = mo.getString("attribute");
+        spec.op = mo.getString("op", "add");
+        spec.value = mo.getDouble("value", 0.0);
+        spec.priority = mo.getInt("priority", 0);
+        if (!spec.attribute.empty()) def.modifiers.push_back(std::move(spec));
     }
     return def;
 }
@@ -88,33 +69,24 @@ EffectDefinition parseEffectObject(Poco::JSON::Object::Ptr o) {
 }  // namespace
 
 int EffectRegistry::loadFromJson(const std::string &json, std::string *error) {
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc) {
+    const eve::json::Document doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return 0;
     }
 
+    const Value root = doc.root();
     int n = 0;
-    if (doc->isArray()) {
-        auto arr = doc->array();
-        if (!arr) return 0;
-        for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o;
-            try {
-                o = arr->getObject(i);
-            } catch (...) {
-                continue;
-            }
-            if (!o) continue;
-            EffectDefinition def = parseEffectObject(o);
+    if (root.isArray()) {
+        for (size_t i = 0; i < root.size(); ++i) {
+            EffectDefinition def = parseEffectObject(root.at(i));
             if (def.id.empty()) continue;
             registerEffect(def);
             ++n;
         }
-    } else if (doc->isObject()) {
-        EffectDefinition def = parseEffectObject(doc->object());
+    } else if (root.isObject()) {
+        EffectDefinition def = parseEffectObject(root);
         if (!def.id.empty()) {
             registerEffect(def);
             ++n;

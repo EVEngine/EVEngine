@@ -35,7 +35,7 @@ public:
 
 private:
 	void wakeWaiters() override;
-	void exceptionIfInRenderPass(const char *name);
+	/** Offers the event to the registered sinks, then handles quit itself. */
 	Message *convert(const SDL_Event &e);
 	Uint32 wakeEventType_ = static_cast<Uint32>(-1);
 

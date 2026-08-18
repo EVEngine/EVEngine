@@ -475,9 +475,9 @@ TEST_CASE("Scene.link.genericMultiLinkAndSync") {
     CHECK(approxEq(n->z, 30.f));
 
     // unlink by kind keeps the other links
-    CHECK(h->unlink("soldier", LinkKind::Physics3D));
+    CHECK(h->unlink("soldier", findLinkKind("physics3d")));
     CHECK_EQ(h->linkCount("soldier"), 2);
-    CHECK(!h->unlink("soldier", LinkKind::Physics3D));
+    CHECK(!h->unlink("soldier", findLinkKind("physics3d")));
 
     // full rebuild preserves remaining links by id
     h->setTree(node("root", {node("soldier")}));
@@ -519,7 +519,7 @@ TEST_CASE("Scene.link.physics2D") {
     CHECK(approxEq(n->y, 40.f));
     CHECK(approxEq(n->roll, 0.5f));
 
-    CHECK(h->unlink("p", LinkKind::Physics2D));
+    CHECK(h->unlink("p", findLinkKind("physics2d")));
     CHECK_EQ(h->linkCount("p"), 0);
     w.destroy();
 }

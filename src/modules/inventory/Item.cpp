@@ -1,18 +1,12 @@
 #include "inventory/Item.h"
-#include "inventory/JsonHelpers.h"
 
-#include "data/DataModule.h"
-#include "data/JsonDocument.h"
-
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
+#include "common/Json.h"
 
 #include <algorithm>
-#include <memory>
 
 namespace eve::inventory {
 
-using namespace json_helpers;
+using eve::json::Value;
 
 bool ItemDefinition::hasTag(const std::string &tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
@@ -70,51 +64,42 @@ int ItemRegistry::count() { return int(table().size()); }
 
 namespace {
 
-ItemDefinition parseItemObject(Poco::JSON::Object::Ptr o) {
+ItemDefinition parseItemObject(Value o) {
     ItemDefinition def;
-    if (!o) return def;
-    def.id = asString(o->get("id"));
-    def.displayName = asString(o->get("displayName"), def.id);
-    def.maxStack = asInt(o->get("maxStack"), 1);
-    def.weight = asFloat(o->get("weight"), 0.f);
-    def.volume = asFloat(o->get("volume"), 0.f);
-    def.tags = asStringArray(o, "tags");
-    def.category = asString(o->get("category"));
-    def.equipSlot = asString(o->get("equipSlot"));
-    def.extra = asStringMap(o, "extra");
+    if (!o.isObject()) return def;
+    def.id = o.getString("id");
+    def.displayName = o.getString("displayName", def.id);
+    def.maxStack = o.getInt("maxStack", 1);
+    def.weight = o.getFloat("weight", 0.f);
+    def.volume = o.getFloat("volume", 0.f);
+    def.tags = o.getStringArray("tags");
+    def.category = o.getString("category");
+    def.equipSlot = o.getString("equipSlot");
+    def.extra = o.getStringMap("extra");
     return def;
 }
 
 }  // namespace
 
 int ItemRegistry::loadFromJson(const std::string &json, std::string *error) {
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc) {
+    const eve::json::Document doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return 0;
     }
 
+    const Value root = doc.root();
     int n = 0;
-    if (doc->isArray()) {
-        auto arr = doc->array();
-        if (!arr) return 0;
-        for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o;
-            try {
-                o = arr->getObject(i);
-            } catch (...) {
-                continue;
-            }
-            if (!o) continue;
-            ItemDefinition def = parseItemObject(o);
+    if (root.isArray()) {
+        for (size_t i = 0; i < root.size(); ++i) {
+            ItemDefinition def = parseItemObject(root.at(i));
             if (def.id.empty()) continue;
             registerItem(def);
             ++n;
         }
-    } else if (doc->isObject()) {
-        ItemDefinition def = parseItemObject(doc->object());
+    } else if (root.isObject()) {
+        ItemDefinition def = parseItemObject(root);
         if (!def.id.empty()) {
             registerItem(def);
             ++n;

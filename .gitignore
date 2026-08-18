@@ -48,3 +48,6 @@ platform/android/apk/app/src/main/assets/examples/
 
 # Local Python deps for scripts/export_tiny_gpt2.py (pip --target).
 external/pylibs/
+# Python bytecode from scripts/
+__pycache__/
+*.pyc
