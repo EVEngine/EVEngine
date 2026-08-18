@@ -18,6 +18,9 @@ public:
 
     virtual NodeDesc build() = 0;
 
+    /** Called once when the component is attached to a host. */
+    virtual void onMount(SceneHost *host) {}
+
     void attach(SceneHost *host);
     void mountAs(const std::string &hostName);
     SceneHost *host() const { return host_; }

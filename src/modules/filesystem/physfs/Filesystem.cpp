@@ -75,8 +75,14 @@ namespace physfs {
 Filesystem::Filesystem() : fused(false), fusedSet(false) {
     requirePath  = {"?.lua", "?/init.lua"};
     cRequirePath = {"??"};
-    if (auto* c = getModInst(eve::cmd,Cmdline)) init(c->getArgv(0).c_str());
-    else init(NULL);
+    if (auto* c = getModInst(eve::cmd,Cmdline)) {
+        // unit_test / embedders never call Cmdline::runArgs: argv stays empty.
+        const std::string a0 = c->getArgv(0);
+        if (a0.empty()) init(NULL);
+        else init(a0.c_str());
+    } else {
+        init(NULL);
+    }
 }
 
 Filesystem::~Filesystem() {

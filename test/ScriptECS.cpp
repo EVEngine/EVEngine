@@ -246,6 +246,71 @@ function testShaderSystemClassExists() {
     sys.update(0.016)
     return true
 }
+
+function testViewCacheStableAndInvalidated() {
+    class Pos extends eve.Component { x = 0.0 }
+    class Node extends eve.Entity { pos = Pos }
+    class Sub extends Node {}
+
+    local a = Node.create()
+    local b = Sub.create()
+
+    // No changes between calls → same cached array identity (zero allocation
+    // per frame in System.entities()).
+    local v1 = eve.view(Node)
+    if (v1.len() != 2) return false
+    local v2 = eve.view(Node)
+    if (v1 != v2) return false
+
+    local sv1 = eve.view(Sub)
+    if (sv1.len() != 1) return false
+
+    // create() invalidates the cached view (and subclass views via the chain)
+    local c = Node.create()
+    if (eve.view(Node).len() != 3) return false
+    if (eve.view(Sub).len() != 1) return false
+
+    // destroy() invalidates too; dead entities leave the view immediately
+    a.destroy()
+    b.destroy()
+    c.destroy()
+    if (eve.view(Node).len() != 0) return false
+    return true
+}
+
+function testViewCacheBaseClassIncludesSubclasses() {
+    class Pos extends eve.Component { x = 0.0 }
+    class Node extends eve.Entity { pos = Pos }
+    class Sub extends Node {}
+
+    local n = Node.create()
+    local s = Sub.create()
+    if (eve.view(Node).len() != 2) return false
+    if (eve.view(eve.Entity).len() < 2) return false
+    n.destroy()
+    s.destroy()
+    return true
+}
+
+function testComponentDefaultsAndSlotsCached() {
+    class C extends eve.Component { v = eve.Number; s = eve.String }
+    class E extends eve.Entity { c = C }
+
+    local a = E.create()
+    if (a.c.v != 0.0 || a.c.s != "") return false
+    a.c.v = 5.0
+
+    // Second instance gets fresh resolved defaults, not the mutated values.
+    local b = E.create()
+    if (b.c.v != 0.0 || b.c.s != "") return false
+    if (a.c.v != 5.0) return false
+    if (a.getComponent(C) != a.c) return false
+    if (!a.hasComponent(C)) return false
+
+    a.destroy()
+    b.destroy()
+    return true
+}
 )SQ";
 
 UnitSciptTest(ScriptEcsTest, kScriptEcsContent);
@@ -284,4 +349,16 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.staticComponentsTable") {
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemClassExists") {
     CHECK(vm.callFunc(vm.findFunc("testShaderSystemClassExists"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheStableAndInvalidated") {
+    CHECK(vm.callFunc(vm.findFunc("testViewCacheStableAndInvalidated"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheBaseClassIncludesSubclasses") {
+    CHECK(vm.callFunc(vm.findFunc("testViewCacheBaseClassIncludesSubclasses"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.componentDefaultsAndSlotsCached") {
+    CHECK(vm.callFunc(vm.findFunc("testComponentDefaultsAndSlotsCached"), vm).toBool());
 }

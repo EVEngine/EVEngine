@@ -30,7 +30,7 @@ public:
 };
 
 
-Cmdline::Cmdline() {}
+Cmdline::Cmdline() : argc(0), argv(nullptr) {}
 
 void Cmdline::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Cmdline::create, false);

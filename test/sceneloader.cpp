@@ -14,6 +14,10 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 
+#include <assimp/mesh.h>
+#include <assimp/scene.h>
+#include <assimp/vector3.h>
+
 #include <SDL2/SDL.h>
 
 #include <chrono>
@@ -198,8 +202,9 @@ TEST_CASE("SceneLoader.apply.preservesUnchangedRenderableIdentity") {
     SceneNode *after = h->findById("keep");
     REQUIRE(after != nullptr);
     // The unchanged GameObject keeps its linked Renderable3D — no rebuild / re-upload.
-    CHECK(after->linkTarget == r);
-    CHECK(after->linkKind == "renderable3d");
+    REQUIRE_EQ(after->links.size(), 1u);
+    CHECK(after->links[0].target == r);
+    CHECK(int(after->links[0].kind) == int(eve::scene::LinkKind::Renderable3D));
     CHECK(h->findById("keep2") != nullptr);
     CHECK(h->findById("gone") == nullptr);
 
@@ -252,8 +257,9 @@ TEST_CASE("SceneLoader.load.buildsGameObjectTreeWithRenderables") {
     // Exactly one mesh GameObject with a linked Renderable3D.
     std::vector<SceneNode *> linked = h->findAllLinked();
     REQUIRE_EQ(linked.size(), 1u);
-    CHECK(linked[0]->linkKind == "renderable3d");
-    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->linkTarget);
+    REQUIRE_EQ(linked[0]->links.size(), 1u);
+    CHECK(int(linked[0]->links[0].kind) == int(eve::scene::LinkKind::Renderable3D));
+    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->links[0].target);
     REQUIRE(r != nullptr);
     CHECK(r->meshRenderer()->mesh != nullptr);
 
@@ -274,6 +280,84 @@ TEST_CASE("SceneLoader.load.buildsGameObjectTreeWithRenderables") {
     loader->unload(name);
     CHECK(!loader->loaded(name));
     win->close();
+}
+
+TEST_CASE("SceneLoader.bounds.fillFromMeshAndUnion") {
+    // Minimal Assimp scene: node "tank" with one cube mesh child.
+    // Heap-allocate every node so the Assimp destructors (which delete[] mesh
+    // vertex/face arrays and the scene/root node) stay well-defined.
+    auto *scene = new aiScene{};
+    auto *rootNode = new aiNode{};
+    auto *mesh = new aiMesh{};
+    auto *face = new aiFace[1];
+    auto *cube = new aiVector3D[8]{
+        {-1, -1, -1}, {1, -1, -1}, {1, 1, -1}, {-1, 1, -1},
+        {-1, -1, 1},  {1, -1, 1},  {1, 1, 1},  {-1, 1, 1},
+    };
+    auto *meshIdx = new unsigned[1]{0};
+    auto *meshPtrs = new aiMesh *[1];
+    meshPtrs[0] = mesh;
+    mesh->mNumVertices = 8;
+    mesh->mVertices = cube;
+    mesh->mNumFaces = 1;
+    mesh->mFaces = face;
+    rootNode->mName = "tank";
+    rootNode->mNumMeshes = 1;
+    rootNode->mMeshes = meshIdx;
+    scene->mNumMeshes = 1;
+    scene->mMeshes = meshPtrs;
+    scene->mRootNode = rootNode;
+    scene->mNumMaterials = 0;
+    scene->mMaterials = nullptr;
+    scene->mNumAnimations = 0;
+
+    MeshSlotMap slots;
+    NodeDesc root = SceneLoader::buildNodeDesc(scene, &slots);
+    REQUIRE(slots.count("tank_mesh0") == 1u);
+
+    SceneHost *h = SceneHost::createHost("boundstest");
+    h->setTree(std::move(root));
+    SceneLoader::fillSceneBounds(h, slots);
+
+    SceneNode *meshN = h->findById("tank_mesh0");
+    REQUIRE(meshN != nullptr);
+    CHECK(meshN->hasBounds);
+    CHECK(approx(meshN->bminX, -1.f));
+    CHECK(approx(meshN->bminY, -1.f));
+    CHECK(approx(meshN->bmaxZ, 1.f));
+
+    // ancestor union: mesh child has identity TRS → same local AABB
+    SceneNode *tank = h->findById("tank");
+    REQUIRE(tank != nullptr);
+    CHECK(tank->hasBounds);
+    CHECK(approx(tank->bminX, -1.f));
+    CHECK(approx(tank->bmaxZ, 1.f));
+
+    // moving a child merges (bounds are conservative and never shrink)
+    meshN->x = 5.f;
+    SceneLoader::fillSceneBounds(h, slots);
+    CHECK(approx(tank->bminX, -1.f));
+    CHECK(approx(tank->bmaxX, 6.f));
+
+    // fresh host: transformed child union lands in parent local space
+    SceneHost *h2 = SceneHost::createHost("boundstest2");
+    h2->setTree(node("tank", {node("tank_mesh0").withPosition(5.f, 0.f, 0.f)}));
+    SceneLoader::fillSceneBounds(h2, slots);
+    SceneNode *tank2 = h2->findById("tank");
+    REQUIRE(tank2 != nullptr);
+    CHECK(approx(tank2->bminX, 4.f));
+    CHECK(approx(tank2->bmaxX, 6.f));
+
+    // hot-reload path (null slots) keeps bounds on kept nodes
+    NodeDesc newRoot = node("tank", {node("tank_mesh0")});
+    SceneDiff d = SceneLoader::diffTree(h, newRoot);
+    REQUIRE(SceneLoader::applyTreeDiff(h, newRoot, d, nullptr, nullptr));
+    SceneNode *kept = h->findById("tank_mesh0");
+    REQUIRE(kept != nullptr);
+    CHECK(kept->hasBounds);
+    CHECK(approx(kept->bminX, -1.f));
+
+    delete scene;  // frees rootNode + mesh pointer arrays; mesh dtor frees verts/faces
 }
 
 // ---- PBR material + texture cache + lights/cameras via a self-contained glTF ----

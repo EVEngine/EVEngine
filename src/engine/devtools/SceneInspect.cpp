@@ -122,8 +122,9 @@ image::ImageData* buildIdMask(eve::graphics::Graphics* gfx, std::string* outJson
             host->walkDepthFirst([&](eve::scene::SceneHost*, int,
                                      eve::scene::SceneNode& node) {
                 if (!node.visible || node.space != "3d") return;
-                if (node.linkKind != "renderable3d" || !node.linkTarget) return;
-                auto* r = static_cast<eve::graphics::Renderable3D*>(node.linkTarget);
+                const auto* l = host->findLink(&node, eve::scene::LinkKind::Renderable3D);
+                if (!l || !l->target) return;
+                auto* r = static_cast<eve::graphics::Renderable3D*>(l->target);
                 auto  mr = r->meshRenderer();
                 graphics::Mesh* mesh = mr->mesh;
                 if (!mesh || !mesh->gpuHandle) return;

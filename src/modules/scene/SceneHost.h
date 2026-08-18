@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <functional>
 #include <string>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <glm/mat4x4.hpp>
@@ -14,9 +16,42 @@
 namespace eve::graphics {
 class Renderable2D;
 class Renderable3D;
+class Camera3D;
+}
+
+namespace eve::physics {
+class Body;
+class Body3D;
+}
+
+namespace eve::audio {
+class Source;
 }
 
 namespace eve::scene {
+
+/** Link target kind for the generic per-node link system. */
+enum class LinkKind {
+    None = 0,
+    Renderable2D,
+    Renderable3D,
+    Physics2D,
+    Physics3D,
+    Camera3D,
+    Audio3D,
+};
+
+/**
+ * One generic link between a scene node and an external object (renderable,
+ * physics body, camera, audio source). A node can hold several links of
+ * different kinds; re-linking the same kind replaces the target.
+ * syncMode: 0 = node → target (node authoritative), 1 = target → node.
+ */
+struct SceneLink {
+    LinkKind kind = LinkKind::None;
+    void *target = nullptr;
+    int syncMode = 0;
+};
 
 /**
  * Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.
@@ -27,17 +62,28 @@ struct SceneNode {
     std::string name;
     std::string space = "3d";  // "2d" | "3d"
     bool visible = true;
+    /** Gameplay groups (Godot-style): multiple string tags per node. */
+    std::vector<std::string> tags;
+    int layer = 0;
+    /** Local-space AABB (for picking / culling / spatial index). */
+    float bminX = 0.f, bminY = 0.f, bminZ = 0.f;
+    float bmaxX = 0.f, bmaxY = 0.f, bmaxZ = 0.f;
+    bool hasBounds = false;
 
     float x = 0.f, y = 0.f, z = 0.f;
     float yaw = 0.f, pitch = 0.f, roll = 0.f;
     float sx = 1.f, sy = 1.f, sz = 1.f;
 
     bool localDirty = true;
+    /** Subtree needs world recompute (API edits mark node + ancestors). */
+    bool subtreeDirty = true;
     glm::mat4 world{1.f};
 
-    /** Optional link: "renderable2d" | "renderable3d" | empty. Target owned elsewhere. */
-    std::string linkKind;
-    void *linkTarget = nullptr;
+    /** Generic links (renderable / physics / camera / audio). Target owned elsewhere. */
+    std::vector<SceneLink> links;
+
+    /** Lazy companion SceneObject ECS entity id; 0 = none. */
+    uint32_t objectId = 0;
 
     int firstChild = -1;
     int nextSibling = -1;
@@ -68,6 +114,8 @@ public:
     struct Tree {
         bool dirty = true;
         bool transformDirty = true;
+        bool indexValid = false;
+        std::unordered_map<std::string, int> idIndex;
         std::vector<SceneNode> nodes;
         int root = -1;
     };
@@ -128,6 +176,21 @@ public:
 
     void markDirty() { tree()->dirty = true; }
     void markTransformDirty() { tree()->transformDirty = true; }
+    /** Mark a node's subtree for world recompute (recompute it + descendants). */
+    void markSubtreeDirty(int nodeIndex);
+    void markSubtreeDirtyById(const std::string &id) {
+        markSubtreeDirty(findIndexById(id));
+    }
+    void invalidateIndex() { tree()->indexValid = false; }
+
+    // --- Node lifecycle events ---
+    using SceneEventFn = std::function<void(SceneHost *host, const std::string &action,
+                                            const std::string &nodeId,
+                                            const std::string &parentId)>;
+    void setEventHandler(SceneEventFn fn) { eventHandler_ = std::move(fn); }
+    /** Fire "node_added" / "node_removed" / "node_moved" / "node_changed". */
+    void fireEvent(const std::string &action, const std::string &nodeId,
+                   const std::string &parentId = {});
 
     void setVisible(bool v) { meta()->visible = v; }
     void setLayer(int layer) { meta()->layer = layer; }
@@ -178,12 +241,36 @@ public:
     std::vector<std::string> collectIdsVisible(bool visible = true);
 
     /**
-     * Link a graphics renderable to a node id. Survives reconcile/rebuild by id.
-     * After TransformSystem, world TRS is written into the renderable transform.
+     * Link an external object to a node id. Survives reconcile/rebuild by id.
+     * After TransformSystem, the link is synced per kind (and syncMode).
      */
     bool linkRenderable2D(const std::string &nodeId, graphics::Renderable2D *r);
     bool linkRenderable3D(const std::string &nodeId, graphics::Renderable3D *r);
+    bool linkPhysics2D(const std::string &nodeId, physics::Body *b, int syncMode = 0);
+    bool linkPhysics3D(const std::string &nodeId, physics::Body3D *b, int syncMode = 0);
+    bool linkCamera3D(const std::string &nodeId, graphics::Camera3D *c);
+    bool linkAudio3D(const std::string &nodeId, audio::Source *s);
+
+    /** Remove all links of a kind; returns true if a link was removed. */
+    bool unlink(const std::string &nodeId, LinkKind kind);
+    /** Remove every link on the node. */
     bool unlink(const std::string &nodeId);
+
+    SceneLink *findLink(SceneNode *node, LinkKind kind);
+    const SceneLink *findLink(const SceneNode *node, LinkKind kind) const;
+    int linkCount(const std::string &nodeId);
+
+    /** Reparent by id; empty parentId detaches (parent = -1). Cycle-safe. */
+    bool setParentById(const std::string &childId, const std::string &parentId);
+    bool removeChildById(const std::string &parentId, const std::string &childId);
+
+    bool addTag(SceneNode *node, const std::string &tag);
+    bool removeTag(SceneNode *node, const std::string &tag);
+    bool hasTag(const SceneNode *node, const std::string &tag) const;
+    std::vector<SceneNode *> findAllByTag(const std::string &tag);
+
+private:
+    SceneEventFn eventHandler_;
 };
 
 }  // namespace eve::scene

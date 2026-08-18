@@ -20,6 +20,11 @@ struct NodeDesc {
     /** "2d" or "3d" (string enum per module convention). */
     std::string space = "3d";
     bool visible = true;
+    std::vector<std::string> tags;
+    int layer = 0;
+    float bminX = 0.f, bminY = 0.f, bminZ = 0.f;
+    float bmaxX = 0.f, bmaxY = 0.f, bmaxZ = 0.f;
+    bool hasBounds = false;
 
     float x = 0.f, y = 0.f, z = 0.f;
     float yaw = 0.f, pitch = 0.f, roll = 0.f;
@@ -45,6 +50,29 @@ struct NodeDesc {
     }
     NodeDesc &withVisible(bool v) {
         visible = v;
+        return *this;
+    }
+    NodeDesc &withTag(std::string v) {
+        tags.push_back(std::move(v));
+        return *this;
+    }
+    NodeDesc &withTags(std::vector<std::string> v) {
+        tags = std::move(v);
+        return *this;
+    }
+    NodeDesc &withLayer(int v) {
+        layer = v;
+        return *this;
+    }
+    NodeDesc &withBounds(float minX, float minY, float minZ, float maxX, float maxY,
+                         float maxZ) {
+        bminX = minX;
+        bminY = minY;
+        bminZ = minZ;
+        bmaxX = maxX;
+        bmaxY = maxY;
+        bmaxZ = maxZ;
+        hasBounds = true;
         return *this;
     }
     NodeDesc &withPosition(float px, float py, float pz = 0.f) {

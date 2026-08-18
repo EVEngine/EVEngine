@@ -4,6 +4,7 @@
 // https://github.com/sunxfancy/ECS.hpp
 #include <algorithm>  // ECS.hpp 使用 std::all_of（上游头未直接包含）
 #include <functional>
+#include <vector>
 #include "ECS.hpp"
 
 namespace ssq {
@@ -27,5 +28,11 @@ void exposeECSToVM(ssq::VM& vm);
 // 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。
 using CppEntityViewFn = std::function<void(ssq::Array& out)>;
 void registerCppEntityView(size_t typeHash, CppEntityViewFn fn);
+
+// 在脚本 ECS 基类（eve.Component / eve.Entity / eve.System）注入之后执行的回调。
+// 模块用它注入"extends eve.Entity"的脚本基类（例如 eve.SceneEntity）。
+// 在 exposeECS / exposeECSToVM 末尾运行，早于任何游戏脚本。
+using PostEcsHook = std::function<void(ssq::Table& table)>;
+void registerPostEcsHook(PostEcsHook fn);
 
 }  // namespace eve

@@ -64,7 +64,9 @@ public:
     int runArgs(unsigned argc, char** argv);
 
     // this will be used in physfs filesystem
-    std::string getArgv(unsigned i) { return argv[i]; }
+    std::string getArgv(unsigned i) {
+        return (argv && i < argc && argv[i]) ? argv[i] : std::string{};
+    }
     unsigned getArgc() { return argc; }
 
     static std::string get_remaining(CLI::App* sub, std::string default_path = ".");

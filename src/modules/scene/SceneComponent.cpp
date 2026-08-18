@@ -6,7 +6,10 @@
 namespace eve::scene {
 
 void SceneComponent::attach(SceneHost *host) {
-    host_ = host;
+    if (host_ != host) {
+        host_ = host;
+        onMount(host);
+    }
     dirty_ = true;
 }
 

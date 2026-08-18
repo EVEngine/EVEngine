@@ -241,6 +241,13 @@ public:
                               const SceneDiff &diff, graphics::Graphics *gfx,
                               const MeshSlotMap *slots);
 
+    /**
+     * Fill node bounds from Assimp mesh AABBs (mesh GameObjects get the exact
+     * local-space AABB; ancestors get the union of their children in local
+     * space), so picking / frustum culling work on loaded models.
+     */
+    static void fillSceneBounds(scene::SceneHost *host, const MeshSlotMap &slots);
+
 private:
     struct Loaded {
         std::string path;
