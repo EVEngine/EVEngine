@@ -113,5 +113,14 @@ std::string getExecutablePath() {
     return {};
 }
 
+std::string getHotReloadDirectory() {
+    const char *internal = SDL_AndroidGetInternalStoragePath();
+    if (!internal)
+        return {};
+    std::string dir = std::string(internal) + "/hotreload";
+    mkdir(dir.c_str());
+    return dir;
+}
+
 }  // namespace android
 }  // namespace eve

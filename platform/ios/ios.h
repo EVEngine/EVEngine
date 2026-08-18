@@ -21,9 +21,15 @@ std::string getResources(bool &fused);
 std::string getGameDirectory();
 
 /**
- * Gets the directory path where files should be stored.
+ * Gets the appdata directory (Application Support/EVEngine). Writable.
  **/
 std::string getAppdataDirectory();
+
+/**
+ * Gets the writable directory used to stage remote hot-reload downloads.
+ * Created on first use.
+ **/
+std::string getHotReloadDirectory();
 
 /**
  * Get the home directory (on iOS, this really means the app's sandbox dir.)
