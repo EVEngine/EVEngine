@@ -45,6 +45,7 @@
 ## 表现与场景
 
 - [图形渲染](modules/graphics.md)：清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染；Camera2D/3D 提供屏幕↔世界与拾取射线。
+- [体素](modules/voxel.md)：32³ chunk 体素世界，贪婪矩形合并 + 实例化渲染、跨 chunk 接缝消隐、顶点 AO、DDA 射线拾取、自动流式地形生成与存档。
 - [Sprite-Stacking](modules/spritestack.md)：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。
 - [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。
 - [天气系统](modules/weather.md)：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。
