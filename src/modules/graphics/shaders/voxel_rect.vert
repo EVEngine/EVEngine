@@ -4,6 +4,8 @@
 layout(location = 0) in vec2 inCorner;
 // Packed rect instance (per-instance): xyz(5+5+5) + wh(5+5) + tex(7).
 layout(location = 1) in uint inPacked;
+// Per-instance AO word: 2 bits per corner (0..3), shader corner order.
+layout(location = 2) in uint inAO;
 
 layout(push_constant) uniform PC {
     mat4 viewProj;
@@ -16,6 +18,7 @@ layout(location = 0) out vec2 vUV;
 layout(location = 1) out flat uint vTex;
 layout(location = 2) out vec3 vNormal;
 layout(location = 3) out vec4 vTint;
+layout(location = 4) out flat float vAO;
 
 void main() {
     uint packed = inPacked;
@@ -25,6 +28,13 @@ void main() {
     float w = float((packed >> 15) & 31u) + 1.0;
     float h = float((packed >> 20) & 31u) + 1.0;
     uint tex = (packed >> 25) & 127u;
+
+    uint ao0 = inAO & 3u;
+    uint ao1 = (inAO >> 2) & 3u;
+    uint ao2 = (inAO >> 4) & 3u;
+    uint ao3 = (inAO >> 6) & 3u;
+    uint ao = inCorner.y < 0.5 ? (inCorner.x < 0.5 ? ao0 : ao1)
+                               : (inCorner.x < 0.5 ? ao3 : ao2);
 
     int face = int(pc.chunkOrigin.w + 0.5);
     vec3 pos = vec3(float(ix), float(iy), float(iz));
@@ -62,4 +72,5 @@ void main() {
     vTex = tex;
     vNormal = n;
     vTint = pc.tint;
+    vAO = float(ao) / 3.0;
 }

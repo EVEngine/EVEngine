@@ -2,6 +2,8 @@
 
 #include "voxel/FaceDir.h"
 
+#include "data/ByteData.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <functional>
@@ -37,14 +39,54 @@ void Voxel::expose(ssq::Table &table) {
         "VoxelWorld", std::function<VoxelWorld *()>([]() -> VoxelWorld * { return nullptr; }), true);
     world.addFunc("hasChunk", &VoxelWorld::hasChunk);
     world.addFunc("removeChunk", &VoxelWorld::removeChunk);
+    world.addFunc("unloadChunksOutside", &VoxelWorld::unloadChunksOutside);
+    world.addFunc(
+        "streamAround",
+        std::function<int(VoxelWorld *, int, int, int, int)>(
+            [](VoxelWorld *w, int cx, int cy, int cz, int radius) -> int {
+                return w ? w->streamAround(cx, cy, cz, radius).created : 0;
+            }));
+    world.addFunc(
+        "setTerrain",
+        std::function<void(VoxelWorld *, int, int, int, int, float, float, float)>(
+            [](VoxelWorld *w, int seed, int top, int sub, int stone, float baseHeight,
+               float amplitude, float scale) {
+                if (!w) return;
+                w->setTerrainParams(uint32_t(seed), uint8_t(top), uint8_t(sub), uint8_t(stone),
+                                    baseHeight, amplitude, scale);
+            }));
+    world.addFunc("terrainHeightAt", &VoxelWorld::terrainHeightAt);
+    world.addFunc("disableTerrain", &VoxelWorld::disableTerrain);
+    world.addFunc("saveWorld", &VoxelWorld::saveWorld);
+    world.addFunc("loadWorld", &VoxelWorld::loadWorld);
     world.addFunc("clear", &VoxelWorld::clear);
     world.addFunc("getChunkCount", &VoxelWorld::getChunkCount);
-    world.addFunc("remeshDirty", &VoxelWorld::remeshDirty);
+    world.addFunc("remeshDirty",
+                  std::function<int(VoxelWorld *)>([](VoxelWorld *w) -> int {
+                      return w ? w->remeshDirty() : 0;
+                  }));
     world.addFunc("getVoxel", &VoxelWorld::getVoxel);
     world.addFunc("setVoxel", &VoxelWorld::setVoxel);
     world.addFunc("setVoxelByName", &VoxelWorld::setVoxelByName);
     world.addFunc("getCubeTypeName", &VoxelWorld::getCubeTypeName);
     world.addFunc("getCubeTypeTex", &VoxelWorld::getCubeTypeTex);
+    world.addFunc(
+        "raycast",
+        std::function<bool(VoxelWorld *, float, float, float, float, float, float, float)>(
+            [](VoxelWorld *w, float ox, float oy, float oz, float dx, float dy, float dz,
+               float maxDist) -> bool {
+                return w && w->raycastScript(ox, oy, oz, dx, dy, dz, maxDist);
+            }));
+    world.addFunc("lastRaycastHit", &VoxelWorld::lastRaycastHit);
+    world.addFunc("getRaycastHitX", &VoxelWorld::lastRaycastHitX);
+    world.addFunc("getRaycastHitY", &VoxelWorld::lastRaycastHitY);
+    world.addFunc("getRaycastHitZ", &VoxelWorld::lastRaycastHitZ);
+    world.addFunc("getRaycastPrevX", &VoxelWorld::lastRaycastPrevX);
+    world.addFunc("getRaycastPrevY", &VoxelWorld::lastRaycastPrevY);
+    world.addFunc("getRaycastPrevZ", &VoxelWorld::lastRaycastPrevZ);
+    world.addFunc("getRaycastFaceX", &VoxelWorld::lastRaycastFaceX);
+    world.addFunc("getRaycastFaceY", &VoxelWorld::lastRaycastFaceY);
+    world.addFunc("getRaycastFaceZ", &VoxelWorld::lastRaycastFaceZ);
     world.addFunc("getVisibleBatchCount", &VoxelWorld::getVisibleBatchCount);
     world.addFunc("getVisibleChunkCount", &VoxelWorld::getVisibleChunkCount);
     world.addFunc("getVisibleRectCount", &VoxelWorld::getVisibleRectCount);
