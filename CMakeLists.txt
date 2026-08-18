@@ -729,6 +729,18 @@ function(load_third_party)
     endif()
 
     ensure_third_party_checkout()
+    # Normal generation for assets without authored normals: medialoader maps
+    # generateNormalsIfMissing to aiProcess_GenNormals (per-face, flat shading).
+    # Patch the cloned tree (idempotent, same pattern as the ENABLE_DATA edit
+    # below) to request aiProcess_GenSmoothNormals, so sphere-like models shade
+    # smoothly while hard edges (default smoothing angle 80 degrees) keep seams.
+    set(_eve_ml_loader "${CMAKE_SOURCE_DIR}/third-party/medialoader/model/ModelLoader.cpp")
+    if(EXISTS "${_eve_ml_loader}")
+        file(READ "${_eve_ml_loader}" _eve_ml_loader_text)
+        string(REPLACE "aiProcess_GenNormals" "aiProcess_GenSmoothNormals"
+                       _eve_ml_loader_text "${_eve_ml_loader_text}")
+        file(WRITE "${_eve_ml_loader}" "${_eve_ml_loader_text}")
+    endif()
     # EVEngine's database module uses POCO Data and its bundled SQLite connector.
     # The third-party aggregate disables these by default to reduce its footprint;
     # enable the two targets in the checked-out aggregate before configuring it.
