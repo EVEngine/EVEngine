@@ -48,14 +48,14 @@ public:
     virtual bool isFused() const      = 0;
 
     /**
-     * This sets up the save directory. If the
+     * @brief This sets up the save directory. If the
      * it is already set up, nothing happens.
      * @return True on success, false otherwise.
      **/
     virtual bool setupWriteDirectory() = 0;
 
     /**
-     * This sets the save location on Android.
+     * @brief This sets the save location on Android.
      * False for internal, true for external
      * @param external Bool for whether
      * Android should use external file storage.
@@ -63,13 +63,13 @@ public:
     virtual void setAndroidSaveExternal(bool useExternal = false) { this->useExternal = useExternal; }
 
     /**
-     * Gets whether the Android save is external.
+     * @brief Gets whether the Android save is external.
      * Returns a bool.
      **/
     virtual bool isAndroidSaveExternal() const { return useExternal; }
 
     /**
-     * Sets the name of the save folder.
+     * @brief Sets the name of the save folder.
      * @param ident The name of the game. Will be used to
      * to create the folder in the LOVE data folder.
      **/
@@ -77,14 +77,14 @@ public:
     virtual std::string getIdentity() const                                       = 0;
 
     /**
-     * Sets the path to the game source.
+     * @brief Sets the path to the game source.
      * This can only be set once.
      * @param source Path to a directory or a .love-file.
      **/
     virtual bool setSource(std::string source) = 0;
 
     /**
-     * Loads the game source from a packaged archive (.eve / zip) held entirely in
+     * @brief Loads the game source from a packaged archive (.eve / zip) held entirely in
      * memory and mounts it at "/" (no extraction to disk). The bytes are copied and
      * kept alive for the lifetime of the mounted archive.
      * This can only be set once.
@@ -94,7 +94,7 @@ public:
     virtual bool setSourceFromMemory(const void* data, size_t size) = 0;
 
     /**
-     * Gets the path to the game source.
+     * @brief Gets the path to the game source.
      * Returns a 0-length string if the source has not been set.
      **/
     virtual std::string getSource() const = 0;
@@ -106,12 +106,12 @@ public:
     virtual bool unmount(Data *data)          = 0;
 
     /**
-     * Creates a new file.
+     * @brief Creates a new file.
      **/
     virtual File *newFile(std::string filename) const = 0;
 
     /**
-     * Creates a new FileData object. Data will be copied.
+     * @brief Creates a new FileData object. Data will be copied.
      * @param data Pointer to the data.
      * @param size The size of the data.
      * @param filename The full filename used to file type identification.
@@ -119,66 +119,66 @@ public:
     virtual FileData *newFileData(const void *data, std::string filename, size_t size) const;
 
     /**
-     * Gets the current working directory.
+     * @brief Gets the current working directory.
      **/
     virtual std::string getWorkingDirectory() = 0;
 
     /**
-     * Gets the user home directory.
+     * @brief Gets the user home directory.
      **/
     virtual std::string getUserDirectory() = 0;
 
     /**
-     * Gets the APPDATA directory. On Windows, this is the folder
+     * @brief Gets the APPDATA directory. On Windows, this is the folder
      * in the %APPDATA% enviroment variable. On Linux, this is the
      * user home folder.
      **/
     virtual std::string getAppdataDirectory() = 0;
 
     /**
-     * Gets the full path of the save folder.
+     * @brief Gets the full path of the save folder.
      **/
     virtual std::string getSaveDirectory() = 0;
 
     /**
-     * Gets the full path to the directory containing the game source.
+     * @brief Gets the full path to the directory containing the game source.
      * For example if the game source is C:\Games\mygame.love, this will return
      * C:\Games.
      **/
     virtual std::string getSourceBaseDirectory() const = 0;
 
     /**
-     * Gets the real directory path containing the file.
+     * @brief Gets the real directory path containing the file.
      **/
     virtual std::string getRealDirectory(std::string filename) const = 0;
 
     /**
-     * Gets information about the item at the specified filepath. Returns false
+     * @brief Gets information about the item at the specified filepath. Returns false
      * if nothing exists at the path.
      **/
     virtual bool getInfo(std::string filepath, Info &info) const = 0;
 
     /**
-     * Creates a directory. Write dir must be set.
+     * @brief Creates a directory. Write dir must be set.
      * @param dir The directory to create.
      **/
     virtual bool createDirectory(std::string dir) = 0;
 
     /**
-     * Removes a file (or directory).
+     * @brief Removes a file (or directory).
      * @param file The file or directory to remove.
      **/
     virtual bool remove(std::string file) = 0;
 
     /**
-     * Reads data from a file.
+     * @brief Reads data from a file.
      * @param filename The name of the file to read from.
      * @param size The size in bytes of the data to read.
      **/
     virtual FileData *read(std::string filename, int64_t size = File::ALL) const = 0;
 
     /**
-     * Write data to a file.
+     * @brief Write data to a file.
      * @param filename The name of the file to write to.
      * @param data The data to write.
      * @param size The size in bytes of the data to write.
@@ -186,7 +186,7 @@ public:
     virtual void write(std::string filename, const void *data, int64_t size) const = 0;
 
     /**
-     * Append data to a file, creating it if it doesn't exist.
+     * @brief Append data to a file, creating it if it doesn't exist.
      * @param filename The name of the file to write to.
      * @param data The data to append.
      * @param size The size in bytes of the data to append.
@@ -194,18 +194,18 @@ public:
     virtual void append(std::string filename, const void *data, int64_t size) const = 0;
 
     /**
-     * This "native" method returns a table of all
+     * @brief This "native" method returns a table of all
      * files in a given directory.
      **/
     virtual std::vector<std::string> getDirectoryItems(std::string dir) = 0;
 
     /**
-     * Enable or disable symbolic link support in love.filesystem.
+     * @brief Enable or disable symbolic link support in love.filesystem.
      **/
     virtual void setSymlinksEnabled(bool enable) = 0;
 
     /**
-     * Gets whether symbolic link support is enabled.
+     * @brief Gets whether symbolic link support is enabled.
      **/
     virtual bool areSymlinksEnabled() const = 0;
 
@@ -215,36 +215,36 @@ public:
     virtual std::vector<std::string> &getCRequirePath() = 0;
 
     /**
-     * Allows a full (OS-dependent) path to be used with Filesystem::mount.
+     * @brief Allows a full (OS-dependent) path to be used with Filesystem::mount.
      **/
     virtual void allowMountingForPath(const std::string &path) = 0;
 
     /**
-     * Gets whether the given full (OS-dependent) path is a directory.
+     * @brief Gets whether the given full (OS-dependent) path is a directory.
      **/
     virtual bool isRealDirectory(const std::string &path) const;
 
     /**
-     * Gets the full platform-dependent path to the executable.
+     * @brief Gets the full platform-dependent path to the executable.
      **/
     virtual std::string getExecutablePath() const;
 
     // --- File watch (backend-specific; main-thread poll) ---
 
     /**
-     * Watch a virtual or absolute OS path (file or directory).
+     * @brief Watch a virtual or absolute OS path (file or directory).
      * File watches monitor the parent directory and filter by basename.
      * Returns false if the path cannot be resolved to a real directory.
      **/
     virtual bool watch(std::string path) = 0;
 
-    /** Stop watching a path previously passed to watch(). */
+    /** @brief Stop watching a path previously passed to watch(). */
     virtual bool unwatch(std::string path) = 0;
     virtual void unwatchAll() = 0;
     virtual int getWatchCount() const = 0;
 
     /**
-     * Pop next watch event kind: "added"|"removed"|"modified"|"movedFrom"|"movedTo".
+     * @brief Pop next watch event kind: "added"|"removed"|"modified"|"movedFrom"|"movedTo".
      * Empty string if queue empty. Path available via getLastWatchPath().
      **/
     virtual std::string pollWatch() = 0;

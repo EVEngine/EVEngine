@@ -10,7 +10,7 @@
 namespace eve::voxel {
 
 /**
- * Greedy rectangle mesher for one 32³ dense voxel volume.
+ * @brief Greedy rectangle mesher for one 32³ dense voxel volume.
  * Voxel storage: index = x + y*32 + z*32*32. Value 0 = air; 1..255 = type id.
  *
  * 每个体素的类型 id 通过注册表解析为“各面纹理 id”后合并；输出 PackedRect.tex
@@ -23,11 +23,11 @@ namespace eve::voxel {
  */
 class GreedyMesher {
 public:
-    /** Mesh all six faces. Clears and fills `outFaces[6]`. */
+    /** @brief Mesh all six faces. Clears and fills `outFaces[6]`. */
     static void meshChunk(const uint8_t *voxels, std::vector<PackedRect> outFaces[6],
                           const CubeTypeRegistry &types = CubeTypeRegistry::empty());
 
-    /** Mesh a single face direction into `out` (appended; caller may clear). */
+    /** @brief Mesh a single face direction into `out` (appended; caller may clear). */
     static void meshFace(const uint8_t *voxels, FaceDir dir, std::vector<PackedRect> &out,
                          const CubeTypeRegistry &types = CubeTypeRegistry::empty());
 

@@ -6,7 +6,7 @@
 namespace eve::map {
 
 /**
- * Integration + direction field for group pathfinding to a single goal.
+ * @brief Integration + direction field for group pathfinding to a single goal.
  * nextX/nextY point to the neighboring cell with lower cost (toward goal).
  * At the goal, next points to itself.
  */

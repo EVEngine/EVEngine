@@ -36,7 +36,7 @@ public:
     static void unregisterChangeHook(const std::string &name);
     static bool hasChangeHook(const std::string &name);
 
-    /** 确保内置规则已注册（模块首次使用时自动调用）。 */
+    /** @brief 确保内置规则已注册（模块首次使用时自动调用）。 */
     static void ensureBuiltins();
 
     static SnapResult snap(const PlacementWorld &world, const std::string &buildingId, float worldX,
@@ -44,14 +44,14 @@ public:
     static SnapResult snapWithMode(const PlacementWorld &world, const std::string &mode,
                                    float worldX, float worldY);
 
-    /** 规范化旋转角（cardinal → 0/90/180/270；none → 0）。 */
+    /** @brief 规范化旋转角（cardinal → 0/90/180/270；none → 0）。 */
     static float normalizeRotation(const std::string &buildingId, float rotationDeg);
 
-    /** 旋转后的占地宽高（cardinal 90/270 交换）。 */
+    /** @brief 旋转后的占地宽高（cardinal 90/270 交换）。 */
     static void effectiveFootprint(const BuildingDefinition &def, float rotationDeg, int *outW,
                                    int *outH);
 
-    /** 枚举占地格子（旋转后局部 → 世界格子）。返回 false 若定义未知。 */
+    /** @brief 枚举占地格子（旋转后局部 → 世界格子）。返回 false 若定义未知。 */
     static bool foreachFootprintCell(const BuildingDefinition &def, int originCellX,
                                      int originCellY, float rotationDeg,
                                      const std::function<bool(int cx, int cy)> &fn);
@@ -60,10 +60,10 @@ public:
                          float rotationDeg = 0.f, int excludeInstanceId = 0,
                          std::string *reason = nullptr);
 
-    /** 成功返回 instanceId；失败返回 0。 */
+    /** @brief 成功返回 instanceId；失败返回 0。 */
     static int placeAt(PlacementWorld *world, const std::string &buildingId, int cellX, int cellY,
                        float rotationDeg = 0.f);
-    /** 先吸附再放置；free/自定义 snap 会保留吸附后的世界坐标。 */
+    /** @brief 先吸附再放置；free/自定义 snap 会保留吸附后的世界坐标。 */
     static int placeAtWorld(PlacementWorld *world, const std::string &buildingId, float worldX,
                             float worldY, float rotationDeg = 0.f);
     static int placeGhost(PlacementWorld *world, Ghost *ghost);

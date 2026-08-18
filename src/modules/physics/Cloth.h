@@ -11,7 +11,7 @@ class Graphics;
 namespace eve::physics {
 
 /**
- * Interactive 2D cloth — Verlet particles + distance constraints.
+ * @brief Interactive 2D cloth — Verlet particles + distance constraints.
  * Pixel space (same convention as Box2D World). Script-owned.
  */
 class Cloth {
@@ -35,19 +35,19 @@ public:
     float getGravityX() const { return gravityX_; }
     float getGravityY() const { return gravityY_; }
 
-    /** Constraint relaxation strength in [0,1] (default 0.85). */
+    /** @brief Constraint relaxation strength in [0,1] (default 0.85). */
     void  setStiffness(float stiffness);
     float getStiffness() const { return stiffness_; }
 
-    /** Constraint solver iterations per substep (default 4). */
+    /** @brief Constraint solver iterations per substep (default 4). */
     void setIterations(int iterations);
     int  getIterations() const { return iterations_; }
 
-    /** Damping applied to Verlet velocity [0,1] (default 0.01). */
+    /** @brief Damping applied to Verlet velocity [0,1] (default 0.01). */
     void  setDamping(float damping);
     float getDamping() const { return damping_; }
 
-    /** Axis-aligned walls; particles bounce inside. Disabled if w/h <= 0. */
+    /** @brief Axis-aligned walls; particles bounce inside. Disabled if w/h <= 0. */
     void setBounds(float x, float y, float w, float h);
     void clearBounds();
 
@@ -57,7 +57,7 @@ public:
     bool isPinned(int index) const;
 
     /**
-     * Grab nearest free particle within radius (pixels).
+     * @brief Grab nearest free particle within radius (pixels).
      * Returns particle index, or -1 if none.
      */
     int  grabAt(float x, float y, float radius = 24.f);

@@ -51,12 +51,12 @@ public:
     void setFov(float fovYDeg);
     void setActive(bool active);
     void setAmbient(float r, float g, float b);
-    /** Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */
+    /** @brief Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL. */
     void setEnvMap(Texture *cube);
     void setEnvIntensity(float intensity);
 
     /**
-     * Build a world-space picking ray from a screen pixel.
+     * @brief Build a world-space picking ray from a screen pixel.
      * Stores origin (camera eye) and normalized direction; read via getScreenRay*.
      * viewW/viewH must match the drawable used for rendering.
      */
@@ -90,10 +90,10 @@ public:
         Texture *normalTexture = nullptr;  // nullptr → flat normal in default PBR path
         Texture *heightTexture = nullptr;  // nullptr → no parallax height (R = height)
         Shader *shader = nullptr;          // nullptr → default mesh3d PBR pipeline
-        /** Optional packed material; when set, overrides texture/shader/PBR fields below. */
+        /** @brief Optional packed material; when set, overrides texture/shader/PBR fields below. */
         Material *material = nullptr;
         /**
-         * Optional X-ray shader used to paint this entity's occluded silhouette
+         * @brief Optional X-ray shader used to paint this entity's occluded silhouette
          * (see Shader::setXray). When xrayHighlight is set, the entity is skipped
          * from the G-buffer (so its pixels record occluder depth) and drawn a
          * second time over the scene with the X-ray shader. Only the part hidden
@@ -115,19 +115,19 @@ public:
         bool castShadow = true;
         bool receiveShadow = true;
         bool castOcclusion = true;  // volumetric occlusion (screen-space shafts)
-        /** Alpha-blended hair/fur card pass (drawn after opaque meshes, back-to-front). */
+        /** @brief Alpha-blended hair/fur card pass (drawn after opaque meshes, back-to-front). */
         bool isHair = false;
         Camera3D *camera = nullptr;
 
         /**
-         * Multi-part model slots (one mesh + material per Assimp mesh / body region).
+         * @brief Multi-part model slots (one mesh + material per Assimp mesh / body region).
          * When partCount > 0, each part is drawn; otherwise `mesh` + material/fields.
          */
         int partCount = 0;
         ModelPart parts[kMaxParts] = {};
 
         /**
-         * Optional geometric LOD. When lodCount > 0, lodMeshes[0..lodCount) are used
+         * @brief Optional geometric LOD. When lodCount > 0, lodMeshes[0..lodCount) are used
          * instead of `mesh` based on camera distance. lodDistances[i] is the distance
          * at which rendering switches from lodMeshes[i] to lodMeshes[i+1].
          */
@@ -135,7 +135,7 @@ public:
         Mesh *lodMeshes[kMaxLodLevels] = {};
         float lodDistances[kMaxLodLevels - 1] = {25.f, 60.f, 120.f};
 
-        /** Pick LOD mesh for a camera distance; falls back to `mesh` when LOD disabled. */
+        /** @brief Pick LOD mesh for a camera distance; falls back to `mesh` when LOD disabled. */
         Mesh *meshForDistance(float distance) const {
             if (lodCount <= 0) return mesh;
             int level = 0;
@@ -175,24 +175,24 @@ public:
     void setMesh(Mesh *mesh);
     void setTexture(Texture *texture);
     void setNormalTexture(Texture *texture);
-    /** Height map for parallax (R channel; white = raised). nullptr disables sampling. */
+    /** @brief Height map for parallax (R channel; white = raised). nullptr disables sampling. */
     void setHeightTexture(Texture *texture);
     void setShader(Shader *shader);
-    /** Attach a Material that packages shading method + surface params. */
+    /** @brief Attach a Material that packages shading method + surface params. */
     void setMaterial(Material *material);
     Material *getMaterial();
-    /** Attach an X-ray mesh shader (see Shader::setXray) for occluded silhouettes. */
+    /** @brief Attach an X-ray mesh shader (see Shader::setXray) for occluded silhouettes. */
     void setXRayShader(Shader *shader);
     Shader *getXRayShader();
     /**
-     * When true, this entity is an X-ray target: its G-buffer pixels are replaced
+     * @brief When true, this entity is an X-ray target: its G-buffer pixels are replaced
      * by occluders and it is redrawn with xrayShader so the part hidden behind
      * buildings shows as a highlight silhouette (visible parts stay normal).
      */
     void setXRayHighlight(bool on);
     bool getXRayHighlight();
     /**
-     * Bind a named mesh+material part (e.g. Assimp submesh / body region).
+     * @brief Bind a named mesh+material part (e.g. Assimp submesh / body region).
      * index 0..kMaxParts-1. Passing nullptr mesh clears that slot and trims partCount.
      */
     void setPart(int index, const std::string &name, Mesh *mesh, Material *material);
@@ -207,7 +207,7 @@ public:
     void setMetallic(float metallic);
     void setRoughness(float roughness);
     /**
-     * Texture cell bombing — random per-cell UV offset/rotation blended across a 2×2
+     * @brief Texture cell bombing — random per-cell UV offset/rotation blended across a 2×2
      * neighborhood to hide tiling. strength 0 disables (default).
      */
     void setTexCellBomb(float cellScale, float strength, float rotAmount = 1.f);
@@ -215,7 +215,7 @@ public:
     float getTexCellBombStrength();
     float getTexCellBombRotation();
     /**
-     * Parallax occlusion mapping. scale 0 disables (default). Typical scale 0.02..0.08.
+     * @brief Parallax occlusion mapping. scale 0 disables (default). Typical scale 0.02..0.08.
      * Requires a height texture via setHeightTexture.
      */
     void setParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f);
@@ -231,7 +231,7 @@ public:
     void setCamera(Camera3D *camera);
 
     /**
-     * Configure geometric LOD. index 0 = highest detail.
+     * @brief Configure geometric LOD. index 0 = highest detail.
      * For index > 0, switchDistance is the camera distance that selects this level
      * (stored in lodDistances[index-1]). Passing nullptr mesh clears that slot.
      */
@@ -246,7 +246,7 @@ public:
     static void render(Graphics &gfx);
 
     /**
-     * Register a callback that fills the G-buffer (depth/normal/albedo) for
+     * @brief Register a callback that fills the G-buffer (depth/normal/albedo) for
      * geometry outside the Renderable3D ECS (e.g. sprite-stack slices). Called
      * inside the GBuffer pass after opaque meshes, before endGBufferPass.
      * The camera data and view-projection match the pass camera.
@@ -257,7 +257,7 @@ public:
     static void addGBufferExtraDrawer(GBufferExtraDrawer drawer);
 
     /**
-     * Register a callback that casts shadows for geometry outside the
+     * @brief Register a callback that casts shadows for geometry outside the
      * Renderable3D ECS (e.g. sprite-stack slices). Invoked inside each CSM
      * cascade pass with that cascade's light-view-projection; call
      * gfx.drawMeshShadowAlpha(...) / drawMeshShadow(...) there. When no Light3D
@@ -269,7 +269,7 @@ public:
                            const Camera3D::Data &cam)>;
     static void addShadowExtraDrawer(ShadowExtraDrawer drawer);
 
-    /** Legacy single directional light used when no enabled Light3D exists. */
+    /** @brief Legacy single directional light used when no enabled Light3D exists. */
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);
 };
 

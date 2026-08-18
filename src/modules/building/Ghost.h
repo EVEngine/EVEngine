@@ -35,9 +35,9 @@ public:
     bool isValid() const { return valid_; }
     std::string getReason() const { return reason_; }
 
-    /** 按世界吸附模式，从世界坐标刷新格子与世界位姿。 */
+    /** @brief 按世界吸附模式，从世界坐标刷新格子与世界位姿。 */
     void setFromWorld(PlacementWorld *world, float worldX, float worldY);
-    /** 对当前姿态做校验，写入 valid_/reason_。 */
+    /** @brief 对当前姿态做校验，写入 valid_/reason_。 */
     bool validate(PlacementWorld *world);
 
 private:

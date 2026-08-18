@@ -7,24 +7,24 @@ namespace eve {
 namespace data {
 
 /**
- * Stores byte data compressed via DataModule::compress.
+ * @brief Stores byte data compressed via DataModule::compress.
  **/
 class CompressedData : public eve::Data {
 public:
     /**
-     * Constructor just stores already-compressed data in the object.
+     * @brief Constructor just stores already-compressed data in the object.
      **/
     CompressedData(std::string format, char *cdata, size_t compressedsize, size_t rawsize, bool own = true);
     CompressedData(const CompressedData &c);
     virtual ~CompressedData();
 
     /**
-     * Gets the format that was used to compress the data.
+     * @brief Gets the format that was used to compress the data.
      **/
     std::string getFormat() const;
 
     /**
-     * Gets the original (uncompressed) size of the compressed data. May return
+     * @brief Gets the original (uncompressed) size of the compressed data. May return
      * 0 if the uncompressed size is unknown.
      **/
     size_t getDecompressedSize() const;

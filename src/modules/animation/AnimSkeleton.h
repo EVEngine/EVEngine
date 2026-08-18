@@ -8,7 +8,7 @@
 namespace eve::animation {
 
 /**
- * 3D bone hierarchy + bind-pose local TRS for skeletal animation.
+ * @brief 3D bone hierarchy + bind-pose local TRS for skeletal animation.
  * Independent of ik::Skeleton3D (FABRIK). Script type: `AnimSkeleton`.
  */
 class AnimSkeleton {
@@ -20,7 +20,7 @@ public:
     AnimSkeleton &operator=(const AnimSkeleton &) = delete;
 
     /**
-     * Append a bone. parentIndex = -1 for root.
+     * @brief Append a bone. parentIndex = -1 for root.
      * @return bone index
      */
     int addBone(const std::string &name, int parentIndex = -1);
@@ -47,7 +47,7 @@ public:
 
     const TransformTRS &bindLocal(int boneIndex) const;
 
-    /** Fill pose locals with bind pose. */
+    /** @brief Fill pose locals with bind pose. */
     void applyBindPose(class AnimPose *pose) const;
 
 private:

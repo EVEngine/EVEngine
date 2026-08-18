@@ -63,14 +63,14 @@ struct EVENGINE_API VariableInfo {
     int         childCount = -1;     // -1 = unknown
 };
 
-/** Where a variable tree node is rooted (used by containerChildren/resolvePath). */
+/** @brief Where a variable tree node is rooted (used by containerChildren/resolvePath). */
 enum class VarKind : uint8_t {
     Locals   = 0,  // frame locals
     Globals  = 1,  // roottable
 };
 
 /**
- * Script + frame debugger: pause/step, breakpoints, watches.
+ * @brief Script + frame debugger: pause/step, breakpoints, watches.
  *
  * Frame pause: game loop skips eve_update (see load.nut + shouldRunUpdate).
  * Script pause: Squirrel line hook blocks until resume/step (waitWhilePaused).
@@ -96,16 +96,16 @@ public:
     void     pause(PauseReason reason = PauseReason::PauseKey);
     void     resume();
     void     stepFrame();
-    /** Enter calls: stop on the next script line at any depth. */
+    /** @brief Enter calls: stop on the next script line at any depth. */
     void     stepInto();
-    /** Skip calls: stop on the next line at ≤ current stack depth. */
+    /** @brief Skip calls: stop on the next line at ≤ current stack depth. */
     void     stepOver();
-    /** Finish current function: stop when stack depth drops. */
+    /** @brief Finish current function: stop when stack depth drops. */
     void     stepOut();
-    /** Alias for stepInto (historical name). */
+    /** @brief Alias for stepInto (historical name). */
     void     stepLine() { stepInto(); }
     /**
-     * Convenience: script stepOver when mid-hook; otherwise one game frame.
+     * @brief Convenience: script stepOver when mid-hook; otherwise one game frame.
      * Prefer stepInto/stepOver/stepOut from DAP / UI.
      */
     void     step();
@@ -113,20 +113,20 @@ public:
     RunMode  mode() const { return mode_.load(); }
     PauseReason lastPauseReason() const { return reason_.load(); }
     const SourceLoc& pauseLocation() const { return pauseLoc_; }
-    /** Current Squirrel call depth (1 = topmost script frame). 0 if none. */
+    /** @brief Current Squirrel call depth (1 = topmost script frame). 0 if none. */
     int      scriptStackDepth() const;
 
-    /** Frame loop: true ⇒ call eve_update this frame. Consumes StepFrame. */
+    /** @brief Frame loop: true ⇒ call eve_update this frame. Consumes StepFrame. */
     bool shouldRunUpdate();
-    /** After a frame when StepFrame was active → return to Paused. */
+    /** @brief After a frame when StepFrame was active → return to Paused. */
     void notifyFrameDone();
 
     /**
-     * Called from Squirrel line debug hook.
+     * @brief Called from Squirrel line debug hook.
      * Returns true if execution should block (breakpoint / step).
      */
     bool onScriptLine(const SourceLoc& loc);
-    /** Block until resume/step/detach (processes external poll callbacks). */
+    /** @brief Block until resume/step/detach (processes external poll callbacks). */
     void waitWhilePaused(const std::function<void()>& pump = {});
 
     // ---- breakpoints ----
@@ -142,20 +142,20 @@ public:
     bool removeWatch(const std::string& expression);
     void clearWatches();
     std::vector<WatchEntry> watches() const;
-    /** Re-evaluate all watches against current VM (paused preferred). */
+    /** @brief Re-evaluate all watches against current VM (paused preferred). */
     void refreshWatches();
     /**
-     * Evaluate an expression in the given frame's scope.
+     * @brief Evaluate an expression in the given frame's scope.
      * Understands plain names, `a.b` paths, and full Squirrel expressions
      * (arithmetic / calls / indexing) compiled against a locals+roottable env.
      */
     VariableInfo evaluate(const std::string& expression, int frameLevel = 0) const;
-    /** Locals of the given call-stack level (0 = current script frame). */
+    /** @brief Locals of the given call-stack level (0 = current script frame). */
     std::vector<VariableInfo> locals(int stackLevel = 0) const;
-    /** Root-table slots (globals). */
+    /** @brief Root-table slots (globals). */
     std::vector<VariableInfo> globals() const;
     /**
-     * Children of a container variable. `path` is the key chain that locates
+     * @brief Children of a container variable. `path` is the key chain that locates
      * the container from its root (locals frame / roottable / upvalues).
      * Empty `path` lists the root entries themselves.
      */
@@ -164,13 +164,13 @@ public:
     std::vector<StackFrameInfo> stackTrace(int maxFrames = 32) const;
 
     // ---- error / breakpoint policy ----
-    /** Break on script errors (Godot "Break on Error"). Default off. */
+    /** @brief Break on script errors (Godot "Break on Error"). Default off. */
     void setBreakOnError(bool on) { breakOnError_.store(on); }
     bool breakOnError() const { return breakOnError_.load(); }
-    /** Master switch for all breakpoints ("skip all breakpoints"). */
+    /** @brief Master switch for all breakpoints ("skip all breakpoints"). */
     void setBreakpointsEnabled(bool on) { bpsEnabled_.store(on); }
     bool breakpointsEnabled() const { return bpsEnabled_.load(); }
-    /** Called once when a breakpoint line is first observed by the line hook. */
+    /** @brief Called once when a breakpoint line is first observed by the line hook. */
     using BreakpointEventFn = std::function<void(int id, const std::string& source, int line,
                                                  bool verified)>;
     void setBreakpointEventFn(BreakpointEventFn fn) { bpEventFn_ = std::move(fn); }
@@ -178,12 +178,12 @@ public:
     using PumpFn = std::function<void()>;
     void setPump(PumpFn pump) { pump_ = std::move(pump); }
 
-    /** Normalize source paths for breakpoint matching (basename fallback). */
+    /** @brief Normalize source paths for breakpoint matching (basename fallback). */
     static std::string normalizeSource(std::string source);
-    /** Basename of a normalized path (empty-safe). */
+    /** @brief Basename of a normalized path (empty-safe). */
     static std::string sourceBasename(const std::string& source);
     /**
-     * True when two source paths refer to the same script file.
+     * @brief True when two source paths refer to the same script file.
      * Matches exact path, basename, or one path as a suffix of the other.
      */
     static bool sourcesMatch(const std::string& a, const std::string& b);
@@ -216,7 +216,7 @@ private:
     PumpFn                pump_;
     bool                  stepFrameArmed_ = false;
     int                   stepStartDepth_ = 0;
-    /** While set, step filters ignore this exact source+line (multi-_OP_LINE). */
+    /** @brief While set, step filters ignore this exact source+line (multi-_OP_LINE). */
     SourceLoc             stepSkipLoc_;
     BreakpointEventFn     bpEventFn_;
 };

@@ -1,7 +1,9 @@
 #pragma once
 
-// 放置世界：格子占用 + 地形语义 + 已放置建筑实例。
-// 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。
+/**
+ * @brief 放置世界：格子占用 + 地形语义 + 已放置建筑实例。
+ * 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。
+ */
 
 #include "building/BuildingTypes.h"
 
@@ -13,19 +15,24 @@ namespace eve::building {
 
 class Ghost;
 
+/** @brief 格子型建筑放置世界（脚本可直接操作）。 */
 class PlacementWorld {
 public:
+    /** @brief 创建 width×height 的格子世界，cellSize 为像素/格。 */
     PlacementWorld(int width, int height, float cellSize = 32.f);
     ~PlacementWorld() = default;
 
     PlacementWorld(const PlacementWorld &) = delete;
     PlacementWorld &operator=(const PlacementWorld &) = delete;
 
+    /** @brief 释放资源并使其失效。 */
     void destroy();
 
+    /** @brief 世界 id（用于变更事件定位）。 */
     std::string getId() const { return id_; }
     void setId(const std::string &id) { id_ = id; }
 
+    /** @brief 尺寸 / 格子大小 / 原点。 */
     int getWidth() const { return width_; }
     int getHeight() const { return height_; }
     float getCellSize() const { return cellSize_; }
@@ -35,29 +42,32 @@ public:
     float getOriginY() const { return originY_; }
     void setOrigin(float x, float y);
 
+    /** @brief 放置策略：吸附模式 / 校验规则。 */
     std::string getSnapMode() const { return snapMode_; }
     void setSnapMode(const std::string &mode) { snapMode_ = mode; }
     std::string getValidateRule() const { return validateRule_; }
     void setValidateRule(const std::string &rule) { validateRule_ = rule; }
 
+    /** @brief 世界级额外属性（键值）。 */
     void setExtra(const std::string &key, const std::string &value);
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 
-    // ---- 坐标换算 ----
+    /** @brief 坐标换算：世界像素 ↔ 格子坐标。 */
     int worldToCellX(float worldX) const;
     int worldToCellY(float worldY) const;
     float cellToWorldX(int cellX) const;
     float cellToWorldY(int cellY) const;
 
-    // ---- 地形 ----
+    /** @brief 地形语义（占用检查用）。 */
     void fillTerrain(int semantic);
     void setTerrain(int cellX, int cellY, int semantic);
     int getTerrain(int cellX, int cellY) const;
     bool inBounds(int cellX, int cellY) const;
 
-    // ---- 占用查询 ----
+    /** @brief 占用查询：格子上建筑实例 / 是否为空。 */
     int getOccupant(int cellX, int cellY) const;
     bool isCellEmpty(int cellX, int cellY) const;
+    /** @brief 已放置建筑实例查询。 */
     int getBuildingCount() const;
     bool hasBuilding(int instanceId) const;
     std::string getBuildingId(int instanceId) const;
@@ -70,9 +80,10 @@ public:
                                 const std::string &fallback = {}) const;
     void setBuildingProp(int instanceId, const std::string &key, const std::string &value);
     bool buildingHasTag(int instanceId, const std::string &tag) const;
+    /** @brief 按插入顺序取实例 id。 */
     int getBuildingInstanceAt(int index) const;
 
-    // ---- 便捷操作（转发 PlacementSystem）----
+    /** @brief 便捷操作（转发 PlacementSystem）：放置 / 移除 / 移动。 */
     bool canPlace(const std::string &buildingId, int cellX, int cellY, float rotationDeg = 0.f);
     std::string canPlaceReason(const std::string &buildingId, int cellX, int cellY,
                                float rotationDeg = 0.f);

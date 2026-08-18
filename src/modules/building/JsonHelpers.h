@@ -1,6 +1,6 @@
 #pragma once
 
-// 供 building 模块内多个 *.cpp 共用的小型 JSON 读取辅助。
+/** @brief 供 building 模块内多个 *.cpp 共用的小型 JSON 读取辅助。 */
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>

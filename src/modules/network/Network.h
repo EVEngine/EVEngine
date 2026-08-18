@@ -18,36 +18,54 @@ class Channel;
 class Session;
 class NetWorker;
 
+/**
+ * @brief Network module: TCP/UDP/HTTP factories, background worker, and
+ * completion event plumbing. Script: `net <- eve.Network();`
+ */
 class Network : public Module {
 public:
     Module_REG(Network);
     Network();
     ~Network() override;
 
+    /** @brief Creates a new TCP socket (client or server). */
     TcpSocket*   newTcp();
+    /** @brief Creates a new UDP socket. */
     UdpSocket*   newUdp();
+    /** @brief Creates a new HTTP request (method e.g. "GET"/"POST", full URL). */
     HttpRequest* newHttp(std::string method, std::string url);
+    /** @brief Creates a length-prefixed Channel over a TCP socket. */
     Channel*     newChannel(TcpSocket* socket);
+    /** @brief Creates a named-channel session container. */
     Session*     newSession();
 
+    /** @brief Default socket/HTTP timeout in milliseconds. */
     void setTimeout(int ms);
     int  getTimeout() const;
+    /** @brief Whether TLS peer certificates are verified (default true). */
     void setVerifySsl(bool verify);
     bool getVerifySsl() const;
 
+    /** @brief Drains worker completions and emits them as events; call per frame. */
     void pump();
 
+    /** @brief Posts a completion to the worker queue (thread-safe). */
     void post(NetCompletion c);
+    /** @brief Test helper: drains pending completions into out. */
     void drainForTest(std::vector<NetCompletion>& out);
 
+    /** @brief Background worker thread handle (advanced). */
     NetWorker* worker() const { return worker_.get(); }
 
+    /** @brief Internal: register/unregister sockets for pump polling. */
     void watchTcp(TcpSocket* sock);
     void unwatchTcp(TcpSocket* sock);
     void watchUdp(UdpSocket* sock);
     void unwatchUdp(UdpSocket* sock);
+    /** @brief Internal: polls watched sockets; called from the NetWorker thread. */
     void pollSockets();  // called from NetWorker thread
 
+    /** @brief Internal: bind a Channel to its socket (and reverse lookup). */
     void bindChannel(TcpSocket* sock, Channel* ch);
     void unbindChannel(TcpSocket* sock);
     Channel* channelFor(TcpSocket* sock) const;

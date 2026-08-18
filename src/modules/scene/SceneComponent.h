@@ -8,7 +8,7 @@
 namespace eve::scene {
 
 /**
- * React-style scene component: implement build(), call setState / markDirty, then rebuild().
+ * @brief React-style scene component: implement build(), call setState / markDirty, then rebuild().
  * Mounts onto a named SceneHost via mountAs / attach.
  * Isomorphic to eve::ui::Component.
  */
@@ -18,24 +18,24 @@ public:
 
     virtual NodeDesc build() = 0;
 
-    /** Called once when the component is attached to a host. */
+    /** @brief Called once when the component is attached to a host. */
     virtual void onMount(SceneHost *host) {}
 
     void attach(SceneHost *host);
     void mountAs(const std::string &hostName);
     SceneHost *host() const { return host_; }
 
-    /** Rebuild tree onto host (reconcile by key when possible). */
+    /** @brief Rebuild tree onto host (reconcile by key when possible). */
     void rebuild(bool forceFull = false);
 
     void markDirty() { dirty_ = true; }
     bool isDirty() const { return dirty_; }
 
-    /** If dirty, rebuild and clear flag. Returns true if rebuilt. */
+    /** @brief If dirty, rebuild and clear flag. Returns true if rebuilt. */
     bool updateIfDirty();
 
 protected:
-    /** Subclasses call after mutating local state that affects build(). */
+    /** @brief Subclasses call after mutating local state that affects build(). */
     void setState() { dirty_ = true; }
 
 private:

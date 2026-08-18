@@ -40,4 +40,18 @@
 
 阶段性设计稿与实施计划位于 [`superpowers/`](superpowers/)。文档使用的图示位于 [`img/`](img/)。
 
+## 构建与文档
+
+- 生成 C++ API 文档（Doxygen）：`make docs`（或 `cmake --build <build-dir> --target docs`），
+  产物位于 `docs/api/html/`（已加入 `.gitignore`）。需要先安装 doxygen：
+  Ubuntu/WSL `sudo apt install doxygen`、macOS `brew install doxygen`、Windows `choco install doxygen`。
+  文档配置见根目录 [`Doxyfile`](../../Doxyfile)，入口 `src/` 与 `Readme.md`。
+
+- 运行时断言：引擎统一通过 zeroerr 的 `ASSERT` 系列宏做函数参数校验与内部不变量检查，
+  入口见 [`src/engine/common/Assert.h`](../../src/engine/common/Assert.h)（`EV_PARAM_CHECK` / `EV_ASSERT`）。
+  - Debug 构建默认启用；
+  - Release 等非 Debug 构建默认通过 `ZEROERR_NO_ASSERT` 编译剔除，零运行时开销；
+  - 需要手动开启时：`make build/linux CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_ASSERTS=ON`
+    （或 CMake 配置时加 `-DEVENGINE_ENABLE_ASSERTS=ON`）。
+
 如果你是使用 EVEngine 制作游戏，而不是修改引擎，请从[用户指南](../usr/README.md)开始。

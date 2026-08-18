@@ -25,7 +25,7 @@ public:
     std::string getId() const { return id_; }
     void setId(const std::string &id) { id_ = id; }
 
-    /** 声明一个装备槽；已存在则保留当前物品，仅更新允许标签。 */
+    /** @brief 声明一个装备槽；已存在则保留当前物品，仅更新允许标签。 */
     void defineSlot(const std::string &slotName);
     void clearSlotAllowedTags(const std::string &slotName);
     void addSlotAllowedTag(const std::string &slotName, const std::string &tag);
@@ -42,7 +42,7 @@ public:
                           std::string *reason = nullptr) const;
     bool equipFromBag(const std::string &equipSlot, Bag *bag, int bagSlot);
     bool unequipToBag(const std::string &equipSlot, Bag *bag);
-    /** 直接清空槽位（物品丢弃，不回背包）。 */
+    /** @brief 直接清空槽位（物品丢弃，不回背包）。 */
     bool clearSlot(const std::string &slotName);
 
     const ItemStack *stackAt(const std::string &slotName) const;

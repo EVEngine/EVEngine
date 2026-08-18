@@ -9,7 +9,7 @@ namespace eve
 {
 
 /**
- * Base64-encode data.
+ * @brief Base64-encode data.
  *
  * @param src The data to encode.
  * @param srclen The size in bytes of the data.
@@ -21,7 +21,7 @@ namespace eve
 char *b64_encode(const char *src, size_t srclen, size_t linelen, size_t &dstlen);
 
 /**
- * Decode base64 encoded data.
+ * @brief Decode base64 encoded data.
  *
  * @param src The string containing the base64 data.
  * @param srclen The length of the string.

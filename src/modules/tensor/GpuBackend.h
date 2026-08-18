@@ -7,7 +7,7 @@ namespace eve::tensor {
 class Graph;
 
 /**
- * GPU execution of a compiled tensor Graph via eve::gpgpu compute shaders.
+ * @brief GPU execution of a compiled tensor Graph via eve::gpgpu compute shaders.
  *
  * Built once per CompiledFunction (shapes are static at compile time): every
  * graph node gets a GPU storage buffer, ops are mapped to a handful of shared
@@ -25,7 +25,7 @@ public:
 
     static GpuProgram *tryBuild(const Graph &graph, const std::vector<int> &order, int outputNode);
 
-    /** feeds[slot] must point to `placeholderSize(slot)` floats. Returns the output buffer. */
+    /** @brief feeds[slot] must point to `placeholderSize(slot)` floats. Returns the output buffer. */
     std::vector<float> run(const std::vector<const float *> &feeds) const;
 
 private:
@@ -38,7 +38,7 @@ private:
 };
 
 /**
- * GPU-accelerated reduction for large eager tensors.
+ * @brief GPU-accelerated reduction for large eager tensors.
  * op: 0 = sum, 1 = min, 2 = max. Returns false (caller should fall back to CPU)
  * when Vulkan/gpgpu isn't available.
  */

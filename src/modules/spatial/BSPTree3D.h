@@ -10,7 +10,7 @@
 namespace eve::spatial {
 
 /**
- * Binary space partition tree (kd-style AABB splits) for 3D culling.
+ * @brief Binary space partition tree (kd-style AABB splits) for 3D culling.
  * Alternating X/Y/Z splits at node midplanes.
  */
 class BSPTree3D {

@@ -13,7 +13,7 @@ namespace eve {
 namespace model3d {
 
 /**
- * CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene).
+ * @brief CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene).
  * Does not upload to GPU — use graphics::Graphics::newMeshFromAssimp on getMesh().
  */
 class ModelData : public Resource {
@@ -29,21 +29,21 @@ public:
     bool hasNormals(int meshIndex) const;
     bool hasTexCoords(int meshIndex) const;
 
-    /** Assimp morph / blend-shape targets on a mesh (aiAnimMesh). */
+    /** @brief Assimp morph / blend-shape targets on a mesh (aiAnimMesh). */
     int getMorphTargetCount(int meshIndex) const;
     std::string getMorphTargetName(int meshIndex, int morphIndex) const;
 
-    /** Assimp skeletal skin data (aiBone / vertex weights) on a mesh. */
+    /** @brief Assimp skeletal skin data (aiBone / vertex weights) on a mesh. */
     bool hasBones(int meshIndex) const;
     int getBoneCount(int meshIndex) const;
     std::string getBoneName(int meshIndex, int boneIndex) const;
-    /** Inverse-bind (offset) matrix element, column-major, elementIndex in [0,15]. */
+    /** @brief Inverse-bind (offset) matrix element, column-major, elementIndex in [0,15]. */
     float getInverseBindMatrixElement(int meshIndex, int boneIndex, int elementIndex) const;
     int getBoneWeightCount(int meshIndex, int boneIndex) const;
     int getBoneWeightVertex(int meshIndex, int boneIndex, int weightIndex) const;
     float getBoneWeightValue(int meshIndex, int boneIndex, int weightIndex) const;
 
-    /** Scene-level animation clips (aiAnimation). */
+    /** @brief Scene-level animation clips (aiAnimation). */
     int getAnimationCount() const;
     std::string getAnimationName(int animIndex) const;
 

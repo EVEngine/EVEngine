@@ -1,6 +1,8 @@
 #pragma once
 
-// 供 inventory 模块内多个 *.cpp 共用的小型 JSON 读取辅助（风格与 rpg/JsonHelpers.h 一致）。
+/**
+ * @brief 供 inventory 模块内多个 *.cpp 共用的小型 JSON 读取辅助（风格与 rpg/JsonHelpers.h 一致）。
+ */
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
@@ -12,6 +14,7 @@
 
 namespace eve::inventory::json_helpers {
 
+/** @brief 带默认值的 JSON 数值/字符串读取（解析失败时回退）。 */
 inline double asDouble(const Poco::Dynamic::Var &v, double fallback) {
     try {
         if (v.isEmpty()) return fallback;
