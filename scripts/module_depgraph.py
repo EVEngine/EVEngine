@@ -39,10 +39,6 @@ KNOWN_BACK_EDGES = {
     ("event", "touch"),
     ("event", "ui"),
     ("event", "window"),
-    # filesystem/HotReload.cpp: the dispatcher inlines every asset reloader.
-    ("filesystem", "graphics"),
-    ("filesystem", "map"),
-    ("filesystem", "particles"),
     # window/Window.cpp, window/sdl/Window.cpp
     ("window", "graphics"),
     ("window", "image"),

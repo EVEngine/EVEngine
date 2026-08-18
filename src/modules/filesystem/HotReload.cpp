@@ -1,14 +1,9 @@
 #include "filesystem/HotReload.h"
 
+#include "common/AssetReloader.h"
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/Graphics.h"
-#ifndef EVENGINE_WEBGPU
-#include "map/TileConfig.h"
-#include "map/TileLayer.h"
-#include "particles/ParticleConfig.h"
-#include "particles/ParticleEmitter.h"
-#endif
 
 #ifndef EVENGINE_WEBGPU
 #include <Poco/Exception.h>
@@ -44,17 +39,6 @@
 
 namespace eve::filesystem {
 namespace {
-
-std::string toLower(std::string s) {
-    for (char &c : s) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-    return s;
-}
-
-std::string extensionOf(const std::string &path) {
-    auto pos = path.find_last_of('.');
-    if (pos == std::string::npos) return {};
-    return toLower(path.substr(pos));
-}
 
 std::string joinDir(const std::string &dir, const std::string &name) {
     if (dir.empty() || dir == ".") return name;
@@ -148,94 +132,6 @@ void HotReload::unbind(std::string path) {
     bindings_.erase(normalizePath(std::move(path)));
 }
 
-bool HotReload::isImagePath(const std::string &normPath) const {
-    const std::string ext = extensionOf(normPath);
-    return ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tga" ||
-           ext == ".gif" || ext == ".webp" || ext == ".exr" || ext == ".hdr";
-}
-
-bool HotReload::isJsonPath(const std::string &normPath) const {
-    return extensionOf(normPath) == ".json";
-}
-
-#ifndef EVENGINE_WEBGPU
-bool HotReload::reloadParticles(const std::string &normPath) {
-    if (ecs::current()->getManager<particles::ParticleEmitter>() == nullptr) return false;
-
-    int reloaded = 0;
-    auto view = ecs::View<particles::ParticleEmitter, particles::ParticleEmitter::Config,
-                          particles::ParticleEmitter::Resource>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [cfg, res] = *it;
-        if (!cfg->entity || res->path.empty()) continue;
-        if (normalizePath(res->path) != normPath) continue;
-        if (particles::reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
-    }
-    return reloaded > 0;
-}
-
-bool HotReload::reloadTilemaps(const std::string &normPath) {
-    if (ecs::current()->getManager<map::TileLayer>() == nullptr) return false;
-
-    int reloaded = 0;
-    auto view = ecs::View<map::TileLayer, map::TileLayer::Config, map::TileLayer::Resource>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [cfg, res] = *it;
-        if (!cfg->entity || res->path.empty()) continue;
-        if (normalizePath(res->path) != normPath) continue;
-        if (map::reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
-    }
-    return reloaded > 0;
-}
-#else
-bool HotReload::reloadParticles(const std::string &) { return false; }
-bool HotReload::reloadTilemaps(const std::string &) { return false; }
-#endif
-
-bool HotReload::reloadTextures(const std::string &normPath) {
-    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-    if (!gfx) return false;
-
-    bool ok = gfx->reloadTextureFromFile(normPath);
-
-#ifndef EVENGINE_WEBGPU
-    // Emitters that reference this texture path: force re-bind via config reload or setTexture.
-    if (ecs::current()->getManager<particles::ParticleEmitter>() != nullptr) {
-        auto view = ecs::View<particles::ParticleEmitter, particles::ParticleEmitter::Config,
-                              particles::ParticleEmitter::Resource>();
-        for (auto it = view.begin(); it != view.end(); ++it) {
-            auto [cfg, res] = *it;
-            if (!cfg->entity || res->texturePath.empty()) continue;
-            if (normalizePath(res->texturePath) != normPath) continue;
-            try {
-                graphics::Texture *tex = gfx->newTextureFromFile(normPath);
-                cfg->entity->setTexture(tex);
-                ok = true;
-            } catch (...) {
-            }
-        }
-    }
-
-    // Tile layers that reference this atlas path.
-    if (ecs::current()->getManager<map::TileLayer>() != nullptr) {
-        auto view = ecs::View<map::TileLayer, map::TileLayer::Config, map::TileLayer::Resource,
-                              map::TileLayer::Tileset>();
-        for (auto it = view.begin(); it != view.end(); ++it) {
-            auto [cfg, res, ts] = *it;
-            if (!cfg->entity || res->texturePath.empty()) continue;
-            if (normalizePath(res->texturePath) != normPath) continue;
-            try {
-                graphics::Texture *tex = gfx->newTextureFromFile(normPath);
-                cfg->entity->setTileset(tex, ts->firstGid, ts->columns, ts->margin, ts->spacing);
-                ok = true;
-            } catch (...) {
-            }
-        }
-    }
-#endif
-    return ok;
-}
-
 bool HotReload::tryReload(std::string path) {
     const std::string norm = normalizePath(std::move(path));
     if (norm.empty()) return false;
@@ -245,19 +141,13 @@ bool HotReload::tryReload(std::string path) {
     if (bit != bindings_.end()) kind = bit->second;
 
     bool any = false;
-    const bool wantParticle = (kind == "auto" || kind == "particle") && isJsonPath(norm);
-    const bool wantTilemap = (kind == "auto" || kind == "tilemap") && isJsonPath(norm);
-    const bool wantTexture = (kind == "auto" || kind == "texture") && isImagePath(norm);
-
-    if (wantParticle) any = reloadParticles(norm) || any;
-    if (wantTilemap) any = reloadTilemaps(norm) || any;
-    if (wantTexture) any = reloadTextures(norm) || any;
-
-    // Bound but unknown extension: still try when kind is explicit.
-    if (kind == "particle" && !wantParticle) any = reloadParticles(norm) || any;
-    if (kind == "tilemap" && !wantTilemap) any = reloadTilemaps(norm) || any;
-    if (kind == "texture" && !wantTexture) any = reloadTextures(norm) || any;
-
+    eve::cap::forEach<eve::caps::IAssetReloader>([&](eve::caps::IAssetReloader *r) {
+        // "auto" lets each reloader claim the path by extension. An explicit
+        // kind targets exactly one reloader and ignores the extension, so a
+        // config file with an unexpected suffix can still be bound by hand.
+        const bool wanted = (kind == "auto") ? r->handlesPath(norm) : (kind == r->reloadKind());
+        if (wanted && r->reload(norm)) any = true;
+    });
     return any;
 }
 
