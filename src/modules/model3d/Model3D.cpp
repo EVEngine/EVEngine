@@ -39,10 +39,20 @@ std::string ensureDotExt(std::string ext) {
     return ext;
 }
 
+medialoader::LoadOptions toMedialoader(const ModelLoadOptions &opt) {
+    medialoader::LoadOptions m;
+    m.triangulate = opt.triangulate;
+    m.generateNormalsIfMissing = opt.generateNormalsIfMissing;
+    m.joinIdenticalVertices = opt.joinIdenticalVertices;
+    m.flipUVs = opt.flipUVs;
+    m.improveCacheLocality = opt.improveCacheLocality;
+    return m;
+}
+
 medialoader::ModelScene loadOrThrow(medialoader::ModelLoader &loader, const void *data, size_t size,
-                                    const char *hint) {
+                                    const char *hint, const medialoader::LoadOptions &opt) {
     try {
-        return loader.loadFromMemory(data, size, hint);
+        return loader.loadFromMemory(data, size, hint, opt);
     } catch (const medialoader::Exception &e) {
         throw eve::Exception("%s", e.what());
     }
@@ -51,6 +61,11 @@ medialoader::ModelScene loadOrThrow(medialoader::ModelLoader &loader, const void
 }  // namespace
 
 ModelData *Model3D::newModelData(Data *data, std::string hintExt) {
+    return newModelData(data, std::move(hintExt), ModelLoadOptions{});
+}
+
+ModelData *Model3D::newModelData(Data *data, std::string hintExt,
+                                 const ModelLoadOptions &options) {
     if (data == nullptr || data->getData() == nullptr || data->getSize() == 0)
         throw eve::Exception("Cannot decode empty model data");
 
@@ -68,7 +83,8 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt) {
     EveFileSystem eveFs(fs);
     medialoader::ModelLoader loader(&eveFs);
 
-    auto scene = loadOrThrow(loader, data->getData(), data->getSize(), hint.c_str());
+    auto scene = loadOrThrow(loader, data->getData(), data->getSize(), hint.c_str(),
+                             toMedialoader(options));
     if (scene.empty())
         throw eve::Exception("Could not decode model data");
 
@@ -80,6 +96,10 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt) {
 }
 
 ModelData *Model3D::newModelDataFromFile(std::string path) {
+    return newModelDataFromFile(std::move(path), ModelLoadOptions{});
+}
+
+ModelData *Model3D::newModelDataFromFile(std::string path, const ModelLoadOptions &options) {
     if (path.empty())
         throw eve::Exception("Model3D::newModelDataFromFile: empty path");
 
@@ -91,7 +111,7 @@ ModelData *Model3D::newModelDataFromFile(std::string path) {
     medialoader::ModelLoader loader(&eveFs);
 
     try {
-        auto scene = loader.loadFromPath(path.c_str());
+        auto scene = loader.loadFromPath(path.c_str(), toMedialoader(options));
         if (scene.empty())
             throw eve::Exception("Could not load model: %s", path.c_str());
         return new ModelData(std::move(scene), "file://" + path);
@@ -128,8 +148,10 @@ void Model3D::expose(ssq::Table &table) {
 
 void Model3D::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Model3D::getName);
-    cls.addFunc("newModelData", &Model3D::newModelData);
-    cls.addFunc("newModelDataFromFile", &Model3D::newModelDataFromFile);
+    cls.addFunc("newModelData", static_cast<ModelData *(Model3D::*)(Data *, std::string)>(
+                                    &Model3D::newModelData));
+    cls.addFunc("newModelDataFromFile",
+                static_cast<ModelData *(Model3D::*)(std::string)>(&Model3D::newModelDataFromFile));
 }
 
 }  // namespace model3d

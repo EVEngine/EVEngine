@@ -276,7 +276,7 @@ void Graphics::configureSurface(int width, int height) {
     // emdawnwebgpu only accepts Fifo / Undefined present modes.
     cfg.presentMode = WGPUPresentMode_Fifo;
     // Auto (0) maps to an empty slot in emdawnwebgpu's JS CompositeAlphaMode
-    // table → `alphaMode: undefined`, which some browsers reject. Use Opaque,
+    // table �?`alphaMode: undefined`, which some browsers reject. Use Opaque,
     // which maps to the JS value 'opaque' used by the working replica.
     cfg.alphaMode = WGPUCompositeAlphaMode_Opaque;
     surface.Configure(reinterpret_cast<const wgpu::SurfaceConfiguration*>(&cfg));
@@ -304,7 +304,7 @@ void Graphics::createDefaultTextures() {
     uint8_t white[4] = {255, 255, 255, 255};
     whiteTexture = static_cast<GpuTexture *>(newTexture(1, 1, white, false, false)->gpuHandle);
 
-    // Flat normal (0.5,0.5,1) in RGBA8 → sampled as (0,0,1) normal.
+    // Flat normal (0.5,0.5,1) in RGBA8 �?sampled as (0,0,1) normal.
     uint8_t flatNrm[4] = {128, 128, 255, 255};
     flatNormalTexture = static_cast<GpuTexture *>(newTexture(1, 1, flatNrm, false, false)->gpuHandle);
     flatNormalTexture3D = flatNormalTexture;
@@ -1532,13 +1532,29 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     queue.WriteBuffer(gpu->vertexBuffer, 0, verts.data(), vbd.size);
 
     if (indexCount > 0) {
-        WGPUBufferDescriptor ibd{};
-        ibd.label = sv("eve_mesh_ib");
-        ibd.size = uint64_t(indexCount) * sizeof(uint32_t);
-        ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-        ibd.mappedAtCreation = false;
-        gpu->indexBuffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&ibd));
-        queue.WriteBuffer(gpu->indexBuffer, 0, indices, ibd.size);
+        // 16-bit index format halves index memory for meshes with <= 65535 verts.
+        if (vertexCount <= 65535) {
+            std::vector<uint16_t> idx16;
+            idx16.reserve(indexCount);
+            for (int i = 0; i < indexCount; ++i) idx16.push_back(uint16_t(indices[i]));
+            WGPUBufferDescriptor ibd{};
+            ibd.label = sv("eve_mesh_ib");
+            ibd.size = uint64_t(indexCount) * sizeof(uint16_t);
+            ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+            ibd.mappedAtCreation = false;
+            gpu->indexBuffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&ibd));
+            queue.WriteBuffer(gpu->indexBuffer, 0, idx16.data(), ibd.size);
+            gpu->indexFormat = wgpu::IndexFormat::Uint16;
+        } else {
+            WGPUBufferDescriptor ibd{};
+            ibd.label = sv("eve_mesh_ib");
+            ibd.size = uint64_t(indexCount) * sizeof(uint32_t);
+            ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+            ibd.mappedAtCreation = false;
+            gpu->indexBuffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&ibd));
+            queue.WriteBuffer(gpu->indexBuffer, 0, indices, ibd.size);
+            gpu->indexFormat = wgpu::IndexFormat::Uint32;
+        }
     }
 
     auto *mesh = new Mesh();
@@ -2623,7 +2639,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 
         if (gpuMesh->indexBuffer) {
             pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
-            pass.SetIndexBuffer(gpuMesh->indexBuffer, wgpu::IndexFormat::Uint32, 0,
+            pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
                                 uint64_t(gpuMesh->indexCount) * 4);
             pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
         } else {
@@ -2662,7 +2678,7 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass) {
 
             if (gpuMesh->indexBuffer) {
                 pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
-                pass.SetIndexBuffer(gpuMesh->indexBuffer, wgpu::IndexFormat::Uint32, 0,
+                pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
                                     uint64_t(gpuMesh->indexCount) * 4);
                 pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
             } else {
@@ -2715,7 +2731,7 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
 
         if (gpuMesh->indexBuffer) {
             pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
-            pass.SetIndexBuffer(gpuMesh->indexBuffer, wgpu::IndexFormat::Uint32, 0,
+            pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
                                 uint64_t(gpuMesh->indexCount) * 4);
             pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
         } else {
