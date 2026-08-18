@@ -2,6 +2,7 @@
 #include "building/BuildingDef.h"
 #include "building/Ghost.h"
 #include "building/PlacementWorld.h"
+#include "grid/GridProjection.h"
 
 #include <algorithm>
 #include <cmath>
@@ -37,6 +38,11 @@ std::unordered_map<std::string, PlacementSystem::SnapFn> &PlacementSystem::snapR
 
 std::unordered_map<std::string, PlacementSystem::ChangeHook> &PlacementSystem::changeHooks() {
     static std::unordered_map<std::string, ChangeHook> m;
+    return m;
+}
+
+std::unordered_map<std::string, PlacementSystem::SurfaceFn> &PlacementSystem::surfaces() {
+    static std::unordered_map<std::string, SurfaceFn> m;
     return m;
 }
 
@@ -92,17 +98,56 @@ bool PlacementSystem::hasChangeHook(const std::string &name) {
     return changeHooks().count(name) > 0;
 }
 
+void PlacementSystem::registerSurface(const std::string &name, SurfaceFn fn) {
+    if (name.empty() || !fn) return;
+    surfaces()[name] = std::move(fn);
+}
+
+void PlacementSystem::unregisterSurface(const std::string &name) { surfaces().erase(name); }
+
+bool PlacementSystem::hasSurface(const std::string &name) {
+    ensureBuiltins();
+    return surfaces().count(name) > 0;
+}
+
+bool PlacementSystem::surfaceHit(const PlacementWorld &world, const std::string &name, float x,
+                                 float y, PlacementHit *hit) {
+    ensureBuiltins();
+    auto &rules = surfaces();
+    auto it = rules.find(name.empty() ? "plane" : name);
+    if (it == rules.end() || !it->second) return false;
+    return it->second(world, x, y, hit);
+}
+
+std::vector<std::string> PlacementSystem::surfaceNames() {
+    ensureBuiltins();
+    std::vector<std::string> names;
+    names.reserve(surfaces().size());
+    for (const auto &kv : surfaces()) names.push_back(kv.first);
+    return names;
+}
+
+void PlacementSystem::setPlaneSurfaceHeight(float h) { planeSurfaceHeight() = h; }
+
+float PlacementSystem::getPlaneSurfaceHeight() { return planeSurfaceHeight(); }
+
+float &PlacementSystem::planeSurfaceHeight() {
+    static float h = 0.f;
+    return h;
+}
+
 void PlacementSystem::ensureBuiltins() {
     if (builtinsReady()) return;
     builtinsReady() = true;
 
     registerSnapRule("grid", [](const PlacementWorld &world, float worldX, float worldY) {
         SnapResult r;
-        const float cs = world.getCellSize() > 0.f ? world.getCellSize() : 1.f;
-        r.cellX = int(std::floor((worldX - world.getOriginX()) / cs));
-        r.cellY = int(std::floor((worldY - world.getOriginY()) / cs));
-        r.worldX = world.cellToWorldX(r.cellX);
-        r.worldY = world.cellToWorldY(r.cellY);
+        int cx = 0, cy = 0;
+        grid::worldToCell(world.getGrid(), worldX, worldY, cx, cy, world.getWidth(),
+                          world.getHeight());
+        r.cellX = cx;
+        r.cellY = cy;
+        world.cellToWorldPlane(cx, cy, r.worldX, r.worldY);
         return r;
     });
 
@@ -161,6 +206,22 @@ void PlacementSystem::ensureBuiltins() {
         if (!checkAdjacency(world, *def, q, reason)) return false;
         return true;
     });
+
+    registerSurface("plane", [](const PlacementWorld &world, float x, float y,
+                                PlacementHit *hit) {
+        if (!hit) return false;
+        const float h = planeSurfaceHeight();
+        if (world.getGrid().plane == grid::GridPlane::XZ) {
+            hit->worldX = x;
+            hit->worldY = h;
+            hit->worldZ = y;
+        } else {
+            hit->worldX = x;
+            hit->worldY = y;
+            hit->worldZ = h;
+        }
+        return true;
+    });
 }
 
 int PlacementSystem::nextInstanceId() { return ++instanceCounter(); }
@@ -210,12 +271,32 @@ SnapResult PlacementSystem::snap(const PlacementWorld &world, const std::string 
     return snapWithMode(world, mode, worldX, worldY);
 }
 
+SnapResult PlacementSystem::snap3D(const PlacementWorld &world, const std::string &buildingId,
+                                   float worldX, float worldY, float worldZ) {
+    float px = worldX;
+    float py = worldY;
+    float elev = worldZ;
+    if (world.getGrid().plane == grid::GridPlane::XZ) {
+        // 世界坐标 (x, y=高度, z)：网格平面第二轴取 z，垂直高度取 y。
+        py = worldZ;
+        elev = worldY;
+    }
+    SnapResult s = snap(world, buildingId, px, py);
+    s.elevation = elev;
+    return s;
+}
+
 float PlacementSystem::normalizeRotation(const std::string &buildingId, float rotationDeg) {
     const BuildingDefinition *def = BuildingRegistry::find(buildingId);
     const std::string mode = def ? def->rotationMode : "cardinal";
     if (mode == "none") return 0.f;
     if (mode == "free") return wrapDeg(rotationDeg);
-    // cardinal
+    if (mode == "hex") {
+        const float d = wrapDeg(rotationDeg);
+        const int steps = int(std::lround(d / 60.f)) % 6;
+        return float((steps < 0 ? steps + 6 : steps) * 60);
+    }
+    // cardinal（默认）
     return float(cardinalQuarter(rotationDeg) * 90);
 }
 
@@ -223,7 +304,11 @@ void PlacementSystem::effectiveFootprint(const BuildingDefinition &def, float ro
                                          int *outH) {
     int w = def.footprintW;
     int h = def.footprintH;
-    if (def.rotationMode == "cardinal" || def.rotationMode.empty()) {
+    if (def.rotationMode == "hex") {
+        const int steps = int(std::lround(wrapDeg(rotationDeg) / 60.f)) % 6;
+        grid::rotatedFootprintSize(def.footprintW, def.footprintH, def.footprintMask, steps, true,
+                                   w, h);
+    } else if (def.rotationMode == "cardinal" || def.rotationMode.empty()) {
         const int q = cardinalQuarter(rotationDeg);
         if (q == 1 || q == 3) std::swap(w, h);
     }
@@ -235,50 +320,15 @@ bool PlacementSystem::foreachFootprintCell(const BuildingDefinition &def, int or
                                            int originCellY, float rotationDeg,
                                            const std::function<bool(int cx, int cy)> &fn) {
     if (!fn) return false;
-    const int q = (def.rotationMode == "none") ? 0 : cardinalQuarter(rotationDeg);
-    const int W = def.footprintW;
-    const int H = def.footprintH;
-
-    auto emit = [&](int lx, int ly) -> bool {
-        int ox = lx;
-        int oy = ly;
-        // Rotate local cell around origin (min corner stays origin after remap).
-        int rw = W;
-        int rh = H;
-        switch (q) {
-            case 0:
-                ox = lx;
-                oy = ly;
-                break;
-            case 1:  // 90° CCW: (x,y)->(-y,x) then shift so min is 0
-                ox = ly;
-                oy = W - 1 - lx;
-                rw = H;
-                rh = W;
-                (void)rw;
-                (void)rh;
-                break;
-            case 2:  // 180°
-                ox = W - 1 - lx;
-                oy = H - 1 - ly;
-                break;
-            case 3:  // 270° CCW / 90° CW
-                ox = H - 1 - ly;
-                oy = lx;
-                break;
-            default:
-                break;
-        }
-        return fn(originCellX + ox, originCellY + oy);
-    };
-
-    for (int ly = 0; ly < H; ++ly) {
-        for (int lx = 0; lx < W; ++lx) {
-            if (!def.maskAt(lx, ly)) continue;
-            if (!emit(lx, ly)) return false;
-        }
-    }
-    return true;
+    const bool hex = def.rotationMode == "hex";
+    const int steps =
+        hex ? int(std::lround(wrapDeg(rotationDeg) / 60.f)) % 6 : cardinalQuarter(rotationDeg);
+    bool ok = true;
+    grid::foreachRotatedFootprint(def.footprintW, def.footprintH, def.footprintMask, steps, hex,
+                                  [&](int lx, int ly) {
+                                      if (!fn(originCellX + lx, originCellY + ly)) ok = false;
+                                  });
+    return ok;
 }
 
 bool PlacementSystem::checkBoundsAndOccupancy(const PlacementWorld &world,
@@ -293,7 +343,7 @@ bool PlacementSystem::checkBoundsAndOccupancy(const PlacementWorld &world,
             return false;
         }
         if (checkOccupancy) {
-            const int occ = world.getOccupant(cx, cy);
+            const int occ = world.getOccupantInChannel(def.channel, cx, cy);
             if (occ != 0 && occ != q.excludeInstanceId) {
                 if (reason) *reason = "occupied";
                 ok = false;
@@ -362,7 +412,7 @@ bool PlacementSystem::checkAdjacency(const PlacementWorld &world, const Building
             if (!world.inBounds(nx, ny)) continue;
 
             if (needTag && !tagOk) {
-                const int occ = world.getOccupant(nx, ny);
+                const int occ = world.getAnyOccupant(nx, ny);
                 if (occ != 0 && occ != q.excludeInstanceId) {
                     auto it = world.buildings().find(occ);
                     if (it != world.buildings().end()) {
@@ -413,9 +463,9 @@ bool PlacementSystem::runValidate(const PlacementWorld &world, const BuildingDef
     return it->second(world, q, reason);
 }
 
-bool PlacementSystem::canPlace(PlacementWorld *world, const std::string &buildingId, int cellX,
-                              int cellY, float rotationDeg, int excludeInstanceId,
-                              std::string *reason) {
+bool PlacementSystem::canPlaceElev(PlacementWorld *world, const std::string &buildingId, int cellX,
+                                   int cellY, float elevation, float rotationDeg,
+                                   int excludeInstanceId, std::string *reason) {
     ensureBuiltins();
     if (!world) {
         if (reason) *reason = "no_world";
@@ -431,29 +481,42 @@ bool PlacementSystem::canPlace(PlacementWorld *world, const std::string &buildin
     q.cellX = cellX;
     q.cellY = cellY;
     q.rotationDeg = normalizeRotation(buildingId, rotationDeg);
-    q.worldX = world->cellToWorldX(cellX);
-    q.worldY = world->cellToWorldY(cellY);
+    world->cellToWorldPlane(cellX, cellY, q.worldX, q.worldY);
+    q.elevation = elevation;
     q.excludeInstanceId = excludeInstanceId;
     return runValidate(*world, *def, q, reason);
 }
 
+bool PlacementSystem::canPlace(PlacementWorld *world, const std::string &buildingId, int cellX,
+                               int cellY, float rotationDeg, int excludeInstanceId,
+                               std::string *reason) {
+    return canPlaceElev(world, buildingId, cellX, cellY, 0.f, rotationDeg, excludeInstanceId,
+                        reason);
+}
+
 void PlacementSystem::writeOccupancy(PlacementWorld &world, const BuildingDefinition &def,
                                      const PlacedBuilding &placed, int instanceId) {
+    std::vector<int> &occ = world.channelOccupancy(def.channel);
     foreachFootprintCell(def, placed.originCellX, placed.originCellY, placed.rotationDeg,
                          [&](int cx, int cy) {
                              if (world.inBounds(cx, cy)) {
                                  const size_t idx =
                                      size_t(cy) * size_t(world.getWidth()) + size_t(cx);
-                                 world.occupancy()[idx] = instanceId;
+                                 if (idx < occ.size()) occ[idx] = instanceId;
                              }
                              return true;
                          });
 }
 
 void PlacementSystem::clearOccupancy(PlacementWorld &world, int instanceId) {
-    auto &occ = world.occupancy();
-    for (int &v : occ) {
+    // 默认通道（""）占用存于 occupancy_，附加通道存于 allChannels_，两者都要清。
+    for (int &v : world.occupancy()) {
         if (v == instanceId) v = 0;
+    }
+    for (auto &kv : world.allChannels()) {
+        for (int &v : kv.second) {
+            if (v == instanceId) v = 0;
+        }
     }
 }
 
@@ -471,9 +534,10 @@ int PlacementSystem::placeAt(PlacementWorld *world, const std::string &buildingI
     pb.buildingId = buildingId;
     pb.originCellX = cellX;
     pb.originCellY = cellY;
-    pb.worldX = world->cellToWorldX(cellX);
-    pb.worldY = world->cellToWorldY(cellY);
+    world->cellToWorldPlane(cellX, cellY, pb.worldX, pb.worldY);
+    pb.elevation = 0.f;
     pb.rotationDeg = rot;
+    pb.channel = def->channel;
     pb.tags = def->tags;
 
     writeOccupancy(*world, *def, pb, pb.instanceId);
@@ -488,6 +552,10 @@ int PlacementSystem::placeAt(PlacementWorld *world, const std::string &buildingI
     ev.cellX = cellX;
     ev.cellY = cellY;
     ev.rotationDeg = rot;
+    ev.worldX = pb.worldX;
+    ev.worldY = pb.worldY;
+    ev.elevation = pb.elevation;
+    ev.channel = pb.channel;
     emit(std::move(ev));
     return pb.instanceId;
 }
@@ -508,11 +576,37 @@ int PlacementSystem::placeAtWorld(PlacementWorld *world, const std::string &buil
     return id;
 }
 
+int PlacementSystem::placeAtWorld3D(PlacementWorld *world, const std::string &buildingId,
+                                    float worldX, float worldY, float worldZ,
+                                    float rotationDeg) {
+    ensureBuiltins();
+    if (!world) return 0;
+    const SnapResult s = snap3D(*world, buildingId, worldX, worldY, worldZ);
+    const int id = placeAt(world, buildingId, s.cellX, s.cellY, rotationDeg);
+    if (id <= 0) return 0;
+    auto it = world->buildings().find(id);
+    if (it != world->buildings().end()) {
+        it->second.worldX = s.worldX;
+        it->second.worldY = s.worldY;
+        it->second.elevation = s.elevation;
+    }
+    return id;
+}
+
 int PlacementSystem::placeGhost(PlacementWorld *world, Ghost *ghost) {
     if (!world || !ghost) return 0;
     if (!ghost->validate(world)) return 0;
-    return placeAt(world, ghost->getBuildingId(), ghost->getCellX(), ghost->getCellY(),
-                   ghost->getRotationDeg());
+    const int id = placeAt(world, ghost->getBuildingId(), ghost->getCellX(), ghost->getCellY(),
+                           ghost->getRotationDeg());
+    if (id <= 0) return 0;
+    // 保留吸附后的平面位姿与高度（free/自定义 snap 与 3D 放置需要）。
+    auto it = world->buildings().find(id);
+    if (it != world->buildings().end()) {
+        it->second.worldX = ghost->getWorldX();
+        it->second.worldY = ghost->getWorldY();
+        it->second.elevation = ghost->getElevation();
+    }
+    return id;
 }
 
 bool PlacementSystem::removeBuilding(PlacementWorld *world, int instanceId) {
@@ -528,6 +622,10 @@ bool PlacementSystem::removeBuilding(PlacementWorld *world, int instanceId) {
     ev.cellX = it->second.originCellX;
     ev.cellY = it->second.originCellY;
     ev.rotationDeg = it->second.rotationDeg;
+    ev.worldX = it->second.worldX;
+    ev.worldY = it->second.worldY;
+    ev.elevation = it->second.elevation;
+    ev.channel = it->second.channel;
 
     clearOccupancy(*world, instanceId);
     world->buildings().erase(it);
@@ -561,12 +659,17 @@ bool PlacementSystem::moveBuilding(PlacementWorld *world, int instanceId, int ce
     ev.cellX = cellX;
     ev.cellY = cellY;
     ev.rotationDeg = rot;
+    float px = 0.f, py = 0.f;
+    world->cellToWorldPlane(cellX, cellY, px, py);
+    ev.worldX = px;
+    ev.worldY = py;
+    ev.elevation = pb.elevation;
+    ev.channel = pb.channel;
 
     clearOccupancy(*world, instanceId);
     pb.originCellX = cellX;
     pb.originCellY = cellY;
-    pb.worldX = world->cellToWorldX(cellX);
-    pb.worldY = world->cellToWorldY(cellY);
+    world->cellToWorldPlane(cellX, cellY, pb.worldX, pb.worldY);
     pb.rotationDeg = rot;
     writeOccupancy(*world, *def, pb, instanceId);
     emit(std::move(ev));
@@ -580,7 +683,9 @@ void PlacementSystem::clearBuildings(PlacementWorld *world) {
     for (int id : ids) removeBuilding(world, id);
     world->buildings().clear();
     world->instanceOrder_.clear();
-    std::fill(world->occupancy().begin(), world->occupancy().end(), 0);
+    for (auto &kv : world->allChannels()) {
+        std::fill(kv.second.begin(), kv.second.end(), 0);
+    }
 }
 
 }  // namespace eve::building

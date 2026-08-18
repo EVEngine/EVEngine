@@ -762,7 +762,8 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
     if (!gfx) return;
     for (const auto &kv : slots) {
         scene::SceneNode *n = host->findById(kv.first);
-        if (!n || host->findLink(n, scene::LinkKind::Renderable3D) || kv.second.empty()) continue;
+        if (!n || kv.second.empty()) continue;
+        if (host->findLink(n, scene::LinkKind::Renderable3D)) continue;
         const MeshSlot &slot = kv.second[0];
         graphics::Mesh *mesh = nullptr;
         auto it = shared.find(slot.mesh);
@@ -837,6 +838,9 @@ scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
     host->setTree(std::move(d.root));
 
     graphics::Graphics *gfx = currentGraphics();
+    fillSceneBounds(host, d.slots);
+    if (!d.slots.empty()) fillSceneBounds(host, d.slots);
+
     if (gfx) {
         MeshCache shared;
         linkMeshNodes(host, d.slots, gfx, d.options, textures_, shared, &d.cpuImages);

@@ -56,6 +56,7 @@ file(GLOB all_test_cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
+  buildingfx.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -78,6 +79,7 @@ file(GLOB all_test_cpp
   box3d.cpp
   softbody.cpp
   hotreload.cpp
+  remotesync.cpp
   shader.cpp
   grass.cpp
   spritestack.cpp
@@ -101,6 +103,7 @@ file(GLOB all_test_cpp
   system.cpp
   math.cpp
   spatial.cpp
+  grid.cpp
   editor.cpp
   ik.cpp
   animation.cpp
@@ -108,6 +111,8 @@ file(GLOB all_test_cpp
   animation_skinned.cpp
   animation_sprite_spine.cpp
   tensor.cpp
+  tensor_llm.cpp
+  tensor_quant.cpp
   callgraph.cpp
   renderflow.cpp
   debugger.cpp
@@ -274,6 +279,7 @@ set(EVELIBS
   EVTimer
   EVSystem
   EVMath
+  EVGrid
   EVSpatial
   EVEditor
   EVIK
@@ -300,6 +306,7 @@ set(EVELIBS
   EVRPG
   EVInventory
   EVBuilding
+  EVBuildingFx
   EVAvatar
   EVDialogue
   EVProcgen

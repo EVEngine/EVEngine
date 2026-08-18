@@ -27,6 +27,11 @@ config <- {
     title = "EVEngine"
     debug = false
     hotReload = false
+    // Remote hot reload: set to the `eve dev` URL of the host machine, e.g.
+    // "http://192.168.1.5:8765". Scripts/resources changed there are synced and
+    // reloaded live on this device (used on iOS/Android where the bundle is read-only).
+    devServer = ""
+    devSyncMs = 1000
 };
 
 if (file_exists("config.nut")) {
@@ -34,6 +39,11 @@ if (file_exists("config.nut")) {
 }
 if (!("hotReload" in config))
     config.hotReload <- true;
+
+// `eve run --dev-server <url>` overrides config.devServer (useful on mobile
+// builds where config.nut is baked into a read-only bundle).
+if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
+    config.devServer <- eve.devServerArg;
 
 win <- eve.Window();
 gfx <- eve.Graphics();
@@ -149,6 +159,31 @@ function soft_reload_scripts() {
     }
 }
 
+// Apply a single changed path: scripts are re-dofile'd, assets go through the
+// native reload registry (particles / tilemaps / textures) plus the optional
+// eve_asset_reload hook. Shared by local watch and remote sync.
+function handle_change(p) {
+    if (path_endswith(p, ".nut")) {
+        track_script(p);
+        soft_reload_scripts();
+    } else {
+        try {
+            hot.tryReload(p);
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("hot-reload asset failed: " + p + ": " + e + "\n");
+        }
+        if ("eve_asset_reload" in getroottable()) {
+            try {
+                eve_asset_reload(p);
+            } catch (e) {
+                if ("dev" in eve) eve.dev.reportError("" + e);
+                print("eve_asset_reload failed: " + p + ": " + e + "\n");
+            }
+        }
+    }
+}
+
 function poll_hot_reload() {
     if (!config.hotReload) return;
     local needScripts = false;
@@ -169,20 +204,33 @@ function poll_hot_reload() {
     if (needScripts)
         soft_reload_scripts();
     foreach (p in assets) {
-        try {
-            hot.tryReload(p);
-        } catch (e) {
-            if ("dev" in eve) eve.dev.reportError("" + e);
-            print("hot-reload asset failed: " + p + ": " + e + "\n");
+        handle_change(p);
+    }
+}
+
+// Remote hot reload: pull changed files from the `eve dev` server on the host
+// and feed them through the same reload path as the local watchers.
+remote_sync_started <- false;
+
+function poll_remote_reload() {
+    if (!("devServer" in config)) return;
+    local url = config.devServer;
+    if (url == null || url == "") return;
+    if (!remote_sync_started) {
+        local ms = ("devSyncMs" in config) ? config.devSyncMs : 1000;
+        if (ms == null) ms = 1000;
+        if (hot.startRemoteSync(url, ms)) {
+            remote_sync_started = true;
+            print("remote hot-reload: " + url + "\n");
+        } else {
+            print("remote hot-reload failed to start: " + url + "\n");
+            return;
         }
-        if ("eve_asset_reload" in getroottable()) {
-            try {
-                eve_asset_reload(p);
-            } catch (e) {
-                if ("dev" in eve) eve.dev.reportError("" + e);
-                print("eve_asset_reload failed: " + p + ": " + e + "\n");
-            }
-        }
+    }
+    while (true) {
+        local p = hot.pollRemoteChange();
+        if (p == "") break;
+        handle_change(p);
     }
 }
 
@@ -339,6 +387,7 @@ while (running) {
     config.height = win.getHeight();
 
     poll_hot_reload();
+    poll_remote_reload();
     dev_poll();
 
     local dt = timer.step();

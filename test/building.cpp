@@ -6,6 +6,9 @@
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
+#include "building/PlacementSession.h"
+#include "map/Map.h"
+#include "map/TileLayer.h"
 
 #include <cmath>
 #include <string>
@@ -360,6 +363,223 @@ TEST_CASE("building.demo.townSandboxDefs") {
     CHECK(world.placeAt("barn.l", 12, 5, 0.f) > 0);
     CHECK(world.isCellEmpty(13, 6));  // L mask hole
     CHECK_EQ(world.getBuildingCount(), 5);
+
+    BuildingRegistry::clear();
+}
+
+TEST_CASE("building.grid.isometricPlacement") {
+    BuildingRegistry::clear();
+    PlacementSystem::clearEvents();
+    PlacementSystem::ensureBuiltins();
+
+    BuildingDefinition hut;
+    hut.id = "hut";
+    hut.footprintW = 1;
+    hut.footprintH = 1;
+    BuildingRegistry::registerBuilding(hut);
+
+    PlacementWorld world(16, 16, 64.f);
+    world.setGridLayout("isometric");
+    world.setOrigin(0.f, 0.f);
+
+    float px = 0.f, py = 0.f;
+    world.cellToWorldPlane(1, 0, px, py);
+    REQUIRE(approxEq(px, 32.f));
+    REQUIRE(approxEq(py, 32.f));
+
+    const int id = world.placeAt("hut", 1, 0, 0.f);
+    REQUIRE(id > 0);
+    REQUIRE(approxEq(world.getBuildingWorldX(id), 32.f));
+    REQUIRE(approxEq(world.getBuildingWorldY(id), 32.f));
+    REQUIRE(!world.canPlace("hut", 1, 0, 0.f));  // 已占用
+    REQUIRE(world.canPlace("hut", 2, 0, 0.f));
+
+    // 世界坐标吸附回格（iso 反投影）。
+    Ghost ghost;
+    ghost.setBuildingId("hut");
+    ghost.setFromWorld(&world, 35.f, 40.f);
+    REQUIRE_EQ(ghost.getCellX(), 1);
+    REQUIRE_EQ(ghost.getCellY(), 0);
+
+    BuildingRegistry::clear();
+}
+
+TEST_CASE("building.grid.hexRotation") {
+    BuildingRegistry::clear();
+    PlacementSystem::clearEvents();
+    PlacementSystem::ensureBuiltins();
+
+    BuildingDefinition hut;
+    hut.id = "hexhut";
+    hut.footprintW = 2;
+    hut.footprintH = 1;
+    hut.rotationMode = "hex";
+    BuildingRegistry::registerBuilding(hut);
+
+    REQUIRE(approxEq(PlacementSystem::normalizeRotation("hexhut", 10.f), 0.f));
+    REQUIRE(approxEq(PlacementSystem::normalizeRotation("hexhut", 65.f), 60.f));
+    REQUIRE(approxEq(PlacementSystem::normalizeRotation("hexhut", 375.f), 0.f));
+
+    PlacementWorld world(12, 12, 32.f);
+    world.setGridLayout("hexagon");
+    world.setStagger("y", "odd");
+    world.setHexSideLength(14.f);
+
+    REQUIRE(world.placeAt("hexhut", 2, 2, 60.f) > 0);
+    // 60° 旋转后的占地占 2 格；同一格再放冲突。
+    REQUIRE(!world.canPlace("hexhut", 2, 2, 0.f));
+
+    BuildingRegistry::clear();
+}
+
+TEST_CASE("building.channel.stackedOccupancy") {
+    BuildingRegistry::clear();
+    PlacementSystem::clearEvents();
+    PlacementSystem::ensureBuiltins();
+
+    BuildingDefinition floor;
+    floor.id = "floor";
+    floor.channel = "floor";
+    floor.footprintW = 1;
+    floor.footprintH = 1;
+    BuildingRegistry::registerBuilding(floor);
+
+    BuildingDefinition furniture;
+    furniture.id = "furniture";
+    furniture.channel = "furniture";
+    furniture.footprintW = 1;
+    furniture.footprintH = 1;
+    BuildingRegistry::registerBuilding(furniture);
+
+    PlacementWorld world(8, 8, 32.f);
+    const int a = world.placeAt("floor", 3, 3, 0.f);
+    const int b = world.placeAt("furniture", 3, 3, 0.f);
+    REQUIRE(a > 0);
+    REQUIRE(b > 0);
+    REQUIRE(world.isCellEmptyInChannel("", 3, 3));
+    REQUIRE_EQ(world.getOccupantInChannel("floor", 3, 3), a);
+    REQUIRE_EQ(world.getOccupantInChannel("furniture", 3, 3), b);
+    REQUIRE(world.getAnyOccupant(3, 3) != 0);
+
+    REQUIRE(world.removeBuilding(a));
+    REQUIRE_EQ(world.getOccupantInChannel("floor", 3, 3), 0);
+    REQUIRE_EQ(world.getOccupantInChannel("furniture", 3, 3), b);
+
+    BuildingRegistry::clear();
+}
+
+TEST_CASE("building.tilemap.terrainFromGid") {
+    BuildingRegistry::clear();
+    PlacementSystem::clearEvents();
+    PlacementSystem::ensureBuiltins();
+
+    BuildingDefinition dock;
+    dock.id = "dock";
+    dock.footprintW = 1;
+    dock.footprintH = 1;
+    dock.requireTerrain = {2};
+    BuildingRegistry::registerBuilding(dock);
+
+    auto *mapMod = eve::map::Map::create();
+    eve::map::TileLayer *layer = mapMod->newLayer(10, 10, 32.f, 32.f);
+    REQUIRE(layer != nullptr);
+    layer->fill(1);          // GID 1 = 陆地
+    layer->setTile(4, 4, 2); // GID 2 = 水域
+
+    PlacementWorld world(10, 10, 32.f);
+    world.bindTileLayer(layer);
+    world.setTerrainGid(1, 1);
+    world.setTerrainGid(2, 2);
+
+    REQUIRE_EQ(world.getTerrain(0, 0), 1);
+    REQUIRE_EQ(world.getTerrain(4, 4), 2);
+    REQUIRE(!world.canPlace("dock", 0, 0, 0.f));
+    REQUIRE_EQ(world.canPlaceReason("dock", 0, 0, 0.f), "terrain_mismatch");
+    REQUIRE(world.canPlace("dock", 4, 4, 0.f));
+
+    // 手动覆盖优先于 GID。
+    world.setTerrain(4, 4, 1);
+    REQUIRE_EQ(world.getTerrain(4, 4), 1);
+    REQUIRE(!world.canPlace("dock", 4, 4, 0.f));
+
+    BuildingRegistry::clear();
+}
+
+TEST_CASE("building.surface.plane3D") {
+    BuildingRegistry::clear();
+    PlacementSystem::clearEvents();
+    PlacementSystem::ensureBuiltins();
+
+    BuildingDefinition hut;
+    hut.id = "hut";
+    hut.footprintW = 1;
+    hut.footprintH = 1;
+    BuildingRegistry::registerBuilding(hut);
+
+    PlacementWorld world(10, 10, 1.f);
+    world.setGridPlane("xz");
+    world.setOrigin(0.f, 0.f);
+
+    Ghost ghost;
+    ghost.setBuildingId("hut");
+    ghost.setFromSurface(&world, "plane", 4.2f, 7.8f);
+    REQUIRE_EQ(ghost.getCellX(), 4);
+    REQUIRE_EQ(ghost.getCellY(), 7);
+    REQUIRE(approxEq(ghost.getElevation(), 0.f));
+    REQUIRE(ghost.validate(&world));
+    const int id = world.placeGhost(&ghost);
+    REQUIRE(id > 0);
+    REQUIRE(approxEq(world.getBuildingWorldX(id), 4.f));
+    REQUIRE(approxEq(world.getBuildingWorldY(id), 0.f));   // XZ 平面：worldY = 高度
+    REQUIRE(approxEq(world.getBuildingWorldZ(id), 7.f));
+    REQUIRE(approxEq(world.getBuildingElevation(id), 0.f));
+
+    PlacementSystem::setPlaneSurfaceHeight(1.5f);
+    Ghost ghost2;
+    ghost2.setBuildingId("hut");
+    ghost2.setFromSurface(&world, "plane", 1.2f, 2.3f);
+    REQUIRE(approxEq(ghost2.getElevation(), 1.5f));
+    PlacementSystem::setPlaneSurfaceHeight(0.f);
+
+    const int id2 = world.placeAtWorld3D("hut", 5.2f, 2.5f, 3.1f, 0.f);
+    REQUIRE(id2 > 0);
+    REQUIRE(approxEq(world.getBuildingWorldX(id2), 5.f));
+    REQUIRE(approxEq(world.getBuildingWorldY(id2), 2.5f));
+    REQUIRE(approxEq(world.getBuildingWorldZ(id2), 3.f));
+    REQUIRE(approxEq(world.getBuildingElevation(id2), 2.5f));
+
+    BuildingRegistry::clear();
+}
+
+TEST_CASE("building.session.placeAndRemove") {
+    BuildingRegistry::clear();
+    PlacementSystem::clearEvents();
+    PlacementSystem::ensureBuiltins();
+
+    BuildingDefinition hut;
+    hut.id = "hut";
+    hut.footprintW = 1;
+    hut.footprintH = 1;
+    BuildingRegistry::registerBuilding(hut);
+
+    PlacementWorld world(8, 8, 32.f);
+    PlacementSession session;
+    REQUIRE(session.startPlacement(&world, "hut"));
+    REQUIRE(session.isActive());
+    REQUIRE(session.updateFromWorld(&world, 80.f, 90.f));
+    REQUIRE(session.isValid());
+    const int id = session.execute();
+    REQUIRE(id > 0);
+    REQUIRE_EQ(world.getBuildingCount(), 1);
+
+    session.setMode("remove");
+    REQUIRE(session.updateFromWorld(&world, 80.f, 90.f));
+    const int removed = session.execute();
+    REQUIRE_EQ(removed, id);
+    REQUIRE_EQ(world.getBuildingCount(), 0);
+
+    session.stopPlacement();
+    REQUIRE(!session.isActive());
 
     BuildingRegistry::clear();
 }
