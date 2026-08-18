@@ -25,25 +25,14 @@ MODULES_DIR = os.path.join(REPO, "src", "modules")
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s*[<"]([^">]+)[">]', re.M)
 SOURCE_EXT = (".cpp", ".cc", ".h", ".hpp")
 
-# Upward edges that break the layering. Each entry is a known debt item to be
-# removed by the capability-registry work; the --check mode fails on anything
-# outside this list so no new back-edge slips in.
+# Upward edges that break the layering. Each entry is a known debt item; --check
+# fails on anything outside this list so no new back-edge slips in, and reports
+# entries that are no longer needed so the list shrinks as debt is paid off.
 KNOWN_BACK_EDGES = {
-    # event/sdl/Event.cpp: the SDL pump pushes into its consumers instead of
-    # letting them subscribe.
-    ("event", "audio"),
-    ("event", "filesystem"),
-    ("event", "graphics"),
-    ("event", "joystick"),
-    ("event", "keyboard"),
-    ("event", "touch"),
-    ("event", "ui"),
-    ("event", "window"),
-    # window/Window.cpp, window/sdl/Window.cpp
+    # window/Window.cpp, window/sdl/Window.cpp: the window owns the Graphics
+    # pointer and decodes its own icon image.
     ("window", "graphics"),
     ("window", "image"),
-    # ui/EditorHost.cpp: the headless editor host pumps events itself.
-    ("ui", "event"),
 }
 
 
