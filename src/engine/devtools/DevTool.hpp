@@ -23,6 +23,7 @@ namespace eve::dev {
 
 class McpServer;
 class AiPanel;
+class ConsolePanel;
 
 /**
  * Platform-level script + render debugger / dynamic slicer front-end.
@@ -66,6 +67,8 @@ public:
 
     /** Draw DevTools AI ImGui panel when visible (call from UI/frame loop). */
     void drawAiPanel();
+    /** Draw DevTools console ImGui panel when visible (call from UI/frame loop). */
+    void drawConsolePanel();
 
     bool isAttached() const { return vm_ != nullptr; }
     bool renderTraceEnabled() const { return renderTraceEnabled_; }
@@ -81,6 +84,7 @@ public:
     DebugAdapter&     dap() { return DebugAdapter::instance(); }
     McpServer&        mcp();
     AiPanel&          ai();
+    ConsolePanel&     console();
 
     SliceResult analyzeError(const std::string& errorMessage,
                              const std::vector<std::string>& hintVars = {}) const;

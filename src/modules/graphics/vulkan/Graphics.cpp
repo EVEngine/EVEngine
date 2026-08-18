@@ -134,7 +134,7 @@ void destroyPipelineLayout(vkb::Device &device, vk::PipelineLayout &layout) {
 void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh) {
     const vk::DeviceSize offset = 0;
     cb.bindVertexBuffers(0, 1, mesh.vertices, &offset);
-    cb.bindIndexBuffer(mesh.indices.buffer, 0, vk::IndexType::eUint32);
+    cb.bindIndexBuffer(mesh.indices.buffer, 0, mesh.indexType);
     cb.drawIndexed(mesh.indexCount, 1, 0, 0, 0);
 }
 
@@ -147,6 +147,20 @@ std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame
                           indices.size() * sizeof(uint32_t), kHostVisibleCoherent);
     gpu->indices.updateLocal(frame, indices.data(), indices.size() * sizeof(uint32_t));
     gpu->indexCount = uint32_t(indices.size());
+    return gpu;
+}
+
+/** 16-bit index upload (halves index memory for meshes with <= 65535 vertices). */
+std::unique_ptr<GpuMesh> uploadGpuMesh16(vkb::Device &device, vkb::FrameSlot frame,
+                                         const std::vector<MeshVertex> &vertices,
+                                         const std::vector<uint16_t> &indices) {
+    auto gpu = std::make_unique<GpuMesh>();
+    gpu->vertices.allocate<MeshVertex>(frame, device, vertices);
+    gpu->indices.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
+                          indices.size() * sizeof(uint16_t), kHostVisibleCoherent);
+    gpu->indices.updateLocal(frame, indices.data(), indices.size() * sizeof(uint16_t));
+    gpu->indexCount = uint32_t(indices.size());
+    gpu->indexType = vk::IndexType::eUint16;
     return gpu;
 }
 
@@ -4457,9 +4471,21 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     }
     if (indices.empty()) throw Exception("newMeshFromAssimp: no triangle faces");
 
-    auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
+    std::unique_ptr<GpuMesh> gpu;
+    if (mesh.mNumVertices <= 65535u) {
+        std::vector<uint16_t> idx16;
+        idx16.reserve(indices.size());
+        for (uint32_t i : indices) idx16.push_back(uint16_t(i));
+        gpu = uploadGpuMesh16(device, frameToken(), verts, idx16);
+    } else {
+        gpu = uploadGpuMesh(device, frameToken(), verts, indices);
+    }
     auto handle = makeMeshHandle(*gpu);
-    handle->initMorphBase(int(mesh.mNumVertices), basePos.data(), baseNrm.data(), baseUv.data());
+    // Retain the CPU morph base pose only when the mesh actually has morphs;
+    // otherwise the base pos/nrm/uv copies would linger at ~32B/vertex for no reason.
+    if (mesh.mNumAnimMeshes > 0) {
+        handle->initMorphBase(int(mesh.mNumVertices), basePos.data(), baseNrm.data(), baseUv.data());
+    }
     // Assimp morph targets (VRM / glTF blend shapes often land here).
     for (unsigned m = 0; m < mesh.mNumAnimMeshes; ++m) {
         const aiAnimMesh *am = mesh.mAnimMeshes[m];

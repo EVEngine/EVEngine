@@ -173,6 +173,7 @@ set(EVELIBS
     EVKeyboard
     EVJoystick
     EVEvent
+    EVRx
     EVTimer
     EVSystem
     EVAnimation
@@ -187,6 +188,9 @@ set(EVELIBS
 if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS
         OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
     list(APPEND EVELIBS EVDevTools)
+    # DevTools ImGui host panels (AI + console) compile into the host binary —
+    # not EVDevTools (which avoids imgui.h to protect MSVC export limits).
+    target_sources(eve PRIVATE devtools/ImGuiHostPanels.cpp)
 endif()
 
 list(APPEND EVELIBS
@@ -211,6 +215,7 @@ list(APPEND EVELIBS
     EVParticles
     EVMap
     EVGpgpu
+    EVVirtualGeometry
     EVModel3D
     EVFont
     EVThread
@@ -219,6 +224,7 @@ list(APPEND EVELIBS
     EVRPG
     EVInventory
     EVBuilding
+    EVCard
     EVAvatar
     EVDialogue
     EVProcgen
@@ -231,9 +237,9 @@ list(APPEND EVELIBS
 # WASM (Emscripten) trims the modules whose third-party deps were dropped.
 if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     foreach(_eve_trimmed IN ITEMS
-        EVAnimation EVAudio EVAvatar EVBuilding EVDatabase EVFont EVInventory
+        EVAnimation EVAudio EVAvatar EVBuilding EVDatabase EVFont EVInventory EVCard
         EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVSpriteStack EVStylize EVVoxel
-        EVDialogue EVProcgen EVSceneLoader EVHouseGen)
+        EVDialogue EVProcgen EVSceneLoader EVHouseGen EVVirtualGeometry)
         list(REMOVE_ITEM EVELIBS ${_eve_trimmed})
     endforeach()
 endif()

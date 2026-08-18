@@ -26,6 +26,11 @@
 
 2. 事件系统 - event
     主要处理多线程间的信号同步与各种回调事件，处理来自硬件的各种信号
+    响应式编程 - rx（`eve.Rx`）
+    UniRx 风格推送流：`Subject` / `BehaviorSubject` / `ReplaySubject` / `ReactiveProperty`
+    + LINQ 操作符（`map` / `filter` / `take` / `skip` / `first` / `takeUntil` / `distinctUntilChanged`）
+    + 事件桥接（`fromEvent` + `pump`）
+    代码：`src/modules/rx/`；设计：`docs/dev/superpowers/specs/2026-08-17-rx-module-design.md`
 
 3. 窗口系统 - window
     主要处理渲染窗口的设置、位置、样式、全屏等，我们只支持单窗口

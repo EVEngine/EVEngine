@@ -35,6 +35,7 @@ if(BUILD_PLATFORM STREQUAL "webgpu")
 endif()
 create_module(EVWindow window)
 create_module(EVEvent event)
+create_module(EVRx rx)
 create_module(EVTimer timer)
 create_module(EVSystem system)
 create_module(EVMath math)
@@ -132,6 +133,10 @@ target_link_libraries(EVUI PUBLIC eve_imgui)
 target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
 target_include_directories(EVUI BEFORE PUBLIC
   ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+# EditorHost (headless MCP host) pulls Poco headers on desktop builds;
+# disable MSVC #pragma comment auto-link like EVDevTools does (it would
+# request PocoFoundationd.lib instead of the built *mdd postfix).
+target_compile_definitions(EVUI PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 
 create_module(EVScene scene)
 # Scene serialization includes Poco/JSON: disable Poco's MSVC auto-link pragma
@@ -165,6 +170,11 @@ create_module(EVGpgpu gpgpu)
 target_include_directories(EVGpgpu BEFORE PRIVATE
   ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 if(NOT EVENGINE_WEBGPU_TRIM)
+  create_module(EVVirtualGeometry virtualgeometry)
+  target_include_directories(EVVirtualGeometry BEFORE PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+endif()
+if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVModel3D model3d)
   create_module(EVFont font)
   # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
@@ -187,6 +197,8 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVInventory PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVBuilding building)
   target_compile_definitions(EVBuilding PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
+  create_module(EVCard card)
+  target_compile_definitions(EVCard PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVAvatar avatar)
 endif()
 if(NOT EVENGINE_WEBGPU_TRIM)

@@ -1,6 +1,7 @@
 #include "devtools/DevTool.hpp"
 
 #include "devtools/AiPanel.hpp"
+#include "devtools/ConsolePanel.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/RenderVision.hpp"
@@ -170,6 +171,9 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     sq_seterrorhandler(vm_);
     g_active = this;
     installRenderTracer();
+
+    ConsolePanel::instance().attach(vm_);
+    ConsolePanel::instance().addLog("info", "DevTools attached");
 }
 
 void DevTool::detach() {
@@ -181,6 +185,7 @@ void DevTool::detach() {
         // Leave debuginfo enabled; harmless for subsequent runs on same VM.
     }
     if (g_active == this) g_active = nullptr;
+    ConsolePanel::instance().detach();
     vm_ = nullptr;
     localSnap_.clear();
     uninstallRenderTracer();
@@ -198,12 +203,16 @@ McpServer& DevTool::mcp() { return McpServer::instance(); }
 
 AiPanel& DevTool::ai() { return AiPanel::instance(); }
 
+ConsolePanel& DevTool::console() { return ConsolePanel::instance(); }
+
 void DevTool::poll() {
     DebugAdapter::instance().poll();
     McpServer::instance().poll();
 }
 
 void DevTool::drawAiPanel() { AiPanel::instance().drawImGui(); }
+
+void DevTool::drawConsolePanel() { ConsolePanel::instance().drawImGui(); }
 
 void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
@@ -339,6 +348,49 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         ai.addFunc("mcpPort", []() { return AiPanel::instance().mcpPort(); });
         ai.addFunc("mcpConnected", []() { return AiPanel::instance().mcpConnected(); });
         ai.addFunc("draw", [this]() { drawAiPanel(); });
+
+        // Runtime console / log / REPL surface.
+        ssq::Table consoleTbl = dev.addTable("console");
+        consoleTbl.addFunc("log", [](std::string text) {
+            ConsolePanel::instance().addLog("info", std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("info", [](std::string text) {
+            ConsolePanel::instance().addInfo(std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("warn", [](std::string text) {
+            ConsolePanel::instance().addWarn(std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("error", [](std::string text) {
+            ConsolePanel::instance().addError(std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("debug", [](std::string text) {
+            ConsolePanel::instance().addLog("debug", std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("eval", [this](std::string expr) { return console().eval(std::move(expr)); });
+        consoleTbl.addFunc("clear", []() {
+            ConsolePanel::instance().clear();
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("recent", [](int n) {
+            const auto lines = ConsolePanel::instance().recent(
+                static_cast<size_t>(n > 0 ? n : 64));
+            std::vector<std::string> out;
+            out.reserve(lines.size());
+            for (const auto& l : lines) out.push_back("[" + l.timestamp + "] " + l.level + " | " + l.text);
+            return out;
+        });
+        consoleTbl.addFunc("format", [](int n) {
+            return ConsolePanel::instance().format(static_cast<size_t>(n > 0 ? n : 64));
+        });
+        consoleTbl.addFunc("isVisible", []() { return ConsolePanel::instance().isVisible(); });
+        consoleTbl.addFunc("setVisible", [](bool on) { ConsolePanel::instance().setVisible(on); });
+        consoleTbl.addFunc("toggleVisible", []() { ConsolePanel::instance().toggleVisible(); });
+        consoleTbl.addFunc("draw", [this]() { drawConsolePanel(); });
     } catch (...) {
         // If eve table missing, skip — attach still useful for C++/DAP/MCP.
     }

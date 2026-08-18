@@ -139,6 +139,7 @@ struct GpuMesh {
     vkb::HostVertexBuffer vertices;
     vkb::GenericBuffer indices;
     uint32_t indexCount = 0;
+    vk::IndexType indexType = vk::IndexType::eUint32;
 };
 
 struct GpuShader {

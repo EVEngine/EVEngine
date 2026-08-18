@@ -39,6 +39,9 @@ public:
     // run test if it has
     int Test(std::string path);
 
+    // headless MCP host: stdio (default) or TCP, driven by AI agents (Codex)
+    int McpHost(std::string path, int port);
+
     // zip the current folder
     int Zip(std::string path);
 

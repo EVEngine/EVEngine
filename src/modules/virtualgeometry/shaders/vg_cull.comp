@@ -1,0 +1,49 @@
+// Pass A — GPU-driven cluster-DAG visibility culling (Nanite two-pass style).
+//
+// One invocation per cluster. Emits a cluster into the visible list iff it is
+// the coarsest ancestor that satisfies the screen-space error threshold (or a
+// leaf), exactly reproducing a top-down DAG traversal with one thread/cluster:
+//
+//   accept = (screenErr(cluster) <= threshold || isLeaf) && screenErr(parent) > threshold
+//
+// Combined with view-frustum culling against a world-space sphere.
+#version 450
+
+#include "vg_common.glsl"
+
+layout(local_size_x = 64) in;
+
+void main() {
+    uint cid = gl_GlobalInvocationID.x;
+    if (cid >= vgU.misc.x) return;  // clusterCount
+
+    vec3 center = vg_clusterCenter(cid);
+    float r = vg_clusterRadius(cid);
+    vec4 wc4 = vgU.model * vec4(center, 1.0);
+    vec3 wc = wc4.xyz / max(wc4.w, 1e-6);
+    vec3 toCam = wc - vgU.cameraPos.xyz;
+    float dist = max(length(toCam), 1e-4);
+
+    // Frustum culling (sphere vs world-space planes).
+    for (int i = 0; i < 6; ++i) {
+        if (dot(vgU.frustum[i].xyz, wc) + vgU.frustum[i].w < -r) return;
+    }
+
+    // Screen-space error (pre-scaled by projScale on the CPU).
+    float screenC = vg_clusterErrorRS(cid) / dist;
+    float screenP = 1e30;
+    uint parent = vg_clusterParent(cid);
+    if (parent != 0xFFFFFFFFu) {
+        vec4 pc = vgU.model * vec4(vg_clusterCenter(parent), 1.0);
+        float pd = max(length(pc.xyz - vgU.cameraPos.xyz), 1e-4);
+        screenP = vg_clusterErrorRS(parent) / pd;
+    }
+
+    bool isLeaf = vg_clusterChildCount(cid) == 0u;
+    bool accept = (screenC <= vgU.params.w || isLeaf) && (screenP > vgU.params.w);
+    if (!accept) return;
+
+    uint slot = atomicAdd(vgCounter, 1u);
+    vgVis[slot] = cid;
+    atomicAdd(vgStat[0].x, 1u);  // visible cluster count
+}

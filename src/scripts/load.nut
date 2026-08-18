@@ -290,12 +290,23 @@ function handle_dev_key(key, scancode) {
     if (key == "F9") {
         eve.dev.ai.toggleVisible();
         print("dev: AI panel " + (eve.dev.ai.isVisible() ? "shown" : "hidden") + "\n");
+        return;
+    }
+    // F4 = toggle DevTools runtime console / log / REPL panel.
+    if (key == "F4") {
+        eve.dev.console.toggleVisible();
+        print("dev: console " + (eve.dev.console.isVisible() ? "shown" : "hidden") + "\n");
     }
 }
 
 function dev_draw_ai() {
     if (has_dev())
         eve.dev.ai.draw();
+}
+
+function dev_draw_console() {
+    if (has_dev())
+        eve.dev.console.draw();
 }
 
 // On Android, SDL may queue a spurious "quit" while setOrientation recreates
@@ -345,6 +356,7 @@ while (running) {
         eve_render();
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();
+        dev_draw_console();
     } catch (e) {
         if ("dev" in eve) eve.dev.reportError("" + e);
         print("frame error: " + e + "\n");

@@ -448,10 +448,12 @@ macro(get_available_build)
     # module (FreeType/Poco, skipped on WASM), so it is trimmed as well.
     if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         set(EVENGINE_EXCLUDED_MODULE_FILES
-            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;Font.cpp"
+            "DataModule.cpp;JsonDocument.cpp;XmlDocument.cpp;Font.cpp;ImGuiHostPanels.cpp"
             CACHE INTERNAL "Exact basenames excluded from module source scan on Emscripten")
     else()
-        set(EVENGINE_EXCLUDED_MODULE_FILES "" CACHE INTERNAL "Exact basenames excluded from module source scan")
+        set(EVENGINE_EXCLUDED_MODULE_FILES
+            "ImGuiHostPanels.cpp"
+            CACHE INTERNAL "Exact basenames excluded from module source scan")
     endif()
 
     message("Availabe: ${AVAILABLE_PLATFORM}")

@@ -1,7 +1,11 @@
 #pragma once
 
 #include "common/Module.h"
+#include "scene/NodeDesc.h"
 
+#include <functional>
+#include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -11,9 +15,17 @@ struct aiNode;
 struct aiMesh;
 
 namespace eve {
+namespace animation {
+class AnimSkeleton;
+class AnimClip;
+}  // namespace animation
 namespace graphics {
 class Graphics;
 class Renderable3D;
+class Light3D;
+class Camera3D;
+class Texture;
+class Mesh;
 }  // namespace graphics
 namespace model3d {
 class ModelData;
@@ -22,6 +34,9 @@ namespace scene {
 class NodeDesc;
 class SceneHost;
 }  // namespace scene
+namespace thread {
+class ThreadPool;
+}
 
 namespace sceneloader {
 
@@ -61,7 +76,8 @@ struct SceneDiff {
  * A GPU mesh reference for one Assimp mesh referenced by an aiNode. The loader
  * uploads one Renderable3D (with its own mesh + material) per aiMesh, so every
  * mesh is an independently diffable GameObject and unchanged meshes are never
- * re-uploaded across a hot reload.
+ * re-uploaded across a hot reload. With LoadOptions::sharedMeshes the same
+ * aiMesh referenced by several nodes uploads a single GPU buffer.
  */
 struct MeshSlot {
     const aiScene *scene = nullptr;
@@ -71,14 +87,46 @@ struct MeshSlot {
 using MeshSlotMap = std::unordered_map<std::string, std::vector<MeshSlot>>;
 
 /**
+ * Options controlling how a 3D scene file is decoded and mounted.
+ *
+ * The first five toggles map to medialoader's Assimp post-processing steps
+ * (triangulate, generate-normals-if-missing, join-identical-vertices, flip-UVs,
+ * improve-cache-locality). All default to on; disabling one changes the decoded
+ * vertex layout (e.g. joinIdenticalVertices=false keeps per-face vertices for
+ * hard-edged flat shading). Tangents are not required by the default PBR
+ * pipeline (it derives its tangent frame from screen-space derivatives).
+ */
+struct LoadOptions {
+    bool triangulate = true;
+    bool generateNormalsIfMissing = true;
+    bool joinIdenticalVertices = true;
+    bool flipUVs = true;
+    bool improveCacheLocality = true;
+    /** Reuse one GPU mesh when several nodes reference the same aiMesh. */
+    bool sharedMeshes = true;
+    /** Generate mipmaps + anisotropic filtering for imported textures. */
+    bool mipmaps = true;
+    /** Import aiLight entries as graphics::Light3D entities. */
+    bool importLights = true;
+    /** Import aiCamera entries as inactive graphics::Camera3D entities. */
+    bool importCameras = false;
+    /** Import aiAnimation clips (skeleton + clips exposed via accessors). */
+    bool importAnimations = true;
+};
+
+/**
  * Loads a 3D scene (glTF / OBJ / FBX / GLB ... via Assimp/medialoader) into the
  * ECS scene tree.
  *
  * For every aiNode it creates a scene::SceneHost GameObject (SceneNode) mirroring
  * the source hierarchy, and for every referenced aiMesh it creates a child
- * GameObject that links a graphics::Renderable3D (mesh + diffuse material). The
- * host is itself an ecs::Entity, so the whole model becomes a tree of GameObjects
- * inside the ECS.
+ * GameObject that links a graphics::Renderable3D (mesh + material). Materials
+ * import the PBR base-color / metallic / roughness / normal / height factors
+ * and textures. Textures are cached by path and shared across meshes; meshes
+ * referenced by several nodes share one GPU buffer (LoadOptions::sharedMeshes).
+ * aiLight / aiCamera / aiAnimation entries are imported as graphics::Light3D /
+ * graphics::Camera3D entities and animation::AnimSkeleton + AnimClip objects
+ * when the corresponding LoadOptions flags are enabled.
  *
  * Hot-reload: reload() re-decodes the file, diffs the new tree against the
  * mounted tree, and applies only the changed GameObjects in place — transform /
@@ -90,15 +138,20 @@ class SceneLoader : public Module {
 public:
     Module_REG(SceneLoader);
 
+    ~SceneLoader() override;
+
     /** Full load: build the GameObject tree from `path`, mount it, return host. */
-    scene::SceneHost *load(const std::string &path, bool linkRenderables = true);
+    scene::SceneHost *load(const std::string &path, bool linkRenderables = true,
+                           const LoadOptions &options = {});
+    scene::SceneHost *load(const std::string &path, const LoadOptions &options);
 
     /**
      * Hot-reload `path`. Re-decodes, diffs, and applies only what changed.
      * Returns false if the file failed to decode (old scene is kept) or nothing
      * changed. When `out` is non-null it is filled with the applied diff.
      */
-    bool reload(const std::string &path, SceneDiff *out = nullptr);
+    bool reload(const std::string &path, SceneDiff *out = nullptr,
+                const LoadOptions &options = {});
 
     /** Script-friendly reload: returns true when anything was updated. */
     bool reloadChecked(const std::string &path) { return reload(path, nullptr); }
@@ -117,7 +170,61 @@ public:
     /** True if `path` is currently loaded. */
     bool loaded(const std::string &path);
 
+    // ---- async loading (decode off-thread, mount on the main thread) ----
+
+    /**
+     * Decode `path` on a worker thread, then apply it on the main thread the
+     * next time pollAsync() is called (GPU upload + ECS mount happen there).
+     * `done` fires on the main thread during pollAsync() with the mounted host.
+     * Returns false when a load for `path` is already in flight.
+     */
+    bool loadAsync(const std::string &path, const LoadOptions &options = {},
+                   std::function<void(scene::SceneHost *)> done = nullptr);
+
+    /**
+     * Mount every decoded-but-not-applied scene. Must be called on the main /
+     * render thread. Returns the number of scenes applied this call.
+     */
+    int pollAsync();
+
+    /** Decode and retain a scene without creating ECS/GPU objects. */
+    bool prewarmAsync(const std::string &path, const LoadOptions &options = {});
+    /** True when a decoded scene is ready for load() to consume. */
+    bool prewarmed(const std::string &path) const;
+    /** Drop a decoded prewarm result and release its CPU scene. */
+    void clearPrewarm(const std::string &path);
+
+    /** Number of async loads still waiting to be mounted. */
+    int pendingAsyncCount() const;
+
+    // ---- imported scene extras ----
+
+    /** Number of imported Light3D entities for `path`; 0 if none / disabled. */
+    int lightCount(const std::string &path);
+    graphics::Light3D *light(const std::string &path, int index);
+
+    /** Number of imported Camera3D entities for `path`; 0 if none / disabled. */
+    int cameraCount(const std::string &path);
+    graphics::Camera3D *camera(const std::string &path, int index);
+
+    /** Number of imported animation clips for `path`; 0 if none / disabled. */
+    int animationCount(const std::string &path);
+    /** Imported skeleton for `path` (nullptr when the scene has no animations). */
+    animation::AnimSkeleton *skeleton(const std::string &path);
+    animation::AnimClip *clip(const std::string &path, int index);
+
     // ---- pure tree helpers (no graphics required; unit-testable) ----
+
+    /** Caches shared across the loader: textures by source key, GPU meshes per aiMesh. */
+    using TextureCache = std::unordered_map<std::string, graphics::Texture *>;
+    using MeshCache = std::unordered_map<const aiMesh *, graphics::Mesh *>;
+    /** CPU-decoded texture (RGBA8) keyed by the same source+suffix key as TextureCache. */
+    struct CpuImage {
+        int w = 0;
+        int h = 0;
+        std::vector<uint8_t> rgba;
+    };
+    using CpuImageMap = std::unordered_map<std::string, CpuImage>;
 
     /** Flatten an Assimp scene into a scene::NodeDesc tree (id = object id). */
     static scene::NodeDesc buildNodeDesc(const aiScene *scene, MeshSlotMap *slotsOut = nullptr);
@@ -146,8 +253,44 @@ private:
         std::string path;
         scene::SceneHost *host = nullptr;
         graphics::Graphics *gfx = nullptr;
+        LoadOptions options;
+        std::vector<graphics::Light3D *> lights;
+        std::vector<graphics::Camera3D *> cameras;
+        animation::AnimSkeleton *skeleton = nullptr;
+        std::vector<animation::AnimClip *> clips;
     };
+
+    struct DecodedScene {
+        std::string path;
+        model3d::ModelData *md = nullptr;
+        scene::NodeDesc root;
+        MeshSlotMap slots;
+        LoadOptions options;
+        CpuImageMap cpuImages;  // external textures pre-decoded off-thread
+        std::vector<graphics::Light3D *> lights;
+        std::vector<graphics::Camera3D *> cameras;
+        animation::AnimSkeleton *skeleton = nullptr;
+        std::vector<animation::AnimClip *> clips;
+        bool prewarmOnly = false;
+        std::function<void(scene::SceneHost *)> done;
+    };
+
+    bool decode(const std::string &path, const LoadOptions &options, DecodedScene *out);
+    scene::SceneHost *mount(DecodedScene &d);
+    /** Attach shared Renderable3D to every mesh node that has none yet. */
+    void linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots,
+                       graphics::Graphics *gfx, const LoadOptions &options,
+                       TextureCache &textures, MeshCache &shared,
+                       const CpuImageMap *predecoded = nullptr);
+    /** Release textures created by this loader (shared across scenes). */
+    void clearTextures();
+
     std::unordered_map<std::string, Loaded> scenes_;
+    std::unordered_map<std::string, DecodedScene> prewarmed_;
+    TextureCache textures_;
+    std::shared_ptr<thread::ThreadPool> pool_;
+    std::vector<DecodedScene> pending_;
+    mutable std::mutex pendingMu_;
 };
 
 }  // namespace sceneloader

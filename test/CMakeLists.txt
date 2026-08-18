@@ -69,6 +69,8 @@ file(GLOB all_test_cpp
   Xray.cpp
   voxel.cpp
   voxel_render.cpp
+  virtualgeometry_builder.cpp
+  virtualgeometry_gpu.cpp
   gpgpu.cpp
   box2d.cpp
   box3d.cpp
@@ -91,6 +93,7 @@ file(GLOB all_test_cpp
   window_cpp.cpp
   image.cpp
   event.cpp
+  rx.cpp
   timer.cpp
   timer_cpp.cpp
   system.cpp
@@ -109,6 +112,7 @@ file(GLOB all_test_cpp
   debugger_audit.cpp
   dap.cpp
   mcp.cpp
+  console.cpp
   main.cpp
 )
 
@@ -120,7 +124,7 @@ endif()
 # compiled into the Android runtime, so their test files cannot link there.
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp)
+  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp console.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Android test: removed devtools test files, remaining=${all_test_cpp}")
@@ -263,6 +267,7 @@ set(EVELIBS
   EVWeather
   EVCommon
   EVEvent
+  EVRx
   EVTimer
   EVSystem
   EVMath
@@ -285,6 +290,7 @@ set(EVELIBS
   EVPhysics
   EVMap
   EVGpgpu
+  EVVirtualGeometry
   EVModel3D
   EVFont
   EVThread
