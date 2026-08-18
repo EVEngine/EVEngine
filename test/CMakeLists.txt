@@ -2,6 +2,7 @@ enable_testing()
 
 file(GLOB all_test_cpp
   ECS.cpp
+  capability.cpp
   data.cpp
   json.cpp
   filesystem.cpp

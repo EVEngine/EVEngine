@@ -46,10 +46,6 @@ KNOWN_BACK_EDGES = {
     # window/Window.cpp, window/sdl/Window.cpp
     ("window", "graphics"),
     ("window", "image"),
-    # system/System.cpp: GPU name / vendor / VRAM queries.
-    ("system", "graphics"),
-    # thread/Thread.cpp, thread/ThreadPool.cpp: postMain.
-    ("thread", "event"),
     # ui/EditorHost.cpp: the headless editor host pumps events itself.
     ("ui", "event"),
 }
