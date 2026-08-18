@@ -100,8 +100,8 @@ function(main)
         # PROXY_TO_PTHREAD turns on shared memory; every TU must be compiled
         # with atomics/bulk-memory or wasm-ld rejects the final link.
         add_compile_options(-matomics -mbulk-memory)
-        # Trimmed third-party / module set for the WASM runtime.
-        set(EVENGINE_WEBGPU_TRIM TRUE CACHE BOOL "Trimmed dependency/module set for Emscripten" FORCE)
+        # The trimmed module set for the WASM runtime is the "web" profile,
+        # selected below from cmake/module_manifest.cmake.
         # Emscripten 6.x vendors a fork of CheckTypeSize.cmake that is
         # incompatible with CMake >= 4.2 (mpg123/physfs/... try_compile fail
         # with "/CheckTypeSize.c.in does not exist"). Force a CMake 3.29.x for

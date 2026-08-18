@@ -2,6 +2,17 @@
 # This file only carries the per-module build settings that cannot be expressed
 # in the manifest: extra include directories and compile definitions.
 
+# --- sources that follow an optional dependency ------------------------------
+# graphics/Font.cpp is the only bridge from graphics into the font module, so it
+# comes out with font. (The Emscripten build already excluded it by name; the
+# rule is now the same everywhere.)
+
+eve_module_enabled(font _has_font)
+if(NOT _has_font)
+  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};Font.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 # --- create every enabled module -------------------------------------------
 
 foreach(_mod IN LISTS EVE_ENABLED_MODULES)
@@ -133,7 +144,6 @@ if(_has_virtualgeometry)
     ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 endif()
 
-eve_module_enabled(font _has_font)
 if(_has_font)
   # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
   if(EVENGINE_THIRD_PARTY_BINARY_ONLY)
@@ -158,9 +168,9 @@ if(_has_procgen)
 endif()
 
 eve_module_enabled(scene _has_scene)
-if(_has_scene AND NOT EVENGINE_WEBGPU_TRIM)
-  # Scene serialization needs Poco JSON; the WASM build has no Poco headers, so
-  # EVENGINE_SCENE_JSON compiles that path out of Scene.cpp there.
+if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+  # Scene serialization needs Poco JSON; the browser build has no Poco headers,
+  # so EVENGINE_SCENE_JSON compiles that path out of Scene.cpp there.
   target_compile_definitions(EVScene PUBLIC EVENGINE_SCENE_JSON=1)
 endif()
 
@@ -196,7 +206,7 @@ if(_has_ui)
     add_library(eve_imgui STATIC ${_eve_imgui_sources})
     target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
     # On Emscripten SDL2 headers come from the port sysroot.
-    if(EVENGINE_WEBGPU_TRIM)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
       target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
     else()
       target_include_directories(eve_imgui PRIVATE

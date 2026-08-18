@@ -25,8 +25,19 @@ function(eve_thirdparty_libs out_var)
         set(_emscripten TRUE)
     endif()
 
+    # The Emscripten aggregate only builds the simple vendored libraries; the
+    # heavy ones are skipped and the module code that would need them is
+    # compiled out (see EVENGINE_EXCLUDED_MODULE_FILES and the module guards).
+    # Asking for these groups on WASM must resolve to nothing, not to a missing
+    # archive.
+    set(_skip_on_emscripten
+        assimp medialoader_model medialoader_sound audio_codecs openal freetype poco poco_data)
+
     set(_libs "")
     foreach(g IN LISTS ARGN)
+        if(_emscripten AND g IN_LIST _skip_on_emscripten)
+            continue()
+        endif()
         if(g STREQUAL "squirrel")
             if(_win_debug)
                 list(APPEND _libs simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd)
