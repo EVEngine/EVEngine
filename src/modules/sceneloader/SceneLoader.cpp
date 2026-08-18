@@ -848,6 +848,7 @@ scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
         if (d.options.importCameras) importCameras(d.md->getScene(), d.cameras);
         importAnimations(d.md->getScene(), d.options, &d.skeleton, d.clips);
     }
+    fillSceneBounds(host, d.slots);
     scene::TransformSystem::updateHost(host);
     scenes_[d.path] = Loaded{d.path, host, gfx, d.options, std::move(d.lights),
                              std::move(d.cameras), d.skeleton, std::move(d.clips)};
