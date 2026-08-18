@@ -139,6 +139,135 @@ EVE_VISION_TIMEOUT_MS 默认 20000
 
 见 [`tools/eve-mcp/README.md`](../../tools/eve-mcp/README.md)。先起游戏再连 bridge。
 
+## Headless MCP 主机（`eve mcp`）
+
+> 状态：v1 落地。命令 + stdio/TCP 传输 + `eve_host_*` 工具 + EditorHost（MVVM 编辑器宿主）。
+
+`eve mcp` 在命令行启动一个**无头 MCP 主机**：不先起游戏、不创建窗口，进程就绪后等 AI
+通过 MCP 下令。AI 调用 `eve_host_editor_apply` 提交一份 JSON 编辑器（View），主机随即
+创建窗口、每帧渲染，并把 View 与 AI 注册的 Squirrel 表（ViewModel）做 MVVM 双向绑定。
+这样每个项目都能长出风格与功能完全不同的地形编辑器、材质编辑器、事件编辑器——由 AI
+按项目定制，不再受统一 IDE 样式约束。
+
+### 启动
+
+```bash
+# stdio（Codex / Claude / Cursor 直接接入，无需 Node 桥）
+eve mcp
+
+# TCP（给 tools/eve-mcp 或自定义客户端）
+eve mcp --port 7529 --root /path/to/project
+```
+
+Codex 配置（`.codex/config.toml` 或项目 `mcpServers`）：
+
+```json
+{ "mcpServers": { "evengine-host": {
+    "command": "eve", "args": ["mcp"]
+} } }
+```
+
+stdout 专用于 MCP 帧；所有诊断 / 脚本 `print()` 走 stderr。窗口 quit、
+`eve_host_shutdown` 或 stdin EOF 时退出。桌面平台可用；Android / iOS / 浏览器返回不可用。
+
+### 架构
+
+```mermaid
+flowchart LR
+  Agent["Codex / Cursor"] -->|stdio MCP| Mcp["McpServer (stdio/TCP)"]
+  Mcp --> Host["eve::ui::EditorHost"]
+  Host --> Win["OS Window + ImGui 渲染循环"]
+  Host --> VM["Squirrel ViewModel 表"]
+  VM --> Engine["引擎数据（Heightmap / Material / Scene）"]
+  Host --> Disk["editors/<id>.editor.json + <id>.vm.nut"]
+```
+
+- `McpServer` 新增 stdio 传输：后台读线程把 stdin 行入队，`poll()` 在主线程同步分发，
+  stdout 只写 JSON-RPC。
+- `EditorHost`（`src/modules/ui/EditorHost.{h,cpp}`，Pimpl、头文件不含 imgui.h）：
+  惰性建窗、每帧渲染所有编辑器面板、执行绑定、截图、运行 Squirrel、持久化。
+- 帧序：Event pump → `eve_host_update(dt)` → `gfx.clearScreen()` → `eve_host_render()`
+  → `ui.beginFrameAndRender()` → 绘制面板 → `gfx.present()` → `ui.dispatchEvents()`。
+
+### 编辑器 JSON 协议（View）
+
+```jsonc
+{
+  "id": "terrain",               // 唯一 ID（必填）
+  "title": "Terrain Editor",
+  "vm": "TerrainVM",             // 绑定的 ViewModel 表名
+  "x": 80, "y": 60, "width": 520, "height": 640,
+  "layout": "vertical",          // vertical | horizontal
+  "theme": { "preset": "dark", "accent": [0.2, 0.7, 0.45],
+             "bg": [0.1, 0.11, 0.13], "panel": [0.14, 0.15, 0.18],
+             "text": [0.92, 0.93, 0.95], "radius": 4.0, "fontScale": 1.0 },
+  "children": [ /* 控件树 */ ]
+}
+```
+
+控件目录 v1：`label / text / separator / spacer / progress / plot / input /
+slider / slider2 / slider3 / color / checkbox / dropdown / listbox / button /
+tree / group / tabs / tab / table / viewport`；通用字段 `id / label / visible /
+enabled / tooltip`（可交互控件必须 `id`）。`viewport` 是预览画布：脚本用
+`eve.host.widgetRect(editor, widget)` 查询矩形后自己绘制。
+
+绑定规则（v1，不做任意表达式求值）：
+
+| 字段 | 方向 | 说明 |
+|------|------|------|
+| `bind` | 双向 | 点路径 `vm.brushSize` / `vm.mat.roughness`，标量/字符串/bool/数组 |
+| `command` | View→VM | 按钮点击调 VM 方法 `(editorId, widgetId)` |
+| `onChange` | View→VM | 值变化回调 `(widgetId, value)` |
+| `bind:options` / `bind:label` / `bind:visible` / `bind:enabled` | VM→View | 单向同步 |
+
+### ViewModel（Squirrel 表）
+
+AI 通过 `eve_host_vm_register` 把 Squirrel 源编译进主机 VM 并注册为表；表方法里用
+`this.` 访问兄弟字段（调用时宿主把表作为 `this` 传入）：
+
+```squirrel
+::TerrainVM <- {
+    brushSize = 12, strength = 0.3, tool = "Raise",
+    grassColor = [0.3, 0.55, 0.25], wireframe = false,
+    tools = ["Raise", "Flatten", "Carve", "Smooth"],
+
+    onChange = function(widget, value) {
+        if (widget == "strength") this.refreshPreview();
+    },
+    apply = function(editor, widget) {
+        // 读写引擎数据（eve.Procgen / Heightmap / Material ...）
+    }
+};
+```
+
+### 工具一览
+
+`eve_host_status`、`eve_host_window_open/close/state`、
+`eve_host_editor_apply/remove/list/state/set_value/save/unload`、
+`eve_host_vm_register/unregister`、`eve_host_events`（读取并清空
+`{editor,widget,type:click|change,value}`）、`eve_host_widget_rect`、
+`eve_host_capture`、`eve_host_script`、`eve_host_shutdown`。
+
+首次 `editor_apply` 自动开默认窗口（1280×800）；`editor_save` 把 View + VM 源持久化到
+项目 `editors/<id>.editor.json` 与 `editors/<id>.vm.nut`，`eve mcp` 启动时自动恢复。
+
+### 脚本 API
+
+`eve.host`：`status / openWindow / closeWindow / windowState / applyEditor /
+removeEditor / setValue / events / registerVM / unregisterVM / widgetRect /
+capture / save / runScript`。脚本可定义 `eve_host_update(dt)` 与 `eve_host_render()`
+钩子参与每帧更新与绘制（用 `eve.host.widgetRect` 在 viewport 内自绘预览）。
+
+### 测试
+
+```bash
+./build/<platform>-debug/test/unit_test --testcase='^devtools\.(mcp|ai)\..*$'
+```
+
+新增用例：`devtools.mcp.stdioTransport`（stdio 握手 + tools/list）、
+`devtools.mcp.hostEditorBinding`（VM 注册、双向绑定、onChange、事件、
+save→unload→reload 持久化往返）。
+
 ## 测试
 
 ```bash
@@ -153,3 +282,4 @@ EVE_VISION_TIMEOUT_MS 默认 20000
 - 音频波形 / 素材来源加载类工具（当前为主音量、停止控制）
 - 与 `eve test` 场景脚本联动的 MCP 资源
 - AI 生成内容的静态校验（nut AST / 资源清单）
+- 编辑器 JSON：更多控件（image/视频预览、节点图）、多 OS 窗口、编辑器间拖拽
