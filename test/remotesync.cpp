@@ -8,6 +8,7 @@
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Timespan.h>
+#include <Poco/Exception.h>
 
 #include <atomic>
 #include <algorithm>
@@ -58,8 +59,10 @@ public:
             return;
         }
         running_.store(false);
+        // On Linux, closing a socket does NOT wake a thread blocked in accept().
+        // A self-connection is the reliable cross-platform way to unblock it.
         try {
-            server_->close();
+            Poco::Net::StreamSocket wake(Poco::Net::SocketAddress("127.0.0.1", port_));
         } catch (...) {
         }
         if (thread_.joinable()) thread_.join();
@@ -74,16 +77,31 @@ private:
             try {
                 sock = server_->acceptConnection();
             } catch (...) {
+                if (!running_.load()) break;
                 continue;
             }
-            sock.setReceiveTimeout(Poco::Timespan(2, 0));
-            std::string req;
-            char buf[4096];
-            while (req.find("\r\n\r\n") == std::string::npos) {
-                int n = sock.receiveBytes(buf, sizeof(buf));
-                if (n <= 0) break;
-                req.append(buf, static_cast<size_t>(n));
+            // Swallow any per-connection error (e.g. receiveBytes timeout on a
+            // half-open client) so a bad request cannot crash the server thread.
+            try {
+                handle(sock);
+            } catch (...) {
             }
+            try {
+                sock.close();
+            } catch (...) {
+            }
+        }
+    }
+
+    void handle(Poco::Net::StreamSocket &sock) {
+        sock.setReceiveTimeout(Poco::Timespan(2, 0));
+        std::string req;
+        char buf[4096];
+        while (req.find("\r\n\r\n") == std::string::npos) {
+            int n = sock.receiveBytes(buf, sizeof(buf));
+            if (n <= 0) break;
+            req.append(buf, static_cast<size_t>(n));
+        }
 
             std::string path;
             if (!req.empty()) {
@@ -123,7 +141,6 @@ private:
                 sock.close();
             } catch (...) {
             }
-        }
     }
 
     std::string manifest() {
