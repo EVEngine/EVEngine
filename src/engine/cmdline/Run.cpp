@@ -219,6 +219,10 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             ssq::Table eve = runtime.table("eve");
             eve.set("demoScript", std::string(demo_content ? demo_content : ""));
             eve.set("asyncScript", std::string(async_content ? async_content : ""));
+            // Scene-director authoring kit (src/scripts/scene_director.nut). Host
+            // games load it via `compilestring(eve.sceneDirectorScript)()`; the
+            // MCP tools auto-install it on demand.
+            eve.set("sceneDirectorScript", std::string(scene_director_content ? scene_director_content : ""));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
         // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in

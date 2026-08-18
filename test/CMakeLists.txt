@@ -56,6 +56,8 @@ file(GLOB all_test_cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
+  i18n.cpp
+  i18n_script.cpp
   avatar.cpp
   dialogue.cpp
   procgen.cpp
@@ -67,6 +69,8 @@ file(GLOB all_test_cpp
   Xray.cpp
   voxel.cpp
   voxel_render.cpp
+  virtualgeometry_builder.cpp
+  virtualgeometry_gpu.cpp
   gpgpu.cpp
   box2d.cpp
   box3d.cpp
@@ -74,6 +78,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   shader.cpp
   grass.cpp
+  spritestack.cpp
   daynight.cpp
   weather.cpp
   simplesquirrel.cpp
@@ -88,6 +93,7 @@ file(GLOB all_test_cpp
   window_cpp.cpp
   image.cpp
   event.cpp
+  rx.cpp
   timer.cpp
   timer_cpp.cpp
   system.cpp
@@ -106,6 +112,7 @@ file(GLOB all_test_cpp
   debugger_audit.cpp
   dap.cpp
   mcp.cpp
+  console.cpp
   main.cpp
 )
 
@@ -117,7 +124,7 @@ endif()
 # compiled into the Android runtime, so their test files cannot link there.
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp)
+  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp console.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Android test: removed devtools test files, remaining=${all_test_cpp}")
@@ -126,6 +133,7 @@ endif()
 file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
+  i18n.nut
   model.nut
   model2.nut
   mouse.nut
@@ -259,6 +267,7 @@ set(EVELIBS
   EVWeather
   EVCommon
   EVEvent
+  EVRx
   EVTimer
   EVSystem
   EVMath
@@ -270,6 +279,7 @@ set(EVELIBS
   EVNetwork
   EVDatabase
   EVData
+  EVI18n
   EVSound
   EVAudio
   EVUI
@@ -280,6 +290,7 @@ set(EVELIBS
   EVPhysics
   EVMap
   EVGpgpu
+  EVVirtualGeometry
   EVModel3D
   EVFont
   EVThread
@@ -292,6 +303,7 @@ set(EVELIBS
   EVHouseGen
   EVVoxel
   EVStylize
+  EVSpriteStack
   EVEditor)
 
 if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android")))

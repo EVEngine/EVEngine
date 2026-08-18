@@ -1,0 +1,25 @@
+{
+  "menu": {
+    "title": "Localization Demo",
+    "hint": "Press 1 / 2 / 3 to switch language, Space to toggle auto-reload"
+  },
+  "greeting": "Hello, {name}!",
+  "items": {
+    "one": "{n} item",
+    "other": "{n} items"
+  },
+  "apples": {
+    "one": "{n} apple",
+    "other": "{n} apples"
+  },
+  "buttons": {
+    "start": "Start Game",
+    "quit": "Quit",
+    "continue": "Continue"
+  },
+  "status": {
+    "language": "Language: {lang}",
+    "reload": "Auto-reload: {on}",
+    "reloaded": "Reloaded {n} locale(s) this frame"
+  }
+}

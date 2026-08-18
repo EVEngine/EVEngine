@@ -66,6 +66,7 @@ ParticleEmitter *Particles::newEmitterFromFile(const std::string &path) {
 void Particles::update(float dt) {
     ParticleConfigSystem::poll();
     ParticleSimSystem::update(dt);
+    ParticleLightSystem::update();
 }
 
 void Particles::render(graphics::Graphics *gfx) { ParticleRenderSystem::render(gfx); }
@@ -122,6 +123,44 @@ void Particles::expose(ssq::Table &table) {
     em.addFunc("setSizeVariation", &ParticleEmitter::setSizeVariation);
     em.addFunc("getSizeVariation", &ParticleEmitter::getSizeVariation);
     em.addFunc("setSpin", &ParticleEmitter::setSpin);
+    em.addFunc("setStartRotation", &ParticleEmitter::setStartRotation);
+    em.addFunc("addBurst", &ParticleEmitter::addBurst);
+    em.addFunc("clearBursts", &ParticleEmitter::clearBursts);
+    em.addFunc("setPrewarm", &ParticleEmitter::setPrewarm);
+    em.addFunc("getPrewarmSeconds", &ParticleEmitter::getPrewarmSeconds);
+    em.addFunc("setGravity", &ParticleEmitter::setGravity);
+    em.addFunc("setDamping", &ParticleEmitter::setDamping);
+    em.addFunc("setLimitVelocity", &ParticleEmitter::setLimitVelocity);
+    em.addFunc("clearVelocityCurve", &ParticleEmitter::clearVelocityCurve);
+    em.addFunc("addVelocityCurvePoint", &ParticleEmitter::addVelocityCurvePoint);
+    em.addFunc("setInheritVelocity", &ParticleEmitter::setInheritVelocity);
+    em.addFunc("setSimulationSpace", &ParticleEmitter::setSimulationSpace);
+    em.addFunc("setNoise", &ParticleEmitter::setNoise);
+    em.addFunc("setGpuSimulation", &ParticleEmitter::setGpuSimulation);
+    em.addFunc("getGpuSimulation", &ParticleEmitter::getGpuSimulation);
+    em.addFunc("setCollision", &ParticleEmitter::setCollision);
+    em.addFunc("setCollisionBounds", &ParticleEmitter::setCollisionBounds);
+    em.addFunc("setWorldCollision", &ParticleEmitter::setWorldCollision);
+    em.addFunc("setRenderMode", &ParticleEmitter::setRenderMode);
+    em.addFunc("setOverflowMode", &ParticleEmitter::setOverflowMode);
+    em.addFunc("setMaxDeltaTime", &ParticleEmitter::setMaxDeltaTime);
+    em.addFunc("addSubEmitter", &ParticleEmitter::addSubEmitter);
+    em.addFunc("clearSubEmitters", &ParticleEmitter::clearSubEmitters);
+    em.addFunc("addForceField", &ParticleEmitter::addForceField);
+    em.addFunc("clearForceFields", &ParticleEmitter::clearForceFields);
+    em.addFunc("setShader", &ParticleEmitter::setShader);
+    em.addFunc("getShader", &ParticleEmitter::getShader);
+    em.addFunc("setLights", &ParticleEmitter::setLights);
+    em.addFunc("getLightsEnabled", &ParticleEmitter::getLightsEnabled);
+    em.addFunc("setBlendMode", &ParticleEmitter::setBlendMode);
+    em.addFunc("getBlendMode", &ParticleEmitter::getBlendMode);
+    em.addFunc("setFlipbook", &ParticleEmitter::setFlipbook);
+    em.addFunc("clearColorGradient", &ParticleEmitter::clearColorGradient);
+    em.addFunc("addColorStop", &ParticleEmitter::addColorStop);
+    em.addFunc("clearSizeCurve", &ParticleEmitter::clearSizeCurve);
+    em.addFunc("addSizeCurvePoint", &ParticleEmitter::addSizeCurvePoint);
+    em.addFunc("clearRotationCurve", &ParticleEmitter::clearRotationCurve);
+    em.addFunc("addRotationCurvePoint", &ParticleEmitter::addRotationCurvePoint);
     em.addFunc("setColorStart", &ParticleEmitter::setColorStart);
     em.addFunc("setColorEnd", &ParticleEmitter::setColorEnd);
     em.addFunc("setTexture", &ParticleEmitter::setTexture);

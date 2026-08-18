@@ -112,9 +112,11 @@ public:
     void setVSync(bool enabled) override;
     int getMsaaSamples() const override { return msaaSamples; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
-    void drawSolidRect(float x, float y, float w, float h, const Color &color) override;
+    void drawSolidRect(float x, float y, float w, float h, const Color &color,
+                       BlendMode blend = BlendMode::Alpha) override;
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
-                              const Color &color) override;
+                              const Color &color,
+                              BlendMode blend = BlendMode::Alpha) override;
 
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                         bool repeatV = false) override;
@@ -138,11 +140,13 @@ public:
                             float u1, float v1, const Color &color) override;
     void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w,
                                   float h, float u0, float v0, float u1, float v1,
-                                  const Color &color, bool rotatedUV = false) override;
+                                  const Color &color, bool rotatedUV = false,
+                                  BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
                                          float w, float h, float degrees, float u0, float v0,
                                          float u1, float v1, const Color &color,
-                                         bool rotatedUV = false) override;
+                                         bool rotatedUV = false,
+                                         BlendMode blend = BlendMode::Alpha) override;
     void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x, float y,
                                      float w, float h, const Color &tint) override;
     void drawTexturedRectLitUV(Texture *albedo, Texture *normal, float x, float y, float w, float h,
@@ -166,6 +170,8 @@ public:
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
     bool bakeMeshMorph(Mesh *mesh) override;
+    bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                            int vertexCount, const uint32_t *indices, int indexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
 
@@ -199,12 +205,17 @@ public:
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
     void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
+    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
+                             Texture *albedo = nullptr) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;
     void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
                          float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
                          float tintB = 1.f) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
+                              float nearZ, float farZ, Texture *albedo = nullptr, float tintR = 1.f,
+                              float tintG = 1.f, float tintB = 1.f) override;
     void endGBufferPass() override;
 
     Canvas *newCanvas(int width, int height) override;
@@ -240,10 +251,15 @@ public:
 
     friend class OffscreenCanvas;
 
+    struct SolidBatch {
+        BlendMode blend = BlendMode::Alpha;
+        Batcher batch;
+    };
     struct TexturedBatch {
         Texture *texture = nullptr;
         Texture *depth = nullptr;
         Shader *shader = nullptr;
+        BlendMode blend = BlendMode::Alpha;
         Batcher batch;
     };
     struct LitBatch {
@@ -428,6 +444,10 @@ private:
     wgpu::Sampler mainSampler;
     wgpu::RenderPipeline colorPipeline;      // 2D solid
     wgpu::RenderPipeline texturedPipeline;   // 2D textured
+    wgpu::RenderPipeline colorAdditivePipeline;
+    wgpu::RenderPipeline texturedAdditivePipeline;
+    wgpu::RenderPipeline colorOpaquePipeline;
+    wgpu::RenderPipeline texturedOpaquePipeline;
     wgpu::RenderPipeline mesh3dPipeline;
     wgpu::RenderPipeline mesh3dShadowPipeline;
     wgpu::RenderPipeline mesh3dGbufferPipeline;
@@ -436,6 +456,10 @@ private:
     // RGBA8Unorm (offscreen canvas / scene) variants of the 2D pipelines.
     wgpu::RenderPipeline offscreenColorPipeline;
     wgpu::RenderPipeline offscreenTexturedPipeline;
+    wgpu::RenderPipeline offscreenColorAdditivePipeline;
+    wgpu::RenderPipeline offscreenTexturedAdditivePipeline;
+    wgpu::RenderPipeline offscreenColorOpaquePipeline;
+    wgpu::RenderPipeline offscreenTexturedOpaquePipeline;
     wgpu::RenderPipeline offscreenLitPipeline;
     // Fullscreen quad used to composite the scene color into the swapchain.
     wgpu::Buffer fullscreenQuadVb;
@@ -443,7 +467,7 @@ private:
     bool fullscreenQuadReady = false;
 
     // 2D batch state.
-    Batcher solidBatch;
+    std::vector<SolidBatch> solidBatches;
     std::vector<TexturedBatch> texturedBatches;
     std::vector<LitBatch> litBatches;
     Lighting2DUBO lighting2dFrame{};

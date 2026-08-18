@@ -35,6 +35,7 @@ if(BUILD_PLATFORM STREQUAL "webgpu")
 endif()
 create_module(EVWindow window)
 create_module(EVEvent event)
+create_module(EVRx rx)
 create_module(EVTimer timer)
 create_module(EVSystem system)
 create_module(EVMath math)
@@ -62,6 +63,8 @@ create_module(EVData data)
 if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVData PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endif()
+# Localization: self-contained JSON parser (no Poco), so it also builds on WASM.
+create_module(EVI18n i18n)
 create_module(EVImage image)
 if(EVENGINE_WEBGPU_TRIM)
   # ImageData.h includes medialoader/image/pixelformat.h; the vendored
@@ -155,6 +158,11 @@ create_module(EVGpgpu gpgpu)
 target_include_directories(EVGpgpu BEFORE PRIVATE
   ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
 if(NOT EVENGINE_WEBGPU_TRIM)
+  create_module(EVVirtualGeometry virtualgeometry)
+  target_include_directories(EVVirtualGeometry BEFORE PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+endif()
+if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVModel3D model3d)
   create_module(EVFont font)
   # ft2build.h lives under include/freetype2/ (installed by third-party FreeType).
@@ -197,6 +205,10 @@ if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVVoxel voxel)
   target_compile_definitions(EVVoxel PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
   create_module(EVStylize stylize)
+  # Sprite-stacking pseudo-3D: CPU mesh slicing + billboard-slice rendering.
+  # Vulkan-only (custom hair-style mesh shader) and depends on model3d, so it
+  # is trimmed from the WebGPU/WASM build alongside those modules.
+  create_module(EVSpriteStack spritestack)
 endif()
 create_module(EVEditor editor)
 if(EVENGINE_BUILD_DEMO AND NOT EVENGINE_WEBGPU_TRIM)

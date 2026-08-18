@@ -81,6 +81,34 @@ void Batcher::addTexturedRectRotated(float cx, float cy, float w, float h, float
     verts.push_back(v2p);
 }
 
+void Batcher::addRectRotated(float cx, float cy, float w, float h, float degrees,
+                             const Color &color) {
+    const float rad = degrees * static_cast<float>(3.14159265358979323846) / 180.0f;
+    const float cos = std::cos(rad);
+    const float sin = std::sin(rad);
+    const float hw = w * 0.5f;
+    const float hh = h * 0.5f;
+
+    auto corner = [&](float dx, float dy) -> glm::vec2 {
+        return {cx + dx * cos - dy * sin, cy + dx * sin + dy * cos};
+    };
+    const glm::vec2 tl = corner(-hw, -hh);
+    const glm::vec2 tr = corner(hw, -hh);
+    const glm::vec2 bl = corner(-hw, hh);
+    const glm::vec2 br = corner(hw, hh);
+
+    BatchVertex v0p{tl, color, {0.f, 0.f}};
+    BatchVertex v1p{tr, color, {1.f, 0.f}};
+    BatchVertex v2p{bl, color, {0.f, 1.f}};
+    BatchVertex v3p{br, color, {1.f, 1.f}};
+    verts.push_back(v0p);
+    verts.push_back(v1p);
+    verts.push_back(v2p);
+    verts.push_back(v1p);
+    verts.push_back(v3p);
+    verts.push_back(v2p);
+}
+
 void Batcher::toNDC(int logicalW, int logicalH) {
     ASSERT_GT(logicalW, 0);
     ASSERT_GT(logicalH, 0);

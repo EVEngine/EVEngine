@@ -1,0 +1,76 @@
+// Pass B — software rasterizer that fills the visibility buffer.
+//
+// Each invocation handles one triangle of one visible cluster:
+//   slot  = globalId / VG_MAX_TRI_PER_CLUSTER   (index into the visible list)
+//   tri   = globalId % VG_MAX_TRI_PER_CLUSTER   (triangle within the cluster)
+//
+// The triangle is transformed, backface-culled, and rasterized with edge
+// functions. Per pixel we atomically write a packed (depth, cluster) value
+// (see vg_pack) so the closest visible cluster wins at every pixel.
+#version 450
+
+#include "vg_common.glsl"
+
+layout(local_size_x = 128) in;
+
+void main() {
+    uint slot = gl_GlobalInvocationID.x / VG_MAX_TRI_PER_CLUSTER;
+    uint t = gl_GlobalInvocationID.x % VG_MAX_TRI_PER_CLUSTER;
+    uint nVisible = vgCounter;
+    if (slot >= nVisible) return;
+
+    uint cid = vgVis[slot];
+    uint triStart = vg_clusterTriStart(cid);
+    uint triCount = vg_clusterTriCount(cid);
+    if (t >= triCount) return;
+
+    // Fetch triangle corners (global vertex indices).
+    uint i0 = vgTri[triStart * 3u + t * 3u + 0u];
+    uint i1 = vgTri[triStart * 3u + t * 3u + 1u];
+    uint i2 = vgTri[triStart * 3u + t * 3u + 2u];
+
+    vec3 p0 = vec3(vgPos[3u * i0 + 0u], vgPos[3u * i0 + 1u], vgPos[3u * i0 + 2u]);
+    vec3 p1 = vec3(vgPos[3u * i1 + 0u], vgPos[3u * i1 + 1u], vgPos[3u * i1 + 2u]);
+    vec3 p2 = vec3(vgPos[3u * i2 + 0u], vgPos[3u * i2 + 1u], vgPos[3u * i2 + 2u]);
+
+    vec4 c0 = vgU.viewProj * (vgU.model * vec4(p0, 1.0));
+    vec4 c1 = vgU.viewProj * (vgU.model * vec4(p1, 1.0));
+    vec4 c2 = vgU.viewProj * (vgU.model * vec4(p2, 1.0));
+
+    vec2 n0 = c0.xy / c0.w, n1 = c1.xy / c1.w, n2 = c2.xy / c2.w;
+    vec2 s0 = (n0 * 0.5 + 0.5) * vgU.params.xy;
+    vec2 s1 = (n1 * 0.5 + 0.5) * vgU.params.xy;
+    vec2 s2 = (n2 * 0.5 + 0.5) * vgU.params.xy;
+
+    // Backface cull (CCW in screen space, using signed area).
+    float area = (s1.x - s0.x) * (s2.y - s0.y) - (s1.y - s0.y) * (s2.x - s0.x);
+    if (area <= 0.0) return;
+
+    // 2D bounding box, clamped to the viewport.
+    ivec2 vmin = ivec2(floor(min(min(s0, s1), s2)));
+    ivec2 vmax = ivec2(ceil(max(max(s0, s1), s2)));
+    ivec2 view = ivec2(vgU.params.xy);
+    vmin = clamp(vmin, ivec2(0), view - ivec2(1));
+    vmax = clamp(vmax, ivec2(0), view - ivec2(1));
+
+    float invArea = 1.0 / area;
+    int W = view.x;
+    for (int y = vmin.y; y <= vmax.y; ++y) {
+        for (int x = vmin.x; x <= vmax.x; ++x) {
+            vec2 p = vec2(float(x) + 0.5, float(y) + 0.5);
+            // Edge functions -> barycentrics.
+            float e0 = (s1.x - s0.x) * (p.y - s0.y) - (s1.y - s0.y) * (p.x - s0.x);
+            float e1 = (s2.x - s1.x) * (p.y - s1.y) - (s2.y - s1.y) * (p.x - s1.x);
+            float e2 = (s0.x - s2.x) * (p.y - s2.y) - (s0.y - s2.y) * (p.x - s2.x);
+            if (e0 < 0.0 || e1 < 0.0 || e2 < 0.0) continue;
+
+            float l0 = e1 * invArea, l1 = e2 * invArea, l2 = e0 * invArea;
+            // Interpolate NDC depth (near = 0).
+            float ndcZ = l0 * (c0.z / c0.w) + l1 * (c1.z / c1.w) + l2 * (c2.z / c2.w);
+            uint depth = uint(clamp(ndcZ, 0.0, 1.0) * 65535.0);
+            uint packed = vg_pack(depth, cid);
+            atomicMin(vgPix[uint(y) * uint(W) + uint(x)], packed);
+        }
+    }
+    atomicAdd(vgStat[1].x, 1u);  // rasterized triangle count
+}

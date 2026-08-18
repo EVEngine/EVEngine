@@ -175,6 +175,12 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundAudio  = false;
     bool foundVision = false;
     bool foundVcfg   = false;
+    bool foundSdMod  = false;
+    bool foundSdInfo = false;
+    bool foundCamGen = false;
+    bool foundReset  = false;
+    bool foundSdStat = false;
+    bool foundSdInst = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto t = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
@@ -188,6 +194,12 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_audio_set_volume") foundAudio = true;
         if (name == "eve_render_describe") foundVision = true;
         if (name == "eve_render_vision_config") foundVcfg = true;
+        if (name == "eve_scene_modify") foundSdMod = true;
+        if (name == "eve_scene_info") foundSdInfo = true;
+        if (name == "eve_camera_generate") foundCamGen = true;
+        if (name == "eve_scene_reset") foundReset = true;
+        if (name == "eve_scene_director_status") foundSdStat = true;
+        if (name == "eve_scene_director_install") foundSdInst = true;
     }
     CHECK(foundStatus);
     CHECK(foundEval);
@@ -199,6 +211,12 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundAudio);
     CHECK(foundVision);
     CHECK(foundVcfg);
+    CHECK(foundSdMod);
+    CHECK(foundSdInfo);
+    CHECK(foundCamGen);
+    CHECK(foundReset);
+    CHECK(foundSdStat);
+    CHECK(foundSdInst);
 
     client.sendRequest(3, "tools/call",
                        "{\"name\":\"eve_status\",\"arguments\":{}}");
@@ -257,6 +275,33 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         textOf(10, "{\"name\":\"eve_render_vision_config\",\"arguments\":{}}");
     CHECK(vcfgText.find("{") != std::string::npos);
     CHECK(vcfgText.find("apiKeySet") != std::string::npos);
+
+    // Scene-director tools: auto-install the Squirrel kit into the plain test VM
+    // and drive it over MCP (no Graphics / modules mounted -> geometry-only ops).
+    const std::string sdStat =
+        textOf(11, "{\"name\":\"eve_scene_director_status\",\"arguments\":{}}");
+    CHECK(sdStat.find("\"installed\":true") != std::string::npos);
+
+    const std::string resetText = textOf(12, "{\"name\":\"eve_scene_reset\",\"arguments\":{}}");
+    CHECK(resetText.find("ok") != std::string::npos);
+
+    const std::string infoText =
+        textOf(13, "{\"name\":\"eve_scene_info\",\"arguments\":{}}");
+    CHECK(infoText.find("\"count\":0") != std::string::npos);
+
+    const std::string camText =
+        textOf(14, "{\"name\":\"eve_camera_generate\",\"arguments\":{\"count\":2}}");
+    CHECK(camText.find("\"cam_0\"") != std::string::npos);
+
+    const std::string modInfo =
+        textOf(15, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"info\"}}");
+    CHECK(modInfo.find("\"count\":0") != std::string::npos);
+    // Unknown action must surface as a controlled error, not crash the server.
+    const std::string modBad =
+        textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
+    const bool modBadHasError = modBad.find("error") != std::string::npos ||
+                                modBad.find("unknown action") != std::string::npos;
+    CHECK(modBadHasError);
 
     mcp.stop();
     dt.detach();

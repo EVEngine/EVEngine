@@ -122,6 +122,208 @@ function findFreePort() {
 }
 
 /**
+ * Copy the DAP variable fields the inspector needs into a plain object.
+ * @param {*} v
+ * @returns {{name: string, value: string, type: string, ref: number, expandable: boolean}}
+ */
+function sanitizeVariable(v) {
+  const ref =
+    v && typeof v.variablesReference === 'number' && v.variablesReference > 0
+      ? v.variablesReference
+      : 0;
+  return {
+    name: v && v.name != null ? String(v.name) : '',
+    value: v && v.value != null ? String(v.value) : '',
+    type: v && v.type != null ? String(v.type) : '',
+    ref,
+    expandable: ref > 0,
+  };
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * HTML for the object-inspector webview. The page asks the extension for
+ * children on demand (`expand` messages); the extension answers with `children`
+ * fetched from the DAP `variables` request so the data matches the VARIABLES
+ * view exactly.
+ * @param {string} rootName
+ * @returns {string}
+ */
+function buildInspectHtml(rootName) {
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';">
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: var(--vscode-font-family, sans-serif); font-size: var(--vscode-font-size, 13px); margin: 0; padding: 8px; }
+  .meta { color: var(--vscode-descriptionForeground, #888); padding: 2px 0 8px 0; }
+  .row { display: flex; align-items: baseline; gap: 6px; padding: 2px 0; white-space: nowrap; }
+  .row.expandable { cursor: pointer; }
+  .row.expandable:hover { background: var(--vscode-list-hoverBackground, rgba(128,128,128,.15)); }
+  .twist { width: 14px; display: inline-block; color: var(--vscode-descriptionForeground, #888); text-align: center; flex: none; }
+  .name { color: var(--vscode-charts-blue, #569cd6); font-weight: 600; }
+  .value { color: var(--vscode-editor-foreground, #d4d4d4); }
+  .type { color: var(--vscode-descriptionForeground, #888); }
+  .children { margin-left: 18px; padding-left: 4px; border-left: 1px solid var(--vscode-tree-indentGuidesStroke, rgba(128,128,128,.2)); }
+</style>
+</head>
+<body>
+  <div class="meta">对象检查: <b>${escapeHtml(rootName)}</b> — 点击可展开节点实时向调试器请求子项。</div>
+  <div id="root"></div>
+  <script>
+    (function () {
+      const vscode = acquireVsCodeApi();
+      const cache = new Map();      // ref -> { loading, loaded, children }
+      const containers = new Map(); // ref -> children DOM element
+      const rootEl = document.getElementById('root');
+
+      function makeRow(node) {
+        const row = document.createElement('div');
+        row.className = 'row' + (node.expandable ? ' expandable' : '');
+        const twist = document.createElement('span');
+        twist.className = 'twist';
+        twist.textContent = node.expandable ? '\\u25B8' : '';
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = node.name;
+        const value = document.createElement('span');
+        value.className = 'value';
+        value.textContent = node.value;
+        const type = document.createElement('span');
+        type.className = 'type';
+        type.textContent = node.type || '';
+        row.append(twist, name, value, type);
+        if (node.expandable) {
+          row.addEventListener('click', () => toggle(node.ref, row));
+        }
+        return row;
+      }
+
+      function toggle(ref, row) {
+        const twist = row.querySelector('.twist');
+        const kids = containers.get(ref);
+        if (kids) {
+          const expanded = twist.textContent === '\\u25BE';
+          twist.textContent = expanded ? '\\u25B8' : '\\u25BE';
+          kids.style.display = expanded ? 'none' : 'block';
+          return;
+        }
+        twist.textContent = '\\u25BE';
+        const childrenEl = document.createElement('div');
+        childrenEl.className = 'children';
+        childrenEl.textContent = '加载中…';
+        row.after(childrenEl);
+        containers.set(ref, childrenEl);
+        const entry = cache.get(ref) || { loading: false, loaded: false, children: [] };
+        if (!entry.loaded && !entry.loading) {
+          entry.loading = true;
+          cache.set(ref, entry);
+          vscode.postMessage({ type: 'expand', ref });
+        } else if (entry.loaded) {
+          renderChildren(ref);
+        }
+      }
+
+      function renderChildren(ref) {
+        const entry = cache.get(ref);
+        const el = containers.get(ref);
+        if (!entry || !el) return;
+        el.textContent = '';
+        for (const child of entry.children) el.appendChild(makeRow(child));
+        if (!entry.children.length) el.textContent = '(空)';
+      }
+
+      window.addEventListener('message', (event) => {
+        const msg = event.data;
+        if (!msg) return;
+        if (msg.type === 'root') {
+          rootEl.textContent = '';
+          rootEl.appendChild(makeRow(msg.node));
+          cache.set(msg.node.ref, { loading: false, loaded: false, children: [] });
+        } else if (msg.type === 'children') {
+          const entry = cache.get(msg.ref) || { loading: false, loaded: false, children: [] };
+          entry.children = Array.isArray(msg.children) ? msg.children : [];
+          entry.loading = false;
+          entry.loaded = true;
+          cache.set(msg.ref, entry);
+          renderChildren(msg.ref);
+        } else if (msg.type === 'error') {
+          const el = containers.get(msg.ref);
+          if (el) el.textContent = '读取失败: ' + (msg.message || 'unknown error');
+        }
+      });
+
+      vscode.postMessage({ type: 'ready' });
+    })();
+  </script>
+</body>
+</html>`;
+}
+
+/**
+ * "查看实例": open a webview that walks a stack-frame object's children via
+ * DAP `variables` requests. VS Code passes the focused variable from the
+ * `debug/variables/context` menu as the first argument.
+ * @param {*} variable
+ * @returns {vscode.WebviewPanel | undefined}
+ */
+function inspectVariable(variable) {
+  const session = vscode.debug.activeDebugSession;
+  if (!session || session.type !== 'eve') {
+    void vscode.window.showWarningMessage('需要先启动 EVEngine 调试会话。');
+    return undefined;
+  }
+  const root = sanitizeVariable(variable);
+  if (!root.expandable) {
+    void vscode.window.showInformationMessage('该变量不是可展开对象，无法查看实例。');
+    return undefined;
+  }
+
+  const panel = vscode.window.createWebviewPanel(
+    'eve-debug.inspect',
+    'EVEngine 对象检查: ' + root.name,
+    vscode.ViewColumn.Two,
+    { enableScripts: true, retainContextWhenHidden: true }
+  );
+  panel.webview.html = buildInspectHtml(root.name);
+  panel.webview.onDidReceiveMessage((msg) => {
+    if (!msg) return;
+    if (msg.type === 'ready') {
+      panel.webview.postMessage({ type: 'root', node: root });
+      return;
+    }
+    if (msg.type === 'expand') {
+      session.customRequest('variables', { variablesReference: msg.ref }).then(
+        (resp) => {
+          const children = (
+            resp && Array.isArray(resp.variables) ? resp.variables : []
+          ).map(sanitizeVariable);
+          panel.webview.postMessage({ type: 'children', ref: msg.ref, children });
+        },
+        (err) => {
+          panel.webview.postMessage({
+            type: 'error',
+            ref: msg.ref,
+            message: String((err && err.message) || err),
+          });
+        }
+      );
+    }
+  });
+  return panel;
+}
+
+/**
  * Kill a previously launched eve process if still alive.
  */
 function killLaunched() {
@@ -267,6 +469,11 @@ function activate(context) {
     vscode.debug.onDidTerminateDebugSession((session) => {
       if (session.type === 'eve') killLaunched();
     })
+  );
+
+  // VARIABLES view context menu: "查看实例" opens the object inspector.
+  context.subscriptions.push(
+    vscode.commands.registerCommand('eve-debug.inspectVariable', inspectVariable)
   );
 }
 

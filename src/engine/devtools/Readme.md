@@ -32,10 +32,16 @@
 | F11 | 单步进入：下一条语句，进入函数（`stepInto`） |
 | F8 | 单步一帧（`stepFrame`，次要） |
 | F6 / F7 | 保存 / 加载脚本状态快照 `eve_snapshot.json` |
-| 断点 | `Debugger::setBreakpoint` 或 VS Code；命中时在 line hook 内阻塞 |
-| Watch | `addWatch` / DAP `evaluate`；读 local 或 roottable（含 `a.b`） |
+| 断点 | `Debugger::setBreakpoint` 或 VS Code；命中时在 line hook 内阻塞；支持条件断点（`condition`）；行首次被执行时回传 DAP `breakpoint` 事件做验证 |
+| 异常断点 | DAP `setExceptionBreakpoints` / VS Code BREAKPOINTS 面板「Script Errors」；错误经错误钩子（未捕获：精确停在抛出点，调用栈从抛出函数开始）或 `load.nut` catch（停在游戏脚本 catch 语句）路由到调试器，等价 Godot「Break on Error」 |
+| 跳过所有断点 | `Debugger::setBreakpointsEnabled(false)` / `eve.dev.setBreakpointsEnabled(false)` |
+| 变量 | 多帧作用域（Locals 按 `frameId`）+ Globals scope；table / array / class / instance / closure(upvalue) 可展开为变量树；可展开变量带 `__vscodeVariableMenuContext` 标记，VS Code 变量视图右键「查看实例」打开对象检查面板（webview 经 DAP `variables` 递归取子项） |
+| 表达式求值 | DAP `evaluate` 支持完整 Squirrel 表达式（算术 / 调用 / 下标），在选中帧的 locals + roottable 环境中编译求值 |
+| Watch | `addWatch` / DAP `evaluate`（仅 `context=watch` 注册为持久 watch）；求值失败时显示错误 |
 | Snapshot | JSON 序列化标记根（或 `gameState` / `eve_state` / 启发式非引擎槽） |
+| Profiler | line hook 计时：`eve.dev.profileReport()` / `profileClear()`（按函数统计调用次数、行数、耗时） |
 | MCP / AI | `--mcp-port` 嵌入 MCP；`AiPanel` 会话日志；F9 切换 ImGui「AI / MCP」面板 |
+| 运行时控制台 | `ConsolePanel`: print 捕获 + 级别化日志 + Squirrel REPL; F4 切换 ImGui「Console」面板 |
 
 ### C++ API
 
@@ -46,7 +52,8 @@
 - `eve::dev::Snapshot`：脚本状态 capture / restore / 文件
 - `eve::dev::DebugAdapter`：DAP TCP（供 VS Code 插件连接）
 - `eve::dev::McpServer`：MCP JSON-RPC TCP（AI Agent 测试 / 辅助开发）
-- `eve::dev::AiPanel`：AI 会话日志；ImGui 绘制由 `ImGuiBackend` 注册（避免 EVDevTools 拉入 imgui.h）
+- `eve::dev::AiPanel`: AI 会话日志；ImGui 绘制由 `ImGuiHostPanels.cpp` 注册（避免 EVDevTools 拉入 imgui.h）
+- `eve::dev::ConsolePanel`: 运行时控制台环形缓冲（线程安全）+ Squirrel `print` 捕获 + REPL 求值；ImGui 绘制同样由 `ImGuiHostPanels.cpp` 注册
 - `eve::dev::DevTool`：`attach` + `exposeScriptApi` + 可选 `startDap` / `startMcp`
 
 ### 脚本 API（`eve.dev`，仅 `--debug`）
@@ -61,6 +68,11 @@ eve.dev.stepFrame();       // F8 — one game frame
 eve.dev.step();            // convenience: stepOver mid-script, else one frame
 eve.dev.setBreakpoint("main.nut", 42);
 eve.dev.addWatch("score");
+eve.dev.setBreakOnError(true);   // Godot-style break on script errors
+eve.dev.setBreakpointsEnabled(false);  // skip all breakpoints
+eve.dev.reportError("boom");     // forward an error to the debugger / slicer
+eve.dev.profileReport();         // function timing CSV
+eve.dev.registerSource("gen.nut", "local x = 1");  // virtual source for compilestring
 eve.dev.markStateRoot("gameState");
 eve.dev.saveSnapshot("boss.json");
 eve.dev.loadSnapshot("boss.json");
@@ -69,6 +81,17 @@ eve.dev.loadSnapshot("boss.json");
 eve.dev.ai.status();
 eve.dev.ai.note("reached boss");
 eve.dev.ai.toggleVisible();  // F9
+// Runtime console / log / REPL
+eve.dev.console.log("hello");       // level: info
+eve.dev.console.info("hi");         // info
+eve.dev.console.warn("careful");    // warn
+eve.dev.console.error("boom");      // error
+eve.dev.console.debug("trace");     // debug
+eve.dev.console.eval("score + 1");  // Squirrel expression evaluation
+eve.dev.console.recent(64);         // recent log entries
+eve.dev.console.format(64);         // recent log text
+eve.dev.console.clear();
+eve.dev.console.toggleVisible();    // F4
 ```
 
 ### 使用方式

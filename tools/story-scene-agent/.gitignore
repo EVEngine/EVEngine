@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+test_stage_out/
+ai_stage_out/
+stage_duel/

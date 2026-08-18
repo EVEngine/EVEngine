@@ -71,9 +71,22 @@
         "title": "Pause",
         "category": "EVEngine",
         "enablement": "debugType == 'eve' && debugState == 'running'"
+      },
+      {
+        "command": "eve-debug.inspectVariable",
+        "title": "查看实例 (Inspect Instance)",
+        "category": "EVEngine",
+        "enablement": "debugType == 'eve' && debugState == 'stopped'"
       }
     ],
     "menus": {
+      "debug/variables/context": [
+        {
+          "command": "eve-debug.inspectVariable",
+          "when": "debugType == 'eve' && __vscodeVariableMenuContext == 'object'",
+          "group": "navigation@1"
+        }
+      ],
       "editor/title/run": [
         {
           "command": "eve-debug.debugEditorContents",

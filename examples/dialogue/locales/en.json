@@ -1,0 +1,19 @@
+{
+  "name": { "alice": "Alice", "bob": "Bob" },
+  "line": {
+    "hello": "Hello! I'm {name}.",
+    "intro": "I'm Bob. This dialogue script is written in Squirrel.",
+    "avatar": "Expressions and motion go through the Avatar layers; no second script language.",
+    "continue_ask": "Would you like to keep listening?",
+    "backends": "Great! Live2D / VRoid can plug into the same API.",
+    "image_layers": "Image layers are the base; other backends plug in as needed.",
+    "bye": "Okay, see you next time.",
+    "end": "(Demo finished — Space restarts)"
+  },
+  "choice": { "yes": "Continue", "no": "That's all" },
+  "hint": {
+    "advance": "Space / Click to continue",
+    "choose": "Press 1 / 2 to choose",
+    "restart": "Space to restart"
+  }
+}

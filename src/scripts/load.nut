@@ -69,6 +69,7 @@ avatar <- eve.Avatar();
 dialogue <- eve.Dialogue();
 anim <- eve.Animation();
 stylize <- eve.Stylize();
+spritestack <- eve.SpriteStack();
 gpgpu <- eve.Gpgpu();
 daynight <- eve.DayNight();
 weather <- eve.Weather();
@@ -83,18 +84,23 @@ font <- eve.Font();
 thread <- eve.Thread();
 fs <- eve.Filesystem();
 hot <- eve.HotReload();
+i18n <- eve.I18n();
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
     try {
         compilestring(eve.asyncScript)();
     } catch (e) {
+        // Report FIRST: with "break on error" the debugger pauses at the
+        // throwing script line / catch site before stdout is flushed.
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("async runtime failed to load: " + e + "\n");
     }
 } else if (file_exists("async.nut")) {
     try {
         dofile("async.nut");
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("async.nut failed to load: " + e + "\n");
     }
 }
@@ -125,6 +131,7 @@ function soft_reload_scripts() {
             dofile(p);
             print("hot-reload script: " + p + "\n");
         } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
             print("hot-reload script failed: " + p + ": " + e + "\n");
         }
     }
@@ -132,6 +139,7 @@ function soft_reload_scripts() {
         try {
             eve_reload();
         } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
             print("eve_reload failed: " + e + "\n");
         }
     }
@@ -160,12 +168,14 @@ function poll_hot_reload() {
         try {
             hot.tryReload(p);
         } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
             print("hot-reload asset failed: " + p + ": " + e + "\n");
         }
         if ("eve_asset_reload" in getroottable()) {
             try {
                 eve_asset_reload(p);
             } catch (e) {
+                if ("dev" in eve) eve.dev.reportError("" + e);
                 print("eve_asset_reload failed: " + p + ": " + e + "\n");
             }
         }
@@ -180,6 +190,7 @@ if (file_exists("main.nut")) {
     try {
         compilestring(eve.demoScript)();
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("Embedded demo failed to load: " + e + "\n");
     }
 }
@@ -194,6 +205,7 @@ if (config.hotReload) {
             fs.watch("main.nut");
         print("hot-reload: watching " + n + " path(s)\n");
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("hot-reload watchTree failed: " + e + "\n");
     }
 }
@@ -201,6 +213,7 @@ if (config.hotReload) {
 try {
     eve_init();
 } catch (e) {
+    if ("dev" in eve) eve.dev.reportError("" + e);
     print("eve_init failed: " + e + "\n");
 }
 
@@ -273,12 +286,23 @@ function handle_dev_key(key, scancode) {
     if (key == "F9") {
         eve.dev.ai.toggleVisible();
         print("dev: AI panel " + (eve.dev.ai.isVisible() ? "shown" : "hidden") + "\n");
+        return;
+    }
+    // F4 = toggle DevTools runtime console / log / REPL panel.
+    if (key == "F4") {
+        eve.dev.console.toggleVisible();
+        print("dev: console " + (eve.dev.console.isVisible() ? "shown" : "hidden") + "\n");
     }
 }
 
 function dev_draw_ai() {
     if (has_dev())
         eve.dev.ai.draw();
+}
+
+function dev_draw_console() {
+    if (has_dev())
+        eve.dev.console.draw();
 }
 
 // On Android, SDL may queue a spurious "quit" while setOrientation recreates
@@ -328,7 +352,9 @@ while (running) {
         eve_render();
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();
+        dev_draw_console();
     } catch (e) {
+        if ("dev" in eve) eve.dev.reportError("" + e);
         print("frame error: " + e + "\n");
     }
     // Always present: eve_render may have opened a 3D pass (gfx.render3D)

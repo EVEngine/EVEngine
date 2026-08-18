@@ -1,6 +1,7 @@
 #include "devtools/DevTool.hpp"
 
 #include "devtools/AiPanel.hpp"
+#include "devtools/ConsolePanel.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/RenderVision.hpp"
@@ -12,7 +13,9 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
+#include <algorithm>
 #include <cstring>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -80,6 +83,37 @@ void nativeDebugHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQ
                                static_cast<int>(line), funcname ? funcname : "");
 }
 
+/** Runtime error handler: uncaught script errors are routed to DevTool. */
+SQInteger runtimeErrorHook(HSQUIRRELVM v) {
+    if (!g_active) return 0;
+    std::string msg = "script error";
+    if (sq_gettop(v) >= 2) {
+        switch (sq_gettype(v, 2)) {
+            case OT_STRING: {
+                const SQChar* s = nullptr;
+                if (SQ_SUCCEEDED(sq_getstring(v, 2, &s)) && s) msg = s;
+                break;
+            }
+            case OT_INTEGER: {
+                SQInteger i = 0;
+                if (SQ_SUCCEEDED(sq_getinteger(v, 2, &i)))
+                    msg = "script error " + std::to_string(static_cast<long long>(i));
+                break;
+            }
+            case OT_BOOL: {
+                SQBool b = SQFalse;
+                if (SQ_SUCCEEDED(sq_getbool(v, 2, &b)))
+                    msg = b ? "script error: true" : "script error: false";
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    g_active->notifyError(msg);
+    return 0;
+}
+
 SourceLoc stackTopLoc(HSQUIRRELVM vm) {
     SourceLoc loc;
     SQStackInfos si;
@@ -132,8 +166,14 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
 
     sq_enabledebuginfo(vm_, SQTrue);
     sq_setnativedebughook(vm_, nativeDebugHook);
+    // Route uncaught script errors into the debugger (break-on-error aware).
+    sq_newclosure(vm_, runtimeErrorHook, 0);
+    sq_seterrorhandler(vm_);
     g_active = this;
     installRenderTracer();
+
+    ConsolePanel::instance().attach(vm_);
+    ConsolePanel::instance().addLog("info", "DevTools attached");
 }
 
 void DevTool::detach() {
@@ -145,6 +185,7 @@ void DevTool::detach() {
         // Leave debuginfo enabled; harmless for subsequent runs on same VM.
     }
     if (g_active == this) g_active = nullptr;
+    ConsolePanel::instance().detach();
     vm_ = nullptr;
     localSnap_.clear();
     uninstallRenderTracer();
@@ -162,12 +203,16 @@ McpServer& DevTool::mcp() { return McpServer::instance(); }
 
 AiPanel& DevTool::ai() { return AiPanel::instance(); }
 
+ConsolePanel& DevTool::console() { return ConsolePanel::instance(); }
+
 void DevTool::poll() {
     DebugAdapter::instance().poll();
     McpServer::instance().poll();
 }
 
 void DevTool::drawAiPanel() { AiPanel::instance().drawImGui(); }
+
+void DevTool::drawConsolePanel() { ConsolePanel::instance().drawImGui(); }
 
 void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
@@ -245,6 +290,21 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             auto info = debugger().evaluate(expr);
             return info.value;
         });
+        dev.addFunc("reportError", [this](std::string msg) {
+            return notifyError(msg.empty() ? std::string("script error") : std::move(msg));
+        });
+        dev.addFunc("setBreakOnError", [this](bool on) { debugger().setBreakOnError(on); });
+        dev.addFunc("breakOnError", [this]() { return debugger().breakOnError(); });
+        dev.addFunc("setBreakpointsEnabled", [this](bool on) {
+            debugger().setBreakpointsEnabled(on);
+        });
+        dev.addFunc("breakpointsEnabled", [this]() { return debugger().breakpointsEnabled(); });
+        dev.addFunc("lastError", [this]() { return lastError(); });
+        dev.addFunc("profileReport", [this]() { return formatProfileReport(); });
+        dev.addFunc("profileClear", [this]() { profileClear(); });
+        dev.addFunc("registerSource", [this](std::string name, std::string content) {
+            dap().registerSource(std::move(name), std::move(content));
+        });
 
         dev.addFunc("markStateRoot",
                     [](std::string name) { Snapshot::instance().markRoot(std::move(name)); });
@@ -288,6 +348,49 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         ai.addFunc("mcpPort", []() { return AiPanel::instance().mcpPort(); });
         ai.addFunc("mcpConnected", []() { return AiPanel::instance().mcpConnected(); });
         ai.addFunc("draw", [this]() { drawAiPanel(); });
+
+        // Runtime console / log / REPL surface.
+        ssq::Table consoleTbl = dev.addTable("console");
+        consoleTbl.addFunc("log", [](std::string text) {
+            ConsolePanel::instance().addLog("info", std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("info", [](std::string text) {
+            ConsolePanel::instance().addInfo(std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("warn", [](std::string text) {
+            ConsolePanel::instance().addWarn(std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("error", [](std::string text) {
+            ConsolePanel::instance().addError(std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("debug", [](std::string text) {
+            ConsolePanel::instance().addLog("debug", std::move(text));
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("eval", [this](std::string expr) { return console().eval(std::move(expr)); });
+        consoleTbl.addFunc("clear", []() {
+            ConsolePanel::instance().clear();
+            return std::string("ok");
+        });
+        consoleTbl.addFunc("recent", [](int n) {
+            const auto lines = ConsolePanel::instance().recent(
+                static_cast<size_t>(n > 0 ? n : 64));
+            std::vector<std::string> out;
+            out.reserve(lines.size());
+            for (const auto& l : lines) out.push_back("[" + l.timestamp + "] " + l.level + " | " + l.text);
+            return out;
+        });
+        consoleTbl.addFunc("format", [](int n) {
+            return ConsolePanel::instance().format(static_cast<size_t>(n > 0 ? n : 64));
+        });
+        consoleTbl.addFunc("isVisible", []() { return ConsolePanel::instance().isVisible(); });
+        consoleTbl.addFunc("setVisible", [](bool on) { ConsolePanel::instance().setVisible(on); });
+        consoleTbl.addFunc("toggleVisible", []() { ConsolePanel::instance().toggleVisible(); });
+        consoleTbl.addFunc("draw", [this]() { drawConsolePanel(); });
     } catch (...) {
         // If eve table missing, skip — attach still useful for C++/DAP/MCP.
     }
@@ -305,14 +408,17 @@ void DevTool::handleDebugEvent(HSQUIRRELVM vm, int type, const char* source, int
         case 'c':
             graph_.onCall(loc, loc.function);
             localSnap_.erase(static_cast<int>(graph_.currentStack().size()));
+            profileCall(loc.function);
             break;
         case 'r':
             graph_.onReturn(loc, loc.function);
             // Drop snapshot for the frame that just returned.
             localSnap_.erase(static_cast<int>(graph_.currentStack().size()) + 1);
+            profileReturn();
             break;
         case 'l':
             graph_.onLine(loc);
+            profileLine(loc.function);
             if (sampleLocals_) sampleFrameLocals(vm, loc);
             if (Debugger::instance().onScriptLine(loc)) {
                 dap().notifyStopped(Debugger::instance().lastPauseReason(), loc);
@@ -518,6 +624,12 @@ std::string DevTool::notifyError(const std::string& errorMessage,
                                  const std::vector<std::string>& hintVars) {
     SourceLoc site;
     if (vm_) {
+        // When called from the uncaught-error hook, level 0 is the native hook
+        // itself and level 1 is the throwing script frame, so this already
+        // lands on the exact throw site (before the stack unwinds). When called
+        // from a script catch (eve.dev.reportError), level 1 is the catch
+        // statement that reported the error (the game script when load.nut
+        // calls the native reporter directly).
         SQStackInfos si;
         if (SQ_SUCCEEDED(sq_stackinfos(vm_, 1, &si))) {
             if (si.source) site.source = si.source;
@@ -538,10 +650,16 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     }
     if (report.empty()) report = std::string("Error: ") + errorMessage + "\n";
     lastReport_ = report;
+    lastError_  = errorMessage;
 
-    debugger().pause(PauseReason::Exception);
-    dap().notifyStopped(PauseReason::Exception, site);
     RenderVision::instance().notifyPending("error", site.source, site.line);
+    if (debugger().breakOnError()) {
+        // Godot "Break on Error": stop at the reported site. Block inside the
+        // hook so the IDE sees a stable frame instead of the next executed line.
+        debugger().pause(PauseReason::Exception);
+        dap().notifyStopped(PauseReason::Exception, site, errorMessage);
+        debugger().waitWhilePaused([this]() { pumpWhilePaused(); });
+    }
 
     return lastReport_;
 }
@@ -558,6 +676,45 @@ const std::string& mcpLastReport() { return DevTool::instance().lastReport(); }
 
 std::string mcpFormatError(const std::string& message) {
     return DevTool::instance().formatError(message);
+}
+
+void DevTool::profileCall(const std::string& func) {
+    profStack_.emplace_back(func, std::chrono::steady_clock::now());
+}
+
+void DevTool::profileLine(const std::string& func) {
+    const auto now = std::chrono::steady_clock::now();
+    if (!profStack_.empty()) {
+        auto& top = profStack_.back();
+        profile_[top.first].ns +=
+            std::chrono::duration_cast<std::chrono::nanoseconds>(now - top.second).count();
+        top.second = now;
+    }
+    if (!func.empty()) ++profile_[func].lines;
+}
+
+void DevTool::profileReturn() {
+    const auto now = std::chrono::steady_clock::now();
+    if (profStack_.empty()) return;
+    auto& top = profStack_.back();
+    profile_[top.first].ns +=
+        std::chrono::duration_cast<std::chrono::nanoseconds>(now - top.second).count();
+    ++profile_[top.first].calls;
+    profStack_.pop_back();
+}
+
+std::string DevTool::formatProfileReport() const {
+    std::ostringstream oss;
+    oss << "function, calls, lines, time_ms\n";
+    std::vector<std::pair<std::string, ProfileEntry>> rows(profile_.begin(), profile_.end());
+    std::sort(rows.begin(), rows.end(), [](const auto& a, const auto& b) {
+        return a.second.ns > b.second.ns;
+    });
+    for (const auto& [name, e] : rows) {
+        oss << name << ", " << e.calls << ", " << e.lines << ", "
+            << (static_cast<double>(e.ns) / 1e6) << "\n";
+    }
+    return oss.str();
 }
 
 }  // namespace eve::dev

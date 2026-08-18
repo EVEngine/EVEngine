@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/Canvas.h"
+#include "graphics/BlendMode.h"
 #include "graphics/Quad.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
@@ -28,6 +29,8 @@ struct DrawItem2D {
     bool hasOrder = false;
     Color color{1.f, 1.f, 1.f, 1.f};
     int layer = 0;
+    /** 2D quad blending (alpha / additive / opaque). */
+    BlendMode blend = BlendMode::Alpha;
     Texture *texture = nullptr;
     Texture *normal = nullptr;
     Quad *quad = nullptr;
@@ -58,6 +61,7 @@ inline void sortDrawItems2D(std::vector<DrawItem2D> &items) {
         if (a.depthY != b.depthY) return a.depthY < b.depthY;
         if (a.litPath != b.litPath) return !a.litPath && b.litPath;
         if (a.shader != b.shader) return a.shader < b.shader;
+        if (a.blend != b.blend) return a.blend < b.blend;
         if (a.texture != b.texture) return a.texture < b.texture;
         return a.normal < b.normal;
     });

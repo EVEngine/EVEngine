@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "graphics/BlendMode.h"
 #include "graphics/Shader.h"
 #include "graphics/Drawable.h"
 #include "graphics/Canvas.h"
@@ -106,10 +107,21 @@ public:
     double getScreenDPIScale() const { return getCurrentDPIScale(); }
 
     /** Internal immediate-mode helper used by RenderSystem / Batcher. */
-    virtual void drawSolidRect(float x, float y, float w, float h, const Color &color) = 0;
-    /** Draw a solid rectangle rotated clockwise around its center. */
+    virtual void drawSolidRect(float x, float y, float w, float h, const Color &color,
+                               BlendMode blend = BlendMode::Alpha) = 0;
+
+    /** Rotated solid quad `degrees` clockwise (screen Y-down) around (cx, cy). */
     virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
-                                      const Color &color) = 0;
+                                      const Color &color,
+                                      BlendMode blend = BlendMode::Alpha) {
+        (void)cx;
+        (void)cy;
+        (void)w;
+        (void)h;
+        (void)degrees;
+        (void)color;
+        (void)blend;
+    }
 
     /** Create RGBA8 texture from CPU pixels (size = width*height*4). Caller owns Texture*. */
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
@@ -171,7 +183,8 @@ public:
     /** UV draw with an explicit Shader (nullptr = default textured pipeline). */
     virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y,
                                           float w, float h, float u0, float v0, float u1, float v1,
-                                          const Color &color, bool rotatedUV = false) = 0;
+                                          const Color &color, bool rotatedUV = false,
+                                          BlendMode blend = BlendMode::Alpha) = 0;
 
     /**
      * UV draw rotated `degrees` clockwise (screen Y-down) around the rect center.
@@ -180,7 +193,8 @@ public:
     virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
                                                  float w, float h, float degrees, float u0, float v0,
                                                  float u1, float v1, const Color &color,
-                                                 bool rotatedUV = false) {
+                                                 bool rotatedUV = false,
+                                                 BlendMode blend = BlendMode::Alpha) {
         (void)texture;
         (void)shader;
         (void)cx;
@@ -194,6 +208,7 @@ public:
         (void)v1;
         (void)color;
         (void)rotatedUV;
+        (void)blend;
     }
 
     /**
@@ -238,6 +253,19 @@ public:
      */
     virtual Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                     int vertexCount, const uint32_t *indices, int indexCount) = 0;
+
+    /**
+     * In-place update of a mesh's vertex/index data (CPU -> host-visible VBO).
+     * Mirrors bakeMeshMorph: the update synchronizes with in-flight GPU work,
+     * so prefer rebuilding only when content actually changes. The mesh's
+     * buffer is reused while it fits (stable GPU handle) and reallocated when
+     * the new size grows. Returns false when unsupported (WebGPU backend).
+     * posXYZ/nrmXYZ follow newMeshFromArrays layout (uvST may be null);
+     * indices/indexCount may be null/0 to keep the mesh's existing indices.
+     */
+    virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
+                                    const float *uvST, int vertexCount, const uint32_t *indices,
+                                    int indexCount) = 0;
 
     /**
      * If mesh morph weights are dirty, bake blended positions and upload to the GPU VBO.
@@ -317,6 +345,16 @@ public:
     virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
                                  float nearZ, float farZ, Texture *albedo = nullptr,
                                  float tintR = 1.f, float tintG = 1.f, float tintB = 1.f) = 0;
+    /**
+     * GBuffer fill with alpha-cutout discard (card/billboard geometry such as
+     * sprite-stack slices): same outputs as drawMeshGBuffer, but transparent
+     * texels are discarded so depth/normal follow the silhouette. No-op on
+     * backends without the alpha pipeline (WebGPU).
+     */
+    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
+                                      float nearZ, float farZ, Texture *albedo = nullptr,
+                                      float tintR = 1.f, float tintG = 1.f,
+                                      float tintB = 1.f) = 0;
     virtual void endGBufferPass() = 0;
 
     /**
@@ -476,6 +514,15 @@ public:
      */
     virtual void beginShadowPass(int cascadeIndex) = 0;
     virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
+    /**
+     * Shadow pass draw with alpha-cutout discard (card/billboard geometry such
+     * as sprite-stack slices): transparent texels of `albedo` are discarded so
+     * the slice casts a silhouette shadow instead of a solid quad. Requires an
+     * active shadow pass (beginShadowPass). No-op on backends without the
+     * alpha shadow pipeline (WebGPU).
+     */
+    virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
+                                     Texture *albedo = nullptr) = 0;
     virtual void endShadowPass() = 0;
 
     /** True after begin3DFrame until present completes. */
@@ -672,7 +719,7 @@ public:
      * Caller owns Waterfall*; its Mesh / Shader are owned by Graphics.
      */
     Waterfall *newWaterfall();
-    
+
     /**
      * Dynamic water surface (sky reflection + animated edge waves + middle
      * drop ripples). Caller owns Water*; its Mesh / Shader are owned by Graphics.

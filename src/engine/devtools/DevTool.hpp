@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <chrono>
 
 struct SQVM;
 typedef struct SQVM* HSQUIRRELVM;
@@ -22,6 +23,7 @@ namespace eve::dev {
 
 class McpServer;
 class AiPanel;
+class ConsolePanel;
 
 /**
  * Platform-level script + render debugger / dynamic slicer front-end.
@@ -65,6 +67,8 @@ public:
 
     /** Draw DevTools AI ImGui panel when visible (call from UI/frame loop). */
     void drawAiPanel();
+    /** Draw DevTools console ImGui panel when visible (call from UI/frame loop). */
+    void drawConsolePanel();
 
     bool isAttached() const { return vm_ != nullptr; }
     bool renderTraceEnabled() const { return renderTraceEnabled_; }
@@ -80,6 +84,7 @@ public:
     DebugAdapter&     dap() { return DebugAdapter::instance(); }
     McpServer&        mcp();
     AiPanel&          ai();
+    ConsolePanel&     console();
 
     SliceResult analyzeError(const std::string& errorMessage,
                              const std::vector<std::string>& hintVars = {}) const;
@@ -88,6 +93,20 @@ public:
                             const std::vector<std::string>& hintVars = {}) const;
 
     const std::string& lastReport() const { return lastReport_; }
+    const std::string& lastError() const { return lastError_; }
+
+    /** Per-function script profile (line-hook timing). */
+    struct ProfileEntry {
+        int         calls = 0;
+        int         lines = 0;
+        long long   ns    = 0;
+    };
+    const std::unordered_map<std::string, ProfileEntry>& profile() const { return profile_; }
+    void profileClear() {
+        profile_.clear();
+        profStack_.clear();
+    }
+    std::string formatProfileReport() const;
 
     /** Record an error; includes script slice and render-pipeline slice when enabled. */
     std::string notifyError(const std::string& errorMessage,
@@ -106,6 +125,9 @@ private:
     /** DAP poll + in-engine F5/F8/F10/F11 while blocked in a script pause. */
     void pumpWhilePaused();
     void handleDebugHotkey(const std::string& key);
+    void profileLine(const std::string& func);
+    void profileCall(const std::string& func);
+    void profileReturn();
 
     HSQUIRRELVM vm_               = nullptr;
     bool        sampleLocals_     = true;
@@ -113,6 +135,9 @@ private:
     CallGraph   graph_;
     RenderFlow  renderFlow_;
     std::string lastReport_;
+    std::string lastError_;
+    std::unordered_map<std::string, ProfileEntry> profile_;
+    std::vector<std::pair<std::string, std::chrono::steady_clock::time_point>> profStack_;
 
     std::unordered_map<int, std::unordered_map<std::string, std::string>> localSnap_;
 };
