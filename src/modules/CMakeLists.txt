@@ -13,6 +13,15 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
+# Each of graphics / physics / audio has a SceneLinks.cpp registering the link
+# kinds it owns (scene/SceneLink.h). They all share the basename, so dropping
+# scene drops all three in one rule.
+eve_module_enabled(scene _has_scene)
+if(NOT _has_scene)
+  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp"
+      CACHE INTERNAL "Exact basenames excluded from module source scan")
+endif()
+
 # --- create every enabled module -------------------------------------------
 
 foreach(_mod IN LISTS EVE_ENABLED_MODULES)
@@ -167,7 +176,6 @@ if(_has_procgen)
     ${CMAKE_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
 endif()
 
-eve_module_enabled(scene _has_scene)
 if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
   # Scene serialization needs Poco JSON; the browser build has no Poco headers,
   # so EVENGINE_SCENE_JSON compiles that path out of Scene.cpp there.

@@ -12,7 +12,10 @@
 #include <glm/mat4x4.hpp>
 
 #include "scene/NodeDesc.h"
+#include "scene/SceneLink.h"
 
+// Only pointers to these cross the interface, so a forward declaration is
+// enough: scene links carry them as void* and the owning module does the casts.
 namespace eve::graphics {
 class Renderable2D;
 class Renderable3D;
@@ -29,29 +32,6 @@ class Source;
 }
 
 namespace eve::scene {
-
-/** Link target kind for the generic per-node link system. */
-enum class LinkKind {
-    None = 0,
-    Renderable2D,
-    Renderable3D,
-    Physics2D,
-    Physics3D,
-    Camera3D,
-    Audio3D,
-};
-
-/**
- * One generic link between a scene node and an external object (renderable,
- * physics body, camera, audio source). A node can hold several links of
- * different kinds; re-linking the same kind replaces the target.
- * syncMode: 0 = node → target (node authoritative), 1 = target → node.
- */
-struct SceneLink {
-    LinkKind kind = LinkKind::None;
-    void *target = nullptr;
-    int syncMode = 0;
-};
 
 /**
  * Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.
@@ -241,9 +221,15 @@ public:
     std::vector<std::string> collectIdsVisible(bool visible = true);
 
     /**
-     * Link an external object to a node id. Survives reconcile/rebuild by id.
-     * After TransformSystem, the link is synced per kind (and syncMode).
+     * Attach an external object to a node id. Survives reconcile/rebuild by id.
+     * After TransformSystem the link is synced per kind (and syncMode).
+     *
+     * `kind` is an id from scene::registerLinkKind, so any module can attach to
+     * the tree; the typed helpers below are conveniences for the kinds the
+     * engine ships. Returns false when the node or the kind is unknown.
      */
+    bool link(const std::string &nodeId, int kind, void *target, int syncMode = 0);
+
     bool linkRenderable2D(const std::string &nodeId, graphics::Renderable2D *r);
     bool linkRenderable3D(const std::string &nodeId, graphics::Renderable3D *r);
     bool linkPhysics2D(const std::string &nodeId, physics::Body *b, int syncMode = 0);
@@ -252,12 +238,12 @@ public:
     bool linkAudio3D(const std::string &nodeId, audio::Source *s);
 
     /** Remove all links of a kind; returns true if a link was removed. */
-    bool unlink(const std::string &nodeId, LinkKind kind);
+    bool unlink(const std::string &nodeId, int kind);
     /** Remove every link on the node. */
     bool unlink(const std::string &nodeId);
 
-    SceneLink *findLink(SceneNode *node, LinkKind kind);
-    const SceneLink *findLink(const SceneNode *node, LinkKind kind) const;
+    SceneLink *findLink(SceneNode *node, int kind);
+    const SceneLink *findLink(const SceneNode *node, int kind) const;
     int linkCount(const std::string &nodeId);
 
     /** Reparent by id; empty parentId detaches (parent = -1). Cycle-safe. */

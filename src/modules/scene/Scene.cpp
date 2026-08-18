@@ -77,15 +77,12 @@ bool sameScriptObject(const HSQOBJECT &a, const HSQOBJECT &b) {
            std::memcmp(&a._unVal, &b._unVal, sizeof(a._unVal)) == 0;
 }
 
-LinkKind linkKindFromString(const std::string &kind) {
-    if (kind == "renderable2d") return LinkKind::Renderable2D;
-    if (kind == "renderable3d") return LinkKind::Renderable3D;
-    if (kind == "physics2d") return LinkKind::Physics2D;
-    if (kind == "physics3d") return LinkKind::Physics3D;
-    if (kind == "camera3d") return LinkKind::Camera3D;
-    if (kind == "audio3d") return LinkKind::Audio3D;
-    return LinkKind::None;
-}
+/**
+ * The script API already names link kinds with strings, which is exactly the
+ * registry's key, so an unknown name and a kind whose module was trimmed out
+ * are the same case: -1.
+ */
+int linkKindFromString(const std::string &kind) { return findLinkKind(kind.c_str()); }
 
 int syncModeFromString(const std::string &mode) {
     return mode == "body" ? 1 : 0;
@@ -898,8 +895,8 @@ bool Scene::unlinkNodeKindAt(const std::string &hostName, const std::string &nod
                              const std::string &kind) {
     SceneHost *h = resolveHost(hostName);
     if (!h) return false;
-    const LinkKind k = linkKindFromString(kind);
-    if (k == LinkKind::None) return false;
+    const int k = linkKindFromString(kind);
+    if (k < 0) return false;
     const bool removed = h->unlink(nodeId, k);
     if (removed) TransformSystem::updateHost(h);
     return removed;

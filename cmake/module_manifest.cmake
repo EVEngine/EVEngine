@@ -142,6 +142,7 @@ eve_declare_module(NAME touch LAYER 2 SCRIPT Touch SLOT touch
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME audio LAYER 2 SCRIPT Audio SLOT audio
                    DEPS event sound
+                   OPTIONAL_DEPS scene
                    THIRDPARTY openal
                    GROUP 2d 3d)
 eve_declare_module(NAME font LAYER 2 SCRIPT Font SLOT font
@@ -176,6 +177,7 @@ eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
                    DEPS event graphics
+                   OPTIONAL_DEPS scene
                    THIRDPARTY box2d box3d
                    GROUP 2d 3d web)
 eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
@@ -214,9 +216,11 @@ eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
 # L5 / L6 -- aggregates and orchestration
 # ---------------------------------------------------------------------------
 
-eve_declare_module(NAME scene LAYER 5 SCRIPT Scene SLOT scene
-                   DEPS graphics physics spatial
-                   OPTIONAL_DEPS audio
+# Renderables, bodies and audio sources attach through registered link kinds
+# (scene/SceneLink.h), so scene no longer depends on those modules; graphics
+# remains only because pickScreenAt / collectFrustumIdsAt take a Camera3D.
+eve_declare_module(NAME scene LAYER 1 SCRIPT Scene SLOT scene
+                   DEPS graphics spatial
                    THIRDPARTY poco
                    GROUP 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles

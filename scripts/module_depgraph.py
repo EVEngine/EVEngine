@@ -33,6 +33,11 @@ KNOWN_BACK_EDGES = {
     # pointer and decodes its own icon image.
     ("window", "graphics"),
     ("window", "image"),
+    # scene/Scene.cpp: pickScreenAt and collectFrustumIdsAt take a
+    # graphics::Camera3D and read its projection. Everything else about scene is
+    # now renderer-agnostic (graphics registers its own link kinds), so these two
+    # entry points are what is left to move out to camera/graphics.
+    ("scene", "graphics"),
 }
 
 
