@@ -445,16 +445,6 @@ void unionChildBounds(scene::SceneHost::Tree &tree, int nodeIndex) {
     }
 }
 
-void linkAllMeshNodes(scene::SceneHost *host, graphics::Graphics *gfx, const MeshSlotMap &slots) {
-    for (const auto &kv : slots) {
-        scene::SceneNode *n = host->findById(kv.first);
-        if (!n) continue;
-        graphics::Renderable3D *r = makeRenderable(gfx, kv.second[0]);
-        if (!r) continue;
-        n->links.push_back(scene::SceneLink{scene::LinkKind::Renderable3D, r, 0});
-    }
-}
-
 // ---- NodeDesc build ----
 
 void buildNodeRecursive(const aiScene *scene, const aiNode *node, scene::NodeDesc &out,
@@ -772,7 +762,7 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
     if (!gfx) return;
     for (const auto &kv : slots) {
         scene::SceneNode *n = host->findById(kv.first);
-        if (!n || n->linkTarget || kv.second.empty()) continue;
+        if (!n || kv.second.empty()) continue;
         const MeshSlot &slot = kv.second[0];
         graphics::Mesh *mesh = nullptr;
         auto it = shared.find(slot.mesh);
@@ -819,8 +809,7 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
         if (albedo) r->setTexture(albedo);
         if (normal) r->setNormalTexture(normal);
         if (height) r->setHeightTexture(height);
-        n->linkKind = "renderable3d";
-        n->linkTarget = r;
+        n->links.push_back(scene::SceneLink{scene::LinkKind::Renderable3D, r, 0});
     }
 }
 
@@ -848,8 +837,7 @@ scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
     host->setTree(std::move(d.root));
 
     graphics::Graphics *gfx = currentGraphics();
-    if (linkRenderables && gfx && !slots.empty()) linkAllMeshNodes(host, gfx, slots);
-    if (!slots.empty()) fillSceneBounds(host, slots);
+    fillSceneBounds(host, d.slots);
 
     if (gfx) {
         MeshCache shared;

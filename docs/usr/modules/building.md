@@ -103,3 +103,65 @@ PlacementSystem::registerValidateRule("needGold",
 - 变更事件不会自动清空；批量操作后调用 `clearChangeEvents` 或按帧 poll。
 - 自定义 validate/snap/hook 只能在 C++ 注册；脚本通过字符串策略名选用。
 - 模块**不**扣资源、不画鬼影；`cost` 仅作数据提示，由游戏在 hook 或脚本中处理。
+
+## 多样式网格 / 3D / Tilemap（2026-08-18 起）
+
+坐标换算统一走 `grid` 模块（纯数学），`PlacementWorld` 缺省为正交 2D，旧脚本零改动。
+
+### 网格布局
+
+```squirrel
+world.setGridLayout("isometric");          // rectangle | hexagon | isometric | staggered | isometric-z-as-y
+world.setGridPlane("xz");                  // xy（默认）| xz（3D：第二轴 -> 世界 Z）
+world.setCellGap(2.0, 2.0);
+world.setStagger("y", "odd");
+world.setHexSideLength(14.0);
+```
+
+### 绑定 Tilemap（复用投影 + GID 地形）
+
+```squirrel
+world.bindTileLayer(layer);                // 同时复用 layer 的 orientation/stagger/hex
+world.setTerrainGid(2, 2);                 // GID 2 -> 地形语义 2（水域）
+world.setTerrainGidMapJson("{\"1\":1,\"2\":2}");  // 或整表
+```
+
+绑定后 `getTerrain` 从 GID 懒解析；`setTerrain` 手动覆盖优先。
+
+### 3D 放置（XZ 平面 + 表面接口）
+
+```squirrel
+world.setGridPlane("xz");
+ghost.setFromSurface(world, "plane", hitX, hitZ);   // 内置平面表面；高度 setPlaneSurfaceHeight
+ghost.setFromWorld3D(world, worldX, worldY, worldZ); // 直接喂真实世界坐标
+world.placeAtWorld3D("house", x, y, z, rot);
+```
+
+物理射线 / 高度场等表面由游戏在 C++ 侧 `registerSurface` 实现；引擎只提供接口 + `plane`。
+
+### 通道（同格叠放）
+
+定义 `"channel":"floor"` / `"channel":"furniture"`，同一格允许跨通道建筑并存；
+`getOccupantInChannel(channel, x, y)` / `isCellEmptyInChannel` 按通道查询。
+
+### 视觉双形态与渲染桥（`eve.BuildingFx`）
+
+```squirrel
+fx <- eve.BuildingFx();
+fx.attach(world);
+fx.sync(world);                        // 按定义 renderMode/visual2d/visual3d 生成/同步/销毁视觉
+fx.updateGhost(world, ghost);          // 每帧：鬼影 + 占地光标（绿/红）
+fx.setGridVisible(world, true);
+fx.drawGrid2D(world, gfx);             // 2D 网格叠加（渲染循环中调用）
+fx.drawGrid3D(world, gfx, 0.01);       // 3D 平面线框
+```
+
+### 放置会话（`eve.Building.newSession`）
+
+```squirrel
+session <- building.newSession();
+session.startPlacement(world, "house");
+session.updateFromSurface(world, "plane", hitX, hitZ);  // 或 updateFromWorld / updateFromWorld3D
+session.setMode("remove");
+session.execute();                     // place 放置 / remove 拆除
+```
