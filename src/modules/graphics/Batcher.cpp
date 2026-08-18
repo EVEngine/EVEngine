@@ -11,10 +11,6 @@ void Batcher::addRect(float x, float y, float w, float h, const Color &color) {
     addTexturedRect(x, y, w, h, color, 0, 0, 1, 1);
 }
 
-void Batcher::addRectRotated(float cx, float cy, float w, float h, float degrees, const Color &color) {
-    addTexturedRectRotated(cx, cy, w, h, degrees, color, 0, 0, 1, 1);
-}
-
 void Batcher::addTexturedRect(float x, float y, float w, float h, const Color &color,
                               float u0, float v0, float u1, float v1, bool rotatedUV) {
     BatchVertex v0p, v1p, v2p, v3p;

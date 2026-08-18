@@ -2477,12 +2477,6 @@ void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float 
     noteSolidOverlay();
 }
 
-void Graphics::drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
-                                    const Color &color) {
-    solidBatch.addRectRotated(cx, cy, w, h, degrees, color);
-    noteSolidOverlay();
-}
-
 namespace {
 
 uint32_t rgba8MipBytes(uint32_t width, uint32_t height) {
