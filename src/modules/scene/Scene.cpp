@@ -7,10 +7,12 @@
 #include "graphics/RenderSystem3D.h"
 #include "spatial/Octree.h"
 
+#ifdef EVENGINE_SCENE_JSON
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/JSON/Stringifier.h>
+#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -188,6 +190,7 @@ bool aabbIntersectsFrustum(const glm::mat4 &clip, const glm::mat4 &invClip,
 
 // --- JSON serialization helpers ---
 
+#ifdef EVENGINE_SCENE_JSON
 Poco::JSON::Object::Ptr nodeToJson(const SceneHost::Tree &tree, const SceneNode *n) {
     Poco::JSON::Object::Ptr o = new Poco::JSON::Object;
     o->set("id", n->id);
@@ -269,6 +272,7 @@ NodeDesc nodeFromJson(const Poco::JSON::Object::Ptr &o) {
     }
     return d;
 }
+#endif
 
 /** Script base: `class X extends eve.SceneComponent { function build() { ... } }`. */
 const char *kSceneComponentScript = R"SQ(
@@ -1204,6 +1208,7 @@ std::vector<float> Scene::getNodeBoundsAt(const std::string &hostName,
     return {n->bminX, n->bminY, n->bminZ, n->bmaxX, n->bmaxY, n->bmaxZ};
 }
 
+#ifdef EVENGINE_SCENE_JSON
 std::string Scene::serializeHostAt(const std::string &hostName) const {
     SceneHost *h = resolveHost(hostName);
     if (!h || !h->getRoot()) return "{}";
@@ -1230,6 +1235,18 @@ bool Scene::deserializeHostAt(const std::string &hostName, const std::string &js
         return false;
     }
 }
+#else
+std::string Scene::serializeHostAt(const std::string &hostName) const {
+    (void)hostName;
+    return "{}";  // Poco JSON is not available on this build (e.g. WASM trim)
+}
+
+bool Scene::deserializeHostAt(const std::string &hostName, const std::string &json) {
+    (void)hostName;
+    (void)json;
+    return false;
+}
+#endif
 
 std::string Scene::pickRayAt(const std::string &hostName, float ox, float oy, float oz,
                              float dx, float dy, float dz) const {
