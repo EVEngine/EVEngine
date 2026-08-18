@@ -1,8 +1,6 @@
 create_module(EVCommon common)
-# Desktop only: DAP / MCP / DevTools rely on Poco JSON+Net and are trimmed out
-# of Android / iOS / browser runtimes (kept in sync with the EVELIBS guard).
-if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS
-        OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
+eve_module_enabled(devtools _has_devtools)
+if(_has_devtools)
     create_module(EVDevTools devtools)
     # Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
     # (would request PocoFoundationd.lib instead of our *mdd postfix).
@@ -112,142 +110,24 @@ elseif(UNIX)
     endif()
 endif()
 
-# Windows MSVC static-lib names match third-party install postfixes (md/mdd).
-# Postfixes are forced early via ExternalProject CMAKE_ARGS so squirrel/OpenAL
-# match Poco-style names even on a fresh CI configure.
-# FreeType forces CMAKE_DEBUG_POSTFIX=d (freetyped.lib) and ignores our mdd;
-# Release still picks up CMAKE_RELEASE_POSTFIX=md → freetypemd.lib.
-if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmdd sqstdlib_staticmdd squirrel_staticmdd SDL2d SDL2maind
-        medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd physfsmdd lz4mdd Box2Dmdd
-        vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd
-        freetyped
-        box3dd
-        PocoDataSQLitemdd PocoDatamdd PocoFoundationmdd PocoNetmdd PocoJSONmdd PocoXMLmdd
-        ${SystemLibraries})
-elseif(WIN32)
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2 SDL2main
-        medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic physfsmd lz4md Box2Dmd
-        vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md
-        freetypemd
-        box3dmd
-        PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
-        ${SystemLibraries})
-elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    # SDL2 is shared (loaded by Java); other deps are static where possible.
-    # GNU ld needs dependents before providers: vorbisfile -> vorbis -> ogg;
-    # PocoNet/XML/JSON -> PocoFoundation.
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D box3d
-        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
-        freetype
-        PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
-        ${SystemLibraries})
-elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS OR APPLE)
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D box3d
-        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
-        freetype
-        PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
-        ${SystemLibraries})
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    # WASM-trimmed third-party: only the simple vendored libs built by the
-    # aggregate (squirrel/simplesquirrel/physfs/lz4/Box2D/xxHash). SDL2 and
-    # zlib come from Emscripten ports (-sUSE_SDL=2 / -sUSE_ZLIB); Poco/OpenAL/
-    # medialoader/assimp/freetype are skipped (their modules are compiled out).
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static
-        medialoader_image physfs lz4 Box2D box3d xxHash
-        ${SystemLibraries})
-else()
-    set(ThirdParty ${ThirdParty} simplesquirrel_static sqstdlib_static squirrel_static SDL2 SDL2main
-        medialoader_image medialoader_model medialoader_sound assimp z physfs lz4 Box2D box3d
-        vorbisfile-static vorbis-static ogg-static modplug-static mpg123 openal
-        freetype
-        PocoDataSQLite PocoData PocoNet PocoXML PocoJSON PocoFoundation
-        ${SystemLibraries})
+# Third-party link list, derived from the module manifest: only the libraries
+# the enabled modules actually need, in the canonical order GNU ld requires.
+# See cmake/thirdparty_libs.cmake for the group -> link-name mapping.
+eve_thirdparty_libs(_eve_tp_libs ${EVE_THIRDPARTY_GROUPS})
+set(ThirdParty ${_eve_tp_libs} ${SystemLibraries})
+message(STATUS "Third-party groups: ${EVE_THIRDPARTY_GROUPS}")
+
+# Module link list, derived from the module manifest; EVCommon, EVCmdLine and
+# EVDevTools are declared there too, so only the embedded scripts are added here.
+set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+if(_has_devtools)
+    # DevTools ImGui host panels (AI + console) compile into the host binary --
+    # not EVDevTools, which avoids imgui.h to protect MSVC export limits.
+    target_sources(${EVENGINE_NATIVE_TARGET} PRIVATE devtools/ImGuiHostPanels.cpp)
 endif()
-
-set(EVELIBS
-    EVWindow
-    EVMouse
-    EVKeyboard
-    EVJoystick
-    EVEvent
-    EVRx
-    EVTimer
-    EVSystem
-    EVAnimation
-    EVIK
-    EVMath
-    EVGrid
-    EVSpatial
-    EVTensor
-    EVTouch
-    EVCmdLine)
-
-# Desktop only: DAP / MCP / DevTools (trimmed out of Android / iOS / browser runtimes).
-if(NOT (ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS
-        OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
-    list(APPEND EVELIBS EVDevTools)
-    # DevTools ImGui host panels (AI + console) compile into the host binary —
-    # not EVDevTools (which avoids imgui.h to protect MSVC export limits).
-    target_sources(eve PRIVATE devtools/ImGuiHostPanels.cpp)
-endif()
-
-list(APPEND EVELIBS
-    EVScripts
-    EVCommon
-    EVGraphics
-    EVDayNight
-    EVWeather
-    EVImage
-    EVDatabase
-    EVFileSystem
-    EVNetwork
-    EVData
-    EVI18n
-    EVSound
-    EVAudio
-    EVUI
-    eve_imgui
-    EVScene
-    EVCamera
-    EVSceneLoader
-    EVParticles
-    EVMap
-    EVGpgpu
-    EVVirtualGeometry
-    EVModel3D
-    EVFont
-    EVThread
-    EVPlugins
-    EVPhysics
-    EVRPG
-    EVInventory
-    EVBuilding
-    EVBuildingFx
-    EVCard
-    EVAvatar
-    EVDialogue
-    EVProcgen
-    EVHouseGen
-    EVVoxel
-    EVStylize
-    EVSpriteStack
-    EVEditor)
-
-# WASM (Emscripten) trims the modules whose third-party deps were dropped.
-if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    foreach(_eve_trimmed IN ITEMS
-        EVAnimation EVAudio EVAvatar EVBuilding EVBuildingFx EVDatabase EVFont EVInventory EVCard
-        EVMap EVModel3D EVNetwork EVParticles EVPlugins EVRPG EVSound EVSpriteStack EVStylize EVVoxel
-        EVDialogue EVProcgen EVSceneLoader EVHouseGen EVVirtualGeometry)
-        list(REMOVE_ITEM EVELIBS ${_eve_trimmed})
-    endforeach()
-endif()
-
-if(EVENGINE_BUILD_DEMO AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
-    list(APPEND EVELIBS EVDemo)
+eve_module_enabled(ui _has_ui)
+if(_has_ui)
+    list(APPEND EVELIBS eve_imgui)
 endif()
 
 if(EVENGINE_PLATFORM_LIB)

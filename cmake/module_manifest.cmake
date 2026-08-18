@@ -1,0 +1,239 @@
+# The module manifest: single source of truth for what a build contains.
+#
+# Edit here, not in src/modules/CMakeLists.txt or the EVELIBS / ThirdParty lists
+# in src/engine/CMakeLists.txt -- those are derived. See cmake/modules.cmake for
+# the eve_declare_module() signature and docs/dev/模块编排与裁剪架构.md for the
+# layering the LAYER field records.
+#
+# DEPS mirrors the real #include graph, which scripts/module_depgraph.py prints;
+# keep the two in step when a module gains or drops a dependency.
+
+include_guard(GLOBAL)
+include(${CMAKE_CURRENT_LIST_DIR}/modules.cmake)
+
+# Third-party groups in link order. GNU ld resolves left to right, so a
+# dependent must appear before its provider (vorbisfile -> vorbis -> ogg,
+# PocoNet -> PocoFoundation). Groups are filtered by this order, never sorted.
+set(EVE_TP_ORDER
+    squirrel
+    sdl2
+    medialoader_image
+    medialoader_model
+    medialoader_sound
+    assimp
+    zlib
+    physfs
+    lz4
+    box2d
+    box3d
+    audio_codecs
+    openal
+    freetype
+    poco_data
+    poco
+    xxhash
+    CACHE INTERNAL "Third-party groups, in link order")
+
+# ---------------------------------------------------------------------------
+# Engine core. Built by src/engine/CMakeLists.txt rather than src/modules.
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME common CORE REQUIRED LIB EVCommon LAYER -1
+                   THIRDPARTY squirrel)
+eve_declare_module(NAME cmdline CORE REQUIRED LIB EVCmdLine LAYER -1
+                   DEPS filesystem ui
+                   THIRDPARTY squirrel poco)
+# DevTools reaches into scene / physics / procgen / particles / audio / ui
+# directly (McpServer, SceneInspect). Until those calls go through capability
+# interfaces it has to be switched off before any of them can be trimmed --
+# the resolver says so by name when that happens.
+eve_declare_module(NAME devtools CORE LIB EVDevTools LAYER -1
+                   DEPS graphics scene physics procgen particles audio ui image event filesystem
+                   THIRDPARTY poco
+                   GROUP 3d)
+
+# ---------------------------------------------------------------------------
+# L0 -- foundation
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME math LAYER 0 SCRIPT Math SLOT math
+                   GROUP minimal 2d 3d web)
+# Unified grid: layout/topology + projection. Pure math, no Module class.
+eve_declare_module(NAME grid LAYER 0
+                   GROUP 2d 3d web)
+eve_declare_module(NAME data LAYER 0 SCRIPT DataModule
+                   THIRDPARTY poco xxhash
+                   GROUP minimal 2d 3d web)
+# Filesystem also exposes HotReload, the asset-reload dispatcher.
+eve_declare_module(NAME filesystem REQUIRED LIB EVFileSystem LAYER 0 SCRIPT Filesystem HotReload SLOT fs hot
+                   THIRDPARTY physfs lz4 zlib poco sdl2)
+eve_declare_module(NAME event REQUIRED LAYER 0 SCRIPT Event SLOT event
+                   THIRDPARTY sdl2)
+eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
+                   THIRDPARTY sdl2)
+eve_declare_module(NAME system LAYER 0 SCRIPT System SLOT system
+                   THIRDPARTY sdl2
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME thread LAYER 0 SCRIPT Thread SLOT thread
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
+                   GROUP 2d 3d web)
+eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
+                   GROUP 2d 3d web)
+eve_declare_module(NAME editor LAYER 0 SCRIPT Editor SLOT editor
+                   GROUP 3d web)
+eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
+                   GROUP 3d)
+eve_declare_module(NAME database LAYER 0 SCRIPT Database
+                   THIRDPARTY poco_data poco)
+eve_declare_module(NAME rpg LIB EVRPG LAYER 0 SCRIPT RPG)
+eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
+eve_declare_module(NAME building LAYER 0 SCRIPT Building
+                   DEPS grid)
+
+# ---------------------------------------------------------------------------
+# L1 -- platform services and resource decoding
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME window REQUIRED LAYER 1 SCRIPT Window SLOT win
+                   DEPS event graphics image
+                   THIRDPARTY sdl2)
+eve_declare_module(NAME image LAYER 1 SCRIPT Image
+                   DEPS filesystem
+                   THIRDPARTY medialoader_image
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME i18n LAYER 1 SCRIPT I18n SLOT i18n
+                   DEPS filesystem
+                   GROUP 2d 3d web)
+eve_declare_module(NAME rx LAYER 1 SCRIPT Rx
+                   DEPS event
+                   GROUP 2d 3d web)
+eve_declare_module(NAME joystick LAYER 1 SCRIPT Joystick
+                   DEPS event
+                   THIRDPARTY sdl2
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME model3d LIB EVModel3D LAYER 1 SCRIPT Model3D SLOT model3d
+                   DEPS filesystem
+                   THIRDPARTY medialoader_model assimp
+                   GROUP 3d)
+eve_declare_module(NAME sound LAYER 1 SCRIPT Sound SLOT sound
+                   DEPS filesystem
+                   THIRDPARTY medialoader_sound audio_codecs
+                   GROUP 2d 3d)
+eve_declare_module(NAME network LAYER 1 SCRIPT Network
+                   DEPS data event
+                   THIRDPARTY poco)
+
+# ---------------------------------------------------------------------------
+# L2 -- input state and playback
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME keyboard LAYER 2 SCRIPT Keyboard SLOT keyboard
+                   DEPS event window
+                   THIRDPARTY sdl2
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME mouse LAYER 2 SCRIPT Mouse SLOT mouse
+                   DEPS window
+                   THIRDPARTY sdl2
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME touch LAYER 2 SCRIPT Touch SLOT touch
+                   DEPS event window
+                   THIRDPARTY sdl2
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME audio LAYER 2 SCRIPT Audio SLOT audio
+                   DEPS event sound
+                   THIRDPARTY openal
+                   GROUP 2d 3d)
+eve_declare_module(NAME font LAYER 2 SCRIPT Font SLOT font
+                   DEPS filesystem image
+                   THIRDPARTY freetype
+                   GROUP 2d 3d)
+
+# ---------------------------------------------------------------------------
+# L3 -- the rendering hub
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
+                   DEPS data filesystem font image
+                   THIRDPARTY sdl2 assimp)
+
+# ---------------------------------------------------------------------------
+# L4 -- rendering extensions and simulation
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
+                   DEPS graphics
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
+                   DEPS data filesystem graphics
+                   GROUP 2d 3d web)
+eve_declare_module(NAME ui LIB EVUI LAYER 4 SCRIPT UI SLOT ui
+                   DEPS event filesystem graphics image timer window
+                   THIRDPARTY sdl2 poco
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
+                   DEPS event graphics
+                   THIRDPARTY box2d box3d
+                   GROUP 2d 3d web)
+eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
+                   DEPS data filesystem graphics grid
+                   THIRDPARTY poco
+                   GROUP 2d 3d)
+eve_declare_module(NAME buildingfx LIB EVBuildingFx LAYER 4 SCRIPT BuildingFx SLOT buildingfx
+                   DEPS building graphics)
+eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
+                   DEPS data filesystem graphics model3d
+                   THIRDPARTY poco assimp
+                   GROUP 2d 3d)
+eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
+                   DEPS graphics
+                   GROUP 3d web)
+eve_declare_module(NAME weather LAYER 4 SCRIPT Weather SLOT weather
+                   DEPS graphics
+                   GROUP 3d web)
+eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
+                   DEPS graphics image
+                   GROUP 3d)
+eve_declare_module(NAME voxel LAYER 4 SCRIPT Voxel
+                   DEPS graphics
+                   GROUP 3d)
+eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
+                   DEPS graphics image model3d
+                   GROUP 3d)
+eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
+                   DEPS data graphics image model3d)
+eve_declare_module(NAME card LAYER 4 SCRIPT Card
+                   DEPS graphics)
+eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
+                   DEPS graphics sound)
+
+# ---------------------------------------------------------------------------
+# L5 / L6 -- aggregates and orchestration
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME scene LAYER 5 SCRIPT Scene SLOT scene
+                   DEPS graphics physics spatial
+                   OPTIONAL_DEPS audio
+                   THIRDPARTY poco
+                   GROUP 3d web)
+eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
+                   DEPS animation data filesystem gpgpu graphics ik
+                   THIRDPARTY poco
+                   GROUP 2d 3d)
+eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
+                   DEPS graphics image map
+                   GROUP 3d)
+eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
+                   DEPS animation graphics model3d)
+eve_declare_module(NAME tensor LAYER 5 LIB EVTensor SCRIPT TF SLOT tf
+                   DEPS gpgpu
+                   GROUP 3d web)
+eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT VirtualGeometry
+                   DEPS data gpgpu graphics
+                   GROUP 3d)
+eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
+                   DEPS animation data filesystem graphics image model3d scene thread
+                   THIRDPARTY assimp
+                   GROUP 3d)
+eve_declare_module(NAME dialogue LAYER 6 SCRIPT Dialogue SLOT dialogue
+                   DEPS avatar)

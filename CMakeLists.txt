@@ -127,6 +127,23 @@ function(main)
     elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
+    # Resolve which modules this build contains before descending into any
+    # subdirectory: src/modules, src/engine and src/scripts all derive their
+    # content from the result. See cmake/module_manifest.cmake.
+    include(${CMAKE_SOURCE_DIR}/cmake/module_manifest.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/thirdparty_libs.cmake)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND NOT EVENGINE_PROFILE)
+        # The browser runtime drops the modules whose third-party deps were cut.
+        set(EVENGINE_PROFILE "web")
+    endif()
+    # DevTools (DAP / MCP / snapshot) rely on Poco JSON+Net and have never been
+    # part of the mobile or browser runtimes.
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
+       OR EVENGINE_IOS OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        set(EVENGINE_MODULE_devtools OFF)
+    endif()
+    eve_resolve_modules()
+
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).
