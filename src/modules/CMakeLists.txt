@@ -130,6 +130,10 @@ target_link_libraries(EVUI PUBLIC eve_imgui)
 target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
 target_include_directories(EVUI BEFORE PUBLIC
   ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+# EditorHost (headless MCP host) pulls Poco headers on desktop builds;
+# disable MSVC #pragma comment auto-link like EVDevTools does (it would
+# request PocoFoundationd.lib instead of the built *mdd postfix).
+target_compile_definitions(EVUI PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 
 create_module(EVScene scene)
 create_module(EVCamera camera)
