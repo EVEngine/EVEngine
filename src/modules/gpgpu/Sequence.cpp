@@ -1,6 +1,7 @@
 #include "gpgpu/Sequence.h"
 
 #include "common/Exception.h"
+#include "common/config.h"  // EVENGINE_WEBGPU platform macro (generated)
 
 #ifdef EVENGINE_WEBGPU
 
