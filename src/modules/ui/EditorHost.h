@@ -77,7 +77,7 @@ public:
     std::string saveEditor(const std::string& id);
     /** Remove an editor from the session (files stay on disk). */
     std::string unloadEditor(const std::string& id);
-    /** Load editors/*.editor.json (+ matching .vm.nut) on host startup. */
+    /** Load editors/<id>.editor.json (+ matching .vm.nut) on host startup. */
     void loadEditorsFromDisk();
 
     // ---- misc --------------------------------------------------------------

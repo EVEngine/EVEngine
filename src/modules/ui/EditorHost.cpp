@@ -1,10 +1,14 @@
 #include "ui/EditorHost.h"
 
+#include "common/config.h"
+
 #if defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__)
 
 // The browser runtime trims Poco / DevTools / the host path. Keep EVUI
 // linkable with a no-op implementation; `eve mcp` is desktop-only anyway.
 namespace eve::ui {
+struct EditorHost::Impl {};
+
 EditorHost& EditorHost::instance() {
     static EditorHost* inst = new EditorHost();
     return *inst;
