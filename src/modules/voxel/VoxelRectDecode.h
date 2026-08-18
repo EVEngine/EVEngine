@@ -13,6 +13,7 @@ struct DecodedRect {
     int tex = 0;
     float width = 1.f;
     float height = 1.f;
+    uint8_t ao[4] = {3, 3, 3, 3};  // per-corner 0..3, shader corner order
 };
 
 /**
@@ -20,7 +21,8 @@ struct DecodedRect {
  * Used by unit tests to validate packing ↔ geometry without a GPU.
  */
 inline DecodedRect decodePackedRect(PackedRect rect, FaceDir dir, float originX, float originY,
-                                    float originZ, int tilesPerRow = 16) {
+                                    float originZ, int tilesPerRow = 16,
+                                    uint32_t aoWord = 0xFFu) {
     DecodedRect out;
     const float ix = float(rect.x());
     const float iy = float(rect.y());
@@ -30,6 +32,8 @@ inline DecodedRect decodePackedRect(PackedRect rect, FaceDir dir, float originX,
     out.width = w;
     out.height = h;
     out.tex = rect.tex();
+
+    for (int i = 0; i < 4; ++i) out.ao[i] = uint8_t((aoWord >> (2 * i)) & 3u);
 
     const float corners2[4][2] = {{0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}};
     for (int i = 0; i < 4; ++i) {

@@ -188,7 +188,7 @@ public:
                         Shader *shader) override;
     void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
                                 float originZ, const std::string &faceDir, Texture *atlas,
-                                int tilesPerRow = 16) override;
+                                int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DSceneDepth(Texture *depth) override;
