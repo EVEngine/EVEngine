@@ -38,6 +38,7 @@
 - [动画](modules/animation.md)：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（`ControlAnim` / `ControlPose`）、以及拖尾轨迹（`AnimTrail`）。
 - [RPG 系统](modules/rpg.md)：组合属性、效果、状态、技能、施法与伤害结算。
 - [背包 / 物品栏](modules/inventory.md)：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。
+- [卡牌游戏工具](modules/cardgame.md)：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌与费用置灰（参考 UiCard）。
 - [建筑放置](modules/building.md)：策略 / 经营类建筑定义、格子占用、鬼影预览与可插拔校验/吸附。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
 
