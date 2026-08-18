@@ -88,8 +88,13 @@ eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 0 SCRIPT RPG)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
+# PlacementWorld.cpp includes data/JsonDocument.h and Poco JSON (save/load).
+# THIRDPARTY poco is required so MSVC compiles those TUs with
+# POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of
+# PocoFoundationd.lib instead of the *mdd archive the third-party build emits.
 eve_declare_module(NAME building LAYER 0 SCRIPT Building
-                   DEPS grid)
+                   DEPS grid data
+                   THIRDPARTY poco)
 
 # ---------------------------------------------------------------------------
 # L1 -- platform services and resource decoding

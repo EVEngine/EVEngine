@@ -32,16 +32,16 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
 endforeach()
 
 # Poco's MSVC #pragma comment auto-link names libraries without the md/mdd
-# postfix the third-party build was told to use, so every module that touches
-# Poco has to opt out of it and into the static build.
+# postfix the third-party build was told to use (PocoFoundationd.lib vs
+# PocoFoundationmdd.lib). OBJECT libraries do not inherit compile definitions
+# from other modules, so any TU that includes a Poco header -- directly or via
+# data/JsonDocument.h -- must have the flag on its own target. Apply it to
+# every native module rather than hoping the THIRDPARTY list stays in sync.
 foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   if(EVE_MODULE_${_mod}_CORE)
     continue()
   endif()
-  if("poco" IN_LIST EVE_MODULE_${_mod}_THIRDPARTY OR
-     "poco_data" IN_LIST EVE_MODULE_${_mod}_THIRDPARTY)
-    target_compile_definitions(${EVE_MODULE_${_mod}_LIB} PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
-  endif()
+  target_compile_definitions(${EVE_MODULE_${_mod}_LIB} PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endforeach()
 
 # --- per-module build settings ----------------------------------------------

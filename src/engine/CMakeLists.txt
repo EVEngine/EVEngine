@@ -134,6 +134,12 @@ if(EVENGINE_PLATFORM_LIB)
     list(APPEND EVELIBS ${EVENGINE_PLATFORM_LIB})
 endif()
 
+# Host TUs (main.cpp, ImGuiHostPanels.cpp) can pull Poco headers through
+# engine includes; keep the same no-auto-link contract as the modules.
+if(WIN32 AND TARGET ${EVENGINE_NATIVE_TARGET})
+    target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+endif()
+
 if(NOT EVENGINE_ANDROID_TEST_APP)
   if(CMAKE_GENERATOR MATCHES "Xcode")
     # create_module() emits STATIC libraries here, so the linker would drop the

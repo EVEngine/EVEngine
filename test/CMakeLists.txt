@@ -169,6 +169,17 @@ else()
   )
 endif()
 
+# Several tests include Poco headers (data, mcp, dap, remotesync). MSVC would
+# otherwise #pragma-comment PocoFoundationd.lib, which the third-party prefix
+# does not ship (it installs PocoFoundationmdd.lib).
+if(WIN32)
+  if(EVENGINE_ANDROID_TEST_APP)
+    target_compile_definitions(main PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  else()
+    target_compile_definitions(unit_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
+endif()
+
 
 if(WIN32)
   set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
