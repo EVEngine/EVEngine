@@ -80,60 +80,68 @@ bool FileWatch::add(const std::string &realDir, const std::string &filterName,
         return false;
     }
 
-    std::lock_guard<std::mutex> lock(mu_);
+    // Destroy a replaced DirectoryWatcher (whose dtor joins its inotify/OS
+    // thread) only after mu_ is released: the watcher thread may be blocked in
+    // handlePocoEvent() waiting on that same lock (e.g. right after a file
+    // write), so destroying it while holding mu_ would deadlock.
+    std::unique_ptr<DirWatch> doomed;
+    {
+        std::lock_guard<std::mutex> lock(mu_);
 
-    auto prev = reportToDir_.find(reportPath);
-    if (prev != reportToDir_.end()) {
-        auto it = byDir_.find(prev->second);
-        if (it != byDir_.end()) {
-            DirWatch *dw = it->second.get();
-            for (auto fit = dw->filters.begin(); fit != dw->filters.end();) {
-                if (fit->second == reportPath) {
-                    fit = dw->filters.erase(fit);
-                    --dw->refs;
-                } else {
-                    ++fit;
+        auto prev = reportToDir_.find(reportPath);
+        if (prev != reportToDir_.end()) {
+            auto it = byDir_.find(prev->second);
+            if (it != byDir_.end()) {
+                DirWatch *dw = it->second.get();
+                for (auto fit = dw->filters.begin(); fit != dw->filters.end();) {
+                    if (fit->second == reportPath) {
+                        fit = dw->filters.erase(fit);
+                        --dw->refs;
+                    } else {
+                        ++fit;
+                    }
+                }
+                if (dw->refs <= 0) {
+                    if (dw->watcher) {
+                        dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
+                        dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
+                        dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
+                        dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
+                        dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
+                    }
+                    doomed = std::move(it->second);
+                    byDir_.erase(it);
                 }
             }
-            if (dw->refs <= 0) {
-                if (dw->watcher) {
-                    dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
-                    dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
-                    dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
-                    dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
-                    dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
-                }
-                byDir_.erase(it);
+            reportToDir_.erase(prev);
+        }
+
+        DirWatch *dw = nullptr;
+        auto it = byDir_.find(dir);
+        if (it == byDir_.end()) {
+            auto owned = std::make_unique<DirWatch>();
+            owned->realDir = dir;
+            try {
+                owned->watcher = std::make_unique<Poco::DirectoryWatcher>(
+                    dir, Poco::DirectoryWatcher::DW_FILTER_ENABLE_ALL, scanInterval);
+            } catch (...) {
+                return false;
             }
+            owned->watcher->itemAdded += Poco::delegate(this, &FileWatch::onAdded);
+            owned->watcher->itemRemoved += Poco::delegate(this, &FileWatch::onRemoved);
+            owned->watcher->itemModified += Poco::delegate(this, &FileWatch::onModified);
+            owned->watcher->itemMovedFrom += Poco::delegate(this, &FileWatch::onMovedFrom);
+            owned->watcher->itemMovedTo += Poco::delegate(this, &FileWatch::onMovedTo);
+            dw = owned.get();
+            byDir_[dir] = std::move(owned);
+        } else {
+            dw = it->second.get();
         }
-        reportToDir_.erase(prev);
-    }
 
-    DirWatch *dw = nullptr;
-    auto it = byDir_.find(dir);
-    if (it == byDir_.end()) {
-        auto owned = std::make_unique<DirWatch>();
-        owned->realDir = dir;
-        try {
-            owned->watcher = std::make_unique<Poco::DirectoryWatcher>(
-                dir, Poco::DirectoryWatcher::DW_FILTER_ENABLE_ALL, scanInterval);
-        } catch (...) {
-            return false;
-        }
-        owned->watcher->itemAdded += Poco::delegate(this, &FileWatch::onAdded);
-        owned->watcher->itemRemoved += Poco::delegate(this, &FileWatch::onRemoved);
-        owned->watcher->itemModified += Poco::delegate(this, &FileWatch::onModified);
-        owned->watcher->itemMovedFrom += Poco::delegate(this, &FileWatch::onMovedFrom);
-        owned->watcher->itemMovedTo += Poco::delegate(this, &FileWatch::onMovedTo);
-        dw = owned.get();
-        byDir_[dir] = std::move(owned);
-    } else {
-        dw = it->second.get();
+        dw->filters[filterName] = reportPath;
+        ++dw->refs;
+        reportToDir_[reportPath] = dir;
     }
-
-    dw->filters[filterName] = reportPath;
-    ++dw->refs;
-    reportToDir_[reportPath] = dir;
     return true;
 #endif
 }
@@ -143,56 +151,70 @@ bool FileWatch::remove(const std::string &reportPath) {
     (void)reportPath;
     return false;
 #else
-    std::lock_guard<std::mutex> lock(mu_);
-    auto prev = reportToDir_.find(reportPath);
-    if (prev == reportToDir_.end()) return false;
-    const std::string dir = prev->second;
-    reportToDir_.erase(prev);
+    // Same as add(): destroy the DirectoryWatcher (joins its thread) after
+    // mu_ is released to avoid a deadlock with the watcher callback.
+    std::unique_ptr<DirWatch> doomed;
+    {
+        std::lock_guard<std::mutex> lock(mu_);
+        auto prev = reportToDir_.find(reportPath);
+        if (prev == reportToDir_.end()) return false;
+        const std::string dir = prev->second;
+        reportToDir_.erase(prev);
 
-    auto it = byDir_.find(dir);
-    if (it == byDir_.end()) return false;
-    DirWatch *dw = it->second.get();
-    for (auto fit = dw->filters.begin(); fit != dw->filters.end();) {
-        if (fit->second == reportPath) {
-            fit = dw->filters.erase(fit);
-            --dw->refs;
-        } else {
-            ++fit;
+        auto it = byDir_.find(dir);
+        if (it == byDir_.end()) return false;
+        DirWatch *dw = it->second.get();
+        for (auto fit = dw->filters.begin(); fit != dw->filters.end();) {
+            if (fit->second == reportPath) {
+                fit = dw->filters.erase(fit);
+                --dw->refs;
+            } else {
+                ++fit;
+            }
         }
-    }
-    if (dw->refs <= 0) {
-        if (dw->watcher) {
-            dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
-            dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
-            dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
-            dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
-            dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
+        if (dw->refs <= 0) {
+            if (dw->watcher) {
+                dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
+                dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
+                dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
+                dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
+                dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
+            }
+            doomed = std::move(it->second);
+            byDir_.erase(it);
         }
-        byDir_.erase(it);
     }
     return true;
 #endif
 }
 
 void FileWatch::clear() {
-    std::lock_guard<std::mutex> lock(mu_);
 #ifdef EVENGINE_WEBGPU
+    std::lock_guard<std::mutex> lock(mu_);
     queue_.clear();
     return;
 #else
-    for (auto &kv : byDir_) {
-        DirWatch *dw = kv.second.get();
-        if (dw && dw->watcher) {
-            dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
-            dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
-            dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
-            dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
-            dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
+    // Destroy all DirectoryWatchers (each joins its inotify/OS thread) after
+    // mu_ is released, so a watcher thread blocked in handlePocoEvent() on the
+    // same lock cannot deadlock against clear().
+    std::vector<std::unique_ptr<DirWatch>> doomed;
+    {
+        std::lock_guard<std::mutex> lock(mu_);
+        for (auto &kv : byDir_) {
+            DirWatch *dw = kv.second.get();
+            if (dw && dw->watcher) {
+                dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
+                dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
+                dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
+                dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
+                dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
+            }
         }
+        for (auto &kv : byDir_) doomed.push_back(std::move(kv.second));
+        byDir_.clear();
+        reportToDir_.clear();
+        queue_.clear();
     }
-    byDir_.clear();
-    reportToDir_.clear();
-    queue_.clear();
 #endif
 }
 
