@@ -56,6 +56,28 @@ std::string Building::getBuildingValidateRule(const std::string &buildingId) {
     return def ? def->validateRule : std::string{};
 }
 
+std::string Building::getBuildingChannel(const std::string &buildingId) {
+    const auto *def = BuildingRegistry::find(buildingId);
+    return def ? def->channel : std::string{};
+}
+
+std::string Building::getBuildingRenderMode(const std::string &buildingId) {
+    const auto *def = BuildingRegistry::find(buildingId);
+    return def ? def->renderMode : std::string{};
+}
+
+std::string Building::getBuildingVisual2d(const std::string &buildingId, const std::string &key,
+                                          const std::string &fallback) {
+    const auto *def = BuildingRegistry::find(buildingId);
+    return def ? def->getVisual2d(key, fallback) : fallback;
+}
+
+std::string Building::getBuildingVisual3d(const std::string &buildingId, const std::string &key,
+                                          const std::string &fallback) {
+    const auto *def = BuildingRegistry::find(buildingId);
+    return def ? def->getVisual3d(key, fallback) : fallback;
+}
+
 bool Building::buildingHasTag(const std::string &buildingId, const std::string &tag) {
     const auto *def = BuildingRegistry::find(buildingId);
     return def ? def->hasTag(tag) : false;
@@ -82,6 +104,11 @@ Ghost *Building::newGhost() {
     return new Ghost();
 }
 
+PlacementSession *Building::newSession() {
+    PlacementSystem::ensureBuiltins();
+    return new PlacementSession();
+}
+
 bool Building::hasValidateRule(const std::string &name) {
     return PlacementSystem::hasValidateRule(name);
 }
@@ -89,6 +116,24 @@ bool Building::hasValidateRule(const std::string &name) {
 bool Building::hasSnapRule(const std::string &name) {
     return PlacementSystem::hasSnapRule(name);
 }
+
+bool Building::hasSurface(const std::string &name) {
+    return PlacementSystem::hasSurface(name);
+}
+
+int Building::getSurfaceCount() {
+    return int(PlacementSystem::surfaceNames().size());
+}
+
+std::string Building::getSurfaceName(int index) {
+    const auto names = PlacementSystem::surfaceNames();
+    if (index < 0 || index >= int(names.size())) return {};
+    return names[size_t(index)];
+}
+
+void Building::setPlaneSurfaceHeight(float h) { PlacementSystem::setPlaneSurfaceHeight(h); }
+
+float Building::getPlaneSurfaceHeight() { return PlacementSystem::getPlaneSurfaceHeight(); }
 
 void Building::clearChangeEvents() { PlacementSystem::clearEvents(); }
 
@@ -173,18 +218,41 @@ void Building::expose(ssq::Table &table) {
     world.addFunc("setSnapMode", &PlacementWorld::setSnapMode);
     world.addFunc("getValidateRule", &PlacementWorld::getValidateRule);
     world.addFunc("setValidateRule", &PlacementWorld::setValidateRule);
+    world.addFunc("setGridLayout", &PlacementWorld::setGridLayout);
+    world.addFunc("getGridLayoutName", &PlacementWorld::getGridLayoutName);
+    world.addFunc("setGridPlane", &PlacementWorld::setGridPlane);
+    world.addFunc("getGridPlaneName", &PlacementWorld::getGridPlaneName);
+    world.addFunc("setCellGap", &PlacementWorld::setCellGap);
+    world.addFunc("setHexSideLength", &PlacementWorld::setHexSideLength);
+    world.addFunc("setStagger", &PlacementWorld::setStagger);
+    world.addFunc("setGridFromLayer", &PlacementWorld::setGridFromLayer);
+    world.addFunc("hasGridFromLayer", &PlacementWorld::hasGridFromLayer);
     world.addFunc("setExtra", &PlacementWorld::setExtra);
     world.addFunc("getExtra", &PlacementWorld::getExtra);
     world.addFunc("worldToCellX", &PlacementWorld::worldToCellX);
     world.addFunc("worldToCellY", &PlacementWorld::worldToCellY);
     world.addFunc("cellToWorldX", &PlacementWorld::cellToWorldX);
     world.addFunc("cellToWorldY", &PlacementWorld::cellToWorldY);
+    world.addFunc("cellToWorld3DX", &PlacementWorld::cellToWorld3DX);
+    world.addFunc("cellToWorld3DY", &PlacementWorld::cellToWorld3DY);
+    world.addFunc("cellToWorld3DZ", &PlacementWorld::cellToWorld3DZ);
+    world.addFunc("worldToCell3DX", &PlacementWorld::worldToCell3DX);
+    world.addFunc("worldToCell3DY", &PlacementWorld::worldToCell3DY);
     world.addFunc("fillTerrain", &PlacementWorld::fillTerrain);
     world.addFunc("setTerrain", &PlacementWorld::setTerrain);
     world.addFunc("getTerrain", &PlacementWorld::getTerrain);
     world.addFunc("inBounds", &PlacementWorld::inBounds);
+    world.addFunc("bindTileLayer", &PlacementWorld::bindTileLayer);
+    world.addFunc("getTileLayer", &PlacementWorld::getTileLayer);
+    world.addFunc("clearTileLayer", &PlacementWorld::clearTileLayer);
+    world.addFunc("setTerrainGidMapJson", &PlacementWorld::setTerrainGidMapJson);
+    world.addFunc("setTerrainGid", &PlacementWorld::setTerrainGid);
+    world.addFunc("clearTerrainGidMap", &PlacementWorld::clearTerrainGidMap);
     world.addFunc("getOccupant", &PlacementWorld::getOccupant);
+    world.addFunc("getOccupantInChannel", &PlacementWorld::getOccupantInChannel);
+    world.addFunc("getAnyOccupant", &PlacementWorld::getAnyOccupant);
     world.addFunc("isCellEmpty", &PlacementWorld::isCellEmpty);
+    world.addFunc("isCellEmptyInChannel", &PlacementWorld::isCellEmptyInChannel);
     world.addFunc("getBuildingCount", &PlacementWorld::getBuildingCount);
     world.addFunc("hasBuilding", &PlacementWorld::hasBuilding);
     world.addFunc("getBuildingId", &PlacementWorld::getBuildingId);
@@ -192,6 +260,9 @@ void Building::expose(ssq::Table &table) {
     world.addFunc("getBuildingCellY", &PlacementWorld::getBuildingCellY);
     world.addFunc("getBuildingWorldX", &PlacementWorld::getBuildingWorldX);
     world.addFunc("getBuildingWorldY", &PlacementWorld::getBuildingWorldY);
+    world.addFunc("getBuildingWorldZ", &PlacementWorld::getBuildingWorldZ);
+    world.addFunc("getBuildingElevation", &PlacementWorld::getBuildingElevation);
+    world.addFunc("getBuildingChannel", &PlacementWorld::getBuildingChannel);
     world.addFunc("getBuildingRotation", &PlacementWorld::getBuildingRotation);
     world.addFunc("getBuildingProp", &PlacementWorld::getBuildingProp);
     world.addFunc("setBuildingProp", &PlacementWorld::setBuildingProp);
@@ -201,6 +272,7 @@ void Building::expose(ssq::Table &table) {
     world.addFunc("canPlaceReason", &PlacementWorld::canPlaceReason);
     world.addFunc("placeAt", &PlacementWorld::placeAt);
     world.addFunc("placeAtWorld", &PlacementWorld::placeAtWorld);
+    world.addFunc("placeAtWorld3D", &PlacementWorld::placeAtWorld3D);
     world.addFunc("placeGhost", &PlacementWorld::placeGhost);
     world.addFunc("removeBuilding", &PlacementWorld::removeBuilding);
     world.addFunc("moveBuilding", &PlacementWorld::moveBuilding);
@@ -217,13 +289,40 @@ void Building::expose(ssq::Table &table) {
     ghost.addFunc("getWorldX", &Ghost::getWorldX);
     ghost.addFunc("getWorldY", &Ghost::getWorldY);
     ghost.addFunc("setWorld", &Ghost::setWorld);
+    ghost.addFunc("getElevation", &Ghost::getElevation);
+    ghost.addFunc("setElevation", &Ghost::setElevation);
     ghost.addFunc("getRotationDeg", &Ghost::getRotationDeg);
     ghost.addFunc("setRotationDeg", &Ghost::setRotationDeg);
     ghost.addFunc("rotateBy", &Ghost::rotateBy);
     ghost.addFunc("isValid", &Ghost::isValid);
     ghost.addFunc("getReason", &Ghost::getReason);
     ghost.addFunc("setFromWorld", &Ghost::setFromWorld);
+    ghost.addFunc("setFromWorld3D", &Ghost::setFromWorld3D);
+    ghost.addFunc("setFromSurface", &Ghost::setFromSurface);
     ghost.addFunc("validate", &Ghost::validate);
+
+    auto session = table.addClass<PlacementSession>(
+        "PlacementSession", std::function<PlacementSession *()>([]() -> PlacementSession * {
+            return new PlacementSession();
+        }),
+        true);
+    session.addFunc("destroy", &PlacementSession::destroy);
+    session.addFunc("startPlacement", &PlacementSession::startPlacement);
+    session.addFunc("stopPlacement", &PlacementSession::stopPlacement);
+    session.addFunc("isActive", &PlacementSession::isActive);
+    session.addFunc("getBuildingId", &PlacementSession::getBuildingId);
+    session.addFunc("getGhost", &PlacementSession::getGhost);
+    session.addFunc("setMode", &PlacementSession::setMode);
+    session.addFunc("getMode", &PlacementSession::getMode);
+    session.addFunc("setRotationDeg", &PlacementSession::setRotationDeg);
+    session.addFunc("rotateBy", &PlacementSession::rotateBy);
+    session.addFunc("getRotationDeg", &PlacementSession::getRotationDeg);
+    session.addFunc("updateFromWorld", &PlacementSession::updateFromWorld);
+    session.addFunc("updateFromWorld3D", &PlacementSession::updateFromWorld3D);
+    session.addFunc("updateFromSurface", &PlacementSession::updateFromSurface);
+    session.addFunc("isValid", &PlacementSession::isValid);
+    session.addFunc("getReason", &PlacementSession::getReason);
+    session.addFunc("execute", &PlacementSession::execute);
 }
 
 void Building::expose(ssq::Class &cls) {
@@ -238,13 +337,23 @@ void Building::expose(ssq::Class &cls) {
     cls.addFunc("getBuildingSnapMode", &Building::getBuildingSnapMode);
     cls.addFunc("getBuildingRotationMode", &Building::getBuildingRotationMode);
     cls.addFunc("getBuildingValidateRule", &Building::getBuildingValidateRule);
+    cls.addFunc("getBuildingChannel", &Building::getBuildingChannel);
+    cls.addFunc("getBuildingRenderMode", &Building::getBuildingRenderMode);
+    cls.addFunc("getBuildingVisual2d", &Building::getBuildingVisual2d);
+    cls.addFunc("getBuildingVisual3d", &Building::getBuildingVisual3d);
     cls.addFunc("buildingHasTag", &Building::buildingHasTag);
     cls.addFunc("getBuildingExtra", &Building::getBuildingExtra);
     cls.addFunc("getBuildingCost", &Building::getBuildingCost);
     cls.addFunc("newWorld", &Building::newWorld);
     cls.addFunc("newGhost", &Building::newGhost);
+    cls.addFunc("newSession", &Building::newSession);
     cls.addFunc("hasValidateRule", &Building::hasValidateRule);
     cls.addFunc("hasSnapRule", &Building::hasSnapRule);
+    cls.addFunc("hasSurface", &Building::hasSurface);
+    cls.addFunc("getSurfaceCount", &Building::getSurfaceCount);
+    cls.addFunc("getSurfaceName", &Building::getSurfaceName);
+    cls.addFunc("setPlaneSurfaceHeight", &Building::setPlaneSurfaceHeight);
+    cls.addFunc("getPlaneSurfaceHeight", &Building::getPlaneSurfaceHeight);
     cls.addFunc("clearChangeEvents", &Building::clearChangeEvents);
     cls.addFunc("getChangeEventCount", &Building::getChangeEventCount);
     cls.addFunc("getChangeEventAction", &Building::getChangeEventAction);

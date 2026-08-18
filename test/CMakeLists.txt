@@ -56,6 +56,7 @@ file(GLOB all_test_cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
+  buildingfx.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -100,6 +101,7 @@ file(GLOB all_test_cpp
   system.cpp
   math.cpp
   spatial.cpp
+  grid.cpp
   editor.cpp
   ik.cpp
   animation.cpp
@@ -272,6 +274,7 @@ set(EVELIBS
   EVTimer
   EVSystem
   EVMath
+  EVGrid
   EVSpatial
   EVEditor
   EVIK
@@ -298,6 +301,7 @@ set(EVELIBS
   EVRPG
   EVInventory
   EVBuilding
+  EVBuildingFx
   EVAvatar
   EVDialogue
   EVProcgen

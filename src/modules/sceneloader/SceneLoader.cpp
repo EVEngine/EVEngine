@@ -838,6 +838,7 @@ scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
     host->setTree(std::move(d.root));
 
     graphics::Graphics *gfx = currentGraphics();
+    fillSceneBounds(host, d.slots);
     if (!d.slots.empty()) fillSceneBounds(host, d.slots);
 
     if (gfx) {

@@ -24,6 +24,18 @@ std::string BuildingDefinition::getExtra(const std::string &key,
     return it == extra.end() ? fallback : it->second;
 }
 
+std::string BuildingDefinition::getVisual2d(const std::string &key,
+                                            const std::string &fallback) const {
+    auto it = visual2d.find(key);
+    return it == visual2d.end() ? fallback : it->second;
+}
+
+std::string BuildingDefinition::getVisual3d(const std::string &key,
+                                            const std::string &fallback) const {
+    auto it = visual3d.find(key);
+    return it == visual3d.end() ? fallback : it->second;
+}
+
 int BuildingDefinition::getCost(const std::string &resource, int fallback) const {
     auto it = cost.find(resource);
     return it == cost.end() ? fallback : it->second;
@@ -91,6 +103,8 @@ BuildingDefinition parseBuildingObject(Poco::JSON::Object::Ptr o) {
     def.id = asString(o->get("id"));
     def.displayName = asString(o->get("displayName"), def.id);
     def.category = asString(o->get("category"));
+    def.channel = asString(o->get("channel"));
+    def.renderMode = asString(o->get("renderMode"));
     def.footprintW = asInt(o->get("footprintW"), 1);
     def.footprintH = asInt(o->get("footprintH"), 1);
     def.snapMode = asString(o->get("snapMode"), "grid");
@@ -103,6 +117,8 @@ BuildingDefinition parseBuildingObject(Poco::JSON::Object::Ptr o) {
     def.requireAdjacentTerrain = asInt(o->get("requireAdjacentTerrain"), -1);
     def.cost = asIntMap(o, "cost");
     def.extra = asStringMap(o, "extra");
+    def.visual2d = asStringMap(o, "visual2d");
+    def.visual3d = asStringMap(o, "visual3d");
     if (o->has("footprintMask")) {
         try {
             auto arr = o->getArray("footprintMask");
