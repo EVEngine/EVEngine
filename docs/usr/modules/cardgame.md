@@ -65,7 +65,7 @@ card.renderDeck(gfx);        // 画牌库堆 + 剩余张数
 
 ## 常见问题
 
-- 卡牌文字：`render`/`renderCard` 用 `gfx.print`，需先 `gfx.setFont(gfx.newFont(fontData, "ascii"))` 且 `fontData` 含 ASCII 字形；未设字体时静默跳过文字，只画色块/宝石。
+- 卡牌文字：C++ 模块会使用 Graphics 当前字体绘制文字；未设置字体时静默跳过文字，只画色块/宝石。字体资源由宿主渲染初始化流程管理。
 - `mouse.isDown(1)` 是左键；面板悬浮时先查 `ui.wantCaptureMouse()`，避免把 UI 操作误当卡牌拖拽。
 - 布局为“中心锚定”的抛物线扇形（两端上翘），`rotationAngle` 控制两端最大旋转角；`hoverRotation` 控制悬浮时是否转正。
 - `Zone.acceptKinds` 通过 `addAcceptKind` 设置后会参与实际 Drop 判定，不匹配的卡牌不会产生 drop 事件。

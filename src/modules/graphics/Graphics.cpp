@@ -151,17 +151,6 @@ void Graphics::expose(ssq::Table& table) {
     quad.addFunc("getWidth", &Quad::getWidth);
     quad.addFunc("getHeight", &Quad::getHeight);
 
-    // Rasterized glyph font for print(). Instances come from Graphics::newFont.
-    // Named "GfxFont" so it does not collide with the eve.Font module class.
-    auto fontCls = table.addClass<Font>(
-        "GfxFont", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
-    fontCls.addFunc("getWidth", [](Font* f, std::string text) -> float {
-        return f ? f->getWidth(text) : 0.f;
-    });
-    fontCls.addFunc("getHeight", [](Font* f) -> float {
-        return f ? f->getHeight() : 0.f;
-    });
-
     auto shader = table.addClass<Shader>("Shader", std::function<Shader*()>([]() -> Shader* { return nullptr; }), true);
     shader.addFunc("declareFloat", &Shader::declareFloat);
     shader.addFunc("declareVec2", &Shader::declareVec2);
@@ -621,21 +610,6 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("drawSolidRect", &Graphics::drawSolidRectRGBA);
     cls.addFunc("drawTexturedRect", &Graphics::drawTexturedRectRGBA);
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
-    cls.addFunc("newFont", [](Graphics* g, font::FontData* data, std::string charset) -> Font* {
-        if (!g) return nullptr;
-        if (charset.empty()) charset = Font::defaultCharset();
-        return g->newFont(data, std::move(charset));
-    });
-    cls.addFunc("setFont", [](Graphics* g, Font* font) {
-        if (g) g->setFont(font);
-    });
-    cls.addFunc("getFont", [](Graphics* g) -> Font* {
-        return g ? g->getFont() : nullptr;
-    });
-    cls.addFunc("print", [](Graphics* g, std::string text, float x, float y, float r, float gr, float b,
-                            float a, float scale) {
-        if (g) g->print(text, x, y, Color(r, gr, b, a), scale);
-    });
     cls.addFunc("newTexture",
                 static_cast<Texture* (Graphics::*)(image::ImageData*, bool, bool)>(&Graphics::newTextureFromImageData));
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
