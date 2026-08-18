@@ -198,7 +198,6 @@ TEST_CASE("xray.shaderAndFlags") {
     CHECK(r->getXRayHighlight() == false);
     r->setVisible(false);
 
-    delete stylize;
     win->close();
 }
 
@@ -246,6 +245,5 @@ TEST_CASE("xray.occludedSilhouette") {
     }
 done:
     target->setVisible(false);
-    delete stylize;
     win->close();
 }
