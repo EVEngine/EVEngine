@@ -2,7 +2,9 @@
 
 #include "scene/SceneHost.h"
 
+#ifdef EVENGINE_SCENE_AUDIO
 #include "audio/Source.h"
+#endif
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "physics/Body.h"
@@ -168,8 +170,10 @@ void pushTarget(const SceneNode &n, const SceneLink &l) {
             break;
         }
         case LinkKind::Audio3D: {
+#ifdef EVENGINE_SCENE_AUDIO
             auto *s = static_cast<audio::Source *>(l.target);
             s->setPosition(n.world[3][0], n.world[3][1], n.world[3][2]);
+#endif
             break;
         }
         default:

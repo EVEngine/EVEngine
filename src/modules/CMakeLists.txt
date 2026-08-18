@@ -140,7 +140,7 @@ create_module(EVScene scene)
 # (EVENGINE_SCENE_JSON guards the Poco code in Scene.cpp).
 if(NOT EVENGINE_WEBGPU_TRIM)
   target_compile_definitions(EVScene PUBLIC
-    POCO_STATIC POCO_NO_AUTOMATIC_LIBS EVENGINE_SCENE_JSON=1)
+    POCO_STATIC POCO_NO_AUTOMATIC_LIBS EVENGINE_SCENE_JSON=1 EVENGINE_SCENE_AUDIO=1)
 endif()
 create_module(EVCamera camera)
 # 3D scene loader (SceneLoader): decode a model into an ECS GameObject tree and
