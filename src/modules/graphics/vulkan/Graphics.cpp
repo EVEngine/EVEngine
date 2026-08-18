@@ -1713,6 +1713,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
             g->mesh3dPipeline =
                 createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                           g->pipelineLayout, target, samples);
+            g->mesh3dXrayPipeline =
+                createMesh3DXrayPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
+                                         g->pipelineLayout, target, samples);
         }
     }
 
@@ -3236,6 +3239,10 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
     gpu->mesh3dPipeline = createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
                                                     activeScenePass(), activeSceneSamples());
+    // Built here, not lazily in drawMeshShader: vkCreateGraphicsPipelines
+    // during an open render pass crashes software ICDs (Lavapipe).
+    gpu->mesh3dXrayPipeline = createMesh3DXrayPipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
+                                                       activeScenePass(), activeSceneSamples());
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
@@ -5013,15 +5020,12 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         vk::Pipeline pipeline = gs->mesh3dPipeline;
         if (shader->isXray()) {
             // X-ray silhouette pass: depth test/write off + alpha blend so the
-            // occluded part paints over the building. Lazy so only xray shaders
-            // pay for the extra pipeline (and MSAA/RP changes re-create it).
-            if (!gs->mesh3dXrayPipeline)
-                gs->mesh3dXrayPipeline =
-                    createMesh3DXrayPipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
-                                             mesh3dShaderPipelineLayout, activeScenePass(),
-                                             activeSceneSamples());
+            // occluded part paints over the building. The pipeline is created
+            // with the shader (see newMeshShaderFromSpv); do not compile it
+            // here — a render pass is already open.
             pipeline = gs->mesh3dXrayPipeline;
         }
+        if (!pipeline) return;
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
                               0, nullptr);

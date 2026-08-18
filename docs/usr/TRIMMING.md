@@ -40,7 +40,7 @@ cmake -B build -DEVENGINE_PROFILE=2d -DEVENGINE_MODULE_DIALOGUE=ON
 
 ```
 -- Module profile: 2d
--- Modules enabled: 31/54
+-- Modules enabled: 32/56
 -- Modules disabled: devtools;editor;plugins;database;rpg;...
 -- Third-party groups: squirrel;sdl2;medialoader_image;...
 ```
@@ -89,9 +89,9 @@ linux-debug 实测：
 
 | 档位 | 模块数 | 二进制 | 相比 `full` 少掉的第三方 |
 |------|--------|--------|--------------------------|
-| `full` | 54 | 233 MB | — |
-| `3d` | 44 | 198 MB | PocoData、SQLite |
-| `2d` | 31 | — | 上述 + DTL |
+| `full` | 56 | 233 MB | — |
+| `3d` | 45 | 198 MB | PocoData、SQLite |
+| `2d` | 32 | — | 上述 + DTL |
 | `minimal` | 19 | — | 上述 + OpenAL、Box2D/box3d、音频编解码、assimp、medialoader model/sound |
 
 Release 构建的绝对体积小得多，比例接近。
