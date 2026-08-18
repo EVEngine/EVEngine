@@ -3,6 +3,7 @@ enable_testing()
 file(GLOB all_test_cpp
   ECS.cpp
   data.cpp
+  json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
   graphic.cpp
