@@ -171,6 +171,28 @@ endif()
 create_module(EVGpgpu gpgpu)
 target_include_directories(EVGpgpu BEFORE PRIVATE
   ${CMAKE_SOURCE_DIR}/external/VKBuilder/include)
+if(WIN32 AND DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
+  # In-process GLSL -> SPIR-V via the Vulkan SDK's shaderc (glslang + SPIRV-Tools
+  # static archive). The tensor module's runtime kernel codegen compiles generated
+  # GLSL when a CompiledFunction is built; linking shaderc removes the external
+  # glslc.exe dependency on Windows (players don't install the Vulkan SDK).
+  set(_eve_shaderc_libnames shaderc_combined)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(_eve_shaderc_libnames shaderc_combinedd)
+  endif()
+  find_library(EVE_SHADERC_LIB NAMES ${_eve_shaderc_libnames}
+    HINTS "$ENV{VULKAN_SDK}/Lib" "$ENV{VULKAN_SDK}/lib")
+  unset(_eve_shaderc_libnames)
+  if(EVE_SHADERC_LIB)
+    # INTERFACE: EVGpgpu is an OBJECT library; its private link deps would not
+    # reach the final executable, so propagate the SDK archive to consumers.
+    target_link_libraries(EVGpgpu INTERFACE ${EVE_SHADERC_LIB})
+    target_compile_definitions(EVGpgpu INTERFACE EVE_HAS_SHADERC=1)
+    message(STATUS "Gpgpu: in-process shaderc compiler: ${EVE_SHADERC_LIB}")
+  else()
+    message(STATUS "Gpgpu: shaderc lib not found; will spawn glslc at runtime")
+  endif()
+endif()
 if(NOT EVENGINE_WEBGPU_TRIM)
   create_module(EVVirtualGeometry virtualgeometry)
   target_include_directories(EVVirtualGeometry BEFORE PRIVATE

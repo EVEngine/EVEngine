@@ -109,6 +109,8 @@ file(GLOB all_test_cpp
   animation_skinned.cpp
   animation_sprite_spine.cpp
   tensor.cpp
+  tensor_llm.cpp
+  tensor_quant.cpp
   callgraph.cpp
   renderflow.cpp
   debugger.cpp

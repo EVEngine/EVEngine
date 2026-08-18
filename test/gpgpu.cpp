@@ -5,6 +5,7 @@
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/EcsGpu.h"
 #include "gpgpu/GpuBuffer.h"
+#include "gpgpu/Sequence.h"
 #include "gpgpu/ShaderSystem.h"
 #include "graphics/Graphics.h"
 #include "window/Window.h"
@@ -63,6 +64,20 @@ void main() {
     uint b = i * 2u;
     pos.data[b + 0u] += vel.data[b + 0u] * dt;
     pos.data[b + 1u] += vel.data[b + 1u] * dt;
+}
+)";
+
+const char *kDoubleKernel = R"(#version 450
+layout(local_size_x = 64) in;
+layout(set = 0, binding = 0) buffer In {
+    float a[];
+} inBuf;
+layout(set = 0, binding = 1) buffer Out {
+    float b[];
+} outBuf;
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    outBuf.b[i] = inBuf.a[i] * 2.0;
 }
 )";
 
@@ -145,6 +160,126 @@ TEST_CASE("gpgpu.dispatch.scaleFloats") {
 
     delete shader;
     delete buf;
+}
+
+TEST_CASE("gpgpu.sequence.dispatchScale") {
+    if (!tryInitGpuWindow()) return;
+    auto *mod = Gpgpu::create();
+    REQUIRE(mod->isAvailable());
+
+    const int count = 128;
+    GpuBuffer *in = mod->newBuffer(count * int(sizeof(float)), "storage");
+    GpuBuffer *out = mod->newBuffer(count * int(sizeof(float)), "storage");
+    GpuBuffer *staging = mod->newBuffer(count * int(sizeof(float)), "staging");
+    REQUIRE(in != nullptr);
+    REQUIRE(out != nullptr);
+    REQUIRE(staging != nullptr);
+
+    ComputeShader *shader = nullptr;
+    try {
+        shader = mod->newShader(kDoubleKernel);
+    } catch (...) {
+        delete in;
+        delete out;
+        delete staging;
+        return;  // no compiler available — skip GPU path
+    }
+    REQUIRE(shader != nullptr);
+
+    std::vector<float> src;
+    src.reserve(count);
+    for (int i = 0; i < count; ++i) src.push_back(float(i + 1));
+
+    Sequence *seq = mod->newSequence();
+    REQUIRE(seq->isAvailable());
+    shader->bindBuffer(0, in);
+    shader->bindBuffer(1, out);
+
+    const int groups = (count + 63) / 64;
+    seq->begin();
+    seq->recordUpload(in, src.data(), uint64_t(count) * sizeof(float));
+    seq->recordDispatch(shader, groups, 1, 1);
+    seq->recordDownload(out, staging, uint64_t(count) * sizeof(float));
+    seq->submit();
+
+    std::vector<float> dst(size_t(count), 0.f);
+    staging->downloadBytes(dst.data(), uint64_t(count) * sizeof(float));
+    CHECK(std::fabs(dst[0] - 2.f) < 1e-4f);
+    CHECK(std::fabs(dst[1] - 4.f) < 1e-4f);
+    CHECK(std::fabs(dst[count - 1] - float(count) * 2.f) < 1e-3f);
+
+    delete seq;
+    delete shader;
+    delete in;
+    delete out;
+    delete staging;
+}
+
+TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {
+    if (!tryInitGpuWindow()) return;
+    auto *mod = Gpgpu::create();
+    REQUIRE(mod->isAvailable());
+
+    const int count = 256;
+    GpuBuffer *a = mod->newBuffer(count * int(sizeof(float)), "storage");
+    GpuBuffer *b = mod->newBuffer(count * int(sizeof(float)), "storage");
+    GpuBuffer *c = mod->newBuffer(count * int(sizeof(float)), "storage");
+    GpuBuffer *staging = mod->newBuffer(count * int(sizeof(float)), "staging");
+
+    ComputeShader *shader = nullptr;
+    try {
+        shader = mod->newShader(kDoubleKernel);
+    } catch (...) {
+        delete a;
+        delete b;
+        delete c;
+        delete staging;
+        return;
+    }
+
+    std::vector<float> src(static_cast<size_t>(count));
+    for (int i = 0; i < count; ++i) src[size_t(i)] = float(i % 7);
+
+    Sequence *seq = mod->newSequence();
+    REQUIRE(seq->isAvailable());
+    const int groups = (count + 63) / 64;
+
+    // a -> b -> c in one submission; c[i] must be src[i] * 4.
+    seq->begin();
+    seq->recordUpload(a, src.data(), uint64_t(count) * sizeof(float));
+    shader->bindBuffer(0, a);
+    shader->bindBuffer(1, b);
+    seq->recordDispatch(shader, groups, 1, 1);
+    shader->bindBuffer(0, b);
+    shader->bindBuffer(1, c);
+    seq->recordDispatch(shader, groups, 1, 1);
+    seq->recordDownload(c, staging, uint64_t(count) * sizeof(float));
+    seq->submit();
+
+    std::vector<float> dst(size_t(count), 0.f);
+    staging->downloadBytes(dst.data(), uint64_t(count) * sizeof(float));
+    for (int i = 0; i < count; ++i)
+        CHECK(std::fabs(dst[size_t(i)] - float(i % 7) * 4.f) < 1e-3f);
+
+    // Reuse the same sequence for a second cycle.
+    seq->begin();
+    seq->recordUpload(a, src.data(), uint64_t(count) * sizeof(float));
+    shader->bindBuffer(0, a);
+    shader->bindBuffer(1, b);
+    seq->recordDispatch(shader, groups, 1, 1);
+    seq->recordDownload(b, staging, uint64_t(count) * sizeof(float));
+    seq->submit();
+
+    staging->downloadBytes(dst.data(), uint64_t(count) * sizeof(float));
+    CHECK(std::fabs(dst[0] - 0.f) < 1e-4f);
+    CHECK(std::fabs(dst[count - 1] - float((count - 1) % 7) * 2.f) < 1e-3f);
+
+    delete seq;
+    delete shader;
+    delete a;
+    delete b;
+    delete c;
+    delete staging;
 }
 
 TEST_CASE("gpgpu.shaderSystem.ecsMove") {
