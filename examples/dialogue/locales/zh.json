@@ -1,5 +1,5 @@
 {
-  "name": { "alice": "Alice", "bob": "Bob" },
+  "name": { "alice": "Alice", "bob": "Bob", "player": "旅行者" },
   "line": {
     "hello": "你好！我是 {name}。",
     "intro": "我是 Bob。这是用 Squirrel 写的对话脚本。",

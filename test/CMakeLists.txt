@@ -60,6 +60,8 @@ file(GLOB all_test_cpp
   i18n_script.cpp
   avatar.cpp
   dialogue.cpp
+  dialogue_proc.cpp
+  dialogue_proc_script.cpp
   procgen.cpp
   housegen.cpp
   housegen_render.cpp
@@ -134,6 +136,7 @@ file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
   i18n.nut
+  dialogue_proc_script.nut
   model.nut
   model2.nut
   mouse.nut
