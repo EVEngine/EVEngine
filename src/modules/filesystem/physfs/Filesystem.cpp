@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <string>
 
@@ -359,6 +360,30 @@ bool Filesystem::mount(Data *data, std::string archivename, std::string mountpoi
     }
 
     return false;
+}
+
+bool Filesystem::mountRealDirectory(std::string realDir, std::string mountpoint, bool appendToPath) {
+    if (!PHYSFS_isInit() || realDir.empty()) return false;
+    if (!isRealDirectory(realDir)) return false;
+    if (mountpoint.empty()) mountpoint = "/";
+
+    // Track the dir so unmountRealDirectory() / the destructor can clean it up,
+    // even though PhysFS itself needs the OS path string to unmount.
+    std::lock_guard<std::mutex> lock(mountMu_);
+    if (std::find(mountedRealDirs_.begin(), mountedRealDirs_.end(), realDir) == mountedRealDirs_.end()) {
+        if (!PHYSFS_mount(realDir.c_str(), mountpoint.c_str(), appendToPath ? 1 : 0)) return false;
+        mountedRealDirs_.push_back(realDir);
+    }
+    return true;
+}
+
+bool Filesystem::unmountRealDirectory(std::string realDir) {
+    std::lock_guard<std::mutex> lock(mountMu_);
+    auto it = std::find(mountedRealDirs_.begin(), mountedRealDirs_.end(), realDir);
+    if (it == mountedRealDirs_.end()) return false;
+    const bool ok = PHYSFS_unmount(realDir.c_str()) != 0;
+    mountedRealDirs_.erase(it);
+    return ok;
 }
 
 bool Filesystem::unmount(std::string archive) {

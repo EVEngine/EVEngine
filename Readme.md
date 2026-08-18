@@ -358,6 +358,26 @@ cmake --build build/macosx-debug -j 32
 也可直接用前文的 `make build/win32` / `make build/macosx-debug` 等目标一步完成配置 + 编译。
 
 
+## 资源脚本全平台热更新（`eve dev`）
+
+开发调试时，改完脚本 / 资源想立刻看到效果：
+
+- **桌面（macOS / Windows / Linux）**：`eve run <游戏目录>` 默认开启本地 watcher（`config.hotReload`），改 `main.nut` / JSON / 贴图后自动 `dofile` 或重载资源。
+- **移动端（iOS / Android）**：应用包内资源只读，无法直接改设备文件。改在**开发机**上编辑，由设备拉取：
+
+```sh
+# 1. 开发机上启动开发服务器（服务当前游戏目录）
+eve dev --port 8765
+
+# 2. 设备端 config.nut 配置开发机地址（或命令行注入）
+config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
+```
+
+设备端会按清单轮询 `eve dev`，把变更文件下载到可写覆盖目录并复用本地热更新管线（脚本 `dofile`、资源 `tryReload`），无需重装应用。命令行也可用 `eve run --dev-server http://192.168.1.5:8765`。
+
+iOS / Android 构建已默认放行明文 HTTP（开发机内网），见 `platform/ios/Info.plist.in` 与 `platform/android/apk/app/src/main/AndroidManifest.xml`。
+
+
 ## 运行单元测试
 
 默认开启 `BUILD_TESTING`。编译完成后：

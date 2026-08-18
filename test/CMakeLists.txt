@@ -76,6 +76,7 @@ file(GLOB all_test_cpp
   box3d.cpp
   softbody.cpp
   hotreload.cpp
+  remotesync.cpp
   shader.cpp
   grass.cpp
   spritestack.cpp
