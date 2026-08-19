@@ -39,6 +39,16 @@ public:
     using SurfaceFn = std::function<bool(const PlacementWorld &world, float x, float y,
                                          PlacementHit *hit)>;
 
+    /**
+     * @brief Process singleton holding all PlacementSystem state.
+     *
+     * Rules / hooks / events / counters used to live in one function-local
+     * static per accessor, which made the state invisible, non-destructible
+     * and hard to reason about across hot-reload and tests. State now lives in
+     * this single instance's members; the static API below delegates to it.
+     */
+    static PlacementSystem &inst();
+
     static void registerValidateRule(const std::string &name, ValidateFn fn);
     static void unregisterValidateRule(const std::string &name);
     static bool hasValidateRule(const std::string &name);
@@ -138,6 +148,20 @@ private:
     static std::vector<BuildingChangeEvent> &eventQueue();
     static int &instanceCounter();
     static bool &builtinsReady();
+
+    PlacementSystem() = default;
+    ~PlacementSystem() = default;
+    PlacementSystem(const PlacementSystem &) = delete;
+    PlacementSystem &operator=(const PlacementSystem &) = delete;
+
+    std::unordered_map<std::string, ValidateFn> validateRules_;
+    std::unordered_map<std::string, SnapFn> snapRules_;
+    std::unordered_map<std::string, ChangeHook> changeHooks_;
+    std::unordered_map<std::string, SurfaceFn> surfaces_;
+    std::vector<BuildingChangeEvent> eventQueue_;
+    int instanceCounter_ = 0;
+    bool builtinsReady_ = false;
+    float planeSurfaceHeight_ = 0.f;
 };
 
 }  // namespace eve::building

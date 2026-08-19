@@ -9,6 +9,9 @@
 
 namespace eve::animation {
 
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
+
 AnimTrail::AnimTrail(int capacity) {
     setCapacity(capacity);
 }

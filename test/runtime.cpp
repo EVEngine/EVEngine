@@ -1,5 +1,6 @@
 #include "common/Runtime.h"
 
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <algorithm>
@@ -37,7 +38,8 @@ class RuntimeProbe {
     const Runtime::ScriptId id = runtime.runSource(source, "runtime-probe.nut");
     const ScriptInfo* script = runtime.script(id);
     CHECK(script != nullptr);
-    CHECK(script->state == ScriptState::Loaded);
+    // zeroerr's CHECK cannot print the ScriptState enum; compare via int.
+    CHECK(static_cast<int>(script->state) == static_cast<int>(ScriptState::Loaded));
     CHECK(std::find(script->classes.begin(), script->classes.end(), "RuntimeProbe") !=
           script->classes.end());
 
@@ -72,7 +74,8 @@ TEST_CASE("runtimeWrapsCompileErrorsAndRestoresStack") {
         runtime.compileSource("class Broken {", "broken.nut");
     } catch (const ScriptException& error) {
         caught = true;
-        CHECK(error.stage() == ScriptStage::Compile);
+        // zeroerr's CHECK_EQ cannot print the ScriptStage enum; compare via int.
+        CHECK_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Compile));
         CHECK_EQ(error.source(), std::string("broken.nut"));
     }
     CHECK(caught);

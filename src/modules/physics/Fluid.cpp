@@ -9,6 +9,9 @@
 
 namespace eve::physics {
 
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
+
 Fluid::Fluid(int capacity) : capacity_(capacity) {
     if (capacity_ < 1) throw Exception("Fluid: capacity must be >= 1");
     particles_.reserve(static_cast<size_t>(capacity_));

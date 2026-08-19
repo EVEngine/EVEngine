@@ -17,6 +17,10 @@ class Canvas;
 
 namespace eve::map {
 
+// Color lives in eve::graphics (see graphics/Canvas.h); re-expose it here so
+// tile code keeps the unqualified form.
+using eve::graphics::Color;
+
 /**
  * @brief ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem
  * batch-draws atlas quads (or solid debug colors when no texture).

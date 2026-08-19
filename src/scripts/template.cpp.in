@@ -1,20 +1,20 @@
 
 namespace eve {
 
-const char* boot_content = R"(@boot_content@)";
+const char* boot_content = @boot_content_literal@;
 
-const char* load_content = R"(@load_content@)";
+const char* load_content = @load_content_literal@;
 
-const char* module_list_content = R"(@module_list_content@)";
+const char* module_list_content = @module_list_content_literal@;
 
-const char* async_content = R"(@async_content@)";
+const char* async_content = @async_content_literal@;
 
-const char* scene_director_content = R"(@scene_director_content@)";
+const char* scene_director_content = @scene_director_content_literal@;
 
-const char* demo_content = R"(@demo_content@)";
+const char* demo_content = @demo_content_literal@;
 
-const char* vertex_content = R"(@vertex_content@)";
+const char* vertex_content = @vertex_content_literal@;
 
-const char* fragment_content = R"(@fragment_content@)";
+const char* fragment_content = @fragment_content_literal@;
 
 }

@@ -114,6 +114,7 @@ GAME ?=
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
+	check/test-manifest check/module-layers \
 	docs
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
@@ -131,6 +132,14 @@ show-targets:
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
+
+# Verify every test/*.cpp on disk is registered in test/CMakeLists.txt.
+check/test-manifest:
+	python3 scripts/check_test_manifest.py
+
+# Verify module includes never climb above the declared manifest LAYER.
+check/module-layers:
+	python3 scripts/module_depgraph.py --check-layers
 
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
@@ -513,7 +522,7 @@ docs:
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 
 # Default: run tests per case (process-isolated; this is the fast path on CI —
-# main runs 1551 cases in ~2-11 min).  "bundle/<file>" entries stay registered
+# main runs 1526 cases in ~2-11 min).  "bundle/<file>" entries stay registered
 # by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
 # ~70x slower when several shared one process on CI, so bundles are excluded
 # unless requested (FILTER=bundle/<file> or ctest -L bundle).
