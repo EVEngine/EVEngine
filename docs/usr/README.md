@@ -27,6 +27,13 @@ git clone --recurse-submodules https://github.com/EVEngine/EVEngine
 cd EVEngine
 ```
 
+默认克隆的是 `main`（最新正式版，可直接编译）。要改引擎请：
+
+```sh
+git checkout dev
+git pull
+```
+
 如果克隆时没有拉取子模块：
 
 ```sh

@@ -1,0 +1,93 @@
+# Orchestrate a release started by a GitHub Pre-release:
+#   start → strict tests (debug+release) → SDK zips → finish
+# See docs/dev/发布流程.md and scripts/release.py.
+
+name: Release
+
+on:
+  release:
+    types: [prereleased]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Pre-release tag (vMAJOR.MINOR.PATCH)
+        required: true
+        type: string
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  start:
+    name: start (version + branch)
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.go.outputs.tag }}
+      branch: ${{ steps.go.outputs.branch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Start release
+        id: go
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: "true"
+        run: |
+          set -euo pipefail
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 scripts/release.py start --tag "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "branch=$TAG" >> "$GITHUB_OUTPUT"
+
+  strict-tests:
+    name: strict tests
+    needs: start
+    uses: ./.github/workflows/ci.yml
+    with:
+      build_type: both
+      ref: ${{ needs.start.outputs.branch }}
+    secrets: inherit
+
+  sdk:
+    name: SDK pack
+    needs: [start, strict-tests]
+    uses: ./.github/workflows/sdk-release.yml
+    with:
+      tag: ${{ needs.start.outputs.tag }}
+      ref: ${{ needs.start.outputs.branch }}
+    secrets: inherit
+
+  finish:
+    name: finish (promote + rebase dev)
+    needs: [start, sdk]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.start.outputs.branch }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Finish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: "true"
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main dev "${{ needs.start.outputs.tag }}" || true
+          python3 scripts/release.py finish --tag "${{ needs.start.outputs.tag }}"

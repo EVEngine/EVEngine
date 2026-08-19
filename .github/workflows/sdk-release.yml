@@ -1,18 +1,31 @@
-# Build target-platform SDKs when a pre-release is published, then promote
-# that GitHub Release to a formal (non-prerelease) release with artifacts:
-#   win32 + android  (windows runner)
-#   macosx + ios     (macos runner)
-#   linux            (ubuntu runner)
+# Build target-platform SDKs and attach eve-sdk-<plat>-<tag>.zip to a Release.
+# Formal promote (unmark prerelease) is scripts/release.py finish, not this file.
+# Each SDK runs as its own parallel job (same split as ci.yml):
+#   windows → win32 SDK (+ usability test)
+#   android → android SDK
+#   macos   → macosx SDK (+ usability test)
+#   ios     → ios SDK
+#   linux   → linux SDK (+ usability test)
 #
-# Usage: create/publish a Pre-release from the desired tag (e.g. v0.1.0).
-# After all jobs succeed, the same release is unmarked as prerelease and
-# receives eve-sdk-<plat>-<tag>.zip for each platform.
+# Called from release.yml after strict tests, or via workflow_dispatch + tag.
+#
+# iOS signing (optional repo secrets):
+#   IOS_CERTIFICATE_P12_BASE64, IOS_CERTIFICATE_PASSWORD, IOS_DEVELOPMENT_TEAM
+#   IOS_PROVISIONING_PROFILE_BASE64 (optional)
+# Without them, iOS SDK builds unsigned (consumers re-sign locally).
 
 name: SDK Release
 
 on:
-  release:
-    types: [prereleased]
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      ref:
+        description: commit/branch to build (official vX.X.X after start)
+        type: string
+        default: ""
   workflow_dispatch:
     inputs:
       tag:
@@ -30,10 +43,10 @@ env:
   ANDROID_API: "34"
 
 jobs:
-  build-windows:
-    name: Windows + Android SDK
+  windows:
+    name: Windows SDK
     runs-on: windows-latest
-    timeout-minutes: 240
+    timeout-minutes: 180
     defaults:
       run:
         shell: bash
@@ -41,6 +54,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.ref || inputs.tag }}
           submodules: recursive
 
       - name: Install build tools
@@ -57,6 +71,50 @@ jobs:
           install_runtime: true
           cache: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan (SwiftShader, best-effort)
+        run: |
+          bash .github/scripts/setup-software-vulkan.sh || echo "WARN: software Vulkan unavailable; in-memory run skipped"
+
+      - name: Build win32 SDK
+        run: make sdk/win32 VS_GENERATOR="$VS_GENERATOR" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Test win32 SDK usability
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/win32 win32
+
+      - name: Package SDK zip
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          mkdir -p artifacts
+          python .github/scripts/zip-sdk.py win32 "$TAG"
+          ls -lh artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-win32
+          path: artifacts/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  android:
+    name: Android SDK
+    runs-on: windows-latest
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+          submodules: recursive
+
+      - name: Install build tools
+        shell: pwsh
+        run: choco install make ninja -y --no-progress
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -83,16 +141,6 @@ jobs:
           echo "ANDROID_NDK=$ANDROID_NDK"
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
-      - name: Build win32 SDK
-        run: make sdk/win32 VS_GENERATOR="$VS_GENERATOR" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="${NUMBER_OF_PROCESSORS:-8}"
-
-      - name: Setup software Vulkan (SwiftShader, best-effort)
-        run: |
-          bash .github/scripts/setup-software-vulkan.sh || echo "WARN: software Vulkan unavailable; in-memory run skipped"
-
-      - name: Test win32 SDK usability
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/win32 win32
-
       - name: Build android SDK
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
@@ -103,38 +151,87 @@ jobs:
             CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
-      - name: Package SDK zips
+      - name: Package SDK zip
         env:
-          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          TAG: ${{ inputs.tag }}
         run: |
           mkdir -p artifacts
-          for plat in win32 android; do
-            python .github/scripts/zip-sdk.py "$plat" "$TAG"
-          done
+          python .github/scripts/zip-sdk.py android "$TAG"
           ls -lh artifacts/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sdk-windows
+          name: sdk-android
           path: artifacts/*.zip
           if-no-files-found: error
           retention-days: 14
 
-  build-macos:
-    name: macOS + iOS SDK
+  macos:
+    name: macOS SDK
     runs-on: macos-latest
-    timeout-minutes: 240
+    timeout-minutes: 180
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.ref || inputs.tag }}
           submodules: recursive
 
       - name: Install tools
         run: |
           brew install ninja || true
           # CMake on macos runners is usually recent enough; ensure ≥ 3.21.
+          cmake --version
+
+      - name: Install Vulkan SDK (MoltenVK)
+        uses: jakoch/install-vulkan-sdk-action@v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          # Keep full macOS tree so MoltenVK remains available.
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve VULKAN_SDK / MoltenVK
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Build macosx SDK
+        run: make sdk/macosx CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(sysctl -n hw.ncpu)"
+
+      - name: Test macosx SDK usability
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/macosx macosx
+
+      - name: Package SDK zip
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          mkdir -p artifacts
+          python3 .github/scripts/zip-sdk.py macosx "$TAG"
+          ls -lh artifacts/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-macosx
+          path: artifacts/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  ios:
+    name: iOS SDK
+    runs-on: macos-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+          submodules: recursive
+
+      - name: Install tools
+        run: |
+          brew install ninja || true
           cmake --version
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
@@ -157,12 +254,6 @@ jobs:
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: bash .github/scripts/setup-ios-signing.sh
 
-      - name: Build macosx SDK
-        run: make sdk/macosx CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(sysctl -n hw.ncpu)"
-
-      - name: Test macosx SDK usability
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/macosx macosx
-
       - name: Build ios SDK
         run: |
           set -euo pipefail
@@ -181,25 +272,23 @@ jobs:
               ANDROID_JOBS="$JOBS"
           fi
 
-      - name: Package SDK zips
+      - name: Package SDK zip
         env:
-          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          TAG: ${{ inputs.tag }}
         run: |
           mkdir -p artifacts
-          for plat in macosx ios; do
-            python3 .github/scripts/zip-sdk.py "$plat" "$TAG"
-          done
+          python3 .github/scripts/zip-sdk.py ios "$TAG"
           ls -lh artifacts/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sdk-macos
+          name: sdk-ios
           path: artifacts/*.zip
           if-no-files-found: error
           retention-days: 14
 
-  build-linux:
+  linux:
     name: Linux SDK
     runs-on: ubuntu-24.04
     timeout-minutes: 180
@@ -207,6 +296,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.ref || inputs.tag }}
           submodules: recursive
 
       - name: Install system packages
@@ -241,7 +331,7 @@ jobs:
 
       - name: Package SDK zip
         env:
-          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          TAG: ${{ inputs.tag }}
         run: |
           mkdir -p artifacts
           python3 .github/scripts/zip-sdk.py linux "$TAG"
@@ -256,8 +346,8 @@ jobs:
           retention-days: 14
 
   publish:
-    name: Attach SDKs & promote release
-    needs: [build-windows, build-macos, build-linux]
+    name: Attach SDKs
+    needs: [windows, android, macos, ios, linux]
     runs-on: ubuntu-latest
     steps:
       - name: Download all SDK artifacts
@@ -270,10 +360,10 @@ jobs:
       - name: List packages
         run: ls -lh artifacts/
 
-      - name: Upload to GitHub Release and promote
+      - name: Upload to GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          TAG: ${{ inputs.tag }}
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
@@ -286,7 +376,5 @@ jobs:
             exit 1
           fi
           gh release upload "$TAG" "${zips[@]}" --repo "$REPO" --clobber
-          # Promote the pre-release to a formal release once all SDKs are attached.
-          gh release edit "$TAG" --repo "$REPO" --prerelease=false
-          echo "Published formal release $TAG with:"
+          echo "Attached SDKs to $TAG:"
           printf '  %s\n' "${zips[@]}"

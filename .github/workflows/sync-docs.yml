@@ -1,0 +1,39 @@
+# Cherry-pick documentation commits from main onto dev.
+# Non-doc files on main (relative to dev) fail the job.
+
+name: Sync docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - Readme.md
+      - Readme.en.md
+      - Doxyfile
+      - docs/**
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: sync-docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync documentation to dev
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: "true"
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 scripts/release.py sync-docs
