@@ -26,13 +26,13 @@ struct UIEvent {
     std::string textValue;
 };
 
-/** One script-facing click: "hostName/nodeId". */
+/** @brief One script-facing click: "hostName/nodeId". */
 struct UIClick {
     std::string hostName;
     std::string nodeId;
 };
 
-/** Value/text/toggle change for script: "hostName/nodeId". */
+/** @brief Value/text/toggle change for script: "hostName/nodeId". */
 struct UIChange {
     std::string hostName;
     std::string nodeId;
@@ -78,24 +78,24 @@ public:
     /** Create/refresh the offscreen canvas for a viewport key. */
     static ViewportState *ensureViewport(const std::string &key, int w, int h);
 
-    /** Walk all UIHost (+ subclasses) via ECS View. */
+    /** @brief Walk all UIHost (+ subclasses) via ECS View. */
     static void render();
 
     static std::vector<UIEvent> &pendingEvents();
     static void dispatchEvents();
 
-    /** Lookup by Meta.name across the UIHost View. */
+    /** @brief Lookup by Meta.name across the UIHost View. */
     static UIHost *findHost(const std::string &name);
-    /** First host with Meta.ownerId == ownerId, or nullptr. */
+    /** @brief First host with Meta.ownerId == ownerId, or nullptr. */
     static UIHost *findHostByOwner(uint32_t ownerId);
 
     static std::vector<UIClick> &clickQueue();
     static std::vector<UIChange> &changeQueue();
-    /** Pop next click as "name/node"; empty if none. */
+    /** @brief Pop next click as "name/node"; empty if none. */
     static std::string consumeClick();
-    /** Pop next click for a specific host; returns node id only (or ""). */
+    /** @brief Pop next click for a specific host; returns node id only (or ""). */
     static std::string consumeClickFor(const std::string &hostName);
-    /** Pop next change as "name/node"; empty if none. */
+    /** @brief Pop next change as "name/node"; empty if none. */
     static std::string consumeChange();
 };
 

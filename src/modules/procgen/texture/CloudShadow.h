@@ -5,7 +5,7 @@
 namespace eve::procgen {
 
 /**
- * Cloud shadows cast onto the ground plane.
+ * @brief Cloud shadows cast onto the ground plane.
  *
  * A cloud at altitude `cloudAltitude` above a ground point casts its shadow
  * where the sun ray from that cloud lands. Given a directional light `sunDir`
@@ -39,20 +39,20 @@ public:
     void setCloudAltitude(float altitude);
     void setStrength(float strength);
 
-    /** Cloud coverage projected onto ground (x, z) at time t, in [0,1]. */
+    /** @brief Cloud coverage projected onto ground (x, z) at time t, in [0,1]. */
     float coverageAt(float x, float z, float time) const;
 
-    /** Light multiplier in [0,1]: 1 = fully lit, (1-strength) = fully shadowed. */
+    /** @brief Light multiplier in [0,1]: 1 = fully lit, (1-strength) = fully shadowed. */
     float shadowFactorAt(float x, float z, float time) const;
 
-    /** World-space cloud-point offset implied by sun + altitude. */
+    /** @brief World-space cloud-point offset implied by sun + altitude. */
     void cloudOffset(float &ox, float &oz) const;
 
-    /** Fill a buffer with projected coverage for a world region. */
+    /** @brief Fill a buffer with projected coverage for a world region. */
     void sampleCoverage(float *out, int width, int height, float time, float x0, float z0,
                         float extent) const;
 
-    /** Fill a buffer with shadow light-multiplier factors for a world region. */
+    /** @brief Fill a buffer with shadow light-multiplier factors for a world region. */
     void sampleFactor(float *out, int width, int height, float time, float x0, float z0,
                       float extent) const;
 

@@ -11,7 +11,7 @@ class Graphics;
 namespace eve::physics {
 
 /**
- * Interactive 2D particle fluid (double-density relaxation) in pixel space.
+ * @brief Interactive 2D particle fluid (double-density relaxation) in pixel space.
  * Script-owned; independent of Box2D World.
  */
 class Fluid {
@@ -28,44 +28,44 @@ public:
     float getGravityX() const { return gravityX_; }
     float getGravityY() const { return gravityY_; }
 
-    /** Interaction / neighbor radius in pixels (default 18). */
+    /** @brief Interaction / neighbor radius in pixels (default 18). */
     void  setSmoothingRadius(float radius);
     float getSmoothingRadius() const { return h_; }
 
-    /** Target rest density for the relaxation solver (default 4). */
+    /** @brief Target rest density for the relaxation solver (default 4). */
     void  setRestDensity(float density);
     float getRestDensity() const { return restDensity_; }
 
-    /** Pressure stiffness (default 0.5). */
+    /** @brief Pressure stiffness (default 0.5). */
     void  setPressureStiffness(float k);
     float getPressureStiffness() const { return pressureK_; }
 
-    /** Near-pressure (anti-clustering) stiffness (default 0.5). */
+    /** @brief Near-pressure (anti-clustering) stiffness (default 0.5). */
     void  setNearPressureStiffness(float k);
     float getNearPressureStiffness() const { return nearPressureK_; }
 
     void  setViscosity(float viscosity);
     float getViscosity() const { return viscosity_; }
 
-    /** Solver iterations per frame (default 3). */
+    /** @brief Solver iterations per frame (default 3). */
     void setIterations(int iterations);
     int  getIterations() const { return iterations_; }
 
-    /** Axis-aligned container; particles bounce inside. */
+    /** @brief Axis-aligned container; particles bounce inside. */
     void setBounds(float x, float y, float w, float h);
     void clearBounds();
 
     /**
-     * Spawn up to `count` particles at (x,y) with initial velocity.
+     * @brief Spawn up to `count` particles at (x,y) with initial velocity.
      * Returns number actually added.
      */
     int emit(float x, float y, int count, float vx = 0.f, float vy = 0.f);
 
-    /** Clear all particles. */
+    /** @brief Clear all particles. */
     void clear();
 
     /**
-     * Mouse / pointer interaction: positive strength attracts, negative repels.
+     * @brief Mouse / pointer interaction: positive strength attracts, negative repels.
      * Applied as acceleration within radius (pixels).
      */
     void interactAt(float x, float y, float radius, float strength);
@@ -76,7 +76,7 @@ public:
     float getColorB() const { return colorB_; }
     float getColorA() const { return colorA_; }
 
-    /** Particle draw size in pixels (default 5). */
+    /** @brief Particle draw size in pixels (default 5). */
     void  setParticleSize(float size);
     float getParticleSize() const { return particleSize_; }
 

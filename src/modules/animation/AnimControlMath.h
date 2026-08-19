@@ -6,7 +6,7 @@
 namespace eve::animation {
 
 /**
- * Control-theory helpers for procedural animation.
+ * @brief Control-theory helpers for procedural animation.
  *
  * Sources (public literature / industry practice):
  * - Second-order LTI tracking (t3ssel8r): ÿ + k1 ẏ + k2 y = x + k3 ẋ
@@ -23,7 +23,7 @@ struct SecondOrderCoeffs {
     float k3 = 0.f;
 };
 
-/** Build second-order coefficients from frequency (Hz), damping ζ, response r. */
+/** @brief Build second-order coefficients from frequency (Hz), damping ζ, response r. */
 inline SecondOrderCoeffs makeSecondOrderCoeffs(float frequencyHz, float dampingZeta,
                                                float response) {
     const float f = std::max(frequencyHz, 1e-4f);
@@ -37,7 +37,7 @@ inline SecondOrderCoeffs makeSecondOrderCoeffs(float frequencyHz, float dampingZ
 }
 
 /**
- * Stable semi-implicit Euler step for a second-order tracker.
+ * @brief Stable semi-implicit Euler step for a second-order tracker.
  * Estimates input velocity from consecutive targets when xdEstimate is used by caller.
  * k2 is clamped (k2_stable) so large dt cannot explode the integrator.
  */
@@ -49,7 +49,7 @@ inline void stepSecondOrder(float dt, float x, float xd, const SecondOrderCoeffs
     yd += dt * (x + c.k3 * xd - y - c.k1 * yd) / k2Stable;
 }
 
-/** Closed-form coefficients for one damped-spring time step (Juckett). */
+/** @brief Closed-form coefficients for one damped-spring time step (Juckett). */
 struct DampedSpringStep {
     float posPos = 1.f;
     float posVel = 0.f;
@@ -110,7 +110,7 @@ inline DampedSpringStep makeDampedSpringStep(float dt, float angularFrequency, f
     return s;
 }
 
-/** Advance position/velocity relative to a set-point using closed-form spring step. */
+/** @brief Advance position/velocity relative to a set-point using closed-form spring step. */
 inline void stepDampedSpring(float dt, float target, float angularFrequency, float dampingRatio,
                              float &pos, float &vel) {
     const DampedSpringStep s = makeDampedSpringStep(dt, angularFrequency, dampingRatio);
@@ -122,7 +122,7 @@ inline void stepDampedSpring(float dt, float target, float angularFrequency, flo
     vel = newVel;
 }
 
-/** Unit-mass PD gains from natural frequency ω (rad/s) and damping ratio ζ. */
+/** @brief Unit-mass PD gains from natural frequency ω (rad/s) and damping ratio ζ. */
 inline void pdGainsFromOmegaZeta(float omega, float zeta, float &kp, float &kd) {
     const float w = std::max(omega, 0.f);
     const float z = std::max(zeta, 0.f);
@@ -131,7 +131,7 @@ inline void pdGainsFromOmegaZeta(float omega, float zeta, float &kp, float &kd) 
 }
 
 /**
- * Semi-implicit Euler PD step (unit mass):
+ * @brief Semi-implicit Euler PD step (unit mass):
  * a = Kp (target − y) + Kd (targetVel − yd), then integrate.
  */
 inline void stepPd(float dt, float target, float targetVel, float kp, float kd, float &y,
@@ -142,7 +142,7 @@ inline void stepPd(float dt, float target, float targetVel, float kp, float kd, 
     y += yd * dt;
 }
 
-/** ω (rad/s) from frequency in Hz. */
+/** @brief ω (rad/s) from frequency in Hz. */
 inline float hzToOmega(float frequencyHz) {
     return 6.283185307179586f * std::max(frequencyHz, 0.f);
 }

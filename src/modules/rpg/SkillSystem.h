@@ -19,7 +19,7 @@ struct SkillDefinition;
 
 class SkillSystem {
 public:
-    /** 返回 false 表示禁止释放；通过 outReason 说明原因。 */
+    /** @brief 返回 false 表示禁止释放；通过 outReason 说明原因。 */
     using CastCondition =
         std::function<bool(RPGActor *actor, const SkillDefinition &def, std::string &outReason)>;
 
@@ -34,25 +34,25 @@ public:
     static float getCooldownRemaining(RPGActor *actor, const std::string &skillId);
     static void setCooldownRemaining(RPGActor *actor, const std::string &skillId, float seconds);
 
-    /** 检查冷却/消耗/学会状态/自定义条件，不产生任何副作用。 */
+    /** @brief 检查冷却/消耗/学会状态/自定义条件，不产生任何副作用。 */
     static bool canCast(RPGActor *actor, const std::string &skillId, std::string *reason = nullptr);
 
     /**
-     * 尝试释放技能：通过 canCast 检查后立即扣除消耗并进入冷却；
+     * @brief 尝试释放技能：通过 canCast 检查后立即扣除消耗并进入冷却；
      * castTime<=0 时立即结算（授予效果 + 产生 SkillCastEvent），
      * 否则进入读条状态，由 update() 在读条结束时结算。
      */
     static bool beginCast(RPGActor *actor, const std::string &skillId, RPGActor *target = nullptr,
                            std::string *reason = nullptr);
 
-    /** 打断当前读条（不退还已扣除的消耗/冷却）。 */
+    /** @brief 打断当前读条（不退还已扣除的消耗/冷却）。 */
     static void cancelCast(RPGActor *actor);
 
     static bool isCasting(RPGActor *actor);
     static std::string getCastingSkillId(RPGActor *actor);
     static float getCastProgress(RPGActor *actor);  ///< 0..1，非读条状态返回 0
 
-    /** 遍历 RPGActor::liveActors()：冷却倒计时 + 读条推进/结算。 */
+    /** @brief 遍历 RPGActor::liveActors()：冷却倒计时 + 读条推进/结算。 */
     static void update(float dt);
 
     static void pollCastEvents(std::vector<SkillCastEvent> &out);

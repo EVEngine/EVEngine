@@ -10,7 +10,7 @@
 namespace eve::spatial {
 
 /**
- * Region quadtree for 2D AABB broad-phase / map culling.
+ * @brief Region quadtree for 2D AABB broad-phase / map culling.
  * Items are stored in the smallest node that fully contains them; spanning
  * items stay at the parent. Scripts use insert/remove/query* + getResult*.
  */

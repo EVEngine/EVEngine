@@ -6,7 +6,7 @@
 
 namespace eve::particles {
 
-/** Color gradient stop at normalized lifetime t in [0, 1]. */
+/** @brief Color gradient stop at normalized lifetime t in [0, 1]. */
 struct ColorStop {
     float t = 0.f;
     float r = 1.f;
@@ -15,14 +15,14 @@ struct ColorStop {
     float a = 1.f;
 };
 
-/** Scalar curve point at normalized lifetime t in [0, 1]. */
+/** @brief Scalar curve point at normalized lifetime t in [0, 1]. */
 struct CurvePoint {
     float t = 0.f;
     float v = 0.f;
 };
 
 /**
- * Multi-stop color gradient sampled with linear interpolation between stops.
+ * @brief Multi-stop color gradient sampled with linear interpolation between stops.
  * Stops are kept sorted by t. Empty gradient means "use the legacy
  * colorStart/colorEnd two-point lerp".
  */
@@ -82,7 +82,7 @@ private:
 };
 
 /**
- * Multi-point scalar curve sampled with linear interpolation between points.
+ * @brief Multi-point scalar curve sampled with linear interpolation between points.
  * Empty curve means "use the legacy two-point linear fallback".
  */
 class ParticleCurve {
@@ -99,7 +99,7 @@ public:
     size_t size() const { return points.size(); }
     const CurvePoint &at(size_t i) const { return points[i]; }
 
-    /** Sample at normalized t; fallback is returned when the curve is empty. */
+    /** @brief Sample at normalized t; fallback is returned when the curve is empty. */
     float sample(float t, float fallback) const {
         if (points.empty()) return fallback;
         t = t < 0.f ? 0.f : (t > 1.f ? 1.f : t);

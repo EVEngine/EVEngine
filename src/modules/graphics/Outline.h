@@ -10,7 +10,7 @@ class Shader;
 class Texture;
 
 /**
- * Screen-space model outline (t3ssel8r-style), computed from the GBuffer
+ * @brief Screen-space model outline (t3ssel8r-style), computed from the GBuffer
  * hardware depth + world-normal buffers.
  *
  * Technique: for every pixel sample the depth (Vulkan NDC z, binding 0) and
@@ -41,27 +41,27 @@ public:
     float getColorG() const;
     float getColorB() const;
 
-    /** Outline thickness in screen pixels (>= 0.5). */
+    /** @brief Outline thickness in screen pixels (>= 0.5). */
     void setWidth(float width);
     float getWidth() const;
 
-    /** View-space depth discontinuity that starts a depth edge. */
+    /** @brief View-space depth discontinuity that starts a depth edge. */
     void setDepthThreshold(float threshold);
     float getDepthThreshold() const;
 
-    /** Extra per-unit-distance depth tolerance (keeps outlines distance-consistent). */
+    /** @brief Extra per-unit-distance depth tolerance (keeps outlines distance-consistent). */
     void setDepthSensitivity(float sensitivity);
     float getDepthSensitivity() const;
 
-    /** Normal discontinuity (1 - dot(n, nN)) that starts a crease edge. */
+    /** @brief Normal discontinuity (1 - dot(n, nN)) that starts a crease edge. */
     void setNormalThreshold(float threshold);
     float getNormalThreshold() const;
 
-    /** Smoothstep band used to fade edges (0 = hard, 1 = soft). */
+    /** @brief Smoothstep band used to fade edges (0 = hard, 1 = soft). */
     void setSoftness(float softness);
     float getSoftness() const;
 
-    /** Near/far used to linearize the hardware depth. */
+    /** @brief Near/far used to linearize the hardware depth. */
     void setClip(float nearZ, float farZ);
 
     bool hasParam(const std::string &name) const;
@@ -69,7 +69,7 @@ public:
     float getFloat(const std::string &name) const;
 
     /**
-     * Draw the outline over the currently bound canvas / screen.
+     * @brief Draw the outline over the currently bound canvas / screen.
      * `hwDepth` is the D32 GBuffer (Vulkan NDC z), `worldNormal` the GBuffer
      * world normal (RGBA8, n * 0.5 + 0.5). Automatically uploads texel size
      * and clip uniforms. Returns false if either input is missing.

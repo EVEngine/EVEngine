@@ -14,14 +14,14 @@ class Graphics;
 class Texture;
 
 /**
- * Decodes one UTF-8 codepoint from `text` starting at byte offset `i`,
+ * @brief Decodes one UTF-8 codepoint from `text` starting at byte offset `i`,
  * advancing `i` past it. Returns 0 at end of string; invalid/truncated
  * sequences decode as U+FFFD and advance by one byte.
  */
 uint32_t nextCodepointUtf8(const std::string &text, size_t &i);
 
 /**
- * GPU-side font: wraps a decoded `font::FontData` and rasterizes a fixed
+ * @brief GPU-side font: wraps a decoded `font::FontData` and rasterizes a fixed
  * set of codepoints into a single RGBA8 glyph atlas texture up front, so
  * `Graphics::print()` can draw text with plain textured-quad draws.
  *
@@ -31,7 +31,7 @@ uint32_t nextCodepointUtf8(const std::string &text, size_t &i);
  */
 class Font {
 public:
-    /** Printable ASCII (0x20..0x7E), used when no explicit charset is given. */
+    /** @brief Printable ASCII (0x20..0x7E), used when no explicit charset is given. */
     static std::string defaultCharset();
 
     Font(Graphics *gfx, font::FontData *data, std::string charset = defaultCharset());
@@ -43,16 +43,16 @@ public:
     font::FontData *getData() const { return data; }
     Texture        *getTexture() const { return atlas; }
 
-    /** Line height in pixels at the FontData's decoded pixel size. */
+    /** @brief Line height in pixels at the FontData's decoded pixel size. */
     float getHeight() const;
     float getAscent() const;
-    /** Distance from the top of a line to the baseline (== getAscent()). */
+    /** @brief Distance from the top of a line to the baseline (== getAscent()). */
     float getBaseline() const;
 
-    /** Pixel width of `text` (UTF-8), including kerning; delegates to FontData. */
+    /** @brief Pixel width of `text` (UTF-8), including kerning; delegates to FontData. */
     float getWidth(const std::string &text) const;
 
-    /** Whether `codepoint` was rasterized into this Font's atlas. */
+    /** @brief Whether `codepoint` was rasterized into this Font's atlas. */
     bool hasGlyph(int codepoint) const;
 
     struct Glyph {
@@ -62,7 +62,7 @@ public:
         int   advance = 0;
     };
 
-    /** Returns nullptr if `codepoint` isn't in this Font's atlas. */
+    /** @brief Returns nullptr if `codepoint` isn't in this Font's atlas. */
     const Glyph *findGlyph(int codepoint) const;
 
 private:

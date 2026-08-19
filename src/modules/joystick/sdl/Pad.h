@@ -9,6 +9,7 @@
 
 namespace eve::joystick::sdl {
 
+/** @brief SDL 手柄/摇杆后端实现（含 GameController 与振动）。 */
 class Pad : public eve::joystick::Pad {
 public:
     explicit Pad(int id);

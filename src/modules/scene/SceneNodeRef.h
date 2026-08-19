@@ -9,7 +9,7 @@ namespace eve::scene {
 class Scene;
 
 /**
- * Script handle to a scene node (hostName + nodeId). Deliberately holds strings
+ * @brief Script handle to a scene node (hostName + nodeId). Deliberately holds strings
  * rather than arena pointers, so it stays valid across rebuilds/reconcile.
  * Node-level entity bindings are forwarded through the Scene module.
  */
@@ -21,9 +21,9 @@ public:
 
     std::string getHostName() const { return hostName_; }
     std::string getNodeId() const { return nodeId_; }
-    /** True when host + node currently resolve. */
+    /** @brief True when host + node currently resolve. */
     bool isValid() const;
-    /** The eve.Scene module instance (for entity binding forwarding). */
+    /** @brief The eve.Scene module instance (for entity binding forwarding). */
     Scene *getScene() const;
 
     // --- local transform ---
@@ -53,9 +53,9 @@ public:
     float getWorldPositionY() const;
     float getWorldPositionZ() const;
     std::vector<float> getWorldPosition() const;
-    /** Column-major 4x4 world matrix, 16 floats. */
+    /** @brief Column-major 4x4 world matrix, 16 floats. */
     std::vector<float> getWorldMatrix() const;
-    /** Normalized local axes in world space (forward = +Z). */
+    /** @brief Normalized local axes in world space (forward = +Z). */
     std::vector<float> getForward() const;
     std::vector<float> getRight() const;
     std::vector<float> getUp() const;

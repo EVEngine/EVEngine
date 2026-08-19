@@ -9,7 +9,7 @@
 
 namespace eve::procgen {
 
-/** Named palette: semantic name -> tile GID. Unmapped semantics become GID 0. */
+/** @brief Named palette: semantic name -> tile GID. Unmapped semantics become GID 0. */
 class PaletteTable {
 public:
     void setGid(const std::string &palette, const std::string &semantic, int gid);

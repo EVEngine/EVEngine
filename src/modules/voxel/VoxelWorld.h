@@ -27,13 +27,13 @@ class ByteData;
 
 namespace eve::voxel {
 
-/** Result of a streaming pass. */
+/** @brief Result of a streaming pass. */
 struct StreamStats {
     int created = 0;  // chunks allocated + filled this pass
     int evicted = 0;  // chunks unloaded outside the radius
 };
 
-/** One draw batch: all packed rects of one face direction for one chunk. */
+/** @brief One draw batch: all packed rects of one face direction for one chunk. */
 struct DrawBatch {
     const Chunk *chunk = nullptr;
     FaceDir dir = FaceDir::PosX;
@@ -43,7 +43,7 @@ struct DrawBatch {
 };
 
 /**
- * Sparse chunk map + visibility selection (frustum + distance + face orientation).
+ * @brief Sparse chunk map + visibility selection (frustum + distance + face orientation).
  * Meshing is neighbor-aware (cross-chunk seam culling), parallel-capable and
  * script-friendly via getVisible getters and raycast helpers.
  */
@@ -62,14 +62,14 @@ public:
     int getChunkCount() const { return int(chunks_.size()); }
 
     /**
-     * Streaming eviction: drop chunks whose center is farther than
+     * @brief Streaming eviction: drop chunks whose center is farther than
      * `radiusChunks` chunk units from (centerX, centerY, centerZ).
      * Radius < 0 is a no-op. Returns the number of chunks evicted.
      */
     int unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks);
 
     /**
-     * Player-centered streaming: evict chunks outside `radiusChunks`, then
+     * @brief Player-centered streaming: evict chunks outside `radiusChunks`, then
      * allocate + fill + mesh missing chunks inside it (sphere, chunk coords).
      * `generator` is called for each new chunk (chunk, cx, cy, cz); when null
      * the stored terrain sampler (procgen::TerrainSampler) is used if enabled,
@@ -80,7 +80,7 @@ public:
                              const std::function<void(Chunk &, int, int, int)> &generator = {});
 
     /**
-     * Configure the built-in terrain generator used by streamAround(). The
+     * @brief Configure the built-in terrain generator used by streamAround(). The
      * sampling itself lives in procgen::TerrainSampler (deterministic Perlin
      * fBm); voxel only adapts it to 32³ chunk filling.
      */
@@ -101,26 +101,26 @@ public:
     void disableTerrain() { terrainEnabled_ = false; }
     bool terrainEnabled() const { return terrainEnabled_; }
 
-    /** Terrain height (world blocks) at a column for the configured seed. */
+    /** @brief Terrain height (world blocks) at a column for the configured seed. */
     int terrainHeightAt(int wx, int wz) const {
         const float e = terrainSampler_.sample(float(wx), float(wz));
         return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
     }
 
     /**
-     * Persistence: serialize every chunk (coords + raw voxels) into `out`.
+     * @brief Persistence: serialize every chunk (coords + raw voxels) into `out`.
      * Format is portable little-endian: "EVVX" + version + count + per-chunk
      * (cx, cy, cz, 32³ voxels). Meshes are rebuilt on demand after loading.
      */
     void serializeWorld(std::vector<uint8_t> &out) const;
     bool deserializeWorld(const uint8_t *data, size_t size);
 
-    /** Script-facing wrappers around serialize/deserialize. */
+    /** @brief Script-facing wrappers around serialize/deserialize. */
     data::ByteData *saveWorld() const;
     bool loadWorld(data::ByteData *bytes);
 
     /**
-     * Remesh every dirty chunk. Returns number remeshed.
+     * @brief Remesh every dirty chunk. Returns number remeshed.
      * @param maxThreads 0 = auto (parallel up to an internal cap on desktop),
      *                   1 = serial, >1 = that many workers. Falls back to
      *                   serial when threads are unavailable.
@@ -128,7 +128,7 @@ public:
     int remeshDirty(int maxThreads = 0);
 
     /**
-     * Select chunks/faces to draw.
+     * @brief Select chunks/faces to draw.
      * @param viewProj16 column-major 4x4 RH+ZO view-projection (16 floats)
      * @param eyeX/Y/Z  camera eye world position
      * @param viewRange max distance from eye to chunk center (world units; ≤0 disables)
@@ -140,24 +140,24 @@ public:
     int getVisibleBatchCount() const { return int(visible_.size()); }
     const DrawBatch &getVisibleBatch(int index) const { return visible_[size_t(index)]; }
 
-    /** Script accessors for the last selectVisible result. */
+    /** @brief Script accessors for the last selectVisible result. */
     int getVisibleChunkCount() const { return int(visibleChunkKeys_.size()); }
     void getVisibleChunkCoord(int index, int &cx, int &cy, int &cz) const;
     int getVisibleRectCount() const;
 
     /**
-     * Issue Graphics::drawVoxelFaceInstances for every visible batch.
+     * @brief Issue Graphics::drawVoxelFaceInstances for every visible batch.
      * Requires begin3DFrame + setMesh3DViewProj already done.
      */
     void drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow = 16);
 
-    /** World-space voxel get/set. Air (0) never allocates a chunk; a border
+    /** @brief World-space voxel get/set. Air (0) never allocates a chunk; a border
      *  edit also invalidates the adjacent chunk's mesh. */
     uint8_t getVoxel(int wx, int wy, int wz) const;
     void setVoxel(int wx, int wy, int wz, uint8_t texId);
 
     /**
-     * Voxel raycast (Amanatides & Woo DDA). Returns true when a solid voxel is
+     * @brief Voxel raycast (Amanatides & Woo DDA). Returns true when a solid voxel is
      * found within `maxDist` world units along the ray; fills hit/prev coords
      * and the face normal of the surface the ray entered. `prev` is the last
      * air voxel before the hit (equals hit when the ray starts inside solid).
@@ -166,7 +166,7 @@ public:
                  int &hitX, int &hitY, int &hitZ, int &prevX, int &prevY, int &prevZ,
                  int &faceX, int &faceY, int &faceZ) const;
 
-    /** Script-facing raycast: stores the last result, returns hit/miss. */
+    /** @brief Script-facing raycast: stores the last result, returns hit/miss. */
     bool raycastScript(float ox, float oy, float oz, float dx, float dy, float dz, float maxDist);
     bool lastRaycastHit() const { return raycastHit_; }
     int lastRaycastHitX() const { return raycastHitX_; }
@@ -180,17 +180,17 @@ public:
     int lastRaycastFaceZ() const { return raycastFaceZ_; }
 
     /**
-     * 按方块名 + orientation(0..3) 设置体素；内部解析为具体类型 id 后写 Chunk。
+     * @brief 按方块名 + orientation(0..3) 设置体素；内部解析为具体类型 id 后写 Chunk。
      * 未注册的名字按空气(0)处理。
      */
     void setVoxelByName(int wx, int wy, int wz, const std::string &name, int orientation = 0);
 
-    /** 该体素所属方块类型名（未注册或空气返回空串）。 */
+    /** @brief 该体素所属方块类型名（未注册或空气返回空串）。 */
     std::string getCubeTypeName(int wx, int wy, int wz) const;
-    /** 该体素在某面方向上的纹理 id（faceDir 如 "posX"/"+y"/"negZ"）。 */
+    /** @brief 该体素在某面方向上的纹理 id（faceDir 如 "posX"/"+y"/"negZ"）。 */
     uint8_t getCubeTypeTex(int wx, int wy, int wz, const std::string &faceDir) const;
 
-    /** 本世界持有的方块类型注册表（副本）。 */
+    /** @brief 本世界持有的方块类型注册表（副本）。 */
     const CubeTypeRegistry &cubeTypes() const { return types_; }
 
 private:

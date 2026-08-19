@@ -3,7 +3,7 @@
 namespace eve::particles {
 
 /**
- * GLSL compute kernel for GPU-accelerated particle integration.
+ * @brief GLSL compute kernel for GPU-accelerated particle integration.
  *
  * Particle layout: 16 floats per particle.
  *   [0] x, [1] y, [2] vx, [3] vy,

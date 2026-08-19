@@ -34,7 +34,7 @@ class Source;
 namespace eve::scene {
 
 /**
- * Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.
+ * @brief Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.
  */
 struct SceneNode {
     std::string id;
@@ -42,10 +42,10 @@ struct SceneNode {
     std::string name;
     std::string space = "3d";  // "2d" | "3d"
     bool visible = true;
-    /** Gameplay groups (Godot-style): multiple string tags per node. */
+    /** @brief Gameplay groups (Godot-style): multiple string tags per node. */
     std::vector<std::string> tags;
     int layer = 0;
-    /** Local-space AABB (for picking / culling / spatial index). */
+    /** @brief Local-space AABB (for picking / culling / spatial index). */
     float bminX = 0.f, bminY = 0.f, bminZ = 0.f;
     float bmaxX = 0.f, bmaxY = 0.f, bmaxZ = 0.f;
     bool hasBounds = false;
@@ -55,14 +55,14 @@ struct SceneNode {
     float sx = 1.f, sy = 1.f, sz = 1.f;
 
     bool localDirty = true;
-    /** Subtree needs world recompute (API edits mark node + ancestors). */
+    /** @brief Subtree needs world recompute (API edits mark node + ancestors). */
     bool subtreeDirty = true;
     glm::mat4 world{1.f};
 
-    /** Generic links (renderable / physics / camera / audio). Target owned elsewhere. */
+    /** @brief Generic links (renderable / physics / camera / audio). Target owned elsewhere. */
     std::vector<SceneLink> links;
 
-    /** Lazy companion SceneObject ECS entity id; 0 = none. */
+    /** @brief Lazy companion SceneObject ECS entity id; 0 = none. */
     uint32_t objectId = 0;
 
     int firstChild = -1;
@@ -70,11 +70,11 @@ struct SceneNode {
     int parent = -1;
 };
 
-/** Alias: GameObject is the conceptual name for a SceneNode in a host tree. */
+/** @brief Alias: GameObject is the conceptual name for a SceneNode in a host tree. */
 using GameObject = SceneNode;
 
 /**
- * ECS mount point for one scene graph (full scene or nested subtree root).
+ * @brief ECS mount point for one scene graph (full scene or nested subtree root).
  * Isomorphic to eve::ui::UIHost.
  */
 class SceneHost : public ecs::Entity {
@@ -110,16 +110,16 @@ public:
     void setOwnerId(uint32_t id) { meta()->ownerId = id; }
     uint32_t getOwnerId() { return meta()->ownerId; }
 
-    /** Full replace. */
+    /** @brief Full replace. */
     void setTree(NodeDesc root);
-    /** Key-aware patch when structure matches; else full replace. */
+    /** @brief Key-aware patch when structure matches; else full replace. */
     bool setTreeReconcile(NodeDesc root);
 
     SceneNode *findById(const std::string &id);
     SceneNode *findByKey(const std::string &key);
-    /** First node whose name equals `name` (DFS from root). */
+    /** @brief First node whose name equals `name` (DFS from root). */
     SceneNode *findByName(const std::string &name);
-    /** Path of ids joined by '/', e.g. "root/player/weapon". Relative to host root. */
+    /** @brief Path of ids joined by '/', e.g. "root/player/weapon". Relative to host root. */
     SceneNode *findByPath(const std::string &path);
     int findIndexById(const std::string &id);
     int findIndexByKey(const std::string &key);
@@ -137,7 +137,7 @@ public:
     SceneNode *getParentById(const std::string &id);
     int getChildCount(int nodeIndex);
     int getChildCountById(const std::string &id);
-    /** Child ordinal 0..count-1; -1 if out of range. */
+    /** @brief Child ordinal 0..count-1; -1 if out of range. */
     int getChildIndexAt(int parentIndex, int childOrdinal);
     SceneNode *getChildAt(int parentIndex, int childOrdinal);
     SceneNode *getChildAtById(const std::string &parentId, int childOrdinal);
@@ -145,7 +145,7 @@ public:
     std::vector<SceneNode *> getChildren(int nodeIndex);
     std::vector<std::string> getChildIds(const std::string &parentId);
 
-    /** Id path "a/b/c" from root to node; empty if invalid. */
+    /** @brief Id path "a/b/c" from root to node; empty if invalid. */
     std::string getPath(int nodeIndex);
     std::string getPathById(const std::string &id);
 
@@ -156,7 +156,7 @@ public:
 
     void markDirty() { tree()->dirty = true; }
     void markTransformDirty() { tree()->transformDirty = true; }
-    /** Mark a node's subtree for world recompute (recompute it + descendants). */
+    /** @brief Mark a node's subtree for world recompute (recompute it + descendants). */
     void markSubtreeDirty(int nodeIndex);
     void markSubtreeDirtyById(const std::string &id) {
         markSubtreeDirty(findIndexById(id));
@@ -168,7 +168,7 @@ public:
                                             const std::string &nodeId,
                                             const std::string &parentId)>;
     void setEventHandler(SceneEventFn fn) { eventHandler_ = std::move(fn); }
-    /** Fire "node_added" / "node_removed" / "node_moved" / "node_changed". */
+    /** @brief Fire "node_added" / "node_removed" / "node_moved" / "node_changed". */
     void fireEvent(const std::string &action, const std::string &nodeId,
                    const std::string &parentId = {});
 
@@ -176,31 +176,31 @@ public:
     void setLayer(int layer) { meta()->layer = layer; }
 
     /**
-     * Imperative parent link. Returns false on invalid indices or cycle.
+     * @brief Imperative parent link. Returns false on invalid indices or cycle.
      * Prefer declarative NodeDesc + reconcile for normal use.
      */
     bool setParent(int childIndex, int parentIndex);
     bool addChild(int parentIndex, int childIndex);
     bool removeChild(int parentIndex, int childIndex);
 
-    /** Depth-first visit of arena indices under `nodeIndex` (inclusive). C callback. */
+    /** @brief Depth-first visit of arena indices under `nodeIndex` (inclusive). C callback. */
     void forEachDepthFirst(int nodeIndex, void (*fn)(SceneHost *, int, void *), void *user);
 
     using NodeVisitFn = std::function<void(SceneHost *host, int index, SceneNode &node)>;
     using NodePredFn = std::function<bool(SceneHost *host, int index, const SceneNode &node)>;
 
-    /** DFS from root (or from `nodeIndex`), inclusive. */
+    /** @brief DFS from root (or from `nodeIndex`), inclusive. */
     void walkDepthFirst(NodeVisitFn fn);
     void walkDepthFirstFrom(int nodeIndex, NodeVisitFn fn);
-    /** BFS from root (or from `nodeIndex`), inclusive. */
+    /** @brief BFS from root (or from `nodeIndex`), inclusive. */
     void walkBreadthFirst(NodeVisitFn fn);
     void walkBreadthFirstFrom(int nodeIndex, NodeVisitFn fn);
-    /** Direct children only. */
+    /** @brief Direct children only. */
     void walkChildren(int parentIndex, NodeVisitFn fn);
-    /** Parent chain upward, excluding self. */
+    /** @brief Parent chain upward, excluding self. */
     void walkAncestors(int nodeIndex, NodeVisitFn fn);
 
-    /** First DFS match; nullptr if none. */
+    /** @brief First DFS match; nullptr if none. */
     SceneNode *findIf(NodePredFn pred);
     SceneNode *findIfFrom(int nodeIndex, NodePredFn pred);
     std::vector<SceneNode *> filter(NodePredFn pred);
@@ -221,7 +221,7 @@ public:
     std::vector<std::string> collectIdsVisible(bool visible = true);
 
     /**
-     * Attach an external object to a node id. Survives reconcile/rebuild by id.
+     * @brief Attach an external object to a node id. Survives reconcile/rebuild by id.
      * After TransformSystem the link is synced per kind (and syncMode).
      *
      * `kind` is an id from scene::registerLinkKind, so any module can attach to
@@ -237,16 +237,16 @@ public:
     bool linkCamera3D(const std::string &nodeId, graphics::Camera3D *c);
     bool linkAudio3D(const std::string &nodeId, audio::Source *s);
 
-    /** Remove all links of a kind; returns true if a link was removed. */
+    /** @brief Remove all links of a kind; returns true if a link was removed. */
     bool unlink(const std::string &nodeId, int kind);
-    /** Remove every link on the node. */
+    /** @brief Remove every link on the node. */
     bool unlink(const std::string &nodeId);
 
     SceneLink *findLink(SceneNode *node, int kind);
     const SceneLink *findLink(const SceneNode *node, int kind) const;
     int linkCount(const std::string &nodeId);
 
-    /** Reparent by id; empty parentId detaches (parent = -1). Cycle-safe. */
+    /** @brief Reparent by id; empty parentId detaches (parent = -1). Cycle-safe. */
     bool setParentById(const std::string &childId, const std::string &parentId);
     bool removeChildById(const std::string &parentId, const std::string &childId);
 

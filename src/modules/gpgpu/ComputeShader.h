@@ -8,7 +8,7 @@ namespace eve::gpgpu {
 class GpuBuffer;
 
 /**
- * Backend-agnostic compute program.
+ * @brief Backend-agnostic compute program.
  * Bind storage buffers then dispatch via Gpgpu::dispatch.
  * Push constants: float[32] (same size as graphics::Shader).
  */
@@ -24,7 +24,7 @@ public:
     ComputeShader(const ComputeShader &) = delete;
     ComputeShader &operator=(const ComputeShader &) = delete;
 
-    /** Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings). */
+    /** @brief Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings). */
     virtual void bindBuffer(int binding, GpuBuffer *buffer) = 0;
     virtual GpuBuffer *getBoundBuffer(int binding) const = 0;
 

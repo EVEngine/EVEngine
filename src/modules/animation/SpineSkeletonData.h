@@ -7,7 +7,7 @@
 namespace eve::animation {
 
 /**
- * Spine skeleton JSON data (bones / slots / skins / animations).
+ * @brief Spine skeleton JSON data (bones / slots / skins / animations).
  *
  * Supports a practical subset for 2D region attachments:
  * - bones: name, parent, x, y, rotation, scaleX, scaleY
@@ -83,7 +83,7 @@ public:
         float       scaleX = 1.f, scaleY = 1.f;
     };
 
-    /** slotIndex → attachmentName → region */
+    /** @brief slotIndex → attachmentName → region */
     using SkinAttachments = std::unordered_map<int, std::unordered_map<std::string, RegionAttachment>>;
 
     struct SkinData {

@@ -10,7 +10,7 @@ namespace eve::procgen {
 class MeshRecipeRegistry;
 
 /**
- * Procedural linear, tileable structures (fences, walls, bridges, the Great Wall,
+ * @brief Procedural linear, tileable structures (fences, walls, bridges, the Great Wall,
  * hedges, cheval de frise, ...). Each recipe builds one tileable unit segment
  * from axis-aligned boxes and oriented beams, then repeats it `segments` times
  * along the X axis so units join seamlessly end-to-end.
@@ -28,7 +28,7 @@ class MeshRecipeRegistry;
 bool generateLinearStructure(const std::string &kind, const Params &params, MeshBuild &out,
                              std::string &error);
 
-/** Register all built-in linear structure mesh recipes into a registry. */
+/** @brief Register all built-in linear structure mesh recipes into a registry. */
 void registerLinearStructureRecipes(MeshRecipeRegistry &registry);
 
 }  // namespace eve::procgen

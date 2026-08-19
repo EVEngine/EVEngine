@@ -5,7 +5,7 @@
 
 namespace eve::editor {
 
-/** Independent GID grid for map brushes (no hard dependency on map.TileLayer). */
+/** @brief Independent GID grid for map brushes (no hard dependency on map.TileLayer). */
 class TileBuffer {
 public:
     TileBuffer(int width, int height);

@@ -1,0 +1,73 @@
+# Doxyfile 1.9+ — EVEngine API documentation.
+# Run `make docs` (or `doxygen Doxyfile`); output goes to docs/api/html.
+
+PROJECT_NAME           = "EVEngine"
+PROJECT_NUMBER         = "0.1.0"
+PROJECT_BRIEF          = "Evolutionary Vision Engine - C++20 / Vulkan game engine (SDL2 + Squirrel scripting)"
+OUTPUT_DIRECTORY       = docs/api
+CREATE_SUBDIRS         = NO
+ALLOW_UNICODE_NAMES    = YES
+
+INPUT                  = src Readme.md
+USE_MDFILE_AS_MAINPAGE = Readme.md
+RECURSIVE              = YES
+
+# Generated shader headers, Squirrel scripts and templates are not C++ API.
+EXCLUDE_PATTERNS       = *.glsl \
+                         *.spv \
+                         *.nut \
+                         *.in \
+                         *.inc \
+                         *.json \
+                         *.py
+
+# Headers pulled in by engine code (submodules / third-party).
+INCLUDE_PATH           = external/zeroerr/include \
+                         external/ECS.hpp/src \
+                         external/ik.hpp \
+                         external/VKBuilder/include \
+                         third-party/medialoader/include
+INCLUDE_FILE_PATTERNS  = *.h *.hpp *.inl
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+EXTRACT_PACKAGE        = NO
+HIDE_UNDOC_MEMBERS     = NO
+SHOW_INCLUDE_FILES     = YES
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_EXTRA_STYLESHEET  =
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
+SEARCHENGINE           = YES
+SERVER_BASED_SEARCH    = NO
+
+GENERATE_LATEX         = NO
+GENERATE_MAN           = NO
+GENERATE_RTF           = NO
+GENERATE_XML           = NO
+
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = NO
+WARN_NO_PARAMDOC       = NO
+WARN_FORMAT            = "$file:$line: $text"
+
+HAVE_DOT               = NO
+CLASS_DIAGRAMS         = NO
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+
+PREDEFINED             = EVENGINE_API= \
+                         EVENGINE_EXPORT=
+EXPAND_AS_DEFINED      = Module_REG Module_IMPL SSQ_REG

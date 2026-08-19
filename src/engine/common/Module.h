@@ -51,26 +51,36 @@ public:
     typedef Module* (*creator_t)();
     typedef void    (*exposer_t)(ssq::Table&);
 
+    /** @brief Singleton registry holding every registered engine module. */
     static ModuleManager& inst();
 
+    /** @brief Finds a live module instance by name, or nullptr. */
     static Module* find(const char* name);
+    /** @brief Stores a module instance under a name (used by Module_IMPL). */
     static void    insert(const char* name, Module* inst);
 
+    /** @brief Registers a module factory (creator + script exposer) by name. */
     static void register_module(const char* name, creator_t c, exposer_t e);
+    /** @brief Exposes every registered module into the given runtime's root table. */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
     static void expose(ssq::VM& vm);
     // Expose modules registered after the initial expose() (e.g. plugins).
     static int  expose_pending();
+    /** @brief Active runtime associated with the last expose() call, or nullptr. */
     static Runtime* runtime();
+    /** @brief Script VM of the active runtime, or nullptr. */
     static ssq::VM* vm();
+    /** @brief Clears the active runtime if it matches; called during shutdown. */
     static void detach(Runtime* runtime);
 
+    /** @brief Casts the registered instance of a module to T (may be null). */
     template <typename T>
     static T* getInstance(const char* name) {
         return static_cast<T*>(inst().registered_modules[name].instance);
     }
 
+    /** @brief Returns the live instance, creating it lazily through the registered factory. */
     template <typename T>
     static T* requireInstance(const char* name) {
         auto& D = inst().registered_modules[name];

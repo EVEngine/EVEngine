@@ -12,7 +12,7 @@ class AnimClip;
 class AnimSkeleton;
 
 /**
- * Clip-driven animation state machine with float/bool/trigger parameters
+ * @brief Clip-driven animation state machine with float/bool/trigger parameters
  * and cross-fade transitions. Script type: `AnimStateMachine`.
  */
 class AnimStateMachine {
@@ -32,17 +32,17 @@ public:
     int getStateCount() const { return static_cast<int>(states_.size()); }
 
     /**
-     * Add transition from → to with blend duration.
+     * @brief Add transition from → to with blend duration.
      * @return transition id
      */
     int addTransition(const std::string &from, const std::string &to, float blendSeconds);
 
-    /** Comparison op: ">", ">=", "<", "<=", "==", "!=". */
+    /** @brief Comparison op: ">", ">=", "<", "<=", "==", "!=". */
     void addFloatCondition(int transitionId, const std::string &param, const std::string &op,
                            float threshold);
     void addBoolCondition(int transitionId, const std::string &param, bool value);
     void addTriggerCondition(int transitionId, const std::string &param);
-    /** Optional: require normalized local time in [0,1] >= exitTime before transition. */
+    /** @brief Optional: require normalized local time in [0,1] >= exitTime before transition. */
     void setExitTime(int transitionId, float normalizedTime);
     void setHasExitTime(int transitionId, bool enabled);
 

@@ -8,7 +8,7 @@
 namespace eve::avatar {
 
 /**
- * Built-in Live2D placeholder backend (no Cubism SDK).
+ * @brief Built-in Live2D placeholder backend (no Cubism SDK).
  * Stores path / parameters / expression / motion so scripts and tests can run
  * without a proprietary runtime. Replace via Avatar::registerLive2DBackend
  * (see examples/live2d-backend-plugin).

@@ -24,7 +24,7 @@ class EditorDock;
 class EditorHistory;
 
 /**
- * Editor building blocks — not a shipped 3D/map editor app.
+ * @brief Editor building blocks — not a shipped 3D/map editor app.
  * Script: `editor <- eve.Editor();`
  *
  * Provides transform gizmos, map brushes, and UI shell helpers so games/tools

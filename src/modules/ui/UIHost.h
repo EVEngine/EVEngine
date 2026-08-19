@@ -9,6 +9,7 @@
 
 namespace eve::ui {
 
+/** @brief Widget node kinds understood by the UI renderer. */
 enum class NodeType : uint8_t {
     Window = 0,
     Text = 1,
@@ -31,13 +32,13 @@ enum class NodeType : uint8_t {
     Viewport = 18,  // embedded render target: offscreen Canvas shown + input routed
 };
 
-/** Main-axis direction for Flex containers. */
+/** @brief Main-axis direction for Flex containers. */
 enum class FlexDirection : uint8_t { Row = 0, Column = 1 };
 
-/** Cross-axis alignment of Flex children. */
+/** @brief Cross-axis alignment of Flex children. */
 enum class FlexAlign : uint8_t { Start = 0, Center = 1, End = 2, Stretch = 3 };
 
-/** Main-axis distribution of free space in a Flex container. */
+/** @brief Main-axis distribution of free space in a Flex container. */
 enum class FlexJustify : uint8_t {
     Start = 0,
     Center = 1,
@@ -46,6 +47,10 @@ enum class FlexJustify : uint8_t {
     SpaceAround = 4,
 };
 
+/**
+ * @brief Retained UI widget node (arena tree). Conceptual counterpart of
+ * eve::scene::SceneNode; built declaratively from WidgetDesc.
+ */
 struct UINode {
     NodeType type = NodeType::Text;
     std::string id;
@@ -118,7 +123,7 @@ struct UINode {
 struct WidgetDesc;
 
 /**
- * ECS mount point for one UI panel/screen.
+ * @brief ECS mount point for one UI panel/screen.
  * Subclass to attach UI to game entities, e.g. `class Hud : public UIHost`.
  * UISystem walks `ecs::View<UIHost, Meta, Tree>` (includes subclasses).
  */
@@ -165,33 +170,41 @@ public:
 
     static UIHost *createHost(const std::string &name = "");
 
+    /** @brief Names the host. */
     void setName(const std::string &name);
     const std::string &getName();
+    /** @brief Attaches the host to an owner id (scene/UI ownership). */
     void setOwnerId(uint32_t id) { meta()->ownerId = id; }
     uint32_t getOwnerId() { return meta()->ownerId; }
 
-    /** Full replace. */
+    /** @brief Full replace. */
     void setTree(WidgetDesc root);
-    /** Key-aware patch when structure matches; else full replace. */
+    /** @brief Key-aware patch when structure matches; else full replace. */
     bool setTreeReconcile(WidgetDesc root);
 
+    /** @brief One-shot convenience panel: window + label + button. */
     void setSimplePanel(const std::string &title, const std::string &labelText,
                         const std::string &buttonText, const std::string &labelId = "label",
                         const std::string &buttonId = "btn");
 
+    /** @brief Widget state updates by node id. */
     void setTextById(const std::string &id, const std::string &text);
     void setVisibleById(const std::string &id, bool visible);
     void setCheckedById(const std::string &id, bool checked);
     void setValueById(const std::string &id, float value);
     void setValueTextById(const std::string &id, const std::string &value);
+    /** @brief Installs a widget callback by node id (returns false if not found). */
     bool setClickHandler(const std::string &id, std::function<void()> fn);
     bool setToggleHandler(const std::string &id, std::function<void(bool)> fn);
     bool setValueHandler(const std::string &id, std::function<void(float)> fn);
     bool setTextHandler(const std::string &id, std::function<void(const std::string &)> fn);
+    /** @brief Looks up a node by id or reconciliation key. */
     UINode *findById(const std::string &id);
     UINode *findByKey(const std::string &key);
+    /** @brief Marks the tree for a full rebuild on the next frame. */
     void markDirty() { tree()->dirty = true; }
 
+    /** @brief Host visibility / layer / modality. */
     void setVisible(bool v) { meta()->visible = v; }
     void setLayer(int layer) { meta()->layer = layer; }
     void setModal(bool modal) { meta()->modal = modal; }

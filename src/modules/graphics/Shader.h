@@ -12,7 +12,7 @@
 namespace eve::graphics {
 
 /**
- * Custom GPU program.
+ * @brief Custom GPU program.
  *
  * **2D sprites** (`newShader` / `newShaderFromSpv`):
  *   Vertex = TexturedVertex; MainTex @ set0 binding0; optional push-constant data[32].
@@ -53,7 +53,7 @@ public:
     void setKind(Kind k) { kind_ = k; }
 
     /**
-     * X-ray mesh shader. When true, drawMeshShader renders this mesh a second
+     * @brief X-ray mesh shader. When true, drawMeshShader renders this mesh a second
      * pass over the already-lit scene with depth test/write disabled and alpha
      * blending, letting occluded (behind-building) silhouettes show through.
      * The shader itself samples G-buffer scene depth to discard visible pixels.
@@ -61,7 +61,7 @@ public:
     void setXray(bool x) { isXray_ = x; }
     bool isXray() const { return isXray_; }
 
-    /** Reserve sequential float slots in the push-constant block. Returns start index. */
+    /** @brief Reserve sequential float slots in the push-constant block. Returns start index. */
     int declareFloat(const std::string &name);
     int declareVec2(const std::string &name);
     int declareVec3(const std::string &name);
@@ -74,7 +74,7 @@ public:
     void sendVec4(const std::string &name, float x, float y, float z, float w);
     void sendMatrix(const std::string &name, const glm::mat4 &m);
 
-    /** Low-level blob write into a declared uniform (size must match declaration). */
+    /** @brief Low-level blob write into a declared uniform (size must match declaration). */
     int sendToVar(const std::string &name, const void *data, size_t size);
     int getFromVar(const std::string &name, void *data, size_t size) const;
 
