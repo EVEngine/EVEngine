@@ -1594,9 +1594,10 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
         }
     }
 
-    auto *mesh = new Mesh();
+    auto *mesh       = new Mesh();
     mesh->indexCount = indexCount;
-    mesh->gpuHandle = gpu.get();
+    mesh->gpuHandle  = gpu.get();
+    mesh->computeBounds(posXYZ, vertexCount);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::unique_ptr<Mesh>(mesh));
     return mesh;
@@ -1671,6 +1672,7 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     std::vector<float> pos, nrm;
     mesh->computeMorphedPositions(pos, nrm);
     if (pos.empty()) return false;
+    mesh->computeBounds(pos.data(), mesh->getVertexCount());
     std::vector<float> verts;
     verts.reserve(mesh->getVertexCount() * 8);
     const auto &uvs = mesh->baseUv();
@@ -2284,21 +2286,22 @@ void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) 
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) { mesh3dLighting = pack; }
 void Graphics::setCloudShadows(float strength, float worldCell, float time, float windSpeed,
                                float windAngle, float coverage, float detail) {
-    mesh3dCloud = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f), time, 0.f);
+    mesh3dCloud     = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f), time, 0.f);
     mesh3dCloudWind = glm::vec4(std::cos(windAngle) * windSpeed, std::sin(windAngle) * windSpeed,
                                 std::clamp(coverage, 0.f, 1.f), std::clamp(detail, 0.f, 1.f));
 }
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
-    mesh3dClustered = upload;
+    mesh3dClustered       = upload;
     mesh3dClusteredActive = upload.active;
 }
+void Graphics::setMesh3DClusteredActive(bool active) { mesh3dClusteredActive = active; }
 void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     mesh3dLighting.lights[0].posRadius = glm::vec4(dir, 0.f);
-    mesh3dLighting.lights[0].color = glm::vec4(color, 1.f);
+    mesh3dLighting.lights[0].color     = glm::vec4(color, 1.f);
 }
 void Graphics::setMesh3DCameraPos(const glm::vec3 &eye) { mesh3dCameraPos = eye; }
 void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
-    mesh3dEnvTexture = cube;
+    mesh3dEnvTexture   = cube;
     mesh3dEnvIntensity = intensity;
 }
 void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }

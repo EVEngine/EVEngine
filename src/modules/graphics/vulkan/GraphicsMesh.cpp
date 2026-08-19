@@ -1,15 +1,13 @@
 // Vulkan backend implementation — mesh creation and drawing.
 //
-// Split out of the original single 5100-line Graphics.cpp so several
-// agents can work on backend concerns (lifecycle / pipelines / 2D / 3D /
-// mesh) without touching the same translation unit. This file only
-// defines members of vulkan::Graphics; see GraphicsInternal.h for the
-// shared implementation helpers.
+// Re-split from the merged dev single-TU Graphics.cpp (pure move;
+// dev perf changes preserved). Shared helpers live in
+// GraphicsInternal.h.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/Light.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -128,6 +126,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     }
     handle->markMorphClean();
     Mesh *raw = handle.get();
+    assignMeshBounds(raw, verts);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -234,9 +233,10 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
         if (int(id) >= vertexCount) throw Exception("newMeshFromArrays: index out of range");
     }
 
-    auto gpu = uploadGpuMesh(device, frameToken(), verts, idx);
-    auto handle = makeMeshHandle(*gpu);
-    Mesh *raw = handle.get();
+    auto  gpu    = uploadGpuMesh(device, frameToken(), verts, idx);
+    auto  handle = makeMeshHandle(*gpu);
+    Mesh *raw    = handle.get();
+    raw->computeBounds(posXYZ, vertexCount);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -251,12 +251,13 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     mesh->computeMorphedPositions(pos, nrm);
     const int vc = mesh->getVertexCount();
     if (vc <= 0 || int(pos.size()) < vc * 3) return false;
+    mesh->computeBounds(pos.data(), vc);
 
     std::vector<MeshVertex> verts(static_cast<size_t>(vc));
-    const auto &uv = mesh->baseUv();
+    const auto             &uv = mesh->baseUv();
     for (int i = 0; i < vc; ++i) {
         MeshVertex &v = verts[static_cast<size_t>(i)];
-        v.pos = {pos[size_t(i) * 3u + 0], pos[size_t(i) * 3u + 1], pos[size_t(i) * 3u + 2]};
+        v.pos         = {pos[size_t(i) * 3u + 0], pos[size_t(i) * 3u + 1], pos[size_t(i) * 3u + 2]};
         if (int(nrm.size()) >= (i + 1) * 3)
             v.normal = {nrm[size_t(i) * 3u + 0], nrm[size_t(i) * 3u + 1], nrm[size_t(i) * 3u + 2]};
         else
@@ -268,17 +269,17 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     }
 
     auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
-    // Host-visible VBO is shared across frames. Overwriting it while an
-    // in-flight draw still reads the previous morph is a GPU page-fault / TDR.
-    waitForSharedGpuResources();
-    gpu->vertices.updateLocal(vkb::FrameSlot::gpuIdle(), verts);
+    // Ring-buffered host-visible VBO: the next copy is kDynamicVertexCopies
+    // frames old, so overwriting it never races with in-flight draws — no
+    // device-wide wait (see writeDynamicMesh).
+    ensureDynamicRing(*gpu);
+    writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), nullptr, 0);
     mesh->markMorphClean();
     return true;
 }
 
-bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
-                                  const float *uvST, int vertexCount, const uint32_t *indices,
-                                  int indexCount) {
+bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                  int vertexCount, const uint32_t *indices, int indexCount) {
     if (!initialized || !mesh || !mesh->gpuHandle) return false;
     if (!posXYZ || vertexCount <= 0) return false;
     if (indexCount > 0 && (indexCount % 3 != 0 || !indices)) return false;
@@ -299,31 +300,21 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     }
 
     auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
-    // The host-visible buffers may be reallocated (grow) or still be read by an
-    // in-flight frame; synchronize like bakeMeshMorph before overwriting.
-    waitForSharedGpuResources();
-    gpu->vertices.allocate<MeshVertex>(vkb::FrameSlot::gpuIdle(), getDevice(), verts);
-    if (indices && indexCount > 0) {
-        std::vector<uint32_t> idx(indices, indices + indexCount);
-        gpu->indices.allocate(vkb::FrameSlot::gpuIdle(), getDevice(),
-                              vk::BufferUsageFlagBits::eIndexBuffer,
-                              idx.size() * sizeof(uint32_t), kHostVisibleCoherent);
-        gpu->indices.updateLocal(vkb::FrameSlot::gpuIdle(), idx.data(),
-                                 idx.size() * sizeof(uint32_t));
-        gpu->indexCount = uint32_t(indexCount);
-        mesh->indexCount = indexCount;
-    }
+    mesh->computeBounds(posXYZ, vertexCount);
+    // Same ring-buffer approach as bakeMeshMorph: never wait on in-flight
+    // frames, just write the next copy.
+    ensureDynamicRing(*gpu);
+    writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), indices, indexCount);
+    mesh->indexCount = int(gpu->indexCount);
     return true;
 }
 
 bool Graphics::releaseMesh(Mesh *mesh) {
     if (!mesh || !mesh->gpuHandle) return false;
 
-    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
-    auto gpuIt = std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
-                              [&](const std::unique_ptr<GpuMesh> &g) {
-                                  return g.get() == gpu;
-                              });
+    auto *gpu   = static_cast<GpuMesh *>(mesh->gpuHandle);
+    auto  gpuIt = std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
+                               [&](const std::unique_ptr<GpuMesh> &g) { return g.get() == gpu; });
     if (gpuIt == ownedGpuMeshes.end()) return false;
 
     auto meshIt = std::find_if(ownedMeshes.begin(), ownedMeshes.end(),
@@ -417,9 +408,10 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
         }
     }
 
-    auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
-    auto handle = makeMeshHandle(*gpu);
-    Mesh *raw = handle.get();
+    auto  gpu    = uploadGpuMesh(device, frameToken(), verts, indices);
+    auto  handle = makeMeshHandle(*gpu);
+    Mesh *raw    = handle.get();
+    assignMeshBounds(raw, verts);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -525,9 +517,10 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
         }
     }
 
-    auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
-    auto handle = makeMeshHandle(*gpu);
-    Mesh *raw = handle.get();
+    auto  gpu    = uploadGpuMesh(device, frameToken(), verts, indices);
+    auto  handle = makeMeshHandle(*gpu);
+    Mesh *raw    = handle.get();
+    assignMeshBounds(raw, verts);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -601,31 +594,42 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         ubo.lightColor = glm::vec4(glm::vec3(mesh3dClustered.primaryColor), envIntensity);
         ubo.tint = glm::vec4(tint.r, tint.g, tint.b, tint.a);
         ubo.cameraPos = glm::vec4(glm::vec3(mesh3dFrameUbo.cameraPos), mesh3dRoughness);
-        ubo.ambient = glm::vec4(glm::vec3(mesh3dClustered.ambient), mesh3dMetallic);
-        ubo.gridInfo = mesh3dClustered.gridInfo;
-        ubo.clipInfo = mesh3dClustered.clipInfo;
-        ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
-        ubo.parallax =
-            glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+        ubo.ambient    = glm::vec4(glm::vec3(mesh3dClustered.ambient), mesh3dMetallic);
+        ubo.gridInfo   = mesh3dClustered.gridInfo;
+        ubo.clipInfo   = mesh3dClustered.clipInfo;
+        ubo.texBomb    = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+        ubo.parallax   = glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
 
         auto &cfslots = currentMesh3dClusteredFrameSlots();
+        if (cfslots.drawIndex >= cfslots.capacity) {
+            std::fprintf(stderr, "[vulkan] clustered mesh3d UBO ring exhausted (%zu draws); draw skipped\n",
+                         cfslots.capacity);
+            return;
+        }
         const size_t slot = cfslots.drawIndex++;
-        vk::DescriptorSet set =
-            mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, cfslots, slot);
-        cfslots.slots[slot].ubo.updateLocal(frameToken(), ubo);
-        cfslots.slots[slot].shadowUbo.updateLocal(frameToken(), makeShadowUbo());
+        ensureMesh3dStrides();
+        const uint32_t uboOffset    = uint32_t(slot) * mesh3dClusteredUboStride;
+        const uint32_t shadowOffset = uint32_t(slot) * shadowUboStride;
+        updateRingLocal(cfslots.uboRing, uboOffset, &ubo, sizeof(ubo));
+        const ShadowUBO shadow = makeShadowUbo();
+        updateRingLocal(cfslots.shadowRing, shadowOffset, &shadow, sizeof(shadow));
+        vk::DescriptorSet set           = mesh3dClusteredSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, cfslots);
+        const uint32_t    dynOffsets[2] = {uboOffset, shadowOffset};
 
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipeline);
-        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipelineLayout, 0, 1,
-                              &set, 0, nullptr);
+        if (mesh3dClusteredPipeline != lastMesh3dClusteredPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipeline);
+            lastMesh3dClusteredPipeline = mesh3dClusteredPipeline;
+        }
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dClusteredPipelineLayout, 0, 1, &set, 2,
+                              dynOffsets);
         drawIndexedMesh(cb, *gpuMesh);
         return;
     }
 
-    Mesh3DUBO ubo = mesh3dFrameUbo;
-    ubo.model = model;
-    ubo.mvp = mesh3dFrameUbo.mvp * model;
-    ubo.tint = glm::vec4(tint.r, tint.g, tint.b, tint.a);
+    Mesh3DUBO ubo        = mesh3dFrameUbo;
+    ubo.model            = model;
+    ubo.mvp              = mesh3dFrameUbo.mvp * model;
+    ubo.tint             = glm::vec4(tint.r, tint.g, tint.b, tint.a);
     ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), mesh3dMetallic);
     const int lightCount = std::max(0, std::min(mesh3dLighting.count, Lighting3DPack::kMaxLights));
     ubo.lightDir.w = float(lightCount);
@@ -646,23 +650,32 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         glm::vec3 d(mesh3dLighting.lights[dirI].posRadius);
         if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
         else d = glm::normalize(d);
-        ubo.lightDir = glm::vec4(d, float(lightCount));
+        ubo.lightDir   = glm::vec4(d, float(lightCount));
         ubo.lightColor = glm::vec4(glm::vec3(mesh3dLighting.lights[dirI].color), envIntensity);
     } else {
-        ubo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(lightCount));
+        ubo.lightDir   = glm::vec4(0.f, 1.f, 0.f, float(lightCount));
         ubo.lightColor = glm::vec4(0.f, 0.f, 0.f, envIntensity);
     }
 
     auto &fslots = currentMesh3dFrameSlots();
+    if (fslots.drawIndex >= fslots.capacity) {
+        std::fprintf(stderr, "[vulkan] mesh3d UBO ring exhausted (%zu draws); draw skipped\n", fslots.capacity);
+        return;
+    }
     const size_t slot = fslots.drawIndex++;
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots, slot);
-    fslots.slots[slot].ubo.updateLocal(frameToken(), ubo);
-    fslots.slots[slot].shadowUbo.updateLocal(frameToken(), makeShadowUbo());
+    ensureMesh3dStrides();
+    const uint32_t uboOffset    = uint32_t(slot) * mesh3dUboStride;
+    const uint32_t shadowOffset = uint32_t(slot) * shadowUboStride;
+    updateRingLocal(fslots.uboRing, uboOffset, &ubo, sizeof(ubo));
+    const ShadowUBO shadow = makeShadowUbo();
+    updateRingLocal(fslots.shadowRing, shadowOffset, &shadow, sizeof(shadow));
+    vk::DescriptorSet set           = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots);
+    const uint32_t    dynOffsets[2] = {uboOffset, shadowOffset};
 
     if (shader) {
         if (offscreen3DPassOpen)
             throw Exception("drawMeshShader: custom mesh shader in offscreen 3D pass is unsupported");
-        auto *gs = static_cast<GpuShader *>(shader->gpuHandle);
+        auto        *gs       = static_cast<GpuShader *>(shader->gpuHandle);
         vk::Pipeline pipeline = gs->mesh3dPipeline;
         if (shader->isXray()) {
             // X-ray silhouette pass: depth test/write off + alpha blend so the
@@ -672,17 +685,21 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
             pipeline = gs->mesh3dXrayPipeline;
         }
         if (!pipeline) return;
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
-                              0, nullptr);
+        if (pipeline != lastMesh3dPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+            lastMesh3dPipeline = pipeline;
+        }
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set, 2, dynOffsets);
         cb.pushConstants(mesh3dShaderPipelineLayout,
                          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
                          Shader::kPushConstantBytes, shader->pushConstantData());
     } else {
         const vk::Pipeline pipe = offscreen3DPassOpen ? offscreen3DMeshPipeline : mesh3dPipeline;
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
-        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 0,
-                              nullptr);
+        if (pipe != lastMesh3dPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipe);
+            lastMesh3dPipeline = pipe;
+        }
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dPipelineLayout, 0, 1, &set, 2, dynOffsets);
     }
     drawIndexedMesh(cb, *gpuMesh);
 }

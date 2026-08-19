@@ -517,6 +517,13 @@ public:
      */
     virtual void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) = 0;
 
+    /**
+     * @brief Cheap per-draw toggle for the already-uploaded clustered light
+     * table. Unlike setMesh3DClusteredLighting it never re-uploads SSBO data,
+     * so the per-frame clustered build happens exactly once per camera.
+     */
+    virtual void setMesh3DClusteredActive(bool active) = 0;
+
     /** @brief Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
 

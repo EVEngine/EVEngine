@@ -297,14 +297,95 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
     win->close();
 }
 
-TEST_CASE("RenderSystem3D.textureCheckerPixels") {
+TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
+    // P1-2 regression: updateMeshVertices now writes into a per-frame ring of
+    // host-visible vertex buffers instead of waiting on all in-flight frames.
+    // The draw path must bind the latest written copy — a stale slot (e.g. a
+    // copy from a few frames ago) would show the wrong side of this
+    // alternating quad.
     eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx);
     resetScene3D();
 
-    Mesh *mesh = loadUvCube(gfx);
-    auto *cam = Camera3D::createCamera();
+    const float           half    = 0.5f;
+    std::vector<float>    basePos = {-half, -half, 0.f, half, -half, 0.f, half, half, 0.f, -half, half, 0.f};
+    std::vector<float>    nrm     = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    std::vector<float>    uv      = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    std::vector<uint32_t> idx     = {0, 1, 2, 0, 2, 3};
+    Mesh                 *mesh    = gfx->newMeshFromArrays(basePos.data(), nrm.data(), uv.data(), 4, idx.data(), 6);
+    REQUIRE(mesh != nullptr);
+
+    auto *cam                    = Camera3D::createCamera();
+    cam->data()->eyeZ            = 3.f;
+    auto *ent                    = Renderable3D::create();
+    ent->meshRenderer()->mesh    = mesh;
+    ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
+    RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
+    gfx->setScreenReadbackEnabled(true);
+
+    const int W         = gfx->getWidth();
+    const int H         = gfx->getHeight();
+    auto      updatePos = [&](float side) {
+        std::vector<float> pos = basePos;
+        for (int v = 0; v < 4; ++v) pos[size_t(v) * 3u + 0u] += side * 0.8f;
+        // Indices are only supplied on the first update; later calls exercise
+        // the ring's CPU-index reuse path.
+        REQUIRE(gfx->updateMeshVertices(mesh, pos.data(), nrm.data(), uv.data(), 4, idx.data(), 6));
+    };
+    auto renderFrame = [&]() {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        gfx->present();
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+    };
+    auto brightestHalf = [&]() -> int {
+        // Horizontal scan at mid-height: 0 = brightest on left half, 1 = right.
+        float bestL = 0.f, bestR = 0.f;
+        for (int x = 0; x < W; ++x) {
+            const Color c = gfx->getPixel(x, H / 2);
+            const float l = luma(c);
+            if (x < W / 2)
+                bestL = std::max(bestL, l);
+            else
+                bestR = std::max(bestR, l);
+        }
+        return bestL > bestR ? 0 : 1;
+    };
+
+    // Alternate sides across many frames so the ring rotates several times;
+    // the drawn image must always reflect the update issued in that frame.
+    for (int i = 0; i < 24; ++i) {
+        updatePos((i % 2 == 0) ? -1.f : 1.f);
+        renderFrame();
+    }
+    // Settle on the right side and verify the latest update wins.
+    for (int i = 0; i < 4; ++i) {
+        updatePos(1.f);
+        renderFrame();
+    }
+    CHECK_EQ(brightestHalf(), 1);
+    // Settle on the left side: the ring must still serve the freshest copy.
+    for (int i = 0; i < 4; ++i) {
+        updatePos(-1.f);
+        renderFrame();
+    }
+    CHECK_EQ(brightestHalf(), 0);
+
+    win->close();
+}
+
+TEST_CASE("RenderSystem3D.textureCheckerPixels") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    Mesh *mesh        = loadUvCube(gfx);
+    auto *cam         = Camera3D::createCamera();
     cam->data()->eyeZ = 3.f;
 
     auto *ent = Renderable3D::create();

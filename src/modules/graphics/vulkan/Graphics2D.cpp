@@ -1,10 +1,8 @@
 // Vulkan backend implementation — 2D drawing, textures and batching.
 //
-// Split out of the original single 5100-line Graphics.cpp so several
-// agents can work on backend concerns (lifecycle / pipelines / 2D / 3D /
-// mesh) without touching the same translation unit. This file only
-// defines members of vulkan::Graphics; see GraphicsInternal.h for the
-// shared implementation helpers.
+// Re-split from the merged dev single-TU Graphics.cpp (pure move;
+// dev perf changes preserved). Shared helpers live in
+// GraphicsInternal.h.
 
 #include "graphics/AntiAliasing.h"
 #include "graphics/Light.h"
@@ -538,21 +536,21 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     gpu->samplerState = info.sampler;
     gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
 
-    std::vector<uint8_t> bytes =
-        (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
-                        : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
+    std::vector<uint8_t> bytes = (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
+                                                 : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
     gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
+
     gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
 
-    auto tex = std::make_unique<Texture>();
-    tex->width = w;
-    tex->height = h;
-    tex->pixelWidth = w;
+    auto tex         = std::make_unique<Texture>();
+    tex->width       = w;
+    tex->height      = h;
+    tex->pixelWidth  = w;
     tex->pixelHeight = h;
     tex->mipmapCount = int(mipLevels);
     tex->sampler = info.sampler;
@@ -714,14 +712,14 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     gpu->mipLevels = mipLevels;
     gpu->samplerState = info.sampler;
     gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
-    std::vector<uint8_t> bytes =
-        (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
-                        : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
+    std::vector<uint8_t> bytes = (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
+                                                 : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
     gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
+
     gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
 
@@ -930,11 +928,12 @@ vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
     if (!colorView) return {};
     if (!depth || !depth->sampler || !depth->imageView()) depth = color;
     LitSetKey key{color, depth};
-    auto it = post2Sets.find(key);
+    auto      it = post2Sets.find(key);
     if (it != post2Sets.end()) return it->second;
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
-    vkb::UnboundSet unbound{sets[0]};
+
+    vkb::UnboundSet           unbound{sets[0]};
     vkb::DescriptorSetUpdater updater;
     updater.beginDescriptorSet(unbound)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)

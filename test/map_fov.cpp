@@ -25,6 +25,7 @@
 #include "map/Fov.h"
 #include "map/Map.h"
 #include "map/TileLayer.h"
+#include "window/Window.h"
 
 #include <cstdint>
 #include <string>
@@ -449,21 +450,28 @@ TEST_CASE("map.fov.perception.canDetect") {
 }
 
 TEST_CASE("map.fov.gpuMaskTexture") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width    = 4;
+    settings.height   = 4;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
+
     auto *mod = Map::create();
-    Fov *fov = mod->newFovSize(4, 4);
+    Fov  *fov = mod->newFovSize(4, 4);
     fov->setBlockEmpty(false);
     fov->addRevealer(1, 1, 1);
     fov->compute();
     CHECK(fov->buildMaskTexture(nullptr) == nullptr);
 
-    auto *gfx = eve::graphics::Graphics::create();
-    REQUIRE(gfx != nullptr);
     auto *tex = fov->buildMaskTexture(gfx);
     REQUIRE(tex != nullptr);
     CHECK_EQ(tex->getWidth(), 4);
     CHECK_EQ(tex->getHeight(), 4);
     delete tex;
     delete fov;
+    win->close();
 }
-
-

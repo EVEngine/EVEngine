@@ -1,10 +1,8 @@
 // Vulkan backend implementation — backend lifecycle and frame orchestration.
 //
-// Split out of the original single 5100-line Graphics.cpp so several
-// agents can work on backend concerns (lifecycle / pipelines / 2D / 3D /
-// mesh) without touching the same translation unit. This file only
-// defines members of vulkan::Graphics; see GraphicsInternal.h for the
-// shared implementation helpers.
+// Re-split from the merged dev single-TU Graphics.cpp (pure move;
+// dev perf changes preserved). Shared helpers live in
+// GraphicsInternal.h.
 
 #define VKB_IMPL
 #include "graphics/vulkan/Graphics.h"
@@ -339,15 +337,11 @@ vkb::FrameSlot Graphics::frameToken() const {
     return vkb::FrameSlot::gpuIdle();
 }
 
-void Graphics::waitForSharedGpuResources() {
-    presentModel.waitForAllFrames();
-}
+void Graphics::waitForSharedGpuResources() { presentModel.waitForAllFrames(); }
 
 void Graphics::invalidateTextureBindings() {
-    for (auto &frame : mesh3dFrameSlots)
-        for (auto &slot : frame.slots) slot.sets.clear();
-    for (auto &frame : mesh3dClusteredFrameSlots)
-        for (auto &slot : frame.slots) slot.sets.clear();
+    for (auto &frame : mesh3dFrameSlots) frame.sets.clear();
+    for (auto &frame : mesh3dClusteredFrameSlots) frame.sets.clear();
     for (auto &m : lit2dSets) m.clear();
     offscreenLit2dSets.clear();
     post2Sets.clear();
@@ -691,5 +685,6 @@ void Graphics::present() {
 
 void Graphics::draw(eve::graphics::Graphics *, const glm::mat4 &) const {}
 void Graphics::draw(Canvas *, const glm::mat4 &) const {}
+
 
 }  // namespace eve::graphics::vulkan
