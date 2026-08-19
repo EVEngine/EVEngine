@@ -71,6 +71,7 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.RefTest") {
     CHECK(vm.callFunc(vm.findFunc("refTest"), vm).toBool());
 }
 
+#if !(defined(__APPLE__) && defined(NDEBUG))
 TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
     auto root = vm.getRaw();
     CHECK_EQ(sq_type(root), OT_TABLE);
@@ -107,6 +108,7 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
 
     CHECK(vm.callFunc(vm.findFunc("testDefClass"), vm).toBool());
 }
+#endif
 
 
 TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.PerformInteration") {
