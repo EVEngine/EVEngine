@@ -38,6 +38,8 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::procgen;
 using namespace eve::graphics;

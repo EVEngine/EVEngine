@@ -1,4 +1,5 @@
 #include "devtools/McpServer.hpp"
+#include "devtools/Immortal.hpp"
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/DebugAdapter.hpp"
@@ -1522,10 +1523,10 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
 }  // namespace
 
 McpServer& McpServer::instance() {
-    // Intentionally leaked so AiPanel/McpServer mutexes are never destroyed
-    // while the other singleton's destructor still calls into them (macOS abort).
-    static McpServer* inst = new McpServer();
-    return *inst;
+    // Process-immortal singleton: the stdio reader thread (detached when
+    // reading stdin) and cross-singleton calls make destruction unsafe; see
+    // devtools/Immortal.hpp.
+    return Immortal<McpServer>::get();
 }
 
 McpServer::McpServer() = default;

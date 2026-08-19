@@ -58,7 +58,9 @@ public:
                            float a = 1.f);
     void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r,
                               float g, float b, float a = 1.f);
-    /** Upload RGBA8 ImageData; optional seamless repeat on U/V. Caller owns Texture*. */
+    /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
+     *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
+     *  releaseTexture); callers must not delete it. */
     Texture *newTextureFromImageData(image::ImageData *data, bool repeatU = false,
                                      bool repeatV = false);
     /** @brief Upload RGBA8 ImageData with mipmaps / filter / anisotropy options. */
@@ -117,21 +119,17 @@ public:
     /** @brief Rotated solid quad `degrees` clockwise (screen Y-down) around (cx, cy). */
     virtual void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                                       const Color &color,
-                                      BlendMode blend = BlendMode::Alpha) {
-        (void)cx;
-        (void)cy;
-        (void)w;
-        (void)h;
-        (void)degrees;
-        (void)color;
-        (void)blend;
-    }
+                                      BlendMode blend = BlendMode::Alpha) = 0;
 
-    /** Create RGBA8 texture from CPU pixels (size = width*height*4). Caller owns Texture*. */
+    /** Create RGBA8 texture from CPU pixels (size = width*height*4).
+     *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
+     *  releaseTexture); callers must not delete it. */
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                                 bool repeatV = false) = 0;
 
-    /** Create RGBA8 texture with explicit sampler / mipmap options. Caller owns Texture*. */
+    /** Create RGBA8 texture with explicit sampler / mipmap options.
+     *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
+     *  releaseTexture); callers must not delete it. */
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba,
                                 const TextureCreateInfo &info) = 0;
 
@@ -171,6 +169,27 @@ public:
     /** @brief Reload a path-cached texture from disk in place (pointer stable). False if unbound. */
     virtual bool reloadTextureFromFile(const std::string &filename) = 0;
 
+    /**
+     * @brief Eagerly releases a texture created by this Graphics.
+     *
+     * All newTexture* / newCubemap results are borrowed handles: the Graphics
+     * backend owns both the CPU facade and the GPU resource, and the handle
+     * must not be deleted directly. A successful release frees the GPU
+     * resource (after in-flight frames drain), detaches the handle
+     * (gpuHandle becomes null) and transfers the CPU facade to the caller,
+     * who may then delete it. Renderer-owned fallback textures (white /
+     * flat-normal / environment) and resources created by another Graphics
+     * are never released here.
+     *
+     * @param texture Handle returned by a previous create call (may be null).
+     * @return true when released; false for null, foreign, internal or
+     *         already-released handles.
+     */
+    virtual bool releaseTexture(Texture *texture) {
+        (void)texture;
+        return false;
+    }
+
     /** Draw a textured quad (full UV 0..1). texture may be null → solid.
      *  Uses currentShader when set (or per-call override via drawTexturedRectShader). */
     virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
@@ -194,36 +213,19 @@ public:
      * @brief UV draw rotated `degrees` clockwise (screen Y-down) around the rect center.
      * texture may be null → solid. Shader nullptr = default textured pipeline.
      */
-    virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx, float cy,
-                                                 float w, float h, float degrees, float u0, float v0,
-                                                 float u1, float v1, const Color &color,
-                                                 bool rotatedUV = false,
-                                                 BlendMode blend = BlendMode::Alpha) {
-        (void)texture;
-        (void)shader;
-        (void)cx;
-        (void)cy;
-        (void)w;
-        (void)h;
-        (void)degrees;
-        (void)u0;
-        (void)v0;
-        (void)u1;
-        (void)v1;
-        (void)color;
-        (void)rotatedUV;
-        (void)blend;
-    }
+    virtual void drawTexturedRectShaderUVRotated(Texture *texture, Shader *shader, float cx,
+                                                 float cy, float w, float h, float degrees,
+                                                 float u0, float v0, float u1, float v1,
+                                                 const Color &color, bool rotatedUV = false,
+                                                 BlendMode blend = BlendMode::Alpha) = 0;
 
     /**
      * @brief Fullscreen/post draw sampling `color` at binding 0 and `depth` at binding 1
      * (hardware D32, .r = Vulkan NDC z). depth may be null → color is bound twice.
      */
-    virtual void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader, float x,
-                                             float y, float w, float h, const Color &tint) {
-        drawTexturedRectShader(color, shader, x, y, w, h, tint);
-        (void)depth;
-    }
+    virtual void drawTexturedRectShaderDepth(Texture *color, Texture *depth, Shader *shader,
+                                             float x, float y, float w, float h,
+                                             const Color &tint) = 0;
 
     /**
      * @brief Lit 2D draw (albedo + normal map). Uses Lighting2DUBO from setLighting2D.
@@ -236,7 +238,7 @@ public:
     /** @brief Upload per-frame / per-canvas 2D lighting constants for subsequent lit draws. */
     virtual void setLighting2D(const Lighting2DUBO &ubo) = 0;
 
-    /** Pixel-space atlas rect. Squirrel owns the Quad*. */
+    /** @brief Pixel-space atlas rect. Caller owns Quad* (not tracked by Graphics). */
     Quad *newQuad(int x, int y, int w, int h);
 
     /** Upload triangulated mesh from Assimp (pos/normal/uv + indices). Owned by Graphics.
@@ -296,6 +298,22 @@ public:
      */
     Mesh *newMeshCube(float size = 1.f);
 
+    /**
+     * @brief Eagerly releases a mesh created by this Graphics.
+     *
+     * Mirrors releaseTexture: the returned handle is borrowed, a successful
+     * release frees the GPU buffers, detaches the handle (gpuHandle becomes
+     * null) and transfers the CPU facade to the caller for deletion.
+     *
+     * @param mesh Handle returned by a previous create call (may be null).
+     * @return true when released; false for null, foreign or already-released
+     *         handles.
+     */
+    virtual bool releaseMesh(Mesh *mesh) {
+        (void)mesh;
+        return false;
+    }
+
     /** @brief Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     void render3D();
     /**
@@ -331,8 +349,8 @@ public:
      * @brief Backend hooks so the platform-independent render3D() can wrap its work in
      * a GPU validation error scope (used on WebGPU to catch early device errors).
      */
-    virtual void pushValidationScope() {}
-    virtual void popValidationScope() {}
+    virtual void pushValidationScope() = 0;
+    virtual void popValidationScope() = 0;
 
     /**
      * @brief Create a Material asset (shading model + textures + PBR knobs).
@@ -645,7 +663,8 @@ public:
      * @brief Build a GPU font (glyph atlas texture) from decoded font data.
      * Rasterizes `charset` (UTF-8, default: printable ASCII) up front;
      * codepoints outside it still advance in print() but aren't drawn.
-     * Owned by the caller (same convention as newTexture, newMesh, newShader).
+     * Caller owns Font* (not tracked by Graphics — unlike newTexture /
+     * newMesh / newShader handles, which Graphics owns).
      */
     Font *newFont(font::FontData *data, std::string charset = Font::defaultCharset());
 
@@ -713,6 +732,25 @@ public:
                                          const std::vector<uint32_t> &fragSpv) = 0;
     /** @brief Built-in hair shader with default anisotropic parameters. */
     Shader *newHairShader();
+
+    /**
+     * @brief Eagerly releases a shader created by this Graphics.
+     *
+     * Mirrors releaseTexture: the returned handle is borrowed, a successful
+     * release destroys the GPU pipelines, detaches the handle (gpuHandle
+     * becomes null) and transfers the CPU facade to the caller for deletion.
+     * Only call this on shaders you created yourself; shaders owned by
+     * Graphics pipeline objects (AA / AO / GI / grass / ...) are still reachable
+     * through their owning objects and must not be released.
+     *
+     * @param shader Handle returned by a previous create call (may be null).
+     * @return true when released; false for null, foreign or already-released
+     *         handles.
+     */
+    virtual bool releaseShader(Shader *shader) {
+        (void)shader;
+        return false;
+    }
 
     /**
      * @brief t3ssel8r-style grass billboard shader (alpha test + shadow two-tone).

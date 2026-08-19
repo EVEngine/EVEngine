@@ -652,6 +652,45 @@ void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler
     }
 }
 
+bool Graphics::releaseTexture(Texture *texture) {
+    if (!texture || !texture->gpuHandle) return false;
+    // Renderer-owned fallback textures must never be released by callers.
+    if (texture == whiteTexture || texture == flatNormalTexture ||
+        texture == flatNormalTexture3D || texture == defaultEnvCubemap)
+        return false;
+
+    auto *gpu = static_cast<GpuTexture *>(texture->gpuHandle);
+    auto gpuIt = std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                              [&](const std::unique_ptr<GpuTexture> &g) {
+                                  return g.get() == gpu;
+                              });
+    if (gpuIt == ownedGpuTextures.end()) return false;
+
+    auto texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                              [&](const std::unique_ptr<Texture> &t) {
+                                  return t.get() == texture;
+                              });
+    if (texIt == ownedTextures.end()) return false;
+
+    // Path-cached textures must leave the hot-reload cache once released.
+    for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
+        if (it->second == texture)
+            it = texturesByPath.erase(it);
+        else
+            ++it;
+    }
+
+    // In-flight frames may still sample the image / sampler; drain first.
+    waitForSharedGpuResources();
+    if ((*gpuIt)->sampler) device->destroySampler((*gpuIt)->sampler);
+    texture->gpuHandle = nullptr;
+    ownedGpuTextures.erase(gpuIt);
+    // Transfer the CPU facade to the caller instead of destroying it.
+    (void)texIt->release();
+    ownedTextures.erase(texIt);
+    return true;
+}
+
 bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     if (!tex || !data) return false;
     if (data->getFormat() != "RGBA8") return false;
@@ -1061,6 +1100,37 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     ownedShaders.push_back(std::move(sh));
     ownedGpuShaders.push_back(std::move(gpu));
     return raw;
+}
+
+bool Graphics::releaseShader(Shader *shader) {
+    if (!shader || !shader->gpuHandle) return false;
+
+    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
+    auto gpuIt = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
+                              [&](const std::unique_ptr<GpuShader> &g) {
+                                  return g.get() == gpu;
+                              });
+    if (gpuIt == ownedGpuShaders.end()) return false;
+
+    auto shIt = std::find_if(ownedShaders.begin(), ownedShaders.end(),
+                             [&](const std::unique_ptr<Shader> &s) {
+                                 return s.get() == shader;
+                             });
+    if (shIt == ownedShaders.end()) return false;
+
+    // Mirror ~Graphics: pipelines are raw handles that must be destroyed here;
+    // pipelineLayout is shared and must not be destroyed per-shader.
+    waitForSharedGpuResources();
+    if (gpu->swapchainPipeline) device->destroyPipeline(gpu->swapchainPipeline);
+    if (gpu->offscreenPipeline) device->destroyPipeline(gpu->offscreenPipeline);
+    if (gpu->mesh3dPipeline) device->destroyPipeline(gpu->mesh3dPipeline);
+    if (gpu->mesh3dXrayPipeline) device->destroyPipeline(gpu->mesh3dXrayPipeline);
+    shader->gpuHandle = nullptr;
+    ownedGpuShaders.erase(gpuIt);
+    // Transfer the CPU facade to the caller instead of destroying it.
+    (void)shIt->release();
+    ownedShaders.erase(shIt);
+    return true;
 }
 
 Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) {

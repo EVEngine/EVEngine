@@ -26,39 +26,37 @@ int cardinalQuarter(float rotationDeg) {
 
 }  // namespace
 
+PlacementSystem &PlacementSystem::inst() {
+    static PlacementSystem instance;
+    return instance;
+}
+
 std::unordered_map<std::string, PlacementSystem::ValidateFn> &PlacementSystem::validateRules() {
-    static std::unordered_map<std::string, ValidateFn> m;
-    return m;
+    return inst().validateRules_;
 }
 
 std::unordered_map<std::string, PlacementSystem::SnapFn> &PlacementSystem::snapRules() {
-    static std::unordered_map<std::string, SnapFn> m;
-    return m;
+    return inst().snapRules_;
 }
 
 std::unordered_map<std::string, PlacementSystem::ChangeHook> &PlacementSystem::changeHooks() {
-    static std::unordered_map<std::string, ChangeHook> m;
-    return m;
+    return inst().changeHooks_;
 }
 
 std::unordered_map<std::string, PlacementSystem::SurfaceFn> &PlacementSystem::surfaces() {
-    static std::unordered_map<std::string, SurfaceFn> m;
-    return m;
+    return inst().surfaces_;
 }
 
 std::vector<BuildingChangeEvent> &PlacementSystem::eventQueue() {
-    static std::vector<BuildingChangeEvent> q;
-    return q;
+    return inst().eventQueue_;
 }
 
 int &PlacementSystem::instanceCounter() {
-    static int c = 0;
-    return c;
+    return inst().instanceCounter_;
 }
 
 bool &PlacementSystem::builtinsReady() {
-    static bool ready = false;
-    return ready;
+    return inst().builtinsReady_;
 }
 
 void PlacementSystem::registerValidateRule(const std::string &name, ValidateFn fn) {
@@ -132,8 +130,7 @@ void PlacementSystem::setPlaneSurfaceHeight(float h) { planeSurfaceHeight() = h;
 float PlacementSystem::getPlaneSurfaceHeight() { return planeSurfaceHeight(); }
 
 float &PlacementSystem::planeSurfaceHeight() {
-    static float h = 0.f;
-    return h;
+    return inst().planeSurfaceHeight_;
 }
 
 void PlacementSystem::ensureBuiltins() {

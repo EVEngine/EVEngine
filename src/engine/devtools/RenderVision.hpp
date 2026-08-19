@@ -72,6 +72,8 @@ public:
     void pollPending(graphics::Graphics* gfx, const std::string& renderDataJson);
 
 private:
+    // Immortal<RenderVision> constructs the singleton (devtools/Immortal.hpp).
+    template <typename> friend struct Immortal;
     RenderVision() = default;
 
     void ensureEnvLocked();

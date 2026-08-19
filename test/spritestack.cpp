@@ -21,6 +21,8 @@
 #include "image/ImageData.h"
 #include "spritestack/SpriteStack.h"
 #include "window/Window.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using eve::graphics::Camera3D;
 using eve::graphics::Graphics;

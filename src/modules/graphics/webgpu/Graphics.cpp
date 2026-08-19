@@ -1408,6 +1408,43 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
     return true;
 }
 
+bool Graphics::releaseTexture(Texture *texture) {
+    if (!texture || !texture->gpuHandle) return false;
+    // Renderer-owned fallback textures must never be released by callers.
+    if (texture->gpuHandle == whiteTexture || texture->gpuHandle == flatNormalTexture ||
+        texture->gpuHandle == flatNormalTexture3D ||
+        texture->gpuHandle == defaultEnvCubemap)
+        return false;
+
+    auto *gpu = static_cast<GpuTexture *>(texture->gpuHandle);
+    auto gpuIt = std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                              [&](const std::unique_ptr<GpuTexture> &g) {
+                                  return g.get() == gpu;
+                              });
+    if (gpuIt == ownedGpuTextures.end()) return false;
+
+    auto texIt = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                              [&](const std::unique_ptr<Texture> &t) {
+                                  return t.get() == texture;
+                              });
+    if (texIt == ownedTextures.end()) return false;
+
+    // Path-cached textures must leave the hot-reload cache once released.
+    for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
+        if (it->second == texture)
+            it = texturesByPath.erase(it);
+        else
+            ++it;
+    }
+
+    texture->gpuHandle = nullptr;
+    ownedGpuTextures.erase(gpuIt);
+    // Transfer the CPU facade to the caller instead of destroying it.
+    (void)texIt->release();
+    ownedTextures.erase(texIt);
+    return true;
+}
+
 GpuTexture *Graphics::gpuForTexture(Texture *t) const {
     return t ? static_cast<GpuTexture *>(t->gpuHandle) : nullptr;
 }
@@ -1675,6 +1712,30 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     (void)indices;
     (void)indexCount;
     return false;
+}
+
+bool Graphics::releaseMesh(Mesh *mesh) {
+    if (!mesh || !mesh->gpuHandle) return false;
+
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    auto gpuIt = std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
+                              [&](const std::unique_ptr<GpuMesh> &g) {
+                                  return g.get() == gpu;
+                              });
+    if (gpuIt == ownedGpuMeshes.end()) return false;
+
+    auto meshIt = std::find_if(ownedMeshes.begin(), ownedMeshes.end(),
+                               [&](const std::unique_ptr<Mesh> &m) {
+                                   return m.get() == mesh;
+                               });
+    if (meshIt == ownedMeshes.end()) return false;
+
+    mesh->gpuHandle = nullptr;
+    ownedGpuMeshes.erase(gpuIt);
+    // Transfer the CPU facade to the caller instead of destroying it.
+    (void)meshIt->release();
+    ownedMeshes.erase(meshIt);
+    return true;
 }
 
 Mesh *Graphics::newMeshSphere(int slices, int stacks) {
@@ -3332,6 +3393,30 @@ Shader *Graphics::newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
 Shader *Graphics::newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) {
     throw Exception("newShaderFromSpvFile: SPIR-V custom shaders are not supported on the "
                     "WebGPU backend. Use WGSL shaders instead.");
+}
+
+bool Graphics::releaseShader(Shader *shader) {
+    if (!shader || !shader->gpuHandle) return false;
+
+    auto *gpu = static_cast<GpuShader *>(shader->gpuHandle);
+    auto gpuIt = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
+                              [&](const std::unique_ptr<GpuShader> &g) {
+                                  return g.get() == gpu;
+                              });
+    if (gpuIt == ownedGpuShaders.end()) return false;
+
+    auto shIt = std::find_if(ownedShaders.begin(), ownedShaders.end(),
+                             [&](const std::unique_ptr<Shader> &s) {
+                                 return s.get() == shader;
+                             });
+    if (shIt == ownedShaders.end()) return false;
+
+    shader->gpuHandle = nullptr;
+    ownedGpuShaders.erase(gpuIt);
+    // Transfer the CPU facade to the caller instead of destroying it.
+    (void)shIt->release();
+    ownedShaders.erase(shIt);
+    return true;
 }
 
 Shader *Graphics::newShader(const std::string &vertGlsl, const std::string &fragGlsl) {

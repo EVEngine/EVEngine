@@ -9,6 +9,8 @@
 #include "common/Exception.h"
 
 #include "graphics/Graphics.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"

@@ -316,6 +316,32 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     return true;
 }
 
+bool Graphics::releaseMesh(Mesh *mesh) {
+    if (!mesh || !mesh->gpuHandle) return false;
+
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    auto gpuIt = std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
+                              [&](const std::unique_ptr<GpuMesh> &g) {
+                                  return g.get() == gpu;
+                              });
+    if (gpuIt == ownedGpuMeshes.end()) return false;
+
+    auto meshIt = std::find_if(ownedMeshes.begin(), ownedMeshes.end(),
+                               [&](const std::unique_ptr<Mesh> &m) {
+                                   return m.get() == mesh;
+                               });
+    if (meshIt == ownedMeshes.end()) return false;
+
+    // An in-flight draw may still read the vertex/index buffers; drain first.
+    waitForSharedGpuResources();
+    mesh->gpuHandle = nullptr;
+    ownedGpuMeshes.erase(gpuIt);
+    // Transfer the CPU facade to the caller instead of destroying it.
+    (void)meshIt->release();
+    ownedMeshes.erase(meshIt);
+    return true;
+}
+
 Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     ASSERT(initialized);
     if (!initialized) throw Exception("newMeshSphere: graphics not initialized");

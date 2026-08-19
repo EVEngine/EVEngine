@@ -13,6 +13,8 @@
 #include "graphics/RenderSystem.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::graphics;
 

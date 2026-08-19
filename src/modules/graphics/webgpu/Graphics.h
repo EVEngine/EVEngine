@@ -132,6 +132,7 @@ public:
     float getMaxAnisotropy() const override;
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
+    bool releaseTexture(Texture *texture) override;
 
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                           const Color &color) override;
@@ -165,6 +166,7 @@ public:
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    bool releaseShader(Shader *shader) override;
 
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
@@ -175,6 +177,7 @@ public:
                             int vertexCount, const uint32_t *indices, int indexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
+    bool releaseMesh(Mesh *mesh) override;
 
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;

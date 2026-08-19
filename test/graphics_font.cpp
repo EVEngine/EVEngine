@@ -28,6 +28,8 @@ constexpr int         kIconCodepoint = 0xF000;
 constexpr const char *kIconUtf8      = "\xEF\x80\x80";  // UTF-8 for U+F000
 
 #include "PathBesideSource.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 std::vector<char> readBinaryFile(const std::string &path) {

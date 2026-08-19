@@ -1,4 +1,5 @@
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/Immortal.hpp"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -118,9 +119,8 @@ std::string formatValue(HSQUIRRELVM vm, SQInteger idx) {
 }  // namespace
 
 ConsolePanel& ConsolePanel::instance() {
-    // Intentionally leaked (matches AiPanel / McpServer lifetime patterns).
-    static ConsolePanel* inst = new ConsolePanel();
-    return *inst;
+    // Process-immortal singleton; see devtools/Immortal.hpp.
+    return Immortal<ConsolePanel>::get();
 }
 
 std::string ConsolePanel::nowStamp() {
