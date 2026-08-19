@@ -2,7 +2,6 @@
 
 #include "common/Resource.h"
 
-#include "image/ImageData.h"
 #include "medialoader/model/ModelScene.h"
 
 #include <string>
@@ -12,6 +11,9 @@ struct aiScene;
 struct aiMaterial;
 
 namespace eve {
+namespace image {
+class ImageData;
+}
 namespace model3d {
 
 /**

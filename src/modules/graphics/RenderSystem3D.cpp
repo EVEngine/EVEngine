@@ -1,13 +1,14 @@
 #include "graphics/RenderSystem3D.h"
 #include "common/RenderTrace.h"
+#include "graphics/AmbientOcclusion.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
-#include "graphics/ClusteredLight.h"
-#include "graphics/Shadow.h"
-#include "graphics/RenderControl.h"
 #include "graphics/Material.h"
-#include "graphics/AmbientOcclusion.h"
+#include "graphics/Outline.h"
+#include "graphics/RenderControl.h"
+#include "graphics/Shadow.h"
 
 #include <algorithm>
 #include <cmath>

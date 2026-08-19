@@ -1,8 +1,13 @@
 #pragma once
 
+#include <string>
+#include <vector>
 #include "animation/SpineSkeletonData.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Texture.h"
+
+namespace eve::graphics {
+struct DrawItem2D;
+class Texture;
+}  // namespace eve::graphics
 
 #include <string>
 #include <vector>

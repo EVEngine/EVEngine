@@ -21,8 +21,11 @@
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 
 #ifndef EVENGINE_WEBGPU
 #include "font/FontData.h"
@@ -50,6 +53,11 @@ Graphics::Graphics() {
     // The query happens after native window creation, so this pointer is valid
     // by the time it is used; see common/WindowSurfaceHost.h.
     eve::cap::provide<IWindowSurfaceHost>(this);
+}
+
+Graphics::~Graphics() {
+    // Out-of-line so unique_ptr members of effect classes (Outline, AO, GI, …)
+    // are destroyed where the complete types are visible.
 }
 
 #ifdef EVENGINE_WEBGPU

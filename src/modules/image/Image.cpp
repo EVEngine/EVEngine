@@ -19,6 +19,7 @@
  **/
 
 #include "Image.h"
+#include "common/Exception.h"
 #include "common/config.h"
 
 #include "medialoader/image/PNGHandler.h"

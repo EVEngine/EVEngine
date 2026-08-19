@@ -6,8 +6,6 @@
 #include "voxel/Frustum.h"
 #include "voxel/VoxelPack.h"
 
-#include "procgen/heightmap/TerrainSampler.h"
-
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -16,8 +14,12 @@
 #include <unordered_map>
 #include <vector>
 
+namespace eve::procgen {
+class TerrainSampler;
+}
+
 namespace eve::graphics {
-class Graphics;
+class IGraphics3D;
 class Texture;
 }  // namespace eve::graphics
 
@@ -50,6 +52,7 @@ struct DrawBatch {
 class VoxelWorld {
 public:
     VoxelWorld() = default;
+    ~VoxelWorld();
     explicit VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
 
     Chunk *getOrCreateChunk(int cx, int cy, int cz);
@@ -84,28 +87,13 @@ public:
      * sampling itself lives in procgen::TerrainSampler (deterministic Perlin
      * fBm); voxel only adapts it to 32³ chunk filling.
      */
-    void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone,
-                          float baseHeight, float amplitude, float scale) {
-        terrainSampler_.setSeed(seed);
-        terrainSampler_.setBase(0.f);
-        terrainSampler_.setAmplitude(1.f);
-        terrainSampler_.setClamp(true, 0.f, 1.f);
-        terrainSampler_.setFrequency(scale > 0.f ? scale : 1.f / 32.f);
-        terrainTop_ = top;
-        terrainSub_ = sub;
-        terrainStone_ = stone;
-        terrainBase_ = baseHeight;
-        terrainAmplitude_ = amplitude < 0.f ? 0.f : amplitude;
-        terrainEnabled_ = true;
-    }
+    void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight, float amplitude,
+                          float scale);
     void disableTerrain() { terrainEnabled_ = false; }
     bool terrainEnabled() const { return terrainEnabled_; }
 
     /** @brief Terrain height (world blocks) at a column for the configured seed. */
-    int terrainHeightAt(int wx, int wz) const {
-        const float e = terrainSampler_.sample(float(wx), float(wz));
-        return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
-    }
+    int terrainHeightAt(int wx, int wz) const;
 
     /**
      * @brief Persistence: serialize every chunk (coords + raw voxels) into `out`.
@@ -149,7 +137,7 @@ public:
      * @brief Issue Graphics::drawVoxelFaceInstances for every visible batch.
      * Requires begin3DFrame + setMesh3DViewProj already done.
      */
-    void drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow = 16);
+    void drawVisible(graphics::IGraphics3D *gfx, graphics::Texture *atlas, int tilesPerRow = 16);
 
     /** @brief World-space voxel get/set. Air (0) never allocates a chunk; a border
      *  edit also invalidates the adjacent chunk's mesh. */
@@ -226,7 +214,7 @@ private:
     std::vector<DrawBatch> visible_;
     std::vector<uint64_t> visibleChunkKeys_;
     CubeTypeRegistry types_;
-    procgen::TerrainSampler terrainSampler_;
+    std::unique_ptr<procgen::TerrainSampler>             terrainSampler_;
     uint8_t terrainTop_ = 1;
     uint8_t terrainSub_ = 2;
     uint8_t terrainStone_ = 3;

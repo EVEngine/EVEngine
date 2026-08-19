@@ -20,6 +20,7 @@
 
 #include "ImageData.h"
 #include "Image.h"
+#include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "medialoader/image/pixelformat.h"
 

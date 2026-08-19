@@ -1,12 +1,13 @@
 #include "dialogue/Dialogue.h"
 #include "dialogue/DnutParser.h"
 
+#include "avatar/AvatarInstance.h"
+#include "common/utf8.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "i18n/I18n.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
-#include "common/utf8.h"
 
 #include <algorithm>
 #include <cmath>

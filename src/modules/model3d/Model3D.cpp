@@ -6,6 +6,8 @@
 #include "common/Exception.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/Graphics.h"
+#include "image/ImageData.h"
 
 #include "medialoader/Exception.h"
 #include "medialoader/model/ModelLoader.h"

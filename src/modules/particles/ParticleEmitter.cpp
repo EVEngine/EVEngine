@@ -1,17 +1,19 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleConfig.h"
 
+#include "animation/AnimMath.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
-#include "animation/AnimMath.h"
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
-#include "ik/Skeleton2D.h"
-#include "ik/Skeleton3D.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
+#include "graphics/Canvas.h"
+#include "graphics/Texture.h"
+#include "ik/Skeleton2D.h"
+#include "ik/Skeleton3D.h"
 #include "particles/ParticleGpuKernel.h"
 
 #include <cmath>

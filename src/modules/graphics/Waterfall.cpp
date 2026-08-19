@@ -4,6 +4,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/shaders/waterfall_mesh_frag_spv.inc"
 
+#include <algorithm>
 #include <cmath>
 #include <string>
 #include <vector>

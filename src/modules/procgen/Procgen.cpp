@@ -1,5 +1,7 @@
 #include "procgen/Procgen.h"
 
+#include "image/ImageData.h"
+
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/JsonExport.h"
 #include "procgen/Semantic.h"

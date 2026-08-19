@@ -4,6 +4,7 @@
 #include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
 
+#include "filesystem/FileData.h"
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/StreamSocket.h>

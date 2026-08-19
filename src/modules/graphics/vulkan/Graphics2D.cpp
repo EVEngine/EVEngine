@@ -6,10 +6,11 @@
 // defines members of vulkan::Graphics; see GraphicsInternal.h for the
 // shared implementation helpers.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/Light.h"
+#include "graphics/RenderControl.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>

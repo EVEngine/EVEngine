@@ -9,12 +9,13 @@
 #include "medialoader/image/Color.h"
 #include "medialoader/image/FormatHandler.h"
 
-#include "filesystem/FileData.h"
-
 #include <cstdint>
 
 namespace eve
 {
+namespace filesystem {
+class FileData;
+}
 namespace image
 {
 

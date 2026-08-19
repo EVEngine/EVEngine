@@ -1,8 +1,12 @@
 #pragma once
 
-#include "graphics/RenderSystem3D.h"
+#include "graphics/IResourceFactory.h"
 
 #include <vector>
+
+namespace eve::graphics {
+class Renderable3D;
+}
 
 namespace eve::model3d {
 
@@ -34,11 +38,11 @@ struct ModelRenderOptions {
  * Returns nullptr for invalid/empty meshes. The entity is registered in the
  * current ECS; the caller keeps it alive by owning a reference in script state.
  */
-graphics::Renderable3D *buildRenderable(graphics::Graphics &gfx, ModelData *model, int meshIndex,
+graphics::Renderable3D *buildRenderable(graphics::IResourceFactory &gfx, ModelData *model, int meshIndex,
                                         const ModelRenderOptions &options = {});
 
 /** Build one Renderable3D per mesh referenced by the scene graph. */
-std::vector<graphics::Renderable3D *> buildRenderables(graphics::Graphics &gfx, ModelData *model,
+std::vector<graphics::Renderable3D *> buildRenderables(graphics::IResourceFactory &gfx, ModelData *model,
                                                        const ModelRenderOptions &options = {});
 
 }  // namespace eve::model3d

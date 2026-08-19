@@ -3,7 +3,9 @@
 
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
+#include "sound/Decoder.h"
 #include "sound/Sound.h"
+#include "sound/SoundData.h"
 
 #include <AL/al.h>
 #include <simplesquirrel/simplesquirrel.hpp>

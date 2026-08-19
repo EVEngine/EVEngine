@@ -5,8 +5,10 @@
 
 #include "graphics/ClipSpace.h"
 #include "graphics/Graphics.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 
+#include "filesystem/FileData.h"
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
 

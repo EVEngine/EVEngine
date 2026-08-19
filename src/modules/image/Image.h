@@ -2,7 +2,6 @@
 
 #include "common/Module.h"
 #include "image/ImageData.h"
-#include "filesystem/File.h"
 
 #include <list>
 
