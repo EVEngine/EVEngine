@@ -4,11 +4,14 @@
 
 #include "common/Data.h"
 #include "common/Exception.h"
+#include "common/Resource.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 
 #include "medialoader/Exception.h"
 #include "medialoader/model/ModelLoader.h"
+
+#include "model3d/ModelLoader.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -104,21 +107,13 @@ ModelData *Model3D::newModelDataFromFile(std::string path, const ModelLoadOption
     if (path.empty())
         throw eve::Exception("Model3D::newModelDataFromFile: empty path");
 
-    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
-    if (!fs)
-        fs = filesystem::Filesystem::create();
-
-    EveFileSystem eveFs(fs);
-    medialoader::ModelLoader loader(&eveFs);
-
-    try {
-        auto scene = loader.loadFromPath(path.c_str(), toMedialoader(options));
-        if (scene.empty())
-            throw eve::Exception("Could not load model: %s", path.c_str());
-        return new ModelData(std::move(scene), "file://" + path);
-    } catch (const medialoader::Exception &e) {
-        throw eve::Exception("%s", e.what());
-    }
+    // Route through the unified resource cache: options are part of the key,
+    // so identical (path, options) requests share one decoded Assimp scene.
+    const std::string key = modelCacheKey(path, options);
+    eve::Resource *resource = eve::ResourceManager::getInstance().get(key);
+    if (!resource)
+        throw eve::Exception("Could not load model: %s", path.c_str());
+    return static_cast<ModelData *>(resource);
 }
 
 graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, ModelData *model,

@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <utility>
 
 namespace eve {
 namespace font {
@@ -22,10 +23,12 @@ FT_Library &ftLibrary() {
             if (FT_Init_FreeType(&lib) != 0)
                 lib = nullptr;
         }
-        ~Holder() {
-            if (lib)
-                FT_Done_FreeType(lib);
-        }
+        // Deliberately no destructor (intentional leak): FontData instances are
+        // ref-counted and the unified resource cache keeps them alive until
+        // process exit. Static destruction order across TUs is unspecified, so
+        // calling FT_Done_FreeType here could destroy the library before a
+        // cached face's destructor runs FT_Done_Face on it. The library is
+        // small and reclaimed by the OS at exit.
     } holder;
     return holder.lib;
 }
@@ -90,6 +93,14 @@ FontData::~FontData() {
         FT_Done_Face(face);
         face = nullptr;
     }
+}
+
+void FontData::adopt(eve::Resource &replacement) {
+    auto &other = static_cast<FontData &>(replacement);
+    std::swap(bytes, other.bytes);
+    std::swap(face, other.face);
+    std::swap(pixelSize, other.pixelSize);
+    std::swap(glyphCache, other.glyphCache);
 }
 
 int FontData::getSize() const { return pixelSize; }

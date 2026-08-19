@@ -205,7 +205,7 @@ TEST_CASE("particles.attach.emitsAtBone") {
 TEST_CASE("particles.skin.surfaceEmitCesiumMan") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_skin_surface"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
@@ -313,7 +313,7 @@ TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
 TEST_CASE("particles.attach.clipSampleMovesEmitter") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_attach_clip"));
     REQUIRE(model.get() != nullptr);
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
@@ -361,7 +361,7 @@ TEST_CASE("particles.attach.clipSampleMovesEmitter") {
 TEST_CASE("particles.skin.emptyBoneFilterFallsBack") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_skin_empty_filter"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());

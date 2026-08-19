@@ -44,6 +44,9 @@ public:
     float getWidth(std::string text) const;
     float getKerning(int leftCodepoint, int rightCodepoint) const;
 
+    /** @brief Replace this face with `replacement`'s (cache reload). */
+    void adopt(eve::Resource &replacement) override;
+
     /** @brief 单字形度量（像素）。 */
     int getGlyphWidth(int codepoint) const;
     int getGlyphHeight(int codepoint) const;

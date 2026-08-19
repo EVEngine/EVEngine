@@ -473,7 +473,7 @@ TEST_CASE("animation.skinned.worldMatrixMatchesTRS") {
 TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_animation_skinned"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_animation_skinned"));
     REQUIRE(model.get() != nullptr);
     REQUIRE(!model->empty());
     CHECK(model->getMeshCount() >= 1);
@@ -579,7 +579,7 @@ TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
 TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_animation_skinned_factory"));
     REQUIRE(model.get() != nullptr);
 
@@ -604,7 +604,7 @@ TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
 TEST_CASE("animation.skinned.render.bindPose") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_animation_skinned_render_bindpose"));
     REQUIRE(model.get() != nullptr);
     renderSkinnedAnimation(model.get(), "animation_skinned_bindpose.png",
@@ -614,7 +614,7 @@ TEST_CASE("animation.skinned.render.bindPose") {
 TEST_CASE("animation.skinned.render.clipSampledMovesPixels") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_animation_skinned_render_clipsample"));
     REQUIRE(model.get() != nullptr);
     // Walk cycle across 32 frames: mid-cycle pose differs from the first frame,
@@ -626,7 +626,7 @@ TEST_CASE("animation.skinned.render.clipSampledMovesPixels") {
 TEST_CASE("animation.skinned.render.playerDriven") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_animation_skinned_render_player"));
     REQUIRE(model.get() != nullptr);
     renderSkinnedAnimation(model.get(), "animation_skinned_player.png",

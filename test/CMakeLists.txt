@@ -4,6 +4,7 @@ file(GLOB all_test_cpp
   ECS.cpp
   capability.cpp
   data.cpp
+  resource.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
