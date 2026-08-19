@@ -81,6 +81,11 @@ eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 eve_declare_module(NAME editor LAYER 0 SCRIPT Editor SLOT editor
+                   # Editor.cpp builds heightmap meshes with procgen::Heightmap
+                   # when procgen is available; procgen is not in the web
+                   # profile (its map dependency needs Poco), so the usage is
+                   # guarded by EVENGINE_HAS_PROCGEN.
+                   OPTIONAL_DEPS procgen
                    GROUP 3d web)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)

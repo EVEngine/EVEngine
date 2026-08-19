@@ -11,7 +11,9 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#ifdef EVENGINE_HAS_PROCGEN
 #include "procgen/heightmap/Heightmap.h"
+#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -22,6 +24,7 @@ namespace eve::editor {
 
 Module_IMPL(Editor, new Editor());
 
+#ifdef EVENGINE_HAS_PROCGEN
 namespace {
 
 struct HeightmapArrays {
@@ -83,6 +86,7 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
 }
 
 }  // namespace
+#endif
 
 TransformGizmo *Editor::newGizmo() { return new TransformGizmo(); }
 
@@ -100,6 +104,7 @@ EditorDock *Editor::newDock() { return new EditorDock(); }
 
 EditorHistory *Editor::newHistory() { return new EditorHistory(); }
 
+#ifdef EVENGINE_HAS_PROCGEN
 graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
                                          float heightScale) {
     auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
@@ -120,6 +125,7 @@ bool Editor::updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
     return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
                                    int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
 }
+#endif
 
 void Editor::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Editor::create, false);
@@ -352,8 +358,10 @@ void Editor::expose(ssq::Class &cls) {
     cls.addFunc("newInspector", &Editor::newInspector);
     cls.addFunc("newDock", &Editor::newDock);
     cls.addFunc("newHistory", &Editor::newHistory);
+#ifdef EVENGINE_HAS_PROCGEN
     cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
     cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
+#endif
 }
 
 }  // namespace eve::editor
