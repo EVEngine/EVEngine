@@ -1,6 +1,7 @@
 #include "graphics/Graphics.h"
 #include "common/Capability.h"
 #include "common/config.h"
+#include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
 
@@ -53,6 +54,7 @@ Graphics::Graphics() {
     // The query happens after native window creation, so this pointer is valid
     // by the time it is used; see common/WindowSurfaceHost.h.
     eve::cap::provide<IWindowSurfaceHost>(this);
+    registerGraphicsCapabilities();
 }
 
 Graphics::~Graphics() {

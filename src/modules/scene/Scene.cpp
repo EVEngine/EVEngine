@@ -1,5 +1,6 @@
 #include "scene/Scene.h"
 
+#include "scene/SceneCapabilities.h"
 #include "scene/SceneBounds.h"
 #include "scene/SceneInternal.h"
 #include "scene/TransformSystem.h"
@@ -26,6 +27,10 @@
 #include <stdexcept>
 
 namespace eve::scene {
+
+Scene::Scene() {
+    registerSceneCapabilities();
+}
 
 Module_IMPL(Scene, new Scene());
 

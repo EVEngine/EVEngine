@@ -1,4 +1,5 @@
 #include "physics/Physics.h"
+#include "physics/PhysicsCapabilities.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
 #include "physics/Body.h"
@@ -13,6 +14,10 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::physics {
+
+Physics::Physics() {
+    registerPhysicsCapabilities();
+}
 
 Module_IMPL(Physics, new Physics());
 

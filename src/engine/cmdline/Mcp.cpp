@@ -2,6 +2,8 @@
 
 #include "common/Module.h"
 #include "common/Runtime.h"
+#include "common/Capability.h"
+#include "common/EditorHost.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
@@ -9,7 +11,6 @@
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
-#include "ui/EditorHost.h"
 #endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -124,9 +125,11 @@ int Cmdline::McpHost(std::string path, int port) {
         dt.exposeScriptApi(runtime.vm());
 
         // Editor host: JSON Views <-> Squirrel ViewModel binding + window/render.
-        auto& host = eve::ui::EditorHost::instance();
-        host.start(runtime.vm(), gameDir, /*allowWindow=*/true);
-        host.exposeScriptApi(runtime.vm());
+        auto* host = eve::cap::query<eve::IEditorHost>();
+        if (host) {
+            host->start(runtime.vm(), gameDir, /*allowWindow=*/true);
+            host->exposeScriptApi(runtime.vm());
+        }
 
         auto& mcp = dt.mcp();
         mcp.setGameRoot(gameDir);
@@ -148,9 +151,9 @@ int Cmdline::McpHost(std::string path, int port) {
                       << ")" << std::endl;
         }
 
-        while (!host.exitRequested()) {
+        while (!host->exitRequested()) {
             dt.poll();  // drains MCP requests on the main thread
-            host.frame();
+            host->frame();
             if (mcp.transport() == eve::dev::McpServer::Transport::Stdio &&
                 mcp.stdinClosed()) {
                 std::cerr << "MCP stdio closed; host exiting" << std::endl;
@@ -159,7 +162,7 @@ int Cmdline::McpHost(std::string path, int port) {
             std::this_thread::sleep_for(std::chrono::milliseconds(2));
         }
 
-        host.stop();
+        host->stop();
         dt.detach();
         return 0;
     } catch (const std::exception& e) {

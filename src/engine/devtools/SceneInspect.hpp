@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
-namespace eve::graphics {
-class Graphics;
-class Camera3D;
-}  // namespace eve::graphics
+namespace eve {
+class IRenderCapture;
+class ISceneQuery;
+}
 
 namespace eve::dev {
 
@@ -69,8 +69,6 @@ public:
     static std::vector<InspectView> generateViews(const glm::vec3& center, float fov = 60.f);
 
     // ---------- 相机位姿 ----------
-    /** @brief 查找当前激活的 Camera3D；不存在则惰性创建一个（作为渲染机位）。 */
-    graphics::Camera3D* findOrCreateCamera();
     /**
      * @brief 以 pos + 欧拉角 rot 设置相机位姿。
      * rot = [yawDeg, pitchDeg]（与 firstperson 约定一致，Y-up）。
@@ -114,8 +112,9 @@ public:
 private:
     SceneInspect() = default;
 
-    graphics::Graphics* graphics();
-    bool savePng(graphics::Graphics* gfx, const std::string& path, std::string& err);
+    eve::IRenderCapture* captureIface();
+    eve::ISceneQuery* scene();
+    bool ensureCamera();
 
     std::string cacheDir_;
     std::string lastPngPath_;

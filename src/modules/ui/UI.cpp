@@ -1,4 +1,5 @@
 #include "ui/UI.h"
+#include "ui/EditorHostCapabilities.h"
 
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
@@ -143,7 +144,9 @@ void injectUIComponentClass(ssq::Table &eveTable) {
 
 Module_IMPL(UI, new UI());
 
-UI::UI() : backend_(createImGuiBackend()) {}
+UI::UI() : backend_(createImGuiBackend()) {
+    registerEditorHostCapabilities();
+}
 UI::~UI() { shutdownBackend(); }
 
 bool UI::isBackendReady() const { return backend_ && backend_->isInitialized(); }

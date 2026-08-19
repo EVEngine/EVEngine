@@ -1,5 +1,7 @@
 #include "procgen/Procgen.h"
 
+#include "procgen/ProcgenCapabilities.h"
+
 #include "image/ImageData.h"
 
 #include "procgen/GeneratorRegistry.h"
@@ -24,6 +26,7 @@ namespace eve::procgen {
 Module_IMPL(Procgen, new Procgen());
 
 Procgen::Procgen() {
+    registerProcgenCapabilities();
     GeneratorRegistry::instance().registerBuiltins();
     TextureRecipeRegistry::instance().registerBuiltins();
     PbrRecipeRegistry::instance().registerPbrBuiltins();

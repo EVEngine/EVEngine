@@ -1,6 +1,7 @@
 #include "Audio.h"
 #include "Source.h"
 
+#include "AudioCapabilities.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "sound/Decoder.h"
@@ -19,6 +20,7 @@ namespace audio {
 Module_IMPL(Audio, new Audio());
 
 Audio::Audio() {
+    registerAudioCapabilities();
     StartupStage stage("audio: OpenAL device/context + worker thread");
     device = alcOpenDevice(nullptr);
     if (!device)

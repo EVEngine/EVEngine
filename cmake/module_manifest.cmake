@@ -41,14 +41,14 @@ set(EVE_TP_ORDER
 eve_declare_module(NAME common CORE REQUIRED LIB EVCommon LAYER -1
                    THIRDPARTY squirrel)
 eve_declare_module(NAME cmdline CORE REQUIRED LIB EVCmdLine LAYER -1
-                   DEPS filesystem ui
+                   DEPS filesystem
                    THIRDPARTY squirrel poco)
-# DevTools reaches into scene / physics / procgen / particles / audio / ui
-# directly (McpServer, SceneInspect). Until those calls go through capability
-# interfaces it has to be switched off before any of them can be trimmed --
-# the resolver says so by name when that happens.
+# DevTools consumes business modules only through the capability interfaces in
+# common/ (ISceneQuery / IRenderCapture / IPhysicsQuery / IProcgenQuery /
+# IParticlesQuery / IAudioQuery / IEditorHost), so it no longer blocks
+# trimming scene / physics / procgen / particles / audio / ui / graphics.
 eve_declare_module(NAME devtools CORE LIB EVDevTools LAYER -1
-                   DEPS graphics scene physics procgen particles audio ui image event filesystem
+                   DEPS event
                    THIRDPARTY poco
                    GROUP 3d)
 

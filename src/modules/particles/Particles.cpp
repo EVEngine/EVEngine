@@ -1,4 +1,5 @@
 #include "particles/Particles.h"
+#include "particles/ParticlesCapabilities.h"
 #include "particles/ParticleSystem.h"
 #include "particles/ParticleConfig.h"
 #include "graphics/Graphics.h"
@@ -15,6 +16,11 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::particles {
+
+Particles::Particles() {
+    registerParticlesCapabilities();
+}
+
 namespace {
 
 int bufferFromJson(const std::string &json, int fallback) {
