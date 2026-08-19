@@ -19,6 +19,41 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.maxValue = desc.maxValue;
     node.sizeX = desc.sizeX;
     node.sizeY = desc.sizeY;
+    node.marginL = desc.marginL;
+    node.marginT = desc.marginT;
+    node.marginR = desc.marginR;
+    node.marginB = desc.marginB;
+    node.paddingL = desc.paddingL;
+    node.paddingT = desc.paddingT;
+    node.paddingR = desc.paddingR;
+    node.paddingB = desc.paddingB;
+    node.minSizeX = desc.minSizeX;
+    node.minSizeY = desc.minSizeY;
+    node.maxSizeX = desc.maxSizeX;
+    node.maxSizeY = desc.maxSizeY;
+    node.percentW = desc.percentW;
+    node.percentH = desc.percentH;
+    node.anchorX = desc.anchorX;
+    node.anchorY = desc.anchorY;
+    node.posX = desc.posX;
+    node.posY = desc.posY;
+    node.absolute = desc.absolute;
+    node.textureId = desc.textureId;
+    node.tintR = desc.tintR;
+    node.tintG = desc.tintG;
+    node.tintB = desc.tintB;
+    node.tintA = desc.tintA;
+    node.uv0x = desc.uv0x;
+    node.uv0y = desc.uv0y;
+    node.uv1x = desc.uv1x;
+    node.uv1y = desc.uv1y;
+    node.borderL = desc.borderL;
+    node.borderT = desc.borderT;
+    node.borderR = desc.borderR;
+    node.borderB = desc.borderB;
+    node.cornerRadius = desc.cornerRadius;
+    node.wrapWidth = desc.wrapWidth;
+    node.itemHeight = desc.itemHeight;
     node.flexDirection = desc.flexDirection;
     node.alignItems = desc.alignItems;
     node.justifyContent = desc.justifyContent;
@@ -103,6 +138,41 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.maxValue = desc.maxValue;
     n.sizeX = desc.sizeX;
     n.sizeY = desc.sizeY;
+    n.marginL = desc.marginL;
+    n.marginT = desc.marginT;
+    n.marginR = desc.marginR;
+    n.marginB = desc.marginB;
+    n.paddingL = desc.paddingL;
+    n.paddingT = desc.paddingT;
+    n.paddingR = desc.paddingR;
+    n.paddingB = desc.paddingB;
+    n.minSizeX = desc.minSizeX;
+    n.minSizeY = desc.minSizeY;
+    n.maxSizeX = desc.maxSizeX;
+    n.maxSizeY = desc.maxSizeY;
+    n.percentW = desc.percentW;
+    n.percentH = desc.percentH;
+    n.anchorX = desc.anchorX;
+    n.anchorY = desc.anchorY;
+    n.posX = desc.posX;
+    n.posY = desc.posY;
+    n.absolute = desc.absolute;
+    n.textureId = desc.textureId;
+    n.tintR = desc.tintR;
+    n.tintG = desc.tintG;
+    n.tintB = desc.tintB;
+    n.tintA = desc.tintA;
+    n.uv0x = desc.uv0x;
+    n.uv0y = desc.uv0y;
+    n.uv1x = desc.uv1x;
+    n.uv1y = desc.uv1y;
+    n.borderL = desc.borderL;
+    n.borderT = desc.borderT;
+    n.borderR = desc.borderR;
+    n.borderB = desc.borderB;
+    n.cornerRadius = desc.cornerRadius;
+    n.wrapWidth = desc.wrapWidth;
+    n.itemHeight = desc.itemHeight;
     n.flexDirection = desc.flexDirection;
     n.alignItems = desc.alignItems;
     n.justifyContent = desc.justifyContent;
@@ -242,6 +312,54 @@ WidgetDesc progress(float fraction, std::string id, std::string overlay) {
     return d;
 }
 
+WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
+                 std::string id, std::function<void(int)> onValue) {
+    WidgetDesc d;
+    d.type = NodeType::Combo;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.value = float(std::max(0, selected));
+    for (size_t i = 0; i < options.size(); ++i) {
+        if (i) d.valueText += '\n';
+        d.valueText += options[i];
+    }
+    d.onValue = std::move(onValue);
+    return d;
+}
+
+WidgetDesc image(std::string id, float width, float height, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type = NodeType::Image;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.sizeX = width;
+    d.sizeY = height;
+    d.onClick = std::move(onClick);
+    return d;
+}
+
+WidgetDesc imageButton(std::string id, float width, float height, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type = NodeType::ImageButton;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.sizeX = width;
+    d.sizeY = height;
+    d.onClick = std::move(onClick);
+    return d;
+}
+
+WidgetDesc viewport(std::string id, float width, float height) {
+    WidgetDesc d;
+    d.type = NodeType::Viewport;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.sizeX = width;
+    d.sizeY = height;
+    return d;
+}
+
 WidgetDesc inputText(std::string label, std::string value, std::string id,
                      std::function<void(const std::string &)> onChange) {
     WidgetDesc d;
@@ -275,6 +393,29 @@ WidgetDesc child(std::string id, std::vector<WidgetDesc> children, float width, 
     d.sizeY = height;
     d.children = std::move(children);
     return d;
+}
+
+WidgetDesc scrollList(std::string id, std::vector<WidgetDesc> children, float height,
+                      float itemHeight) {
+    WidgetDesc d;
+    d.type = NodeType::ScrollList;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.sizeY = height;
+    d.itemHeight = itemHeight;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc virtualList(std::string listId, const std::vector<std::string> &items, float height,
+                       float itemHeight) {
+    const std::string lid = listId;
+    WidgetDesc inner = list(std::move(listId), items,
+                            [lid](const std::string &label, int i) {
+                                return button(label, lid + "/" + std::to_string(i))
+                                    .withKey(lid + "/" + std::to_string(i));
+                            });
+    return scrollList(lid, std::move(inner.children), height, itemHeight);
 }
 
 WidgetDesc flex(FlexDirection direction, std::vector<WidgetDesc> children, std::string id) {

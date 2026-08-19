@@ -9,11 +9,80 @@
 #include "editor/TileBuffer.h"
 #include "editor/TransformGizmo.h"
 
+#include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
+#include "procgen/heightmap/Heightmap.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
+
+#include <cstdint>
+#include <vector>
 
 namespace eve::editor {
 
 Module_IMPL(Editor, new Editor());
+
+namespace {
+
+struct HeightmapArrays {
+    std::vector<float> pos;
+    std::vector<float> nrm;
+    std::vector<float> uv;
+    std::vector<uint32_t> idx;
+};
+
+/** Flat-shaded terrain mesh: two triangles per cell, 6 vertices per quad. */
+void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float hScale,
+                          HeightmapArrays &out) {
+    out.pos.clear();
+    out.nrm.clear();
+    out.uv.clear();
+    out.idx.clear();
+    const int w = hm.getWidth();
+    const int h = hm.getHeight();
+    if (w < 2 || h < 2) return;
+    const float uw = float(w - 1);
+    const float uh = float(h - 1);
+
+    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx,
+                      float cz, float cy) {
+        const float p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
+        const float p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
+        const float p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
+        const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
+        const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
+        float nx = e1y * e2z - e1z * e2y;
+        float ny = e1z * e2x - e1x * e2z;
+        float nz = e1x * e2y - e1y * e2x;
+        const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+        if (len > 1e-8f) {
+            nx /= len;
+            ny /= len;
+            nz /= len;
+        }
+        const uint32_t base = uint32_t(out.pos.size() / 3);
+        out.pos.insert(out.pos.end(), {p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z});
+        out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
+        out.uv.insert(out.uv.end(),
+                      {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
+        out.idx.insert(out.idx.end(), {base, base + 1, base + 2});
+    };
+
+    for (int y = 0; y < h - 1; ++y) {
+        for (int x = 0; x < w - 1; ++x) {
+            const float h00 = hm.height(x, y);
+            const float h10 = hm.height(x + 1, y);
+            const float h01 = hm.height(x, y + 1);
+            const float h11 = hm.height(x + 1, y + 1);
+            // Grid is XZ; y in the function is the XZ "row" axis.
+            addTri(float(x), float(y), h00, float(x + 1), float(y), h10, float(x), float(y + 1), h01);
+            addTri(float(x + 1), float(y), h10, float(x + 1), float(y + 1), h11, float(x),
+                   float(y + 1), h01);
+        }
+    }
+}
+
+}  // namespace
 
 TransformGizmo *Editor::newGizmo() { return new TransformGizmo(); }
 
@@ -30,6 +99,27 @@ EditorInspector *Editor::newInspector() { return new EditorInspector(); }
 EditorDock *Editor::newDock() { return new EditorDock(); }
 
 EditorHistory *Editor::newHistory() { return new EditorHistory(); }
+
+graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
+                                         float heightScale) {
+    auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
+    if (!gfx || !hm) return nullptr;
+    HeightmapArrays a;
+    buildHeightmapArrays(*hm, cellSize, heightScale, a);
+    if (a.idx.empty()) return nullptr;
+    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(),
+                                  int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+}
+
+bool Editor::updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
+                                 procgen::Heightmap *hm, float cellSize, float heightScale) {
+    if (!mesh || !gfx || !hm) return false;
+    HeightmapArrays a;
+    buildHeightmapArrays(*hm, cellSize, heightScale, a);
+    if (a.idx.empty()) return false;
+    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
+                                   int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+}
 
 void Editor::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Editor::create, false);
@@ -262,6 +352,8 @@ void Editor::expose(ssq::Class &cls) {
     cls.addFunc("newInspector", &Editor::newInspector);
     cls.addFunc("newDock", &Editor::newDock);
     cls.addFunc("newHistory", &Editor::newHistory);
+    cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
+    cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
 }
 
 }  // namespace eve::editor

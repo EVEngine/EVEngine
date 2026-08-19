@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "graphics/Graphics.h"
+#include "graphics/RenderSystem3D.h"
 #include "graphics/RenderSystem.h"
 #include "ui/UI.h"
 #include "ui/UISystem.h"
@@ -198,5 +199,67 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
     CHECK(UISystem::findHost("gallery") != nullptr);
     bgA->sprite()->visible = false;
     bgB->sprite()->visible = false;
+    win->close();
+}
+
+TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = Graphics::create();
+    auto *ui = UI::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    REQUIRE(ui != nullptr);
+
+    win->setGraphics(gfx);
+    eve::window::WindowSettings s;
+    s.width = 800;
+    s.height = 600;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+    REQUIRE(ui->initBackend());
+
+    ui->mountAs("vpsmoke", window("Viewport", {viewport("vp", 420.f, 260.f)}, "root"));
+
+    for (int frame = 0; frame < 4; ++frame) {
+        // UI pass first: ensures the offscreen canvas exists at the widget rect.
+        ui->beginFrameAndRender();
+        Canvas *canvas = ui->viewportCanvas("vp");
+        REQUIRE(canvas != nullptr);
+        REQUIRE(canvas->getWidth() > 0);
+
+        // 2D: draw into the viewport canvas with the immediate-mode path.
+        gfx->setCanvas(canvas);
+        gfx->clearScreen();
+        gfx->drawSolidRectRGBA(10.f, 10.f, 120.f, 80.f, 0.2f, 0.6f, 0.9f, 1.f);
+        gfx->setCanvas(nullptr);
+
+        RenderSystem::render(*gfx);  // present + UI overlay
+        ui->dispatchEvents();
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            ui->processEvent(&e);
+            if (e.type == SDL_QUIT) break;
+        }
+    }
+
+    auto *vs = UISystem::viewportState("vpsmoke", "vp");
+    REQUIRE(vs != nullptr);
+    CHECK(vs->canvas != nullptr);
+    CHECK(vs->textureId != 0);
+    CHECK(vs->width == 420);
+    CHECK(vs->height == 260);
+
+    // 3D: render a cube scene into the same canvas (preview-quality pass).
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(3.f, 2.f, 4.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    auto *cube = Renderable3D::create();
+    cube->setMesh(gfx->newMeshCube(1.f));
+    cube->setVisible(true);
+    gfx->setDirectionalLight(-0.4f, 0.9f, 0.3f, 1.8f, 1.6f, 1.3f);
+    gfx->renderScene3DToCanvas(vs->canvas, cam);
+    CHECK(vs->canvas->getTexture() != nullptr);
+
     win->close();
 }

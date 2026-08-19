@@ -39,6 +39,7 @@ file(GLOB all_test_cpp
   GlobalIllumination.cpp
   UISystem.cpp
   UIBuilder.cpp
+  UIMoveRepro.cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp

@@ -815,4 +815,62 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
 }
 
+void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera) {
+    if (!target || !camera) return;
+    auto cd = camera->data();
+    const float aspect = target->getWidth() > 0
+                             ? float(target->getWidth()) / float(target->getHeight())
+                             : 1.f;
+
+    // Preview-quality forward pass: no shadow / G-buffer / AO passes.
+    gfx.begin3DFrameToCanvas(target);
+
+    const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+    const glm::vec3 look(cd->targetX, cd->targetY, cd->targetZ);
+    const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
+    const glm::mat4 viewM = glm::lookAtRH(eye, look, up);
+    const float fovRad = cd->fovYDeg * 0.017453292519943295f;
+    const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
+    gfx.setMesh3DViewProj(projM * viewM);
+    gfx.setMesh3DView(viewM);
+    gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+    gfx.setMesh3DCameraPos(eye);
+    gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+
+    // Lighting: real lights (if any) + camera ambient; shadows/clustered off.
+    std::vector<PackedLight3D> packed;
+    collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
+    promoteDirectional(packed);
+    ClusteredLightingUpload noClustered{};
+    noClustered.active = false;
+    gfx.setMesh3DClusteredLighting(noClustered);
+    gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+    ShadowUpload noShadow{};
+    noShadow.active = false;
+    gfx.setMesh3DShadows(noShadow);
+
+    if (ecs::current()->getManager<Renderable3D>() != nullptr) {
+        auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [xf, mr] = *it;
+            if (!mr->visible) continue;
+            // Legacy per-entity material path (no parts / materials / hair).
+            gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
+            gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
+            gfx.setMesh3DNormalTexture(mr->normalTexture);
+            gfx.setMesh3DHeightTexture(mr->heightTexture);
+            gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers, mr->parallaxMaxLayers);
+            gfx.setMesh3DShadowReceive(false);
+            Texture *albedo = mr->texture;
+            Color tint(mr->r, mr->g, mr->b, mr->a);
+            Shader *shader = mr->shader;
+            const glm::mat4 model = modelFromTransform(*xf);
+            eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
+            gfx.drawMeshShader(mr->mesh, model, albedo, tint, shader);
+        }
+    }
+
+    gfx.end3DFrameToCanvas();
+}
+
 } // namespace eve::graphics

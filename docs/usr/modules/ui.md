@@ -56,13 +56,25 @@ ui.end();
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginRow()`、`beginWindow()`、`bindOwner()`
-- `button()`、`checkbox()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
+- `beginBuild()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginRow()`、`beginScrollList()`、`beginWindow()`、`bindOwner()`
+- `animateHostPos()`、`button()`、`checkbox()`、`combo()`、`consumeChange()`、`consumeClick()`、`dispatchEvents()`、`end()`、`getChecked()`、`getName()`
 - `getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`
 - `mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`select()`、`separator()`、`setChecked()`
-- `setFlexAlign()`、`setFlexJustify()`、`setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPos()`、`setHostVisible()`、`setItemFlexGrow()`、`setItemSize()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`text()`、`wantCaptureKeyboard()`
+- `setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostOverlay()`、`setHostPercent()`、`setHostPos()`、`setHostSize()`、`setHostVisible()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemFlexGrow()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`
+- `image()`、`imageButton()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
+- `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
+
+## 内嵌渲染视口（Viewport）
+
+`ui.viewport(id, w, h)` 声明一个内嵌渲染目标控件：它维护一个离屏 `Canvas`
+（尺寸跟随控件矩形），游戏在 `eve_render` 里先把 2D（`gfx.setCanvas` + 立即模式绘制）
+或 3D（`gfx.renderScene3DToCanvas(canvas, camera)`）渲染进去，然后
+`ui.beginFrameAndRender()` 会把该 Canvas 纹理显示在控件中。视口交互输入
+（悬停、按住、控件本地鼠标坐标、拖拽增量、滚轮）通过 `viewportHovered/Active/MouseX/
+MouseY/DragDX/DragDY/Wheel(id)` 每帧读取。完整示例见
+`examples/terrain-editor`（高度图地形 + orbit 相机 + 抬高/压低笔刷）。
 
 ## 使用要点
 

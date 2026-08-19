@@ -59,6 +59,10 @@ void Graphics::render3D() {
     popValidationScope();
 }
 
+void Graphics::renderScene3DToCanvas(Canvas *canvas, Camera3D *camera) {
+    RenderSystem3D::renderToCanvas(*this, canvas, camera);
+}
+
 Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {
     if (!scene) return nullptr;
     AntiAliasing* aa = pipelineAntiAliasing();
@@ -633,6 +637,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setShader", static_cast<void (Graphics::*)(Shader*)>(&Graphics::setShader));
     cls.addFunc("getShader", &Graphics::getShader);
     cls.addFunc("render3D", &Graphics::render3D);
+    cls.addFunc("renderScene3DToCanvas", &Graphics::renderScene3DToCanvas);
     cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
     cls.addFunc("drawCanvas", &Graphics::drawCanvas);

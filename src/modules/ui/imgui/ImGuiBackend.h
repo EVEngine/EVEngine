@@ -4,6 +4,9 @@
 
 #include <imgui.h>
 
+#include <cstdint>
+#include <map>
+
 namespace eve::ui {
 
 /** @brief Dear ImGui + SDL input + Vulkan present overlay. */
@@ -42,6 +45,20 @@ private:
     /** @brief Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
     void rebuildFonts();
 
+    uint64_t registerTexture(graphics::Texture *tex) override;
+    void unregisterTexture(uint64_t id) override;
+    bool textureSize(uint64_t id, int *w, int *h) const override;
+    void *textureHandle(uint64_t id) const override;
+
+    struct RegisteredTexture {
+        ImTextureID imId = nullptr;
+        int width = 0;
+        int height = 0;
+    };
+    std::map<uint64_t, RegisteredTexture> textures_;
+    uint64_t nextTextureKey_ = 1;
+    ImVector<ImWchar> fontRanges_;  // kept alive for cfg.GlyphRanges across font builds
+
     bool initialized_ = false;
     bool fontsUploaded_ = false;
     bool frameOpen_ = false;
@@ -50,6 +67,8 @@ private:
     eve::graphics::Graphics *gfx_ = nullptr;
     SDL_Window *window_ = nullptr;
     void *imguiDescriptorPool_ = nullptr;   // VkDescriptorPool
+    void *imguiTexturePool_ = nullptr;      // VkDescriptorPool (texture sets)
+    void *imguiTextureLayout_ = nullptr;    // VkDescriptorSetLayout (texture sets)
     ImGuiContext *ctx_ = nullptr;           // ImGui context owned by this backend
 };
 
