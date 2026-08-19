@@ -104,14 +104,23 @@ TEST_CASE("particles.attach.boneFollowsPose") {
     CHECK(std::fabs(e->getX() - 30.f) < 1e-3f);
     CHECK(std::fabs(e->getY() - 0.f) < 1e-3f);
 
+    // yz plane maps (x,y,z) → (y,z).
+    e->setAttachPlane("yz");
+    e->setAttachScale(1.f);
+    e->syncAttach();
+    CHECK(std::fabs(e->getX() - 41.f) < 1e-3f);
+    CHECK(std::fabs(e->getY() - 0.f) < 1e-3f);
+
     e->setAttachScale(2.f);
     e->setAttachPlane("xy");
     e->syncAttach();
     CHECK(std::fabs(e->getX() - 60.f) < 1e-3f);
     CHECK(std::fabs(e->getY() - 82.f) < 1e-3f);
 
+    CHECK_EQ(e->getAttachKind(), std::string("anim"));
     e->detach();
     CHECK(!e->isAttached());
+    CHECK_EQ(e->getAttachKind(), std::string("none"));
 }
 
 TEST_CASE("particles.attach.byNameAndOffset") {
@@ -158,6 +167,14 @@ TEST_CASE("particles.attach.followRotation") {
     e->attachToBone(pose.get(), root);
     CHECK(std::fabs(e->getDirection() - (3.14159265f * 0.5f)) < 0.05f);
     e->detach();
+
+    // Off keeps the configured direction unchanged under the same rotation.
+    ParticleEmitter *e2 = mod->newEmitter(4);
+    e2->setDirection(0.25f);
+    e2->setFollowBoneRotation(false);
+    e2->attachToBone(pose.get(), root);
+    CHECK(std::fabs(e2->getDirection() - 0.25f) < 1e-4f);
+    e2->detach();
 }
 
 TEST_CASE("particles.attach.emitsAtBone") {
@@ -205,8 +222,12 @@ TEST_CASE("particles.skin.surfaceEmitCesiumMan") {
     std::unique_ptr<AnimPose> pose(new AnimPose());
     clip->sample(0.f, pose.get(), skeleton.get());
     pose->computeWorld(skeleton.get());
+    CHECK(!skin->hasSkinnedPositions());
     REQUIRE(skin->updateSkinnedPositions(pose.get()));
     CHECK(skin->hasSkinnedPositions());
+    CHECK(std::isfinite(skin->getSkinnedPositionX(0)));
+    CHECK(std::isfinite(skin->getSkinnedPositionY(0)));
+    CHECK(std::isfinite(skin->getSkinnedPositionZ(0)));
 
     auto *mod = Particles::create();
     ParticleEmitter *e = mod->newEmitter(256);
@@ -252,29 +273,6 @@ TEST_CASE("particles.skin.surfaceEmitCesiumMan") {
     CHECK(!e->hasSkinSource());
 }
 
-TEST_CASE("particles.skin.skinnedCacheReadable") {
-    if (!ensureSkinnedAssets()) return;
-
-    std::unique_ptr<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_particles_skin_cache"));
-    REQUIRE(model.get() != nullptr);
-    const int meshIndex = findFirstSkinnedMesh(model.get());
-    REQUIRE(meshIndex >= 0);
-
-    std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
-    std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
-    std::unique_ptr<AnimPose> pose(new AnimPose());
-    skeleton->applyBindPose(pose.get());
-    pose->computeWorld(skeleton.get());
-
-    CHECK(!skin->hasSkinnedPositions());
-    REQUIRE(skin->updateSkinnedPositions(pose.get()));
-    CHECK(skin->hasSkinnedPositions());
-    CHECK(std::isfinite(skin->getSkinnedPositionX(0)));
-    CHECK(std::isfinite(skin->getSkinnedPositionY(0)));
-    CHECK(std::isfinite(skin->getSkinnedPositionZ(0)));
-}
-
 TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
     // Emit while the bone is moving — particles should form a trail of spawn positions.
     std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
@@ -310,27 +308,6 @@ TEST_CASE("particles.attach.animPoseDynamicEmitAcrossFrames") {
     CHECK(std::fabs(sim->particles[0].x - 10.f) < 1e-2f);
     CHECK(std::fabs(sim->particles[4].x - 90.f) < 1e-2f);
     e->detach();
-}
-
-TEST_CASE("particles.attach.yzPlaneAndDetachClearsKind") {
-    std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
-    const int root = sk->addBone("root", -1);
-    std::unique_ptr<AnimPose> pose(new AnimPose());
-    sk->applyBindPose(pose.get());
-    pose->setLocalPosition(root, 1.f, 2.f, 3.f);
-    pose->computeWorld(sk.get());
-
-    auto *mod = Particles::create();
-    ParticleEmitter *e = mod->newEmitter(4);
-    e->setAttachPlane("yz");
-    e->setAttachScale(1.f);
-    e->attachToBone(pose.get(), root);
-    CHECK(std::fabs(e->getX() - 2.f) < 1e-3f);
-    CHECK(std::fabs(e->getY() - 3.f) < 1e-3f);
-    CHECK_EQ(e->getAttachKind(), std::string("anim"));
-    e->detach();
-    CHECK(!e->isAttached());
-    CHECK_EQ(e->getAttachKind(), std::string("none"));
 }
 
 TEST_CASE("particles.attach.clipSampleMovesEmitter") {
@@ -420,20 +397,3 @@ TEST_CASE("particles.skin.emptyBoneFilterFallsBack") {
     e->detach();
 }
 
-TEST_CASE("particles.attach.followRotationOffKeepsDirection") {
-    std::unique_ptr<AnimSkeleton> sk(new AnimSkeleton());
-    const int root = sk->addBone("root", -1);
-    std::unique_ptr<AnimPose> pose(new AnimPose());
-    sk->applyBindPose(pose.get());
-    const float half = 0.70710678f;
-    pose->setLocalRotation(root, 0.f, 0.f, half, half);
-    pose->computeWorld(sk.get());
-
-    auto *mod = Particles::create();
-    ParticleEmitter *e = mod->newEmitter(4);
-    e->setDirection(0.25f);
-    e->setFollowBoneRotation(false);
-    e->attachToBone(pose.get(), root);
-    CHECK(std::fabs(e->getDirection() - 0.25f) < 1e-4f);
-    e->detach();
-}

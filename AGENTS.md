@@ -41,6 +41,14 @@ export ALSOFT_DRIVERS=null                                     # OpenAL Soft nul
 
 - Unit tests (full suite, ~1400 tests, a couple of minutes):
   `VK_ICD_FILENAMES=... ALSOFT_DRIVERS=... xvfb-run -a make test/linux-debug`
+- `make test/*` runs tests per case (process-isolated; this is the fast path on
+  CI) and injects fast headless defaults for ClassicScenes
+  (`VIEW_SECONDS=0.3`, `PERF_FRAMES=30`). "bundle/<file>" CTest entries exist
+  as an opt-in (`make test FILTER=bundle/<file>.cpp` or `ctest -L bundle`) —
+  do not make bundles the default: GPU/window tests were ~70x slower when
+  several shared one process on CI. Restore interactive view times with
+  `make test VIEW_SECONDS=4 PERF_FRAMES=120`. See
+  `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md`.
 - Run an example (long-lived GUI loop — use `timeout` for a smoke run):
   `cd examples/basic && VK_ICD_FILENAMES=... ALSOFT_DRIVERS=... XDG_RUNTIME_DIR=... xvfb-run -a ../../build/linux-debug/src/engine/eve run`
 - `scripts/smoke_examples.sh <name>` launches an example headless and greps for error
