@@ -528,6 +528,7 @@ struct CulledItem {
     Renderable3D::MeshRenderer *mr = nullptr;
     Mesh *mesh = nullptr;
     Material *material = nullptr;
+    Shader *shader = nullptr;  // effective mesh shader (material or legacy)
     glm::mat4 model{1.f};
     glm::vec3 worldC{0.f};  // world-space bounding-sphere center
     float worldR = 0.f;     // world-space bounding-sphere radius (0 = unknown → unculled)
@@ -664,6 +665,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                 item.mr = mr;
                 item.mesh = drawMesh;
                 item.material = mat;
+                item.shader = mat ? mat->effectiveShader() : mr->shader;
                 item.model = model;
                 item.distSq = distSq;
                 item.camIdx = camIdx;
@@ -774,6 +776,15 @@ void RenderSystem3D::render(Graphics &gfx) {
         if (!item.inView) continue;
         (item.hair ? hairItems : opaque).push_back(&item);
     }
+    // Opaque: group by (camera, shader, material, mesh) so the backend sees
+    // long runs of identical pipeline/descriptor state instead of thrashing
+    // between materials. Hair stays sorted back-to-front by distance below.
+    std::stable_sort(opaque.begin(), opaque.end(), [](const CulledItem *a, const CulledItem *b) {
+        if (a->camIdx != b->camIdx) return a->camIdx < b->camIdx;
+        if (a->shader != b->shader) return a->shader < b->shader;
+        if (a->material != b->material) return a->material < b->material;
+        return a->mesh < b->mesh;
+    });
     std::stable_sort(hairItems.begin(), hairItems.end(),
                      [](const CulledItem *a, const CulledItem *b) { return a->distSq > b->distSq; });
 
