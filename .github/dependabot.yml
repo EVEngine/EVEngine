@@ -1,0 +1,46 @@
+# Dependabot keeps third-party GitHub Actions and tooling manifests up to date.
+# GitHub Actions updates also cover SHA-pinned actions (commit-level updates).
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: "npm"
+    directory: "/tools/eve-mcp"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/tools/vscode-eve-debug"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/modelconverter/python"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/tools/creative-brain"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/tools/normal-crafter"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/tools/story-scene-agent"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/tools/vision-prefilter"
+    schedule:
+      interval: "weekly"
