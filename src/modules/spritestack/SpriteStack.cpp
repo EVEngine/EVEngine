@@ -825,7 +825,7 @@ void SpriteStack3D::render(graphics::Graphics *gfx, graphics::Camera3D *camera) 
     // Projected contact shadows: each slice silhouette squashed onto the ground
     // plane along the light direction, painted as a dark alpha blob.
     if (shadowEnabled_ && shadowLightY_ < -1e-4f) {
-        const ::Color shadowColor(0.f, 0.f, 0.f, shadowOpacity_);
+        const eve::graphics::Color shadowColor(0.f, 0.f, 0.f, shadowOpacity_);
         for (const auto &s : slices) {
             const SliceDraw shadow = makeShadowDraw(*this, s, eye);
             shader_->sendVec4("uvRect", s.uv.x, s.uv.y, s.uv.z, s.uv.w);
@@ -835,7 +835,7 @@ void SpriteStack3D::render(graphics::Graphics *gfx, graphics::Camera3D *camera) 
 
     // Stylized rim outline: expanded dark silhouettes behind the stack.
     if (outlineWidth_ > 0.f) {
-        const ::Color outlineColor(outlineR_, outlineG_, outlineB_, 1.f);
+        const eve::graphics::Color outlineColor(outlineR_, outlineG_, outlineB_, 1.f);
         for (const auto &s : slices) {
             const SliceDraw outline = makeOutlineDraw(*this, s, eye);
             shader_->sendVec4("uvRect", s.uv.x, s.uv.y, s.uv.z, s.uv.w);
@@ -846,7 +846,8 @@ void SpriteStack3D::render(graphics::Graphics *gfx, graphics::Camera3D *camera) 
     const glm::vec4 tint(tintR_, tintG_, tintB_, tintA_);
     for (const auto &s : slices) {
         shader_->sendVec4("uvRect", s.uv.x, s.uv.y, s.uv.z, s.uv.w);
-        gfx->drawMeshShader(quad_, s.model, s.texture, ::Color(tint.r, tint.g, tint.b, tint.a),
+        gfx->drawMeshShader(quad_, s.model, s.texture,
+                            eve::graphics::Color(tint.r, tint.g, tint.b, tint.a),
                             shader_);
     }
 }
@@ -864,9 +865,10 @@ uint32_t packTint(float r, float g, float b, float a) {
            uint32_t(clampf(a, 0.f, 1.f) * 255.f);
 }
 
-::Color unpackTint(uint32_t t) {
-    return ::Color(float((t >> 24) & 0xff) / 255.f, float((t >> 16) & 0xff) / 255.f,
-                   float((t >> 8) & 0xff) / 255.f, float(t & 0xff) / 255.f);
+eve::graphics::Color unpackTint(uint32_t t) {
+    return eve::graphics::Color(float((t >> 24) & 0xff) / 255.f,
+                                float((t >> 16) & 0xff) / 255.f,
+                                float((t >> 8) & 0xff) / 255.f, float(t & 0xff) / 255.f);
 }
 
 }  // namespace
@@ -938,12 +940,12 @@ void SpriteStackBatch::render(graphics::Graphics *gfx, graphics::Camera3D *camer
         GroupKey key{};
         struct ColoredSlice {
             SpriteStack3D::SliceDraw draw;
-            ::Color color{1.f, 1.f, 1.f, 1.f};
+            eve::graphics::Color color{1.f, 1.f, 1.f, 1.f};
         };
         std::vector<ColoredSlice> slices;
         uint64_t stamp = 0;
         float nearest = 1e30f;
-        ::Color color{1.f, 1.f, 1.f, 1.f};
+        eve::graphics::Color color{1.f, 1.f, 1.f, 1.f};
     };
     std::unordered_map<GroupKey, GroupBuild, GroupKeyHash> builds;
     for (SpriteStack3D *st : stacks_) {
@@ -952,16 +954,17 @@ void SpriteStackBatch::render(graphics::Graphics *gfx, graphics::Camera3D *camer
         SpriteStack3D::collectSlices(*st, eye, tmp);
         const uint64_t stamp = st->getVersion();
         std::vector<GroupBuild::ColoredSlice> colored;
-        const ::Color baseColor(st->tintR_, st->tintG_, st->tintB_, st->tintA_);
+        const eve::graphics::Color baseColor(st->tintR_, st->tintG_, st->tintB_, st->tintA_);
         for (const auto &s : tmp) colored.push_back({s, baseColor});
         if (st->shadowEnabled_ && st->shadowLightY_ < -1e-4f) {
-            const ::Color shadowColor(0.f, 0.f, 0.f, st->shadowOpacity_);
+            const eve::graphics::Color shadowColor(0.f, 0.f, 0.f, st->shadowOpacity_);
             for (const auto &s : tmp)
                 colored.push_back(
                     {SpriteStack3D::makeShadowDraw(*st, s, eye), shadowColor});
         }
         if (st->outlineWidth_ > 0.f) {
-            const ::Color outlineColor(st->outlineR_, st->outlineG_, st->outlineB_, 1.f);
+            const eve::graphics::Color outlineColor(st->outlineR_, st->outlineG_, st->outlineB_,
+                                                    1.f);
             for (const auto &s : tmp)
                 colored.push_back(
                     {SpriteStack3D::makeOutlineDraw(*st, s, eye), outlineColor});

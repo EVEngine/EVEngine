@@ -60,6 +60,7 @@ file(GLOB all_test_cpp
   inventory.cpp
   building.cpp
   buildingfx.cpp
+  card.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -84,6 +85,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   remotesync.cpp
   shader.cpp
+  hair.cpp
   grass.cpp
   spritestack.cpp
   daynight.cpp
@@ -101,6 +103,7 @@ file(GLOB all_test_cpp
   image.cpp
   event.cpp
   rx.cpp
+  runtime.cpp
   timer.cpp
   timer_cpp.cpp
   system.cpp
@@ -118,6 +121,7 @@ file(GLOB all_test_cpp
   tensor_quant.cpp
   callgraph.cpp
   renderflow.cpp
+  resource_lifetime.cpp
   debugger.cpp
   debugger_audit.cpp
   dap.cpp
@@ -165,12 +169,14 @@ if(EVENGINE_ANDROID_TEST_APP)
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
+  target_link_libraries(main eve_engine_includes)
 else()
   add_executable(
     unit_test
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
+  target_link_libraries(unit_test eve_engine_includes)
 endif()
 
 # Several tests include Poco headers (data, mcp, dap, remotesync). MSVC would
@@ -185,53 +191,9 @@ if(WIN32)
 endif()
 
 
-if(WIN32)
-  set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
-elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  find_library(ANDROID_LOG_LIB log)
-  find_library(ANDROID_LIB android)
-  find_library(ANDROID_OPENSLES_LIB OpenSLES)
-  set(SystemLibraries ${SystemLibraries}
-    ${ANDROID_LOG_LIB}
-    ${ANDROID_LIB}
-    ${ANDROID_OPENSLES_LIB}
-    dl
-    m
-    c++_shared
-  )
-elseif(APPLE)
-  set(SystemLibraries ${SystemLibraries}
-    dl pthread iconv
-    "-framework Cocoa"
-    "-framework IOKit"
-    "-framework ForceFeedback"
-    "-framework Carbon"
-    "-framework CoreVideo"
-    "-framework Metal"
-    "-framework QuartzCore"
-    "-framework AudioToolbox"
-    "-framework CoreAudio"
-    "-framework GameController"
-    "-framework CoreHaptics"
-    "-framework AVFoundation"
-    "-framework CoreMedia"
-    "-framework CoreFoundation"
-    "-framework Foundation"
-    "-framework OpenGL"
-  )
-elseif(UNIX)
-  set(SystemLibraries ${SystemLibraries}
-    dl pthread m rt bz2 png
-    X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
-    wayland-client wayland-cursor wayland-egl xkbcommon
-    asound
-  )
-  # OpenAL Soft may compile the sndio backend when libsndio-dev is present.
-  find_library(EVENGINE_SNDIO_LIBRARY sndio)
-  if(EVENGINE_SNDIO_LIBRARY)
-    list(APPEND SystemLibraries sndio)
-  endif()
-endif()
+# Platform system libraries, shared with the host binary
+# (see cmake/system_libraries.cmake).
+eve_append_system_libraries(SystemLibraries)
 
 # Windows lib names must match local + CI third-party install (md/mdd postfixes).
 # FreeType uses its own Debug postfix "d" (freetyped) and Release "md" (freetypemd).
@@ -321,6 +283,7 @@ set(EVELIBS
   EVInventory
   EVBuilding
   EVBuildingFx
+  EVCard
   EVAvatar
   EVDialogue
   EVProcgen

@@ -40,6 +40,9 @@ endif()
 # symbolized stack trace on crash; it is a host-only tool, not a game module.
 if(WIN32)
     add_library(EVBacktrace INTERFACE)
+    # backward.hpp lives in the third-party install; get its include dirs
+    # through the shared include target instead of global include_directories.
+    target_link_libraries(EVBacktrace INTERFACE eve_engine_includes)
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)
         # Prebuilt-install mode: point at the install tree directly.
         target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
@@ -53,80 +56,17 @@ if(WIN32)
     endif()
 endif()
 
-if(WIN32)
-    set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
-elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    find_library(ANDROID_LOG_LIB log)
-    find_library(ANDROID_LIB android)
-    find_library(ANDROID_OPENSLES_LIB OpenSLES)
-    set(SystemLibraries ${SystemLibraries}
-        ${ANDROID_LOG_LIB}
-        ${ANDROID_LIB}
-        ${ANDROID_OPENSLES_LIB}
-        dl
-        m
-        c++_shared
-    )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    # Emscripten exposes pthread/dl/GL as virtual libraries; nothing to link.
-    # Game-side threading is enabled through -sPROXY_TO_PTHREAD (platform/webgpu).
-    set(SystemLibraries ${SystemLibraries})
-elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(SystemLibraries ${SystemLibraries}
-        "-framework UIKit"
-        "-framework Foundation"
-        "-framework CoreFoundation"
-        "-framework Metal"
-        "-framework QuartzCore"
-        "-framework CoreGraphics"
-        "-framework AudioToolbox"
-        "-framework CoreAudio"
-        "-framework AVFoundation"
-        "-framework CoreMedia"
-        "-framework GameController"
-        "-framework CoreHaptics"
-        "-framework CoreMotion"
-        "-framework OpenGLES"
-        "-framework CoreBluetooth"
-        # Static MoltenVK references IOSurface APIs.
-        "-framework IOSurface"
-        iconv
-    )
-elseif(APPLE)
-    set(SystemLibraries ${SystemLibraries}
-        dl pthread iconv
-        "-framework Cocoa"
-        "-framework IOKit"
-        "-framework ForceFeedback"
-        "-framework Carbon"
-        "-framework CoreVideo"
-        "-framework Metal"
-        "-framework QuartzCore"
-        "-framework AudioToolbox"
-        "-framework CoreAudio"
-        "-framework GameController"
-        "-framework CoreHaptics"
-        "-framework AVFoundation"
-        "-framework CoreMedia"
-        "-framework CoreFoundation"
-        "-framework Foundation"
-        "-framework OpenGL"
-    )
-elseif(UNIX)
-    # Static SDL2 pulls Wayland/X11 extras; FreeType needs bz2/png.
-    set(SystemLibraries ${SystemLibraries}
-        dl pthread m rt bz2 png
-        X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
-        wayland-client wayland-cursor wayland-egl xkbcommon
-        asound
-    )
-    # OpenAL Soft may compile the sndio backend when libsndio-dev is present.
-    # GitHub Actions runners typically lack libsndio, so only link when found.
-    find_library(EVENGINE_SNDIO_LIBRARY sndio)
-    if(EVENGINE_SNDIO_LIBRARY)
-        list(APPEND SystemLibraries sndio)
-    endif()
+# Engine entry-point sources include common/config.h / cmdline/*.h directly;
+# link the shared include set explicitly (also propagates the third-party
+# link directories needed by the bare-name ${ThirdParty} list).
+if(TARGET ${EVENGINE_NATIVE_TARGET})
+    # Plain signature: the target's other links use the plain form.
+    target_link_libraries(${EVENGINE_NATIVE_TARGET} eve_engine_includes)
 endif()
+
+# Platform system libraries, shared with the unit-test runner
+# (see cmake/system_libraries.cmake).
+eve_append_system_libraries(SystemLibraries)
 
 # Third-party link list, derived from the module manifest: only the libraries
 # the enabled modules actually need, in the canonical order GNU ld requires.

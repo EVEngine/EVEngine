@@ -1,4 +1,5 @@
 #include "devtools/RenderVision.hpp"
+#include "devtools/Immortal.hpp"
 
 #include "filesystem/FileData.h"
 #include "graphics/Graphics.h"
@@ -77,9 +78,8 @@ std::string base64Encode(const void* data, size_t size) {
 }  // namespace
 
 RenderVision& RenderVision::instance() {
-    // Leaked like other DevTools singletons to avoid teardown-order issues.
-    static RenderVision* inst = new RenderVision();
-    return *inst;
+    // Process-immortal singleton; see devtools/Immortal.hpp.
+    return Immortal<RenderVision>::get();
 }
 
 void RenderVision::ensureEnvLocked() {

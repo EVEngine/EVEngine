@@ -78,6 +78,8 @@ public:
     static void setImGuiDrawer(ImGuiDrawer fn);
 
 private:
+    // Immortal<ConsolePanel> constructs the singleton (devtools/Immortal.hpp).
+    template <typename> friend struct Immortal;
     ConsolePanel() = default;
 
     static std::string nowStamp();

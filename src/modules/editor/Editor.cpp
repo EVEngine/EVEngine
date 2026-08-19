@@ -27,6 +27,7 @@ Module_IMPL(Editor, new Editor());
 #ifdef EVENGINE_HAS_PROCGEN
 namespace {
 
+#ifdef EVENGINE_HAS_PROCGEN
 struct HeightmapArrays {
     std::vector<float> pos;
     std::vector<float> nrm;
@@ -84,6 +85,7 @@ void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float h
         }
     }
 }
+#endif
 
 }  // namespace
 #endif

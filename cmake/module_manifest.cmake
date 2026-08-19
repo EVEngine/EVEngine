@@ -80,13 +80,9 @@ eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
                    GROUP 2d 3d web)
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
-eve_declare_module(NAME editor LAYER 0 SCRIPT Editor SLOT editor
-                   # Editor.cpp builds heightmap meshes with procgen::Heightmap
-                   # when procgen is available; procgen is not in the web
-                   # profile (its map dependency needs Poco), so the usage is
-                   # guarded by EVENGINE_HAS_PROCGEN.
-                   OPTIONAL_DEPS procgen
-                   GROUP 3d web)
+eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
+                   GROUP 3d web
+                   OPTIONAL_DEPS procgen)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
@@ -97,7 +93,7 @@ eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
 # THIRDPARTY poco is required so MSVC compiles those TUs with
 # POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of
 # PocoFoundationd.lib instead of the *mdd archive the third-party build emits.
-eve_declare_module(NAME building LAYER 0 SCRIPT Building
+eve_declare_module(NAME building LAYER 4 SCRIPT Building
                    DEPS grid data
                    THIRDPARTY poco)
 
@@ -122,7 +118,7 @@ eve_declare_module(NAME joystick LAYER 1 SCRIPT Joystick
                    DEPS event
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
-eve_declare_module(NAME model3d LIB EVModel3D LAYER 1 SCRIPT Model3D SLOT model3d
+eve_declare_module(NAME model3d LIB EVModel3D LAYER 4 SCRIPT Model3D SLOT model3d
                    DEPS filesystem
                    THIRDPARTY medialoader_model assimp
                    GROUP 3d)
@@ -209,8 +205,8 @@ eve_declare_module(NAME weather LAYER 4 SCRIPT Weather SLOT weather
 eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
                    GROUP 3d)
-eve_declare_module(NAME voxel LAYER 4 SCRIPT Voxel
-                   DEPS graphics
+eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
+                   DEPS graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
