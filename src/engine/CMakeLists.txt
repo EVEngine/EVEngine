@@ -35,15 +35,22 @@ else()
     set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 endif()
 
-# Crash-backtrace support from the prebuilt third-party install tree
-# (EVEngine/third-party → backward-cpp, MIT). The host binary installs an
-# unhandled-exception handler (main.cpp) that prints a symbolized stack trace
-# on crash; it is a host-only tool, not a game module.
-if(WIN32 AND EVENGINE_THIRD_PARTY_BINARY_DIR)
+# Crash-backtrace support (backward-cpp from EVEngine/third-party, MIT). The
+# host binary installs an unhandled-exception handler (main.cpp) that prints a
+# symbolized stack trace on crash; it is a host-only tool, not a game module.
+if(WIN32)
     add_library(EVBacktrace INTERFACE)
-    target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
-    target_link_libraries(EVBacktrace INTERFACE
-        ${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib/backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>.lib)
+    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+        # Prebuilt-install mode: point at the install tree directly.
+        target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
+        target_link_libraries(EVBacktrace INTERFACE
+            ${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib/backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>.lib)
+    else()
+        # ExternalProject mode (CI): the root CMakeLists already added the
+        # third-party install include/lib dirs to the global search paths.
+        target_link_libraries(EVBacktrace INTERFACE
+            backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>)
+    endif()
 endif()
 
 if(WIN32)
