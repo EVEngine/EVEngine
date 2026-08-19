@@ -96,7 +96,13 @@ echo "== [test-sdk] platform=$PLAT sdk=$SDK runtime=$RUNTIME =="
 [ -x "$SDK/bin/$RUNTIME" ] || fail "missing runtime bin/$RUNTIME"
 [ -d "$SDK/include/eve" ] || fail "missing include/eve"
 [ "$(find "$SDK/include/eve" -name '*.h' | wc -l)" -gt 0 ] || fail "no headers under include/eve"
-[ -d "$SDK/lib" ] || fail "missing lib/"
+case "$PLAT" in
+  win32|android)
+    # Windows ships eve.lib for plugins; Android ships libmain.so + packaging .so.
+    [ -d "$SDK/lib" ] || fail "missing lib/"
+    ;;
+  # linux/macosx have no engine import libs: plugins are built by the consumer.
+esac
 [ -f "$SDK/cmake/EVEngineConfig.cmake" ] || fail "missing cmake/EVEngineConfig.cmake"
 [ -f "$SDK/cmake/EVEnginePlugin.cmake" ] || fail "missing cmake/EVEnginePlugin.cmake"
 [ -d "$SDK/platform" ] || fail "missing platform/"
