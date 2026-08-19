@@ -23,12 +23,10 @@ FT_Library &ftLibrary() {
             if (FT_Init_FreeType(&lib) != 0)
                 lib = nullptr;
         }
-        // Deliberately no destructor (intentional leak): FontData instances are
-        // ref-counted and the unified resource cache keeps them alive until
-        // process exit. Static destruction order across TUs is unspecified, so
-        // calling FT_Done_FreeType here could destroy the library before a
-        // cached face's destructor runs FT_Done_Face on it. The library is
-        // small and reclaimed by the OS at exit.
+        ~Holder() {
+            if (lib)
+                FT_Done_FreeType(lib);
+        }
     } holder;
     return holder.lib;
 }

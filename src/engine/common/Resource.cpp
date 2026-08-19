@@ -6,9 +6,16 @@
 namespace eve {
 
 ResourceManager& ResourceManager::getInstance() {
-    static ResourceManager instance;
-    instance.ensureRegistered();
-    return instance;
+    // Intentionally leaked: cached CPU resources may own third-party handles
+    // (FreeType faces, Assimp scenes, image decode handlers) whose libraries
+    // are torn down at process exit in an unspecified TU order. Destroying
+    // cached entries from the singleton destructor can therefore crash at
+    // exit. Keeping the singleton alive until the OS reclaims it avoids
+    // exit-time destructors entirely; explicit unload()/clear() still release
+    // entries during the run.
+    static ResourceManager* instance = new ResourceManager();
+    instance->ensureRegistered();
+    return *instance;
 }
 
 std::string ResourceManager::normalizePath(std::string path) {

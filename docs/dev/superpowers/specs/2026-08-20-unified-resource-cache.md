@@ -60,6 +60,10 @@ virtual bool reload(const std::string& normPath) { return false; }
 `std::swap` 搬走 payload），再销毁被抽干的临时实例。这样所有既有持有者（裸指针、`eve::ref`、脚本
 实例）在热重载后仍指向有效对象，不需要 `Object::setUpdate` 的指针跳转机制，也不会悬垂。
 
+`ResourceManager` 单例**有意泄漏**（`new` 后从不 delete）：缓存条目可能持有第三方句柄
+（FreeType face、Assimp scene、图像解码器），这些库在进程退出时按未指定的 TU 顺序析构；从单例
+析构函数销毁缓存条目会在退出期崩溃。显式 `unload()` / `clear()` 在运行期仍会正常释放条目。
+
 四个子类的 `adopt`：
 
 | 资源 | 搬移内容 |
