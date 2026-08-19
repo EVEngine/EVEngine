@@ -14,7 +14,7 @@ namespace eve::gpgpu {
 class WebGpuGpuBuffer;
 
 /**
- * Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V
+ * @brief Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V
  * input is rejected (browsers only accept WGSL at runtime).
  */
 class WebGpuComputeShader final : public ComputeShader {
@@ -40,7 +40,7 @@ private:
     std::array<GpuBuffer *, kMaxBindings> bindings_{};
 };
 
-/** Storage / staging buffer for the WebGPU backend. */
+/** @brief Storage / staging buffer for the WebGPU backend. */
 class WebGpuGpuBuffer final : public GpuBuffer {
 public:
     WebGpuGpuBuffer() = default;

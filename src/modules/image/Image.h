@@ -12,7 +12,7 @@ namespace image
 {
 
 /**
- * This module is responsible for decoding files such as PNG, GIF, JPEG
+ * @brief This module is responsible for decoding files such as PNG, GIF, JPEG
  * into raw pixel data, as well as parsing compressed formats which are designed
  * to be uploaded to the GPU and rendered without being un-compressed.
  * This module does not know how to draw images on screen; only love.graphics
@@ -29,14 +29,14 @@ public:
 	virtual ~Image();
 
 	/**
-	 * Creates new ImageData from FileData.
+	 * @brief Creates new ImageData from FileData.
 	 * @param data The FileData containing the encoded image data.
 	 * @return The new ImageData.
 	 **/
 	ImageData *newImageData(Data *data);
 
 	/**
-	 * Creates empty ImageData with the given size.
+	 * @brief Creates empty ImageData with the given size.
 	 * @param width The width of the ImageData.
 	 * @param height The height of the ImageData.
 	 * @return The new ImageData.
@@ -44,7 +44,7 @@ public:
 	ImageData *newImageData(int width, int height, std::string format = "RGBA8");
 
 	/**
-	 * Creates empty ImageData with the given size.
+	 * @brief Creates empty ImageData with the given size.
 	 * @param width The width of the ImageData.
 	 * @param height The height of the ImageData.
 	 * @param data The data to load into the ImageData.
@@ -55,14 +55,14 @@ public:
 	ImageData *newImageData(int width, int height, std::string format, void *data, bool own = false);
 
 	/**
-	 * Creates new CompressedImageData from FileData.
+	 * @brief Creates new CompressedImageData from FileData.
 	 * @param data The FileData containing the compressed image data.
 	 * @return The new CompressedImageData.
 	 **/
 	// CompressedImageData *newCompressedData(Data *data);
 
 	/**
-	 * Determines whether a FileData is Compressed image data or not.
+	 * @brief Determines whether a FileData is Compressed image data or not.
 	 * @param data The FileData to test.
 	 **/
 	bool isCompressed(Data *data);

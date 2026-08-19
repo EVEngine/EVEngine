@@ -10,7 +10,7 @@ namespace eve {
 namespace thread {
 
 /**
- * Thread-safe message queue (love2d-style Channel).
+ * @brief Thread-safe message queue (love2d-style Channel).
  * Values are strings so the API stays overload-free for Squirrel bindings.
  * Exposed to scripts as "ThreadChannel" (network already owns "Channel").
  */
@@ -23,11 +23,11 @@ public:
     std::string getName() const;
 
     void push(std::string value);
-    /** Non-blocking pop; returns "" if empty. */
+    /** @brief Non-blocking pop; returns "" if empty. */
     std::string pop();
-    /** Block until a value is available, then pop it. */
+    /** @brief Block until a value is available, then pop it. */
     std::string demand();
-    /** Block up to timeoutMs; returns "" on timeout. */
+    /** @brief Block up to timeoutMs; returns "" on timeout. */
     std::string supply(int timeoutMs);
 
     bool hasData() const;

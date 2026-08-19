@@ -5,7 +5,7 @@
 namespace eve::ik {
 
 /**
- * Script-facing 2D skeleton + pose state (ik::skeleton2d + ik::ecs2d).
+ * @brief Script-facing 2D skeleton + pose state (ik::skeleton2d + ik::ecs2d).
  * Bone indices are stable after each createBone / topological refresh.
  * Root bone is always id 0.
  */
@@ -17,7 +17,7 @@ public:
     Skeleton2D(const Skeleton2D &)            = delete;
     Skeleton2D &operator=(const Skeleton2D &) = delete;
 
-    /** Create a child bone under parentId; returns new bone id. */
+    /** @brief Create a child bone under parentId; returns new bone id. */
     int createBone(int parentId, float length = 1.f);
 
     int getBoneCount() const;
@@ -37,11 +37,11 @@ public:
     float getOrientationX(int boneId) const;
     float getOrientationY(int boneId) const;
 
-    /** Local hinge angle (radians) relative to parent forward. */
+    /** @brief Local hinge angle (radians) relative to parent forward. */
     void  setRotation(int boneId, float angle);
     float getRotation(int boneId) const;
 
-    /** Joint limits for the single 2D hinge DOF. */
+    /** @brief Joint limits for the single 2D hinge DOF. */
     void setConstraints(int boneId, float minAngle, float maxAngle);
     void clearConstraints(int boneId);
     bool hasConstraints(int boneId) const;

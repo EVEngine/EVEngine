@@ -9,7 +9,7 @@
 namespace eve::editor {
 
 /**
- * 3D transform gizmo (Three.js TransformControls + ImGuizmo style).
+ * @brief 3D transform gizmo (Three.js TransformControls + ImGuizmo style).
  * Owns TRS + optional local bounds; interaction via world-space rays.
  * Host renders using getPart* descriptors — no GPU dependency.
  */
@@ -31,7 +31,7 @@ public:
     float getPositionY() const { return position_.y; }
     float getPositionZ() const { return position_.z; }
 
-    /** Euler radians, XYZ order. */
+    /** @brief Euler radians, XYZ order. */
     void setRotationEuler(float x, float y, float z);
     float getRotationX() const { return rotation_.x; }
     float getRotationY() const { return rotation_.y; }
@@ -42,7 +42,7 @@ public:
     float getScaleY() const { return scale_.y; }
     float getScaleZ() const { return scale_.z; }
 
-    /** Local AABB extents for bound mode (relative to object origin). */
+    /** @brief Local AABB extents for bound mode (relative to object origin). */
     void setBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
     float getBoundsMinX() const { return boundsMin_.x; }
     float getBoundsMinY() const { return boundsMin_.y; }
@@ -60,11 +60,11 @@ public:
     float getSnapRotate() const { return snapRotateDeg_; }
     float getSnapScale() const { return snapScale_; }
 
-    /** Column-major matrix element 0..15 of current TRS. */
+    /** @brief Column-major matrix element 0..15 of current TRS. */
     float getMatrix(int index) const;
 
     /**
-     * Ray pick against active mode handles.
+     * @brief Ray pick against active mode handles.
      * Returns axis id: "x"|"y"|"z"|"xy"|"yz"|"xz"|"xyz"|"bx"|…|"bz"|"" .
      */
     std::string pick(float ox, float oy, float oz, float dx, float dy, float dz);
@@ -79,7 +79,7 @@ public:
     std::string getActiveAxis() const { return activeAxis_; }
     std::string getHoverAxis() const { return hoverAxis_; }
 
-    /** Rebuild draw parts for current mode/space (call after TRS/mode change). */
+    /** @brief Rebuild draw parts for current mode/space (call after TRS/mode change). */
     void rebuildParts();
 
     int getPartCount() const { return static_cast<int>(parts_.size()); }

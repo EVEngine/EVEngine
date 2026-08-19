@@ -8,7 +8,7 @@
 
 namespace eve::graphics {
 
-/** Clustered forward grid (CPU assign, GPU consume). */
+/** @brief Clustered forward grid (CPU assign, GPU consume). */
 struct ClusteredLightConfig {
     static constexpr int kTilesX = 16;
     static constexpr int kTilesY = 9;
@@ -26,7 +26,7 @@ struct ClusterTableEntry {
 };
 
 /**
- * CPU-built clustered lighting upload for one frame/camera.
+ * @brief CPU-built clustered lighting upload for one frame/camera.
  * Point lights are clustered; directional lights become the primary dir (first by intensity).
  */
 struct ClusteredLightingUpload {
@@ -44,7 +44,7 @@ struct ClusteredLightingUpload {
 };
 
 /**
- * Build clustered tables for point lights in view space.
+ * @brief Build clustered tables for point lights in view space.
  * @param points  world-space point lights (posRadius.w = radius > 0)
  * @param dirs    world-space directional lights (optional; first becomes primary)
  */

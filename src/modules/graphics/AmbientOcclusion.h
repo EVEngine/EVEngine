@@ -11,7 +11,7 @@ class Shader;
 class Texture;
 
 /**
- * Screen-space ambient occlusion.
+ * @brief Screen-space ambient occlusion.
  *
  * Modes:
  *  - "ssao" — Crytek/Mittring hemisphere sampling
@@ -32,16 +32,16 @@ public:
     AmbientOcclusion(const AmbientOcclusion &) = delete;
     AmbientOcclusion &operator=(const AmbientOcclusion &) = delete;
 
-    /** "low" | "medium" | "high" (unknown → medium). */
+    /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
     std::string getQuality() const { return quality_; }
 
-    /** "ssao" | "hbao" | "gtao". */
+    /** @brief "ssao" | "hbao" | "gtao". */
     void setMode(const std::string &mode);
     std::string getMode() const { return mode_; }
 
     /**
-     * Camera for depth reconstruction (RH + ZO).
+     * @brief Camera for depth reconstruction (RH + ZO).
      * Builds inv(viewProj) and near/far used by compute*.
      */
     void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
@@ -70,31 +70,31 @@ public:
     float getDownscale() const { return downscale_; }
 
     /**
-     * Downscale helper: returns floor(dim / downscale), at least 1.
+     * @brief Downscale helper: returns floor(dim / downscale), at least 1.
      * Callers create AO canvases at this size for the active quality tier.
      */
     int resolutionFor(int fullSize) const;
 
     /**
-     * Compute AO into the currently bound canvas / screen.
+     * @brief Compute AO into the currently bound canvas / screen.
      * Output RGB = AO (1=open), A = depth01.
      */
     void compute(Graphics *gfx, Texture *linearDepth);
     void computeTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
-    /** Bilateral blur of an AO map (RGB=AO, A=depth). */
+    /** @brief Bilateral blur of an AO map (RGB=AO, A=depth). */
     void blur(Graphics *gfx, Texture *aoMap);
     void blurTo(Graphics *gfx, Texture *aoMap, Canvas *dest);
 
     /**
-     * Darken the current target with AO: black + alpha=(1-ao)*intensity.
+     * @brief Darken the current target with AO: black + alpha=(1-ao)*intensity.
      * Draw over an already-rendered scene (SrcAlpha blend).
      */
     void applyOverlay(Graphics *gfx, Texture *aoMap);
     void applyOverlayTo(Graphics *gfx, Texture *aoMap, Canvas *dest);
 
     /**
-     * One-pass SSAO overlay for the 3D swapchain path.
+     * @brief One-pass SSAO overlay for the 3D swapchain path.
      * Samples hardware D32 (Vulkan NDC z in .r) and darkens the already-drawn
      * scene. Optional worldNormal is GBuffer RGB = n*0.5+0.5; null reconstructs
      * from depth. Call after forward draws while the swapchain pass is still open.
@@ -105,7 +105,7 @@ public:
     void applyFromGBuffer(Graphics *gfx, Texture *hwDepth, Texture *worldNormal);
 
     /**
-     * Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
+     * @brief Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
      * Owned by Graphics (same convention as Volumetric).
      */
     Texture *newLinearDepthTexture(Graphics *gfx, int width, int height,

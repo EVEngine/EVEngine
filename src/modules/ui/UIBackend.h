@@ -10,7 +10,7 @@ class Graphics;
 namespace eve::ui {
 
 /**
- * Platform / renderer backend for declarative UI.
+ * @brief Platform / renderer backend for declarative UI.
  * Concrete implementations live under ui/<backend>/ (e.g. ui/imgui).
  */
 class UIBackend {
@@ -27,12 +27,12 @@ public:
     virtual bool wantCaptureMouse() const { return false; }
     virtual bool wantCaptureKeyboard() const { return false; }
 
-    /** Scale fonts + ImGui style metrics (1 = default desktop). */
+    /** @brief Scale fonts + ImGui style metrics (1 = default desktop). */
     virtual void setScale(float /*scale*/) {}
     virtual float getScale() const { return 1.f; }
 };
 
-/** Default backend: Dear ImGui + SDL + Vulkan (see ui/imgui/). */
+/** @brief Default backend: Dear ImGui + SDL + Vulkan (see ui/imgui/). */
 std::unique_ptr<UIBackend> createImGuiBackend();
 
 }  // namespace eve::ui

@@ -1,6 +1,7 @@
 #pragma once
 
 namespace eve {
+/** @brief 嵌入式脚本 / 着色器源码常量（构建时由集成脚本生成）。 */
 extern const char* boot_content;
 extern const char* load_content;
 /** Generated slot -> class table for the modules in this build. */

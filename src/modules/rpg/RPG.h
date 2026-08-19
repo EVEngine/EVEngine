@@ -1,14 +1,16 @@
 #pragma once
 
-// RPG 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。
-//
-// 各系统的完整设计说明见对应头文件：
-//   AttributeSystem.h / AttributeTypes.h — 属性
-//   Effect.h                             — 效果（数据驱动定义）
-//   StatusSystem.h / StatusTypes.h       — 状态（运行时实例，buff/debuff）
-//   Skill.h / SkillSystem.h / SkillTypes.h — 技能
-//   Settlement.h                         — 结算流水线
-// 以及总体设计文档：docs/2026-08-08-rpg-module-design.md
+/**
+ * @brief RPG 模块入口：属性 / 效果 / 状态 / 技能 / 结算五套系统的脚本绑定与帧调度点。
+ *
+ * 各系统的完整设计说明见对应头文件：
+ *   AttributeSystem.h / AttributeTypes.h — 属性
+ *   Effect.h                             — 效果（数据驱动定义）
+ *   StatusSystem.h / StatusTypes.h       — 状态（运行时实例，buff/debuff）
+ *   Skill.h / SkillSystem.h / SkillTypes.h — 技能
+ *   Settlement.h                         — 结算流水线
+ * 以及总体设计文档：docs/2026-08-08-rpg-module-design.md
+ */
 
 #include "common/Module.h"
 #include "rpg/RPGActor.h"
@@ -22,29 +24,30 @@ namespace eve::rpg {
 
 class SettlementContext;
 
+/** @brief RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。 */
 class RPG : public Module {
 public:
     Module_REG(RPG);
     RPG() = default;
     ~RPG() override = default;
 
-    // ---- Actor ----
+    /** @brief 创建一个空白 RPGActor。 */
     RPGActor *newActor();
 
-    // ---- Effect / Skill 定义（数据驱动，进程级注册表） ----
+    /** @brief 效果定义注册（数据驱动，进程级注册表）。 */
     int registerEffectsFromJson(const std::string &json);
     void clearEffectDefinitions();
     int getEffectDefinitionCount();
 
+    /** @brief 技能定义注册。 */
     int registerSkillsFromJson(const std::string &json);
     void clearSkillDefinitions();
     int getSkillDefinitionCount();
 
-    // ---- 帧调度 ----
-    /** 推进 StatusSystem / SkillSystem，并刷新本帧的 tick / change / cast 事件缓存。 */
+    /** @brief 推进 StatusSystem / SkillSystem，并刷新本帧的 tick / change / cast 事件缓存。 */
     void update(float dt);
 
-    // 周期状态 tick 事件（上一次 update() 产生的，供脚本轮询）
+    /** @brief 周期状态 tick 事件（上一次 update() 产生的，供脚本轮询）。 */
     int getTickEventCount() const;
     RPGActor *getTickEventActor(int index) const;
     int getTickEventInstanceId(int index) const;
@@ -52,7 +55,7 @@ public:
     std::string getTickEventSource(int index) const;
     int getTickEventStacks(int index) const;
 
-    // 状态生命周期变更事件（apply/refresh/extend/stack/remove/expire/reject）
+    /** @brief 状态生命周期变更事件（apply/refresh/extend/stack/remove/expire/reject）。 */
     int getStatusChangeEventCount() const;
     RPGActor *getStatusChangeEventActor(int index) const;
     int getStatusChangeEventInstanceId(int index) const;
@@ -62,13 +65,13 @@ public:
     int getStatusChangeEventStacks(int index) const;
     std::string getStatusChangeEventReason(int index) const;
 
-    // 技能释放结算事件
+    /** @brief 技能释放结算事件。 */
     int getCastEventCount() const;
     RPGActor *getCastEventCaster(int index) const;
     RPGActor *getCastEventTarget(int index) const;
     std::string getCastEventSkillId(int index) const;
 
-    // ---- 结算 ----
+    /** @brief 结算：新建上下文 / 运行流水线 / 配置阶段。 */
     SettlementContext *newSettlementContext();
     void runSettlement(const std::string &pipeline, SettlementContext *ctx);
     int getSettlementStageCount(const std::string &pipeline);

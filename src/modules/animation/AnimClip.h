@@ -11,7 +11,7 @@ class AnimPose;
 class AnimSkeleton;
 
 /**
- * Keyframed skeletal animation clip (local TRS tracks per bone).
+ * @brief Keyframed skeletal animation clip (local TRS tracks per bone).
  * Script type: `AnimClip`.
  */
 class AnimClip {
@@ -31,7 +31,7 @@ public:
     void setLoop(bool loop) { loop_ = loop; }
     bool getLoop() const { return loop_; }
 
-    /** Sample rate hint used by MotionDatabase baking (Hz). */
+    /** @brief Sample rate hint used by MotionDatabase baking (Hz). */
     void  setSampleRate(float hz);
     float getSampleRate() const { return sampleRate_; }
 
@@ -60,19 +60,19 @@ public:
     float getScaleKeyZ(int boneIndex, int keyIndex) const;
 
     /**
-     * Bake planar root motion onto an existing position track (or create one).
+     * @brief Bake planar root motion onto an existing position track (or create one).
      * For each position key at time t: x += speedX * t, z += speedZ * t.
      * Useful when source clips are Mixamo in-place locomotion.
      */
     void applyPlanarRootMotion(int boneIndex, float speedX, float speedZ);
 
     /**
-     * Sample local pose at time (seconds). If skeleton non-null, missing tracks
+     * @brief Sample local pose at time (seconds). If skeleton non-null, missing tracks
      * fall back to bind pose; otherwise identity.
      */
     void sample(float time, AnimPose *out, const AnimSkeleton *skeleton = nullptr) const;
 
-    /** Wrap or clamp time according to loop flag. */
+    /** @brief Wrap or clamp time according to loop flag. */
     float wrapTime(float time) const;
 
 private:

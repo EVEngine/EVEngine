@@ -6,6 +6,7 @@
 namespace eve::touch::sdl
 {
 
+/** @brief SDL 触摸后端实现（状态由事件驱动更新）。 */
 class Touch : public eve::touch::Touch
 {
 public:
@@ -14,11 +15,7 @@ public:
 	const std::vector<TouchInfo> &getTouches() const override;
 	const TouchInfo &getTouch(int64_t id) const override;
 
-	// SDL has functions to query the state of touch presses, but unfortunately
-	// they are updated on a different thread in some backends, which causes
-	// issues especially if the user is iterating through the current touches
-	// when they're updated. So we only update our touch press state in
-	// love::event::sdl::Event::convert.
+	/** @brief 由事件转换器在 SDL 事件回调中更新触点状态（见事件模块）。 */
 	void onEvent(uint32_t eventtype, const TouchInfo &info);
 
 private:

@@ -9,7 +9,7 @@
 namespace eve::ui {
 
 /**
- * React-style UI component: implement build(), call setState / markDirty, then rebuild().
+ * @brief React-style UI component: implement build(), call setState / markDirty, then rebuild().
  * Mounts onto a named UIHost via mountAs / attach.
  */
 class Component {
@@ -22,17 +22,17 @@ public:
     void mountAs(const std::string &hostName);
     UIHost *host() const { return host_; }
 
-    /** Rebuild tree onto host (reconcile by key when possible). */
+    /** @brief Rebuild tree onto host (reconcile by key when possible). */
     void rebuild(bool forceFull = false);
 
     void markDirty() { dirty_ = true; }
     bool isDirty() const { return dirty_; }
 
-    /** If dirty, rebuild and clear flag. Returns true if rebuilt. */
+    /** @brief If dirty, rebuild and clear flag. Returns true if rebuilt. */
     bool updateIfDirty();
 
 protected:
-    /** Subclasses call after mutating local state that affects build(). */
+    /** @brief Subclasses call after mutating local state that affects build(). */
     void setState() { dirty_ = true; }
 
 private:

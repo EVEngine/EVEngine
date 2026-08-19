@@ -115,7 +115,8 @@ GAME ?=
 	reinstall/third-party/macosx reinstall/third-party/macosx-debug \
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
-	link-compile-commands download-classic-scenes download-skinned-character
+	link-compile-commands download-classic-scenes download-skinned-character \
+	docs
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
 all: $(ALL_DEBUG_TARGETS)
@@ -491,6 +492,28 @@ download-classic-scenes:
 # Fetch CesiumMan (~0.5 MB) for animation.skinned.* skeletal skinning tests.
 download-skinned-character:
 	bash scripts/download_skinned_character.sh
+
+# ---- API documentation (Doxygen) ----
+#   make docs                 # generate docs/api/html from src/ + Doxyfile
+#   make docs CLEAN_DOCS=1    # remove the previous output first
+# Output is git-ignored (docs/api/); open docs/api/html/index.html afterwards.
+CLEAN_DOCS ?= 0
+
+docs: docs/api/html/index.html
+	@echo "API docs generated -> docs/api/html/index.html"
+
+docs/api/html/index.html: Doxyfile
+	@if command -v doxygen >/dev/null 2>&1; then \
+		if [ "$(CLEAN_DOCS)" = "1" ]; then rm -rf docs/api; fi; \
+		mkdir -p docs/api; \
+		doxygen Doxyfile; \
+	else \
+		echo "doxygen is not installed; install it first:"; \
+		echo "  Ubuntu/Debian/WSL: sudo apt install doxygen"; \
+		echo "  macOS:             brew install doxygen"; \
+		echo "  Windows:           choco install doxygen"; \
+		exit 1; \
+	fi
 
 # Optional name-prefix filter for platform targets: make test FILTER=graphics.print
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')

@@ -4,6 +4,7 @@
 
 namespace eve::keyboard::sdl {
 
+/** @brief SDL 键盘后端实现。 */
 class Keyboard : public eve::keyboard::Keyboard {
 public:
     Keyboard();

@@ -15,7 +15,7 @@ class Mesh;
 class Texture;
 
 /**
- * Flowing waterfall (falling water sheet) rendered on a vertical plane.
+ * @brief Flowing waterfall (falling water sheet) rendered on a vertical plane.
  *
  * A custom Mesh3D fragment shader renders a vertical XY plane (facing +Z) as
  * falling water:
@@ -39,32 +39,32 @@ public:
     Waterfall(const Waterfall &) = delete;
     Waterfall &operator=(const Waterfall &) = delete;
 
-    /** Build a vertical XY plane (facing +Z, Y-up world) sized w×h, UVs [0,1]². */
+    /** @brief Build a vertical XY plane (facing +Z, Y-up world) sized w×h, UVs [0,1]². */
     void createSheet(float width, float height, int segX, int segY);
 
-    /** Advance the animation clock by dt seconds. */
+    /** @brief Advance the animation clock by dt seconds. */
     void update(float dt);
     void setTime(float seconds);
     float getTime() const { return time_; }
 
     // --- Animation / material knobs ---
-    /** Fall speed of the water (scales the downward scroll). */
+    /** @brief Fall speed of the water (scales the downward scroll). */
     void setFlowSpeed(float speed);
     float getFlowSpeed() const { return flowSpeed_; }
 
-    /** Amount of turbulence / white-water streak in the body. */
+    /** @brief Amount of turbulence / white-water streak in the body. */
     void setTurbulence(float t);
     float getTurbulence() const { return turbulence_; }
 
-    /** How many layered falling streaks are drawn. */
+    /** @brief How many layered falling streaks are drawn. */
     void setStreakCount(int count);
     int getStreakCount() const { return streakCount_; }
 
-    /** Horizontal stretch of the falling streaks (1 = circular, >1 elongated). */
+    /** @brief Horizontal stretch of the falling streaks (1 = circular, >1 elongated). */
     void setStreakScale(float scale);
     float getStreakScale() const { return streakScale_; }
 
-    /** Relative height (0..1) of the top foam lip and bottom splash bands. */
+    /** @brief Relative height (0..1) of the top foam lip and bottom splash bands. */
     void setTopFoam(float v);
     float getTopFoam() const { return topFoam_; }
     void setBottomFoam(float v);
@@ -78,16 +78,16 @@ public:
     void setSunIntensity(float intensity);
     float getSunIntensity() const { return sunIntensity_; }
 
-    /** Upload current params to the shader push constants. */
+    /** @brief Upload current params to the shader push constants. */
     void bindParams();
 
-    /** Draw the waterfall sheet (uses default mesh3d camera / lighting state). */
+    /** @brief Draw the waterfall sheet (uses default mesh3d camera / lighting state). */
     void draw();
 
     Shader *getShader() const { return shader_; }
     Mesh *getMesh() const { return mesh_; }
 
-    /** Names of the push-constant parameters (for UI / inspection). */
+    /** @brief Names of the push-constant parameters (for UI / inspection). */
     static int paramCount();
     static std::string paramName(int index);
 
@@ -109,7 +109,7 @@ private:
     float sunIntensity_ = 0.8f;
 };
 
-/** Create the embedded waterfall fragment shader (owned by Graphics). */
+/** @brief Create the embedded waterfall fragment shader (owned by Graphics). */
 Shader *newWaterfallShader(Graphics *gfx);
 
 }  // namespace eve::graphics

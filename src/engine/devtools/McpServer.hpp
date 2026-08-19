@@ -21,7 +21,7 @@ class StreamSocket;
 namespace eve::dev {
 
 /**
- * Embedded Model Context Protocol (MCP) server for AI-assisted game development.
+ * @brief Embedded Model Context Protocol (MCP) server for AI-assisted game development.
  *
  * Speaks JSON-RPC 2.0 over TCP with newline-delimited messages (same wire shape
  * as MCP stdio; no embedded newlines in payloads). Start with listen(port)
@@ -41,10 +41,10 @@ public:
 
     enum class Transport { None, Tcp, Stdio };
 
-    /** Bind TCP listen port (0 = ephemeral). Returns bound port or 0 on failure. */
+    /** @brief Bind TCP listen port (0 = ephemeral). Returns bound port or 0 on failure. */
     int  listen(uint16_t port);
     /**
-     * Switch to stdio transport (MCP stdio server). A reader thread pulls
+     * @brief Switch to stdio transport (MCP stdio server). A reader thread pulls
      * newline-delimited JSON from `in` into a queue that poll() drains on the
      * caller thread, so tool execution stays on the main / render thread.
      * Responses are written to `out` (stdout by default — keep it MCP-only).
@@ -56,13 +56,13 @@ public:
     int  port() const { return port_.load(); }
     bool hasClient() const { return hasClient_.load(); }
     Transport transport() const { return transport_.load(); }
-    /** True once the stdio input reached EOF (host should exit). */
+    /** @brief True once the stdio input reached EOF (host should exit). */
     bool stdinClosed() const { return stdinClosed_.load(); }
 
-    /** Accept clients + process one request batch (non-blocking). */
+    /** @brief Accept clients + process one request batch (non-blocking). */
     void poll();
 
-    /** Game / project directory hint for agents. */
+    /** @brief Game / project directory hint for agents. */
     void setGameRoot(std::string root);
     const std::string& gameRoot() const { return gameRoot_; }
 

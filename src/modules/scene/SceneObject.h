@@ -10,7 +10,7 @@
 namespace eve::scene {
 
 /**
- * Per-node ECS identity (created lazily when a node needs script bindings or
+ * @brief Per-node ECS identity (created lazily when a node needs script bindings or
  * engine components). A node's stable string id (hostName + nodeId) is mirrored
  * here so ECS systems can address scene nodes and vice versa.
  *

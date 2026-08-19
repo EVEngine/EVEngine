@@ -5,7 +5,7 @@
 
 namespace eve::dev {
 
-/** Thin hooks so McpServer.cpp need not include DevTool.hpp (avoids a cycle). */
+/** @brief Thin hooks so McpServer.cpp need not include DevTool.hpp (avoids a cycle). */
 bool               mcpDevAttached();
 std::size_t        mcpCallgraphEvents();
 std::size_t        mcpCallgraphStackDepth();

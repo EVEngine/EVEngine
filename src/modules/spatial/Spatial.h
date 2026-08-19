@@ -12,7 +12,7 @@ class BSPTree2D;
 class BSPTree3D;
 
 /**
- * Spatial index module — broad-phase / map culling structures.
+ * @brief Spatial index module — broad-phase / map culling structures.
  * Script: `spatial <- eve.Spatial();`
  *
  * Provides 2D/3D QuadTree, Octree, SpatialHash, and BSP (kd-style) factories.

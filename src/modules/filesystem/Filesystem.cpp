@@ -7,6 +7,7 @@
 #include <cstring>
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include "common/Assert.h"
 #include "filesystem/physfs/Filesystem.h"
 
 #if defined(EVENGINE_MACOSX)
@@ -85,6 +86,8 @@ void Filesystem::expose(ssq::Class &cls) {
 }
 
 FileData *Filesystem::newFileData(const void *data, std::string filename, size_t size) const {
+    const bool validData = size == 0 || data != nullptr;
+    EV_PARAM_CHECK(validData, "file data must not be null when size > 0");
     FileData *fd = new FileData(std::string(filename), size);
     memcpy(fd->getData(), data, size);
     return fd;

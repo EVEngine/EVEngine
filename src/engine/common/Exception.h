@@ -17,7 +17,7 @@ public:
 	virtual ~Exception() throw();
 
     /**
-	 * Returns a string containing reason for the exception.
+	 * @brief Returns a string containing reason for the exception.
 	 * @return A description of the exception.
 	 **/
 	inline virtual const char *what() const throw()

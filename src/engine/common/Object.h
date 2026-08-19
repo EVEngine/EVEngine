@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Assert.h"
+
 #include <type_traits>
 
 namespace eve
@@ -22,7 +24,10 @@ public:
      * You don't need to care about the reference to the old object
      * since it will be automatically updated in the ref smart pointer.
      */
-    void setUpdate(Object *update) { this->update = update; }
+    void setUpdate(Object *update) {
+        EV_PARAM_CHECK(update != nullptr, "replacement object must not be null");
+        this->update = update;
+    }
 
 protected:
     virtual ~Object() {}
