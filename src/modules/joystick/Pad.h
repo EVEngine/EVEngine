@@ -6,7 +6,7 @@
 namespace eve::joystick {
 
 /**
- * One connected (or previously connected) joystick / gamepad device.
+ * @brief One connected (or previously connected) joystick / gamepad device.
  * Gamepad axis/button names follow SDL GameController strings
  * (e.g. "leftx", "a", "dpup"). Hat directions: c/u/d/l/r/lu/ld/ru/rd.
  */

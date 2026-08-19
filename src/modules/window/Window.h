@@ -17,6 +17,10 @@ class ImageData;
 
 namespace window {
 
+/**
+ * @brief Display settings for window creation/resize.
+ * width/height == 0 selects the desktop display mode size.
+ */
 struct WindowSettings {
     float    refreshrate   = 0.0;
     float    dpi_scale     = 1.0;
@@ -42,6 +46,10 @@ struct WindowSettings {
     bool     always_on_top = false;
 };
 
+/**
+ * @brief Platform window interface (SDL implementation on desktop/mobile).
+ * Script: `win <- eve.Window();`
+ */
 class Window : public Module {
 public:
     Module_REG(Window);
@@ -65,65 +73,97 @@ public:
 
     virtual ~Window() {}
 
+    /** @brief Attaches the graphics backend that will own the window's Vulkan surface. */
     virtual void setGraphics(graphics::Graphics* graphics) = 0;
 
+    /** @brief Requests a new logical window size. */
     virtual void setSize(int width, int height) = 0;
     virtual int  getWidth() const               = 0;
     virtual int  getHeight() const              = 0;
 
+    /** @brief Applies a full WindowSettings struct (recreates the window when needed). */
     virtual bool           setWindowSettings(WindowSettings settings) = 0;
     virtual WindowSettings getWindowSettings()                        = 0;
 
+    /** @brief Closes and destroys the underlying window. */
     virtual void close() = 0;
 
+    /** @brief Switches between desktop fullscreen and windowed mode. */
     virtual bool setFullscreenDesktop(bool fullscreen)   = 0;
+    /** @brief Switches between exclusive fullscreen and windowed mode. */
     virtual bool setFullscreenExclusive(bool fullscreen) = 0;
 
     virtual bool isOpen() const = 0;
 
+    /** @brief Sets the window title shown in the OS title bar. */
     virtual void               setWindowTitle(const std::string& title) = 0;
     virtual const std::string& getWindowTitle() const                   = 0;
+    /** @brief Moves the window to a position in logical units on the given display. */
     virtual void               setPosition(int x, int y, int display)   = 0;
+    /** @brief Reads the current window position and display index. */
     virtual void               getPosition(int& x, int& y, int& display) = 0;
+    /** @brief Minimizes / maximizes / restores the window. */
     virtual void               minimize()                               = 0;
     virtual void               maximize()                               = 0;
     virtual void               restore()                                = 0;
     virtual bool               isMaximized() const                      = 0;
     virtual bool               isMinimized() const                      = 0;
+    /** @brief True when the window has keyboard focus. */
     virtual bool               hasFocus() const                         = 0;
+    /** @brief True when the window has mouse focus. */
     virtual bool               hasMouseFocus() const                    = 0;
     virtual bool               isVisible() const                        = 0;
+    /** @brief Enables/disables vertical sync (0 = off, 1 = on). */
     virtual void               setVSync(int vsync)                      = 0;
     virtual int                getVSync() const                         = 0;
 
+    /** @brief Framebuffer (pixel) dimensions of the window. */
     virtual int    getPixelWidth() const  = 0;
     virtual int    getPixelHeight() const = 0;
+    /** @brief Current UI/logical DPI scale (1.0 on non-retina displays). */
     virtual double getDPIScale() const    = 0;
+    /** @brief Native DPI scale reported by the OS for this window. */
     virtual double getNativeDPIScale() const = 0;
+    /** @brief Converts window logical coordinates to framebuffer pixel coordinates. */
     virtual void   windowToPixelCoords(double* x, double* y) const = 0;
+    /** @brief Converts framebuffer pixel coordinates to window logical coordinates. */
     virtual void   pixelToWindowCoords(double* x, double* y) const = 0;
+    /** @brief Converts window logical coordinates to UI-DPI coordinates. */
     virtual void   windowToDPICoords(double* x, double* y) const   = 0;
+    /** @brief Converts UI-DPI coordinates to window logical coordinates. */
     virtual void   DPIToWindowCoords(double* x, double* y) const     = 0;
+    /** @brief Scales a logical length to UI pixels (and back). */
     virtual double toPixels(double x) const                          = 0;
     virtual double fromPixels(double x) const                        = 0;
+    /** @brief Vector variants of the coordinate conversions above. */
     virtual void   toPixelsXY(double wx, double wy, double& px, double& py) const   = 0;
     virtual void   fromPixelsXY(double px, double py, double& wx, double& wy) const = 0;
 
-    /** Native window handle (SDL_Window* on SDL backend). */
+    /** @brief Native window handle (SDL_Window* on SDL backend). */
     virtual void *getHandle() const = 0;
 
+    /** @brief Number of displays attached to the system. */
     virtual int                     getDisplayCount() const                      = 0;
+    /** @brief Human-readable display name for a display index. */
     virtual std::string             getDisplayName(int display) const            = 0;
+    /** @brief Display orientation string (e.g. "landscape"). */
     virtual std::string             getDisplayOrientation(int display) const     = 0;
+    /** @brief Fullscreen sizes supported by a display. */
     virtual std::vector<WindowSize> getFullscreenSizes(int display) const        = 0;
+    /** @brief Desktop resolution of a display. */
     virtual void getDesktopDimensions(int display, int& width, int& height) const = 0;
 
+    /** @brief Shows a modal message box ("info", "warning", or "error"). */
     virtual bool showMessageBox(const std::string& title, const std::string& message,
                                 const std::string& type, bool attachToWindow) = 0;
+    /** @brief Shows a configurable message box; returns the pressed button index. */
     virtual int  showMessageBoxData(const MessageBoxData& data) = 0;
+    /** @brief Requests OS attention (flashing taskbar); continuous repeats until focused. */
     virtual void requestAttention(bool continuous) = 0;
 
+    /** @brief Sets the window icon from raw pixel data. */
     virtual bool              setIcon(image::ImageData *image_data) = 0;
+    /** @brief Currently set window icon, or nullptr. */
     virtual image::ImageData *getIcon() const                       = 0;
 
     // --- not yet implemented (kept as drafts) ---

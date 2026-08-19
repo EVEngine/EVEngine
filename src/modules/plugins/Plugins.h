@@ -7,16 +7,18 @@
 
 namespace eve::plugins {
 
-// Loads native shared libraries (dll / so / dylib) that export eve_plugin_init.
+/** @brief 加载导出 eve_plugin_init 的原生动态库（dll / so / dylib）。 */
 class Plugins : public Module {
 public:
     Module_REG(Plugins);
     Plugins();
     ~Plugins() override;
 
-    // Absolute or game-relative path. Returns true on success.
+    /** @brief 加载插件；路径可为绝对路径或游戏相对路径。 */
     bool load(const std::string& path);
+    /** @brief 卸载插件。 */
     bool unload(const std::string& path);
+    /** @brief 插件是否已加载。 */
     bool isLoaded(const std::string& path) const;
 
 private:

@@ -10,11 +10,12 @@
 namespace eve::spatial {
 
 /**
- * Region octree for 3D AABB broad-phase / scene culling.
+ * @brief Region octree for 3D AABB broad-phase / scene culling.
  * Same storage rules as QuadTree (smallest fully-containing node).
  */
 class Octree {
 public:
+    /** @brief 创建覆盖 [minX..maxX]×[minY..maxY]×[minZ..maxZ] 的八叉树。 */
     Octree(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
            int maxDepth = 8, int maxPerNode = 8);
     ~Octree() = default;
@@ -22,20 +23,27 @@ public:
     Octree(const Octree &)            = delete;
     Octree &operator=(const Octree &) = delete;
 
+    /** @brief 清空全部对象。 */
     void clear();
+    /** @brief 插入一个 AABB 对象；false 表示越界或已存在。 */
     bool insert(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /** @brief 移除 / 更新一个对象。 */
     bool remove(int id);
     bool update(int id, float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /** @brief 对象是否存在。 */
     bool contains(int id) const;
     int  getCount() const { return static_cast<int>(items_.size()); }
 
+    /** @brief 查询：点 / AABB / 球体，命中写入结果缓冲区。 */
     int queryPoint(float x, float y, float z);
     int queryAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
     int querySphere(float cx, float cy, float cz, float radius);
 
+    /** @brief 最近一次查询的结果。 */
     int getResultCount() const { return results_.getCount(); }
     int getResultId(int index) const { return results_.getId(index); }
 
+    /** @brief 根包围盒与分裂参数。 */
     float getMinX() const { return rootBounds_.minX; }
     float getMinY() const { return rootBounds_.minY; }
     float getMinZ() const { return rootBounds_.minZ; }

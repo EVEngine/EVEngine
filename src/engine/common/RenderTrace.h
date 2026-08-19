@@ -7,7 +7,7 @@
 namespace eve::debug {
 
 /**
- * Optional render-pipeline tracer. Graphics / RenderSystem call the rt* helpers;
+ * @brief Optional render-pipeline tracer. Graphics / RenderSystem call the rt* helpers;
  * when no tracer is installed they are cheap null checks (Android/iOS keep this
  * unset because EVDevTools is not linked there).
  */
@@ -52,7 +52,7 @@ inline void rtError(const char* message) {
     if (IRenderTracer* t = renderTracer()) t->error(message ? message : "");
 }
 
-/** RAII pass scope for C++ call sites. */
+/** @brief RAII pass scope for C++ call sites. */
 class RenderPassScope {
 public:
     explicit RenderPassScope(const char* name) : name_(name ? name : "") {

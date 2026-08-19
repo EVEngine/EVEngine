@@ -10,7 +10,7 @@ class Cloth;
 class Fluid;
 
 /**
- * Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive cloth / SPH fluid.
+ * @brief Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive cloth / SPH fluid.
  * Script: `physics <- eve.Physics(); world <- physics.newWorld(0, 900);`
  *         `world3 <- physics.newWorld3D(0, -9.8, 0);`
  */
@@ -20,12 +20,12 @@ public:
     Physics() = default;
     ~Physics() override = default;
 
-    /** Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE). */
+    /** @brief Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE). */
     void  setMeter(float pixelsPerMeter);
     float getMeter() const;
 
     /**
-     * Create a 2D Box2D physics world.
+     * @brief Create a 2D Box2D physics world.
      * @param gravityX gravity X in pixels/s²
      * @param gravityY gravity Y in pixels/s²
      * @param sleep allow sleeping bodies
@@ -33,7 +33,7 @@ public:
     World *newWorld(float gravityX, float gravityY, bool sleep = true);
 
     /**
-     * Create a 3D Box3D physics world.
+     * @brief Create a 3D Box3D physics world.
      * Coordinates are meters (Box3D native); +Y is up by convention.
      * @param gravityX gravity X in m/s²
      * @param gravityY gravity Y in m/s²
@@ -43,7 +43,7 @@ public:
     World3D *newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep = true);
 
     /**
-     * Create a Verlet cloth grid (top row pinned).
+     * @brief Create a Verlet cloth grid (top row pinned).
      * @param cols columns (>= 2)
      * @param rows rows (>= 2)
      * @param spacing particle spacing in pixels
@@ -53,7 +53,7 @@ public:
     Cloth *newCloth(int cols, int rows, float spacing, float originX, float originY);
 
     /**
-     * Create an SPH fluid container with particle capacity.
+     * @brief Create an SPH fluid container with particle capacity.
      * @param capacity max particles (>= 1)
      */
     Fluid *newFluid(int capacity = 512);

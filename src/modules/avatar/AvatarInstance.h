@@ -19,7 +19,7 @@ class Tween;
 
 namespace eve::avatar {
 
-/** Optional Live2D runtime backend (Cubism etc.). Registered from C++ / plugins. */
+/** @brief Optional Live2D runtime backend (Cubism etc.). Registered from C++ / plugins. */
 class ILive2DBackend {
 public:
     virtual ~ILive2DBackend() = default;
@@ -30,14 +30,14 @@ public:
     virtual float getParameter(const std::string &name) const = 0;
     virtual bool setExpression(const std::string &name) = 0;
     virtual bool setMotion(const std::string &name) = 0;
-    /** Optional: push drawables into the 2D queue. Default no-op. */
+    /** @brief Optional: push drawables into the 2D queue. Default no-op. */
     virtual void collectDrawItems(std::vector<graphics::DrawItem2D> & /*out*/) {}
 };
 
 using Live2DBackendFactory = ILive2DBackend *(*)();
 
 /**
- * Unified avatar instance. Kind is a string: "image" | "live2d" | "vroid".
+ * @brief Unified avatar instance. Kind is a string: "image" | "live2d" | "vroid".
  * Script-facing API avoids overloads; kind-specific methods no-op / return false
  * when unsupported.
  */
@@ -78,7 +78,7 @@ public:
     std::string getParameterName(int index) const;
 
     void update(float dt);
-    /** Push image / live2d layers into ECS or draw queues. */
+    /** @brief Push image / live2d layers into ECS or draw queues. */
     void sync();
 
     void release();
@@ -94,7 +94,7 @@ public:
     int getLayerCount() const;
     std::string getLayerName(int index) const;
     bool hasLayer(const std::string &name) const;
-    /** Spec: "eyes=1;mouth=smile;blush=0" (semicolon-separated name=value). */
+    /** @brief Spec: "eyes=1;mouth=smile;blush=0" (semicolon-separated name=value). */
     bool defineExpression(const std::string &name, const std::string &spec);
     bool applyExpression(const std::string &name);
 
@@ -106,7 +106,7 @@ public:
     // ---- vroid kind ----
     bool loadVroidModelPath(const std::string &path);
     bool bindVroidModelData(model3d::ModelData *data);
-    /** Register morph target names from ModelData as parameters (weights default 0). */
+    /** @brief Register morph target names from ModelData as parameters (weights default 0). */
     int loadMorphNamesFromModel(int meshIndex = 0);
     void setMesh(graphics::Mesh *mesh);
     void setTexture(graphics::Texture *texture);
@@ -116,11 +116,11 @@ public:
     graphics::Renderable3D *getRenderable3D() const { return renderable3d_; }
     graphics::Mesh *getBoundMesh() const;
     std::string getVroidModelPath() const { return vroidPath_; }
-    /** Push parameter weights onto Mesh morphs and bake GPU verts when possible. */
+    /** @brief Push parameter weights onto Mesh morphs and bake GPU verts when possible. */
     bool bakeMorphs();
 
     // ---- animation tween binding ----
-    /** Drive x/y/sx/sy and matching parameters from a Tween each update(). */
+    /** @brief Drive x/y/sx/sy and matching parameters from a Tween each update(). */
     void bindTween(animation::Tween *tween);
     void unbindTween();
     animation::Tween *getBoundTween() const { return tween_; }

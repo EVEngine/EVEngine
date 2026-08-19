@@ -5,7 +5,7 @@
 
 namespace eve::editor {
 
-/** Tool strip state for assembling editor chrome with `ui`. */
+/** @brief Tool strip state for assembling editor chrome with `ui`. */
 class EditorToolbar {
 public:
     void clear();

@@ -12,7 +12,7 @@ class Func;
 class CompiledFunction;
 
 /**
- * TF2-like namespace module. Script: `tf <- eve.TF();`
+ * @brief TF2-like namespace module. Script: `tf <- eve.TF();`
  * Default eager; `tf.func()` traces a graph for compile/run.
  */
 class TF : public Module {

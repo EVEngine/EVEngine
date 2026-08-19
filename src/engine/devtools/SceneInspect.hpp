@@ -15,7 +15,7 @@ class Camera3D;
 namespace eve::dev {
 
 /**
- * 场景巡检工具集（MCP 底层数据底座）。
+ * @brief 场景巡检工具集（MCP 底层数据底座）。
  *
  * 提供原子化的相机控制 + 渲染帧捕获 + 可见实体三维几何快照，保证图像与
  * 3D 几何数据严格同步（同一次相机位姿下抓帧并导出配套几何 JSON）。
@@ -33,7 +33,7 @@ struct EVENGINE_API InspectView {
     float       fovYDeg = 60.f;
 };
 
-/** 一次原子快照的结果：PNG 渲染帧 + 配套几何 JSON。 */
+/** @brief 一次原子快照的结果：PNG 渲染帧 + 配套几何 JSON。 */
 struct EVENGINE_API InspectCapture {
     bool        ok = false;
     std::string error;
@@ -59,7 +59,7 @@ public:
 
     // ---------- 多机位自动采样 ----------
     /**
-     * 围绕 center 自动生成一组标准化巡检机位：
+     * @brief 围绕 center 自动生成一组标准化巡检机位：
      *   - along_road  沿路平视：低机位、贴近目标、视线水平略前倾
      *   - bird_eye    高空俯拍：目标正上方垂直俯拍
      *   - corner_close 拐角特写：贴近目标、斜向特写、较窄 FOV
@@ -69,10 +69,10 @@ public:
     static std::vector<InspectView> generateViews(const glm::vec3& center, float fov = 60.f);
 
     // ---------- 相机位姿 ----------
-    /** 查找当前激活的 Camera3D；不存在则惰性创建一个（作为渲染机位）。 */
+    /** @brief 查找当前激活的 Camera3D；不存在则惰性创建一个（作为渲染机位）。 */
     graphics::Camera3D* findOrCreateCamera();
     /**
-     * 以 pos + 欧拉角 rot 设置相机位姿。
+     * @brief 以 pos + 欧拉角 rot 设置相机位姿。
      * rot = [yawDeg, pitchDeg]（与 firstperson 约定一致，Y-up）。
      * fov <= 0 时保持当前 FOV。
      */
@@ -81,7 +81,7 @@ public:
 
     // ---------- 原子快照（渲染帧 + 几何 JSON） ----------
     /**
-     * 锁定当前相机 → 捕获渲染帧 PNG → 立刻导出配套可见实体几何 JSON。
+     * @brief 锁定当前相机 → 捕获渲染帧 PNG → 立刻导出配套可见实体几何 JSON。
      * 两者共享同一相机位姿，杜绝图片与实体数据错位。
      * outDir 为空时使用缓存目录。返回文件路径与图像尺寸。
      * buffers 可选值："color"(默认, 帧) | "depth" | "normal" | "id"(渲染 ID mask)
@@ -92,22 +92,22 @@ public:
 
     // ---------- 可见实体三维几何快照 ----------
     /**
-     * 生成当前视锥内可见实体的结构化 JSON：
+     * @brief 生成当前视锥内可见实体的结构化 JSON：
      *   { camera, viewport, entities:[ { id, asset, world_aabb:{min,max},
      *     screen_bbox:{x,y,w,h} } ] }
      * 位姿可用 camera 指定，否则回退到当前激活相机。
      */
     std::string visibleEntitiesJson(const glm::vec3* eye = nullptr,
                                     const glm::vec3* target = nullptr, float fov = 0.f);
-    /** 当前激活相机位姿 JSON（eye/target/fov/viewport）。 */
+    /** @brief 当前激活相机位姿 JSON（eye/target/fov/viewport）。 */
     std::string currentPoseJson();
 
     // ---------- 快照持久化 / 临时缓存 ----------
     void setCacheDir(std::string dir) { cacheDir_ = std::move(dir); }
     const std::string& cacheDir() const { return cacheDir_; }
-    /** 默认缓存目录：<gameRoot>/eve_inspect_cache。 */
+    /** @brief 默认缓存目录：<gameRoot>/eve_inspect_cache。 */
     std::string defaultCacheDir() const;
-    /** 最近一次快照的 PNG / JSON 路径（供后续读取）。 */
+    /** @brief 最近一次快照的 PNG / JSON 路径（供后续读取）。 */
     const std::string& lastPngPath() const { return lastPngPath_; }
     const std::string& lastJsonPath() const { return lastJsonPath_; }
 

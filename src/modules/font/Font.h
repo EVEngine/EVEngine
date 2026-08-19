@@ -11,7 +11,7 @@ class Data;
 namespace font {
 
 /**
- * Resource module for decoding TrueType / OpenType fonts via FreeType.
+ * @brief Resource module for decoding TrueType / OpenType fonts via FreeType.
  * Produces FontData (CPU metrics + glyph raster); GPU upload/draw is graphics'.
  */
 class Font : public Module {
@@ -22,14 +22,14 @@ public:
     ~Font() override;
 
     /**
-     * Decode a font from in-memory bytes at the given pixel size.
+     * @brief Decode a font from in-memory bytes at the given pixel size.
      * @param data Encoded font bytes (e.g. FileData / ByteData).
      * @param size Pixel height (default 16).
      */
     FontData *newFontData(Data *data, int size = 16);
 
     /**
-     * Decode a font from a VFS path (physfs) at the given pixel size.
+     * @brief Decode a font from a VFS path (physfs) at the given pixel size.
      */
     FontData *newFontDataFromFile(std::string path, int size = 16);
 };

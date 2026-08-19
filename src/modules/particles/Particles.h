@@ -12,7 +12,7 @@ class Graphics;
 namespace eve::particles {
 
 /**
- * Particles module — factory + script binding.
+ * @brief Particles module — factory + script binding.
  * Per-frame: ParticleConfigSystem (hot reload) → ParticleSimSystem →
  * ParticleRenderSystem. Module `update`/`render` forward to Systems.
  */
@@ -23,12 +23,12 @@ public:
     ~Particles() override = default;
 
     ParticleEmitter *newEmitter(int bufferSize = 1000);
-    /** Create emitter from JSON config file (reads optional "buffer"). */
+    /** @brief Create emitter from JSON config file (reads optional "buffer"). */
     ParticleEmitter *newEmitterFromFile(const std::string &path);
 
     void update(float dt);
     void render(graphics::Graphics *gfx);
-    /** Explicit hot-reload poll; also invoked from update(). */
+    /** @brief Explicit hot-reload poll; also invoked from update(). */
     int pollConfigs();
 
     int getEmitterCount() const;

@@ -11,7 +11,7 @@ class Graphics;
 namespace eve::weather {
 
 /**
- * Weather module — real-time precipitation / lightning / wind system.
+ * @brief Weather module — real-time precipitation / lightning / wind system.
  *
  * Drives a set of camera-facing Renderable3D meshes (rain streaks, snow
  * flakes, lightning bolts) whose geometry is animated in the vertex shader
@@ -35,9 +35,9 @@ public:
     Weather();
     ~Weather() override;
 
-    /** Idempotent; builds meshes/shaders on first call. */
+    /** @brief Idempotent; builds meshes/shaders on first call. */
     void init(graphics::Graphics *gfx);
-    /** Advance sim + push per-frame uniforms; must run before gfx.render3D(). */
+    /** @brief Advance sim + push per-frame uniforms; must run before gfx.render3D(). */
     void update(float dt, graphics::Graphics *gfx);
 
     // ---- presets ----
@@ -51,16 +51,16 @@ public:
     float getIntensity() const;
     void setWindSpeed(float v);
     float getWindSpeed() const;
-    /** Wind direction in degrees; 0 = toward +Z, 90 = toward -X. */
+    /** @brief Wind direction in degrees; 0 = toward +Z, 90 = toward -X. */
     void setWindDirection(float degrees);
     float getWindDirection() const;
 
     // ---- lightning ----
     void setLightningEnabled(bool on);
     bool isLightningEnabled() const;
-    /** Force a bolt strike this frame (useful for manual testing). */
+    /** @brief Force a bolt strike this frame (useful for manual testing). */
     void strike();
-    /** How bright the current flash is (0..1), sampled by the scene for a key light. */
+    /** @brief How bright the current flash is (0..1), sampled by the scene for a key light. */
     float getFlash() const;
 
     // ---- mood (sky / fog), read by the example to tint the scene ----
@@ -77,7 +77,7 @@ public:
     void setFogDensity(float v);
     float getFogDensity() const;
 
-    /** Ambient multiplier that the example should feed into camera.setAmbient(). */
+    /** @brief Ambient multiplier that the example should feed into camera.setAmbient(). */
     float getAmbientBrightness() const;
 
 private:

@@ -14,7 +14,7 @@ class Shader;
 class Texture;
 
 /**
- * Volumetric light + fog.
+ * @brief Volumetric light + fog.
  *
  * Modes:
  *  - "screenspace" — Mitchell radial blur god rays (+ dust/fog tint)
@@ -32,34 +32,34 @@ public:
     Volumetric(const Volumetric &) = delete;
     Volumetric &operator=(const Volumetric &) = delete;
 
-    /** "low" | "medium" | "high" (unknown → medium). */
+    /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
     std::string getQuality() const { return quality_; }
 
-    /** "screenspace" | "raymarch" | "fog" — selects which shader params quality tweaks. */
+    /** @brief "screenspace" | "raymarch" | "fog" — selects which shader params quality tweaks. */
     void setMode(const std::string &mode);
     std::string getMode() const { return mode_; }
 
-    /** Light position in UV (0..1), origin top-left to match 2D UVs. */
+    /** @brief Light position in UV (0..1), origin top-left to match 2D UVs. */
     void setLightScreenUV(float u, float v);
     float getLightScreenU() const;
     float getLightScreenV() const;
 
-    /** Pixel-space helper (converts with width/height). */
+    /** @brief Pixel-space helper (converts with width/height). */
     void setLightScreenPos(float x, float y, float width, float height);
 
-    /** World-space direction toward the lit surface (ray march / phase). */
+    /** @brief World-space direction toward the lit surface (ray march / phase). */
     void setLightDirection(float dx, float dy, float dz);
 
     /**
-     * Camera for ray march reconstruction (RH + ZO).
+     * @brief Camera for ray march reconstruction (RH + ZO).
      * Builds inv(viewProj) and near/far used by rayMarch*.
      */
     void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
                    float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ,
                    float farZ);
 
-    /** Raw inverse view-projection (column-major, matching glm). */
+    /** @brief Raw inverse view-projection (column-major, matching glm). */
     void setInvViewProj(const glm::mat4 &invViewProj);
 
     void setShaftColor(float r, float g, float b);
@@ -68,10 +68,10 @@ public:
     void setTime(float seconds);
     void setDensity(float density);
 
-    /** Height fog: denser near world Y = fogHeight; falloff is 1/meters scale. */
+    /** @brief Height fog: denser near world Y = fogHeight; falloff is 1/meters scale. */
     void setFogHeight(float worldY);
     void setFogHeightFalloff(float falloff);
-    /** View-distance ramp where fog appears (world units along the ray). */
+    /** @brief View-distance ramp where fog appears (world units along the ray). */
     void setFogStart(float startDistance);
     void setFogEnd(float endDistance);
     void setFogNoise(float amount);
@@ -84,37 +84,37 @@ public:
     float getDownscale() const { return downscale_; }
 
     /**
-     * Clear the current canvas to black and draw a bright light disc
+     * @brief Clear the current canvas to black and draw a bright light disc
      * (start of an occlusion map). Call drawOcclusion* afterward.
      */
     void beginOcclusionMap(Graphics *gfx, float lightPixelX, float lightPixelY,
                            float lightRadiusPixels = 24.f);
 
-    /** Drawable occlusion (respects Drawable::getCastOcclusion). */
+    /** @brief Drawable occlusion (respects Drawable::getCastOcclusion). */
     void drawOccluder(Graphics *gfx, Drawable *drawable, const glm::mat4 &matrix);
 
-    /** Convenience 2D black silhouette (solid or textured alpha). */
+    /** @brief Convenience 2D black silhouette (solid or textured alpha). */
     void drawOccluderSolid(Graphics *gfx, float x, float y, float w, float h);
     void drawOccluderTexture(Graphics *gfx, Texture *texture, float x, float y, float w, float h);
 
     /**
-     * Scatter-only: occlusion → shafts with alpha (draw over a prior scene).
+     * @brief Scatter-only: occlusion → shafts with alpha (draw over a prior scene).
      * Writes to the currently bound canvas / screen.
      */
     void scatter(Graphics *gfx, Texture *occlusion);
 
-    /** Same as scatter but into an explicit destination. */
+    /** @brief Same as scatter but into an explicit destination. */
     void scatterTo(Graphics *gfx, Texture *occlusion, Canvas *dest);
 
     /**
-     * Single-pass: treat source as the scene (bright regions ≈ light),
+     * @brief Single-pass: treat source as the scene (bright regions ≈ light),
      * add shafts + dust/fog onto it. Writes to current canvas.
      */
     void applyFromScene(Graphics *gfx, Texture *scene);
     void applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest);
 
     /**
-     * Ray march participating media using a linear-depth texture (R channel,
+     * @brief Ray march participating media using a linear-depth texture (R channel,
      * 0=near .. 1=far). Screen-space steps toward light UV approximate CSM
      * occlusion. Call setCamera / setLightDirection / setLightScreenUV first.
      */
@@ -122,7 +122,7 @@ public:
     void rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
-     * Volumetric height/distance fog from a linear-depth texture.
+     * @brief Volumetric height/distance fog from a linear-depth texture.
      * Writes fog RGB with alpha = 1-transmittance (overlay with alpha blend).
      * Call setCamera / setFogHeight* / setFogStart/End first.
      */
@@ -130,21 +130,21 @@ public:
     void applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
-     * Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
+     * @brief Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
      * depth01(x,y) should return values in [0,1]. Owned by Graphics.
      */
     Texture *newLinearDepthTexture(Graphics *gfx, int width, int height,
                                    float (*depth01)(int x, int y, void *userdata), void *userdata);
 
     /**
-     * Downscale helper: returns floor(dim / downscale), at least 1.
+     * @brief Downscale helper: returns floor(dim / downscale), at least 1.
      * Callers create occlusion / scatter canvases at this size for the
      * active quality tier.
      */
     int resolutionFor(int fullSize) const;
 
     /**
-     * Draw all visible Renderable2D with castOcclusion into the current canvas
+     * @brief Draw all visible Renderable2D with castOcclusion into the current canvas
      * as black silhouettes (shadow-analogue occlusion pass).
      */
     void drawOccluders2D(Graphics *gfx);

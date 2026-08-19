@@ -37,13 +37,13 @@ public:
     bool isValid() const { return valid_; }
     std::string getReason() const { return reason_; }
 
-    /** 按世界吸附模式，从世界坐标刷新格子与世界位姿。 */
+    /** @brief 按世界吸附模式，从世界坐标刷新格子与世界位姿。 */
     void setFromWorld(PlacementWorld *world, float worldX, float worldY);
     /** 3D 版本：真实世界坐标 (wx, wy, wz)，按世界平面轴映射后吸附。 */
     void setFromWorld3D(PlacementWorld *world, float worldX, float worldY, float worldZ);
     /** 通过注册的放置表面（如内置 "plane"）刷新位姿。 */
     void setFromSurface(PlacementWorld *world, const std::string &surface, float x, float y);
-    /** 对当前姿态做校验，写入 valid_/reason_。 */
+    /** @brief 对当前姿态做校验，写入 valid_/reason_。 */
     bool validate(PlacementWorld *world);
 
 private:
