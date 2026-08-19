@@ -2,7 +2,9 @@ enable_testing()
 
 file(GLOB all_test_cpp
   ECS.cpp
+  capability.cpp
   data.cpp
+  json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
   graphic.cpp
@@ -61,6 +63,8 @@ file(GLOB all_test_cpp
   i18n_script.cpp
   avatar.cpp
   dialogue.cpp
+  dialogue_proc.cpp
+  dialogue_proc_script.cpp
   procgen.cpp
   housegen.cpp
   housegen_render.cpp
@@ -109,6 +113,8 @@ file(GLOB all_test_cpp
   animation_skinned.cpp
   animation_sprite_spine.cpp
   tensor.cpp
+  tensor_llm.cpp
+  tensor_quant.cpp
   callgraph.cpp
   renderflow.cpp
   debugger.cpp
@@ -137,6 +143,7 @@ file(GLOB all_test_scripts
   filesystem.nut
   graphic.nut
   i18n.nut
+  dialogue_proc_script.nut
   model.nut
   model2.nut
   mouse.nut
@@ -163,6 +170,17 @@ else()
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
+endif()
+
+# Several tests include Poco headers (data, mcp, dap, remotesync). MSVC would
+# otherwise #pragma-comment PocoFoundationd.lib, which the third-party prefix
+# does not ship (it installs PocoFoundationmdd.lib).
+if(WIN32)
+  if(EVENGINE_ANDROID_TEST_APP)
+    target_compile_definitions(main PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  else()
+    target_compile_definitions(unit_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
 endif()
 
 

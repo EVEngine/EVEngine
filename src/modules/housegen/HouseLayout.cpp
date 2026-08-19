@@ -13,9 +13,7 @@
 #include <assimp/matrix4x4.h>
 #include <assimp/scene.h>
 #include <assimp/texture.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
+#include "common/Json.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -132,19 +130,47 @@ std::string HouseLayout::toJson() const {
 }
 
 bool HouseLayout::fromJson(const std::string &json, std::string *error) {
-    try {
-        Poco::JSON::Parser parser; auto o = parser.parse(json).extract<Poco::JSON::Object::Ptr>();
-        HouseLayout parsed;
-        parsed.seed = o->optValue<unsigned>("seed", 1); parsed.moduleSize = o->optValue<float>("moduleSize", 1.f); parsed.floorHeight = o->optValue<float>("floorHeight", 3.f);
-        parsed.footprintStyle = o->optValue<std::string>("footprintStyle", "rectangle");
-        parsed.roofStyle = o->optValue<std::string>("roofStyle", "gable");
-        parsed.entranceSide = o->optValue<std::string>("entranceSide", "north");
-        auto a = o->getArray("instances"); if (!a) { if (error) *error = "layout has no instances"; return false; }
-        for (size_t i = 0; i < a->size(); ++i) { auto v = a->getObject(i); parsed.instances.push_back({v->getValue<std::string>("componentId"), v->getValue<int>("x"), v->getValue<int>("y"), v->getValue<int>("z"), v->optValue<int>("rotationDeg", 0)}); }
-        if (auto rs = o->getArray("rooms")) for (size_t i = 0; i < rs->size(); ++i) { auto v = rs->getObject(i); parsed.rooms.push_back({v->getValue<std::string>("type"), v->getValue<int>("x"), v->getValue<int>("y"), v->getValue<int>("width"), v->getValue<int>("depth")}); }
-        if (auto ds = o->getArray("diagnostics")) for (size_t i = 0; i < ds->size(); ++i) parsed.diagnostics.push_back(ds->getElement<std::string>(i));
-        *this = std::move(parsed); return true;
-    } catch (const std::exception &e) { if (error) *error = e.what(); return false; }
+    using eve::json::Value;
+    const eve::json::Document doc = eve::json::Document::parse(json, error);
+    if (!doc.valid()) return false;
+    const Value o = doc.root();
+    if (!o.isObject()) { if (error) *error = "layout must be an object"; return false; }
+
+    HouseLayout parsed;
+    parsed.seed = static_cast<unsigned>(o.getInt("seed", 1));
+    parsed.moduleSize = o.getFloat("moduleSize", 1.f);
+    parsed.floorHeight = o.getFloat("floorHeight", 3.f);
+    parsed.footprintStyle = o.getString("footprintStyle", "rectangle");
+    parsed.roofStyle = o.getString("roofStyle", "gable");
+    parsed.entranceSide = o.getString("entranceSide", "north");
+
+    const Value instances = o.get("instances");
+    if (!instances.isArray()) { if (error) *error = "layout has no instances"; return false; }
+    for (size_t i = 0; i < instances.size(); ++i) {
+        const Value v = instances.at(i);
+        // componentId and the cell coordinates are required, not defaulted.
+        if (!v.has("componentId") || !v.has("x") || !v.has("y") || !v.has("z")) {
+            if (error) *error = "instance needs componentId, x, y and z";
+            return false;
+        }
+        parsed.instances.push_back({v.getString("componentId"), v.getInt("x"), v.getInt("y"),
+                                    v.getInt("z"), v.getInt("rotationDeg", 0)});
+    }
+
+    const Value rooms = o.get("rooms");
+    for (size_t i = 0; i < rooms.size(); ++i) {
+        const Value v = rooms.at(i);
+        if (!v.has("type") || !v.has("x") || !v.has("y") || !v.has("width") || !v.has("depth")) {
+            if (error) *error = "room needs type, x, y, width and depth";
+            return false;
+        }
+        parsed.rooms.push_back({v.getString("type"), v.getInt("x"), v.getInt("y"),
+                                v.getInt("width"), v.getInt("depth")});
+    }
+
+    parsed.diagnostics = o.getStringArray("diagnostics");
+    *this = std::move(parsed);
+    return true;
 }
 
 bool HouseLayout::validate(const HouseComponentLibrary &library, std::string *error) const {

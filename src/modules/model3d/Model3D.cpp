@@ -1,5 +1,6 @@
 #include "model3d/Model3D.h"
 #include "model3d/EveFileSystem.h"
+#include "model3d/ModelRenderer.h"
 
 #include "common/Data.h"
 #include "common/Exception.h"
@@ -120,6 +121,15 @@ ModelData *Model3D::newModelDataFromFile(std::string path, const ModelLoadOption
     }
 }
 
+graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, ModelData *model,
+                                                  int meshIndex) {
+    if (!gfx)
+        throw eve::Exception("Model3D::createRenderable: null Graphics");
+    if (!model)
+        throw eve::Exception("Model3D::createRenderable: null ModelData");
+    return buildRenderable(*gfx, model, meshIndex);
+}
+
 void Model3D::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Model3D::create, false);
     expose(cls);
@@ -133,6 +143,24 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
+    md.addFunc("getMaterialIndex", &ModelData::getMaterialIndex);
+    md.addFunc("getMaterialName", &ModelData::getMaterialName);
+    md.addFunc("getMaterialBaseColorR", &ModelData::getMaterialBaseColorR);
+    md.addFunc("getMaterialBaseColorG", &ModelData::getMaterialBaseColorG);
+    md.addFunc("getMaterialBaseColorB", &ModelData::getMaterialBaseColorB);
+    md.addFunc("getMaterialBaseColorA", &ModelData::getMaterialBaseColorA);
+    md.addFunc("getMaterialMetallicFactor", &ModelData::getMaterialMetallicFactor);
+    md.addFunc("getMaterialRoughnessFactor", &ModelData::getMaterialRoughnessFactor);
+    md.addFunc("getMaterialOpacity", &ModelData::getMaterialOpacity);
+    md.addFunc("getMaterialTwoSided", &ModelData::getMaterialTwoSided);
+    md.addFunc("getMaterialTextureSlotCount", &ModelData::getMaterialTextureSlotCount);
+    md.addFunc("getMaterialTexturePath", &ModelData::getMaterialTexturePath);
+    md.addFunc("getMaterialTextureEmbeddedIndex", &ModelData::getMaterialTextureEmbeddedIndex);
+    md.addFunc("getEmbeddedTextureCount", &ModelData::getEmbeddedTextureCount);
+    md.addFunc("getEmbeddedTextureName", &ModelData::getEmbeddedTextureName);
+    md.addFunc("getEmbeddedTextureWidth", &ModelData::getEmbeddedTextureWidth);
+    md.addFunc("getEmbeddedTextureHeight", &ModelData::getEmbeddedTextureHeight);
+    md.addFunc("getEmbeddedTextureImageData", &ModelData::getEmbeddedTextureImageData);
     md.addFunc("getMorphTargetCount", &ModelData::getMorphTargetCount);
     md.addFunc("getMorphTargetName", &ModelData::getMorphTargetName);
     md.addFunc("hasBones", &ModelData::hasBones);
@@ -144,6 +172,16 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getBoneWeightValue", &ModelData::getBoneWeightValue);
     md.addFunc("getAnimationCount", &ModelData::getAnimationCount);
     md.addFunc("getAnimationName", &ModelData::getAnimationName);
+
+    // Minimal ImageData surface so getEmbeddedTextureImageData results are
+    // usable from scripts (same pattern as the Font module).
+    auto img = table.addClass<image::ImageData>(
+        "ImageData", std::function<image::ImageData *()>([]() -> image::ImageData * { return nullptr; }),
+        true);
+    img.addFunc("getWidth", &image::ImageData::getWidth);
+    img.addFunc("getHeight", &image::ImageData::getHeight);
+    img.addFunc("getFormat", &image::ImageData::getFormat);
+    img.addFunc("getSize", &image::ImageData::getSize);
 }
 
 void Model3D::expose(ssq::Class &cls) {
@@ -152,6 +190,7 @@ void Model3D::expose(ssq::Class &cls) {
                                     &Model3D::newModelData));
     cls.addFunc("newModelDataFromFile",
                 static_cast<ModelData *(Model3D::*)(std::string)>(&Model3D::newModelDataFromFile));
+    cls.addFunc("createRenderable", &Model3D::createRenderable);
 }
 
 }  // namespace model3d

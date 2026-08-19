@@ -13,15 +13,16 @@
 #include <unordered_map>
 #include <vector>
 
-namespace eve::graphics {
-class Texture;
-}
-
 namespace eve::filesystem {
 
 /**
- * Lightweight path→reload registry for soft hot reload.
+ * Path→reload dispatcher for soft hot reload.
  * Driven from load.nut via pollWatch → tryReload; also used by watchTree.
+ *
+ * What a given file means is not known here. Modules that own an asset kind
+ * register an eve::caps::IAssetReloader (see common/AssetReloader.h) and this
+ * only routes paths to them, so reloadable kinds grow with the linked module
+ * set rather than with this file.
  *
  * On top of the local watchers, HotReload can act as a remote hot-reload client:
  * a background thread polls a dev server (`eve dev`) manifest, downloads changed
@@ -37,16 +38,15 @@ public:
     HotReload() = default;
     ~HotReload() override;
 
-    /** Register a path for explicit reload (kind: "auto"|"particle"|"tilemap"|"texture"). */
+    /**
+     * Pin a path to one reloader kind ("particle" / "tilemap" / "texture" /
+     * whatever a linked module registers), bypassing extension matching.
+     * "auto" (the default) lets every reloader claim the path itself.
+     */
     void bind(std::string path, std::string kind = "auto");
     void unbind(std::string path);
 
-    /**
-     * Reload assets matching path (normalized).
-     * .json → particle emitters / tilemap layers with Resource.path
-     * images → Graphics path-cached texture + emitters/layers with texturePath
-     * Returns true if anything reloaded.
-     */
+    /** Offer a (normalized) path to the registered reloaders; true if any reloaded. */
     bool tryReload(std::string path);
 
     /** Recursively watch root and all subdirectories. Returns number of watches added. */
@@ -92,12 +92,6 @@ private:
         int64_t     size  = -1;
         int64_t     mtime = -1;
     };
-
-    bool reloadParticles(const std::string &normPath);
-    bool reloadTilemaps(const std::string &normPath);
-    bool reloadTextures(const std::string &normPath);
-    bool isImagePath(const std::string &normPath) const;
-    bool isJsonPath(const std::string &normPath) const;
 
     // --- Remote sync internals ---
 

@@ -1,18 +1,12 @@
 #include "building/BuildingDef.h"
-#include "building/JsonHelpers.h"
 
-#include "data/DataModule.h"
-#include "data/JsonDocument.h"
-
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
+#include "common/Json.h"
 
 #include <algorithm>
-#include <memory>
 
 namespace eve::building {
 
-using namespace json_helpers;
+using eve::json::Value;
 
 bool BuildingDefinition::hasTag(const std::string &tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
@@ -97,73 +91,57 @@ int BuildingRegistry::count() { return int(table().size()); }
 
 namespace {
 
-BuildingDefinition parseBuildingObject(Poco::JSON::Object::Ptr o) {
+BuildingDefinition parseBuildingObject(Value o) {
     BuildingDefinition def;
-    if (!o) return def;
-    def.id = asString(o->get("id"));
-    def.displayName = asString(o->get("displayName"), def.id);
-    def.category = asString(o->get("category"));
-    def.channel = asString(o->get("channel"));
-    def.renderMode = asString(o->get("renderMode"));
-    def.footprintW = asInt(o->get("footprintW"), 1);
-    def.footprintH = asInt(o->get("footprintH"), 1);
-    def.snapMode = asString(o->get("snapMode"), "grid");
-    def.rotationMode = asString(o->get("rotationMode"), "cardinal");
-    def.validateRule = asString(o->get("validateRule"), "default");
-    def.tags = asStringArray(o, "tags");
-    def.requireTerrain = asIntArray(o, "requireTerrain");
-    def.forbidTerrain = asIntArray(o, "forbidTerrain");
-    def.requireAdjacentTag = asString(o->get("requireAdjacentTag"));
-    def.requireAdjacentTerrain = asInt(o->get("requireAdjacentTerrain"), -1);
-    def.cost = asIntMap(o, "cost");
-    def.extra = asStringMap(o, "extra");
-    def.visual2d = asStringMap(o, "visual2d");
-    def.visual3d = asStringMap(o, "visual3d");
-    if (o->has("footprintMask")) {
-        try {
-            auto arr = o->getArray("footprintMask");
-            if (arr) {
-                def.footprintMask.reserve(arr->size());
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    def.footprintMask.push_back(uint8_t(asInt(arr->get(i), 0) != 0 ? 1 : 0));
-                }
-            }
-        } catch (...) {
-        }
-    }
+    if (!o.isObject()) return def;
+    def.id = o.getString("id");
+    def.displayName = o.getString("displayName", def.id);
+    def.category = o.getString("category");
+    def.channel = o.getString("channel");
+    def.renderMode = o.getString("renderMode");
+    def.footprintW = o.getInt("footprintW", 1);
+    def.footprintH = o.getInt("footprintH", 1);
+    def.snapMode = o.getString("snapMode", "grid");
+    def.rotationMode = o.getString("rotationMode", "cardinal");
+    def.validateRule = o.getString("validateRule", "default");
+    def.tags = o.getStringArray("tags");
+    def.requireTerrain = o.getIntArray("requireTerrain");
+    def.forbidTerrain = o.getIntArray("forbidTerrain");
+    def.requireAdjacentTag = o.getString("requireAdjacentTag");
+    def.requireAdjacentTerrain = o.getInt("requireAdjacentTerrain", -1);
+    def.cost = o.getIntMap("cost");
+    def.extra = o.getStringMap("extra");
+    def.visual2d = o.getStringMap("visual2d");
+    def.visual3d = o.getStringMap("visual3d");
+
+    const Value mask = o.get("footprintMask");
+    def.footprintMask.reserve(mask.size());
+    for (size_t i = 0; i < mask.size(); ++i)
+        def.footprintMask.push_back(uint8_t(mask.at(i).asInt(0) != 0 ? 1 : 0));
     return def;
 }
 
 }  // namespace
 
 int BuildingRegistry::loadFromJson(const std::string &json, std::string *error) {
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc) {
+    const eve::json::Document doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return 0;
     }
 
+    const Value root = doc.root();
     int n = 0;
-    if (doc->isArray()) {
-        auto arr = doc->array();
-        if (!arr) return 0;
-        for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o;
-            try {
-                o = arr->getObject(i);
-            } catch (...) {
-                continue;
-            }
-            if (!o) continue;
-            BuildingDefinition def = parseBuildingObject(o);
+    if (root.isArray()) {
+        for (size_t i = 0; i < root.size(); ++i) {
+            BuildingDefinition def = parseBuildingObject(root.at(i));
             if (def.id.empty()) continue;
             registerBuilding(def);
             ++n;
         }
-    } else if (doc->isObject()) {
-        BuildingDefinition def = parseBuildingObject(doc->object());
+    } else if (root.isObject()) {
+        BuildingDefinition def = parseBuildingObject(root);
         if (!def.id.empty()) {
             registerBuilding(def);
             ++n;

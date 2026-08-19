@@ -21,7 +21,7 @@
 #include <emscripten.h>
 
 namespace {
-// Global frame-loop state: the root script (load_web.nut) defines a global
+// Global frame-loop state: the root script (load.nut) defines a global
 // eve_frame() function; emscripten_set_main_loop drives it per animation frame.
 ssq::VM* gFrameVm = nullptr;
 ssq::Function* gFrameFunc = nullptr;
@@ -94,12 +94,10 @@ struct RunArgs : Handler {
                 std::string load_root((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
                 return cmd.Run(current_path, load_root, debug, dap_port, mcp_port, dev_server);
             } else {
-#ifdef EVENGINE_WEBGPU
-                // The Emscripten runtime only wires the trimmed module set.
-                return cmd.Run(current_path, load_web_content, debug, dap_port, mcp_port, dev_server);
-#else
+                // One root script for every platform: it binds whatever modules
+                // the build contains from eve.moduleList, and leaves the frame
+                // driver to eve.hostDrivesFrames.
                 return cmd.Run(current_path, load_content, debug, dap_port, mcp_port, dev_server);
-#endif
             }
         }
         return -1; // not handle
@@ -227,6 +225,20 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             // MCP tools auto-install it on demand.
             eve.set("sceneDirectorScript", std::string(scene_director_content ? scene_director_content : ""));
             eve.set("devServerArg", devServer);
+#if defined(EVENGINE_WEBGPU)
+            // The browser has no blocking loop; load.nut defines eve_frame and
+            // returns, and emscripten_set_main_loop drives it below.
+            eve.set("hostDrivesFrames", true);
+#else
+            eve.set("hostDrivesFrames", false);
+#endif
+        }
+        // The generated slot -> class table load.nut iterates over.
+        if (module_list_content && *module_list_content)
+            runtime.runSource(module_list_content, "module_list.nut");
+        {
+            ssq::Table eve = runtime.table("eve");
+            eve.set("moduleList", runtime.root().find("eve_modules"));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
         // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in

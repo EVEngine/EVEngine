@@ -1,5 +1,5 @@
 {
-  "name": { "alice": "Alice", "bob": "Bob" },
+  "name": { "alice": "Alice", "bob": "Bob", "player": "Traveler" },
   "line": {
     "hello": "Hello! I'm {name}.",
     "intro": "I'm Bob. This dialogue script is written in Squirrel.",

@@ -73,17 +73,27 @@ void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
     if (!descriptorsDirty_ && descriptorSet_) return;
 
     if (!descriptorPool_) {
-        vk::DescriptorPoolSize poolSize{vk::DescriptorType::eStorageBuffer, uint32_t(kMaxBindings)};
+        // maxSets sets x kMaxBindings storage-buffer descriptors per set: the
+        // pool must hold the deferred backlog from multi-dispatch Sequences.
+        vk::DescriptorPoolSize poolSize{vk::DescriptorType::eStorageBuffer,
+                                        uint32_t(kMaxBindings) * 64};
         vk::DescriptorPoolCreateInfo poolInfo{};
         poolInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
-        poolInfo.maxSets = 4;
+        poolInfo.maxSets = 64;
         poolInfo.poolSizeCount = 1;
         poolInfo.pPoolSizes = &poolSize;
         descriptorPool_ = device->createDescriptorPool(poolInfo, device.allocation_callbacks);
     }
 
     if (descriptorSet_) {
-        device->freeDescriptorSets(descriptorPool_, descriptorSet_);
+        if (deferSetFree_) {
+            // A previously recorded command buffer in the open Sequence may
+            // still reference this set. Defer the free until that Sequence
+            // submits and waits; the pool is sized for the deferred backlog.
+            pendingSets_.push_back(descriptorSet_);
+        } else {
+            device->freeDescriptorSets(descriptorPool_, descriptorSet_);
+        }
         descriptorSet_ = vk::DescriptorSet{};
     }
 
@@ -124,6 +134,17 @@ void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
     device->updateDescriptorSets(kMaxBindings, writes.data(), 0, nullptr);
 
     descriptorsDirty_ = false;
+}
+
+void VulkanComputeShader::beginSequence() { deferSetFree_ = true; }
+
+void VulkanComputeShader::endSequence() { deferSetFree_ = false; }
+
+void VulkanComputeShader::releasePendingDescriptors(vkb::Device &device) {
+    if (pendingSets_.empty()) return;
+    for (vk::DescriptorSet set : pendingSets_)
+        device->freeDescriptorSets(descriptorPool_, set);
+    pendingSets_.clear();
 }
 
 }  // namespace eve::gpgpu

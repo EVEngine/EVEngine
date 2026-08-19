@@ -1,8 +1,6 @@
 #include "housegen/HouseComponentLibrary.h"
 
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
+#include "common/Json.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -11,6 +9,8 @@
 
 namespace eve::housegen {
 namespace {
+
+using eve::json::Value;
 
 SocketDirection parseDirection(const std::string &s, bool *ok) {
     *ok = true;
@@ -24,69 +24,61 @@ SocketDirection parseDirection(const std::string &s, bool *ok) {
     return SocketDirection::North;
 }
 
-std::vector<std::string> strings(Poco::JSON::Array::Ptr a) {
-    std::vector<std::string> out;
-    if (!a) return out;
-    for (size_t i = 0; i < a->size(); ++i) out.push_back(a->getElement<std::string>(i));
-    return out;
-}
+bool parseComponent(Value o, HouseComponent &out, std::string *error) {
+    if (!o.isObject()) { if (error) *error = "component must be an object"; return false; }
+    out.id = o.getString("id");
+    out.modelPath = o.getString("model");
+    out.category = o.getString("category");
+    out.width = o.getInt("width", 1);
+    out.depth = o.getInt("depth", 1);
+    out.height = o.getInt("height", 1);
+    out.weight = o.getInt("weight", 1);
+    out.tags = o.getStringArray("tags");
+    if (o.get("rotations").isArray()) out.rotations = o.getIntArray("rotations");
 
-bool parseComponent(Poco::JSON::Object::Ptr o, HouseComponent &out, std::string *error) {
-    if (!o) { if (error) *error = "component must be an object"; return false; }
-    out.id = o->optValue<std::string>("id", "");
-    out.modelPath = o->optValue<std::string>("model", "");
-    out.category = o->optValue<std::string>("category", "");
-    out.width = o->optValue<int>("width", 1);
-    out.depth = o->optValue<int>("depth", 1);
-    out.height = o->optValue<int>("height", 1);
-    out.weight = o->optValue<int>("weight", 1);
-    out.tags = strings(o->getArray("tags"));
-    if (auto r = o->getArray("rotations")) {
-        out.rotations.clear();
-        for (size_t i = 0; i < r->size(); ++i) out.rotations.push_back(r->getElement<int>(i));
+    const Value sockets = o.get("sockets");
+    for (size_t i = 0; i < sockets.size(); ++i) {
+        const Value so = sockets.at(i);
+        bool ok = false;
+        HouseSocket s;
+        s.direction = parseDirection(so.getString("direction"), &ok);
+        s.type = so.getString("type");
+        s.accepts = so.getStringArray("accepts");
+        if (!ok || s.type.empty()) { if (error) *error = "socket needs a valid direction and type"; return false; }
+        out.sockets.push_back(std::move(s));
     }
-    if (auto sockets = o->getArray("sockets")) {
-        for (size_t i = 0; i < sockets->size(); ++i) {
-            auto so = sockets->getObject(i);
-            bool ok = false;
-            HouseSocket s;
-            s.direction = parseDirection(so->optValue<std::string>("direction", ""), &ok);
-            s.type = so->optValue<std::string>("type", "");
-            s.accepts = strings(so->getArray("accepts"));
-            if (!ok || s.type.empty()) { if (error) *error = "socket needs a valid direction and type"; return false; }
-            out.sockets.push_back(std::move(s));
-        }
-    }
-    if (auto material = o->getObject("material")) {
-        if (auto color = material->getArray("baseColor")) {
-            if (color->size() != 3 && color->size() != 4) {
+
+    const Value material = o.get("material");
+    if (material.isObject()) {
+        const Value color = material.get("baseColor");
+        if (color.isArray()) {
+            if (color.size() != 3 && color.size() != 4) {
                 if (error) *error = "material baseColor needs 3 or 4 values";
                 return false;
             }
             out.material.hasBaseColor = true;
-            out.material.baseColorR = color->getElement<float>(0);
-            out.material.baseColorG = color->getElement<float>(1);
-            out.material.baseColorB = color->getElement<float>(2);
-            out.material.baseColorA = color->size() == 4 ? color->getElement<float>(3) : 1.f;
+            out.material.baseColorR = color.at(0).asFloat();
+            out.material.baseColorG = color.at(1).asFloat();
+            out.material.baseColorB = color.at(2).asFloat();
+            out.material.baseColorA = color.size() == 4 ? color.at(3).asFloat() : 1.f;
         }
-        out.material.baseColorTexture =
-            material->optValue<std::string>("baseColorTexture", "");
-        out.material.normalTexture = material->optValue<std::string>("normalTexture", "");
-        out.material.heightTexture = material->optValue<std::string>("heightTexture", "");
-        if (material->has("metallic")) {
+        out.material.baseColorTexture = material.getString("baseColorTexture");
+        out.material.normalTexture = material.getString("normalTexture");
+        out.material.heightTexture = material.getString("heightTexture");
+        if (material.has("metallic")) {
             out.material.hasMetallic = true;
-            out.material.metallic = material->getValue<float>("metallic");
+            out.material.metallic = material.getFloat("metallic");
         }
-        if (material->has("roughness")) {
+        if (material.has("roughness")) {
             out.material.hasRoughness = true;
-            out.material.roughness = material->getValue<float>("roughness");
+            out.material.roughness = material.getFloat("roughness");
         }
-        out.material.parallaxScale = material->optValue<float>("parallaxScale", 0.f);
-        out.material.parallaxMinLayers = material->optValue<float>("parallaxMinLayers", 8.f);
-        out.material.parallaxMaxLayers = material->optValue<float>("parallaxMaxLayers", 32.f);
-        out.material.cellBombScale = material->optValue<float>("cellBombScale", 4.f);
-        out.material.cellBombStrength = material->optValue<float>("cellBombStrength", 0.f);
-        out.material.cellBombRotation = material->optValue<float>("cellBombRotation", 1.f);
+        out.material.parallaxScale = material.getFloat("parallaxScale", 0.f);
+        out.material.parallaxMinLayers = material.getFloat("parallaxMinLayers", 8.f);
+        out.material.parallaxMaxLayers = material.getFloat("parallaxMaxLayers", 32.f);
+        out.material.cellBombScale = material.getFloat("cellBombScale", 4.f);
+        out.material.cellBombStrength = material.getFloat("cellBombStrength", 0.f);
+        out.material.cellBombRotation = material.getFloat("cellBombRotation", 1.f);
     }
     return true;
 }
@@ -129,21 +121,19 @@ bool HouseComponentLibrary::registerComponent(const HouseComponent &c, std::stri
 }
 
 bool HouseComponentLibrary::loadFromJson(const std::string &json, std::string *error) {
-    try {
-        Poco::JSON::Parser parser;
-        auto root = parser.parse(json);
-        Poco::JSON::Array::Ptr values;
-        if (root.type() == typeid(Poco::JSON::Array::Ptr)) values = root.extract<Poco::JSON::Array::Ptr>();
-        else values = root.extract<Poco::JSON::Object::Ptr>()->getArray("components");
-        if (!values) { if (error) *error = "expected components array"; return false; }
-        HouseComponentLibrary candidate;
-        for (size_t i = 0; i < values->size(); ++i) {
-            HouseComponent c;
-            if (!parseComponent(values->getObject(i), c, error) || !candidate.registerComponent(c, error)) return false;
-        }
-        components_ = std::move(candidate.components_);
-        return true;
-    } catch (const std::exception &e) { if (error) *error = e.what(); return false; }
+    const eve::json::Document doc = eve::json::Document::parse(json, error);
+    if (!doc.valid()) return false;
+    const Value root = doc.root();
+    const Value values = root.isArray() ? root : root.get("components");
+    if (!values.isArray()) { if (error) *error = "expected components array"; return false; }
+    HouseComponentLibrary candidate;
+    for (size_t i = 0; i < values.size(); ++i) {
+        HouseComponent c;
+        if (!parseComponent(values.at(i), c, error) || !candidate.registerComponent(c, error))
+            return false;
+    }
+    components_ = std::move(candidate.components_);
+    return true;
 }
 
 bool HouseComponentLibrary::loadFromFile(const std::string &filename, std::string *error) {

@@ -235,6 +235,7 @@ TEST_CASE("map.objects.parseObjectGroup") {
 }
 
 TEST_CASE("map.render.tilesContributeDepthY") {
+    hideAllTileLayers();
     auto *mod = Map::create();
     TileLayer *layer = mod->newLayer(1, 2, 32.f, 32.f);
     layer->config()->orientation = MapOrientation::Orthogonal;
@@ -246,6 +247,8 @@ TEST_CASE("map.render.tilesContributeDepthY") {
     REQUIRE(items.size() == 2);
     eve::graphics::sortDrawItems2D(items);
     CHECK(items[0].depthY < items[1].depthY);
+    layer->clear();
+    layer->setVisible(false);
 }
 
 TEST_CASE("map.drawItem.sortByDepthY") {
@@ -776,6 +779,7 @@ TEST_CASE("map.dualGrid.noHalfOffsetKeepsOrigin") {
 }
 
 TEST_CASE("map.dualGrid.render.isometricDisplayDepth") {
+    hideAllTileLayers();
     auto *mod = Map::create();
     TileLayer *logic = mod->newLayer(2, 2, 64.f, 32.f);
     TileLayer *display = mod->newLayer(1, 1, 64.f, 32.f);

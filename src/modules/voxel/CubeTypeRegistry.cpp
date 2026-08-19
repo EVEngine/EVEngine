@@ -1,18 +1,14 @@
 #include "voxel/CubeTypeRegistry.h"
 
-#include "data/DataModule.h"
-#include "data/JsonDocument.h"
-
-#include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
+#include "common/Json.h"
 
 #include <cstring>
-#include <memory>
 
 namespace eve::voxel {
 
 namespace {
+
+using eve::json::Value;
 
 const CubeTypeRegistry &kEmptyRegistry() {
     static const CubeTypeRegistry reg;
@@ -28,53 +24,21 @@ void rotateFaceTex(const uint8_t src[6], int orientation, uint8_t dst[6]) {
     }
 }
 
-int asInt(const Poco::Dynamic::Var &v, int fallback) {
-    try {
-        if (v.isEmpty()) return fallback;
-        return v.convert<int>();
-    } catch (...) {
-    }
-    return fallback;
-}
-
-std::string asString(const Poco::Dynamic::Var &v, const std::string &fallback = {}) {
-    try {
-        if (v.isEmpty()) return fallback;
-        return v.convert<std::string>();
-    } catch (...) {
-    }
-    return fallback;
-}
-
-bool asBool(const Poco::Dynamic::Var &v, bool fallback) {
-    try {
-        if (v.isEmpty()) return fallback;
-        return v.convert<bool>();
-    } catch (...) {
-    }
-    return fallback;
-}
-
-void asFaceTexArray(Poco::JSON::Object::Ptr o, uint8_t out[6]) {
+void readFaceTex(Value o, uint8_t out[6]) {
     std::memset(out, 0, sizeof(uint8_t) * 6);
-    if (!o || !o->has("faceTex")) return;
-    try {
-        auto arr = o->getArray("faceTex");
-        if (!arr) return;
-        const int n = int(arr->size()) < 6 ? int(arr->size()) : 6;
-        for (int i = 0; i < n; ++i) out[i] = uint8_t(asInt(arr->get(i), 0) & 0xFF);
-    } catch (...) {
-    }
+    const Value arr = o.get("faceTex");
+    const size_t n = arr.size() < 6 ? arr.size() : 6;
+    for (size_t i = 0; i < n; ++i) out[i] = uint8_t(arr.at(i).asInt(0) & 0xFF);
 }
 
-CubeType parseCubeType(Poco::JSON::Object::Ptr o) {
+CubeType parseCubeType(Value o) {
     CubeType t;
-    if (!o) return t;
-    t.name = asString(o->get("name"));
-    asFaceTexArray(o, t.faceTex);
-    t.directional = asBool(o->get("directional"), false);
-    t.composeGroup = asString(o->get("composeGroup"));
-    t.connects = asBool(o->get("connects"), false);
+    if (!o.isObject()) return t;
+    t.name = o.getString("name");
+    readFaceTex(o, t.faceTex);
+    t.directional = o.getBool("directional", false);
+    t.composeGroup = o.getString("composeGroup");
+    t.connects = o.getBool("connects", false);
     return t;
 }
 
@@ -105,33 +69,24 @@ uint8_t CubeTypeRegistry::add(const CubeType &type) {
 }
 
 int CubeTypeRegistry::loadFromJson(const std::string &json, std::string *error) {
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc) {
+    const eve::json::Document doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return 0;
     }
 
+    const Value root = doc.root();
     int n = 0;
-    if (doc->isArray()) {
-        auto arr = doc->array();
-        if (!arr) return 0;
-        for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o;
-            try {
-                o = arr->getObject(i);
-            } catch (...) {
-                continue;
-            }
-            if (!o) continue;
-            CubeType t = parseCubeType(o);
+    if (root.isArray()) {
+        for (size_t i = 0; i < root.size(); ++i) {
+            CubeType t = parseCubeType(root.at(i));
             if (t.name.empty()) continue;
             add(t);
             ++n;
         }
-    } else if (doc->isObject()) {
-        CubeType t = parseCubeType(doc->object());
+    } else if (root.isObject()) {
+        CubeType t = parseCubeType(root);
         if (!t.name.empty()) {
             add(t);
             ++n;

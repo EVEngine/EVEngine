@@ -1,7 +1,8 @@
 #include "thread/Thread.h"
 
 #include "common/Exception.h"
-#include "event/Event.h"
+#include "common/Capability.h"
+#include "common/MainThreadPost.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -56,10 +57,11 @@ Channel *Thread::newChannel() { return new Channel(); }
 void Thread::postMain(std::string name, std::string data) {
     if (name.empty())
         throw eve::Exception("Thread::postMain: name must not be empty");
-    auto *ev = ModuleManager::getInstance<event::Event>("Event");
-    if (!ev)
-        ev = event::Event::create();
-    ev->pushData(std::move(name), std::move(data));
+    auto *poster = cap::query<caps::IMainThreadPost>();
+    if (!poster)
+        throw eve::Exception("Thread::postMain: no main-thread queue (event module not linked)");
+    poster->prepare();
+    poster->postToMainThread(std::move(name), std::move(data));
 }
 
 void Thread::expose(ssq::Table &table) {

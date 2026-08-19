@@ -35,6 +35,31 @@ Compute shader 约定：
 
 C++ 侧可用 `gpgpu::ShaderSystem` + `gpgpu/EcsGpu.h` 的 `packViewComponent` / `unpackViewComponent` 对 `ECS.hpp` View 做同样的打包与调度。
 
+## Sequence：把多次调度合并为一次 GPU 提交
+
+`eve.GpuSequence`（C++：`gpgpu::Sequence`）对标 Kompute 的 Sequence：把多个 buffer 拷贝和 compute dispatch 录制进**同一个 command buffer**，`submit()` 时一次提交、一次等待。对 AI 推理这类几十个 kernel 串行的负载，这能把几十次 record/submit/wait 往返压成一次。
+
+```squirrel
+local seq = gpu.newSequence();
+seq.begin();
+seq.recordUpload(inputBuffer, hostDataPointer, nbytes);   // 可多次
+seq.recordDispatch(shaderA, groupsA);                    // 录制时 shader 的
+seq.recordDispatch(shaderB, groupsB);                    // binding 已生效
+seq.recordDownload(outputBuffer, stagingBuffer, nbytes); // staging 需 "staging" 用途
+seq.submit();                                            // 一次提交，内部等待完成
+local out = stagingBuffer.readFloat32s(count);
+```
+
+要点：
+
+- `recordUpload` 会把数据先 memcpy 到内部 host-visible staging，调用返回后源指针即可失效。
+- `recordDownload` 目标必须是 `newBuffer(n, "staging")`；`submit()` 返回后再读。
+- 同一 Sequence 可循环复用：`submit()` 后再 `begin()`。
+- Sequence 内部自动插入内存屏障，保证拷贝/计算/回读之间可见（单次提交没有 fence 兜底，这是与每次 dispatch 各提交一次的关键区别）。
+- 录制期间 shader 的 descriptor set 会被延迟释放，`submit()` 完成后才回收，避免多 dispatch 引用被覆盖的 set。
+
+引擎内部的 tensor 模块（`CompiledFunction` 的 GPU 执行）已经用 Sequence 实现整图单次提交：placeholder 上传 → 所有融合 kernel dispatch → 输出回读，一次 `submit()` 完成。
+
 ## 对象关系与调用时机
 
 `Gpgpu` 使用当前 Graphics 后端设备；`ComputeShader` / `GpuBuffer` 为后端无关抽象，Vulkan 实现保存 SPIR-V、pipeline 与 buffer。`newShaderFromSpvFile` 是 SPIR-V 兼容包装，等价于 `newShaderFromBytecode`。`EcsShaderSystem` / `eve.ShaderSystem` 负责 ECS 查询、打包与 dispatch。dispatch 前所有 binding 和 push constant 必须有效。
@@ -64,9 +89,9 @@ C++ 侧可用 `gpgpu::ShaderSystem` + `gpgpu/EcsGpu.h` 的 `packViewComponent` /
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `bindBuffer()`、`clearBindings()`、`dispatch()`、`fillFloat32()`、`getBoundBuffer()`、`getFloat()`、`getName()`、`getSize()`
+- `begin()`、`bindBuffer()`、`clearBindings()`、`dispatch()`、`fillFloat32()`、`getBoundBuffer()`、`getFloat()`、`getName()`、`getSize()`
 - `getUsage()`、`isAvailable()`、`newBuffer()`、`newShader()`、`newShaderFromBytecode()`、`newShaderFromSpvFile()`、`readData()`、`readFloat32()`、`setFloat()`
-- `writeData()`、`writeFloat32()`、`packEcsFloats()`、`unpackEcsFloats()`
+- `newSequence()`、`recordDispatch()`、`recordDownload()`、`recordUpload()`、`submit()`、`writeData()`、`writeFloat32()`、`packEcsFloats()`、`unpackEcsFloats()`
 - `eve.EcsShaderSystem`：`setGpgpu` / `setShaderSource` / `ensureBuffer` / `dispatch` / …
 - `eve.ShaderSystem`：`bindFields` / `setShaderSource` / `setReadback` / `update`
 

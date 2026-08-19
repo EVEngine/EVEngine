@@ -2,7 +2,8 @@
 
 #include "common/Exception.h"
 #include "common/Module.h"
-#include "event/Event.h"
+#include "common/Capability.h"
+#include "common/MainThreadPost.h"
 #include "thread/Channel.h"
 
 #include <algorithm>
@@ -135,19 +136,20 @@ Task *ThreadPool::submitPost(std::string name, std::string data, int delayMs) {
         throw eve::Exception("ThreadPool::submitPost: name must not be empty");
     if (delayMs < 0)
         delayMs = 0;
-    event::Event *ev = nullptr;
+    auto *poster = cap::query<caps::IMainThreadPost>();
+    if (!poster)
+        throw eve::Exception(
+            "ThreadPool::submitPost: no main-thread queue (event module not linked)");
     {
-        // ModuleManager is not thread-safe. Resolve/create the singleton while
-        // submitPost is still on the submitting (script/main) thread.
+        // The provider may need the module registry, which is not thread-safe.
+        // Resolve while submitPost is still on the submitting (script/main) thread.
         std::lock_guard<std::mutex> lock(eventResolveMu);
-        ev = ModuleManager::getInstance<event::Event>("Event");
-        if (!ev)
-            ev = event::Event::create();
+        poster->prepare();
     }
-    return submit([ev, name = std::move(name), data = std::move(data), delayMs] {
+    return submit([poster, name = std::move(name), data = std::move(data), delayMs] {
         if (delayMs > 0)
             std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
-        ev->pushData(name, data);
+        poster->postToMainThread(name, data);
     });
 }
 

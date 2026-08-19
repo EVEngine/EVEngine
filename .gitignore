@@ -45,3 +45,9 @@ platform/android/apk/app/src/main/assets/game/*
 # Filled by `make sync/android-test-assets` (zeroerr suite + examples on-device tree).
 platform/android/apk/app/src/main/assets/test/
 platform/android/apk/app/src/main/assets/examples/
+
+# Local Python deps for scripts/export_tiny_gpt2.py (pip --target).
+external/pylibs/
+# Python bytecode from scripts/
+__pycache__/
+*.pyc
