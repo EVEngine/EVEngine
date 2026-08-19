@@ -8,16 +8,21 @@
 
 namespace eve::gpgpu {
 
+/** @brief Vulkan 计算着色器（SPIR-V pipeline + descriptor 管理）。 */
 class VulkanComputeShader final : public ComputeShader {
 public:
     ~VulkanComputeShader() override;
 
+    /** @brief 绑定/解绑 GpuBuffer 到指定 binding。 */
     void bindBuffer(int binding, GpuBuffer *buffer) override;
     GpuBuffer *getBoundBuffer(int binding) const override;
+    /** @brief 标量 uniform 读写。 */
     void setFloat(int index, float value) override;
     float getFloat(int index) const override;
+    /** @brief 清空全部绑定。 */
     void clearBindings() override;
 
+    /** @brief 内部：把脏绑定刷成 descriptor set。 */
     void flushDescriptors(vkb::Device &device);
 
     /** While a Sequence is recording, superseded sets are deferred (see flushDescriptors). */

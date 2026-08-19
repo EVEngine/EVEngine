@@ -10,7 +10,7 @@ class Shader;
 class Texture;
 
 /**
- * Classic image-space anti-aliasing.
+ * @brief Classic image-space anti-aliasing.
  *
  * Modes:
  *  - "fxaa" — FXAA 3.11-style luminance edge search + subpixel blend
@@ -29,11 +29,11 @@ public:
     AntiAliasing(const AntiAliasing &) = delete;
     AntiAliasing &operator=(const AntiAliasing &) = delete;
 
-    /** "low" | "medium" | "high" (unknown → medium). */
+    /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
     std::string getQuality() const { return quality_; }
 
-    /** "fxaa" | "smaa" | "ssaa" | "nfaa" (unknown → fxaa). */
+    /** @brief "fxaa" | "smaa" | "ssaa" | "nfaa" (unknown → fxaa). */
     void setMode(const std::string &mode);
     std::string getMode() const { return mode_; }
 
@@ -42,7 +42,7 @@ public:
     float getFloat(const std::string &name) const;
 
     /**
-     * Suggested supersample scale for the active quality when using "ssaa"
+     * @brief Suggested supersample scale for the active quality when using "ssaa"
      * (2 for low/medium, 4 for high). Callers create the source Canvas at
      * destSize * suggestScale().
      */
@@ -52,7 +52,7 @@ public:
     int resolutionFor(int destSize) const;
 
     /**
-     * Apply current mode to `source`, writing into the currently bound canvas / screen.
+     * @brief Apply current mode to `source`, writing into the currently bound canvas / screen.
      * Uploads texelW/texelH from the source size.
      */
     void apply(Graphics *gfx, Texture *source);
@@ -61,7 +61,7 @@ public:
     void applyCanvas(Graphics *gfx, Canvas *source);
     void applyCanvasTo(Graphics *gfx, Canvas *source, Canvas *dest);
 
-    /** Upload texel uniforms from `source` without drawing (3D scene-color resolve). */
+    /** @brief Upload texel uniforms from `source` without drawing (3D scene-color resolve). */
     void prepareSource(Texture *source);
 
     Shader *getFxaaShader() const { return fxaa_; }

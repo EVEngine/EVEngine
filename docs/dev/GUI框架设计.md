@@ -1,6 +1,14 @@
 # 声明式游戏 GUI 框架设计
 
 > 状态：B 期已完成（脚本 Component + 高级原语 + 弹性布局）；C 期 DevTools 待做。
+> 2026-08-18 差距清单补强：两阶段布局（measure/arrange + margin/padding/min/max/百分比/锚点）、
+> Image/九宫格/ImageButton、脚本事件回调、文本换行与 CJK 字体回退、Combo、宿主位移动画、
+> UI JSON 序列化（saveTreeJson/loadTreeJson）、手柄导航与 UI 统计；2026-08-19 补滚动虚拟化
+> （ScrollList / virtualList，按滚动偏移只绘制可见行）；2026-08-19 再补 UI 内嵌渲染视口
+> （Viewport 控件：离屏 Canvas → 纹理注册 → Image 显示 + 输入路由），并新增
+> `Graphics::renderScene3DToCanvas`（RenderSystem3D::renderToCanvas 前向离屏 3D 通道）、
+> `editor.newHeightmapMesh / updateHeightmapMesh`（高度图 → 地形网格），
+> 示例 `examples/terrain-editor`。
 > 对外模型：**声明式** retained 组件树 + ECS `UIHost`（非每帧脚本命令式 ImGui）。
 > 后端：Dear ImGui（SDL 输入 + Vulkan 绘制），由 C++ `UISystem` 每帧 walk。
 > ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（`external/ECS.hpp`）。

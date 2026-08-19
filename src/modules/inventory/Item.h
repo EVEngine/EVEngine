@@ -18,7 +18,7 @@ public:
     static int count();
 
     /**
-     * 从 JSON 数组或单对象批量注册，返回成功数量。
+     * @brief 从 JSON 数组或单对象批量注册，返回成功数量。
      * 元素形如：
      * {
      *   "id": "potion.hp", "displayName": "治疗药水", "maxStack": 20,

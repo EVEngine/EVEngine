@@ -12,7 +12,7 @@ typedef struct SQVM* HSQUIRRELVM;
 namespace eve::dev {
 
 /**
- * Script-state snapshot (engine is treated as stateless).
+ * @brief Script-state snapshot (engine is treated as stateless).
  *
  * Captures serializable Squirrel values from the root table — either
  * explicitly marked roots (`markRoot`) or a heuristic that skips engine
@@ -32,14 +32,14 @@ public:
     void clearRoots();
     std::vector<std::string> roots() const;
 
-    /** Capture marked roots, or heuristic roots when none marked. */
+    /** @brief Capture marked roots, or heuristic roots when none marked. */
     std::string capture(HSQUIRRELVM vm, std::string* error = nullptr) const;
     bool        restore(HSQUIRRELVM vm, const std::string& json, std::string* error = nullptr) const;
 
     bool saveFile(HSQUIRRELVM vm, const std::string& path, std::string* error = nullptr) const;
     bool loadFile(HSQUIRRELVM vm, const std::string& path, std::string* error = nullptr) const;
 
-    /** Built-in names never auto-captured (modules / boot bindings). */
+    /** @brief Built-in names never auto-captured (modules / boot bindings). */
     static bool isEngineBinding(const std::string& name);
 
 private:

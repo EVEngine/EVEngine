@@ -5,7 +5,7 @@
 namespace eve::ik {
 
 /**
- * Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d).
+ * @brief Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d).
  * Local angles are yaw/pitch in the parent bone frame.
  */
 class Skeleton3D {

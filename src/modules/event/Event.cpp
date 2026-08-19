@@ -1,6 +1,8 @@
 #include "event/Event.h"
 #include "event/sdl/Event.h"
 
+#include "common/Assert.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::event {
@@ -27,6 +29,7 @@ void Event::expose(ssq::Class& cls) {
 Event::~Event() {}
 
 void Event::push(Message* msg) {
+    EV_PARAM_CHECK(msg != nullptr, "event message must not be null");
     if (!msg)
         return;
     {

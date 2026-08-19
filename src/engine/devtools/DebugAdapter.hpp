@@ -25,7 +25,7 @@ class Object;
 namespace eve::dev {
 
 /**
- * Minimal Debug Adapter Protocol (DAP) server for VS Code.
+ * @brief Minimal Debug Adapter Protocol (DAP) server for VS Code.
  *
  * Speaks Content-Length framed JSON over TCP. Start with listen(port) after
  * DevTool::attach; call poll() from the game loop / pause wait pump.
@@ -41,38 +41,38 @@ public:
     DebugAdapter(const DebugAdapter&)            = delete;
     DebugAdapter& operator=(const DebugAdapter&) = delete;
 
-    /** Bind TCP listen port (0 = ephemeral). Returns bound port or 0 on failure. */
+    /** @brief Bind TCP listen port (0 = ephemeral). Returns bound port or 0 on failure. */
     int  listen(uint16_t port);
     void stop();
     bool isListening() const { return listening_.load(); }
     int  port() const { return port_.load(); }
     bool hasClient() const { return hasClient_.load(); }
 
-    /** Game directory used to resolve relative script paths in stack frames. */
+    /** @brief Game directory used to resolve relative script paths in stack frames. */
     void setSourceRoot(std::string root);
     const std::string& sourceRoot() const { return sourceRoot_; }
-    /** Register virtual source content for compiled buffers (compilestring). */
+    /** @brief Register virtual source content for compiled buffers (compilestring). */
     void registerSource(std::string name, std::string content);
 
-    /** Accept clients + process one request batch (non-blocking). */
+    /** @brief Accept clients + process one request batch (non-blocking). */
     void poll();
 
-    /** True after the IDE sends configurationDone (breakpoints are installed). */
+    /** @brief True after the IDE sends configurationDone (breakpoints are installed). */
     bool isConfigured() const { return configured_; }
 
     /**
-     * Block briefly until a DAP client finishes initialize/launch/setBreakpoints/
+     * @brief Block briefly until a DAP client finishes initialize/launch/setBreakpoints/
      * configurationDone so scripts do not race past early breakpoints.
      * Returns true if configured, false on timeout (game still starts).
      */
     bool waitUntilConfigured(int timeoutMs = 15000);
 
-    /** Emit stopped event to the connected client (if any). */
+    /** @brief Emit stopped event to the connected client (if any). */
     void notifyStopped(PauseReason reason, const SourceLoc& loc,
                        const std::string& description = {});
     void notifyContinued();
     void notifyTerminated();
-    /** Last exception message delivered via notifyStopped(Exception, ...). */
+    /** @brief Last exception message delivered via notifyStopped(Exception, ...). */
     const std::string& lastException() const { return lastException_; }
 
 private:
@@ -88,19 +88,19 @@ private:
                              const std::string& bodyJson, const std::string& message = {});
     std::string makeEvent(const std::string& event, const std::string& bodyJson);
     static std::string reasonString(PauseReason r);
-    /** Make a path VS Code can open (absolute when possible). */
+    /** @brief Make a path VS Code can open (absolute when possible). */
     std::string resolveSourcePath(std::string source) const;
-    /** Remember IDE absolute paths so Squirrel relative names can be remapped. */
+    /** @brief Remember IDE absolute paths so Squirrel relative names can be remapped. */
     void rememberSourcePath(const std::string& path);
-    /** Best-effort: map embedded `load.nut` to repo `src/scripts/load.nut`. */
+    /** @brief Best-effort: map embedded `load.nut` to repo `src/scripts/load.nut`. */
     void discoverEngineScriptAliases();
-    /** DAP `breakpoint` event: verification state changed for a breakpoint. */
+    /** @brief DAP `breakpoint` event: verification state changed for a breakpoint. */
     void handleBreakpointEvent(int id, const std::string& source, int line, bool verified);
-    /** DAP variablesReference for a call-stack frame's locals scope. */
+    /** @brief DAP variablesReference for a call-stack frame's locals scope. */
     int varRefForFrame(int frameId);
-    /** Register an expandable child scope and return its variablesReference. */
+    /** @brief Register an expandable child scope and return its variablesReference. */
     int allocVarRef(int kind, int frame, std::vector<std::string> path);
-    /** Source object for a stack frame / stopped event (path or virtual ref). */
+    /** @brief Source object for a stack frame / stopped event (path or virtual ref). */
     Poco::SharedPtr<Poco::JSON::Object> makeSourceObject(const std::string& source) const;
 
     struct VarScope {
@@ -118,7 +118,7 @@ private:
     std::unique_ptr<Poco::Net::StreamSocket> client_;
     std::string       recvBuf_;
     std::string       sourceRoot_;
-    /** basename / relative → absolute path from setBreakpoints / launch. */
+    /** @brief basename / relative → absolute path from setBreakpoints / launch. */
     std::unordered_map<std::string, std::string> sourceAliases_;
     bool              configured_ = false;
     bool              stopOnEntry_ = false;

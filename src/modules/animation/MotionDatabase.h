@@ -11,7 +11,7 @@ class AnimClip;
 class AnimSkeleton;
 
 /**
- * Baked motion-matching feature database from one or more AnimClips.
+ * @brief Baked motion-matching feature database from one or more AnimClips.
  * Feature layout per frame:
  *   [0..1]   root velocity xz
  *   [2..7]   trajectory pos xz at +0.33/+0.66/+1.0s (character space)
@@ -29,12 +29,12 @@ public:
 
     AnimSkeleton *getSkeleton() const { return skeleton_; }
 
-    /** Include bone world position in pose features (by index). */
+    /** @brief Include bone world position in pose features (by index). */
     void addFeatureBone(int boneIndex);
     void addFeatureBoneByName(const std::string &name);
 
     /**
-     * Bone used for trajectory / velocity features (default 0).
+     * @brief Bone used for trajectory / velocity features (default 0).
      * Mixamo clips typically want hips (`mixamorig:Hips`).
      */
     void setRootBone(int boneIndex);
@@ -44,7 +44,7 @@ public:
     void addClip(AnimClip *clip);
     int  getClipCount() const { return static_cast<int>(clips_.size()); }
 
-    /** Bake all clips into searchable frames. Call after addClip / feature bones. */
+    /** @brief Bake all clips into searchable frames. Call after addClip / feature bones. */
     void bake();
     bool isBaked() const { return baked_; }
 
@@ -58,7 +58,7 @@ public:
     int getFeatureBoneCount() const { return static_cast<int>(featureBones_.size()); }
     int getFeatureBone(int index) const;
 
-    /** Copy feature vector into out[0..featureSize). */
+    /** @brief Copy feature vector into out[0..featureSize). */
     void getFeature(int frameIndex, float *out, int outCount) const;
 
     struct Frame {

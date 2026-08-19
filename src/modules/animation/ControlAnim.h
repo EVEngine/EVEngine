@@ -9,7 +9,7 @@
 namespace eve::animation {
 
 /**
- * Control-theory procedural animation for named scalar properties.
+ * @brief Control-theory procedural animation for named scalar properties.
  *
  * Tracks continuous targets with a second-order LTI system (default), a
  * closed-form damped spring, or an explicit unit-mass PD law.
@@ -35,17 +35,17 @@ public:
     void  setResponse(float response);
     float getResponse() const { return response_; }
 
-    /** Integrator: "secondOrder" | "spring" | "pd". Invalid → exception. */
+    /** @brief Integrator: "secondOrder" | "spring" | "pd". Invalid → exception. */
     void        setIntegrator(const std::string &kind);
     std::string getIntegrator() const;
 
-    /** Create/update a channel: current value snaps to `value`, velocity cleared. */
+    /** @brief Create/update a channel: current value snaps to `value`, velocity cleared. */
     void set(const std::string &name, float value);
-    /** Move the tracking target (does not snap state). Creates channel if missing. */
+    /** @brief Move the tracking target (does not snap state). Creates channel if missing. */
     void setTarget(const std::string &name, float value);
-    /** Optional explicit target velocity (used by secondOrder / pd). */
+    /** @brief Optional explicit target velocity (used by secondOrder / pd). */
     void setTargetVelocity(const std::string &name, float velocity);
-    /** Inject an instantaneous velocity impulse (procedural “hit”). */
+    /** @brief Inject an instantaneous velocity impulse (procedural “hit”). */
     void impulse(const std::string &name, float deltaVelocity);
 
     bool  has(const std::string &name) const;
@@ -58,7 +58,7 @@ public:
     int  getPropertyCount() const { return static_cast<int>(order_.size()); }
     std::string getPropertyName(int index) const;
 
-    /** Advance all channels by dt seconds. */
+    /** @brief Advance all channels by dt seconds. */
     void update(float dt);
 
 private:

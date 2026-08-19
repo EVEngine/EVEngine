@@ -5,7 +5,7 @@
 namespace eve::spatial {
 
 /**
- * Last-query hit buffer shared by spatial indexes.
+ * @brief Last-query hit buffer shared by spatial indexes.
  * Script pattern: call query* → getResultCount / getResultId(i).
  */
 class QueryIds {

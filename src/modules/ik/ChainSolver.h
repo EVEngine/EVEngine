@@ -11,7 +11,7 @@ namespace eve::ik {
 namespace detail {
 
 /**
- * Options shared by the chain-scoped FABRIK solve used by Solver2D / Solver3D.
+ * @brief Options shared by the chain-scoped FABRIK solve used by Solver2D / Solver3D.
  * These mirror the knobs of ik::solver plus wrapper-level pose blending.
  */
 template <unsigned D>
@@ -28,6 +28,7 @@ struct ChainOptions {
 
 namespace {
 
+/** @brief 把 point 放到以 anchor 为圆心、boneLength 为半径的圆上（共线摆放）。 */
 template <unsigned D>
 void placeOnLine(::ik::vec<float, D>& point, const ::ik::vec<float, D>& anchor,
                  float boneLength) {
@@ -40,8 +41,8 @@ void placeOnLine(::ik::vec<float, D>& point, const ::ik::vec<float, D>& anchor,
     point = anchor + dir * (boneLength / len);
 }
 
-// Builds the bone path root_id .. tip_id (both inclusive). Returns an empty
-// vector when the ids are out of range or tip is not a descendant of root.
+/** @brief 构建 root_id .. tip_id 的骨骼链（两端包含）。id 越界或 tip 不是
+ * root 的后代时返回空向量。 */
 template <unsigned D>
 std::vector<::ik::bone<D>*> buildChain(::ik::skeleton<D>& sk, unsigned root_id,
                                        unsigned tip_id) {
@@ -67,8 +68,8 @@ std::vector<::ik::bone<D>*> buildChain(::ik::skeleton<D>& sk, unsigned root_id,
     return chain;
 }
 
-// One FABRIK reach: backward pass from the target, forward pass pinning the
-// chain root. Only bones chain[0..tipIndex] participate.
+/** @brief 一次 FABRIK 到达：从目标向后回推，再固定链根向前延伸；
+ * 只有 chain[0..tipIndex] 参与。 */
 template <unsigned D>
 void reachTarget(::ik::ecs<D>& state, const std::vector<::ik::bone<D>*>& chain,
                  unsigned tipIndex, const ::ik::vec<float, D>& desired) {
@@ -103,9 +104,8 @@ void reachTarget(::ik::ecs<D>& state, const std::vector<::ik::bone<D>*>& chain,
     }
 }
 
-// Pole vector: rotate the radial component (around the root->goal axis) of every
-// middle joint toward the pole direction. Preserves each joint's distance from
-// the axis, so for two-bone limbs this is the exact bend-direction control.
+/** @brief 极向量约束：把每个中间关节相对 root→goal 轴的径向分量向 pole 方向
+ * 旋转；保持各关节到轴的距离不变，对两骨肢体即精确的弯曲方向控制。 */
 template <unsigned D>
 void applyPole(::ik::ecs<D>& state, const std::vector<::ik::bone<D>*>& chain,
                const ::ik::vec<float, D>& goal, const ::ik::vec3& pole, float weight) {
@@ -144,8 +144,7 @@ void applyPole(::ik::ecs<D>& state, const std::vector<::ik::bone<D>*>& chain,
     }
 }
 
-// Reuse the upstream angle-constraint pass for the chain bones (excluding the
-// chain root, which must stay pinned at its input position).
+/** @brief 对链上骨骼复用上游角度约束（排除必须固定在输入位置的链根）。 */
 template <unsigned D>
 void applyChainConstraints(::ik::ecs<D>& state,
                            const std::vector<::ik::bone<D>*>& chain) {
@@ -159,7 +158,7 @@ void applyChainConstraints(::ik::ecs<D>& state,
 }  // namespace
 
 /**
- * FABRIK solve restricted to the bone chain root_id..tip_id. Unlike the plain
+ * @brief FABRIK solve restricted to the bone chain root_id..tip_id. Unlike the plain
  * solver (which pins the skeleton root), the chain root stays at its input
  * position and bones outside the chain are never touched.
  *

@@ -9,7 +9,7 @@ namespace eve::animation {
 class AnimSkeleton;
 
 /**
- * Evaluated local (and optional world) pose for an AnimSkeleton.
+ * @brief Evaluated local (and optional world) pose for an AnimSkeleton.
  * Script type: `AnimPose`.
  */
 class AnimPose {
@@ -43,7 +43,7 @@ public:
     float getLocalScaleZ(int boneIndex) const;
 
     /**
-     * Compute world transforms from local pose + skeleton hierarchy.
+     * @brief Compute world transforms from local pose + skeleton hierarchy.
      * World values readable via getWorld* after this call.
      */
     void computeWorld(const AnimSkeleton *skeleton);
@@ -57,11 +57,11 @@ public:
     float getWorldRotationW(int boneIndex) const;
 
     /**
-     * Column-major 4x4 world matrix for boneIndex after computeWorld().
+     * @brief Column-major 4x4 world matrix for boneIndex after computeWorld().
      * elementIndex in [0, 15]. Used by CPU skinning (AnimSkin).
      */
     float getWorldMatrixElement(int boneIndex, int elementIndex) const;
-    /** Write 16 floats (column-major) into out16 (must not be null). */
+    /** @brief Write 16 floats (column-major) into out16 (must not be null). */
     void  getWorldMatrix(int boneIndex, float *out16) const;
 
     TransformTRS       &local(int boneIndex);

@@ -12,7 +12,7 @@ class Shader;
 class Texture;
 
 /**
- * Screen-space single-bounce GI (SSGI).
+ * @brief Screen-space single-bounce GI (SSGI).
  *
  * Samples scene color (RGB = lit radiance) plus hardware D32 depth, and adds
  * bounced light from nearby occluders. Manual fullscreen overlay
@@ -32,12 +32,12 @@ public:
     GlobalIllumination(const GlobalIllumination &) = delete;
     GlobalIllumination &operator=(const GlobalIllumination &) = delete;
 
-    /** "low" | "medium" | "high" (unknown → medium). */
+    /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
     std::string getQuality() const { return quality_; }
 
     /**
-     * Camera for depth reconstruction (RH + ZO).
+     * @brief Camera for depth reconstruction (RH + ZO).
      * Builds inv(viewProj) and near/far used by applyFromDepth.
      */
     void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
@@ -61,7 +61,7 @@ public:
     int getSampleCount() const;
 
     /**
-     * Overlay bounced light onto the currently bound canvas / screen.
+     * @brief Overlay bounced light onto the currently bound canvas / screen.
      * Packed path (tests): RGB=albedo/lit, A=linear depth 0..1.
      * 3D path: applyFromScene(color, hwDepth) with D32 NDC z.
      */

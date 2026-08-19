@@ -7,7 +7,7 @@
 
 namespace eve::procgen {
 
-/** Build a shared-vertex, deformed icosphere rock for economical game props. */
+/** @brief Build a shared-vertex, deformed icosphere rock for economical game props. */
 bool generateRockMesh(const Params &params, MeshBuild &out, std::string &error);
 
 }  // namespace eve::procgen

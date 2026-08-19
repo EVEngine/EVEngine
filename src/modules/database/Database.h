@@ -24,7 +24,7 @@ class Query;
 using Value = std::variant<std::monostate, std::int64_t, double, std::string, bool>;
 using Row   = std::unordered_map<std::string, Value>;
 
-/** A named field used by the small, explicit ORM mapping layer. */
+/** @brief A named field used by the small, explicit ORM mapping layer. */
 template <class T>
 struct Field {
     std::string                           name;
@@ -55,38 +55,59 @@ struct Mapping {
     }
 };
 
+/**
+ * @brief SQLite connection with a small ORM layer on top of Poco::Data.
+ * Tables/columns are quoted identifiers; values are bound as literals.
+ */
 class Connection {
 public:
+    /** @brief Opens a Poco::Data session; connector is e.g. "SQLite". */
     Connection(std::string connector, std::string connectionString);
     ~Connection();
 
     Connection(const Connection&)            = delete;
     Connection& operator=(const Connection&) = delete;
 
+    /** @brief True while the underlying session is open. */
     bool             isConnected() const;
+    /** @brief Closes the session (idempotent). */
     void             close();
+    /** @brief Executes a statement; returns the affected row count. */
     int              execute(const std::string& sql);
+    /** @brief Runs a SELECT and returns every row as name/value maps. */
     std::vector<Row> query(const std::string& sql);
+    /** @brief Runs query() and serializes the rows to a JSON array. */
     std::string      queryJson(const std::string& sql);
+    /** @brief Inserts a row map; returns the affected row count. */
     int              insert(const std::string& table, const Row& values);
+    /** @brief Updates rows matching whereClause; returns the affected row count. */
     int              update(const std::string& table, const Row& values, const std::string& whereClause);
+    /** @brief Deletes rows matching whereClause; returns the affected row count. */
     int              remove(const std::string& table, const std::string& whereClause);
 
-    // Script-friendly JSON counterparts. JSON must be an object of column/value pairs.
+    /** @brief Script-friendly insert: JSON must be an object of column/value pairs. */
     int insertJson(const std::string& table, const std::string& json);
+    /** @brief Script-friendly update; whereClause is raw SQL. */
     int updateJson(const std::string& table, const std::string& json, const std::string& whereClause);
 
+    /** @brief Updates a single row by primary key value. */
     int              updateByKey(const std::string& table, const Row& values, const std::string& key, const Value& id);
+    /** @brief Deletes a single row by primary key value. */
     int              removeByKey(const std::string& table, const std::string& key, const Value& id);
+    /** @brief Selects rows where key == id. */
     std::vector<Row> queryByKey(const std::string& table, const std::string& key, const Value& id);
+    /** @brief Builds a script-facing Model repository for a table. */
     Model*           model(std::string table, std::string primaryKey = "id");
+    /** @brief Builds a fluent Query builder for a table. */
     Query*           from(std::string table);
 
+    /** @brief ORM helper: persists one mapped object. */
     template <class T>
     int save(const Mapping<T>& mapping, const T& object) {
         return insert(mapping.table, mapping.toRow(object));
     }
 
+    /** @brief ORM helper: persists a range of mapped entities in one transaction. */
     template <class Range, class Mapper>
     int exportECS(const std::string& table, const Range& entities, Mapper mapper) {
         int count = 0;
@@ -108,7 +129,7 @@ private:
     std::unique_ptr<Poco::Data::Session> session_;
 };
 
-/** Composable filtered/sorted/paged query shared by C++ and scripts. */
+/** @brief Composable filtered/sorted/paged query shared by C++ and scripts. */
 class Query {
 public:
     Query(Connection* connection, std::string table);
@@ -132,7 +153,7 @@ private:
     int                      offset_ = 0;
 };
 
-/** Typed active-record repository built from a Mapping<T>. */
+/** @brief Typed active-record repository built from a Mapping<T>. */
 template <class T>
 class Repository {
 public:
@@ -197,7 +218,7 @@ private:
     Mapping<T>  mapping_;
 };
 
-/** Runtime ORM model exposed to Squirrel. */
+/** @brief Runtime ORM model exposed to Squirrel. */
 class Model {
 public:
     Model(Connection* connection, std::string table, std::string primaryKey);
@@ -214,13 +235,19 @@ private:
     std::string primaryKey_;
 };
 
+/**
+ * @brief Database module (eve.Database): SQLite connection factory.
+ * Script: `db <- eve.Database(); conn <- db.connectSQLite("game.db");`
+ */
 class Database : public Module {
 public:
     Module_REG(Database);
     Database()           = default;
     ~Database() override = default;
 
+    /** @brief Opens a connection with an explicit Poco connector name. */
     Connection* connect(std::string connector, std::string connectionString);
+    /** @brief Opens a SQLite database file (":memory:" is supported). */
     Connection* connectSQLite(std::string path);
 };
 

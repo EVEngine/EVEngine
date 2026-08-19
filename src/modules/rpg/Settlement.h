@@ -29,7 +29,7 @@ namespace eve::rpg {
 
 class RPGActor;
 
-/** 结算上下文：通用的读写数据袋，字段完全由调用方与各阶段自行约定。 */
+/** @brief 结算上下文：通用的读写数据袋，字段完全由调用方与各阶段自行约定。 */
 struct SettlementContext {
     RPGActor *source = nullptr;
     RPGActor *target = nullptr;
@@ -51,7 +51,7 @@ class SettlementPipeline {
 public:
     using Stage = std::function<void(SettlementContext &)>;
 
-    /** 同名 stage 已存在则整体覆盖（fn/priority），并重置为 enabled。 */
+    /** @brief 同名 stage 已存在则整体覆盖（fn/priority），并重置为 enabled。 */
     static void registerStage(const std::string &pipeline, const std::string &stage, int priority,
                                Stage fn);
     static bool unregisterStage(const std::string &pipeline, const std::string &stage);
@@ -61,7 +61,7 @@ public:
     static int stageCount(const std::string &pipeline);
     static void clearPipeline(const std::string &pipeline);
 
-    /** 按 priority 升序依次执行 pipeline 内已启用的阶段；ctx.cancelled 时提前终止。 */
+    /** @brief 按 priority 升序依次执行 pipeline 内已启用的阶段；ctx.cancelled 时提前终止。 */
     static void run(const std::string &pipeline, SettlementContext &ctx);
 };
 

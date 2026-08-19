@@ -14,14 +14,14 @@ namespace eve::graphics {
 
 class Camera2D;
 
-/** Shared 2D draw queue item (sprites + tiles). */
+/** @brief Shared 2D draw queue item (sprites + tiles). */
 struct DrawItem2D {
     float x = 0.f;
     float y = 0.f;
     float w = 0.f;
     float h = 0.f;
     float depthY = 0.f;
-    /** Degrees, clockwise, around the rectangle center (screen Y-down). */
+    /** @brief Degrees, clockwise, around the rectangle center (screen Y-down). */
     float rotation = 0.f;
     /** Explicit back-to-front order (e.g. Spine slot draw order). When set on
      *  both items it takes priority over depthY. */
@@ -29,7 +29,7 @@ struct DrawItem2D {
     bool hasOrder = false;
     Color color{1.f, 1.f, 1.f, 1.f};
     int layer = 0;
-    /** 2D quad blending (alpha / additive / opaque). */
+    /** @brief 2D quad blending (alpha / additive / opaque). */
     BlendMode blend = BlendMode::Alpha;
     Texture *texture = nullptr;
     Texture *normal = nullptr;
@@ -40,10 +40,10 @@ struct DrawItem2D {
     bool receiveLight = true;
     bool litPath = false;
     bool hasUV = false;
-    /** Atlas-packed rotated region: corner UVs are remapped (rotated 90°). */
+    /** @brief Atlas-packed rotated region: corner UVs are remapped (rotated 90°). */
     bool rotatedUV = false;
     float u0 = 0.f, v0 = 0.f, u1 = 1.f, v1 = 1.f;
-    /** Screen-space camera already resolved; if cameraEntity set, RenderSystem resolves. */
+    /** @brief Screen-space camera already resolved; if cameraEntity set, RenderSystem resolves. */
     float camX = 0.f, camY = 0.f, camZoom = 1.f;
     bool camValid = false;
     Color camClear{0.1f, 0.1f, 0.12f, 1.f};

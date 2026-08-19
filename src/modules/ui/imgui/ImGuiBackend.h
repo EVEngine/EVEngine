@@ -4,9 +4,12 @@
 
 #include <imgui.h>
 
+#include <cstdint>
+#include <map>
+
 namespace eve::ui {
 
-/** Dear ImGui + SDL input + Vulkan present overlay. */
+/** @brief Dear ImGui + SDL input + Vulkan present overlay. */
 class ImGuiBackend final : public UIBackend {
 public:
     ImGuiBackend() = default;
@@ -33,14 +36,28 @@ private:
     static void presentOverlayThunk(void *userdata, void *commandBuffer);
     static void windowDestroyedThunk(void *userdata);
     void applyScale(float scale);
-    /** Logical (point-space) UI scale; 1.0 on desktop where ImGui handles DPI. */
+    /** @brief Logical (point-space) UI scale; 1.0 on desktop where ImGui handles DPI. */
     float computeInitialScale() const;
-    /** Display/framebuffer DPI ratio used to bake the font atlas at native res. */
+    /** @brief Display/framebuffer DPI ratio used to bake the font atlas at native res. */
     float computeDpiScale() const;
-    /** Clear the font atlas and re-add fonts at the current physical-pixel size. */
+    /** @brief Clear the font atlas and re-add fonts at the current physical-pixel size. */
     void loadFonts();
-    /** Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
+    /** @brief Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
     void rebuildFonts();
+
+    uint64_t registerTexture(graphics::Texture *tex) override;
+    void unregisterTexture(uint64_t id) override;
+    bool textureSize(uint64_t id, int *w, int *h) const override;
+    void *textureHandle(uint64_t id) const override;
+
+    struct RegisteredTexture {
+        ImTextureID imId = nullptr;
+        int width = 0;
+        int height = 0;
+    };
+    std::map<uint64_t, RegisteredTexture> textures_;
+    uint64_t nextTextureKey_ = 1;
+    ImVector<ImWchar> fontRanges_;  // kept alive for cfg.GlyphRanges across font builds
 
     bool initialized_ = false;
     bool fontsUploaded_ = false;
@@ -50,6 +67,8 @@ private:
     eve::graphics::Graphics *gfx_ = nullptr;
     SDL_Window *window_ = nullptr;
     void *imguiDescriptorPool_ = nullptr;   // VkDescriptorPool
+    void *imguiTexturePool_ = nullptr;      // VkDescriptorPool (texture sets)
+    void *imguiTextureLayout_ = nullptr;    // VkDescriptorSetLayout (texture sets)
     ImGuiContext *ctx_ = nullptr;           // ImGui context owned by this backend
 };
 

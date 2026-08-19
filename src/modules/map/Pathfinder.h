@@ -10,7 +10,7 @@
 namespace eve::map {
 
 /**
- * Pathfinding facade.
+ * @brief Pathfinding facade.
  * Single-agent: A*. Group (same goal): Flow Field + follow.
  * Grid/topology internals stay out of the public ABI (Windows export limit).
  */
@@ -46,24 +46,24 @@ public:
     void syncFromLayer();
 
     /**
-     * A* from (sx,sy) to (gx,gy). Returns owned Path* (may be empty if unreachable).
+     * @brief A* from (sx,sy) to (gx,gy). Returns owned Path* (may be empty if unreachable).
      * Never returns nullptr — always a Path object for simpler script null checks via length.
      */
     Path *findPath(int sx, int sy, int gx, int gy);
 
-    /** Build / reuse cached flow field toward goal. Owned by caller. */
+    /** @brief Build / reuse cached flow field toward goal. Owned by caller. */
     FlowField *buildFlowField(int gx, int gy);
 
     /** Trace path along a flow field from start. Owned Path*. */
     Path *followFlow(FlowField *field, int sx, int sy);
 
     /**
-     * Group helper: ensure field for goal, then follow from start.
+     * @brief Group helper: ensure field for goal, then follow from start.
      * Equivalent to buildFlowField + followFlow but reuses internal cache when possible.
      */
     Path *findGroupPath(int sx, int sy, int gx, int gy);
 
-    /** Invalidate cached flow field (also called when grid dirties). */
+    /** @brief Invalidate cached flow field (also called when grid dirties). */
     void invalidateCache();
 
 private:

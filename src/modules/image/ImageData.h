@@ -19,7 +19,7 @@ namespace image
 {
 
 /**
- * Represents raw pixel data.
+ * @brief Represents raw pixel data.
  **/
 class ImageData : public Resource
 {
@@ -48,7 +48,7 @@ public:
 	virtual ~ImageData();
 
 	/**
-	 * Paste part of one ImageData onto another. The subregion defined by the top-left
+	 * @brief Paste part of one ImageData onto another. The subregion defined by the top-left
 	 * corner (sx, sy) and the size (sw,sh) will be pasted to (dx,dy) in this ImageData.
 	 * @param dx The destination x-coordinate.
 	 * @param dy The destination y-coordinate.
@@ -60,7 +60,7 @@ public:
 	void paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh);
 
 	/**
-	 * Rotate pixels around the image center and return a new ImageData.
+	 * @brief Rotate pixels around the image center and return a new ImageData.
 	 *
 	 * Uses inverse mapping (iterate destination → sample source) so every output
 	 * pixel is filled — the standard approach for image rotation.
@@ -80,14 +80,14 @@ public:
 	ImageData *rotate(float radians, std::string filter = "nearest", bool expand = true) const;
 
 	/**
-	 * Checks whether a position is inside this ImageData. Useful for checking bounds.
+	 * @brief Checks whether a position is inside this ImageData. Useful for checking bounds.
 	 * @param x The position along the x-axis.
 	 * @param y The position along the y-axis.
 	 **/
 	bool inside(int x, int y) const;
 
 	/**
-	 * Sets the pixel at location (x,y).
+	 * @brief Sets the pixel at location (x,y).
 	 * @param x The location along the x-axis.
 	 * @param y The location along the y-axis.
 	 * @param p The color to use for the given location.
@@ -95,7 +95,7 @@ public:
 	void setPixel(int x, int y, const Colorf &p);
 
 	/**
-	 * Gets the pixel at location (x,y).
+	 * @brief Gets the pixel at location (x,y).
 	 * @param x The location along the x-axis.
 	 * @param y The location along the y-axis.
 	 * @return The color for the given location.
@@ -104,7 +104,7 @@ public:
 	Colorf getPixel(int x, int y) const;
 
 	/**
-	 * Encodes raw pixel data into a given format.
+	 * @brief Encodes raw pixel data into a given format.
 	 * @param f The file to save the encoded image data to.
 	 * @param format The format of the encoded data.
 	 **/

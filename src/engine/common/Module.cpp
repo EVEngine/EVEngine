@@ -1,4 +1,5 @@
 #include "common/Module.h"
+#include "common/Assert.h"
 #include "common/ECS.h"
 #include "common/Runtime.h"
 
@@ -14,16 +15,22 @@ ModuleManager& ModuleManager::inst() {
 }
 
 Module* ModuleManager::find(const char* name) {
+    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
     auto p = inst().registered_modules.find(name);
     if (p == inst().registered_modules.end() || p->second.instance == nullptr) return nullptr;
     return p->second.instance;
 }
 
 void ModuleManager::insert(const char* name, Module* instance) {
+    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
+    EV_PARAM_CHECK(instance != nullptr, "module instance must not be null");
     inst().registered_modules[name].instance = instance;
 }
 
 void ModuleManager::register_module(const char* name, creator_t c, exposer_t e) {
+    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
+    const bool hasCreator = c != nullptr;  // function pointers can't be printed by zeroerr
+    EV_PARAM_CHECK(hasCreator, "module creator must not be null");
     auto p = inst().registered_modules.find(name);
     if (p == inst().registered_modules.end()) {
         inst().registered_modules.insert(

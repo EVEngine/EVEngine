@@ -55,10 +55,19 @@ std::vector<const char *> regularFontCandidates() {
         "/System/Library/Fonts/SFNS.ttf",
         "/Library/Fonts/Arial.ttf",
     };
+#elif defined(EVENGINE_ANDROID)
+    static const std::vector<std::string> paths = {
+        "/system/fonts/NotoSansCJK-Regular.ttc",
+        "/system/fonts/DroidSansFallback.ttf",
+        "/system/fonts/Roboto-Regular.ttf",
+    };
 #else
     static const std::vector<std::string> paths = {
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+        "/usr/share/fonts/truetype/arphic/uming.ttc",
     };
 #endif
     std::vector<const char *> out;
@@ -235,6 +244,17 @@ void ImGuiBackend::shutdown() {
                                 static_cast<VkDescriptorPool>(imguiDescriptorPool_), nullptr);
         imguiDescriptorPool_ = nullptr;
     }
+    if (imguiTexturePool_ && vkg) {
+        vkDestroyDescriptorPool(static_cast<VkDevice>(vkg->getDevice().instance),
+                                static_cast<VkDescriptorPool>(imguiTexturePool_), nullptr);
+        imguiTexturePool_ = nullptr;
+    }
+    if (imguiTextureLayout_ && vkg) {
+        vkDestroyDescriptorSetLayout(static_cast<VkDevice>(vkg->getDevice().instance),
+                                     static_cast<VkDescriptorSetLayout>(imguiTextureLayout_),
+                                     nullptr);
+        imguiTextureLayout_ = nullptr;
+    }
 #endif
     gfx_ = nullptr;
     window_ = nullptr;
@@ -324,6 +344,14 @@ void ImGuiBackend::loadFonts() {
     ImFontConfig cfg{};
     cfg.OversampleH = 2;
     cfg.OversampleV = 2;
+    // Include CJK glyphs so Chinese/Japanese text works on any platform whose
+    // system font provides them (atlas grows by a few MB — acceptable).
+    fontRanges_.clear();
+    ImFontGlyphRangesBuilder rangeBuilder;
+    rangeBuilder.AddRanges(atlas->GetGlyphRangesDefault());
+    rangeBuilder.AddRanges(atlas->GetGlyphRangesChineseFull());
+    rangeBuilder.BuildRanges(&fontRanges_);
+    cfg.GlyphRanges = fontRanges_.Data;
 
     bool added = false;
     for (const char *path : regularFontCandidates()) {
@@ -368,6 +396,102 @@ void ImGuiBackend::rebuildFonts() {
     ImGui_ImplVulkan_DestroyFontUploadObjects();
     fontsUploaded_ = true;
 #endif
+}
+
+uint64_t ImGuiBackend::registerTexture(graphics::Texture *tex) {
+    if (!initialized_ || !tex || !tex->gpuHandle) return 0;
+    RegisteredTexture reg;
+#ifdef EVENGINE_WEBGPU
+    auto *gt = static_cast<eve::graphics::webgpu::GpuTexture *>(tex->gpuHandle);
+    reg.imId = (ImTextureID)(intptr_t)gt->view.Get();
+    if (!reg.imId) return 0;
+#else
+    auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx_);
+    if (!vkg) return 0;
+    auto *gt = static_cast<eve::graphics::vulkan::GpuTexture *>(tex->gpuHandle);
+    const VkDevice device = static_cast<VkDevice>(vkg->getDevice().instance);
+    if (!imguiTextureLayout_) {
+        VkDescriptorSetLayoutBinding binding{};
+        binding.binding = 0;
+        binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        binding.descriptorCount = 1;
+        binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        VkDescriptorSetLayoutCreateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        info.bindingCount = 1;
+        info.pBindings = &binding;
+        VkDescriptorSetLayout layout = VK_NULL_HANDLE;
+        checkVk(vkCreateDescriptorSetLayout(device, &info, nullptr, &layout));
+        imguiTextureLayout_ = layout;
+    }
+    if (!imguiTexturePool_) {
+        VkDescriptorPoolSize size{};
+        size.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        size.descriptorCount = 512;
+        VkDescriptorPoolCreateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        info.maxSets = 512;
+        info.poolSizeCount = 1;
+        info.pPoolSizes = &size;
+        VkDescriptorPool pool = VK_NULL_HANDLE;
+        checkVk(vkCreateDescriptorPool(device, &info, nullptr, &pool));
+        imguiTexturePool_ = pool;
+    }
+    VkDescriptorSet set = VK_NULL_HANDLE;
+    VkDescriptorSetAllocateInfo ai{};
+    ai.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    ai.descriptorPool = static_cast<VkDescriptorPool>(imguiTexturePool_);
+    ai.descriptorSetCount = 1;
+    const VkDescriptorSetLayout layout = static_cast<VkDescriptorSetLayout>(imguiTextureLayout_);
+    ai.pSetLayouts = &layout;
+    checkVk(vkAllocateDescriptorSets(device, &ai, &set));
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = static_cast<VkImageView>(gt->imageView());
+    imageInfo.sampler = static_cast<VkSampler>(gt->sampler);
+    VkWriteDescriptorSet write{};
+    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.dstSet = set;
+    write.dstBinding = 0;
+    write.descriptorCount = 1;
+    write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    write.pImageInfo = &imageInfo;
+    vkUpdateDescriptorSets(device, 1, &write, 0, nullptr);
+    reg.imId = set;
+#endif
+    reg.width = tex->getWidth();
+    reg.height = tex->getHeight();
+    const uint64_t key = nextTextureKey_++;
+    textures_[key] = reg;
+    return key;
+}
+
+void ImGuiBackend::unregisterTexture(uint64_t id) {
+    auto it = textures_.find(id);
+    if (it == textures_.end()) return;
+#ifndef EVENGINE_WEBGPU
+    auto *vkg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx_);
+    if (vkg && imguiTexturePool_) {
+        VkDescriptorSet set = static_cast<VkDescriptorSet>(it->second.imId);
+        vkFreeDescriptorSets(static_cast<VkDevice>(vkg->getDevice().instance),
+                             static_cast<VkDescriptorPool>(imguiTexturePool_), 1, &set);
+    }
+#endif
+    textures_.erase(it);
+}
+
+bool ImGuiBackend::textureSize(uint64_t id, int *w, int *h) const {
+    auto it = textures_.find(id);
+    if (it == textures_.end()) return false;
+    if (w) *w = it->second.width;
+    if (h) *h = it->second.height;
+    return true;
+}
+
+void *ImGuiBackend::textureHandle(uint64_t id) const {
+    auto it = textures_.find(id);
+    return it == textures_.end() ? nullptr : static_cast<void *>(it->second.imId);
 }
 
 bool ImGuiBackend::wantCaptureMouse() const {
