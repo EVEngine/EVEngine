@@ -35,6 +35,17 @@ else()
     set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 endif()
 
+# Crash-backtrace support from the prebuilt third-party install tree
+# (EVEngine/third-party → backward-cpp, MIT). The host binary installs an
+# unhandled-exception handler (main.cpp) that prints a symbolized stack trace
+# on crash; it is a host-only tool, not a game module.
+if(WIN32 AND EVENGINE_THIRD_PARTY_BINARY_DIR)
+    add_library(EVBacktrace INTERFACE)
+    target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
+    target_link_libraries(EVBacktrace INTERFACE
+        ${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib/backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>.lib)
+endif()
+
 if(WIN32)
     set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
 elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
@@ -138,6 +149,8 @@ endif()
 # engine includes; keep the same no-auto-link contract as the modules.
 if(WIN32 AND TARGET ${EVENGINE_NATIVE_TARGET})
     target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    # Plain form: the host target's other third-party libs are linked plainly.
+    target_link_libraries(${EVENGINE_NATIVE_TARGET} EVBacktrace)
 endif()
 
 if(NOT EVENGINE_ANDROID_TEST_APP)
