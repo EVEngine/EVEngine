@@ -19,6 +19,18 @@ DOC_FILES = frozenset({"README.md", "Readme.md", "Readme.en.md", "Doxyfile"})
 DEV_BRANCH = "dev"
 MAIN_BRANCH = "main"
 MAIN_GATE_CHECK = "main-gate"
+# Non-doc files the release pipeline (`start`) rewrites on main. sync-docs must
+# not reject them: the same changes reach `dev` through the release rebase PR.
+RELEASE_PATHS = frozenset(
+    {
+        "CMakeLists.txt",
+        "platform/android/apk/app/build.gradle.kts",
+        "src/engine/devtools/McpServer.cpp",
+        "examples/basic/root.nut",
+        "platform/ios/game-shell/root.nut",
+        "platform/android/game-shell/root.nut",
+    }
+)
 _SET_RE = {
     "major": re.compile(r'(set\(EVENGINE_MAJOR_VERSION\s+")([^"]*)("\))'),
     "minor": re.compile(r'(set\(EVENGINE_MINOR_VERSION\s+")([^"]*)("\))'),
@@ -244,6 +256,10 @@ def is_doc_path(path: str) -> bool:
     if norm in DOC_FILES:
         return True
     return norm == "docs" or norm.startswith("docs/")
+
+
+def is_release_path(path: str) -> bool:
+    return path.replace("\\", "/").lstrip("./") in RELEASE_PATHS
 
 
 def is_promote_head(head_ref: str) -> bool:
@@ -687,59 +703,64 @@ def cmd_cleanup_branches(runner: Runner, *, dry_run: bool = False) -> None:
 
 
 def cmd_sync_docs(runner: Runner, *, dry_run: bool = False) -> None:
+    """Sync documentation-only changes from `main` onto `dev`.
+
+    - Only paths that changed on `main` since the merge-base with `dev` are
+      considered, so `dev`-only work is never touched.
+    - Non-doc changes on `main` are rejected unless they are release-version
+      touchpoints (RELEASE_PATHS); those reach `dev` through the release
+      pipeline's rebase PR, and treating them as errors would make every
+      sync-docs run after a release fail spuriously.
+    - The sync is PR-based (`sync-docs/from-main` -> `dev`), matching the
+      "no direct push to dev" model. Doc content is copied from `main`, so
+      merge / squash / rebase merges on `main` are all handled.
+    """
     runner.run(["git", "fetch", "origin", MAIN_BRANCH, DEV_BRANCH])
-    log = runner.run(
-        ["git", "log", "--reverse", "--pretty=%H", f"origin/{DEV_BRANCH}..origin/{MAIN_BRANCH}"]
-    )
-    shas = [line.strip() for line in log.splitlines() if line.strip()]
-    if not shas:
+    base = runner.run(
+        ["git", "merge-base", f"origin/{MAIN_BRANCH}", f"origin/{DEV_BRANCH}"]
+    ).strip()
+    changed = runner.run(["git", "diff", "--name-only", base, f"origin/{MAIN_BRANCH}"])
+    files = [line.strip() for line in changed.splitlines() if line.strip()]
+    bad = [f for f in files if not is_doc_path(f) and not is_release_path(f)]
+    if bad:
+        print(
+            f"error: {MAIN_BRANCH} is ahead of {DEV_BRANCH} with non-doc files: "
+            + ", ".join(bad)
+            + f". Land those changes on {DEV_BRANCH} instead.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+    doc_paths = [f for f in files if is_doc_path(f)]
+    if not doc_paths:
         print("nothing to sync")
         return
-    for sha in shas:
-        names = runner.run(["git", "diff-tree", "--no-commit-id", "--name-only", "-r", sha])
-        files = [line.strip() for line in names.splitlines() if line.strip()]
-        bad = [f for f in files if not is_doc_path(f)]
-        if bad:
-            print(
-                f"error: {MAIN_BRANCH} is ahead of {DEV_BRANCH} with non-doc files: "
-                + ", ".join(bad)
-                + f". Land those changes on {DEV_BRANCH} instead.",
-                file=sys.stderr,
-            )
-            raise SystemExit(1)
-    runner.run(["git", "checkout", DEV_BRANCH])
-    try:
-        runner.run(["git", "cherry-pick", *shas])
-    except CommandError:
-        runner.run(["git", "cherry-pick", "--abort"], check=False)
-        runner.run(["git", "checkout", "-B", "sync-docs/from-main", f"origin/{DEV_BRANCH}"])
-        runner.run(["git", "push", "-u", "origin", "sync-docs/from-main"])
-        sha_list = " ".join(shas)
-        body = (
-            f"Could not cherry-pick documentation commits from `{MAIN_BRANCH}` onto `{DEV_BRANCH}`.\n\n"
-            f"SHAs: {sha_list}\n\n"
-            "```\n"
-            f"git checkout {DEV_BRANCH}\n"
-            f"git cherry-pick {sha_list}\n"
-            "```\n"
-        )
-        runner.run(
-            [
-                "gh",
-                "pr",
-                "create",
-                "--base",
-                DEV_BRANCH,
-                "--head",
-                "sync-docs/from-main",
-                "--title",
-                f"sync docs from {MAIN_BRANCH}",
-                "--body",
-                body,
-            ]
-        )
+    print(f"syncing {len(doc_paths)} documentation path(s) from {MAIN_BRANCH}:")
+    for path in doc_paths:
+        print(f"  {path}")
+    if dry_run:
         return
-    runner.run(["git", "push", "origin", DEV_BRANCH])
+    runner.run(["git", "checkout", "-B", "sync-docs/from-main", f"origin/{DEV_BRANCH}"])
+    runner.run(["git", "checkout", f"origin/{MAIN_BRANCH}", "--", *doc_paths])
+    try:
+        runner.run(["git", "diff", "--cached", "--quiet"])
+    except CommandError:
+        runner.run(["git", "commit", "-m", f"docs: sync documentation from {MAIN_BRANCH}"])
+    else:
+        print("nothing to sync (docs already in sync)")
+        return
+    runner.run(["git", "push", "-u", "origin", "sync-docs/from-main", "--force-with-lease"])
+    body = (
+        f"Sync documentation changes from `{MAIN_BRANCH}` onto `{DEV_BRANCH}`.\n\n"
+        f"Merge this PR to keep `{DEV_BRANCH}` docs in sync. "
+        f"Do not merge `{DEV_BRANCH}` into `{MAIN_BRANCH}`.\n"
+    )
+    _ensure_pr(
+        runner,
+        base=DEV_BRANCH,
+        head="sync-docs/from-main",
+        title=f"docs: sync from {MAIN_BRANCH}",
+        body=body,
+    )
 
 
 def _latest_prerelease_tag(runner: Runner) -> str:

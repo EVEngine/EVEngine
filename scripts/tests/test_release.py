@@ -451,61 +451,78 @@ class FinishTest(unittest.TestCase):
 
 
 class SyncDocsTest(unittest.TestCase):
-    def test_rejects_non_doc_commit(self):
-        r = release.FakeRunner()
+    def _wire(self, r, diff_out):
         r.when(["git", "fetch", "origin", "main", "dev"], stdout="")
         r.when(
-            ["git", "log", "--reverse", "--pretty=%H", "origin/dev..origin/main"],
-            stdout="abc\n",
+            ["git", "merge-base", "origin/main", "origin/dev"],
+            stdout="base123\n",
         )
-        r.when(
-            ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "abc"],
-            stdout="CMakeLists.txt\n",
-        )
+        r.when(["git", "diff", "--name-only", "base123", "origin/main"], stdout=diff_out)
+        return r
+
+    def test_rejects_non_doc_change(self):
+        r = self._wire(release.FakeRunner(), "src/engine/main.cpp\n")
         with self.assertRaises(SystemExit):
             release.cmd_sync_docs(r)
-        self.assertFalse(any(c[:2] == ["git", "cherry-pick"] for c in r.calls))
+        self.assertFalse(any(c[:2] == ["git", "checkout"] for c in r.calls))
 
-    def test_cherry_pick_success(self):
-        r = release.FakeRunner()
-        r.when(["git", "fetch", "origin", "main", "dev"], stdout="")
-        r.when(
-            ["git", "log", "--reverse", "--pretty=%H", "origin/dev..origin/main"],
-            stdout="abc\n",
-        )
-        r.when(
-            ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "abc"],
-            stdout="README.md\n",
-        )
-        r.when(["git", "checkout", "dev"], stdout="")
-        r.when(["git", "cherry-pick", "abc"], stdout="")
-        r.when(["git", "push", "origin", "dev"], stdout="")
+    def test_allows_release_commit_and_skips_sync(self):
+        r = self._wire(release.FakeRunner(), "CMakeLists.txt\n")
         release.cmd_sync_docs(r)
-        self.assertIn(["git", "cherry-pick", "abc"], r.calls)
-        self.assertIn(["git", "push", "origin", "dev"], r.calls)
+        self.assertFalse(any("sync-docs/from-main" in c for c in r.calls))
 
-    def test_conflict_opens_pr(self):
-        r = release.FakeRunner()
-        r.when(["git", "fetch", "origin", "main", "dev"], stdout="")
-        r.when(
-            ["git", "log", "--reverse", "--pretty=%H", "origin/dev..origin/main"],
-            stdout="abc\n",
-        )
-        r.when(
-            ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "abc"],
-            stdout="docs/usr/README.md\n",
-        )
-        r.when(["git", "checkout", "dev"], stdout="")
-        r.when(["git", "cherry-pick", "abc"], rc=1)
-        r.when(["git", "cherry-pick", "--abort"], stdout="")
+    def test_nothing_to_sync(self):
+        r = self._wire(release.FakeRunner(), "")
+        release.cmd_sync_docs(r)
+
+    def test_syncs_docs_via_pr(self):
+        r = self._wire(release.FakeRunner(), "README.md\ndocs/usr/guide.md\n")
         r.when(["git", "checkout", "-B", "sync-docs/from-main", "origin/dev"], stdout="")
-        r.when(["git", "push", "-u", "origin", "sync-docs/from-main"], stdout="")
+        r.when(
+            ["git", "checkout", "origin/main", "--", "README.md", "docs/usr/guide.md"],
+            stdout="",
+        )
+        r.when(["git", "diff", "--cached", "--quiet"], rc=1)
+        r.when(["git", "commit", "-m", "docs: sync documentation from main"], stdout="")
+        r.when(
+            ["git", "push", "-u", "origin", "sync-docs/from-main", "--force-with-lease"],
+            stdout="",
+        )
+        r.when(
+            ["gh", "pr", "list", "--base", "dev", "--head", "sync-docs/from-main"],
+            stdout="[]\n",
+        )
         r.when(["gh", "pr", "create"], stdout="https://example/pr/2\n")
         release.cmd_sync_docs(r)
-        self.assertTrue(any(c[:3] == ["gh", "pr", "create"] for c in r.calls))
-        self.assertFalse(
-            any(c == ["git", "push", "--force-with-lease", "origin", "dev"] for c in r.calls)
+        self.assertIn(
+            ["git", "push", "-u", "origin", "sync-docs/from-main", "--force-with-lease"],
+            r.calls,
         )
+        self.assertTrue(any(c[:3] == ["gh", "pr", "create"] for c in r.calls))
+        self.assertFalse(any(c == ["git", "push", "origin", "dev"] for c in r.calls))
+
+    def test_dry_run_never_mutates(self):
+        r = self._wire(release.FakeRunner(), "README.md\n")
+        release.cmd_sync_docs(r, dry_run=True)
+        self.assertFalse(any(c[:2] == ["git", "push"] for c in r.calls))
+        self.assertFalse(any(c[:2] == ["git", "checkout"] for c in r.calls))
+
+    def test_reuses_existing_pr(self):
+        r = self._wire(release.FakeRunner(), "README.md\n")
+        r.when(["git", "checkout", "-B", "sync-docs/from-main", "origin/dev"], stdout="")
+        r.when(["git", "checkout", "origin/main", "--", "README.md"], stdout="")
+        r.when(["git", "diff", "--cached", "--quiet"], rc=1)
+        r.when(["git", "commit", "-m", "docs: sync documentation from main"], stdout="")
+        r.when(
+            ["git", "push", "-u", "origin", "sync-docs/from-main", "--force-with-lease"],
+            stdout="",
+        )
+        r.when(
+            ["gh", "pr", "list", "--base", "dev", "--head", "sync-docs/from-main"],
+            stdout='[{"url":"https://example/pr/9"}]\n',
+        )
+        release.cmd_sync_docs(r)
+        self.assertFalse(any(c[:3] == ["gh", "pr", "create"] for c in r.calls))
 
 
 class CliTest(unittest.TestCase):

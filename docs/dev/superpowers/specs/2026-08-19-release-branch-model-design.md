@@ -41,7 +41,10 @@ GitHub 展示默认分支上的 README/文档。允许对 `main` 开**文档白�
 
 - 允许路径：`README.md`、`Readme.md`、`Readme.en.md`、`docs/**`、`Doxyfile`
 - 混入白名单外文件则检查失败，改走 `dev`
-- 合并后 `sync-docs.yml` 调用 `release.py sync-docs`：把 `main` 上尚未在 `dev` 的文档提交 cherry-pick 到 `dev`；冲突则开 PR，不强制改写 `dev`
+- 合并后 `sync-docs.yml` 调用 `release.py sync-docs`：以 `merge-base(main, dev)` 到
+  `main` 的路径差为准，把文档路径同步到 `dev`；开 `sync-docs/from-main` → `dev` 的
+  PR（不直推 `dev`）。release 版本触点不算非文档改动（它们经 rebase PR 到达 `dev`），
+  文档内容直接从 `main` 拷贝，merge / squash / rebase 合入方式都兼容
 - 发布更新 `main` 时：能快进到「去 `-dev`」的正式版 commit 就快进；否则 **merge** 该 commit，保留 `main` 上已有的文档提交
 
 ## 一次发布的时间线
@@ -117,9 +120,10 @@ layering 作业（无网络、无工具链依赖）。独立发布的工具版�
 
 **`sync-docs`**（`main` 文档 PR 合并后）
 
-1. 确认 `main` 相对 `dev` 多出来的提交只碰白名单路径，否则失败。
-2. cherry-pick 这些提交到 `dev`；成功则推送 `dev`（普通推送，不需要 lease，除非非快进）。
-3. 冲突则开 PR，不改写 `dev`。
+1. `git merge-base(main, dev)` 后，`git diff --name-only` 列出 `main` 相对合基多出的
+   路径；非文档且非 release 版本触点（`RELEASE_PATHS`）的路径即失败（应走 `dev`）。
+2. 文档路径从 `main` 拷贝到 `sync-docs/from-main`（基于 `origin/dev`）并提交。
+3. 推送分支并开 PR 到 `dev`（复用已存在的同 head PR）；不直推 `dev`。
 
 **`check-versions`**（无网络、无 `gh` 依赖）
 
@@ -182,7 +186,9 @@ start (release.py start --tag)
 
 - `main` 的 `push`，且路径落在文档白名单。
 - 跑 `release.py sync-docs`。
-- 若 push 混有非文档文件（例如有人绕过保护直接推了代码），作业失败并注释说明应走 `dev`。
+- 若 `main` 混有非文档、非 release 版本触点的文件（例如有人绕过保护直接推了代码），
+  作业失败并注释说明应走 `dev`。
+- 同步产物是 `sync-docs/from-main` → `dev` 的 PR，不直推 `dev`。
 
 ## 失败与重跑
 

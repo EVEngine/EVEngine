@@ -109,6 +109,7 @@ class ReleaseGitIntegrationTest(unittest.TestCase):
 
     def _write_required_files(self, target: Path) -> None:
         """Write minimal required version touchpoints (0.1.0) into a repo tree."""
+        (target / "Readme.md").write_text("# EVEngine\n", encoding="utf-8")
         (target / "docs").mkdir(parents=True, exist_ok=True)
         (target / "docs/CMakeLists.txt").write_text(
             'set(EVENGINE_MAJOR_VERSION "0")\n'
@@ -295,14 +296,7 @@ class ReleaseGitIntegrationTest(unittest.TestCase):
             repo_root=work2,
         )
 
-        # Simulate the human merging both PRs: promote -> main, rebase -> dev.
-        official = _run(["git", "rev-parse", "refs/tags/v0.1.0"], cwd=work2)
-        _run(["git", "checkout", "-q", "-B", "main", "refs/remotes/origin/main"], cwd=work2)
-        _run(["git", "merge", "-q", "--no-ff", official, "-m", "promote v0.1.0"], cwd=work2)
-        _run(["git", "push", "-q", "origin", "main"], cwd=work2)
-        _run(["git", "checkout", "-q", "-B", "dev", "refs/remotes/origin/dev"], cwd=work2)
-        _run(["git", "merge", "-q", "--ff-only", "refs/remotes/origin/rebase/v0.1.0"], cwd=work2)
-        _run(["git", "push", "-q", "origin", "dev"], cwd=work2)
+        self._merge_release_prs(work2)
 
         work3 = self._fresh_clone()
         release.cmd_cleanup_branches(FakeGhRunner(cwd=work3))
@@ -316,6 +310,79 @@ class ReleaseGitIntegrationTest(unittest.TestCase):
         self.assertIsNotNone(self._remote_ref("refs/heads/main"))
         self.assertIsNotNone(self._remote_ref("refs/heads/dev"))
         self.assertIsNotNone(self._remote_ref("refs/tags/v0.1.0"))
+
+    def _merge_release_prs(self, work: Path) -> None:
+        """Simulate the human merging the promote + rebase PRs."""
+        official = _run(["git", "rev-parse", "refs/tags/v0.1.0"], cwd=work)
+        _run(["git", "checkout", "-q", "-B", "main", "refs/remotes/origin/main"], cwd=work)
+        _run(["git", "merge", "-q", "--no-ff", official, "-m", "promote v0.1.0"], cwd=work)
+        _run(["git", "push", "-q", "origin", "main"], cwd=work)
+        _run(["git", "checkout", "-q", "-B", "dev", "refs/remotes/origin/dev"], cwd=work)
+        _run(["git", "merge", "-q", "--ff-only", "refs/remotes/origin/rebase/v0.1.0"], cwd=work)
+        _run(["git", "push", "-q", "origin", "dev"], cwd=work)
+
+    def test_sync_docs_after_release_does_not_fail(self) -> None:
+        work = self._fresh_clone()
+        release.cmd_start(
+            FakeGhRunner(cwd=work),
+            tag=TAG,
+            cmake_path=work / "CMakeLists.txt",
+            repo_root=work,
+            ci=True,
+        )
+        work2 = self._fresh_clone()
+        release.cmd_finish(
+            FakeGhRunner(cwd=work2),
+            tag=TAG,
+            cmake_path=work2 / "CMakeLists.txt",
+            repo_root=work2,
+        )
+        self._merge_release_prs(work2)
+
+        work3 = self._fresh_clone()
+        # main is ahead of dev by release content (CMakeLists etc.) only.
+        release.cmd_sync_docs(FakeGhRunner(cwd=work3))
+        self.assertIsNone(self._remote_ref("refs/heads/sync-docs/from-main"))
+
+    def test_sync_docs_copies_doc_commit_via_pr(self) -> None:
+        work = self._fresh_clone()
+        release.cmd_start(
+            FakeGhRunner(cwd=work),
+            tag=TAG,
+            cmake_path=work / "CMakeLists.txt",
+            repo_root=work,
+            ci=True,
+        )
+        work2 = self._fresh_clone()
+        release.cmd_finish(
+            FakeGhRunner(cwd=work2),
+            tag=TAG,
+            cmake_path=work2 / "CMakeLists.txt",
+            repo_root=work2,
+        )
+        self._merge_release_prs(work2)
+        dev_before = self._remote_ref("refs/heads/dev")
+
+        # A documentation commit lands on main (e.g. via a doc-only PR).
+        _run(["git", "checkout", "-q", "main"], cwd=work2)
+        (work2 / "Readme.md").write_text("# EVEngine\n\nUpdated docs for the release.\n", encoding="utf-8")
+        _run(["git", "add", "Readme.md"], cwd=work2)
+        _run(["git", "commit", "-q", "-m", "docs: update readme"], cwd=work2)
+        _run(["git", "push", "-q", "origin", "main"], cwd=work2)
+
+        work3 = self._fresh_clone()
+        release.cmd_sync_docs(FakeGhRunner(cwd=work3))
+
+        sync_sha = self._remote_ref("refs/heads/sync-docs/from-main")
+        self.assertTrue(sync_sha)
+        _run(["git", "fetch", "origin"], cwd=work3)
+        readme = _run(
+            ["git", "show", "refs/remotes/origin/sync-docs/from-main:Readme.md"],
+            cwd=work3,
+        )
+        self.assertIn("Updated docs for the release.", readme)
+        # dev was not direct-pushed; only the sync branch carries the change.
+        self.assertEqual(dev_before, self._remote_ref("refs/heads/dev"))
 
 
 if __name__ == "__main__":
