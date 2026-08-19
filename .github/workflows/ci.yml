@@ -60,6 +60,30 @@ jobs:
   # #include that points up the dependency layering (see
   # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
   # script and shrink as the capability registry lands.
+  format:
+    name: Formatting (clang-format)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
+
+      - name: Check changed lines are clang-format clean
+        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
+
+  # Fast structural check: no build, no toolchain. Fails when a module gains an
+  # #include that points up the dependency layering (see
+  # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
+  # script and shrink as the capability registry lands.
   layering:
     name: Module layering
     runs-on: ubuntu-latest

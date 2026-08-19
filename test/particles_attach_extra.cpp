@@ -503,7 +503,7 @@ TEST_CASE("particles.attach.ik3dSolverStepContinuous") {
 TEST_CASE("particles.skin.filterByIndexAndClearFilter") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_skin_filter_idx"));
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
@@ -536,7 +536,7 @@ TEST_CASE("particles.skin.filterByIndexAndClearFilter") {
 TEST_CASE("particles.skin.emitFromSkinRespectsBuffer") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_skin_buffer"));
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
@@ -562,7 +562,7 @@ TEST_CASE("particles.skin.emitFromSkinRespectsBuffer") {
 TEST_CASE("particles.attach.cesiumManBoneByNameIfPresent") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_attach_byname"));
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
     REQUIRE(skeleton.get() != nullptr);

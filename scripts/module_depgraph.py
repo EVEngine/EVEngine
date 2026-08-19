@@ -34,16 +34,15 @@ SOURCE_EXT = (".cpp", ".cc", ".h", ".hpp")
 # Upward edges that break the layering. Each entry is a known debt item; --check
 # fails on anything outside this list so no new back-edge slips in, and reports
 # entries that are no longer needed so the list shrinks as debt is paid off.
-KNOWN_BACK_EDGES = {
-    # window/Window.cpp, window/sdl/Window.cpp: the window owns the Graphics
-    # pointer and decodes its own icon image.
-    ("window", "graphics"),
-    # scene/Scene.cpp: pickScreenAt and collectFrustumIdsAt take a
-    # graphics::Camera3D and read its projection. Everything else about scene is
-    # now renderer-agnostic (graphics registers its own link kinds), so these two
-    # entry points are what is left to move out to camera/graphics.
-    ("scene", "graphics"),
-}
+#
+# All three original back-edges are fixed:
+#   window -> graphics: the window queries the IWindowSurfaceHost capability
+#     (common/WindowSurfaceHost.h) instead of holding a Graphics pointer.
+#   window -> image:   Window::setIconRGBA takes raw RGBA8 pixels; the image
+#     module does not cross the window boundary.
+#   scene  -> graphics: the Camera3D-based picking entry points are implemented
+#     in graphics/ScenePicking.cpp (graphics -> scene is a legal downward edge).
+KNOWN_BACK_EDGES = set()
 
 # eve_declare_module(NAME <m> ... LAYER <n> ...) blocks in the module manifest.
 DECLARE_RE = re.compile(r"eve_declare_module\((.*?)\)", re.S)

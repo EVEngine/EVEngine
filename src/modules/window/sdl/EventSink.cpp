@@ -6,8 +6,8 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
+#include "common/WindowSurfaceHost.h"
 #include "event/PlatformEventSink.h"
-#include "graphics/Graphics.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
@@ -22,8 +22,7 @@ namespace {
 /** Re-reads the real window size after a resize, rotation or resume. */
 void syncWindowPixelSize() {
     auto *win = eve::ModuleManager::getInstance<eve::window::Window>("Window");
-    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-    if (!win || !gfx) return;
+    if (!win) return;
     auto *sdlWin = dynamic_cast<Window *>(win);
     if (!sdlWin) return;
     SDL_Window *native = static_cast<SDL_Window *>(sdlWin->getHandle());
@@ -50,20 +49,20 @@ void syncWindowPixelSize() {
  * gone.
  */
 int SDLCALL watchAppEvents(void * /*udata*/, SDL_Event *event) {
-    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-    if (!gfx) return 1;
+    auto *surfaceHost = eve::cap::query<IWindowSurfaceHost>();
+    if (!surfaceHost) return 1;
 
     switch (event->type) {
         case SDL_APP_DIDENTERBACKGROUND:
             // Stop presenting: the native surface is being torn down.
-            gfx->setActive(false);
+            surfaceHost->setActive(false);
             break;
         case SDL_APP_WILLENTERFOREGROUND:
         case SDL_APP_DIDENTERFOREGROUND:
             // The native window is recreated on resume; rebuild the render
             // surface and swapchain, then resume presenting.
-            gfx->requestSurfaceRecreate();
-            gfx->setActive(true);
+            surfaceHost->requestSurfaceRecreate();
+            surfaceHost->setActive(true);
             syncWindowPixelSize();
             break;
         default:

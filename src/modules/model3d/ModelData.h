@@ -2,7 +2,6 @@
 
 #include "common/Resource.h"
 
-#include "image/ImageData.h"
 #include "medialoader/model/ModelScene.h"
 
 #include <string>
@@ -12,6 +11,9 @@ struct aiScene;
 struct aiMaterial;
 
 namespace eve {
+namespace image {
+class ImageData;
+}
 namespace model3d {
 
 /**
@@ -90,6 +92,9 @@ public:
 
     const aiScene *getScene() const;
     const aiMesh *getMesh(int meshIndex) const;
+
+    /** @brief Replace this scene with `replacement`'s (cache reload). */
+    void adopt(eve::Resource &replacement) override;
 
 private:
     const aiMesh *meshAt(int meshIndex) const;

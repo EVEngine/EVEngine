@@ -2,18 +2,36 @@
 #include "zeroerr/unittest.h"
 
 #include "animation/Animation.h"
-#include "animation/SpriteAnim.h"
-#include "animation/SpriteClip.h"
-#include "animation/SpriteSheet.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
+#include "animation/SpriteAnim.h"
+#include "animation/SpriteClip.h"
+#include "animation/SpriteSheet.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
 #include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "window/Window.h"
 
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -353,7 +371,6 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width    = 1280;
     s.height   = 720;

@@ -1,9 +1,29 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/RenderSystem3D.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "ui/UI.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
@@ -31,7 +51,6 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 480;
@@ -112,7 +131,6 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 720;
     s.height = 480;
@@ -212,7 +230,6 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 800;
     s.height = 600;

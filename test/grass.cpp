@@ -2,8 +2,23 @@
 #include "zeroerr/unittest.h"
 
 #include "filesystem/FileData.h"
-#include "graphics/Grass.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Material.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
 #include "graphics/Light.h"
@@ -410,7 +425,6 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     gfx->setMsaaSamples(0);
     eve::window::WindowSettings s;
     s.width = 960;

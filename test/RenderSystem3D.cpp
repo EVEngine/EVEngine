@@ -10,12 +10,31 @@
 #include <cstdint>
 #include <vector>
 
+#include "filesystem/FileData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
 #include "graphics/Light.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ClipSpace.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "medialoader/image/FormatHandler.h"
@@ -93,7 +112,6 @@ static void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320
     gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = w;
     s.height = h;
@@ -286,38 +304,34 @@ TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
     // copy from a few frames ago) would show the wrong side of this
     // alternating quad.
     eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx);
     resetScene3D();
 
-    const float half = 0.5f;
-    std::vector<float> basePos = {-half, -half, 0.f, half, -half, 0.f,
-                                  half,  half,  0.f, -half, half,  0.f};
-    std::vector<float> nrm = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
-                              0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
-    std::vector<float> uv = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    std::vector<uint32_t> idx = {0, 1, 2, 0, 2, 3};
-    Mesh *mesh =
-        gfx->newMeshFromArrays(basePos.data(), nrm.data(), uv.data(), 4, idx.data(), 6);
+    const float           half    = 0.5f;
+    std::vector<float>    basePos = {-half, -half, 0.f, half, -half, 0.f, half, half, 0.f, -half, half, 0.f};
+    std::vector<float>    nrm     = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    std::vector<float>    uv      = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    std::vector<uint32_t> idx     = {0, 1, 2, 0, 2, 3};
+    Mesh                 *mesh    = gfx->newMeshFromArrays(basePos.data(), nrm.data(), uv.data(), 4, idx.data(), 6);
     REQUIRE(mesh != nullptr);
 
-    auto *cam = Camera3D::createCamera();
-    cam->data()->eyeZ = 3.f;
-    auto *ent = Renderable3D::create();
-    ent->meshRenderer()->mesh = mesh;
+    auto *cam                    = Camera3D::createCamera();
+    cam->data()->eyeZ            = 3.f;
+    auto *ent                    = Renderable3D::create();
+    ent->meshRenderer()->mesh    = mesh;
     ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
     RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
     gfx->setScreenReadbackEnabled(true);
 
-    const int W = gfx->getWidth();
-    const int H = gfx->getHeight();
-    auto updatePos = [&](float side) {
+    const int W         = gfx->getWidth();
+    const int H         = gfx->getHeight();
+    auto      updatePos = [&](float side) {
         std::vector<float> pos = basePos;
         for (int v = 0; v < 4; ++v) pos[size_t(v) * 3u + 0u] += side * 0.8f;
         // Indices are only supplied on the first update; later calls exercise
         // the ring's CPU-index reuse path.
-        REQUIRE(gfx->updateMeshVertices(mesh, pos.data(), nrm.data(), uv.data(), 4,
-                                        idx.data(), 6));
+        REQUIRE(gfx->updateMeshVertices(mesh, pos.data(), nrm.data(), uv.data(), 4, idx.data(), 6));
     };
     auto renderFrame = [&]() {
         RenderSystem3D::render(*gfx);
@@ -334,8 +348,10 @@ TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
         for (int x = 0; x < W; ++x) {
             const Color c = gfx->getPixel(x, H / 2);
             const float l = luma(c);
-            if (x < W / 2) bestL = std::max(bestL, l);
-            else bestR = std::max(bestR, l);
+            if (x < W / 2)
+                bestL = std::max(bestL, l);
+            else
+                bestR = std::max(bestR, l);
         }
         return bestL > bestR ? 0 : 1;
     };
@@ -364,12 +380,12 @@ TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
 
 TEST_CASE("RenderSystem3D.textureCheckerPixels") {
     eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx);
     resetScene3D();
 
-    Mesh *mesh = loadUvCube(gfx);
-    auto *cam = Camera3D::createCamera();
+    Mesh *mesh        = loadUvCube(gfx);
+    auto *cam         = Camera3D::createCamera();
     cam->data()->eyeZ = 3.f;
 
     auto *ent = Renderable3D::create();

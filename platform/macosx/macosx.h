@@ -1,13 +1,8 @@
 #pragma once
+#include <cstdint>
 #include <string>
 
-namespace eve
-{
-namespace image
-{
-class ImageData;
-}
-
+namespace eve {
 namespace macosx
 {
 
@@ -35,9 +30,9 @@ std::string getExecutablePath();
 void requestAttention(bool continuous);
 
 /**
- * Set the application (Dock) icon. The ImageData must be in RGBA8 format.
+ * Set the application (Dock) icon from tightly packed RGBA8 pixels.
  **/
-void setIcon(image::ImageData *image);
+void setIconRGBA(const uint8_t *rgba, int width, int height);
 
 } // macosx
-} // eve
+}  // namespace eve

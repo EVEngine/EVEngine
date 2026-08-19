@@ -1,10 +1,13 @@
 #pragma once
 
-#include "graphics/vulkan/Graphics.h"
 #include "vkbuilder.hpp"
 
 #include <cstdint>
 #include <vector>
+
+namespace eve::graphics::vulkan {
+class Graphics;
+}
 
 namespace eve::gpgpu {
 
@@ -36,9 +39,7 @@ struct VulkanSequence {
     bool recording = false;
     std::vector<ComputeShader *> usedShaders;  // dispatched during this cycle
 
-    bool ready() const {
-        return vkg && static_cast<VkDevice>(vkg->getDevice().instance);
-    }
+    bool ready() const;
 
     void ensureReady();
     void ensureCommandBuffer();

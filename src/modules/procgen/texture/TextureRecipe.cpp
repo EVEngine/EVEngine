@@ -1,5 +1,7 @@
 #include "procgen/texture/TextureRecipe.h"
 
+#include "image/ImageData.h"
+
 #include <algorithm>
 #include <cmath>
 

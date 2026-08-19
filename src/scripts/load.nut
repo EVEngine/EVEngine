@@ -97,8 +97,6 @@ if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
     return;
 }
-win.setGraphics(gfx);
-
 local s = eve.WindowSettings();
 s.width = config.width;
 s.height = config.height;

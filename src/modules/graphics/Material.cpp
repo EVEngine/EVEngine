@@ -1,5 +1,8 @@
 #include "graphics/Material.h"
+
+#include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
+#include "graphics/Light.h"
 
 namespace eve::graphics {
 

@@ -17,8 +17,8 @@ namespace eve::graphics {
  */
 class Mesh : public Drawable {
 public:
-    int indexCount = 0;
-    void *gpuHandle = nullptr;  // vulkan::GpuMesh*
+    int   indexCount = 0;
+    void *gpuHandle  = nullptr;  // vulkan::GpuMesh*
 
     /**
      * @brief Model-space bounding sphere used for view/cascade frustum culling.
@@ -26,9 +26,9 @@ public:
      * boundsRadius <= 0 means unknown — callers must treat the mesh as
      * always visible (no culling).
      */
-    float boundsCx = 0.f;
-    float boundsCy = 0.f;
-    float boundsCz = 0.f;
+    float boundsCx     = 0.f;
+    float boundsCy     = 0.f;
+    float boundsCz     = 0.f;
     float boundsRadius = 0.f;
 
     /** @brief True when a valid bounding sphere is available for culling. */

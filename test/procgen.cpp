@@ -1,26 +1,46 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "procgen/Procgen.h"
-#include "procgen/GeneratorRegistry.h"
-#include "procgen/Semantic.h"
-#include "procgen/JsonExport.h"
-#include "procgen/MeshBuild.h"
-#include "procgen/algorithms/MarchingCubes.h"
-#include "procgen/algorithms/LinearStructure.h"
-#include "procgen/texture/TextureRecipe.h"
-#include "procgen/texture/PbrMaterial.h"
-#include "procgen/texture/NoiseField.h"
-#include "procgen/texture/ColorRamp.h"
-#include "map/TileLayer.h"
-#include "image/ImageData.h"
-#include "graphics/Graphics.h"
+#include "filesystem/FileData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "window/Window.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/Image.h"
-#include "filesystem/FileData.h"
+#include "image/ImageData.h"
+#include "map/TileLayer.h"
+#include "procgen/GeneratorRegistry.h"
+#include "procgen/JsonExport.h"
+#include "procgen/MeshBuild.h"
+#include "procgen/Procgen.h"
+#include "procgen/Semantic.h"
+#include "procgen/algorithms/LinearStructure.h"
+#include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/texture/ColorRamp.h"
+#include "procgen/texture/NoiseField.h"
+#include "procgen/texture/PbrMaterial.h"
+#include "procgen/texture/TextureRecipe.h"
+#include "window/Window.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "RenderImageAudit.h"
@@ -453,7 +473,6 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 900;
     ws.height = 700;
@@ -608,7 +627,6 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 900;
     ws.height = 700;
@@ -971,7 +989,6 @@ TEST_CASE("procgen.render.hexplanetPng") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 768;
     settings.height = 768;
@@ -1051,7 +1068,6 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 256;
     settings.height = 256;
@@ -1150,7 +1166,6 @@ TEST_CASE("procgen.render.skyscraperPng") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 720;
@@ -1991,7 +2006,6 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 720;
     s.height = 420;
@@ -2217,7 +2231,6 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 128;
     settings.height = 128;
@@ -2261,10 +2274,9 @@ TEST_CASE("graphics.water.paramsRoundTrip") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
-    settings.width = 128;
-    settings.height = 128;
+    settings.width    = 128;
+    settings.height   = 128;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
     Water *w = gfx->newWater();
@@ -2306,7 +2318,6 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 256;
     settings.height = 256;
@@ -2458,7 +2469,6 @@ TEST_CASE("graphics.water.render.plane") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;
@@ -2600,7 +2610,6 @@ TEST_CASE("graphics.water.render.ssr") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;
@@ -2748,7 +2757,6 @@ TEST_CASE("graphics.render3d.toCanvas") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -2821,7 +2829,6 @@ TEST_CASE("graphics.water.render.planar") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;

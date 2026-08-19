@@ -1,11 +1,30 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+#include "map/Fov.h"
 #include "map/Map.h"
 #include "map/TileLayer.h"
-#include "map/Fov.h"
-#include "graphics/Graphics.h"
-#include "graphics/Texture.h"
 #include "window/Window.h"
 
 #include <cstdint>
@@ -435,15 +454,14 @@ TEST_CASE("map.fov.gpuMaskTexture") {
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
-    settings.width = 4;
-    settings.height = 4;
+    settings.width    = 4;
+    settings.height   = 4;
     settings.centered = true;
     REQUIRE(win->setWindowSettings(settings));
 
     auto *mod = Map::create();
-    Fov *fov = mod->newFovSize(4, 4);
+    Fov  *fov = mod->newFovSize(4, 4);
     fov->setBlockEmpty(false);
     fov->addRevealer(1, 1, 1);
     fov->compute();
@@ -457,5 +475,3 @@ TEST_CASE("map.fov.gpuMaskTexture") {
     delete fov;
     win->close();
 }
-
-

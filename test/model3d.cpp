@@ -1,14 +1,34 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Exception.h"
+#include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "model3d/ModelRenderer.h"
-#include "data/ByteData.h"
-#include "filesystem/Filesystem.h"
-#include "common/Exception.h"
 
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
 #include "graphics/Mesh.h"
@@ -138,7 +158,6 @@ void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 640, int h
     gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = w;
     s.height = h;
@@ -612,6 +631,35 @@ TEST_CASE("model3d.newModelDataFromFile.missingThrows") {
     CHECK(threw);
 }
 
+TEST_CASE("model3d.newModelDataFromFile.cached") {
+    const std::string objPath = pathBesideThisSource("sofa.obj");
+    REQUIRE(!readBinaryFile(objPath).empty());
+
+    std::string testDir = pathBesideThisSource("");
+    if (!testDir.empty() && (testDir.back() == '/' || testDir.back() == '\\'))
+        testDir.pop_back();
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_cache", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(testDir);
+    REQUIRE(fs->mount(testDir, "", false));
+
+    auto *mod = eve::model3d::Model3D::create();
+    eve::model3d::ModelData *a = mod->newModelDataFromFile("sofa.obj");
+    eve::model3d::ModelData *b = mod->newModelDataFromFile("sofa.obj");
+    REQUIRE(a != nullptr);
+    CHECK(a == b);  // identical requests share one decoded scene
+
+    eve::model3d::ModelLoadOptions opt;
+    opt.joinIdenticalVertices = false;
+    eve::model3d::ModelData *c = mod->newModelDataFromFile("sofa.obj", opt);
+    REQUIRE(c != nullptr);
+    CHECK(c != a);  // different decode options are a different cache entry
+
+    CHECK(fs->unmount(testDir));
+}
+
 TEST_CASE("model3d.Model3D.getName") {
     auto *mod = eve::model3d::Model3D::create();
     CHECK(mod->getName() == "Model3D");
@@ -685,7 +733,6 @@ TEST_CASE("model3d.newModelDataFromFile.sofaObjMtl") {
     }
     CHECK(totalVerts > 0);
     CHECK(totalFaces > 0);
-    delete md;
 
     CHECK(fs->unmount(testDir));
 }
@@ -758,7 +805,6 @@ TEST_CASE("model3d.render.sofaObjMtl") {
     auto *md = mod->newModelDataFromFile("sofa.obj");
     REQUIRE(md != nullptr);
     renderModelSmoke(md, "model3d_sofa.png");
-    delete md;
 
     CHECK(fs->unmount(testDir));
 }
@@ -846,7 +892,6 @@ TEST_CASE("model3d.materialApi.gltf") {
     // Double-sided flag exists on glTF assets that set it; absence is fine here.
     CHECK(!md->getMaterialTwoSided(0));
 
-    delete md;
     CHECK(fs->unmount(dir));
 }
 
@@ -890,7 +935,6 @@ TEST_CASE("model3d.buildRenderable.objMtl") {
     CHECK(eve::model3d::buildRenderable(*gfx, nullptr, 0) == nullptr);
 
     win->close();
-    delete md;
     CHECK(fs->unmount(testDir));
 }
 
@@ -1098,6 +1142,5 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     delete frame;
 
     win->close();
-    delete md;
     CHECK(fs->unmount(dir));
 }

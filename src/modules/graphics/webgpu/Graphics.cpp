@@ -1,13 +1,15 @@
 #include "graphics/webgpu/Graphics.h"
-#include "graphics/webgpu/wgsl_shaders.h"
-#include "graphics/webgpu/Canvas.h"
 #include "graphics/Batcher.h"
-#include "graphics/Texture.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
-#include "graphics/Light.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/Light.h"
+#include "graphics/Mesh.h"
+#include "graphics/RenderControl.h"
+#include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/Texture.h"
+#include "graphics/TextureSampler.h"
+#include "graphics/webgpu/Canvas.h"
+#include "graphics/webgpu/wgsl_shaders.h"
 
 #include "common/Exception.h"
 #include "common/config.h"
@@ -1372,13 +1374,8 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
         reloadTextureFromFile(filename);
         return it->second;
     }
-    auto *fs = eve::filesystem::Filesystem::create();
-    if (!fs) throw Exception("newTextureFromFile: no filesystem");
-    std::unique_ptr<filesystem::FileData> fileData(fs->read(filename));
-    if (!fileData) throw Exception("newTextureFromFile: failed to read '%s'", filename.c_str());
     auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
-    if (!data) throw Exception("newTextureFromFile: cannot decode '%s'", filename.c_str());
+    eve::ref<image::ImageData> data(imgMod->newImageDataFromFile(filename));
     Texture *tex = newTexture(data.get());
     texturesByPath[filename] = tex;
     return tex;
@@ -1387,18 +1384,17 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
 bool Graphics::reloadTextureFromFile(const std::string &filename) {
     auto it = texturesByPath.find(filename);
     if (it == texturesByPath.end()) return false;
-    auto *fs = eve::filesystem::Filesystem::create();
-    if (!fs) return false;
-    std::unique_ptr<filesystem::FileData> fileData;
+
+    image::ImageData *data = nullptr;
     try {
-        fileData.reset(fs->read(filename));
+        auto *imgMod = image::Image::create();
+        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
+        data = cached.get();
     } catch (...) {
         return false;
     }
-    if (!fileData) return false;
-    auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
     if (!data) return false;
+
     Texture *tex = it->second;
     auto *gpu = gpuForTexture(tex);
     if (gpu && data->getWidth() == tex->width && data->getHeight() == tex->height) {
@@ -1594,9 +1590,9 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
         }
     }
 
-    auto *mesh = new Mesh();
+    auto *mesh       = new Mesh();
     mesh->indexCount = indexCount;
-    mesh->gpuHandle = gpu.get();
+    mesh->gpuHandle  = gpu.get();
     mesh->computeBounds(posXYZ, vertexCount);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::unique_ptr<Mesh>(mesh));
@@ -2286,24 +2282,22 @@ void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) 
 void Graphics::setMesh3DLighting(const Lighting3DPack &pack) { mesh3dLighting = pack; }
 void Graphics::setCloudShadows(float strength, float worldCell, float time, float windSpeed,
                                float windAngle, float coverage, float detail) {
-    mesh3dCloud = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f), time, 0.f);
+    mesh3dCloud     = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f), time, 0.f);
     mesh3dCloudWind = glm::vec4(std::cos(windAngle) * windSpeed, std::sin(windAngle) * windSpeed,
                                 std::clamp(coverage, 0.f, 1.f), std::clamp(detail, 0.f, 1.f));
 }
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
-    mesh3dClustered = upload;
+    mesh3dClustered       = upload;
     mesh3dClusteredActive = upload.active;
 }
-void Graphics::setMesh3DClusteredActive(bool active) {
-    mesh3dClusteredActive = active;
-}
+void Graphics::setMesh3DClusteredActive(bool active) { mesh3dClusteredActive = active; }
 void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     mesh3dLighting.lights[0].posRadius = glm::vec4(dir, 0.f);
-    mesh3dLighting.lights[0].color = glm::vec4(color, 1.f);
+    mesh3dLighting.lights[0].color     = glm::vec4(color, 1.f);
 }
 void Graphics::setMesh3DCameraPos(const glm::vec3 &eye) { mesh3dCameraPos = eye; }
 void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
-    mesh3dEnvTexture = cube;
+    mesh3dEnvTexture   = cube;
     mesh3dEnvIntensity = intensity;
 }
 void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }
@@ -3487,3 +3481,19 @@ Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
 }
 
 }  // namespace eve::graphics::webgpu
+
+namespace eve::graphics {
+// Font support lives in the font module, which is not part of the WebGPU/WASM
+// build. Fail loudly instead of leaving the interface unsatisfied at link time.
+Font *Graphics::newFont(font::FontData *, std::string) {
+    throw Exception(
+        "newFont: fonts are not supported on the WebGPU backend (font module is not "
+        "part of the WASM build)");
+}
+
+void Graphics::print(const std::string &, float, float, const Color &, float) {
+    throw Exception(
+        "print: fonts are not supported on the WebGPU backend (font module is not part "
+        "of the WASM build)");
+}
+}  // namespace eve::graphics

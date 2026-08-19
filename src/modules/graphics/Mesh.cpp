@@ -8,14 +8,14 @@
 namespace eve::graphics {
 
 void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
-    boundsCx = 0.f;
-    boundsCy = 0.f;
-    boundsCz = 0.f;
+    boundsCx     = 0.f;
+    boundsCy     = 0.f;
+    boundsCz     = 0.f;
     boundsRadius = 0.f;
     if (!posXYZ || vertexCount <= 0) return;
 
     const size_t n = size_t(vertexCount);
-    glm::vec3 c(0.f);
+    glm::vec3    c(0.f);
     for (size_t i = 0; i < n; ++i) {
         c.x += posXYZ[i * 3u + 0u];
         c.y += posXYZ[i * 3u + 1u];
@@ -31,7 +31,7 @@ void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
         const float dx = posXYZ[i * 3u + 0u] - c.x;
         const float dy = posXYZ[i * 3u + 1u] - c.y;
         const float dz = posXYZ[i * 3u + 2u] - c.z;
-        const float d = std::sqrt(dx * dx + dy * dy + dz * dz);
+        const float d  = std::sqrt(dx * dx + dy * dy + dz * dz);
         if (d > r) r = d;
     }
     // Degenerate (single-point) meshes still get a tiny non-zero sphere so

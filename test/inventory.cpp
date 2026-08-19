@@ -1,13 +1,33 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "inventory/Item.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "inventory/Bag.h"
-#include "inventory/InventorySystem.h"
 #include "inventory/Equipment.h"
 #include "inventory/Inventory.h"
-#include "graphics/Graphics.h"
-#include "graphics/RenderSystem.h"
+#include "inventory/InventorySystem.h"
+#include "inventory/Item.h"
 #include "ui/UI.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
@@ -353,7 +373,6 @@ TEST_CASE("inventory.bag.uiPreview") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 520;
     s.height = 420;

@@ -4,7 +4,9 @@
 
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/Graphics.h"
+#include "graphics/IResourceFactory.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "image/Image.h"
 
 #include <assimp/matrix4x4.h>
@@ -19,12 +21,12 @@
 namespace eve::model3d {
 namespace {
 
-using eve::graphics::Graphics;
+using eve::graphics::IResourceFactory;
 using eve::graphics::Mesh;
 using eve::graphics::Renderable3D;
 using eve::graphics::Texture;
 
-Texture *textureFromImageData(Graphics *gfx, image::ImageData *img) {
+Texture *textureFromImageData(IResourceFactory *gfx, image::ImageData *img) {
     if (!img) return nullptr;
     try {
         return gfx->newTexture(img);
@@ -33,7 +35,7 @@ Texture *textureFromImageData(Graphics *gfx, image::ImageData *img) {
     }
 }
 
-Texture *loadEmbeddedTexture(Graphics *gfx, ModelData *model, int idx) {
+Texture *loadEmbeddedTexture(IResourceFactory *gfx, ModelData *model, int idx) {
     image::ImageData *img = model->getEmbeddedTextureImageData(idx);
     Texture *tex = textureFromImageData(gfx, img);
     delete img;
@@ -45,7 +47,7 @@ std::string basenameOf(const std::string &path) {
     return slash == std::string::npos ? path : path.substr(slash + 1);
 }
 
-Texture *loadExternalTexture(Graphics *gfx, const std::string &path) {
+Texture *loadExternalTexture(IResourceFactory *gfx, const std::string &path) {
     auto *fs = filesystem::Filesystem::create();
     std::unique_ptr<filesystem::FileData> fd;
     try {
@@ -76,8 +78,7 @@ Texture *loadExternalTexture(Graphics *gfx, const std::string &path) {
     }
 }
 
-Texture *loadTextureSlot(Graphics *gfx, ModelData *model, int matIndex,
-                         const std::string &type) {
+Texture *loadTextureSlot(IResourceFactory *gfx, ModelData *model, int matIndex, const std::string &type) {
     if (model->getMaterialTextureSlotCount(matIndex, type) <= 0) return nullptr;
     const int embedded = model->getMaterialTextureEmbeddedIndex(matIndex, type, 0);
     if (embedded >= 0) return loadEmbeddedTexture(gfx, model, embedded);
@@ -95,8 +96,7 @@ struct TextureLook {
     float roughness = 0.45f;
 };
 
-TextureLook materialLook(Graphics *gfx, ModelData *model, int matIndex,
-                         const ModelRenderOptions &options,
+TextureLook materialLook(IResourceFactory *gfx, ModelData *model, int matIndex, const ModelRenderOptions &options,
                          std::unordered_map<int, TextureLook> &cache) {
     auto it = cache.find(matIndex);
     if (it != cache.end()) return it->second;
@@ -122,9 +122,8 @@ TextureLook materialLook(Graphics *gfx, ModelData *model, int matIndex,
     return look;
 }
 
-Renderable3D *makeRenderable(Graphics *gfx, ModelData *model, int meshIndex,
-                             const aiMatrix4x4 &world, const ModelRenderOptions &options,
-                             std::unordered_map<int, TextureLook> &cache) {
+Renderable3D *makeRenderable(IResourceFactory *gfx, ModelData *model, int meshIndex, const aiMatrix4x4 &world,
+                             const ModelRenderOptions &options, std::unordered_map<int, TextureLook> &cache) {
     const aiScene *scene = model->getScene();
     if (!scene || meshIndex < 0 || static_cast<unsigned>(meshIndex) >= scene->mNumMeshes)
         return nullptr;
@@ -150,7 +149,7 @@ Renderable3D *makeRenderable(Graphics *gfx, ModelData *model, int meshIndex,
     return ent;
 }
 
-void walkNodes(const aiNode *node, const aiMatrix4x4 &parent, Graphics *gfx, ModelData *model,
+void walkNodes(const aiNode *node, const aiMatrix4x4 &parent, IResourceFactory *gfx, ModelData *model,
                const ModelRenderOptions &options, std::vector<Renderable3D *> &out,
                std::unordered_map<int, TextureLook> &cache) {
     if (!node) return;
@@ -181,7 +180,7 @@ bool findMeshTransform(const aiNode *node, const aiMatrix4x4 &parent, unsigned m
 
 }  // namespace
 
-Renderable3D *buildRenderable(Graphics &gfx, ModelData *model, int meshIndex,
+Renderable3D *buildRenderable(IResourceFactory &gfx, ModelData *model, int meshIndex,
                               const ModelRenderOptions &options) {
     if (!model) return nullptr;
     const aiScene *scene = model->getScene();
@@ -196,7 +195,7 @@ Renderable3D *buildRenderable(Graphics &gfx, ModelData *model, int meshIndex,
     return makeRenderable(&gfx, model, meshIndex, world, options, cache);
 }
 
-std::vector<Renderable3D *> buildRenderables(Graphics &gfx, ModelData *model,
+std::vector<Renderable3D *> buildRenderables(IResourceFactory &gfx, ModelData *model,
                                              const ModelRenderOptions &options) {
     std::vector<Renderable3D *> out;
     if (!model) return out;

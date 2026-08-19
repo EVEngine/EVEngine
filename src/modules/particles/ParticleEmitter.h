@@ -1,10 +1,8 @@
 #pragma once
 
 #include "common/ECS.h"
-#include "graphics/Canvas.h"
 #include "graphics/BlendMode.h"
-#include "graphics/Texture.h"
-#include "gpgpu/GpuBuffer.h"
+#include "graphics/Color.h"
 #include "particles/ParticleCurve.h"
 
 #include <cstdint>
@@ -19,6 +17,7 @@ class Camera2D;
 class Canvas;
 class Light2D;
 class Shader;
+class Texture;
 }
 
 namespace eve::animation {
@@ -31,6 +30,10 @@ class SpineSkeleton;
 namespace eve::ik {
 class Skeleton2D;
 class Skeleton3D;
+}
+
+namespace eve::gpgpu {
+class GpuBuffer;
 }
 
 namespace eve::particles {

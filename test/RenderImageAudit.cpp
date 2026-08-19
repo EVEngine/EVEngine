@@ -4,6 +4,7 @@
 #include "zeroerr/unittest.h"
 
 #include <SDL2/SDL.h>
+#include "filesystem/FileData.h"
 
 #include <algorithm>
 #include <cmath>
@@ -34,8 +35,18 @@
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Outline.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
 #include "graphics/Light.h"
@@ -1168,7 +1179,6 @@ TEST_CASE("graphics.imageAudit.pipelineConfigs") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 480;
     s.height = 360;
@@ -1392,7 +1402,6 @@ TEST_CASE("graphics.imageAudit.materialsAndCamera") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1524,7 +1533,6 @@ TEST_CASE("graphics.imageAudit.postFx") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1681,7 +1689,6 @@ TEST_CASE("graphics.imageAudit.composite2d3d") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1737,7 +1744,6 @@ TEST_CASE("graphics.imageAudit.stylizeAndSsaa") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1796,7 +1802,6 @@ TEST_CASE("graphics.imageAudit.multiObjectLod") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1884,7 +1889,6 @@ TEST_CASE("graphics.imageAudit.lightsAndXform") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1947,7 +1951,6 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2028,7 +2031,6 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2073,7 +2075,6 @@ TEST_CASE("graphics.imageAudit.occlusionScatter") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2143,7 +2144,6 @@ TEST_CASE("graphics.imageAudit.textureSources") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2195,7 +2195,6 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2265,7 +2264,6 @@ TEST_CASE("graphics.imageAudit.sprite2dCamera") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2341,7 +2339,6 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2410,7 +2407,6 @@ TEST_CASE("graphics.imageAudit.voxelAndHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2472,7 +2468,6 @@ TEST_CASE("graphics.imageAudit.uiAndMap") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2555,7 +2550,6 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2568,7 +2562,7 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_still"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_still"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2592,7 +2586,6 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2605,7 +2598,7 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_pose"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_pose"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2652,7 +2645,6 @@ TEST_CASE("graphics.imageAudit.reloadTex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2682,7 +2674,6 @@ TEST_CASE("graphics.imageAudit.morphInflate") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2740,7 +2731,6 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2816,7 +2806,6 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2958,7 +2947,6 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2971,7 +2959,7 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_part"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_part"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -3044,7 +3032,6 @@ TEST_CASE("graphics.imageAudit.materialHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3088,7 +3075,6 @@ TEST_CASE("graphics.imageAudit.clusteredHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3148,7 +3134,6 @@ TEST_CASE("graphics.imageAudit.clothFluid") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3206,7 +3191,6 @@ TEST_CASE("graphics.imageAudit.particlePresets") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3261,7 +3245,6 @@ TEST_CASE("graphics.imageAudit.mapPath") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3339,7 +3322,6 @@ TEST_CASE("graphics.imageAudit.reloadTexBytes") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3391,7 +3373,6 @@ TEST_CASE("graphics.imageAudit.postQuality") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3483,7 +3464,6 @@ TEST_CASE("graphics.imageAudit.dualIsoFov") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3571,7 +3551,6 @@ TEST_CASE("graphics.imageAudit.avatarImage") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3619,7 +3598,6 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3633,7 +3611,7 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
     studio.subject->setVisible(false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_vroid"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_vroid"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -3666,7 +3644,6 @@ TEST_CASE("graphics.imageAudit.box2dDebug") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3717,7 +3694,6 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3780,7 +3756,6 @@ TEST_CASE("graphics.imageAudit.sceneGraph") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3827,7 +3802,6 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;

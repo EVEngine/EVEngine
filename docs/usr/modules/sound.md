@@ -23,6 +23,10 @@ local src = eve.Audio().newSource(pcm);
 
 文件内容先以 Data 读入，再传给 `newDecoder(data)`；短音效用 `newSoundDataFromDecoder(decoder)` 完整解码，随后交给 Audio。可用采样率、声道数和 bit depth 做资源诊断。
 
+### 从文件直接加载声音
+
+`newSoundDataFromFile(path)` 经统一资源缓存解码音频文件（同一路径重复加载共享一份 PCM，文件变化时原地刷新，见 `docs/dev/superpowers/specs/2026-08-20-unified-resource-cache.md`），返回的 SoundData 由缓存持有，不要自行释放。
+
 ### 生成程序化声音
 
 `newSoundDataEmpty(samples, rate, bitDepth, channels)` 创建 PCM 容器。当前脚本绑定若不提供逐样本写入，应由原生插件或 Demo 生成数据，再交给 `Audio.newSource()`。
@@ -38,7 +42,7 @@ local src = eve.Audio().newSource(pcm);
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `decode()`、`getBitDepth()`、`getChannelCount()`、`getDuration()`、`getName()`、`getSampleCount()`、`getSampleRate()`、`getSize()`
-- `isFinished()`、`isSeekable()`、`newDecoder()`、`newSoundData()`、`newSoundDataEmpty()`、`newSoundDataFromDecoder()`、`rewind()`、`seek()`
+- `isFinished()`、`isSeekable()`、`newDecoder()`、`newSoundData()`、`newSoundDataEmpty()`、`newSoundDataFromDecoder()`、`newSoundDataFromFile()`、`rewind()`、`seek()`
 
 ## 使用要点
 
