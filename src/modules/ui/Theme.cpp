@@ -206,6 +206,8 @@ void applyThemeToImGui(const Theme &theme, float uiScale) {
 
     if (theme.navEnableKeyboard) io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     else io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
+    if (theme.navEnableGamepad) io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    else io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableGamepad;
 }
 
 }  // namespace eve::ui

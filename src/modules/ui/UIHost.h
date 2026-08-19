@@ -24,6 +24,11 @@ enum class NodeType : uint8_t {
     Child = 11,
     Flex = 12,    // elastic row/column container
     Spacer = 13,  // flexible empty space (default flexGrow=1)
+    Image = 14,   // colored rect or engine texture (nine-patch capable)
+    ImageButton = 15,  // clickable image
+    Combo = 16,   // dropdown; options newline-separated in valueText, index in value
+    ScrollList = 17,  // virtualized scrollable list (uniform itemHeight)
+    Viewport = 18,  // embedded render target: offscreen Canvas shown + input routed
 };
 
 /** Main-axis direction for Flex containers. */
@@ -55,6 +60,46 @@ struct UINode {
     float maxValue = 1.f;
     float sizeX = 0.f;  // Child / item basis width; 0 = auto
     float sizeY = 0.f;  // Child / item basis height; 0 = auto
+    // --- Layout box model (input props; 0 = unset) ---
+    float marginL = 0.f;
+    float marginT = 0.f;
+    float marginR = 0.f;
+    float marginB = 0.f;
+    float paddingL = 0.f;
+    float paddingT = 0.f;
+    float paddingR = 0.f;
+    float paddingB = 0.f;
+    float minSizeX = 0.f;  // 0 = auto
+    float minSizeY = 0.f;
+    float maxSizeX = 0.f;  // 0 = unlimited
+    float maxSizeY = 0.f;
+    float percentW = 0.f;  // 0..1 fraction of parent content width; overrides basis
+    float percentH = 0.f;  // 0..1 fraction of parent content height
+    float anchorX = 0.f;   // absolute placement inside Flex: anchor point in parent (0..1)
+    float anchorY = 0.f;
+    float posX = 0.f;      // absolute placement offset (relative to anchor edge)
+    float posY = 0.f;
+    bool absolute = false; // skip flex flow; placed by anchor/pos
+    // --- Image / ImageButton props (NodeType::Image*) ---
+    uint64_t textureId = 0;  // opaque id from UIBackend::registerTexture; 0 = solid color
+    float tintR = 1.f;
+    float tintG = 1.f;
+    float tintB = 1.f;
+    float tintA = 1.f;
+    float uv0x = 0.f;  // source rect in texture (UV)
+    float uv0y = 0.f;
+    float uv1x = 1.f;
+    float uv1y = 1.f;
+    float borderL = 0.f;  // nine-patch border (px); all 0 = plain image
+    float borderT = 0.f;
+    float borderR = 0.f;
+    float borderB = 0.f;
+    float cornerRadius = 0.f;  // solid-color rounded rect radius
+    float wrapWidth = 0.f;     // Text wrap width (0 = no wrap)
+    float itemHeight = 0.f;    // ScrollList uniform row height (0 = frame height)
+    // --- Computed by measure/arrange pass (per frame) ---
+    float measuredW = 0.f;
+    float measuredH = 0.f;
     // Flex container props (meaningful on NodeType::Flex)
     FlexDirection flexDirection = FlexDirection::Row;
     FlexAlign alignItems = FlexAlign::Start;
@@ -93,6 +138,13 @@ public:
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
+        bool hasSize = false;      // explicit window size
+        float sizeX = 0.f;
+        float sizeY = 0.f;
+        float percentW = 0.f;      // 0..1 of display width; overrides sizeX
+        float percentH = 0.f;      // 0..1 of display height
+        float anchorX = 0.f;       // anchor in display (0..1); with hasPos, posX is offset
+        float anchorY = 0.f;
         std::string name;
         uint32_t ownerId = 0;
         UIHost *entity = nullptr;

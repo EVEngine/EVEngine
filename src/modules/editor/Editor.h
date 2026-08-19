@@ -2,6 +2,16 @@
 
 #include "common/Module.h"
 
+namespace eve {
+namespace graphics {
+class Graphics;
+class Mesh;
+}
+namespace procgen {
+class Heightmap;
+}
+}  // namespace eve
+
 namespace eve::editor {
 
 class TransformGizmo;
@@ -36,6 +46,17 @@ public:
     EditorInspector *newInspector();
     EditorDock      *newDock();
     EditorHistory   *newHistory();
+
+    /**
+     * Build a flat-shaded terrain mesh from a heightmap (grid of cells,
+     * X/Z in world units = index * cellSize, Y = height * heightScale).
+     * Caller attaches it to a Renderable3D via setMesh(). Returns nullptr on
+     * failure (no Graphics module / null heightmap).
+     */
+    graphics::Mesh *newHeightmapMesh(procgen::Heightmap *hm, float cellSize, float heightScale);
+    /** In-place vertex update after heightmap edits (reuses GPU buffers). */
+    bool updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
+                             procgen::Heightmap *hm, float cellSize, float heightScale);
 };
 
 }  // namespace eve::editor

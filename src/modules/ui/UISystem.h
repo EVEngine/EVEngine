@@ -5,6 +5,14 @@
 #include <string>
 #include <vector>
 
+namespace eve::graphics {
+class Canvas;
+}
+
+namespace eve::ui {
+class UIBackend;
+}
+
 namespace eve::ui {
 
 struct UIEvent {
@@ -31,8 +39,45 @@ struct UIChange {
     std::string kind;
 };
 
+/** Per-frame UI statistics (P2-3 profiler counters). */
+struct UIStats {
+    int hostCount = 0;
+    int nodeCount = 0;
+    double measureMs = 0.0;
+    double walkMs = 0.0;
+};
+
+/**
+ * Per-frame state of one embedded Viewport widget: its offscreen render target
+ * (owned by Graphics) and the input routed from the widget rect (local mouse,
+ * drag delta, wheel). Filled during UISystem::render().
+ */
+struct ViewportState {
+    std::string key;                 // "hostName/nodeId"
+    graphics::Canvas *canvas = nullptr;
+    uint64_t textureId = 0;          // registered via UIBackend::registerTexture
+    int width = 0;
+    int height = 0;
+    bool hovered = false;
+    bool active = false;             // mouse button held inside the viewport
+    float mouseX = 0.f;              // widget-local
+    float mouseY = 0.f;
+    float dragDX = 0.f;
+    float dragDY = 0.f;
+    float wheel = 0.f;
+};
+
 class UISystem {
 public:
+    /** Backend used for texture size lookups while rendering (set by UI). */
+    static void setBackend(UIBackend *backend);
+    static UIBackend *backend();
+    static const UIStats &stats();
+    /** Viewport state for "hostName/nodeId"; nullptr if no such viewport. */
+    static ViewportState *viewportState(const std::string &hostName, const std::string &nodeId);
+    /** Create/refresh the offscreen canvas for a viewport key. */
+    static ViewportState *ensureViewport(const std::string &key, int w, int h);
+
     /** Walk all UIHost (+ subclasses) via ECS View. */
     static void render();
 

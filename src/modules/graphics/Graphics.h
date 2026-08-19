@@ -37,6 +37,8 @@ struct aiMesh;
 
 namespace eve::graphics {
 
+class Camera3D;
+
 class Graphics : public Module, public Canvas {
 public:
     Module_REG(Graphics);
@@ -294,6 +296,12 @@ public:
 
     /** Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     void render3D();
+    /**
+     * Preview-quality 3D pass into an offscreen Canvas (editor viewport):
+     * renders visible Renderable3D with `camera` into `canvas`, whose texture
+     * can then be shown inside a UI Viewport widget. See RenderSystem3D::renderToCanvas.
+     */
+    void renderScene3DToCanvas(Canvas *canvas, Camera3D *camera);
     void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
                              float b = 1.f);
 

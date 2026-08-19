@@ -12,6 +12,7 @@
 
 namespace eve::graphics {
 
+class Canvas;
 class Graphics;
 
 class Camera3D : public ecs::Entity {
@@ -244,6 +245,13 @@ public:
 class RenderSystem3D {
 public:
     static void render(Graphics &gfx);
+
+    /**
+     * Preview-quality 3D pass into an offscreen canvas (editor viewport):
+     * forward-only (no shadow / G-buffer / AO), legacy per-entity material
+     * path, using `camera`. The canvas texture then holds the rendered scene.
+     */
+    static void renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera);
 
     /**
      * Register a callback that fills the G-buffer (depth/normal/albedo) for

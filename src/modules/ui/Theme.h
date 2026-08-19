@@ -68,6 +68,7 @@ struct Theme {
      *  Display DPI is cancelled out of FontGlobalScale so this stays logical. */
     float fontScale = 1.f;
     bool navEnableKeyboard = true;
+    bool navEnableGamepad = false;
 
     /** Built-in presets with matching geometry; only colors differ. */
     static Theme dark();
