@@ -1,17 +1,16 @@
 // Vulkan backend implementation — 3D frame, shadow and G-buffer passes.
 //
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
-// dev perf changes preserved). Shared helpers live in
-// GraphicsInternal.h.
+// dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/GlobalIllumination.h"
+#include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/Canvas.h"
 #include "graphics/Light.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -94,21 +93,21 @@ void Graphics::begin3DFrame() {
     setViewportAndScissor(cb, swapchain.extent.width, swapchain.extent.height);
 
     {
-        auto &fslots         = currentMesh3dFrameSlots();
+        auto &fslots = currentMesh3dFrameSlots();
         fslots.lastDrawCount = fslots.drawIndex;
-        fslots.drawIndex     = 0;
+        fslots.drawIndex = 0;
         ensureMesh3dRing(fslots);
-        auto &cslots         = currentMesh3dClusteredFrameSlots();
+        auto &cslots = currentMesh3dClusteredFrameSlots();
         cslots.lastDrawCount = cslots.drawIndex;
-        cslots.drawIndex     = 0;
+        cslots.drawIndex = 0;
         ensureMesh3dClusteredRing(cslots);
     }
-    lastMesh3dPipeline                    = nullptr;
-    lastMesh3dClusteredPipeline           = nullptr;
+    lastMesh3dPipeline = nullptr;
+    lastMesh3dClusteredPipeline = nullptr;
     currentVoxelInstanceFrame().drawIndex = 0;
-    swapchainPassOpen                     = true;
-    frameHad3D                            = true;
-    hasPendingClear                       = false;
+    swapchainPassOpen = true;
+    frameHad3D = true;
+    hasPendingClear = false;
 }
 
 void Graphics::ensureOffscreen3DResources() {
@@ -195,29 +194,30 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     vk::RenderPassBeginInfo rpBegin{};
     rpBegin.renderPass = offscreen3DRenderPass;
     rpBegin.framebuffer = oc->framebuffer3D();
-    rpBegin.renderArea      = vk::Rect2D{{0, 0}, {uint32_t(oc->getWidth()), uint32_t(oc->getHeight())}};
+    rpBegin.renderArea =
+        vk::Rect2D{{0, 0}, {uint32_t(oc->getWidth()), uint32_t(oc->getHeight())}};
     rpBegin.clearValueCount = uint32_t(clears.size());
-    rpBegin.pClearValues    = clears.data();
+    rpBegin.pClearValues = clears.data();
     oc->colorImage().beginColorAttachment();
     oc->depthImage().beginDepthAttachment();
     offscreen3DCB.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     setViewportAndScissor(offscreen3DCB, oc->getWidth(), oc->getHeight());
 
     {
-        auto &fslots         = currentMesh3dFrameSlots();
+        auto &fslots = currentMesh3dFrameSlots();
         fslots.lastDrawCount = fslots.drawIndex;
-        fslots.drawIndex     = 0;
+        fslots.drawIndex = 0;
         ensureMesh3dRing(fslots);
-        auto &cslots         = currentMesh3dClusteredFrameSlots();
+        auto &cslots = currentMesh3dClusteredFrameSlots();
         cslots.lastDrawCount = cslots.drawIndex;
-        cslots.drawIndex     = 0;
+        cslots.drawIndex = 0;
         ensureMesh3dClusteredRing(cslots);
     }
-    lastMesh3dPipeline          = nullptr;
+    lastMesh3dPipeline = nullptr;
     lastMesh3dClusteredPipeline = nullptr;
-    offscreen3DPassOpen         = true;
-    frameHad3D                  = true;
-    hasPendingClear             = false;
+    offscreen3DPassOpen = true;
+    frameHad3D = true;
+    hasPendingClear = false;
 }
 
 void Graphics::end3DFrameToCanvas() {
@@ -703,7 +703,8 @@ void Graphics::ensureFlatHeightTexture3D() {
 }
 
 vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                     GpuTexture *heightTex, GpuTexture *depthTex, Mesh3dFrameSlots &fslots) {
+                                     GpuTexture *heightTex, GpuTexture *depthTex,
+                                     Mesh3dFrameSlots &fslots) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
@@ -713,13 +714,13 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     ASSERT(fslots.shadowRing.buffer);
 
     Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, depthTex};
-    auto         it = fslots.sets.find(key);
+    auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
 
     vk::DescriptorSetAllocateInfo alloc{};
-    alloc.descriptorPool     = descriptorPool;
+    alloc.descriptorPool = descriptorPool;
     alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts        = &mesh3dSetLayout;
+    alloc.pSetLayouts = &mesh3dSetLayout;
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
     vkb::DescriptorSetUpdater updater(12, 12, 0);
@@ -747,9 +748,13 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     return bound;
 }
 
-void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) { mesh3dFrameUbo.mvp = viewProj; }
+void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) {
+    mesh3dFrameUbo.mvp = viewProj;
+}
 
-void Graphics::setMesh3DView(const glm::mat4 &view) { mesh3dFrameUbo.view = view; }
+void Graphics::setMesh3DView(const glm::mat4 &view) {
+    mesh3dFrameUbo.view = view;
+}
 
 void Graphics::setMesh3DClip(float nearZ, float farZ) {
     const float n = nearZ > 1e-4f ? nearZ : 0.1f;

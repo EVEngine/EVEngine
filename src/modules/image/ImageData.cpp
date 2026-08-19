@@ -31,6 +31,7 @@
 #include <cmath>
 #include <cstring>    // memcpy
 #include <limits>
+#include <utility>
 #include <vector>
 
 using namespace medialoader;
@@ -73,6 +74,17 @@ ImageData::~ImageData() {
         decodeHandler->freeRawPixels(data);
     else
         delete[] data;
+}
+
+void ImageData::adopt(eve::Resource &replacement) {
+    auto &other = static_cast<ImageData &>(replacement);
+    std::swap(data, other.data);
+    std::swap(width, other.width);
+    std::swap(height, other.height);
+    std::swap(format, other.format);
+    std::swap(decodeHandler, other.decodeHandler);
+    std::swap(pixelSetFunction, other.pixelSetFunction);
+    std::swap(pixelGetFunction, other.pixelGetFunction);
 }
 
 eve::image::ImageData *ImageData::clone() const {

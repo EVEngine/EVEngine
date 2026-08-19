@@ -1372,13 +1372,8 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
         reloadTextureFromFile(filename);
         return it->second;
     }
-    auto *fs = eve::filesystem::Filesystem::create();
-    if (!fs) throw Exception("newTextureFromFile: no filesystem");
-    std::unique_ptr<filesystem::FileData> fileData(fs->read(filename));
-    if (!fileData) throw Exception("newTextureFromFile: failed to read '%s'", filename.c_str());
     auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
-    if (!data) throw Exception("newTextureFromFile: cannot decode '%s'", filename.c_str());
+    eve::ref<image::ImageData> data(imgMod->newImageDataFromFile(filename));
     Texture *tex = newTexture(data.get());
     texturesByPath[filename] = tex;
     return tex;
@@ -1387,18 +1382,17 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
 bool Graphics::reloadTextureFromFile(const std::string &filename) {
     auto it = texturesByPath.find(filename);
     if (it == texturesByPath.end()) return false;
-    auto *fs = eve::filesystem::Filesystem::create();
-    if (!fs) return false;
-    std::unique_ptr<filesystem::FileData> fileData;
+
+    image::ImageData *data = nullptr;
     try {
-        fileData.reset(fs->read(filename));
+        auto *imgMod = image::Image::create();
+        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
+        data = cached.get();
     } catch (...) {
         return false;
     }
-    if (!fileData) return false;
-    auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
     if (!data) return false;
+
     Texture *tex = it->second;
     auto *gpu = gpuForTexture(tex);
     if (gpu && data->getWidth() == tex->width && data->getHeight() == tex->height) {

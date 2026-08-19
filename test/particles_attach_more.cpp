@@ -463,7 +463,7 @@ TEST_CASE("particles.attach.emitZeroAndNegativeNoOp") {
 TEST_CASE("particles.skin.planeXzYzCesiumMan") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_skin_planes"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
@@ -525,7 +525,7 @@ TEST_CASE("particles.skin.planeXzYzCesiumMan") {
 TEST_CASE("particles.skin.clearRestoresBoneOriginSpawn") {
     if (!ensureSkinnedAssets()) return;
 
-    std::unique_ptr<eve::model3d::ModelData> model(
+    eve::ref<eve::model3d::ModelData> model(
         loadCesiumMan("ev_ut_particles_skin_clear"));
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);

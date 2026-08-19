@@ -35,6 +35,16 @@ public:
 	ImageData *newImageData(Data *data);
 
 	/**
+	 * @brief Loads an image from a VFS path through the unified resource cache.
+	 * Repeated loads of one path share a single decoded ImageData; a file
+	 * change refreshes it in place (see ResourceManager).
+	 * @param path The VFS path of the image file.
+	 * @return The cached ImageData.
+	 * @throws eve::Exception when the file cannot be read or decoded.
+	 **/
+	ImageData *newImageDataFromFile(std::string path);
+
+	/**
 	 * @brief Creates empty ImageData with the given size.
 	 * @param width The width of the ImageData.
 	 * @param height The height of the ImageData.

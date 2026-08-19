@@ -2,6 +2,7 @@
 
 #include "common/Data.h"
 #include "common/Exception.h"
+#include "common/Resource.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "image/ImageData.h"
@@ -10,6 +11,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <string>
 #include <vector>
 
 namespace eve {
@@ -38,24 +40,13 @@ FontData *Font::newFontDataFromFile(std::string path, int size) {
     if (path.empty())
         throw eve::Exception("Font::newFontDataFromFile: empty path");
 
-    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
-    if (!fs)
-        fs = filesystem::Filesystem::create();
-
-    filesystem::FileData *fd = fs->read(path);
-    if (fd == nullptr || fd->getData() == nullptr || fd->getSize() == 0) {
-        delete fd;
-        throw eve::Exception("Could not read font file: %s", path.c_str());
-    }
-
-    try {
-        FontData *font = newFontData(fd, size);
-        delete fd;
-        return font;
-    } catch (...) {
-        delete fd;
-        throw;
-    }
+    // Route through the unified resource cache: one decoded face per
+    // (path, size) pair, refreshed in place on file change.
+    const std::string key = eve::ResourceManager::makeKey(path, "size=" + std::to_string(size));
+    eve::Resource *resource = eve::ResourceManager::getInstance().get(key);
+    if (!resource)
+        throw eve::Exception("Could not load font file: %s", path.c_str());
+    return static_cast<FontData *>(resource);
 }
 
 void Font::expose(ssq::Table &table) {

@@ -4,9 +4,9 @@
 // Re-generated from the merged dev single-TU Graphics.cpp (pure move).
 // Anonymous namespace: each TU gets its own internal copy.
 
+#include "graphics/vulkan/Graphics.h"
 #include "common/Exception.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/vulkan/Graphics.h"
 
 #include <algorithm>
 #include <cmath>
@@ -122,16 +122,18 @@ void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh) {
  *  16-bit indices to 32-bit). */
 void ensureDynamicRing(GpuMesh &gpu) {
     if (gpu.dynamic) return;
-    gpu.dynamic           = true;
+    gpu.dynamic = true;
     gpu.dynamicWriteCount = 0;
     gpu.cpuIndices.resize(gpu.indexCount);
     if (gpu.indexCount > 0 && gpu.indices.buffer) {
         void *ptr = gpu.indices.map();
         if (gpu.indexType == vk::IndexType::eUint16) {
             const auto *src = static_cast<const uint16_t *>(ptr);
-            for (uint32_t i = 0; i < gpu.indexCount; ++i) gpu.cpuIndices[size_t(i)] = src[i];
+            for (uint32_t i = 0; i < gpu.indexCount; ++i)
+                gpu.cpuIndices[size_t(i)] = src[i];
         } else {
-            std::memcpy(gpu.cpuIndices.data(), ptr, size_t(gpu.indexCount) * sizeof(uint32_t));
+            std::memcpy(gpu.cpuIndices.data(), ptr,
+                        size_t(gpu.indexCount) * sizeof(uint32_t));
         }
         gpu.indices.unmap();
     }
@@ -140,8 +142,8 @@ void ensureDynamicRing(GpuMesh &gpu) {
 
 /** Write one ring copy. No device-wide wait: the slot being overwritten is
  *  kDynamicVertexCopies frames old, i.e. past its in-flight window. */
-void writeDynamicMesh(GpuMesh &gpu, const std::vector<MeshVertex> &verts, vkb::Device &device, vkb::FrameSlot frame,
-                      const uint32_t *indices, int indexCount) {
+void writeDynamicMesh(GpuMesh &gpu, const std::vector<MeshVertex> &verts, vkb::Device &device,
+                      vkb::FrameSlot frame, const uint32_t *indices, int indexCount) {
     const size_t slot = size_t(gpu.dynamicWriteCount % GpuMesh::kDynamicVertexCopies);
     gpu.dynVertices[slot].allocate<MeshVertex>(frame, device, verts);
     if (indices && indexCount > 0) {
@@ -151,18 +153,21 @@ void writeDynamicMesh(GpuMesh &gpu, const std::vector<MeshVertex> &verts, vkb::D
     if (!gpu.cpuIndices.empty()) {
         auto &ib = gpu.dynIndices[slot];
         ib.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
-                    vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t), kHostVisibleCoherent);
-        ib.updateLocal(frame, gpu.cpuIndices.data(), vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t));
+                    vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t),
+                    kHostVisibleCoherent);
+        ib.updateLocal(frame, gpu.cpuIndices.data(),
+                       vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t));
     }
     ++gpu.dynamicWriteCount;
 }
 
 std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame,
-                                       const std::vector<MeshVertex> &vertices, const std::vector<uint32_t> &indices) {
+                                       const std::vector<MeshVertex> &vertices,
+                                       const std::vector<uint32_t> &indices) {
     auto gpu = std::make_unique<GpuMesh>();
     gpu->vertices.allocate<MeshVertex>(frame, device, vertices);
-    gpu->indices.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer, indices.size() * sizeof(uint32_t),
-                          kHostVisibleCoherent);
+    gpu->indices.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
+                          indices.size() * sizeof(uint32_t), kHostVisibleCoherent);
     gpu->indices.updateLocal(frame, indices.data(), indices.size() * sizeof(uint32_t));
     gpu->indexCount = uint32_t(indices.size());
     return gpu;
@@ -183,9 +188,9 @@ std::unique_ptr<GpuMesh> uploadGpuMesh16(vkb::Device &device, vkb::FrameSlot fra
 }
 
 std::unique_ptr<Mesh> makeMeshHandle(GpuMesh &gpu) {
-    auto mesh        = std::make_unique<Mesh>();
+    auto mesh = std::make_unique<Mesh>();
     mesh->indexCount = int(gpu.indexCount);
-    mesh->gpuHandle  = &gpu;
+    mesh->gpuHandle = &gpu;
     return mesh;
 }
 
@@ -197,10 +202,10 @@ void assignMeshBounds(Mesh *mesh, const std::vector<MeshVertex> &verts) {
     mesh->boundsCx = c.x;
     mesh->boundsCy = c.y;
     mesh->boundsCz = c.z;
-    float r        = 0.f;
+    float r = 0.f;
     for (const auto &v : verts) {
-        const glm::vec3 d   = v.pos - c;
-        const float     len = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+        const glm::vec3 d = v.pos - c;
+        const float len = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
         if (len > r) r = len;
     }
     // Same degenerate-mesh rule as Mesh::computeBounds: keep a tiny non-zero
@@ -209,7 +214,8 @@ void assignMeshBounds(Mesh *mesh, const std::vector<MeshVertex> &verts) {
 }
 
 /** Host-coherent write at a byte offset into a mapped ring buffer. */
-void updateRingLocal(vkb::GenericBuffer &ring, vk::DeviceSize byteOffset, const void *data, vk::DeviceSize bytes) {
+void updateRingLocal(vkb::GenericBuffer &ring, vk::DeviceSize byteOffset, const void *data,
+                     vk::DeviceSize bytes) {
     if (!ring.buffer || !data || bytes == 0) return;
     void *ptr = ring.map();
     std::memcpy(static_cast<char *>(ptr) + byteOffset, data, size_t(bytes));
@@ -223,8 +229,9 @@ inline T alignUpValue(T value, T align) {
 
 vk::PipelineColorBlendAttachmentState makeBlendAttachment(BlendMode mode) {
     vk::PipelineColorBlendAttachmentState att{};
-    att.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
-                         vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+    att.colorWriteMask =
+        vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+        vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
     att.blendEnable = true;
     if (mode == BlendMode::Additive) {
         att.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
@@ -236,17 +243,18 @@ vk::PipelineColorBlendAttachmentState makeBlendAttachment(BlendMode mode) {
     } else {
         att.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
         att.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-        att.colorBlendOp        = vk::BlendOp::eAdd;
+        att.colorBlendOp = vk::BlendOp::eAdd;
         att.srcAlphaBlendFactor = vk::BlendFactor::eOne;
         att.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
-        att.alphaBlendOp        = vk::BlendOp::eAdd;
+        att.alphaBlendOp = vk::BlendOp::eAdd;
     }
     return att;
 }
 
 class ShaderModulePair {
 public:
-    ShaderModulePair(vkb::Device &device, const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag)
+    ShaderModulePair(vkb::Device &device, const std::vector<uint32_t> &vert,
+                     const std::vector<uint32_t> &frag)
         : device(device),
           vert(vkb::PipelineBuilder::createShaderModule(device.instance, vert)),
           frag(vkb::PipelineBuilder::createShaderModule(device.instance, frag)) {}
@@ -256,13 +264,14 @@ public:
         device->destroyShaderModule(frag);
     }
 
-    ShaderModulePair(const ShaderModulePair &)            = delete;
+    ShaderModulePair(const ShaderModulePair &) = delete;
     ShaderModulePair &operator=(const ShaderModulePair &) = delete;
 
-    vkb::Device     &device;
+    vkb::Device &device;
     vk::ShaderModule vert;
     vk::ShaderModule frag;
 };
+
 
 
 vk::Format pickGBufferColorFormat(vkb::Device &device) {
@@ -276,6 +285,7 @@ vk::SampleCountFlagBits sampleCountFlagFor(int samples) {
     if (samples >= 2) return vk::SampleCountFlagBits::e2;
     return vk::SampleCountFlagBits::e1;
 }
+
 
 
 uint32_t rgba8MipBytes(uint32_t width, uint32_t height) {

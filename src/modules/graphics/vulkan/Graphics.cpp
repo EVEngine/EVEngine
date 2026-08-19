@@ -1,18 +1,17 @@
 // Vulkan backend implementation — backend lifecycle and frame orchestration.
 //
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
-// dev perf changes preserved). Shared helpers live in
-// GraphicsInternal.h.
+// dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
 #define VKB_IMPL
 #include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/Canvas.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Light.h"
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
-#include "graphics/vulkan/Canvas.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -337,11 +336,15 @@ vkb::FrameSlot Graphics::frameToken() const {
     return vkb::FrameSlot::gpuIdle();
 }
 
-void Graphics::waitForSharedGpuResources() { presentModel.waitForAllFrames(); }
+void Graphics::waitForSharedGpuResources() {
+    presentModel.waitForAllFrames();
+}
 
 void Graphics::invalidateTextureBindings() {
-    for (auto &frame : mesh3dFrameSlots) frame.sets.clear();
-    for (auto &frame : mesh3dClusteredFrameSlots) frame.sets.clear();
+    for (auto &frame : mesh3dFrameSlots)
+        frame.sets.clear();
+    for (auto &frame : mesh3dClusteredFrameSlots)
+        frame.sets.clear();
     for (auto &m : lit2dSets) m.clear();
     offscreenLit2dSets.clear();
     post2Sets.clear();

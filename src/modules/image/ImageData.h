@@ -117,6 +117,12 @@ public:
 	size_t getSize() const;
 	bool isSRGB() const;
 
+	/**
+	 * @brief Replace this instance's pixels with `replacement`'s (cache reload).
+	 * The replacement is drained; its destructor releases the old pixels.
+	 */
+	void adopt(eve::Resource &replacement) override;
+
 	int getWidth() const;
 	int getHeight() const;
 	std::string getFormat() const;

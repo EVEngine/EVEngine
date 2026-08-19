@@ -1,14 +1,13 @@
 // Vulkan backend implementation — 2D drawing, textures and batching.
 //
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
-// dev perf changes preserved). Shared helpers live in
-// GraphicsInternal.h.
+// dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
-#include "graphics/AntiAliasing.h"
-#include "graphics/Light.h"
-#include "graphics/RenderControl.h"
-#include "graphics/vulkan/Canvas.h"
 #include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/Light.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/RenderControl.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -536,8 +535,9 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     gpu->samplerState = info.sampler;
     gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
 
-    std::vector<uint8_t> bytes = (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
-                                                 : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
+    std::vector<uint8_t> bytes =
+        (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
+                        : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
     gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
@@ -547,10 +547,10 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
 
-    auto tex         = std::make_unique<Texture>();
-    tex->width       = w;
-    tex->height      = h;
-    tex->pixelWidth  = w;
+    auto tex = std::make_unique<Texture>();
+    tex->width = w;
+    tex->height = h;
+    tex->pixelWidth = w;
     tex->pixelHeight = h;
     tex->mipmapCount = int(mipLevels);
     tex->sampler = info.sampler;
@@ -712,8 +712,9 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     gpu->mipLevels = mipLevels;
     gpu->samplerState = info.sampler;
     gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
-    std::vector<uint8_t> bytes = (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
-                                                 : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
+    std::vector<uint8_t> bytes =
+        (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
+                        : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);
     gpu->image.upload(uploadPool, device.getQueue(vkb::QueueType::graphics), bytes);
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
@@ -759,12 +760,8 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
     if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
 
     const std::string key = normalizeTexPath(filename);
-    auto *fs = filesystem::Filesystem::create();
-    std::unique_ptr<filesystem::FileData> fileData(fs->read(filename));
-    if (!fileData) throw Exception("newTextureFromFile: failed to read '%s'", filename.c_str());
-
     auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
+    eve::ref<image::ImageData> data(imgMod->newImageDataFromFile(filename));
 
     auto it = texturesByPath.find(key);
     if (it != texturesByPath.end() && it->second) {
@@ -784,18 +781,16 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
     auto it = texturesByPath.find(key);
     if (it == texturesByPath.end() || !it->second) return false;
 
-    auto *fs = filesystem::Filesystem::create();
-    std::unique_ptr<filesystem::FileData> fileData;
+    image::ImageData *data = nullptr;
     try {
-        fileData.reset(fs->read(filename));
+        auto *imgMod = image::Image::create();
+        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
+        data = cached.get();
     } catch (...) {
         return false;
     }
-    if (!fileData) return false;
-
-    auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
-    return replaceTexturePixels(it->second, data.get());
+    if (!data) return false;
+    return replaceTexturePixels(it->second, data);
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) {
@@ -928,12 +923,12 @@ vkb::BoundSet Graphics::post2SetFor(GpuTexture *color, GpuTexture *depth) {
     if (!colorView) return {};
     if (!depth || !depth->sampler || !depth->imageView()) depth = color;
     LitSetKey key{color, depth};
-    auto      it = post2Sets.find(key);
+    auto it = post2Sets.find(key);
     if (it != post2Sets.end()) return it->second;
 
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
 
-    vkb::UnboundSet           unbound{sets[0]};
+    vkb::UnboundSet unbound{sets[0]};
     vkb::DescriptorSetUpdater updater;
     updater.beginDescriptorSet(unbound)
         .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)

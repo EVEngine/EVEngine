@@ -2562,7 +2562,7 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_still"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_still"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2598,7 +2598,7 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_pose"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_pose"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2959,7 +2959,7 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_part"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_part"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -3611,7 +3611,7 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
     studio.subject->setVisible(false);
 
-    std::unique_ptr<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_vroid"));
+    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_vroid"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);

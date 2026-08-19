@@ -1,17 +1,16 @@
 // Vulkan backend implementation — swapchain and pipeline creation.
 //
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
-// dev perf changes preserved). Shared helpers live in
-// GraphicsInternal.h.
+// dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
+#include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/Light.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Light.h"
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -47,25 +46,25 @@
 #include <assimp/vector3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "graphics/shaders/color_frag_spv.inc"
 #include "graphics/shaders/color_vert_spv.inc"
-#include "graphics/shaders/lit2d_frag_spv.inc"
-#include "graphics/shaders/lit2d_vert_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
-#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
-#include "graphics/shaders/mesh3d_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
-#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
-#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
-#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
-#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
-#include "graphics/shaders/mesh3d_vert_spv.inc"
-#include "graphics/shaders/textured_frag_spv.inc"
+#include "graphics/shaders/color_frag_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
+#include "graphics/shaders/textured_frag_spv.inc"
+#include "graphics/shaders/mesh3d_vert_spv.inc"
+#include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
+#include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_frag_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_vert_spv.inc"
+#include "graphics/shaders/mesh3d_shadow_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
+#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
+#include "graphics/shaders/lit2d_vert_spv.inc"
+#include "graphics/shaders/lit2d_frag_spv.inc"
 #include "graphics/vulkan/GraphicsInternal.h"
 
 namespace eve::graphics::vulkan {
@@ -73,7 +72,8 @@ namespace eve::graphics::vulkan {
 namespace {
 
 vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRenderPass &renderPass,
-                                      vk::PipelineLayout layout, BlendMode mode = BlendMode::Opaque) {
+                                      vk::PipelineLayout layout,
+                                      BlendMode mode = BlendMode::Opaque) {
     if (mode == BlendMode::Additive) {
         // cbs/attachments must outlive build(); the builder must stay a single
         // expression — copying the builder into a named local leaves its
@@ -113,8 +113,9 @@ vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRende
     return device.createPipeline()
         .useClassicPipeline(embeddedSpirv(color_vert_spv), embeddedSpirv(color_frag_spv))
         .setPipelineLayout(layout)
-        .setVertexInputState(
-            vkb::VertexInputStateBuilder().addInputBinding<ColorVertex>().addAttributeDescription<ColorVertex>())
+        .setVertexInputState(vkb::VertexInputStateBuilder()
+                                 .addInputBinding<ColorVertex>()
+                                 .addAttributeDescription<ColorVertex>())
         .setDynamicStatesViewportScissor()
         .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                        vk::FrontFace::eCounterClockwise)
@@ -206,10 +207,12 @@ void Graphics::createTexturedPipeline() {
     if (texPipeline) return;
 
     vkb::DescriptorSetLayoutBuilder layoutBuilder;
-    texSetLayoutUnique =
-        layoutBuilder.image(0, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .createUnique(device.instance);
+    texSetLayoutUnique = layoutBuilder
+                             .image(0, vk::DescriptorType::eCombinedImageSampler,
+                                    vk::ShaderStageFlagBits::eFragment, 1)
+                             .image(1, vk::DescriptorType::eCombinedImageSampler,
+                                    vk::ShaderStageFlagBits::eFragment, 1)
+                             .createUnique(device.instance);
     texSetLayout = *texSetLayoutUnique;
 
     vk::DescriptorPoolSize poolSizes[] = {
@@ -222,14 +225,15 @@ void Graphics::createTexturedPipeline() {
         {vk::DescriptorType::eStorageBuffer, 256},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.maxSets       = 4096;
+    poolInfo.maxSets = 4096;
     poolInfo.poolSizeCount = 4;
-    poolInfo.pPoolSizes    = poolSizes;
-    descriptorPool         = device->createDescriptorPool(poolInfo);
+    poolInfo.pPoolSizes = poolSizes;
+    descriptorPool = device->createDescriptorPool(poolInfo);
 
-    texPipelineLayout    = createPipelineLayout(device, texSetLayout);
-    const auto pcr       = pushConstantRange(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
-                                             Shader::kPushConstantBytes);
+    texPipelineLayout = createPipelineLayout(device, texSetLayout);
+    const auto pcr =
+        pushConstantRange(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                          Shader::kPushConstantBytes);
     shaderPipelineLayout = createPipelineLayout(device, texSetLayout, &pcr);
 
     auto vert = embeddedSpirv(textured_vert_spv);
@@ -346,8 +350,9 @@ void Graphics::createMesh3DPipeline() {
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
     mesh3dPipelineLayout = createPipelineLayout(device, mesh3dSetLayout);
-    const auto pcr       = pushConstantRange(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
-                                             Shader::kPushConstantBytes);
+    const auto pcr =
+        pushConstantRange(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                          Shader::kPushConstantBytes);
     mesh3dShaderPipelineLayout = createPipelineLayout(device, mesh3dSetLayout, &pcr);
 
     // Per-draw UBOs live in a per-frame-slot ring; descriptor sets are cached
@@ -357,7 +362,8 @@ void Graphics::createMesh3DPipeline() {
     auto vert = embeddedSpirv(mesh3d_vert_spv);
     auto frag = embeddedSpirv(mesh3d_frag_spv);
     mesh3dPipeline =
-        createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1);
+        createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass,
+                                  vk::SampleCountFlagBits::e1);
 }
 
 void Graphics::createMesh3DClusteredPipeline() {
@@ -638,11 +644,12 @@ bool Graphics::renderUiOverlayPass() {
 
 void Graphics::createGBufferResources(int width, int height) {
     if (width <= 0 || height <= 0) return;
-    if (!gbufferSlots.empty() && gbufferWidth == width && gbufferHeight == height && gbufferPipeline) return;
+    if (!gbufferSlots.empty() && gbufferWidth == width && gbufferHeight == height && gbufferPipeline)
+        return;
     destroyGBufferResources();
 
-    gbufferWidth              = width;
-    gbufferHeight             = height;
+    gbufferWidth = width;
+    gbufferHeight = height;
     const uint32_t w = uint32_t(width);
     const uint32_t h = uint32_t(height);
     const vk::Format colorFmt = pickGBufferColorFormat(device);
@@ -1098,14 +1105,15 @@ void Graphics::createShadowResources() {
 
 void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes) {
     auto &st = currentClusteredStorage();
-    auto  ensure = [&](vkb::GenericBuffer &buf, size_t &cap, size_t need) {
+    auto ensure = [&](vkb::GenericBuffer &buf, size_t &cap, size_t need) {
         if (need == 0) need = 4;
         if (cap >= need && buf.buffer) return;
         buf.release();
         // Grow with some slack.
         size_t alloc = std::max(need, cap ? cap * 2 : need);
         buf.allocate(frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer, vk::DeviceSize(alloc),
-                      vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+                     vk::MemoryPropertyFlagBits::eHostVisible |
+                         vk::MemoryPropertyFlagBits::eHostCoherent);
         cap = alloc;
     };
     ensure(st.lightsBuf, st.lightsCap, lightsBytes);
@@ -1117,9 +1125,12 @@ void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, siz
 }
 
 void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {
-    const size_t lightsBytes  = std::max(size_t(1), upload.lights.size()) * sizeof(ClusteredLightGpu);
-    const size_t tableBytes   = std::max(size_t(1), upload.clusterTable.size()) * sizeof(ClusterTableEntry);
-    const size_t indicesBytes = std::max(size_t(1), upload.lightIndices.size()) * sizeof(uint32_t);
+    const size_t lightsBytes =
+        std::max(size_t(1), upload.lights.size()) * sizeof(ClusteredLightGpu);
+    const size_t tableBytes =
+        std::max(size_t(1), upload.clusterTable.size()) * sizeof(ClusterTableEntry);
+    const size_t indicesBytes =
+        std::max(size_t(1), upload.lightIndices.size()) * sizeof(uint32_t);
     ensureClusteredBuffers(lightsBytes, tableBytes, indicesBytes);
 
     auto &st = currentClusteredStorage();
@@ -1138,18 +1149,20 @@ void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {
 
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
     mesh3dClusteredActive = upload.active;
-    mesh3dClustered       = upload;
+    mesh3dClustered = upload;
     if (upload.active) uploadClusteredLighting(upload);
 }
 
-void Graphics::setMesh3DClusteredActive(bool active) { mesh3dClusteredActive = active; }
+void Graphics::setMesh3DClusteredActive(bool active) {
+    mesh3dClusteredActive = active;
+}
 
 void Graphics::ensureMesh3dStrides() {
     if (mesh3dUboStride != 0) return;
-    const uint32_t align =
-        std::max(1u, uint32_t(device.physical_device.properties.limits.minUniformBufferOffsetAlignment));
-    mesh3dUboStride          = alignUpValue(uint32_t(sizeof(Mesh3DUBO)), align);
-    shadowUboStride          = alignUpValue(uint32_t(sizeof(ShadowUBO)), align);
+    const uint32_t align = std::max(
+        1u, uint32_t(device.physical_device.properties.limits.minUniformBufferOffsetAlignment));
+    mesh3dUboStride = alignUpValue(uint32_t(sizeof(Mesh3DUBO)), align);
+    shadowUboStride = alignUpValue(uint32_t(sizeof(ShadowUBO)), align);
     mesh3dClusteredUboStride = alignUpValue(uint32_t(sizeof(Mesh3DClusteredUBO)), align);
 }
 
@@ -1185,8 +1198,9 @@ void Graphics::ensureMesh3dClusteredRing(Mesh3dClusteredFrameSlots &fslots) {
     fslots.sets.clear();
 }
 
-vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                                              GpuTexture *heightTex, Mesh3dClusteredFrameSlots &fslots) {
+vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
+                                              GpuTexture *envTex, GpuTexture *heightTex,
+                                              Mesh3dClusteredFrameSlots &fslots) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
@@ -1196,16 +1210,16 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     ASSERT(fslots.shadowRing.buffer);
 
     Mesh3dSetKey key{gpuTex, normalTex, envTex, heightTex, nullptr};
-    auto         it = fslots.sets.find(key);
+    auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
 
     vk::DescriptorSetAllocateInfo alloc{};
-    alloc.descriptorPool     = descriptorPool;
+    alloc.descriptorPool = descriptorPool;
     alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts        = &mesh3dClusteredSetLayout;
+    alloc.pSetLayouts = &mesh3dClusteredSetLayout;
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
-    auto                     &st = currentClusteredStorage();
+    auto &st = currentClusteredStorage();
     vkb::DescriptorSetUpdater updater(14, 14, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
@@ -1235,8 +1249,10 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
     return bound;
 }
 
-vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
-                                                 vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
+vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
+                                                 const std::vector<uint32_t> &frag,
+                                                 vk::PipelineLayout layout,
+                                                 const vkb::BuiltRenderPass &rp,
                                                  vk::SampleCountFlagBits samples) {
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
