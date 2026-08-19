@@ -196,6 +196,8 @@ if(_has_ui)
     else()
       target_link_libraries(eve_imgui INTERFACE imgui)
     endif()
+    # INTERFACE library: only propagate the shared include set to consumers.
+    target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
   else()
     # Compiled from third-party sources (also installed by the ExternalProject).
     set(_eve_imgui_sources
@@ -223,11 +225,12 @@ if(_has_ui)
       )
     endif()
     target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
+    # STATIC library: PUBLIC so eve_imgui's own TUs (imgui_impl_vulkan.cpp /
+    # imgui_impl_sdl.cpp) compile against the shared include set (Vulkan SDK,
+    # SDL2, engine headers) and consumers inherit it transitively.
+    target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
   endif()
 
-  # eve_imgui may be INTERFACE (prebuilt mode) or STATIC; only the usage
-  # requirements of the shared include set are needed either way.
-  target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
   target_link_libraries(EVUI PUBLIC eve_imgui)
   target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
   target_include_directories(EVUI BEFORE PUBLIC
