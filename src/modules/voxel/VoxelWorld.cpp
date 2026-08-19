@@ -4,6 +4,7 @@
 
 #include "data/ByteData.h"
 #include "graphics/IGraphics3D.h"
+#include "thread/Thread.h"
 
 #include <algorithm>
 #include <cmath>
@@ -254,38 +255,26 @@ int VoxelWorld::remeshDirty(int maxThreads) {
         return count;
     }
 
-    // Parallel remesh: each worker remeshes its own slice of distinct chunks.
-    // The sampler only reads the chunk map (no concurrent mutation), and each
-    // chunk is touched by exactly one thread, so this is safe. The main thread
-    // takes the remainder slice, then joins.
-    std::vector<std::thread> threads;
-    int next = 0;
-    const int perWorker = (count + workers - 1) / workers;
+    // Parallel remesh through the engine JobSystem: each child task remeshes
+    // its own slice of distinct chunks. The sampler only reads the chunk map
+    // (no concurrent mutation), and each chunk is touched by exactly one task,
+    // so this is safe. wait() on the loop joins every slice.
+    auto *jobs = thread::Thread::create()->getJobSystem();
+    thread::Job *loop = nullptr;
     try {
-        threads.reserve(size_t(workers - 1));
-        for (int i = 0; i < workers - 1 && next < count; ++i) {
-            const int begin = next;
-            const int end = std::min(count, begin + perWorker);
-            next = end;
-            threads.emplace_back([this, &dirty, &remeshOne, begin, end] {
-                for (int k = begin; k < end; ++k) remeshOne(dirty[size_t(k)]);
-            });
-        }
+        loop = jobs->parallelFor(0, count,
+            [this, &dirty, &remeshOne](int first, int last) {
+                for (int k = first; k < last; ++k) remeshOne(dirty[size_t(k)]);
+            },
+            (count + workers - 1) / workers);
     } catch (...) {
-        // Thread creation failed (resource limits): join what we have and
-        // finish everything serially. Remesh is idempotent, so any chunks the
-        // created workers already handled are simply done twice.
-        for (auto &w : threads) {
-            if (w.joinable()) w.join();
-        }
-        threads.clear();
+        // Job allocation failed (resource limits): finish everything serially.
+        // Remesh is idempotent, so any chunks already handled are done twice.
         for (Chunk *c : dirty) remeshOne(c);
         return count;
     }
-    for (int k = next; k < count; ++k) remeshOne(dirty[size_t(k)]);
-    for (auto &w : threads) {
-        if (w.joinable()) w.join();
-    }
+    loop->wait();
+    delete loop;
     return count;
 }
 
