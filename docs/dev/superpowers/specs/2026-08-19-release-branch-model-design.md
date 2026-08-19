@@ -41,7 +41,10 @@ GitHub 展示默认分支上的 README/文档。允许对 `main` 开**文档白�
 
 - 允许路径：`README.md`、`Readme.md`、`Readme.en.md`、`docs/**`、`Doxyfile`
 - 混入白名单外文件则检查失败，改走 `dev`
-- 合并后 `sync-docs.yml` 调用 `release.py sync-docs`：把 `main` 上尚未在 `dev` 的文档提交 cherry-pick 到 `dev`；冲突则开 PR，不强制改写 `dev`
+- 合并后 `sync-docs.yml` 调用 `release.py sync-docs`：以 `merge-base(main, dev)` 到
+  `main` 的路径差为准，把文档路径同步到 `dev`；开 `sync-docs/from-main` → `dev` 的
+  PR（不直推 `dev`）。release 版本触点不算非文档改动（它们经 rebase PR 到达 `dev`），
+  文档内容直接从 `main` 拷贝，merge / squash / rebase 合入方式都兼容
 - 发布更新 `main` 时：能快进到「去 `-dev`」的正式版 commit 就快进；否则 **merge** 该 commit，保留 `main` 上已有的文档提交
 
 ## 一次发布的时间线
@@ -70,7 +73,7 @@ v0.1.0     ●──(去-dev)──●──严测──SDK──●──(+ -de
 所有 git/gh 变更的唯一入口。启动即检查 `gh`（`shutil.which("gh")`），缺失则非零退出并写明安装来源（GitHub CLI）。
 通过 `GH_TOKEN` 或 `GITHUB_TOKEN` 调用 `gh`。`--dry-run` 只打印将执行的命令。
 
-版本只改根目录 `CMakeLists.txt` 这四行：
+版本号的**来源**仍是根目录 `CMakeLists.txt` 这四行：
 
 ```cmake
 set(EVENGINE_MAJOR_VERSION "...")
@@ -80,6 +83,12 @@ set(EVENGINE_DEV_VERSION "...")   # 正式版为空串；开发版为 "-dev"
 ```
 
 `EVENGINE_VERSION` 由这四行拼接，不单独手改。
+
+`start` 除改写这四行外，还会把官方 `MAJOR.MINOR.PATCH` 同步到对外暴露版本的
+**required 触点**（Android `build.gradle.kts` 的 `versionName` / 推导 `versionCode`、
+MCP `serverInfo.version`、三个 `root.nut`、`docs/CMakeLists.txt`），一并提交进
+`vX.X.X`；`check-versions` 子命令校验这些触点与 CMake 是否一致，挂在日常 CI 的
+layering 作业（无网络、无工具链依赖）。独立发布的工具版本只做 WARN。
 
 ### 版本规则
 
@@ -111,9 +120,17 @@ set(EVENGINE_DEV_VERSION "...")   # 正式版为空串；开发版为 "-dev"
 
 **`sync-docs`**（`main` 文档 PR 合并后）
 
-1. 确认 `main` 相对 `dev` 多出来的提交只碰白名单路径，否则失败。
-2. cherry-pick 这些提交到 `dev`；成功则推送 `dev`（普通推送，不需要 lease，除非非快进）。
-3. 冲突则开 PR，不改写 `dev`。
+1. `git merge-base(main, dev)` 后，`git diff --name-only` 列出 `main` 相对合基多出的
+   路径；非文档且非 release 版本触点（`RELEASE_PATHS`）的路径即失败（应走 `dev`）。
+2. 文档路径从 `main` 拷贝到 `sync-docs/from-main`（基于 `origin/dev`）并提交。
+3. 推送分支并开 PR 到 `dev`（复用已存在的同 head PR）；不直推 `dev`。
+
+**`check-versions`**（无网络、无 `gh` 依赖）
+
+1. 读取 `CMakeLists.txt` 的版本三元组。
+2. 逐个校验 required 触点（失配即失败），并报告 tracked 工具的偏差（仅 WARN）。
+3. `start` 同步过的发布分支上必然通过；日常 dev 若有失配会在 CI 失败，提示先跑
+   `start` 或手工同步。
 
 脚本不编译、不跑测试、不打 SDK zip。
 
@@ -127,11 +144,23 @@ set(EVENGINE_DEV_VERSION "...")   # 正式版为空串；开发版为 "-dev"
 - `release`：桌面三端 Release 构建；对存在 `make test/win32`、`test/linux`、`test/macosx` 的平台再跑 Release 单测。Android / iOS / WebGPU 做 Release 构建（及现有产物检查），不新增不存在的测试目标。
 - `both`：先 `debug` 全套，再 `release` 全套。
 - 周常 cron 与 `workflow_dispatch` 保留，目标改为 `dev`。
+- layering 作业增加 `scripts/release.py check-versions`（版本一致性，纯文件检查）。
 
 ### `sdk-release.yml`
 
 - 去掉 `on.release.prereleased` 触发，改为 `workflow_call`（可保留 `workflow_dispatch` + tag 以便单独重打 SDK）。
 - 五平台 SDK 作业与可用性测试、上传 artifact 保持不变。
+- `test-sdk.sh` 接收期望版本（tag 去 `v`），精确校验 `share/eve/VERSION` 与 `eve -v`；
+  publish 作业在上传前对每个 zip 的 `share/eve/VERSION` 与 tag 交叉校验。
+- SDK 内容：`install_sdk.cmake` 按 `EVE_ENABLED_MODULES` 自动导出模块头文件；
+  `share/eve/licenses/` 打包引擎与第三方许可证；`test-sdk.sh` 增加 C++ 插件编译
+  与 Android APK 组装冒烟；publish 生成并上传 `SHA256SUMS`。
+
+### `cleanup-branches.yml`（新建）
+
+- 每周一 02:00 UTC 定时 + `workflow_dispatch`。
+- `release.py cleanup-branches`：删除已并入 `main`/`dev` 的 `vX.X.X` /
+  `promote/*` / `rebase/*` 分支（tag、`main`、`dev` 永不删除）。
 - **不再** `gh release edit --prerelease=false`；升正式版只在 `release.py finish`。
 
 ### `release.yml`（新建）
@@ -157,7 +186,9 @@ start (release.py start --tag)
 
 - `main` 的 `push`，且路径落在文档白名单。
 - 跑 `release.py sync-docs`。
-- 若 push 混有非文档文件（例如有人绕过保护直接推了代码），作业失败并注释说明应走 `dev`。
+- 若 `main` 混有非文档、非 release 版本触点的文件（例如有人绕过保护直接推了代码），
+  作业失败并注释说明应走 `dev`。
+- 同步产物是 `sync-docs/from-main` → `dev` 的 PR，不直推 `dev`。
 
 ## 失败与重跑
 

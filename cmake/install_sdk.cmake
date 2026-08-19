@@ -57,34 +57,60 @@ install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
 )
 
-# Module header dirs are derived from the module manifest (single source of
-# truth) so the SDK always ships every module's public headers. CORE modules
-# (common / cmdline / devtools) live under src/engine and are installed above.
-set(_eve_module_dirs "")
-foreach(_eve_mod IN LISTS EVE_ALL_MODULES)
-    if(EVE_MODULE_${_eve_mod}_CORE)
+# Public module headers: export exactly the modules this build enabled, so the
+# SDK's API surface always matches the target runtime. Single source of truth is
+# cmake/module_manifest.cmake (EVE_ENABLED_MODULES); CORE modules (common /
+# cmdline / devtools) live under src/engine and have no src/modules/<name> dir.
+if(NOT DEFINED EVE_ENABLED_MODULES)
+    # Defensive fallback when included outside the engine configure: every dir.
+    file(GLOB _eve_all_module_dirs RELATIVE "${CMAKE_SOURCE_DIR}/src/modules"
+        "${CMAKE_SOURCE_DIR}/src/modules/*")
+    set(EVE_ENABLED_MODULES ${_eve_all_module_dirs})
+endif()
+foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")
         continue()
     endif()
-    list(APPEND _eve_module_dirs "${_eve_mod}")
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}/"
+        DESTINATION include/eve/${_eve_mod}
+        FILES_MATCHING
+            PATTERN "*.h"
+            PATTERN "*.hpp"
+            PATTERN "sdl" EXCLUDE
+            PATTERN "vulkan" EXCLUDE
+            PATTERN "webgpu" EXCLUDE
+            PATTERN "physfs" EXCLUDE
+            PATTERN "openal" EXCLUDE
+            PATTERN "imgui" EXCLUDE
+            PATTERN "cppfs" EXCLUDE
+            PATTERN "include_shim" EXCLUDE
+    )
 endforeach()
-if(NOT _eve_module_dirs)
-    message(WARNING "install_sdk.cmake: EVE_ALL_MODULES is empty; no module headers will be installed")
-endif()
-foreach(_eve_mod IN LISTS _eve_module_dirs)
-    if(EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")
-        install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}/"
-            DESTINATION include/eve/${_eve_mod}
+
+# ---- Licenses -----------------------------------------------------------
+# Distribution must carry attribution for the engine AND every third-party
+# component. Root licenses are required; vendored-source licenses under
+# external/* and third-party/ are best-effort (both may be absent on machines
+# that use a prebuilt third-party tree).
+install(FILES
+    "${CMAKE_SOURCE_DIR}/LICENSE"
+    "${CMAKE_SOURCE_DIR}/LICENSE-COMMERCIAL"
+    "${CMAKE_SOURCE_DIR}/LICENSE-OPENSOURCE"
+    DESTINATION share/eve/licenses
+)
+foreach(_eve_lic_src IN ITEMS
+    "${CMAKE_SOURCE_DIR}/external"
+    "${CMAKE_SOURCE_DIR}/third-party"
+)
+    if(EXISTS "${_eve_lic_src}")
+        install(DIRECTORY "${_eve_lic_src}/"
+            DESTINATION share/eve/licenses
             FILES_MATCHING
-                PATTERN "*.h"
-                PATTERN "*.hpp"
-                PATTERN "sdl" EXCLUDE
-                PATTERN "vulkan" EXCLUDE
-                PATTERN "webgpu" EXCLUDE
-                PATTERN "physfs" EXCLUDE
-                PATTERN "openal" EXCLUDE
-                PATTERN "imgui" EXCLUDE
-                PATTERN "cppfs" EXCLUDE
-                PATTERN "include_shim" EXCLUDE
+                PATTERN "LICENSE*"
+                PATTERN "LICENCE*"
+                PATTERN "COPYING*"
+                PATTERN "NOTICE*"
+                PATTERN ".git" EXCLUDE
         )
     endif()
 endforeach()
