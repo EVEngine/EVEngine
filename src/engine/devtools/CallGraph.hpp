@@ -12,7 +12,7 @@
 
 namespace eve::dev {
 
-/** Source location in a Squirrel (or synthetic) script. */
+/** @brief Source location in a Squirrel (or synthetic) script. */
 struct EVENGINE_API SourceLoc {
     std::string source;
     int         line = 0;
@@ -31,7 +31,7 @@ enum class TraceKind : uint8_t {
     Use,  // variable use / read
 };
 
-/** One recorded runtime event used by the dynamic slicer. */
+/** @brief One recorded runtime event used by the dynamic slicer. */
 struct EVENGINE_API TraceEvent {
     uint32_t  id      = 0;
     TraceKind kind    = TraceKind::Line;
@@ -53,7 +53,7 @@ struct EVENGINE_API DataFlowEdge {
     std::string var;
 };
 
-/** Criterion for a Weiser-style dynamic backward slice. */
+/** @brief Criterion for a Weiser-style dynamic backward slice. */
 struct EVENGINE_API SliceCriterion {
     SourceLoc                loc;         // error site (source+line preferred)
     std::vector<std::string> variables;   // empty ⇒ all vars live at site
@@ -69,7 +69,7 @@ struct EVENGINE_API SliceResult {
 };
 
 /**
- * Runtime call graph + dynamic data-flow tracer with backward slicing.
+ * @brief Runtime call graph + dynamic data-flow tracer with backward slicing.
  *
  * Feed events from a Squirrel debug hook (see DevTool) or manually in tests.
  * On script failure, use sliceBackward() to recover the statements and
@@ -98,11 +98,11 @@ public:
     uint32_t onDef(const SourceLoc& loc, const std::string& var);
     uint32_t onUse(const SourceLoc& loc, const std::string& var);
 
-    /** Convenience: Call then Line at the same site. */
+    /** @brief Convenience: Call then Line at the same site. */
     uint32_t enter(const SourceLoc& loc, const std::string& funcName);
 
     // --- queries -----------------------------------------------------------
-    /** Chronological view over the live ring window (oldest → newest). */
+    /** @brief Chronological view over the live ring window (oldest → newest). */
     class EVENGINE_API EventsView {
     public:
         class EVENGINE_API const_iterator {
@@ -155,19 +155,19 @@ public:
     const TraceEvent* event(uint32_t id) const;
 
     std::vector<CallFrame> currentStack() const;
-    /** Stack reconstructed at (or just before) a given event. */
+    /** @brief Stack reconstructed at (or just before) a given event. */
     std::vector<CallFrame> stackAt(uint32_t eventId) const;
 
     std::vector<std::pair<SourceLoc, SourceLoc>> callEdges() const;
 
     /**
-     * Dynamic backward slice from an error criterion.
+     * @brief Dynamic backward slice from an error criterion.
      * Follows data dependencies (Use←Def) and control predecessors
      * (line order + call/return nesting) until a fixed point.
      */
     SliceResult sliceBackward(const SliceCriterion& criterion) const;
 
-    /** Human-readable report: message + call stack + data-flow + slice locs. */
+    /** @brief Human-readable report: message + call stack + data-flow + slice locs. */
     std::string formatErrorReport(const std::string& errorMessage,
                                   const SliceCriterion& criterion) const;
 

@@ -10,7 +10,7 @@ namespace filesystem {
 namespace cppfs {
 
 /**
- * File which is created when a user drags and drops an actual file onto the
+ * @brief File which is created when a user drags and drops an actual file onto the
  * eve game. Uses C++ stdio & filesystem. Filenames are system-dependent full paths.
  **/
 class File : public eve::filesystem::File {

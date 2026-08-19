@@ -4,11 +4,11 @@
 
 namespace eve::voxel {
 
-/** Chunk edge length in voxels (fixed). */
+/** @brief Chunk edge length in voxels (fixed). */
 constexpr int kChunkSize = 32;
 
 /**
- * Packed face-rectangle instance (exactly 32 bits):
+ * @brief Packed face-rectangle instance (exactly 32 bits):
  *   bits  0..4  : x (0..31)
  *   bits  5..9  : y (0..31)
  *   bits 10..14 : z (0..31)

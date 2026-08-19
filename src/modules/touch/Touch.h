@@ -25,12 +25,12 @@ public:
 	virtual ~Touch() {}
 
 	/**
-	 * Gets all currently active touches.
+	 * @brief Gets all currently active touches.
 	 **/
 	virtual const std::vector<TouchInfo> &getTouches() const = 0;
 
 	/**
-	 * Gets a specific touch, using its ID.
+	 * @brief Gets a specific touch, using its ID.
 	 **/
 	virtual const TouchInfo &getTouch(int64_t id) const = 0;
 

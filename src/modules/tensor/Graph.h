@@ -119,7 +119,7 @@ private:
 };
 
 /**
- * Trace builder — TF2 `tf.function` analogue (`tf.func` in scripts).
+ * @brief Trace builder — TF2 `tf.function` analogue (`tf.func` in scripts).
  * While active, TF ops record into this graph.
  */
 class Func {
@@ -145,7 +145,7 @@ public:
     int   outputNode() const { return outputNode_; }
     int   placeholderCount() const { return placeholderCount_; }
 
-    /** Ensure tensor is a node in this graph (Const-capture if eager). */
+    /** @brief Ensure tensor is a node in this graph (Const-capture if eager). */
     int ensureNode(const Tensor *t);
 
     Tensor *emitUnary(OpType type, const Tensor *x);
@@ -186,7 +186,7 @@ private:
 };
 
 /**
- * Optimized / scheduled graph ready to run with feeds.
+ * @brief Optimized / scheduled graph ready to run with feeds.
  */
 class CompiledFunction {
 public:
@@ -216,7 +216,7 @@ private:
     int                             outputNode_       = -1;
     int                             placeholderCount_ = 0;
     std::string                     device_           = "cpu";
-    /** Set when the graph could be built for GPU execution (see GpuBackend.cpp). */
+    /** @brief Set when the graph could be built for GPU execution (see GpuBackend.cpp). */
     std::unique_ptr<GpuProgram>     gpuProgram_;
 };
 

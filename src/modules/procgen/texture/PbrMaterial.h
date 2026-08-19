@@ -14,7 +14,7 @@
 namespace eve::procgen {
 
 /**
- * Full metallic-roughness PBR map set. All maps are caller-owned; call destroy()
+ * @brief Full metallic-roughness PBR map set. All maps are caller-owned; call destroy()
  * (or delete each pointer) when done. Maps are derived from one shared
  * displacement field so albedo, normal, height, roughness, metallic and AO
  * line up pixel-for-pixel.
@@ -38,7 +38,7 @@ struct PbrTextureSet {
     }
 };
 
-/** Recipe returns a full PBR set (caller owns), or nullptr on failure. */
+/** @brief Recipe returns a full PBR set (caller owns), or nullptr on failure. */
 using PbrRecipeFn = std::function<PbrTextureSet *(const Params &params, std::string &error)>;
 
 class PbrRecipeRegistry {
@@ -58,11 +58,11 @@ private:
     bool builtinsRegistered_ = false;
 };
 
-/** Build a full PBR set from a texture definition. Caller owns the result. */
+/** @brief Build a full PBR set from a texture definition. Caller owns the result. */
 PbrTextureSet *generatePbrSet(const TextureRecipeDef &def, const Params &params,
                               std::string &error);
 
-/** Build a grayscale RGBA8 image from per-pixel values in [0,1]. Caller owns. */
+/** @brief Build a grayscale RGBA8 image from per-pixel values in [0,1]. Caller owns. */
 image::ImageData *grayscaleImage(const std::vector<float> &values, int w, int h);
 
 }  // namespace eve::procgen

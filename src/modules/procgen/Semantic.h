@@ -5,7 +5,7 @@
 
 namespace eve::procgen {
 
-/** Stable semantic cell ids stored in Grid2D.cells (not tile GIDs). */
+/** @brief Stable semantic cell ids stored in Grid2D.cells (not tile GIDs). */
 namespace Semantic {
 constexpr uint32_t Empty    = 0;
 constexpr uint32_t Wall     = 1;

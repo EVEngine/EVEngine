@@ -5,7 +5,7 @@
 namespace eve::procgen {
 
 /**
- * Deterministic, seamlessly-tiling, time-animated procedural cloud field.
+ * @brief Deterministic, seamlessly-tiling, time-animated procedural cloud field.
  *
  * Samples a 2D cloud coverage over the XZ ground plane: coverageAt(x, z, t)
  * returns [0,1] where 0 = clear sky and 1 = dense cloud. The field is built
@@ -47,17 +47,17 @@ public:
     void setWarp(float warp);
     void setSeamless(bool seamless);
 
-    /** Cloud coverage at world (x, z) and time t, in [0,1]. */
+    /** @brief Cloud coverage at world (x, z) and time t, in [0,1]. */
     float coverageAt(float x, float z, float time) const;
 
     /** Fill a width*height buffer with coverage for a world region. */
     void sample(float *out, int width, int height, float time, float x0, float z0,
                 float extent) const;
 
-    /** Drift vector (world units/sec) implied by windSpeed + windAngle. */
+    /** @brief Drift vector (world units/sec) implied by windSpeed + windAngle. */
     void windVelocity(float &vx, float &vz) const;
 
-    /** Internal lattice resolution per tile (also the noise wrap period). */
+    /** @brief Internal lattice resolution per tile (also the noise wrap period). */
     static constexpr int kLattice = 64;
 
 private:

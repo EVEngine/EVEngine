@@ -17,7 +17,7 @@ struct VgUniforms {
 };
 
 /**
- * Opaque backend state for one virtual-geometry renderer. Owned by
+ * @brief Opaque backend state for one virtual-geometry renderer. Owned by
  * VirtualGeometryRenderer; allocated/freed by the active backend.
  */
 struct VgBackend {

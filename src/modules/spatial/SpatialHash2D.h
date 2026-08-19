@@ -10,7 +10,7 @@
 namespace eve::spatial {
 
 /**
- * Uniform-grid spatial hash for 2D AABB queries (map / particle / entity culling).
+ * @brief Uniform-grid spatial hash for 2D AABB queries (map / particle / entity culling).
  * Items are registered in every overlapped cell.
  */
 class SpatialHash2D {

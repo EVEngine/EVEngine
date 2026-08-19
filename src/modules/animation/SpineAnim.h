@@ -18,7 +18,7 @@ class SpineAtlas;
 class SpineSkeleton;
 
 /**
- * Spine animation player + 2D draw collector (region attachments).
+ * @brief Spine animation player + 2D draw collector (region attachments).
  *
  * Applies bone/slot timelines onto a SpineSkeleton, then emits DrawItem2D
  * quads for the shared 2D queue. Bind atlas page textures before collecting.
@@ -37,7 +37,7 @@ public:
     void       setAtlas(SpineAtlas *atlas);
     SpineAtlas *getAtlas() const { return atlas_; }
 
-    /** Bind a GPU texture to an atlas page (by index or page image name). */
+    /** @brief Bind a GPU texture to an atlas page (by index or page image name). */
     void setPageTexture(int pageIndex, graphics::Texture *texture);
     void setPageTextureByName(const std::string &pageName, graphics::Texture *texture);
     graphics::Texture *getPageTexture(int pageIndex) const;
@@ -54,7 +54,7 @@ public:
     void  setLoop(bool loop) { loop_ = loop; }
     bool  getLoop() const { return loop_; }
 
-    /** When true (default), Spine Y-up is flipped for screen Y-down draw items. */
+    /** @brief When true (default), Spine Y-up is flipped for screen Y-down draw items. */
     void setFlipY(bool flip) { flipY_ = flip; }
     bool getFlipY() const { return flipY_; }
 
@@ -74,18 +74,18 @@ public:
     std::string getAnimation() const { return animName_; }
     float       getAnimationDuration() const;
 
-    /** Apply current animation time to skeleton and update world transforms. */
+    /** @brief Apply current animation time to skeleton and update world transforms. */
     void apply();
 
     bool update(float dt);
 
-    /** Append region attachment quads into the shared 2D draw queue. */
+    /** @brief Append region attachment quads into the shared 2D draw queue. */
     void collectDrawItems(std::vector<graphics::DrawItem2D> &out);
-    /** Draw the current pose into an existing frame without clearing or presenting it. */
+    /** @brief Draw the current pose into an existing frame without clearing or presenting it. */
     void draw(graphics::Graphics *gfx);
 
     /**
-     * Query posed draw slots without textures (for unit tests).
+     * @brief Query posed draw slots without textures (for unit tests).
      * Returns number of visible region attachments after apply().
      */
     int   getDrawSlotCount() const;

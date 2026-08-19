@@ -8,7 +8,7 @@
 namespace eve::virtualgeometry {
 
 /**
- * CPU reference implementation of the GPU cluster-DAG LOD selection
+ * @brief CPU reference implementation of the GPU cluster-DAG LOD selection
  * (mirrors shaders/vg_cull.comp).
  *
  * A cluster is selected iff it is the *coarsest* ancestor whose screen-space
@@ -22,7 +22,7 @@ namespace eve::virtualgeometry {
 int selectClusters(const VirtualGeometryAsset &asset, float dist, float projScale, float errorPx,
                    std::vector<std::uint32_t> &outSelected);
 
-/** Per-LOD-level counts of the selected clusters (size = maxLod+1). */
+/** @brief Per-LOD-level counts of the selected clusters (size = maxLod+1). */
 void lodHistogram(const VirtualGeometryAsset &asset, const std::vector<std::uint32_t> &selected,
                   std::vector<int> &perLevelCount);
 

@@ -13,7 +13,7 @@ struct ShadowConfig {
     static constexpr float kMaxDistance = 64.f;
 };
 
-/** Per-frame / per-draw CSM constants (std140). Binding separate from Mesh3D Frame UBO. */
+/** @brief Per-frame / per-draw CSM constants (std140). Binding separate from Mesh3D Frame UBO. */
 struct ShadowUBO {
     glm::mat4 lightVP[ShadowConfig::kCascades]{};
     glm::vec4 splits{0.f};  // xyz = view-space +Z split ends (camera-forward distance); w = strength
@@ -28,7 +28,7 @@ struct ShadowUpload {
 };
 
 /**
- * Build 3 cascade light view-proj matrices for a directional light.
+ * @brief Build 3 cascade light view-proj matrices for a directional light.
  * @param lightDirTowardSurface  world-space direction toward the surface (same as Light3DGpu)
  * @param eye / target / up      camera basis
  * @param fovYRad / aspect / nearZ / farZ  camera clip

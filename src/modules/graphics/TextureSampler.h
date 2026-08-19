@@ -7,13 +7,13 @@
 
 namespace eve::graphics {
 
-/** Mag/min filter for texture sampling. */
+/** @brief Mag/min filter for texture sampling. */
 enum class FilterMode {
     Nearest,
     Linear,
 };
 
-/** Mipmap filter; Disabled turns off mip sampling (maxLod clamped to 0). */
+/** @brief Mipmap filter; Disabled turns off mip sampling (maxLod clamped to 0). */
 enum class MipmapMode {
     Disabled,
     Nearest,
@@ -21,7 +21,7 @@ enum class MipmapMode {
 };
 
 /**
- * Sampler state for a Texture (filter, wrap, mip LOD, anisotropy).
+ * @brief Sampler state for a Texture (filter, wrap, mip LOD, anisotropy).
  * Defaults match historical engine behaviour: linear, clamp, no mips, no aniso.
  */
 struct TextureSampler {
@@ -31,11 +31,11 @@ struct TextureSampler {
     bool repeatU = false;
     bool repeatV = false;
     bool repeatW = false;
-    /** 1 = off; values >1 enable anisotropic filtering when the device supports it. */
+    /** @brief 1 = off; values >1 enable anisotropic filtering when the device supports it. */
     float maxAnisotropy = 1.f;
     float lodBias = 0.f;
     float minLod = 0.f;
-    /** Inclusive upper LOD clamp. Large values mean "use all available mips". */
+    /** @brief Inclusive upper LOD clamp. Large values mean "use all available mips". */
     float maxLod = 1000.f;
 
     static TextureSampler nearest() {
@@ -54,7 +54,7 @@ struct TextureSampler {
         return s;
     }
 
-    /** Trilinear (linear + linear mips). Caller should create the texture with generateMipmaps. */
+    /** @brief Trilinear (linear + linear mips). Caller should create the texture with generateMipmaps. */
     static TextureSampler linearMipmap() {
         TextureSampler s;
         s.min = FilterMode::Linear;
@@ -63,7 +63,7 @@ struct TextureSampler {
         return s;
     }
 
-    /** Trilinear + anisotropic filtering (capped by device limits at bind time). */
+    /** @brief Trilinear + anisotropic filtering (capped by device limits at bind time). */
     static TextureSampler anisotropic(float maxAniso = 16.f) {
         TextureSampler s = linearMipmap();
         s.maxAnisotropy = maxAniso;
@@ -98,7 +98,7 @@ struct TextureSampler {
 };
 
 /**
- * Options for Graphics::newTexture / newCubemap.
+ * @brief Options for Graphics::newTexture / newCubemap.
  * When generateMipmaps is true and sampler.mipmap is Disabled, mipmap mode becomes Linear.
  */
 struct TextureCreateInfo {
@@ -115,7 +115,7 @@ struct TextureCreateInfo {
     }
 };
 
-/** Full mip chain count for a 2D image (including base level). */
+/** @brief Full mip chain count for a 2D image (including base level). */
 inline int mipmapCountForSize(int width, int height) {
     if (width <= 0 || height <= 0) return 1;
     const int m = std::max(width, height);

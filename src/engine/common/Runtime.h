@@ -31,7 +31,7 @@ enum class ScriptStage {
     Shutdown,
 };
 
-/** Exception raised at the public Runtime boundary. */
+/** @brief Exception raised at the public Runtime boundary. */
 class EVENGINE_API ScriptException : public std::runtime_error {
 public:
     ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
@@ -81,7 +81,7 @@ public:
     using ErrorHandler = std::function<void(const ScriptException&)>;
     using LifecycleHandler = std::function<void(const ScriptInfo&)>;
 
-    /** Restores the native Squirrel stack when a binding operation leaves scope. */
+    /** @brief Restores the native Squirrel stack when a binding operation leaves scope. */
     class EVENGINE_API StackGuard {
     public:
         explicit StackGuard(Runtime& runtime) noexcept;
@@ -99,7 +99,7 @@ public:
         SQInteger top_ = 0;
     };
 
-    /** Pushes this Runtime on the current thread's runtime stack. */
+    /** @brief Pushes this Runtime on the current thread's runtime stack. */
     class EVENGINE_API Scope {
     public:
         explicit Scope(Runtime& runtime);
@@ -113,6 +113,11 @@ public:
         Runtime* runtime_ = nullptr;
     };
 
+    /**
+     * @brief Creates a script runtime with its own Squirrel VM.
+     * @param stackSize  Initial Squirrel stack size in slots (must be > 0).
+     * @param libraries  Squirrel standard libraries to register (default: all).
+     */
     explicit Runtime(size_t stackSize = 2048, ssq::Libs::Flag libraries = ssq::Libs::ALL);
     ~Runtime();
     Runtime(Runtime&&) = delete;
@@ -120,42 +125,88 @@ public:
     Runtime(const Runtime&) = delete;
     Runtime& operator=(const Runtime&) = delete;
 
-    /** Exposes registered engine modules. Safe to call more than once. */
+    /** @brief Exposes registered engine modules into the script root table. Safe to call more than once. */
     void initialize();
+    /** @brief Tears down the VM and detaches the runtime; idempotent and noexcept. */
     void shutdown() noexcept;
+    /** @brief True once initialize() has completed successfully. */
     bool initialized() const noexcept;
 
+    /** @brief Underlying SimpleSquirrel VM (requires a live, initialized runtime). */
     ssq::VM& vm() noexcept;
     const ssq::VM& vm() const noexcept;
+    /** @brief Raw Squirrel VM handle; nullptr after shutdown. */
     HSQUIRRELVM handle() const noexcept;
+    /** @brief Root script table of the VM. */
     ssq::Table root() const;
+    /**
+     * @brief Looks up a named global table.
+     * @param name Name of the global table (must be non-null and non-empty).
+     */
     ssq::Table table(const char* name) const;
 
+    /** @brief RAII guard that restores the Squirrel stack top on scope exit. */
     StackGuard guard() noexcept { return StackGuard(*this); }
+    /** @brief Pushes this runtime on the thread-local runtime stack (RAII pop). */
     Scope enter() { return Scope(*this); }
+    /** @brief The runtime currently at the top of this thread's runtime stack, or nullptr. */
     static Runtime* current() noexcept;
+    /** @brief Depth of the thread-local runtime stack. */
     static size_t stackDepth() noexcept;
 
+    /**
+     * @brief Compiles script source without running it.
+     * @param source     Script source text.
+     * @param sourceName Name used in errors and lifecycle events ("buffer" if omitted).
+     * @return New script id.
+     * @throws ScriptException on compile failure.
+     */
     ScriptId compileSource(std::string source, std::string sourceName = "buffer");
+    /**
+     * @brief Compiles a script file without running it.
+     * @param path File path (must be non-empty).
+     * @return New script id.
+     * @throws ScriptException on compile failure.
+     */
     ScriptId compileFile(const std::string& path);
+    /** @brief Runs a previously compiled script; throws ScriptException on failure. */
     const ScriptInfo& execute(ScriptId id);
+    /** @brief Convenience: compileSource() then execute(). */
     ScriptId runSource(std::string source, std::string sourceName = "buffer");
+    /** @brief Convenience: compileFile() then execute(). */
     ScriptId runFile(const std::string& path);
+    /** @brief Alias of runFile(); reflects classes declared by the file. */
     ScriptId reflectFile(const std::string& path) { return runFile(path); }
+    /**
+     * @brief Reflects a class by name, storing its inspected members.
+     * @param name   Class name (must be non-empty).
+     * @param source Optional source label used in errors.
+     */
     const ReflectedClass& reflectClass(const std::string& name,
                                        const std::string& source = {});
+    /** @brief Recompiles and re-runs a script from its original source. */
     ScriptId reload(ScriptId id);
+    /** @brief Unloads a script and removes its declared classes; false if unknown/unloaded. */
     bool unload(ScriptId id);
+    /** @brief Unloads every script. */
     void unloadAll() noexcept;
 
+    /** @brief True if a script with the given id is tracked. */
     bool contains(ScriptId id) const noexcept;
+    /** @brief Script metadata for an id, or nullptr if unknown. */
     const ScriptInfo* script(ScriptId id) const noexcept;
+    /** @brief Metadata for all tracked scripts, sorted by id. */
     std::vector<ScriptInfo> scripts() const;
+    /** @brief Reflected class by name, or nullptr. */
     const ReflectedClass* reflectedClass(const std::string& name) const noexcept;
+    /** @brief All reflected classes, sorted by name. */
     std::vector<ReflectedClass> reflectedClasses() const;
+    /** @brief Finds a script class by name (throws if it does not exist). */
     ssq::Class findClass(const std::string& name) const;
 
+    /** @brief Replaces the handler invoked for script errors at the Runtime boundary. */
     void setErrorHandler(ErrorHandler handler) { error_handler_ = std::move(handler); }
+    /** @brief Replaces the handler notified on every script lifecycle change. */
     void setLifecycleHandler(LifecycleHandler handler) { lifecycle_handler_ = std::move(handler); }
 
 private:

@@ -9,7 +9,7 @@ class Filesystem;
 
 namespace model3d {
 
-/** medialoader::FileSystem adapter over eve::filesystem (physfs / VFS). */
+/** @brief medialoader::FileSystem adapter over eve::filesystem (physfs / VFS). */
 class EveFileSystem : public medialoader::FileSystem {
 public:
     explicit EveFileSystem(filesystem::Filesystem *fs);

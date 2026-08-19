@@ -5,7 +5,7 @@
 namespace eve::procgen {
 
 /**
- * Deterministic value-noise helpers for pixel textures.
+ * @brief Deterministic value-noise helpers for pixel textures.
  * When periodX/periodY > 0, lattice wraps for seamless tiling.
  */
 struct NoiseField {
@@ -15,7 +15,7 @@ struct NoiseField {
 
     float hash01(int ix, int iy) const;
     float valueNoise(float x, float y) const;
-    /** Classic 2D Perlin gradient noise, remapped to [0, 1]. */
+    /** @brief Classic 2D Perlin gradient noise, remapped to [0, 1]. */
     float perlinNoise(float x, float y) const;
     float fbm(float x, float y, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f) const;
     float fbmPerlin(float x, float y, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f) const;

@@ -40,7 +40,7 @@ public:
 	};
 
 	/**
-	 * Get a HashFunction instance for the given function.
+	 * @brief Get a HashFunction instance for the given function.
 	 *
 	 * @param[in] function The selected hash function.
 	 * @return An instance of HashFunction for the given function, or NULL if
@@ -59,7 +59,7 @@ public:
 	virtual ~HashFunction() {}
 
 	/**
-	 * Hash the input, producing an set of bytes as output.
+	 * @brief Hash the input, producing an set of bytes as output.
 	 *
 	 * @param[in] function The selected hash function.
 	 * @param[in] input The input data to hash.

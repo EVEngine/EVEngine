@@ -14,7 +14,7 @@ namespace eve::stylize {
 class StylePass;
 
 /**
- * Ordered multi-pass stylize pipeline (extension point).
+ * @brief Ordered multi-pass stylize pipeline (extension point).
  *
  * Future NPR often needs ping-pong chains (separable bleed, outline then shade,
  * depth-aware contour, etc.). This type owns the sequencing contract; built-in
@@ -38,7 +38,7 @@ public:
     StylePass *getPass(int index) const;
 
     /**
-     * Run passes in order into `dest`.
+     * @brief Run passes in order into `dest`.
      * When more than one pass is present, `temp` is required for ping-pong
      * (same size as dest, sampleable via getTexture()).
      */

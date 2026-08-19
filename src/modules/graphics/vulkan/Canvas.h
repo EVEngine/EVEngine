@@ -35,7 +35,7 @@ public:
     Color pendingClearColor() const { return clearColor; }
     bool takePendingClear();
 
-    /** Ensure a D32 depth attachment + 3D (color+depth) framebuffer exist. */
+    /** @brief Ensure a D32 depth attachment + 3D (color+depth) framebuffer exist. */
     void ensure3D();
 
 private:

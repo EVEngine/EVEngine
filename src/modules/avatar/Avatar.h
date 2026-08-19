@@ -13,7 +13,7 @@ class Graphics;
 namespace eve::avatar {
 
 /**
- * Avatar module — layered character rendering for VN / portrait use.
+ * @brief Avatar module — layered character rendering for VN / portrait use.
  * Script: `avatar <- eve.Avatar();`
  *
  * Factories: newImageAvatar / newLive2DAvatar / newVroidAvatar.
@@ -31,24 +31,24 @@ public:
     AvatarInstance *newVroidAvatar();
 
     void update(float dt);
-    /** Sync all live avatars into renderables. */
+    /** @brief Sync all live avatars into renderables. */
     void sync();
     /**
-     * Sync then draw Image/Live2D avatars via the shared 2D sprite queue
+     * @brief Sync then draw Image/Live2D avatars via the shared 2D sprite queue
      * (does not present). VRoid uses Renderable3D + gfx.render3D separately.
      */
     void render(graphics::Graphics *gfx);
     int getAvatarCount() const;
 
     /**
-     * C++ / plugin: replace Live2D backend factory.
+     * @brief C++ / plugin: replace Live2D backend factory.
      * Pass nullptr to restore the built-in NullLive2DBackend ("null").
      */
     static void registerLive2DBackend(Live2DBackendFactory factory);
     static Live2DBackendFactory live2DBackendFactory();
-    /** Always returns a backend: custom factory, else NullLive2DBackend. */
+    /** @brief Always returns a backend: custom factory, else NullLive2DBackend. */
     static ILive2DBackend *createLive2DBackend();
-    /** Backend name currently in effect ("null" when using the built-in stub). */
+    /** @brief Backend name currently in effect ("null" when using the built-in stub). */
     static std::string getLive2DBackendName();
 
 private:
