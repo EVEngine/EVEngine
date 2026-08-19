@@ -1,13 +1,13 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Exception.h"
+#include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "model3d/ModelRenderer.h"
-#include "data/ByteData.h"
-#include "filesystem/Filesystem.h"
-#include "common/Exception.h"
-#include "filesystem/FileData.h"
 
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"

@@ -3,8 +3,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "filesystem/FileData.h"
 #include <SDL2/SDL.h>
+#include "filesystem/FileData.h"
 
 #include <algorithm>
 #include <cmath>

@@ -1,13 +1,13 @@
 #include "physics/Physics.h"
-#include "physics/PhysicsCapabilities.h"
-#include "physics/World.h"
-#include "physics/World3D.h"
 #include "physics/Body.h"
 #include "physics/Body3D.h"
-#include "physics/Fixture.h"
-#include "physics/Shape3D.h"
 #include "physics/Cloth.h"
+#include "physics/Fixture.h"
 #include "physics/Fluid.h"
+#include "physics/PhysicsCapabilities.h"
+#include "physics/Shape3D.h"
+#include "physics/World.h"
+#include "physics/World3D.h"
 
 #include "common/Exception.h"
 
@@ -15,9 +15,7 @@
 
 namespace eve::physics {
 
-Physics::Physics() {
-    registerPhysicsCapabilities();
-}
+Physics::Physics() { registerPhysicsCapabilities(); }
 
 Module_IMPL(Physics, new Physics());
 

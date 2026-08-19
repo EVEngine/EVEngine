@@ -20,9 +20,8 @@
 
 #include "Image.h"
 #include "common/Exception.h"
-#include "common/config.h"
-#include "common/Exception.h"
 #include "common/Resource.h"
+#include "common/config.h"
 
 #include "medialoader/image/PNGHandler.h"
 #include "medialoader/image/STBHandler.h"

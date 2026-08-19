@@ -167,8 +167,8 @@ std::string RenderVision::pendingReason() const {
     return pendingReason_;
 }
 
-std::string RenderVision::describe(eve::IRenderCapture* cap, const std::string& renderDataJson,
-                                  bool fresh, const std::string& reason) {
+std::string RenderVision::describe(eve::IRenderCapture* cap, const std::string& renderDataJson, bool fresh,
+                                   const std::string& reason) {
     {
         std::lock_guard<std::mutex> lock(mu_);
         ensureEnvLocked();
@@ -213,7 +213,7 @@ std::string RenderVision::doDescribe(eve::IRenderCapture* cap, const std::string
     // --- Capture frame to PNG bytes in memory (via the render-capture interface) ---
     const std::string dataUrl = cap->capturePngDataUrl();
     if (dataUrl.empty()) {
-        const std::string err = "error: frame readback returned no image";
+        const std::string           err = "error: frame readback returned no image";
         std::lock_guard<std::mutex> lock(mu_);
         lastError_ = err;
         return err;

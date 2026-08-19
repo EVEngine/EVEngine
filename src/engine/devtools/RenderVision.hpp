@@ -65,8 +65,8 @@ public:
      * a string starting with "error: " on failure. When `fresh` is false and a
      * cached description exists, returns the cache.
      */
-    std::string describe(eve::IRenderCapture* cap, const std::string& renderDataJson,
-                         bool fresh, const std::string& reason = {});
+    std::string describe(eve::IRenderCapture* cap, const std::string& renderDataJson, bool fresh,
+                         const std::string& reason = {});
 
     /** @brief McpServer::poll hook: performs one pending dump when safe, clears flag. */
     void pollPending(eve::IRenderCapture* cap, const std::string& renderDataJson);
@@ -77,8 +77,7 @@ private:
     RenderVision() = default;
 
     void ensureEnvLocked();
-    std::string doDescribe(eve::IRenderCapture* cap, const std::string& renderDataJson,
-                           const std::string& reason);
+    std::string doDescribe(eve::IRenderCapture* cap, const std::string& renderDataJson, const std::string& reason);
 
     mutable std::mutex mu_;
     std::string baseUrl_ = "http://127.0.0.1:11434/v1";

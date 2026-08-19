@@ -10,8 +10,8 @@
 #include "animation/Animation.h"
 
 #include "common/Exception.h"
-#include "filesystem/FileData.h"
 #include "data/ByteData.h"
+#include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"

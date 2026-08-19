@@ -4,12 +4,12 @@
 #include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
 
-#include "filesystem/FileData.h"
+#include <Poco/Exception.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Timespan.h>
-#include <Poco/Exception.h>
+#include "filesystem/FileData.h"
 
 #include <atomic>
 #include <algorithm>

@@ -1,9 +1,9 @@
 #include "cmdline.h"
 
-#include "common/Module.h"
-#include "common/Runtime.h"
 #include "common/Capability.h"
 #include "common/EditorHost.h"
+#include "common/Module.h"
+#include "common/Runtime.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"

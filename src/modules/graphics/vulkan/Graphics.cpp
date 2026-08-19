@@ -5,13 +5,13 @@
 
 #define VKB_IMPL
 #include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
 #include "graphics/AmbientOcclusion.h"
-#include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
+#include "graphics/Light.h"
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
+#include "graphics/vulkan/Canvas.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -678,8 +678,10 @@ void Graphics::present() {
     if (!isRenderSurfaceReady()) {
         // Native window is mid-(re)creation / rotation; drop this frame's work
         // instead of touching an invalid swapchain (which crashes the driver).
-        if (swapchainPassOpen) abortOpen3DFrame();
-        else clear2DBatches();
+        if (swapchainPassOpen)
+            abortOpen3DFrame();
+        else
+            clear2DBatches();
         hasPendingClear = false;
         return;
     }

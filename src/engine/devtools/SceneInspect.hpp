@@ -10,7 +10,7 @@
 namespace eve {
 class IRenderCapture;
 class ISceneQuery;
-}
+}  // namespace eve
 
 namespace eve::dev {
 
@@ -113,8 +113,8 @@ private:
     SceneInspect() = default;
 
     eve::IRenderCapture* captureIface();
-    eve::ISceneQuery* scene();
-    bool ensureCamera();
+    eve::ISceneQuery*    scene();
+    bool                 ensureCamera();
 
     std::string cacheDir_;
     std::string lastPngPath_;

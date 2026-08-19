@@ -50,13 +50,9 @@ SceneInspect& SceneInspect::instance() {
     return inst;
 }
 
-eve::IRenderCapture* SceneInspect::captureIface() {
-    return eve::cap::query<eve::IRenderCapture>();
-}
+eve::IRenderCapture* SceneInspect::captureIface() { return eve::cap::query<eve::IRenderCapture>(); }
 
-eve::ISceneQuery* SceneInspect::scene() {
-    return eve::cap::query<eve::ISceneQuery>();
-}
+eve::ISceneQuery* SceneInspect::scene() { return eve::cap::query<eve::ISceneQuery>(); }
 
 bool SceneInspect::ensureCamera() {
     auto* cap = captureIface();
@@ -116,8 +112,7 @@ bool SceneInspect::setCameraPose(const glm::vec3& eye, const glm::vec3& rotYawPi
 bool SceneInspect::setCameraView(const InspectView& v) {
     auto* cap = captureIface();
     if (!cap) return false;
-    return cap->setCameraPose(v.eye.x, v.eye.y, v.eye.z, v.target.x, v.target.y, v.target.z,
-                              v.fovYDeg);
+    return cap->setCameraPose(v.eye.x, v.eye.y, v.eye.z, v.target.x, v.target.y, v.target.z, v.fovYDeg);
 }
 
 std::string SceneInspect::defaultCacheDir() const {
@@ -179,24 +174,28 @@ InspectCapture SceneInspect::capture(const std::string& outDir, const std::strin
         return result;
     }
     result.entityCount = 0;
-    const auto pos = geoJson.find("\"count\":");
+    const auto pos     = geoJson.find("\"count\":");
     if (pos != std::string::npos) result.entityCount = std::atoi(geoJson.c_str() + pos + 9);
 
     if (wantDepth) {
         std::string berr;
-        if (cap->gbufferPng("depth", depthPngPath, &berr)) result.depthPngPath = depthPngPath;
-        else result.unsupported.push_back("depth");
+        if (cap->gbufferPng("depth", depthPngPath, &berr))
+            result.depthPngPath = depthPngPath;
+        else
+            result.unsupported.push_back("depth");
     }
     if (wantNormal) {
         std::string berr;
-        if (cap->gbufferPng("normal", normalPngPath, &berr)) result.normalPngPath = normalPngPath;
-        else result.unsupported.push_back("normal");
+        if (cap->gbufferPng("normal", normalPngPath, &berr))
+            result.normalPngPath = normalPngPath;
+        else
+            result.unsupported.push_back("normal");
     }
     if (wantShadow) result.unsupported.push_back("shadow");
 
     if (wantId) {
-        int  iw = 0, ih = 0;
-        bool ok = false;
+        int               iw = 0, ih = 0;
+        bool              ok     = false;
         const std::string idJson = cap->entityIdMaskJson(&iw, &ih, &ok);
         if (!ok) {
             result.unsupported.push_back("id");
@@ -226,8 +225,7 @@ std::string SceneInspect::visibleEntitiesJson(const glm::vec3* eye, const glm::v
     if (!cap) return "{\"error\":\"Graphics module not available\"}";
     bool ok = false;
     if (eye && target)
-        return cap->visibleEntitiesJsonAt(eye->x, eye->y, eye->z, target->x, target->y,
-                                          target->z, fov, &ok);
+        return cap->visibleEntitiesJsonAt(eye->x, eye->y, eye->z, target->x, target->y, target->z, fov, &ok);
     return cap->visibleEntitiesJson(fov, &ok);
 }
 
