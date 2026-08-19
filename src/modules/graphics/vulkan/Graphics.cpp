@@ -172,6 +172,25 @@ std::unique_ptr<Mesh> makeMeshHandle(GpuMesh &gpu) {
     return mesh;
 }
 
+void assignMeshBounds(Mesh *mesh, const std::vector<MeshVertex> &verts) {
+    if (!mesh || verts.empty()) return;
+    glm::vec3 c(0.f);
+    for (const auto &v : verts) c += v.pos;
+    c /= float(verts.size());
+    mesh->boundsCx = c.x;
+    mesh->boundsCy = c.y;
+    mesh->boundsCz = c.z;
+    float r = 0.f;
+    for (const auto &v : verts) {
+        const glm::vec3 d = v.pos - c;
+        const float len = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+        if (len > r) r = len;
+    }
+    // Same degenerate-mesh rule as Mesh::computeBounds: keep a tiny non-zero
+    // sphere so hasBounds() stays meaningful for culling.
+    mesh->boundsRadius = r > 0.f ? r : 1e-4f;
+}
+
 vk::PipelineColorBlendAttachmentState makeBlendAttachment(BlendMode mode) {
     vk::PipelineColorBlendAttachmentState att{};
     att.colorWriteMask =
@@ -1928,6 +1947,10 @@ void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload)
     mesh3dClusteredActive = upload.active;
     mesh3dClustered = upload;
     if (upload.active) uploadClusteredLighting(upload);
+}
+
+void Graphics::setMesh3DClusteredActive(bool active) {
+    mesh3dClusteredActive = active;
 }
 
 vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
@@ -4634,6 +4657,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     }
     handle->markMorphClean();
     Mesh *raw = handle.get();
+    assignMeshBounds(raw, verts);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -4743,6 +4767,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     auto gpu = uploadGpuMesh(device, frameToken(), verts, idx);
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
+    raw->computeBounds(posXYZ, vertexCount);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -4757,6 +4782,7 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     mesh->computeMorphedPositions(pos, nrm);
     const int vc = mesh->getVertexCount();
     if (vc <= 0 || int(pos.size()) < vc * 3) return false;
+    mesh->computeBounds(pos.data(), vc);
 
     std::vector<MeshVertex> verts(static_cast<size_t>(vc));
     const auto &uv = mesh->baseUv();
@@ -4805,6 +4831,7 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
     }
 
     auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    mesh->computeBounds(posXYZ, vertexCount);
     // The host-visible buffers may be reallocated (grow) or still be read by an
     // in-flight frame; synchronize like bakeMeshMorph before overwriting.
     waitForSharedGpuResources();
@@ -4926,6 +4953,7 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
+    assignMeshBounds(raw, verts);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -5034,6 +5062,7 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
     auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
+    assignMeshBounds(raw, verts);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;

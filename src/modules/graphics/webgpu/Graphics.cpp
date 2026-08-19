@@ -1597,6 +1597,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     auto *mesh = new Mesh();
     mesh->indexCount = indexCount;
     mesh->gpuHandle = gpu.get();
+    mesh->computeBounds(posXYZ, vertexCount);
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::unique_ptr<Mesh>(mesh));
     return mesh;
@@ -1671,6 +1672,7 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     std::vector<float> pos, nrm;
     mesh->computeMorphedPositions(pos, nrm);
     if (pos.empty()) return false;
+    mesh->computeBounds(pos.data(), mesh->getVertexCount());
     std::vector<float> verts;
     verts.reserve(mesh->getVertexCount() * 8);
     const auto &uvs = mesh->baseUv();
@@ -2291,6 +2293,9 @@ void Graphics::setCloudShadows(float strength, float worldCell, float time, floa
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
     mesh3dClustered = upload;
     mesh3dClusteredActive = upload.active;
+}
+void Graphics::setMesh3DClusteredActive(bool active) {
+    mesh3dClusteredActive = active;
 }
 void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     mesh3dLighting.lights[0].posRadius = glm::vec4(dir, 0.f);
