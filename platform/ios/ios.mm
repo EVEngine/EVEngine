@@ -97,6 +97,18 @@ std::string getAppdataDirectory() {
     }
 }
 
+std::string getHotReloadDirectory() {
+    @autoreleasepool {
+        NSString *base = [NSString stringWithUTF8String:getAppdataDirectory().c_str()];
+        NSString *dir = [base stringByAppendingPathComponent:@"hotreload"];
+        [[NSFileManager defaultManager] createDirectoryAtPath:dir
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:nil];
+        return nsToStd(dir);
+    }
+}
+
 std::string getHomeDirectory() {
     @autoreleasepool {
         NSString *home = NSHomeDirectory();

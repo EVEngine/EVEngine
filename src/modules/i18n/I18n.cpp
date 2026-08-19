@@ -2,6 +2,7 @@
 
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
+#include "common/Json.h"
 #include "common/Module.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -17,233 +18,7 @@ namespace eve::i18n {
 
 Module_IMPL(I18n, new I18n());
 
-// ---------------------------------------------------------------------------
-// Minimal recursive-descent JSON parser (module-local; no Poco dependency so
-// this module also builds on the trimmed WASM target).
-// ---------------------------------------------------------------------------
 namespace {
-
-struct JsonValue {
-    enum class Kind { Null, Bool, Number, String, Object, Array };
-
-    Kind   kind = Kind::Null;
-    bool   boolVal = false;
-    double numberVal = 0.0;
-    std::string stringVal;
-    std::vector<std::pair<std::string, JsonValue>> object;  // ordered
-    std::vector<JsonValue> array;
-};
-
-class JsonParser {
-public:
-    explicit JsonParser(const std::string &text) : s_(text) {}
-
-    bool parse(JsonValue &out, std::string *error) {
-        skipWs();
-        if (!parseValue(out)) {
-            if (error) *error = "invalid JSON near offset " + std::to_string(pos_);
-            return false;
-        }
-        skipWs();
-        if (pos_ != s_.size()) {
-            if (error) *error = "trailing data at offset " + std::to_string(pos_);
-            return false;
-        }
-        return true;
-    }
-
-private:
-    const std::string &s_;
-    size_t             pos_ = 0;
-
-    void skipWs() {
-        while (pos_ < s_.size() && (s_[pos_] == ' ' || s_[pos_] == '\t' || s_[pos_] == '\n' ||
-                                    s_[pos_] == '\r'))
-            ++pos_;
-    }
-
-    bool peek(char c) const { return pos_ < s_.size() && s_[pos_] == c; }
-
-    bool parseValue(JsonValue &out) {
-        if (pos_ >= s_.size()) return false;
-        switch (s_[pos_]) {
-            case '{': return parseObject(out);
-            case '[': return parseArray(out);
-            case '"': return parseString(out.stringVal) ? (out.kind = JsonValue::Kind::String, true) : false;
-            case 't': return parseLiteral("true", out, true);
-            case 'f': return parseLiteral("false", out, false);
-            case 'n': return parseNull(out);
-            default:  return parseNumber(out);
-        }
-    }
-
-    bool parseLiteral(const char *lit, JsonValue &out, bool value) {
-        const size_t n = std::char_traits<char>::length(lit);
-        if (s_.compare(pos_, n, lit) != 0) return false;
-        pos_ += n;
-        out.kind = JsonValue::Kind::Bool;
-        out.boolVal = value;
-        return true;
-    }
-
-    bool parseNull(JsonValue &out) {
-        if (s_.compare(pos_, 4, "null") != 0) return false;
-        pos_ += 4;
-        out.kind = JsonValue::Kind::Null;
-        return true;
-    }
-
-    bool parseNumber(JsonValue &out) {
-        const size_t start = pos_;
-        if (pos_ < s_.size() && (s_[pos_] == '-' || s_[pos_] == '+')) ++pos_;
-        bool hasDigit = false;
-        while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') {
-            ++pos_;
-            hasDigit = true;
-        }
-        if (pos_ < s_.size() && s_[pos_] == '.') {
-            ++pos_;
-            while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
-        }
-        if (pos_ < s_.size() && (s_[pos_] == 'e' || s_[pos_] == 'E')) {
-            ++pos_;
-            if (pos_ < s_.size() && (s_[pos_] == '-' || s_[pos_] == '+')) ++pos_;
-            while (pos_ < s_.size() && s_[pos_] >= '0' && s_[pos_] <= '9') ++pos_;
-        }
-        if (!hasDigit) return false;
-        std::string num = s_.substr(start, pos_ - start);
-        try {
-            out.numberVal = std::stod(num);
-        } catch (...) {
-            return false;
-        }
-        out.kind = JsonValue::Kind::Number;
-        return true;
-    }
-
-    bool parseString(std::string &out) {
-        if (!peek('"')) return false;
-        ++pos_;
-        out.clear();
-        while (pos_ < s_.size()) {
-            const char c = s_[pos_++];
-            if (c == '"') return true;
-            if (c == '\\') {
-                if (pos_ >= s_.size()) return false;
-                const char esc = s_[pos_++];
-                switch (esc) {
-                    case '"':  out += '"'; break;
-                    case '\\': out += '\\'; break;
-                    case '/':  out += '/'; break;
-                    case 'b':  out += '\b'; break;
-                    case 'f':  out += '\f'; break;
-                    case 'n':  out += '\n'; break;
-                    case 'r':  out += '\r'; break;
-                    case 't':  out += '\t'; break;
-                    case 'u': {
-                        if (pos_ + 4 > s_.size()) return false;
-                        const char hex[5] = {s_[pos_], s_[pos_ + 1], s_[pos_ + 2], s_[pos_ + 3], '\0'};
-                        pos_ += 4;
-                        char *end = nullptr;
-                        const unsigned cp = static_cast<unsigned>(std::strtoul(hex, &end, 16));
-                        if (!end || *end != '\0') return false;
-                        if (cp >= 0xD800 && cp <= 0xDBFF && pos_ + 6 <= s_.size() &&
-                            s_[pos_] == '\\' && s_[pos_ + 1] == 'u') {
-                            const char hex2[5] = {s_[pos_ + 2], s_[pos_ + 3], s_[pos_ + 4],
-                                                  s_[pos_ + 5], '\0'};
-                            pos_ += 6;
-                            char *end2 = nullptr;
-                            const unsigned lo = static_cast<unsigned>(std::strtoul(hex2, &end2, 16));
-                            if (end2 && *end2 == '\0' && lo >= 0xDC00 && lo <= 0xDFFF)
-                                appendUtf8(out, 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00));
-                            else
-                                appendUtf8(out, cp);
-                        } else {
-                            appendUtf8(out, cp);
-                        }
-                        break;
-                    }
-                    default: return false;
-                }
-            } else {
-                out += c;
-            }
-        }
-        return false;  // unterminated
-    }
-
-    static void appendUtf8(std::string &out, unsigned cp) {
-        if (cp < 0x80) {
-            out += static_cast<char>(cp);
-        } else if (cp < 0x800) {
-            out += static_cast<char>(0xC0 | (cp >> 6));
-            out += static_cast<char>(0x80 | (cp & 0x3F));
-        } else if (cp < 0x10000) {
-            out += static_cast<char>(0xE0 | (cp >> 12));
-            out += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
-            out += static_cast<char>(0x80 | (cp & 0x3F));
-        } else {
-            out += static_cast<char>(0xF0 | (cp >> 18));
-            out += static_cast<char>(0x80 | ((cp >> 12) & 0x3F));
-            out += static_cast<char>(0x80 | ((cp >> 6) & 0x3F));
-            out += static_cast<char>(0x80 | (cp & 0x3F));
-        }
-    }
-
-    bool parseObject(JsonValue &out) {
-        ++pos_;  // '{'
-        skipWs();
-        if (peek('}')) {
-            ++pos_;
-            out.kind = JsonValue::Kind::Object;
-            return true;
-        }
-        while (true) {
-            skipWs();
-            std::string key;
-            if (!parseString(key)) return false;
-            skipWs();
-            if (!peek(':')) return false;
-            ++pos_;
-            skipWs();
-            JsonValue val;
-            if (!parseValue(val)) return false;
-            out.object.emplace_back(std::move(key), std::move(val));
-            skipWs();
-            if (peek('}')) {
-                ++pos_;
-                out.kind = JsonValue::Kind::Object;
-                return true;
-            }
-            if (!peek(',')) return false;
-            ++pos_;
-        }
-    }
-
-    bool parseArray(JsonValue &out) {
-        ++pos_;  // '['
-        skipWs();
-        if (peek(']')) {
-            ++pos_;
-            out.kind = JsonValue::Kind::Array;
-            return true;
-        }
-        while (true) {
-            skipWs();
-            JsonValue val;
-            if (!parseValue(val)) return false;
-            out.array.push_back(std::move(val));
-            skipWs();
-            if (peek(']')) {
-                ++pos_;
-                out.kind = JsonValue::Kind::Array;
-                return true;
-            }
-            if (!peek(',')) return false;
-            ++pos_;
-        }
-    }
-};
 
 bool isPluralCategory(const std::string &key) {
     static const char *cats[] = {"zero", "one", "two", "few", "many", "other"};
@@ -252,62 +27,58 @@ bool isPluralCategory(const std::string &key) {
     return false;
 }
 
+/** Default ostream formatting, so script floats interpolate like JSON numbers. */
 std::string numberToString(double v) {
     std::ostringstream os;
     os << v;
     return os.str();
 }
 
-void flatten(const JsonValue &node, const std::string &prefix,
+void flatten(eve::json::Value node, const std::string &prefix,
              std::unordered_map<std::string, std::string> &strings,
              std::unordered_map<std::string, std::unordered_map<std::string, std::string>> &plurals) {
-    if (node.kind == JsonValue::Kind::Object) {
+    if (node.isObject()) {
+        const std::vector<std::string> names = node.keys();
         // A plain object of plural categories is a plural form table.
-        bool allCats = !node.object.empty();
+        bool allCats = !names.empty();
         bool allStrings = true;
-        for (const auto &[k, v] : node.object) {
+        for (const auto &k : names) {
             if (!isPluralCategory(k)) {
                 allCats = false;
                 break;
             }
-            if (v.kind != JsonValue::Kind::String) allStrings = false;
+            if (!node.get(k.c_str()).isString()) allStrings = false;
         }
         if (allCats && allStrings && !prefix.empty()) {
             std::unordered_map<std::string, std::string> forms;
-            for (const auto &[k, v] : node.object) forms[k] = v.stringVal;
+            for (const auto &k : names) forms[k] = node.getString(k.c_str());
             plurals[prefix] = std::move(forms);
             return;
         }
-        for (const auto &[k, v] : node.object) {
+        for (const auto &k : names) {
             const std::string path = prefix.empty() ? k : prefix + "." + k;
-            flatten(v, path, strings, plurals);
+            flatten(node.get(k.c_str()), path, strings, plurals);
         }
         return;
     }
     if (prefix.empty()) return;
-    if (node.kind == JsonValue::Kind::String) {
-        strings[prefix] = node.stringVal;
-    } else if (node.kind == JsonValue::Kind::Number) {
-        strings[prefix] = numberToString(node.numberVal);
-    } else if (node.kind == JsonValue::Kind::Bool) {
-        strings[prefix] = node.boolVal ? "true" : "false";
-    }
+    // Scalars stringify; arrays and nulls are not translatable and are skipped.
+    if (node.isString() || node.isNumber() || node.isBool()) strings[prefix] = node.asString();
 }
 
 bool parseLocale(const std::string &text,
                  std::unordered_map<std::string, std::string> &strings,
                  std::unordered_map<std::string, std::unordered_map<std::string, std::string>> &plurals,
                  std::string *error) {
-    JsonValue root;
-    JsonParser parser(text);
-    if (!parser.parse(root, error)) return false;
-    if (root.kind != JsonValue::Kind::Object) {
+    const eve::json::Document doc = eve::json::Document::parse(text, error);
+    if (!doc.valid()) return false;
+    if (!doc.root().isObject()) {
         if (error) *error = "locale root must be a JSON object";
         return false;
     }
     strings.clear();
     plurals.clear();
-    flatten(root, "", strings, plurals);
+    flatten(doc.root(), "", strings, plurals);
     return true;
 }
 

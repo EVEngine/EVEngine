@@ -53,7 +53,7 @@ void linkAsLastChild(SceneHost::Tree &tree, int parentIndex, int childIndex) {
 }
 
 /** Add a link of a kind, replacing an existing same-kind link (keep others). */
-bool setLink(SceneNode &n, LinkKind kind, void *target, int syncMode) {
+bool setLink(SceneNode &n, int kind, void *target, int syncMode) {
     for (auto &l : n.links) {
         if (l.kind == kind) {
             l.target = target;
@@ -522,37 +522,39 @@ std::vector<std::string> SceneHost::collectIdsVisible(bool visible) {
     return collectIdsWhere([&](SceneHost *, int, const SceneNode &n) { return n.visible == visible; });
 }
 
-bool SceneHost::linkRenderable2D(const std::string &nodeId, graphics::Renderable2D *r) {
+bool SceneHost::link(const std::string &nodeId, int kind, void *target, int syncMode) {
+    if (!linkOps(kind)) return false;  // kind's module is not in this build
     SceneNode *n = findById(nodeId);
-    return n ? setLink(*n, LinkKind::Renderable2D, r, 0) : false;
+    return n ? setLink(*n, kind, target, syncMode) : false;
+}
+
+// The typed helpers resolve their kind by name, so they return false rather
+// than crashing when the module that registers it was trimmed out.
+bool SceneHost::linkRenderable2D(const std::string &nodeId, graphics::Renderable2D *r) {
+    return link(nodeId, findLinkKind("renderable2d"), r, 0);
 }
 
 bool SceneHost::linkRenderable3D(const std::string &nodeId, graphics::Renderable3D *r) {
-    SceneNode *n = findById(nodeId);
-    return n ? setLink(*n, LinkKind::Renderable3D, r, 0) : false;
+    return link(nodeId, findLinkKind("renderable3d"), r, 0);
 }
 
 bool SceneHost::linkPhysics2D(const std::string &nodeId, physics::Body *b, int syncMode) {
-    SceneNode *n = findById(nodeId);
-    return n ? setLink(*n, LinkKind::Physics2D, b, syncMode) : false;
+    return link(nodeId, findLinkKind("physics2d"), b, syncMode);
 }
 
 bool SceneHost::linkPhysics3D(const std::string &nodeId, physics::Body3D *b, int syncMode) {
-    SceneNode *n = findById(nodeId);
-    return n ? setLink(*n, LinkKind::Physics3D, b, syncMode) : false;
+    return link(nodeId, findLinkKind("physics3d"), b, syncMode);
 }
 
 bool SceneHost::linkCamera3D(const std::string &nodeId, graphics::Camera3D *c) {
-    SceneNode *n = findById(nodeId);
-    return n ? setLink(*n, LinkKind::Camera3D, c, 0) : false;
+    return link(nodeId, findLinkKind("camera3d"), c, 0);
 }
 
 bool SceneHost::linkAudio3D(const std::string &nodeId, audio::Source *s) {
-    SceneNode *n = findById(nodeId);
-    return n ? setLink(*n, LinkKind::Audio3D, s, 0) : false;
+    return link(nodeId, findLinkKind("audio3d"), s, 0);
 }
 
-bool SceneHost::unlink(const std::string &nodeId, LinkKind kind) {
+bool SceneHost::unlink(const std::string &nodeId, int kind) {
     SceneNode *n = findById(nodeId);
     if (!n) return false;
     for (auto it = n->links.begin(); it != n->links.end(); ++it) {
@@ -571,7 +573,7 @@ bool SceneHost::unlink(const std::string &nodeId) {
     return true;
 }
 
-SceneLink *SceneHost::findLink(SceneNode *node, LinkKind kind) {
+SceneLink *SceneHost::findLink(SceneNode *node, int kind) {
     if (!node) return nullptr;
     for (auto &l : node->links) {
         if (l.kind == kind) return &l;
@@ -579,7 +581,7 @@ SceneLink *SceneHost::findLink(SceneNode *node, LinkKind kind) {
     return nullptr;
 }
 
-const SceneLink *SceneHost::findLink(const SceneNode *node, LinkKind kind) const {
+const SceneLink *SceneHost::findLink(const SceneNode *node, int kind) const {
     if (!node) return nullptr;
     for (const auto &l : node->links) {
         if (l.kind == kind) return &l;

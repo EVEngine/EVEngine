@@ -37,12 +37,6 @@ EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool approx(float a, float b, float eps = 1e-4f) { return std::fabs(a - b) < eps; }
 
-/** New generic-link API: first Renderable3D target on the node. */
-eve::graphics::Renderable3D *linkedRenderable(SceneHost *host, SceneNode *node) {
-    SceneLink *l = host ? host->findLink(node, LinkKind::Renderable3D) : nullptr;
-    return static_cast<eve::graphics::Renderable3D *>(l ? l->target : nullptr);
-}
-
 void openGfx(eve::window::Window *&win, eve::graphics::Graphics *&gfx, int w = 320, int h = 240) {
     win = eve::window::Window::create();
     gfx = eve::graphics::Graphics::create();
@@ -210,7 +204,7 @@ TEST_CASE("SceneLoader.apply.preservesUnchangedRenderableIdentity") {
     // The unchanged GameObject keeps its linked Renderable3D — no rebuild / re-upload.
     REQUIRE_EQ(after->links.size(), 1u);
     CHECK(after->links[0].target == r);
-    CHECK(int(after->links[0].kind) == int(eve::scene::LinkKind::Renderable3D));
+    CHECK(after->links[0].kind == eve::scene::findLinkKind("renderable3d"));
     CHECK(h->findById("keep2") != nullptr);
     CHECK(h->findById("gone") == nullptr);
 
@@ -264,7 +258,7 @@ TEST_CASE("SceneLoader.load.buildsGameObjectTreeWithRenderables") {
     std::vector<SceneNode *> linked = h->findAllLinked();
     REQUIRE_EQ(linked.size(), 1u);
     REQUIRE_EQ(linked[0]->links.size(), 1u);
-    CHECK(int(linked[0]->links[0].kind) == int(eve::scene::LinkKind::Renderable3D));
+    CHECK(linked[0]->links[0].kind == eve::scene::findLinkKind("renderable3d"));
     auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->links[0].target);
     REQUIRE(r != nullptr);
     CHECK(r->meshRenderer()->mesh != nullptr);
@@ -388,7 +382,7 @@ TEST_CASE("SceneLoader.load.pbrMaterialAndLightsAndCamera") {
     // PBR factors landed on the linked Renderable3D.
     std::vector<SceneNode *> linked = h->findAllLinked();
     REQUIRE_EQ(linked.size(), 1u);
-    auto *r = linkedRenderable(h, linked[0]);
+    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->links[0].target);
     REQUIRE(r != nullptr);
     auto mr = r->meshRenderer();
     CHECK(approx(mr->r, 0.2f, 1e-3f));
@@ -455,8 +449,8 @@ TEST_CASE("SceneLoader.load.pbrTextureCacheReusesTexture") {
     REQUIRE(h != nullptr);
     auto linked = h->findAllLinked();
     REQUIRE_EQ(linked.size(), 2u);
-    auto *r0 = linkedRenderable(h, linked[0]);
-    auto *r1 = linkedRenderable(h, linked[1]);
+    auto *r0 = static_cast<eve::graphics::Renderable3D *>(linked[0]->links[0].target);
+    auto *r1 = static_cast<eve::graphics::Renderable3D *>(linked[1]->links[0].target);
     REQUIRE(r0 != nullptr);
     REQUIRE(r1 != nullptr);
     REQUIRE(r0->meshRenderer()->texture != nullptr);
@@ -495,7 +489,7 @@ TEST_CASE("SceneLoader.load.gltfCesiumManPbrAndAnimation") {
 
     std::vector<SceneNode *> linked = h->findAllLinked();
     REQUIRE(!linked.empty());
-    auto *r = linkedRenderable(h, linked[0]);
+    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->links[0].target);
     REQUIRE(r != nullptr);
     // CesiumMan material: roughnessFactor = 1.0 (engine default is 0.45) and a
     // baseColorTexture — both must have been imported.
@@ -592,7 +586,7 @@ TEST_CASE("SceneLoader.loadAsync.precodesTextures") {
     REQUIRE(cbHost != nullptr);
     auto linked = cbHost->findAllLinked();
     REQUIRE_EQ(linked.size(), 1u);
-    auto *r = linkedRenderable(cbHost, linked[0]);
+    auto *r = static_cast<eve::graphics::Renderable3D *>(linked[0]->links[0].target);
     REQUIRE(r != nullptr);
     // Texture pre-decoded off-thread and uploaded on the main thread.
     CHECK(r->meshRenderer()->texture != nullptr);

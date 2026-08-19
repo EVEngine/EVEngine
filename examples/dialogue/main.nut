@@ -21,6 +21,8 @@ if (!("vnDone" in getroottable())) vnDone <- false;
 if (!("waitingResume" in getroottable())) waitingResume <- false;
 if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("uiReady" in getroottable())) uiReady <- false;
+if (!("curSceneName" in getroottable())) curSceneName <- "town";
+if (!("sceneReady" in getroottable())) sceneReady <- false;
 
 function edgePressed(key, down) {
     local was = (key in prevKeys) ? prevKeys[key] : false;
@@ -80,12 +82,13 @@ function tr(key, params = null) {
 
 function scene_intro() {
     dlg.show("alice", "left");
-    dlg.setExpression("alice", "happy");
-    dlg.say("alice", tr("line.hello", { name = "Alice" }));
+    if (!dlg.playPool("alice.greet", { name = tr("name.player") }))
+        dlg.say("alice", tr("line.hello", { name = tr("name.player") }));
     yield "wait";
 
     dlg.show("bob", "right");
-    dlg.say("bob", tr("line.intro"));
+    if (!dlg.playPool("bob.greet", { name = tr("name.player") }))
+        dlg.say("bob", tr("line.intro"));
     yield "wait";
 
     dlg.setExpression("alice", "shy");
@@ -115,6 +118,28 @@ function scene_intro() {
 
     dlg.narrate(tr("line.end"));
     yield "wait";
+}
+
+function buildScenes() {
+    // 两个最小 Scene host：按键 3 切换，演示 scene 变量区随场景切换自动清空。
+    scene.beginBuild();
+    scene.beginNode("root", "Root");
+    scene.end();
+    scene.mountBuildAs("town");
+    scene.beginBuild();
+    scene.beginNode("root", "Root");
+    scene.end();
+    scene.mountBuildAs("tavern");
+    scene.select("town");
+    sceneReady = true;
+}
+
+function eve_asset_reload(path) {
+    // .dnut 属于内容资产：热重载时重新编译并注册台词池。
+    if (path == "pools.dnut") {
+        dlg.loadPoolsFromDnutFile("pools.dnut");
+        print("dialogue pools reloaded: " + path + "\n");
+    }
 }
 
 function resumeVn() {
@@ -191,7 +216,10 @@ function refreshUI() {
     } else {
         ui.setText("c1", "");
         ui.setText("c2", "");
-        ui.setText("hint", vnDone ? tr("hint.restart") : tr("hint.advance"));
+        local sceneInfo = sceneReady
+            ? ("  场景:" + curSceneName + " met=" + dlg.getVarBool("met", false, "scene") + "  [3]切场景")
+            : "";
+        ui.setText("hint", (vnDone ? tr("hint.restart") : tr("hint.advance")) + sceneInfo);
     }
 }
 
@@ -227,6 +255,15 @@ function eve_init() {
         i18n.setLanguage("zh");
         i18n.setAutoReload(true);
     }
+    // 程序化对话：.dnut 台词池 + 故事变量 + 脚本谓词。
+    dlg.loadPoolsFromDnutFile("pools.dnut");
+    dlg.setVar("name", tr("name.player"), "global");
+    dlg.setVar("mood", "happy", "global");
+    dlg.setVar("hour", 20, "global");
+    dlg.registerCondition("isEvening", function(ctx) {
+        return ctx.vars.hour >= 18;
+    });
+    buildScenes();
     if (aliceAv == null) aliceAv = makePortrait("happy", 0.35, 0.55, 0.85);
     if (bobAv == null) bobAv = makePortrait("neutral", 0.55, 0.40, 0.65);
     buildUI();
@@ -247,6 +284,14 @@ function eve_update(dt) {
         startScene();
     }
     if (keyPressed("2") && i18n.setLanguage("zh")) {
+        dlg.reset();
+        startScene();
+    }
+    // 3 = 切换场景：Dialogue 感知 Scene host 变化并自动清空 scene 变量区。
+    if (keyPressed("3")) {
+        curSceneName = (curSceneName == "town") ? "tavern" : "town";
+        scene.select(curSceneName);
+        dlg.setVar("met", true, "scene");
         dlg.reset();
         startScene();
     }

@@ -21,7 +21,7 @@
 #include <emscripten.h>
 
 namespace {
-// Global frame-loop state: the root script (load_web.nut) defines a global
+// Global frame-loop state: the root script (load.nut) defines a global
 // eve_frame() function; emscripten_set_main_loop drives it per animation frame.
 ssq::VM* gFrameVm = nullptr;
 ssq::Function* gFrameFunc = nullptr;
@@ -60,7 +60,7 @@ namespace eve::cmd
 {
 
 struct RunArgs : Handler {
-    std::string log_path, root_path;
+    std::string log_path, root_path, dev_server;
     bool no_window = false, debug = false;
     int dap_port = 0;
     int mcp_port = 0;
@@ -74,6 +74,8 @@ struct RunArgs : Handler {
                         "Start Debug Adapter Protocol server on port (implies --debug)");
         run->add_option("--mcp-port", mcp_port,
                         "Start Model Context Protocol server on port for AI agents (implies --debug)");
+        run->add_option("--dev-server", dev_server,
+                        "Remote hot-reload dev server URL (eve dev), e.g. http://192.168.1.5:8765");
         run->add_option("-l,--log", log_path, "log messages into a file");
         run->add_option("-r,--root", root_path, "give a entry script instead of using the system default one");
     }
@@ -90,14 +92,12 @@ struct RunArgs : Handler {
                     return -1;
                 }
                 std::string load_root((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
-                return cmd.Run(current_path, load_root, debug, dap_port, mcp_port);
+                return cmd.Run(current_path, load_root, debug, dap_port, mcp_port, dev_server);
             } else {
-#ifdef EVENGINE_WEBGPU
-                // The Emscripten runtime only wires the trimmed module set.
-                return cmd.Run(current_path, load_web_content, debug, dap_port, mcp_port);
-#else
-                return cmd.Run(current_path, load_content, debug, dap_port, mcp_port);
-#endif
+                // One root script for every platform: it binds whatever modules
+                // the build contains from eve.moduleList, and leaves the frame
+                // driver to eve.hostDrivesFrames.
+                return cmd.Run(current_path, load_content, debug, dap_port, mcp_port, dev_server);
             }
         }
         return -1; // not handle
@@ -108,7 +108,8 @@ CMD_REG(RunArgs);
 
 
 // create a new project
-int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, int mcpPort) {
+int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, int mcpPort,
+                 std::string devServer) {
     try {
         // Resolve the game directory. A packaged game ships a game.eve archive next to
         // the executable; we mount it into memory and run without extracting to disk.
@@ -223,6 +224,21 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             // games load it via `compilestring(eve.sceneDirectorScript)()`; the
             // MCP tools auto-install it on demand.
             eve.set("sceneDirectorScript", std::string(scene_director_content ? scene_director_content : ""));
+            eve.set("devServerArg", devServer);
+#if defined(EVENGINE_WEBGPU)
+            // The browser has no blocking loop; load.nut defines eve_frame and
+            // returns, and emscripten_set_main_loop drives it below.
+            eve.set("hostDrivesFrames", true);
+#else
+            eve.set("hostDrivesFrames", false);
+#endif
+        }
+        // The generated slot -> class table load.nut iterates over.
+        if (module_list_content && *module_list_content)
+            runtime.runSource(module_list_content, "module_list.nut");
+        {
+            ssq::Table eve = runtime.table("eve");
+            eve.set("moduleList", runtime.root().find("eve_modules"));
         }
         // Name the embedded root so DAP stack frames map to load.nut (not "buffer").
         // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in

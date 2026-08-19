@@ -38,6 +38,25 @@ env:
   ANDROID_API: "34"
 
 jobs:
+  # Fast structural check: no build, no toolchain. Fails when a module gains an
+  # #include that points up the dependency layering (see
+  # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
+  # script and shrink as the capability registry lands.
+  layering:
+    name: Module layering
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check module dependency layering
+        run: python3 scripts/module_depgraph.py --check
+
+      - name: Report dependency graph
+        if: always()
+        run: python3 scripts/module_depgraph.py
+
   windows:
     name: Windows
     runs-on: windows-latest
