@@ -4,6 +4,7 @@
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
 
+#include "common/config.h"
 #include "common/Module.h"
 #include "graphics/Graphics.h"
 #include "window/Window.h"
