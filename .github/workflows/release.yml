@@ -27,11 +27,13 @@ jobs:
   start:
     name: start (version + branch)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       tag: ${{ steps.go.outputs.tag }}
       branch: ${{ steps.go.outputs.branch }}
     steps:
       - name: Checkout
+        timeout-minutes: 10
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
@@ -39,6 +41,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start release
+        timeout-minutes: 10
         id: go
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,8 +77,10 @@ jobs:
     name: finish (open PRs)
     needs: [start, sdk]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
+        timeout-minutes: 10
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
@@ -83,6 +88,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Finish release
+        timeout-minutes: 10
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: "true"
