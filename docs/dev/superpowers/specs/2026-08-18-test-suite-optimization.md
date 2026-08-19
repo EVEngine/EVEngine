@@ -136,7 +136,7 @@
 
 ## 3. 已实施的优化
 
-### 3.1 CTest 按文件分捆（bundle）执行 —— 进程数 1438 → ~115
+### 3.1 CTest 按文件分捆（bundle）执行 —— 进程数可降 1438 → ~115（opt-in）
 
 `cmake/ZeroErrDiscoverTestsImpl.cmake` 重写：
 
@@ -148,10 +148,12 @@
 
 `Makefile`：
 
-- 默认 `make test/*` 改为 `ctest -L bundle -j N`：约 115 个进程跑完全套，进程启动/引擎初始化
-  开销降到原来的 ~8%，总内存换手与峰值压力同步下降；
-- `FILTER=...` 时自动切回逐用例（不加 `-L`），行为与之前一致；
-- 新增 `FILTER=bundle/<文件>` 快速跑单个文件。
+- **默认仍为逐用例执行**（`-E '^bundle/'` 排除 bundle）：实测发现 GPU/窗口用例在 bundle
+  进程内共享状态时会被拖慢约 70 倍（Linux CI/Lavapipe 上同一用例 5s → 370s），因此 bundle
+  不作为默认路径；逐用例进程隔离才是 CI 上的快速路径（main 1551 用例 2–11 分钟）；
+- bundle 保留为显式 opt-in：`make test FILTER=bundle/<文件>.cpp`（`-L bundle`）适合本地
+  按文件快速跑 CPU 用例；
+- `FILTER=<Suite.Case>` 保持逐用例语义。
 
 > 权衡：逐用例模式每个用例独立进程，某个用例崩溃（段错误/abort）只影响它自己；bundle 模式
 > 同文件用例共享一个进程，崩溃会让该文件剩余用例一并失败。定位时用

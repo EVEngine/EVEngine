@@ -497,11 +497,12 @@ download-skinned-character:
 #  FILTER=bundle/ClassicScenes.cpp).
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 
-# Fast default: run one "bundle/<file>" CTest entry per test source file
-# (~100 processes) instead of one process per test case (~1400).  Bundles are
-# registered with the "bundle" label by cmake/ZeroErrDiscoverTestsImpl.cmake.
-# Any FILTER switches back to per-case matching (see CTEST_FILTER above).
-CTEST_LABEL_SEL = $(if $(FILTER),,-L bundle)
+# Default: run tests per case (process-isolated; this is the fast path on CI —
+# main runs 1551 cases in ~2-11 min).  "bundle/<file>" entries stay registered
+# by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
+# ~70x slower when several shared one process on CI, so bundles are excluded
+# unless requested (FILTER=bundle/<file> or ctest -L bundle).
+CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/')
 
 # ClassicScenes live-view pacing and perf benchmarks are tuned for humans
 # (4 s/phase, 120 timed frames).  `make test` uses fast headless defaults;
@@ -512,22 +513,22 @@ CTEST_ENV = EVENGINE_VIEW_SECONDS=$(VIEW_SECONDS) EVENGINE_PERF_FRAMES=$(PERF_FR
 
 # Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
 test/win32:
-	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_SEL) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/win32-debug:
-	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_SEL) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/linux:
-	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_SEL) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/linux-debug:
-	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_SEL) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/macosx:
-	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_SEL) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/macosx-debug:
-	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_SEL) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).
