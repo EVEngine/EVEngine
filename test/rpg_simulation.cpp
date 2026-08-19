@@ -34,6 +34,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::rpg;
 using namespace eve::map;
