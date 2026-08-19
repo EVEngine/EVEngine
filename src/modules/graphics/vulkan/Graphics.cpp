@@ -132,11 +132,69 @@ void destroyPipelineLayout(vkb::Device &device, vk::PipelineLayout &layout) {
     layout = vk::PipelineLayout{};
 }
 
+/** Latest written vertex copy: the dynamic ring, or the static buffer for
+ *  meshes that are never updated. */
+vkb::HostVertexBuffer &meshDrawVertices(GpuMesh &mesh) {
+    if (!mesh.dynamic) return mesh.vertices;
+    const size_t slot = size_t((mesh.dynamicWriteCount - 1) % GpuMesh::kDynamicVertexCopies);
+    return mesh.dynVertices[slot];
+}
+
+vkb::GenericBuffer &meshDrawIndices(GpuMesh &mesh) {
+    if (!mesh.dynamic) return mesh.indices;
+    const size_t slot = size_t((mesh.dynamicWriteCount - 1) % GpuMesh::kDynamicVertexCopies);
+    return mesh.dynIndices[slot];
+}
+
 void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh) {
     const vk::DeviceSize offset = 0;
-    cb.bindVertexBuffers(0, 1, mesh.vertices, &offset);
-    cb.bindIndexBuffer(mesh.indices.buffer, 0, mesh.indexType);
+    cb.bindVertexBuffers(0, 1, meshDrawVertices(mesh), &offset);
+    cb.bindIndexBuffer(meshDrawIndices(mesh).buffer, 0, mesh.indexType);
     cb.drawIndexed(mesh.indexCount, 1, 0, 0, 0);
+}
+
+/** Switch a mesh to the dynamic ring on first update; take a CPU copy of the
+ *  static index buffer so every ring slot can be populated (also normalizes
+ *  16-bit indices to 32-bit). */
+void ensureDynamicRing(GpuMesh &gpu) {
+    if (gpu.dynamic) return;
+    gpu.dynamic = true;
+    gpu.dynamicWriteCount = 0;
+    gpu.cpuIndices.resize(gpu.indexCount);
+    if (gpu.indexCount > 0 && gpu.indices.buffer) {
+        void *ptr = gpu.indices.map();
+        if (gpu.indexType == vk::IndexType::eUint16) {
+            const auto *src = static_cast<const uint16_t *>(ptr);
+            for (uint32_t i = 0; i < gpu.indexCount; ++i)
+                gpu.cpuIndices[size_t(i)] = src[i];
+        } else {
+            std::memcpy(gpu.cpuIndices.data(), ptr,
+                        size_t(gpu.indexCount) * sizeof(uint32_t));
+        }
+        gpu.indices.unmap();
+    }
+    gpu.indexType = vk::IndexType::eUint32;
+}
+
+/** Write one ring copy. No device-wide wait: the slot being overwritten is
+ *  kDynamicVertexCopies frames old, i.e. past its in-flight window. */
+void writeDynamicMesh(GpuMesh &gpu, const std::vector<MeshVertex> &verts, vkb::Device &device,
+                      vkb::FrameSlot frame, const uint32_t *indices, int indexCount) {
+    const size_t slot = size_t(gpu.dynamicWriteCount % GpuMesh::kDynamicVertexCopies);
+    gpu.dynVertices[slot].allocate<MeshVertex>(frame, device, verts);
+    if (indices && indexCount > 0) {
+        gpu.cpuIndices.assign(indices, indices + indexCount);
+        gpu.indexCount = uint32_t(indexCount);
+    }
+    if (!gpu.cpuIndices.empty()) {
+        auto &ib = gpu.dynIndices[slot];
+        ib.allocate(frame, device, vk::BufferUsageFlagBits::eIndexBuffer,
+                    vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t),
+                    kHostVisibleCoherent);
+        ib.updateLocal(frame, gpu.cpuIndices.data(),
+                       vk::DeviceSize(gpu.cpuIndices.size()) * sizeof(uint32_t));
+    }
+    ++gpu.dynamicWriteCount;
 }
 
 std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame,
@@ -4866,10 +4924,11 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     }
 
     auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
-    // Host-visible VBO is shared across frames. Overwriting it while an
-    // in-flight draw still reads the previous morph is a GPU page-fault / TDR.
-    waitForSharedGpuResources();
-    gpu->vertices.updateLocal(vkb::FrameSlot::gpuIdle(), verts);
+    // Ring-buffered host-visible VBO: the next copy is kDynamicVertexCopies
+    // frames old, so overwriting it never races with in-flight draws — no
+    // device-wide wait (see writeDynamicMesh).
+    ensureDynamicRing(*gpu);
+    writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), nullptr, 0);
     mesh->markMorphClean();
     return true;
 }
@@ -4898,20 +4957,11 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
 
     auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
     mesh->computeBounds(posXYZ, vertexCount);
-    // The host-visible buffers may be reallocated (grow) or still be read by an
-    // in-flight frame; synchronize like bakeMeshMorph before overwriting.
-    waitForSharedGpuResources();
-    gpu->vertices.allocate<MeshVertex>(vkb::FrameSlot::gpuIdle(), getDevice(), verts);
-    if (indices && indexCount > 0) {
-        std::vector<uint32_t> idx(indices, indices + indexCount);
-        gpu->indices.allocate(vkb::FrameSlot::gpuIdle(), getDevice(),
-                              vk::BufferUsageFlagBits::eIndexBuffer,
-                              idx.size() * sizeof(uint32_t), kHostVisibleCoherent);
-        gpu->indices.updateLocal(vkb::FrameSlot::gpuIdle(), idx.data(),
-                                 idx.size() * sizeof(uint32_t));
-        gpu->indexCount = uint32_t(indexCount);
-        mesh->indexCount = indexCount;
-    }
+    // Same ring-buffer approach as bakeMeshMorph: never wait on in-flight
+    // frames, just write the next copy.
+    ensureDynamicRing(*gpu);
+    writeDynamicMesh(*gpu, verts, getDevice(), frameToken(), indices, indexCount);
+    mesh->indexCount = int(gpu->indexCount);
     return true;
 }
 

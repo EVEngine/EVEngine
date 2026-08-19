@@ -8,6 +8,7 @@
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
 #include "vkbuilder.hpp"
+#include <array>
 #include <atomic>
 #include <memory>
 #include <optional>
@@ -136,8 +137,21 @@ struct GpuTexture {
 };
 
 struct GpuMesh {
+    /** @brief Ring copies for per-frame updated meshes (skin/morph/sprite
+     *  stack). Writing the next copy never races with in-flight frames, so
+     *  dynamic updates need no device-wide wait. Only allocated once a mesh
+     *  is actually updated (static meshes keep a single copy). */
+    static constexpr size_t kDynamicVertexCopies = 3;
     vkb::HostVertexBuffer vertices;
     vkb::GenericBuffer indices;
+    std::array<vkb::HostVertexBuffer, kDynamicVertexCopies> dynVertices;
+    std::array<vkb::GenericBuffer, kDynamicVertexCopies> dynIndices;
+    /** @brief CPU index copy for dynamic meshes (also normalizes 16-bit
+     *  static indices to 32-bit ring buffers). */
+    std::vector<uint32_t> cpuIndices;
+    /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
+    uint64_t dynamicWriteCount = 0;
+    bool dynamic = false;
     uint32_t indexCount = 0;
     vk::IndexType indexType = vk::IndexType::eUint32;
 };
