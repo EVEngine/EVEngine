@@ -11,9 +11,11 @@ from pathlib import Path
 from typing import Callable
 
 TAG_RE = re.compile(r"^v([0-9]+)\.([0-9]+)\.([0-9]+)$")
+PROMOTE_HEAD_RE = re.compile(r"^promote/v[0-9]+\.[0-9]+\.[0-9]+$")
 DOC_FILES = frozenset({"README.md", "Readme.md", "Readme.en.md", "Doxyfile"})
 DEV_BRANCH = "dev"
 MAIN_BRANCH = "main"
+MAIN_GATE_CHECK = "main-gate"
 _SET_RE = {
     "major": re.compile(r'(set\(EVENGINE_MAJOR_VERSION\s+")([^"]*)("\))'),
     "minor": re.compile(r'(set\(EVENGINE_MINOR_VERSION\s+")([^"]*)("\))'),
@@ -89,6 +91,22 @@ def is_doc_path(path: str) -> bool:
     return norm == "docs" or norm.startswith("docs/")
 
 
+def is_promote_head(head_ref: str) -> bool:
+    ref = head_ref.replace("\\", "/")
+    prefix = "refs/heads/"
+    if ref.startswith(prefix):
+        ref = ref[len(prefix) :]
+    return bool(PROMOTE_HEAD_RE.fullmatch(ref))
+
+
+def main_pr_allowed(head_ref: str, changed_files: list[str]) -> bool:
+    if is_promote_head(head_ref):
+        return True
+    if not changed_files:
+        return False
+    return all(is_doc_path(p) for p in changed_files)
+
+
 class CommandError(RuntimeError):
     def __init__(self, argv: list[str], returncode: int, stderr: str):
         super().__init__(f"command failed ({returncode}): {' '.join(argv)}\n{stderr}")
@@ -146,6 +164,101 @@ def require_gh(which: Callable[[str], str | None] | None = None) -> None:
         file=sys.stderr,
     )
     raise SystemExit(2)
+
+
+def _is_ancestor(runner: Runner, commit: str, ref: str) -> bool:
+    try:
+        runner.run(["git", "merge-base", "--is-ancestor", commit, ref])
+        return True
+    except CommandError:
+        return False
+
+
+def _existing_pr_url(runner: Runner, *, base: str, head: str) -> str:
+    raw = runner.run(
+        [
+            "gh",
+            "pr",
+            "list",
+            "--base",
+            base,
+            "--head",
+            head,
+            "--state",
+            "open",
+            "--json",
+            "url",
+        ]
+    )
+    if not raw.strip():
+        return ""
+    items = json.loads(raw)
+    if not items:
+        return ""
+    return str(items[0].get("url") or "")
+
+
+def _ensure_pr(
+    runner: Runner,
+    *,
+    base: str,
+    head: str,
+    title: str,
+    body: str,
+) -> str:
+    existing = _existing_pr_url(runner, base=base, head=head)
+    if existing:
+        print(f"PR already open: {existing}")
+        return existing
+    return runner.run(
+        [
+            "gh",
+            "pr",
+            "create",
+            "--base",
+            base,
+            "--head",
+            head,
+            "--title",
+            title,
+            "--body",
+            body,
+        ]
+    ).strip()
+
+
+def post_check(
+    runner: Runner,
+    *,
+    sha: str,
+    conclusion: str,
+    title: str,
+    summary: str,
+    name: str = MAIN_GATE_CHECK,
+) -> None:
+    if not sha:
+        return
+    runner.run(
+        [
+            "gh",
+            "api",
+            "--method",
+            "POST",
+            "repos/{owner}/{repo}/check-runs",
+            "-f",
+            f"name={name}",
+            "-f",
+            f"head_sha={sha}",
+            "-f",
+            "status=completed",
+            "-f",
+            f"conclusion={conclusion}",
+            "-f",
+            f"output[title]={title}",
+            "-f",
+            f"output[summary]={summary}",
+        ]
+    )
 
 
 def _write_github_output(tag: str, branch: str) -> None:
@@ -224,6 +337,62 @@ def cmd_start(
     _write_github_output(tag, tag)
 
 
+def _open_promote_pr(runner: Runner, *, tag: str, official: str) -> None:
+    promote = f"promote/{tag}"
+    if _is_ancestor(runner, official, f"origin/{MAIN_BRANCH}"):
+        print(f"{MAIN_BRANCH} already contains {tag}")
+        return
+    runner.run(["git", "branch", "-f", promote, official])
+    runner.run(["git", "push", "-u", "origin", promote, "--force-with-lease"])
+    body = (
+        f"Promote `{tag}` to `{MAIN_BRANCH}`.\n\n"
+        f"This PR points at the official commit (no `-dev` suffix). "
+        f"Merge it to update the default branch. Do not merge `{DEV_BRANCH}` into `{MAIN_BRANCH}`.\n"
+    )
+    _ensure_pr(
+        runner,
+        base=MAIN_BRANCH,
+        head=promote,
+        title=f"release: {tag}",
+        body=body,
+    )
+    post_check(
+        runner,
+        sha=official,
+        conclusion="success",
+        title="release promote",
+        summary=f"{promote} is allowed onto {MAIN_BRANCH}.",
+    )
+
+
+def _open_rebase_pr(runner: Runner, *, tag: str, conflict: bool) -> None:
+    head = f"rebase/{tag}"
+    if conflict:
+        body = (
+            f"Automatic rebase of `{DEV_BRANCH}` onto `{tag}` failed.\n\n"
+            f"Resolve on this branch or locally:\n\n"
+            f"```\n"
+            f"git fetch origin\n"
+            f"git checkout {DEV_BRANCH}\n"
+            f"git rebase {tag}\n"
+            f"# fix conflicts, then push this rebase branch (do not force-push {DEV_BRANCH} unless you intend to):\n"
+            f"git push --force-with-lease origin {head}\n"
+            f"```\n"
+        )
+    else:
+        body = (
+            f"Automatic rebase of `{DEV_BRANCH}` onto `{tag}` succeeded.\n\n"
+            f"Merge this PR to update `{DEV_BRANCH}`. Do not merge `{DEV_BRANCH}` into `{MAIN_BRANCH}`.\n"
+        )
+    _ensure_pr(
+        runner,
+        base=DEV_BRANCH,
+        head=head,
+        title=f"rebase {DEV_BRANCH} onto {tag}",
+        body=body,
+    )
+
+
 def cmd_finish(
     runner: Runner,
     *,
@@ -236,21 +405,7 @@ def cmd_finish(
     runner.run(["gh", "release", "edit", tag, "--prerelease=false"])
     runner.run(["git", "fetch", "origin", MAIN_BRANCH, DEV_BRANCH, tag])
     official = runner.run(["git", "rev-parse", tag]).strip()
-    runner.run(["git", "checkout", MAIN_BRANCH])
-    try:
-        runner.run(["git", "merge", "--ff-only", official])
-    except CommandError:
-        runner.run(
-            [
-                "git",
-                "merge",
-                "--no-ff",
-                official,
-                "-m",
-                f"release: merge {tag} into {MAIN_BRANCH}",
-            ]
-        )
-    runner.run(["git", "push", "origin", MAIN_BRANCH])
+    _open_promote_pr(runner, tag=tag, official=official)
 
     runner.run(["git", "checkout", tag])
     text = _load_cmake(runner, cmake_path)
@@ -263,42 +418,54 @@ def cmd_finish(
         runner.run(["git", "commit", "-m", f"release: {incoming.as_dev().display()}"])
     runner.run(["git", "push", "origin", tag])
 
-    runner.run(["git", "checkout", DEV_BRANCH])
+    runner.run(["git", "checkout", "-B", DEV_BRANCH, f"origin/{DEV_BRANCH}"])
+    rebase_head = f"rebase/{tag}"
     try:
         runner.run(["git", "rebase", tag])
     except CommandError:
         runner.run(["git", "rebase", "--abort"])
-        head = f"rebase/{tag}"
-        runner.run(["git", "checkout", "-B", head, tag])
-        runner.run(["git", "push", "-u", "origin", head])
-        body = (
-            f"Automatic rebase of `{DEV_BRANCH}` onto `{tag}` failed.\n\n"
-            f"Resolve locally:\n\n"
-            f"```\n"
-            f"git fetch origin\n"
-            f"git checkout {DEV_BRANCH}\n"
-            f"git rebase {tag}\n"
-            f"# fix conflicts, then:\n"
-            f"git push --force-with-lease origin {DEV_BRANCH}\n"
-            f"```\n"
-        )
-        runner.run(
-            [
-                "gh",
-                "pr",
-                "create",
-                "--base",
-                DEV_BRANCH,
-                "--head",
-                head,
-                "--title",
-                f"rebase {DEV_BRANCH} onto {tag}",
-                "--body",
-                body,
-            ]
-        )
+        runner.run(["git", "checkout", "-B", rebase_head, tag])
+        runner.run(["git", "push", "-u", "origin", rebase_head, "--force-with-lease"])
+        _open_rebase_pr(runner, tag=tag, conflict=True)
         return
-    runner.run(["git", "push", "--force-with-lease", "origin", DEV_BRANCH])
+
+    ahead_raw = runner.run(["git", "rev-list", "--count", f"origin/{DEV_BRANCH}..HEAD"]).strip()
+    ahead = int(ahead_raw or "0")
+    if ahead == 0:
+        print(f"{DEV_BRANCH} already contains the rebased history")
+        return
+    runner.run(["git", "checkout", "-B", rebase_head, "HEAD"])
+    runner.run(["git", "push", "-u", "origin", rebase_head, "--force-with-lease"])
+    _open_rebase_pr(runner, tag=tag, conflict=False)
+
+
+def cmd_check_main_pr(runner: Runner, *, head_ref: str | None = None) -> None:
+    head = head_ref or os.environ.get("GITHUB_HEAD_REF") or ""
+    runner.run(["git", "fetch", "origin", MAIN_BRANCH], check=False)
+    names = runner.run(["git", "diff", "--name-only", f"origin/{MAIN_BRANCH}...HEAD"])
+    files = [line.strip() for line in names.splitlines() if line.strip()]
+    sha = runner.run(["git", "rev-parse", "HEAD"]).strip()
+    allowed = main_pr_allowed(head, files)
+    post_check(
+        runner,
+        sha=sha,
+        conclusion="success" if allowed else "failure",
+        title="main gate",
+        summary=(
+            f"{head} is allowed onto {MAIN_BRANCH}."
+            if allowed
+            else f"{head} is not a docs-only or promote/vX.X.X PR."
+        ),
+    )
+    if allowed:
+        return
+    print(
+        f"error: PRs to {MAIN_BRANCH} must be documentation-only "
+        f"or come from a `promote/vMAJOR.MINOR.PATCH` release branch. Got {head!r}: "
+        + ", ".join(files),
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
 
 
 def cmd_sync_docs(runner: Runner, *, dry_run: bool = False) -> None:
@@ -384,6 +551,7 @@ def main(
     p_finish = sub.add_parser("finish")
     p_finish.add_argument("--tag", required=True)
     sub.add_parser("sync-docs")
+    sub.add_parser("check-main-pr")
     args = parser.parse_args(argv)
 
     require_gh(which=which)
@@ -399,6 +567,8 @@ def main(
         cmd_finish(real, tag=args.tag, cmake_path=cmake, repo_root=root, dry_run=args.dry_run)
     elif args.cmd == "sync-docs":
         cmd_sync_docs(real, dry_run=args.dry_run)
+    elif args.cmd == "check-main-pr":
+        cmd_check_main_pr(real)
 
 
 if __name__ == "__main__":

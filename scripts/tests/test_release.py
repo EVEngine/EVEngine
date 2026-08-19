@@ -89,6 +89,56 @@ class DocPathTest(unittest.TestCase):
         self.assertFalse(release.is_doc_path("docs-extra/foo.md"))
 
 
+class MainPrAllowedTest(unittest.TestCase):
+    def test_promote_head_allows_engine_files(self):
+        self.assertTrue(
+            release.main_pr_allowed("promote/v0.1.0", ["CMakeLists.txt", "src/engine/main.cpp"])
+        )
+
+    def test_docs_only_allowed(self):
+        self.assertTrue(release.main_pr_allowed("docs/readme-fix", ["README.md", "docs/usr/README.md"]))
+
+    def test_dev_engine_pr_rejected(self):
+        self.assertFalse(release.main_pr_allowed("dev", ["src/engine/main.cpp"]))
+
+    def test_isolation_branch_not_a_promote_head(self):
+        self.assertFalse(release.main_pr_allowed("v0.1.0", ["CMakeLists.txt"]))
+
+    def test_empty_non_promote_rejected(self):
+        self.assertFalse(release.main_pr_allowed("hotfix", []))
+
+
+class CheckMainPrTest(unittest.TestCase):
+    def test_docs_pr_posts_success_check(self):
+        r = release.FakeRunner()
+        r.when(["git", "fetch", "origin", "main"], stdout="")
+        r.when(
+            ["git", "diff", "--name-only", "origin/main...HEAD"],
+            stdout="README.md\n",
+        )
+        r.when(["git", "rev-parse", "HEAD"], stdout="abc123\n")
+        r.when(["gh", "api"], stdout='{"id":1}\n')
+        release.cmd_check_main_pr(r, head_ref="docs/readme-fix")
+        api = " ".join(next(c for c in r.calls if c[:2] == ["gh", "api"]))
+        self.assertIn("main-gate", api)
+        self.assertIn("success", api)
+
+    def test_engine_pr_fails_and_posts_failure_check(self):
+        r = release.FakeRunner()
+        r.when(["git", "fetch", "origin", "main"], stdout="")
+        r.when(
+            ["git", "diff", "--name-only", "origin/main...HEAD"],
+            stdout="src/engine/main.cpp\n",
+        )
+        r.when(["git", "rev-parse", "HEAD"], stdout="abc123\n")
+        r.when(["gh", "api"], stdout='{"id":1}\n')
+        with self.assertRaises(SystemExit) as ctx:
+            release.cmd_check_main_pr(r, head_ref="dev")
+        self.assertNotEqual(ctx.exception.code, 0)
+        api = " ".join(next(c for c in r.calls if c[:2] == ["gh", "api"]))
+        self.assertIn("failure", api)
+
+
 class RequireGhTest(unittest.TestCase):
     def test_missing_exits(self):
         with self.assertRaises(SystemExit) as ctx:
@@ -167,48 +217,78 @@ class StartTest(unittest.TestCase):
 
 
 class FinishTest(unittest.TestCase):
-    def _base(self):
+    def _base(self, *, on_main: bool = False):
         r = release.FakeRunner()
         official = release.write_version(CMAKE, release.parse_tag("v0.1.0"))
         r.cmake_text = official
         r.when(["gh", "release", "edit", "v0.1.0", "--prerelease=false"], stdout="")
         r.when(["git", "fetch", "origin", "main", "dev", "v0.1.0"], stdout="")
         r.when(["git", "rev-parse", "v0.1.0"], stdout="off123\n")
-        r.when(["git", "checkout", "main"], stdout="")
-        r.when(["git", "merge", "--ff-only", "off123"], stdout="")
-        r.when(["git", "push", "origin", "main"], stdout="")
+        r.when(
+            ["git", "merge-base", "--is-ancestor", "off123", "origin/main"],
+            rc=0 if on_main else 1,
+        )
+        r.when(["git", "branch", "-f", "promote/v0.1.0", "off123"], stdout="")
+        r.when(["git", "push", "-u", "origin", "promote/v0.1.0"], stdout="")
+        r.when(
+            ["gh", "pr", "list", "--base", "main", "--head", "promote/v0.1.0"],
+            stdout="[]\n",
+        )
+        r.when(["gh", "pr", "create"], stdout="https://example/pr/1\n")
+        r.when(["gh", "api"], stdout='{"id":1}\n')
         r.when(["git", "checkout", "v0.1.0"], stdout="")
         r.when(["git", "add", "CMakeLists.txt"], stdout="")
         r.when(["git", "diff", "--cached", "--quiet"], rc=1)
         r.when(["git", "commit", "-m", "release: 0.1.0-dev"], stdout="")
         r.when(["git", "push", "origin", "v0.1.0"], stdout="")
-        r.when(["git", "checkout", "dev"], stdout="")
+        r.when(["git", "checkout", "-B", "dev", "origin/dev"], stdout="")
         return r
 
-    def test_finish_ff_and_rebase(self):
-        r = self._base()
+    def _wire_rebase_ok(self, r, *, ahead="2"):
         r.when(["git", "rebase", "v0.1.0"], stdout="")
-        r.when(["git", "push", "--force-with-lease", "origin", "dev"], stdout="")
+        r.when(["git", "rev-list", "--count", "origin/dev..HEAD"], stdout=f"{ahead}\n")
+        r.when(["git", "checkout", "-B", "rebase/v0.1.0", "HEAD"], stdout="")
+        r.when(["git", "push", "-u", "origin", "rebase/v0.1.0"], stdout="")
+        r.when(
+            ["gh", "pr", "list", "--base", "dev", "--head", "rebase/v0.1.0"],
+            stdout="[]\n",
+        )
+
+    def test_finish_opens_main_and_rebase_prs(self):
+        r = self._base()
+        self._wire_rebase_ok(r)
         release.cmd_finish(r, tag="v0.1.0", cmake_path=ROOT / "CMakeLists.txt", repo_root=ROOT)
         self.assertEqual(release.read_version(r.cmake_text).display(), "0.1.0-dev")
         self.assertIn(["gh", "release", "edit", "v0.1.0", "--prerelease=false"], r.calls)
-        self.assertIn(["git", "push", "--force-with-lease", "origin", "dev"], r.calls)
-        self.assertFalse(any(c[:3] == ["gh", "pr", "create"] for c in r.calls))
+        self.assertFalse(any(c == ["git", "push", "origin", "main"] for c in r.calls))
+        self.assertFalse(
+            any(c == ["git", "push", "--force-with-lease", "origin", "dev"] for c in r.calls)
+        )
+        prs = [c for c in r.calls if c[:3] == ["gh", "pr", "create"]]
+        self.assertEqual(len(prs), 2)
+        main_pr = next(c for c in prs if "main" in c and "promote/v0.1.0" in c)
+        rebase_pr = next(c for c in prs if "dev" in c and "rebase/v0.1.0" in c)
+        self.assertIn("--base", main_pr)
+        self.assertIn("--head", rebase_pr)
+        self.assertTrue(any(c[:2] == ["gh", "api"] for c in r.calls))
 
-    def test_finish_merge_when_ff_fails(self):
-        r = self._base()
-        r.when(["git", "merge", "--ff-only", "off123"], rc=1)
-        r.when(
-            ["git", "merge", "--no-ff", "off123", "-m", "release: merge v0.1.0 into main"],
-            stdout="",
-        )
-        r.when(["git", "rebase", "v0.1.0"], stdout="")
-        r.when(["git", "push", "--force-with-lease", "origin", "dev"], stdout="")
+    def test_finish_skips_main_pr_when_already_on_main(self):
+        r = self._base(on_main=True)
+        self._wire_rebase_ok(r)
         release.cmd_finish(r, tag="v0.1.0", cmake_path=ROOT / "CMakeLists.txt", repo_root=ROOT)
-        self.assertIn(
-            ["git", "merge", "--no-ff", "off123", "-m", "release: merge v0.1.0 into main"],
-            r.calls,
-        )
+        self.assertFalse(any("promote/v0.1.0" in c for c in r.calls if c[:2] == ["git", "push"]))
+        prs = [c for c in r.calls if c[:3] == ["gh", "pr", "create"]]
+        self.assertTrue(all("promote/v0.1.0" not in c for c in prs))
+        self.assertTrue(any("rebase/v0.1.0" in c for c in prs))
+
+    def test_finish_skips_rebase_pr_when_dev_up_to_date(self):
+        r = self._base()
+        self._wire_rebase_ok(r, ahead="0")
+        release.cmd_finish(r, tag="v0.1.0", cmake_path=ROOT / "CMakeLists.txt", repo_root=ROOT)
+        prs = [c for c in r.calls if c[:3] == ["gh", "pr", "create"]]
+        self.assertEqual(len(prs), 1)
+        self.assertIn("promote/v0.1.0", prs[0])
+        self.assertFalse(any("rebase/v0.1.0" in c for c in prs))
 
     def test_finish_rebase_conflict_opens_pr(self):
         r = self._base()
@@ -216,17 +296,31 @@ class FinishTest(unittest.TestCase):
         r.when(["git", "rebase", "--abort"], stdout="")
         r.when(["git", "checkout", "-B", "rebase/v0.1.0", "v0.1.0"], stdout="")
         r.when(["git", "push", "-u", "origin", "rebase/v0.1.0"], stdout="")
-        r.when(["gh", "pr", "create"], stdout="https://example/pr/1\n")
+        r.when(
+            ["gh", "pr", "list", "--base", "dev", "--head", "rebase/v0.1.0"],
+            stdout="[]\n",
+        )
         release.cmd_finish(r, tag="v0.1.0", cmake_path=ROOT / "CMakeLists.txt", repo_root=ROOT)
-        self.assertTrue(any(c[:3] == ["gh", "pr", "create"] for c in r.calls))
+        prs = [c for c in r.calls if c[:3] == ["gh", "pr", "create"]]
+        self.assertTrue(any("promote/v0.1.0" in c for c in prs))
+        rebase_pr = next(c for c in prs if "rebase/v0.1.0" in c)
+        self.assertIn("--base", rebase_pr)
+        self.assertIn("dev", rebase_pr)
         self.assertFalse(
             any(c == ["git", "push", "--force-with-lease", "origin", "dev"] for c in r.calls)
         )
-        pr = next(c for c in r.calls if c[:3] == ["gh", "pr", "create"])
-        self.assertIn("--base", pr)
-        self.assertIn("dev", pr)
-        self.assertIn("--head", pr)
-        self.assertIn("rebase/v0.1.0", pr)
+
+    def test_finish_reuses_existing_main_pr(self):
+        r = self._base()
+        r.when(
+            ["gh", "pr", "list", "--base", "main", "--head", "promote/v0.1.0"],
+            stdout='[{"url":"https://example/pr/9"}]\n',
+        )
+        self._wire_rebase_ok(r)
+        release.cmd_finish(r, tag="v0.1.0", cmake_path=ROOT / "CMakeLists.txt", repo_root=ROOT)
+        prs = [c for c in r.calls if c[:3] == ["gh", "pr", "create"]]
+        self.assertTrue(all("promote/v0.1.0" not in c for c in prs))
+        self.assertTrue(any(c[:2] == ["gh", "api"] for c in r.calls))
 
 
 class SyncDocsTest(unittest.TestCase):

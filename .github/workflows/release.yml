@@ -1,5 +1,5 @@
 # Orchestrate a release started by a GitHub Pre-release:
-#   start → strict tests (debug+release) → SDK zips → finish
+#   start → strict tests (debug+release) → SDK zips → finish (opens PRs)
 # See docs/dev/发布流程.md and scripts/release.py.
 
 name: Release
@@ -21,6 +21,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  checks: write
 
 jobs:
   start:
@@ -70,7 +71,7 @@ jobs:
     secrets: inherit
 
   finish:
-    name: finish (promote + rebase dev)
+    name: finish (open PRs)
     needs: [start, sdk]
     runs-on: ubuntu-latest
     steps:
@@ -89,5 +90,4 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main dev "${{ needs.start.outputs.tag }}" || true
           python3 scripts/release.py finish --tag "${{ needs.start.outputs.tag }}"

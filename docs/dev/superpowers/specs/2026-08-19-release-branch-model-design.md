@@ -20,8 +20,9 @@ git/gh 变更，CI 只编排严测与 SDK。
 - 不在本设计里改引擎代码或 SDK 打包内容（`make sdk/*`、`test-sdk.sh`、`zip-sdk.py` 保持原样）。
 - 不自动按 semver 递增下一正式号；下一正式号以新的 Pre-release tag 为准。
 - 不把 `gh` 做成可选依赖：不在 PATH 就报错退出。
-- 不引入 GitHub App / 额外 bot 账号；使用 `GITHUB_TOKEN`（`contents: write` + `pull-requests: write`）。
+- 不引入 GitHub App / 额外 bot 账号 / 管理员 PAT；使用 `GITHUB_TOKEN`（`contents: write` + `pull-requests: write` + `checks: write`）。
 - 不在发布收尾时用推送再触发新的 workflow（依赖默认 token 不连锁触发，避免死循环）。
+- **不直推 `main` / `dev`**：`finish` 只开 PR，由人点 Merge。`GITHUB_TOKEN` 开出的 PR 不会再触发 `pull_request` workflow，因此 `finish` 用 Checks API 写同名检查 `main-gate`，否则必过检查会一直停在 expected。
 
 ## 分支职责
 
@@ -55,12 +56,12 @@ dev  ──●──●──●──────────●──●──
 v0.1.0     ●──(去-dev)──●──严测──SDK──●──(+ -dev)
            ↑            ↑ 正式版 commit   ↑ 只留在 v0.1.0 / dev
            Pre-release  │
-                        └── fast-forward 或 merge 进 main
+                        └── promote/v0.1.0 PR → main（人点 Merge）
 ```
 
 1. `release.py start`：从 Pre-release 的 tag commit 建 `v0.1.0`，按 tag 写入正式版并提交，**把同名 tag 移到这次 commit**（`git checkout v0.1.0` 必须得到正式号）。
 2. 在 `v0.1.0` 上跑严测（见「CI」），再跑现有五平台 SDK 打包与可用性测试，把 zip 挂到该 Release。
-3. `release.py finish`：升正式 Release；更新 `main` 到正式版 commit（不含 `-dev` 回写）；在 `v0.1.0` 上提交 `0.1.0-dev`；尝试 rebase `dev` 并 `--force-with-lease` 推送；冲突则开 `rebase/v0.1.0` → `dev` 的 PR。
+3. `release.py finish`：升正式 Release；推送 `promote/v0.1.0`（指向去 `-dev` 的正式版 commit）并开 PR 到 `main`；在 `v0.1.0` 上提交 `0.1.0-dev`；尝试 rebase `dev`，无论成功或冲突都开 `rebase/v0.1.0` → `dev` 的 PR（成功时若已无新提交则跳过）。**不** `git push origin main`，**不** force-push `dev`。
 
 任一层严测或 SDK 失败：不执行 `finish`，不升正式版，不动 `main`/`dev`。`vX.X.X` 与已移动的 tag 保留，便于修复后对同一 Pre-release 重跑。
 
@@ -102,10 +103,11 @@ set(EVENGINE_DEV_VERSION "...")   # 正式版为空串；开发版为 "-dev"
 **`finish`**（SDK 作业全部成功之后）
 
 1. `gh release edit <tag> --prerelease=false`。
-2. 把 `main` 更新到正式版 commit（去 `-dev` 的那次，不是随后的 `-dev` 回写）：能 `merge --ff-only` 则快进，否则普通 merge。
+2. 若正式版 commit 尚不在 `main`：建并推送 `promote/vX.X.X`（钉在去 `-dev` 的 commit 上，避免随后的 `-dev` 回写漏进 PR），开 PR 到 `main`，并用 Checks API 给该 SHA 打 `main-gate` = success。已有同 head 的 open PR 则复用。
 3. 在 `vX.X.X` 上把 `EVENGINE_DEV_VERSION` 设回 `-dev` 并提交（已是该开发号则跳过）。
-4. `git rebase` 将 `dev` 接到该 `-dev` commit 上，成功则 `--force-with-lease` 推送 `dev`。
-5. rebase 冲突：中止 rebase，推送 `rebase/vX.X.X`（当前已 rebase 到冲突前的发布尖端 + 说明），开 PR 到 `dev`，**不** force-push `dev`。PR 正文写明冲突文件与本地续做命令。
+4. `git rebase` 将 `dev` 接到该 `-dev` commit 上。成功且有新提交：推送 `rebase/vX.X.X`，开 PR 到 `dev`。已与 `origin/dev` 一致则跳过。
+5. rebase 冲突：中止 rebase，推送 `rebase/vX.X.X`（发布尖端 + 说明），开 PR 到 `dev`。PR 正文写明冲突与本地续做命令。
+6. **不得** `git push origin main`，也不得 force-push 日常开发分支。
 
 **`sync-docs`**（`main` 文档 PR 合并后）
 
@@ -143,7 +145,13 @@ start (release.py start --tag)
       → finish (release.py finish --tag)
 ```
 
-权限：`contents: write`、`pull-requests: write`。`start` 之后的作业必须 checkout 已推送的 `vX.X.X`（正式版 commit），不能再用 Pre-release 最初指向的 `-dev` commit。
+权限：`contents: write`、`pull-requests: write`、`checks: write`。`start` 之后的作业必须 checkout 已推送的 `vX.X.X`（正式版 commit），不能再用 Pre-release 最初指向的 `-dev` commit。`finish` 只开 PR，由人点 Merge。
+
+### `main-gate.yml`（新建）
+
+- `pull_request` 目标为 `main`。
+- 调用 `release.py check-main-pr`：文档白名单或 `promote/vX.X.X` 才通过。
+- 检查名 `main-gate`。`GITHUB_TOKEN` 开的 promote PR 不会跑本 workflow，由 `finish` 用 Checks API 补打同名检查。
 
 ### `sync-docs.yml`（新建）
 
@@ -157,7 +165,7 @@ start (release.py start --tag)
 |---|---|---|
 | `start` | 可能已有 `vX.X.X` 或已挪 tag | 幂等重跑：已是正式号则不再改文件，只保证 tag 指对 commit |
 | 严测 / SDK | 正式版 commit 与 tag 在，Release 仍为 pre | 在 `vX.X.X` 或 `dev` 修复后，对同一 tag 重跑 `release.yml` |
-| `finish` 升正式版 / 更新 `main` | SDK zip 可能已挂上 | `workflow_dispatch` 同一 tag 重跑；`finish` 对已正式的 release 与已更新的 `main` 幂等 |
+| `finish` 升正式版 / 开 PR | SDK zip 可能已挂上；可能已开 promote / rebase PR | `workflow_dispatch` 同一 tag 重跑；已正式的 release 与已开 PR 幂等 |
 | rebase `dev` 冲突 | 不改写 `dev` | 自动开 `rebase/vX.X.X` PR，人修完再合 |
 
 `start` 在以下情况立即失败、不建分支：tag 格式非法、对应 Release 不存在、版本降级、`gh` 缺失、工作区脏且不在 CI。
@@ -171,7 +179,9 @@ Release 已经是正式版时：若 `vX.X.X` 分支、CMake 正式号与 tag 已
 - 写入与读回 `EVENGINE_*_VERSION`
 - 禁止降级、允许升高
 - `start` 在已是正式号时不再提交
-- rebase 冲突走「开 PR」路径，不调用 force-push `dev`
+- rebase 成功或冲突都走「开 PR」路径，不调用 force-push 日常开发分支
+- `main_pr_allowed`：`promote/vX.X.X` 放行引擎文件；文档白名单放行；`dev` 合引擎进 `main` 拒绝
+- `finish` 开 `promote/` → `main` 与 `rebase/` → 日常开发分支，不 `git push origin main`
 - 文档白名单判定
 
 这条 Python 测试挂在 `ci.yml` 的 layering 作业之后（或同 job），不依赖 Vulkan / 显示器。
@@ -182,7 +192,7 @@ Release 已经是正式版时：若 `vX.X.X` 分支、CMake 正式号与 tag 已
 
 1. 从当前 `main` 创建并推送 `dev`（`git branch dev main && git push -u origin dev`）。
 2. GitHub 默认分支保持 `main`。
-3. 建议保护规则：`main` 仅允许文档白名单 PR + 发布 workflow 的快进/merge；`dev` 走 PR。保护规则需人工在 GitHub 设置，不由脚本静默修改。
+3. 建议保护规则（人工在 GitHub 设置，不由脚本静默修改）：`main` 必须走 PR，必过检查 `main-gate`，禁止 force-push / 删除，**不加 Bypass**。日常开发分支可要求 PR，但不要要求 status check（否则 bot 开的 rebase PR 可能一直转圈）。
 
 ## 文档改动（实现阶段）
 
