@@ -527,12 +527,16 @@ jobs:
       - name: Install system packages
         timeout-minutes: 10
         run: |
-          # Fail fast on sick runners instead of hanging for the whole job budget.
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
           apt_ok=0
           for i in 1 2 3; do
-            sudo apt-get update -o Acquire::Retries=3 \
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -588,12 +592,16 @@ jobs:
       - name: Install system packages
         timeout-minutes: 10
         run: |
-          # Fail fast on sick runners instead of hanging for the whole job budget.
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
           apt_ok=0
           for i in 1 2 3; do
-            sudo apt-get update -o Acquire::Retries=3 \
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -647,12 +655,16 @@ jobs:
       - name: Install system packages
         timeout-minutes: 10
         run: |
-          # Fail fast on sick runners instead of hanging for the whole job budget.
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
           apt_ok=0
           for i in 1 2 3; do
-            sudo apt-get update -o Acquire::Retries=3 \
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
