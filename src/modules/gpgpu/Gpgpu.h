@@ -8,6 +8,7 @@ namespace eve::gpgpu {
 
 class ComputeShader;
 class GpuBuffer;
+class Sequence;
 
 /**
  * @brief GPGPU module — compute shaders + storage buffers via the active Graphics backend.
@@ -39,6 +40,12 @@ public:
      * usage: "storage" (SSBO, device-local) | "staging" (host-visible transfer).
      */
     GpuBuffer *newBuffer(int byteSize, const std::string &usage = "storage");
+
+    /**
+     * @brief Create a Kompute-style command Sequence: record buffer transfers and
+     * compute dispatches into one command buffer, then submit() once.
+     */
+    Sequence *newSequence();
 
     /**
      * @brief Record + submit a compute dispatch and wait for completion (sync).

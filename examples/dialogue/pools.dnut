@@ -1,0 +1,25 @@
+// EVEngine Dialogue 台词池示例（.dnut）
+// 由 dlg.loadPoolsFromDnutFile("pools.dnut") 解析并注册到 eve.Dialogue。
+// 玩法：mood / hour 是故事变量，playPool 按条件加权选词；meta 自动切表情/动作。
+
+pool alice.greet noRepeat=3 {
+    when mood == "happy" && hour >= 18 {
+        alice: "晚上好呀，{name}！今天过得怎么样？" weight=2 meta(expression="happy", motion="wave") tags=["greet","evening"]
+        alice: "你来啦，我正想着你呢。" weight=1 meta(expression="happy") tags=["greet"]
+    }
+    when mood == "happy" {
+        alice: "嗨，{name}！今天心情不错吧？" weight=2 meta(expression="happy") tags=["greet"]
+        alice: "见到你真高兴！" weight=1 meta(expression="happy") tags=["greet"]
+    }
+    when mood == "shy" {
+        alice: "那个……你、你好。" weight=1 meta(expression="shy") tags=["greet"]
+    }
+    alice: "……你好。" weight=1 tags=["greet"]
+}
+
+pool bob.greet noRepeat=2 {
+    when hour >= 18 {
+        bob: "晚上好。今天过得怎么样？" weight=2 meta(expression="neutral") tags=["greet","evening"]
+    }
+    bob: "嘿，{name}。" weight=1 meta(expression="neutral") tags=["greet"]
+}

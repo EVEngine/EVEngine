@@ -34,7 +34,7 @@ public:
 
     /** @brief 运行游戏（debug 时附加 DAP/MCP 端口）。 */
     int Run(std::string path, std::string root, bool debug = false, int dapPort = 0,
-            int mcpPort = 0);
+            int mcpPort = 0, std::string devServer = "");
 
     /** @brief 构建项目（需要下载工具与源码）。 */
     int Build(std::string path, std::string output, std::string platform);
@@ -52,7 +52,7 @@ public:
     int Zip(std::string path);
 
     /** @brief 启动热重载开发服务器。 */
-    int DevServer(std::string path);
+    int DevServer(std::string path, int port = 8765);
 
     /** @brief 获取第三方源码。 */
     int Get(std::string url);

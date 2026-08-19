@@ -24,9 +24,13 @@ foreach(_line IN LISTS _lines)
   if(_line MATCHES "TEST CASE .+\\] ([A-Za-z0-9_.]+)")
     set(_name "${CMAKE_MATCH_1}")
     if(NOT _name STREQUAL "")
-      string(REGEX REPLACE "([][+.*()^$|\\\\])" "\\\\\\1" _escaped "${_name}")
+      # Test names only contain [A-Za-z0-9_.] (see the match above), which is a
+      # valid std::regex and a valid CMake quoted string. Backslash-escaping the
+      # name (e.g. \.) produced "Invalid escape sequence" in CMake's quoted-string
+      # parser (CMP0010) on some CMake versions, turning the generated ctest file
+      # into a hard error, so the raw name is passed through instead.
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
-      string(APPEND _content "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_escaped}$\")\n")
+      string(APPEND _content "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n")
     endif()
   endif()
 endforeach()

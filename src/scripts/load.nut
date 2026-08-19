@@ -1,3 +1,15 @@
+// Engine root script.
+//
+// Which modules exist depends on how the engine was built (see
+// cmake/module_manifest.cmake), so nothing here names a module that might have
+// been trimmed. `eve.moduleList` is generated at configure time from the same
+// manifest that drives the link list, and optional modules are used behind
+// `has_module()` guards.
+//
+// The frame body lives in eve_frame() so both drivers can share it: desktop
+// runs the while loop at the bottom, while the browser build returns to C++
+// and is driven from emscripten_set_main_loop instead.
+
 function file_exists(path) {
     try {
         file(path, "r").close();
@@ -21,22 +33,54 @@ function normalize_path(path) {
     return s;
 }
 
+/** True when the build contains this module, i.e. the slot got bound below. */
+function has_module(slot) {
+    return slot in getroottable() && getroottable()[slot] != null;
+}
+
 config <- {
     width = 800
     height = 600
     title = "EVEngine"
     debug = false
     hotReload = false
+    // Remote hot reload: set to the `eve dev` URL of the host machine, e.g.
+    // "http://192.168.1.5:8765". Scripts/resources changed there are synced and
+    // reloaded live on this device (used on iOS/Android where the bundle is read-only).
+    devServer = ""
+    devSyncMs = 1000
 };
 
 if (file_exists("config.nut")) {
     dofile("config.nut");
 }
-if (!("hotReload" in config))
-    config.hotReload <- true;
+if (!("hotReload" in config)) {
+    // Off in the browser: the preloaded VFS has no file watcher to poll.
+    config.hotReload <- !("hostDrivesFrames" in eve && eve.hostDrivesFrames);
+}
 
-win <- eve.Window();
-gfx <- eve.Graphics();
+// `eve run --dev-server <url>` overrides config.devServer (useful on mobile
+// builds where config.nut is baked into a read-only bundle).
+if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
+    config.devServer <- eve.devServerArg;
+
+// ---------------------------------------------------------------------------
+// Bind the modules this build actually contains.
+// ---------------------------------------------------------------------------
+
+foreach (m in eve.moduleList) {
+    if (!(m.cls in eve)) continue;
+    try {
+        getroottable()[m.slot] <- eve[m.cls]();
+    } catch (e) {
+        print("module " + m.cls + " failed to initialize: " + e + "\n");
+    }
+}
+
+if (!has_module("win") || !has_module("gfx")) {
+    print("engine build is missing the window or graphics module\n");
+    return;
+}
 win.setGraphics(gfx);
 
 local s = eve.WindowSettings();
@@ -51,40 +95,6 @@ if (!win.setWindowSettings(s)) {
 // Keep script layout in sync with the real window (mobile may ignore 800x600).
 config.width = win.getWidth();
 config.height = win.getHeight();
-
-event <- eve.Event();
-timer <- eve.Timer();
-system <- eve.System();
-math <- eve.Math();
-spatial <- eve.Spatial();
-editor <- eve.Editor();
-tf <- eve.TF();
-ui <- eve.UI();
-scene <- eve.Scene();
-camera <- eve.Camera();
-particles <- eve.Particles();
-map <- eve.Map();
-procgen <- eve.Procgen();
-avatar <- eve.Avatar();
-dialogue <- eve.Dialogue();
-anim <- eve.Animation();
-stylize <- eve.Stylize();
-spritestack <- eve.SpriteStack();
-gpgpu <- eve.Gpgpu();
-daynight <- eve.DayNight();
-weather <- eve.Weather();
-physics <- eve.Physics();
-keyboard <- eve.Keyboard();
-mouse <- eve.Mouse();
-touch <- eve.Touch();
-sound <- eve.Sound();
-audio <- eve.Audio();
-model3d <- eve.Model3D();
-font <- eve.Font();
-thread <- eve.Thread();
-fs <- eve.Filesystem();
-hot <- eve.HotReload();
-i18n <- eve.I18n();
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -109,14 +119,17 @@ eve_init <- function() {};
 eve_update <- function(dt) {
     // Keep scene node world transforms fresh for games that mutate nodes from
     // scripts. Clean trees skip the pass entirely (incremental transform).
-    scene.updateTransformsAll();
+    if (has_module("scene")) scene.updateTransformsAll();
 };
 eve_render <- function() {
     gfx.clear();
 };
 eve_quit <- function() {};
 
+// ---------------------------------------------------------------------------
 // Soft hot-reload bookkeeping (disk main.nut only; embedded demo is build-time).
+// ---------------------------------------------------------------------------
+
 watched_scripts <- [];
 
 function track_script(path) {
@@ -149,8 +162,36 @@ function soft_reload_scripts() {
     }
 }
 
+// Apply a single changed path: scripts are re-dofile'd, assets go through the
+// native reload registry (particles / tilemaps / textures) plus the optional
+// eve_asset_reload hook. Shared by local watch and remote sync.
+function handle_change(p) {
+    if (path_endswith(p, ".nut")) {
+        track_script(p);
+        soft_reload_scripts();
+        return;
+    }
+    if (has_module("hot")) {
+        try {
+            hot.tryReload(p);
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("hot-reload asset failed: " + p + ": " + e + "\n");
+        }
+    }
+    if ("eve_asset_reload" in getroottable()) {
+        try {
+            eve_asset_reload(p);
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_asset_reload failed: " + p + ": " + e + "\n");
+        }
+    }
+}
+
 function poll_hot_reload() {
     if (!config.hotReload) return;
+    if (!has_module("fs")) return;
     local needScripts = false;
     local assets = [];
     while (true) {
@@ -169,20 +210,34 @@ function poll_hot_reload() {
     if (needScripts)
         soft_reload_scripts();
     foreach (p in assets) {
-        try {
-            hot.tryReload(p);
-        } catch (e) {
-            if ("dev" in eve) eve.dev.reportError("" + e);
-            print("hot-reload asset failed: " + p + ": " + e + "\n");
+        handle_change(p);
+    }
+}
+
+// Remote hot reload: pull changed files from the `eve dev` server on the host
+// and feed them through the same reload path as the local watchers.
+remote_sync_started <- false;
+
+function poll_remote_reload() {
+    if (!has_module("hot")) return;
+    if (!("devServer" in config)) return;
+    local url = config.devServer;
+    if (url == null || url == "") return;
+    if (!remote_sync_started) {
+        local ms = ("devSyncMs" in config) ? config.devSyncMs : 1000;
+        if (ms == null) ms = 1000;
+        if (hot.startRemoteSync(url, ms)) {
+            remote_sync_started = true;
+            print("remote hot-reload: " + url + "\n");
+        } else {
+            print("remote hot-reload failed to start: " + url + "\n");
+            return;
         }
-        if ("eve_asset_reload" in getroottable()) {
-            try {
-                eve_asset_reload(p);
-            } catch (e) {
-                if ("dev" in eve) eve.dev.reportError("" + e);
-                print("eve_asset_reload failed: " + p + ": " + e + "\n");
-            }
-        }
+    }
+    while (true) {
+        local p = hot.pollRemoteChange();
+        if (p == "") break;
+        handle_change(p);
     }
 }
 
@@ -199,7 +254,7 @@ if (file_exists("main.nut")) {
     }
 }
 
-if (config.hotReload) {
+if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
         // Ensure VFS source is set when Run did not mount (e.g. custom root).
         try { fs.setSource("."); } catch (e) {}
@@ -221,7 +276,10 @@ try {
     print("eve_init failed: " + e + "\n");
 }
 
+// ---------------------------------------------------------------------------
 // DevTools helpers (only present when `eve run --debug`).
+// ---------------------------------------------------------------------------
+
 function has_dev() {
     return ("dev" in eve);
 }
@@ -309,12 +367,20 @@ function dev_draw_console() {
         eve.dev.console.draw();
 }
 
+// ---------------------------------------------------------------------------
+// Frame
+// ---------------------------------------------------------------------------
+
 // On Android, SDL may queue a spurious "quit" while setOrientation recreates
 // the surface. Ignore quit for a few frames so a slow eve_init (demo) does not
 // instantly exit. Real back-button quits still work after startup settles.
-local startupFrames = 45;
-local running = true;
-while (running) {
+startup_frames <- 45;
+
+// One frame of the game loop. Returns false to stop (quit requested).
+// The desktop loop below calls this; the browser build returns to C++, which
+// drives it from emscripten_set_main_loop (requestAnimationFrame).
+eve_frame <- function() {
+    local running = true;
     event.pump();
     while (true) {
         local name = event.poll();
@@ -327,21 +393,22 @@ while (running) {
             handle_dev_key(data, data);
         }
         if (name == "quit") {
-            if (startupFrames <= 0)
+            if (startup_frames <= 0)
                 running = false;
         }
     }
-    if (startupFrames > 0)
-        startupFrames -= 1;
+    if (startup_frames > 0)
+        startup_frames -= 1;
 
     // Rotation / foldable: keep gameplay bounds aligned with the graphics viewport.
     config.width = win.getWidth();
     config.height = win.getHeight();
 
     poll_hot_reload();
+    poll_remote_reload();
     dev_poll();
 
-    local dt = timer.step();
+    local dt = has_module("timer") ? timer.step() : 0.016;
     try {
         // Timers + Promise microtasks before game logic (Node-like macrotask boundary).
         if ("async_pump" in getroottable())
@@ -366,11 +433,18 @@ while (running) {
     // later frame fails with "begin3DFrame: swapchain pass already open".
     try {
         gfx.present();
-        ui.dispatchEvents();
+        if (has_module("ui")) ui.dispatchEvents();
     } catch (e) {
         print("present error: " + e + "\n");
     }
-}
+    return running;
+};
 
-eve_quit();
-win.close();
+// The browser build has no blocking loop: C++ picks eve_frame up from the root
+// table and hands it to emscripten_set_main_loop.
+if (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames) {
+    while (eve_frame()) {
+    }
+    eve_quit();
+    win.close();
+}

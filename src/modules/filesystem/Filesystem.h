@@ -102,6 +102,19 @@ public:
     virtual bool mount(std::string archive, std::string mountpoint, bool appendToPath = false)                 = 0;
     virtual bool mount(Data *data, std::string archivename, std::string mountpoint, bool appendToPath = false) = 0;
 
+    /**
+     * Mounts a real (OS-level) directory at a virtual mountpoint, bypassing the
+     * safety checks in mount(). Used by hot reload to overlay a writable sync
+     * directory in front of a read-only bundled/packaged game source.
+     * @param realDir Absolute OS path to an existing directory.
+     * @param mountpoint Virtual path to mount at ("" = "/").
+     * @param appendToPath False = highest priority (searched first).
+     **/
+    virtual bool mountRealDirectory(std::string realDir, std::string mountpoint, bool appendToPath = false) = 0;
+
+    /** Unmounts a directory previously added via mountRealDirectory(). */
+    virtual bool unmountRealDirectory(std::string realDir) = 0;
+
     virtual bool unmount(std::string archive) = 0;
     virtual bool unmount(Data *data)          = 0;
 

@@ -1,19 +1,13 @@
 #include "rpg/Skill.h"
-#include "rpg/JsonHelpers.h"
 
-#include "data/DataModule.h"
-#include "data/JsonDocument.h"
-
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
+#include "common/Json.h"
 
 #include <algorithm>
-#include <memory>
 #include <unordered_map>
 
 namespace eve::rpg {
 
-using namespace json_helpers;
+using eve::json::Value;
 
 bool SkillDefinition::hasTag(const std::string &tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
@@ -45,81 +39,50 @@ int SkillRegistry::count() { return int(table().size()); }
 
 namespace {
 
-SkillDefinition parseSkillObject(Poco::JSON::Object::Ptr o) {
+SkillDefinition parseSkillObject(Value o) {
     SkillDefinition def;
-    if (!o) return def;
-    def.id = asString(o->get("id"));
-    def.cooldown = asFloat(o->get("cooldown"), 0.f);
-    def.castTime = asFloat(o->get("castTime"), 0.f);
-    def.targetType = asString(o->get("targetType"), "self");
-    def.grantedEffects = asStringArray(o, "grantedEffects");
-    def.tags = asStringArray(o, "tags");
+    if (!o.isObject()) return def;
+    def.id = o.getString("id");
+    def.cooldown = o.getFloat("cooldown", 0.f);
+    def.castTime = o.getFloat("castTime", 0.f);
+    def.targetType = o.getString("targetType", "self");
+    def.grantedEffects = o.getStringArray("grantedEffects");
+    def.tags = o.getStringArray("tags");
 
-    if (o->has("costs")) {
-        try {
-            auto arr = o->getArray("costs");
-            if (arr) {
-                for (size_t i = 0; i < arr->size(); ++i) {
-                    Poco::JSON::Object::Ptr co;
-                    try {
-                        co = arr->getObject(i);
-                    } catch (...) {
-                        continue;
-                    }
-                    if (!co) continue;
-                    SkillCostSpec spec;
-                    spec.attribute = asString(co->get("attribute"));
-                    spec.amount = asDouble(co->get("amount"), 0.0);
-                    if (!spec.attribute.empty()) def.costs.push_back(std::move(spec));
-                }
-            }
-        } catch (...) {
-        }
+    const Value costs = o.get("costs");
+    for (size_t i = 0; i < costs.size(); ++i) {
+        const Value co = costs.at(i);
+        SkillCostSpec spec;
+        spec.attribute = co.getString("attribute");
+        spec.amount = co.getDouble("amount", 0.0);
+        if (!spec.attribute.empty()) def.costs.push_back(std::move(spec));
     }
 
-    if (o->has("extra")) {
-        try {
-            auto eo = o->getObject("extra");
-            if (eo) {
-                for (auto it = eo->begin(); it != eo->end(); ++it)
-                    def.extra[it->first] = asString(it->second);
-            }
-        } catch (...) {
-        }
-    }
+    def.extra = o.getStringMap("extra");
     return def;
 }
 
 }  // namespace
 
 int SkillRegistry::loadFromJson(const std::string &json, std::string *error) {
-    auto *dm = eve::data::DataModule::create();
     std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc) {
+    const eve::json::Document doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid()) {
         if (error) *error = err.empty() ? "invalid json" : err;
         return 0;
     }
 
+    const Value root = doc.root();
     int n = 0;
-    if (doc->isArray()) {
-        auto arr = doc->array();
-        if (!arr) return 0;
-        for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o;
-            try {
-                o = arr->getObject(i);
-            } catch (...) {
-                continue;
-            }
-            if (!o) continue;
-            SkillDefinition def = parseSkillObject(o);
+    if (root.isArray()) {
+        for (size_t i = 0; i < root.size(); ++i) {
+            SkillDefinition def = parseSkillObject(root.at(i));
             if (def.id.empty()) continue;
             registerSkill(def);
             ++n;
         }
-    } else if (doc->isObject()) {
-        SkillDefinition def = parseSkillObject(doc->object());
+    } else if (root.isObject()) {
+        SkillDefinition def = parseSkillObject(root);
         if (!def.id.empty()) {
             registerSkill(def);
             ++n;

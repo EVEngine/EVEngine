@@ -17,6 +17,11 @@ class HttpRequest;
 class Channel;
 class Session;
 class NetWorker;
+class NetWriter;
+class NetReader;
+class UdpLink;
+class NetHost;
+class NetRpc;
 
 /**
  * @brief Network module: TCP/UDP/HTTP factories, background worker, and
@@ -38,6 +43,16 @@ public:
     Channel*     newChannel(TcpSocket* socket);
     /** @brief Creates a named-channel session container. */
     Session*     newSession();
+    /** @brief Creates a streaming byte writer. */
+    NetWriter*   newWriter();
+    /** @brief Creates a streaming byte reader over a string buffer. */
+    NetReader*   newReader(std::string bytes);
+    /** @brief Creates a framed UDP link over a socket. */
+    UdpLink*     newUdpLink(UdpSocket* socket);
+    /** @brief Creates an RPC client over a UDP link. */
+    NetRpc*      newRpc(UdpLink* link);
+    /** @brief Creates a UDP host (peer discovery / broadcast). */
+    NetHost*     newHost();
 
     /** @brief Default socket/HTTP timeout in milliseconds. */
     void setTimeout(int ms);
@@ -70,6 +85,12 @@ public:
     void unbindChannel(TcpSocket* sock);
     Channel* channelFor(TcpSocket* sock) const;
 
+    // Main-thread only (script calls + pump). The worker never touches these.
+    void bindUdpLink(UdpSocket* sock, UdpLink* link);
+    void unbindUdpLink(UdpSocket* sock);
+    void bindUdpHost(UdpSocket* sock, NetHost* host);
+    void unbindUdpHost(UdpSocket* sock);
+
 private:
     void emitCompletion(const NetCompletion& c);
 
@@ -83,6 +104,9 @@ private:
 
     mutable std::mutex channelMu_;
     std::unordered_map<TcpSocket*, Channel*> channels_;
+
+    std::unordered_map<UdpSocket*, UdpLink*> udpLinks_;
+    std::unordered_map<UdpSocket*, NetHost*> udpHosts_;
 };
 
 }  // namespace eve::network

@@ -445,16 +445,6 @@ void unionChildBounds(scene::SceneHost::Tree &tree, int nodeIndex) {
     }
 }
 
-void linkAllMeshNodes(scene::SceneHost *host, graphics::Graphics *gfx, const MeshSlotMap &slots) {
-    for (const auto &kv : slots) {
-        scene::SceneNode *n = host->findById(kv.first);
-        if (!n) continue;
-        graphics::Renderable3D *r = makeRenderable(gfx, kv.second[0]);
-        if (!r) continue;
-        n->links.push_back(scene::SceneLink{scene::LinkKind::Renderable3D, r, 0});
-    }
-}
-
 // ---- NodeDesc build ----
 
 void buildNodeRecursive(const aiScene *scene, const aiNode *node, scene::NodeDesc &out,
@@ -662,7 +652,7 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
     // Destroy Renderable3D of removed GameObjects.
     for (const auto &kv : oldNodes) {
         if (!newIds.count(kv.first)) {
-            if (const auto *l = host->findLink(kv.second, scene::LinkKind::Renderable3D)) {
+            if (const auto *l = host->findLink(kv.second, scene::findLinkKind("renderable3d"))) {
                 destroyRenderable(static_cast<graphics::Renderable3D *>(l->target));
             }
         }
@@ -738,7 +728,7 @@ bool SceneLoader::applyTreeDiff(scene::SceneHost *host, const scene::NodeDesc &n
                 r = nullptr;
             }
             if (r) {
-                n.links.push_back(scene::SceneLink{scene::LinkKind::Renderable3D, r, 0});
+                n.links.push_back(scene::SceneLink{scene::findLinkKind("renderable3d"), r, 0});
             }
         }
     }
@@ -772,7 +762,8 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
     if (!gfx) return;
     for (const auto &kv : slots) {
         scene::SceneNode *n = host->findById(kv.first);
-        if (!n || n->linkTarget || kv.second.empty()) continue;
+        if (!n || kv.second.empty()) continue;
+        if (host->findLink(n, scene::findLinkKind("renderable3d"))) continue;
         const MeshSlot &slot = kv.second[0];
         graphics::Mesh *mesh = nullptr;
         auto it = shared.find(slot.mesh);
@@ -819,8 +810,7 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
         if (albedo) r->setTexture(albedo);
         if (normal) r->setNormalTexture(normal);
         if (height) r->setHeightTexture(height);
-        n->linkKind = "renderable3d";
-        n->linkTarget = r;
+        n->links.push_back(scene::SceneLink{scene::findLinkKind("renderable3d"), r, 0});
     }
 }
 
@@ -848,8 +838,8 @@ scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
     host->setTree(std::move(d.root));
 
     graphics::Graphics *gfx = currentGraphics();
-    if (linkRenderables && gfx && !slots.empty()) linkAllMeshNodes(host, gfx, slots);
-    if (!slots.empty()) fillSceneBounds(host, slots);
+    fillSceneBounds(host, d.slots);
+    if (!d.slots.empty()) fillSceneBounds(host, d.slots);
 
     if (gfx) {
         MeshCache shared;
@@ -858,6 +848,7 @@ scene::SceneHost *SceneLoader::mount(DecodedScene &d) {
         if (d.options.importCameras) importCameras(d.md->getScene(), d.cameras);
         importAnimations(d.md->getScene(), d.options, &d.skeleton, d.clips);
     }
+    fillSceneBounds(host, d.slots);
     scene::TransformSystem::updateHost(host);
     scenes_[d.path] = Loaded{d.path, host, gfx, d.options, std::move(d.lights),
                              std::move(d.cameras), d.skeleton, std::move(d.clips)};
@@ -973,7 +964,7 @@ void SceneLoader::unload(const std::string &path) {
     if (it->second.host) {
         auto t = it->second.host->tree();
         for (auto &n : t->nodes) {
-            if (const auto *l = it->second.host->findLink(&n, scene::LinkKind::Renderable3D)) {
+            if (const auto *l = it->second.host->findLink(&n, scene::findLinkKind("renderable3d"))) {
                 destroyRenderable(static_cast<graphics::Renderable3D *>(l->target));
             }
             n.links.clear();

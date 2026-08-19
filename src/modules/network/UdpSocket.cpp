@@ -24,6 +24,8 @@ bool UdpSocket::bind(uint16_t port) {
         sock_ = std::make_unique<Poco::Net::DatagramSocket>();
         sock_->bind(Poco::Net::SocketAddress(port), true);
         sock_->setBlocking(false);
+        sock_->setReceiveBufferSize(1024 * 1024);
+        sock_->setSendBufferSize(1024 * 1024);
         bound_ = true;
         if (net_) net_->watchUdp(this);
         return true;
@@ -47,6 +49,8 @@ bool UdpSocket::connect(std::string host, uint16_t port) {
         if (!sock_) sock_ = std::make_unique<Poco::Net::DatagramSocket>();
         sock_->connect(Poco::Net::SocketAddress(host, port));
         sock_->setBlocking(false);
+        sock_->setReceiveBufferSize(1024 * 1024);
+        sock_->setSendBufferSize(1024 * 1024);
         connected_ = true;
         if (net_) net_->watchUdp(this);
         return true;

@@ -251,9 +251,9 @@ public:
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
-    void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
-                                float originZ, const std::string &faceDir, Texture *atlas,
-                                int tilesPerRow = 16) override;
+      void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
+                                  float originZ, const std::string &faceDir, Texture *atlas,
+                                  int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DSceneDepth(Texture *depth) override;
@@ -801,6 +801,8 @@ private:
     struct VoxelInstanceSlot {
         vkb::GenericBuffer buffer;
         size_t capacityBytes = 0;
+        vkb::GenericBuffer aoBuffer;
+        size_t aoCapacityBytes = 0;
     };
     struct VoxelInstanceFrame {
         std::vector<VoxelInstanceSlot> slots;

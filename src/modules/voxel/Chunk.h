@@ -58,17 +58,31 @@ public:
 
     void clear() { fill(0); }
 
+    /** Replace the whole 32³ voxel storage (e.g. deserialization). */
+    void setVoxelData(const uint8_t *src) {
+        std::memcpy(voxels_, src, sizeof(voxels_));
+        dirty_ = true;
+    }
+
     bool isDirty() const { return dirty_; }
 
+    /** Explicitly invalidate the mesh (e.g. neighbor edit on a shared border). */
+    void markDirty() { dirty_ = true; }
+
     /** @brief Rebuild six face instance buffers via greedy meshing. */
-    void remesh(const CubeTypeRegistry &types = CubeTypeRegistry::empty()) {
-        GreedyMesher::meshChunk(voxels_, faces_, types);
+    void remesh(const CubeTypeRegistry &types = CubeTypeRegistry::empty(),
+                ChunkSampler sampler = nullptr,
+                void *samplerUserData = nullptr) {
+        GreedyMesher::meshChunk(voxels_, faces_, types, sampler, samplerUserData, cx_, cy_, cz_,
+                                ao_);
         dirty_ = false;
     }
 
     /** @brief Ensure mesh is up to date; remesh if dirty. */
-    void ensureMeshed(const CubeTypeRegistry &types = CubeTypeRegistry::empty()) {
-        if (dirty_) remesh(types);
+    void ensureMeshed(const CubeTypeRegistry &types = CubeTypeRegistry::empty(),
+                      ChunkSampler sampler = nullptr,
+                      void *samplerUserData = nullptr) {
+        if (dirty_) remesh(types, sampler, samplerUserData);
     }
 
     const std::vector<PackedRect> &faceRects(FaceDir dir) const {
@@ -80,6 +94,15 @@ public:
     const uint32_t *facePackedData(FaceDir dir) const {
         const auto &v = faces_[int(dir)];
         return v.empty() ? nullptr : reinterpret_cast<const uint32_t *>(v.data());
+    }
+
+    /**
+     * Per-rect ambient-occlusion words (2 bits per corner, 0..3, shader
+     * corner order). Parallel to faceRects(dir).
+     */
+    const uint32_t *faceAOPackedData(FaceDir dir) const {
+        const auto &v = ao_[int(dir)];
+        return v.empty() ? nullptr : v.data();
     }
 
     int totalRectCount() const {
@@ -100,6 +123,7 @@ private:
     int cz_ = 0;
     uint8_t voxels_[kChunkSize * kChunkSize * kChunkSize]{};
     std::vector<PackedRect> faces_[6];
+    std::vector<uint32_t> ao_[6];
     bool dirty_ = true;
 };
 

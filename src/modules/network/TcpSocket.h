@@ -60,9 +60,13 @@ public:
     bool takeAccepted(std::unique_ptr<TcpSocket>& out);
     void pushAccepted(std::unique_ptr<TcpSocket> sock);
     /** @brief Internal: queued-outgoing byte counter for back-pressure. */
-    size_t pendingSendBytes() const { return sendQueued_; }
-    void addSendQueued(size_t n) { sendQueued_ += n; }
-    void subSendQueued(size_t n) { sendQueued_ = sendQueued_ > n ? sendQueued_ - n : 0; }
+    size_t pendingSendBytes() const;
+
+    /** @brief Append bytes to the pending send queue (worker-thread flush via pollSockets). */
+    bool queueSend(const void* d, size_t n);
+    /** @brief Push pending bytes onto the socket; called from Network::pollSockets. */
+    void flushSend();
+    void clearPendingSend();
 
 private:
     Network* net_ = nullptr;
@@ -70,10 +74,12 @@ private:
     std::unique_ptr<Poco::Net::ServerSocket> server_;
     bool listening_ = false;
     bool connected_ = false;
-    size_t sendQueued_ = 0;
     std::mutex acceptMu_;
     std::vector<std::unique_ptr<TcpSocket>> accepted_;
     std::string peer_;
+
+    mutable std::mutex sendMu_;
+    std::vector<char> pendingSend_;
 };
 
 }  // namespace eve::network

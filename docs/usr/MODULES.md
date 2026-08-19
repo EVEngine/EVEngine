@@ -2,6 +2,8 @@
 
 本目录按模块说明 EVEngine 面向 Squirrel 游戏脚本公开的能力。每篇包含入口、最小示例、至少两个目标导向任务、当前绑定的 API 快查和生命周期注意事项。
 
+模块可以按需裁剪：见 [按需裁剪模块](TRIMMING.md)。脚本里用 `has_module("slot")` 判断某个模块在当前构建中是否存在。
+
 首次查阅前请阅读 [API 使用约定](API-CONVENTIONS.md)，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。
 本轮逐章核对的实现、测试证据与结论记录在 [用户模块文档 Review](REVIEW.md)。
 
@@ -45,6 +47,7 @@
 ## 表现与场景
 
 - [图形渲染](modules/graphics.md)：清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染；Camera2D/3D 提供屏幕↔世界与拾取射线。
+- [体素](modules/voxel.md)：32³ chunk 体素世界，贪婪矩形合并 + 实例化渲染、跨 chunk 接缝消隐、顶点 AO、DDA 射线拾取、自动流式地形生成与存档。
 - [Sprite-Stacking](modules/spritestack.md)：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。
 - [昼夜循环](modules/daynight.md)：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。
 - [天气系统](modules/weather.md)：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。

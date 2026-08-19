@@ -8,6 +8,7 @@
 #include "common/Module.h"
 #include "building/Ghost.h"
 #include "building/PlacementWorld.h"
+#include "building/PlacementSession.h"
 
 #include <string>
 
@@ -35,6 +36,12 @@ public:
     std::string getBuildingSnapMode(const std::string &buildingId);
     std::string getBuildingRotationMode(const std::string &buildingId);
     std::string getBuildingValidateRule(const std::string &buildingId);
+    std::string getBuildingChannel(const std::string &buildingId);
+    std::string getBuildingRenderMode(const std::string &buildingId);
+    std::string getBuildingVisual2d(const std::string &buildingId, const std::string &key,
+                                    const std::string &fallback = {});
+    std::string getBuildingVisual3d(const std::string &buildingId, const std::string &key,
+                                    const std::string &fallback = {});
     bool buildingHasTag(const std::string &buildingId, const std::string &tag);
     std::string getBuildingExtra(const std::string &buildingId, const std::string &key,
                                  const std::string &fallback = {});
@@ -43,10 +50,16 @@ public:
     /** @brief 工厂：创建放置世界 / 鬼影。 */
     PlacementWorld *newWorld(int width, int height, float cellSize = 32.f);
     Ghost *newGhost();
+    PlacementSession *newSession();
 
     /** @brief 扩展规则是否存在（校验/吸附）。 */
     bool hasValidateRule(const std::string &name);
     bool hasSnapRule(const std::string &name);
+    bool hasSurface(const std::string &name);
+    int getSurfaceCount();
+    std::string getSurfaceName(int index);
+    void setPlaneSurfaceHeight(float h);
+    float getPlaneSurfaceHeight();
 
     /** @brief 变更事件队列（放置/移除/移动）。 */
     void clearChangeEvents();

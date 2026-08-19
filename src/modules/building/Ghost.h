@@ -27,6 +27,8 @@ public:
     float getWorldX() const { return worldX_; }
     float getWorldY() const { return worldY_; }
     void setWorld(float worldX, float worldY);
+    float getElevation() const { return elevation_; }
+    void setElevation(float elevation);
 
     float getRotationDeg() const { return rotationDeg_; }
     void setRotationDeg(float deg);
@@ -37,6 +39,10 @@ public:
 
     /** @brief 按世界吸附模式，从世界坐标刷新格子与世界位姿。 */
     void setFromWorld(PlacementWorld *world, float worldX, float worldY);
+    /** 3D 版本：真实世界坐标 (wx, wy, wz)，按世界平面轴映射后吸附。 */
+    void setFromWorld3D(PlacementWorld *world, float worldX, float worldY, float worldZ);
+    /** 通过注册的放置表面（如内置 "plane"）刷新位姿。 */
+    void setFromSurface(PlacementWorld *world, const std::string &surface, float x, float y);
     /** @brief 对当前姿态做校验，写入 valid_/reason_。 */
     bool validate(PlacementWorld *world);
 
@@ -48,6 +54,7 @@ private:
     int cellY_ = 0;
     float worldX_ = 0.f;
     float worldY_ = 0.f;
+    float elevation_ = 0.f;
     float rotationDeg_ = 0.f;
     bool valid_ = false;
     std::string reason_;
