@@ -225,6 +225,9 @@ if(_has_ui)
     target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
   endif()
 
+  # eve_imgui may be INTERFACE (prebuilt mode) or STATIC; only the usage
+  # requirements of the shared include set are needed either way.
+  target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
   target_link_libraries(EVUI PUBLIC eve_imgui)
   target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
   target_include_directories(EVUI BEFORE PUBLIC

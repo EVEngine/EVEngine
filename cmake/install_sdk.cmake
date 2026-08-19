@@ -57,10 +57,19 @@ install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
 )
 
-set(_eve_module_dirs
-    animation audio data event filesystem graphics image ik joystick keyboard mouse
-    model3d network particles plugins sound spatial timer touch ui window
-)
+# Module header dirs are derived from the module manifest (single source of
+# truth) so the SDK always ships every module's public headers. CORE modules
+# (common / cmdline / devtools) live under src/engine and are installed above.
+set(_eve_module_dirs "")
+foreach(_eve_mod IN LISTS EVE_ALL_MODULES)
+    if(EVE_MODULE_${_eve_mod}_CORE)
+        continue()
+    endif()
+    list(APPEND _eve_module_dirs "${_eve_mod}")
+endforeach()
+if(NOT _eve_module_dirs)
+    message(WARNING "install_sdk.cmake: EVE_ALL_MODULES is empty; no module headers will be installed")
+endif()
 foreach(_eve_mod IN LISTS _eve_module_dirs)
     if(EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")
         install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}/"

@@ -73,9 +73,15 @@ jobs:
       - name: Check module dependency layering
         run: python3 scripts/module_depgraph.py --check
 
+      - name: Check declared module layers vs includes
+        run: python3 scripts/module_depgraph.py --check-layers
+
       - name: Report dependency graph
         if: always()
         run: python3 scripts/module_depgraph.py
+
+      - name: Check test source manifest
+        run: python3 scripts/check_test_manifest.py
 
       - name: Test release.py
         run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v

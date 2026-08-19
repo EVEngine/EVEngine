@@ -41,7 +41,7 @@ export XDG_RUNTIME_DIR=/tmp/xdg-runtime && mkdir -p "$XDG_RUNTIME_DIR" && chmod 
 export ALSOFT_DRIVERS=null                                     # OpenAL Soft null backend (no audio card)
 ```
 
-- Unit tests (full suite, ~1400 tests, a couple of minutes):
+- Unit tests (full suite, ~1500 per-case tests, a couple of minutes):
   `VK_ICD_FILENAMES=... ALSOFT_DRIVERS=... xvfb-run -a make test/linux-debug`
 - `make test/*` runs tests per case (process-isolated; this is the fast path on
   CI) and injects fast headless defaults for ClassicScenes
