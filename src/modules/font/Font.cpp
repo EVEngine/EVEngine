@@ -73,17 +73,6 @@ void Font::expose(ssq::Table &table) {
     fd.addFunc("getGlyphBearingY", &FontData::getGlyphBearingY);
     fd.addFunc("getGlyphAdvance", &FontData::getGlyphAdvance);
     fd.addFunc("newGlyphImageData", &FontData::newGlyphImageData);
-
-    // Minimal ImageData surface so newGlyphImageData is usable from scripts.
-    // Full image decode APIs remain on eve.Image.
-    auto img = table.addClass<image::ImageData>(
-        "ImageData", std::function<image::ImageData *()>([]() -> image::ImageData * { return nullptr; }),
-        true);
-    img.addFunc("getWidth", &image::ImageData::getWidth);
-    img.addFunc("getHeight", &image::ImageData::getHeight);
-    img.addFunc("getFormat", &image::ImageData::getFormat);
-    img.addFunc("getSize", &image::ImageData::getSize);
-    img.addFunc("rotate", &image::ImageData::rotate);
 }
 
 void Font::expose(ssq::Class &cls) {
