@@ -29,6 +29,21 @@ fs.watch("config/game.json");
 
 对配置文件调用 `fs.watch(path)`，在更新阶段轮询 `pollWatch()`；返回变化后读取 `getLastWatchPath()` 并重新解析。资源对象可登记到 `hot`，但热更新回调中只替换成功加载的新对象，失败时保留旧对象。
 
+### 远程热更新（`eve dev` + 全平台）
+
+本地 watcher 只在游戏源目录可写时生效；iOS 应用包 / Android APK 内的资源只读，无法直接在设备上改文件。为此提供了“开发服务器 + 客户端同步”的远程热更新：
+
+1. 在开发机（macOS）上运行 `eve dev [--port 8765] [游戏目录]`，启动 HTTP 文件服务器（`/manifest` 递归清单、`/raw/<相对路径>` 拉取文件）。
+2. 在 `config.nut` 中设置：
+   ```squirrel
+   config.devServer = "http://192.168.1.5:8765"  // 开发机局域网 IP
+   config.devSyncMs = 1000                        // 轮询间隔（毫秒）
+   ```
+   或在命令行注入：`eve run --dev-server http://192.168.1.5:8765`。
+3. 设备端 `load.nut` 调用 `hot.startRemoteSync()`：后台线程按清单比对 mtime/size，把变更文件下载到可写覆盖目录（iOS: Application Support/EVEngine/hotreload；Android: 内部存储 /hotreload；桌面: <appdata>/EVE/hotreload），该目录以最高优先级挂载到 `/`，随后复用本地热更新管线（`.nut` → `dofile`，资源 → `tryReload`）。
+
+改开发机上的 `main.nut` / 贴图 / JSON 后，设备会在下一个轮询周期内自动重载，无需重装应用。
+
 ## 常见问题
 
 - 用 OS 绝对路径读取包内资源：应走虚拟文件系统。
@@ -44,6 +59,7 @@ fs.watch("config/game.json");
 - `getSourceBaseDirectory()`、`getUserDirectory()`、`getWatchCount()`、`getWorkingDirectory()`、`isAndroidSaveExternal()`、`isFused()`、`isRealDirectory()`、`newFile()`
 - `newFileData()`、`pollWatch()`、`read()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
 - `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`
+- `startRemoteSync()`、`stopRemoteSync()`、`isRemoteSyncing()`、`remoteSyncStatus()`、`pollRemoteChange()`、`setRemoteHotDir()`
 - `write()`
 
 ## 使用要点

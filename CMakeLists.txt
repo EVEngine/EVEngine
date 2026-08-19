@@ -100,8 +100,8 @@ function(main)
         # PROXY_TO_PTHREAD turns on shared memory; every TU must be compiled
         # with atomics/bulk-memory or wasm-ld rejects the final link.
         add_compile_options(-matomics -mbulk-memory)
-        # Trimmed third-party / module set for the WASM runtime.
-        set(EVENGINE_WEBGPU_TRIM TRUE CACHE BOOL "Trimmed dependency/module set for Emscripten" FORCE)
+        # The trimmed module set for the WASM runtime is the "web" profile,
+        # selected below from cmake/module_manifest.cmake.
         # Emscripten 6.x vendors a fork of CheckTypeSize.cmake that is
         # incompatible with CMake >= 4.2 (mpg123/physfs/... try_compile fail
         # with "/CheckTypeSize.c.in does not exist"). Force a CMake 3.29.x for
@@ -127,6 +127,23 @@ function(main)
     elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
+    # Resolve which modules this build contains before descending into any
+    # subdirectory: src/modules, src/engine and src/scripts all derive their
+    # content from the result. See cmake/module_manifest.cmake.
+    include(${CMAKE_SOURCE_DIR}/cmake/module_manifest.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/thirdparty_libs.cmake)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND NOT EVENGINE_PROFILE)
+        # The browser runtime drops the modules whose third-party deps were cut.
+        set(EVENGINE_PROFILE "web")
+    endif()
+    # DevTools (DAP / MCP / snapshot) rely on Poco JSON+Net and have never been
+    # part of the mobile or browser runtimes.
+    if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
+       OR EVENGINE_IOS OR CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        set(EVENGINE_MODULE_devtools OFF)
+    endif()
+    eve_resolve_modules()
+
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).

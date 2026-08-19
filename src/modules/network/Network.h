@@ -17,6 +17,11 @@ class HttpRequest;
 class Channel;
 class Session;
 class NetWorker;
+class NetWriter;
+class NetReader;
+class UdpLink;
+class NetHost;
+class NetRpc;
 
 class Network : public Module {
 public:
@@ -29,6 +34,11 @@ public:
     HttpRequest* newHttp(std::string method, std::string url);
     Channel*     newChannel(TcpSocket* socket);
     Session*     newSession();
+    NetWriter*   newWriter();
+    NetReader*   newReader(std::string bytes);
+    UdpLink*     newUdpLink(UdpSocket* socket);
+    NetRpc*      newRpc(UdpLink* link);
+    NetHost*     newHost();
 
     void setTimeout(int ms);
     int  getTimeout() const;
@@ -52,6 +62,12 @@ public:
     void unbindChannel(TcpSocket* sock);
     Channel* channelFor(TcpSocket* sock) const;
 
+    // Main-thread only (script calls + pump). The worker never touches these.
+    void bindUdpLink(UdpSocket* sock, UdpLink* link);
+    void unbindUdpLink(UdpSocket* sock);
+    void bindUdpHost(UdpSocket* sock, NetHost* host);
+    void unbindUdpHost(UdpSocket* sock);
+
 private:
     void emitCompletion(const NetCompletion& c);
 
@@ -65,6 +81,9 @@ private:
 
     mutable std::mutex channelMu_;
     std::unordered_map<TcpSocket*, Channel*> channels_;
+
+    std::unordered_map<UdpSocket*, UdpLink*> udpLinks_;
+    std::unordered_map<UdpSocket*, NetHost*> udpHosts_;
 };
 
 }  // namespace eve::network

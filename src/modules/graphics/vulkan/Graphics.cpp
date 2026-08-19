@@ -1713,6 +1713,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
             g->mesh3dPipeline =
                 createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                           g->pipelineLayout, target, samples);
+            g->mesh3dXrayPipeline =
+                createMesh3DXrayPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
+                                         g->pipelineLayout, target, samples);
         }
     }
 
@@ -3236,6 +3239,10 @@ Shader *Graphics::newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
     gpu->pipelineLayout = mesh3dShaderPipelineLayout;
     gpu->mesh3dPipeline = createMesh3DStylePipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
                                                     activeScenePass(), activeSceneSamples());
+    // Built here, not lazily in drawMeshShader: vkCreateGraphicsPipelines
+    // during an open render pass crashes software ICDs (Lavapipe).
+    gpu->mesh3dXrayPipeline = createMesh3DXrayPipeline(vert, fragSpv, mesh3dShaderPipelineLayout,
+                                                       activeScenePass(), activeSceneSamples());
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
@@ -3988,15 +3995,18 @@ vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
     auto frag = embeddedSpirv(voxel_rect_frag_spv);
     ShaderModulePair modules(device, vert, frag);
 
-    vk::VertexInputBindingDescription bindings[2]{};
+    vk::VertexInputBindingDescription bindings[3]{};
     bindings[0].binding = 0;
     bindings[0].stride = sizeof(glm::vec2);
     bindings[0].inputRate = vk::VertexInputRate::eVertex;
     bindings[1].binding = 1;
     bindings[1].stride = sizeof(uint32_t);
     bindings[1].inputRate = vk::VertexInputRate::eInstance;
+    bindings[2].binding = 2;
+    bindings[2].stride = sizeof(uint32_t);
+    bindings[2].inputRate = vk::VertexInputRate::eInstance;
 
-    vk::VertexInputAttributeDescription attrs[2]{};
+    vk::VertexInputAttributeDescription attrs[3]{};
     attrs[0].location = 0;
     attrs[0].binding = 0;
     attrs[0].format = vk::Format::eR32G32Sfloat;
@@ -4005,11 +4015,15 @@ vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
     attrs[1].binding = 1;
     attrs[1].format = vk::Format::eR32Uint;
     attrs[1].offset = 0;
+    attrs[2].location = 2;
+    attrs[2].binding = 2;
+    attrs[2].format = vk::Format::eR32Uint;
+    attrs[2].offset = 0;
 
     vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 2;
+    vi.vertexBindingDescriptionCount = 3;
     vi.pVertexBindingDescriptions = bindings;
-    vi.vertexAttributeDescriptionCount = 2;
+    vi.vertexAttributeDescriptionCount = 3;
     vi.pVertexAttributeDescriptions = attrs;
 
     // Unit-quad indices 0-2-1 / 0-3-2 are object-space CCW for outward faces.
@@ -4070,7 +4084,7 @@ vkb::BoundSet Graphics::voxelRectSetFor(GpuTexture *gpuTex) {
 
 void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
                                       float originY, float originZ, const std::string &faceDir,
-                                      Texture *atlas, int tilesPerRow) {
+                                      Texture *atlas, int tilesPerRow, const uint32_t *ao) {
     ASSERT(initialized);
     if (!initialized) throw Exception("drawVoxelFaceInstances: graphics not initialized");
     if (!swapchainPassOpen) throw Exception("drawVoxelFaceInstances: call begin3DFrame first");
@@ -4113,6 +4127,26 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     }
     slot.buffer.updateLocal(frameToken(), packed, size_t(bytes));
 
+    // Ambient-occlusion words (null → full bright). Kept parallel to packed.
+    const uint32_t defaultAO = 0xFFu;  // all four corners AO=3
+    std::vector<uint32_t> aoDefaults;
+    if (!ao) {
+        aoDefaults.assign(size_t(count), defaultAO);
+        ao = aoDefaults.data();
+    }
+    const vk::DeviceSize aoBytes = vk::DeviceSize(count) * sizeof(uint32_t);
+    if (slot.aoCapacityBytes < size_t(aoBytes) || !slot.aoBuffer.buffer) {
+        const size_t alloc = std::max(size_t(aoBytes),
+                                      slot.aoCapacityBytes ? slot.aoCapacityBytes * 2
+                                                           : size_t(aoBytes));
+        slot.aoBuffer.allocate(frameToken(), device, vk::BufferUsageFlagBits::eVertexBuffer,
+                               vk::DeviceSize(alloc),
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+        slot.aoCapacityBytes = alloc;
+    }
+    slot.aoBuffer.updateLocal(frameToken(), ao, size_t(aoBytes));
+
     VoxelRectPC pc{};
     pc.viewProj = mesh3dFrameUbo.mvp;
     pc.chunkOrigin = glm::vec4(originX, originY, originZ, float(face));
@@ -4127,9 +4161,9 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     cb.pushConstants(voxelRectPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(VoxelRectPC),
                      &pc);
 
-    vk::Buffer vbufs[2] = {voxelUnitQuadVerts.buffer, slot.buffer.buffer};
-    vk::DeviceSize offsets[2] = {0, 0};
-    cb.bindVertexBuffers(0, 2, vbufs, offsets);
+    vk::Buffer vbufs[3] = {voxelUnitQuadVerts.buffer, slot.buffer.buffer, slot.aoBuffer.buffer};
+    vk::DeviceSize offsets[3] = {0, 0, 0};
+    cb.bindVertexBuffers(0, 3, vbufs, offsets);
     cb.bindIndexBuffer(voxelUnitQuadIndices.buffer, 0, vk::IndexType::eUint32);
     cb.drawIndexed(6, uint32_t(count), 0, 0, 0);
 }
@@ -5013,15 +5047,12 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
         vk::Pipeline pipeline = gs->mesh3dPipeline;
         if (shader->isXray()) {
             // X-ray silhouette pass: depth test/write off + alpha blend so the
-            // occluded part paints over the building. Lazy so only xray shaders
-            // pay for the extra pipeline (and MSAA/RP changes re-create it).
-            if (!gs->mesh3dXrayPipeline)
-                gs->mesh3dXrayPipeline =
-                    createMesh3DXrayPipeline(shader->vertexSpirv(), shader->fragmentSpirv(),
-                                             mesh3dShaderPipelineLayout, activeScenePass(),
-                                             activeSceneSamples());
+            // occluded part paints over the building. The pipeline is created
+            // with the shader (see newMeshShaderFromSpv); do not compile it
+            // here — a render pass is already open.
             pipeline = gs->mesh3dXrayPipeline;
         }
+        if (!pipeline) return;
         cb.bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dShaderPipelineLayout, 0, 1, &set,
                               0, nullptr);

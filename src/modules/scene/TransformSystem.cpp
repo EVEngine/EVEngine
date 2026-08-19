@@ -1,14 +1,7 @@
 #include "scene/TransformSystem.h"
 
 #include "scene/SceneHost.h"
-
-#ifdef EVENGINE_SCENE_AUDIO
-#include "audio/Source.h"
-#endif
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "physics/Body.h"
-#include "physics/Body3D.h"
+#include "scene/SceneLink.h"
 
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
@@ -40,50 +33,6 @@ void updateNode(SceneHost::Tree &tree, int nodeIndex, const glm::mat4 &parentWor
     }
 }
 
-void writeWorldToRenderable3D(const SceneNode &n, graphics::Renderable3D *r) {
-    auto t = r->transform();
-    const glm::mat4 &w = n.world;
-    t->x = w[3][0];
-    t->y = w[3][1];
-    t->z = w[3][2];
-
-    glm::vec3 c0(w[0]);
-    glm::vec3 c1(w[1]);
-    glm::vec3 c2(w[2]);
-    t->sx = glm::length(c0);
-    t->sy = glm::length(c1);
-    t->sz = glm::length(c2);
-    if (t->sx > 1e-8f) c0 /= t->sx;
-    if (t->sy > 1e-8f) c1 /= t->sy;
-    if (t->sz > 1e-8f) c2 /= t->sz;
-
-    glm::mat3 rot(c0, c1, c2);
-    glm::quat q = glm::quat_cast(rot);
-    glm::vec3 euler = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    t->pitch = euler.x;
-    t->yaw = euler.y;
-    t->roll = euler.z;
-
-    r->meshRenderer()->visible = n.visible;
-}
-
-void writeWorldToRenderable2D(const SceneNode &n, graphics::Renderable2D *r) {
-    auto t = r->transform();
-    const glm::mat4 &w = n.world;
-    t->x = w[3][0];
-    t->y = w[3][1];
-
-    glm::vec3 c0(w[0]);
-    glm::vec3 c1(w[1]);
-    t->sx = glm::length(c0);
-    t->sy = glm::length(c1);
-    if (t->sx > 1e-8f) c0 /= t->sx;
-    // 2D rotation from first column in XY
-    t->rot = std::atan2(c0.y, c0.x);
-
-    r->sprite()->visible = n.visible;
-}
-
 /** syncMode == 1: pull target state into the node before world propagation. */
 void pullTargets(SceneHost *host) {
     if (!host) return;
@@ -92,29 +41,9 @@ void pullTargets(SceneHost *host) {
         SceneNode &n = t->nodes[i];
         for (auto &l : n.links) {
             if (l.syncMode != 1 || !l.target) continue;
-            switch (l.kind) {
-                case LinkKind::Physics2D: {
-                    auto *b = static_cast<physics::Body *>(l.target);
-                    n.x = b->getX();
-                    n.y = b->getY();
-                    n.roll = b->getAngle();
-                    break;
-                }
-                case LinkKind::Physics3D: {
-                    auto *b = static_cast<physics::Body3D *>(l.target);
-                    n.x = b->getX();
-                    n.y = b->getY();
-                    n.z = b->getZ();
-                    glm::quat q(b->getRotW(), b->getRotX(), b->getRotY(), b->getRotZ());
-                    glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-                    n.pitch = e.x;
-                    n.yaw = e.y;
-                    n.roll = e.z;
-                    break;
-                }
-                default:
-                    break;
-            }
+            const LinkOps *ops = linkOps(l.kind);
+            if (!ops || !ops->pullWorld) continue;
+            ops->pullWorld(n, l.target);
             host->markSubtreeDirty(int(i));
         }
     }
@@ -142,43 +71,8 @@ void updateNodeIncremental(SceneHost::Tree &tree, int nodeIndex,
 /** syncMode == 0: push node state into the linked target. */
 void pushTarget(const SceneNode &n, const SceneLink &l) {
     if (!l.target) return;
-    switch (l.kind) {
-        case LinkKind::Renderable2D:
-            writeWorldToRenderable2D(n, static_cast<graphics::Renderable2D *>(l.target));
-            break;
-        case LinkKind::Renderable3D:
-            writeWorldToRenderable3D(n, static_cast<graphics::Renderable3D *>(l.target));
-            break;
-        case LinkKind::Physics2D: {
-            auto *b = static_cast<physics::Body *>(l.target);
-            b->setPosition(n.x, n.y);
-            b->setAngle(n.roll);
-            break;
-        }
-        case LinkKind::Physics3D: {
-            auto *b = static_cast<physics::Body3D *>(l.target);
-            b->setPosition(n.x, n.y, n.z);
-            glm::quat q = glm::angleAxis(n.yaw, glm::vec3(0.f, 1.f, 0.f)) *
-                          glm::angleAxis(n.pitch, glm::vec3(1.f, 0.f, 0.f)) *
-                          glm::angleAxis(n.roll, glm::vec3(0.f, 0.f, 1.f));
-            b->setRotation(q.x, q.y, q.z, q.w);
-            break;
-        }
-        case LinkKind::Camera3D: {
-            auto *c = static_cast<graphics::Camera3D *>(l.target);
-            c->setEye(n.world[3][0], n.world[3][1], n.world[3][2]);
-            break;
-        }
-        case LinkKind::Audio3D: {
-#ifdef EVENGINE_SCENE_AUDIO
-            auto *s = static_cast<audio::Source *>(l.target);
-            s->setPosition(n.world[3][0], n.world[3][1], n.world[3][2]);
-#endif
-            break;
-        }
-        default:
-            break;
-    }
+    const LinkOps *ops = linkOps(l.kind);
+    if (ops) ops->pushWorld(n, l.target);
 }
 
 void syncLinks(SceneHost *host) {
@@ -192,25 +86,15 @@ void syncLinks(SceneHost *host) {
 }
 
 /**
- * Best-effort liveness check for a linked target. ECS entities (renderables,
- * cameras) die via ecs::DestroyEntity; physics bodies expose raw()/isValid().
- * audio::Source has no liveness API, so it is always assumed alive.
+ * Best-effort liveness check for a linked target. Each kind knows how to answer
+ * for its own type; a kind that cannot tell (an audio source has no liveness
+ * API) leaves `alive` null and is assumed alive.
  */
 bool linkTargetAlive(const SceneLink &l) {
     if (!l.target) return false;
-    switch (l.kind) {
-        case LinkKind::Renderable2D:
-        case LinkKind::Renderable3D:
-        case LinkKind::Camera3D:
-            return ecs::is_entity_visible(static_cast<const ecs::Entity *>(l.target));
-        case LinkKind::Physics2D:
-            return static_cast<const physics::Body *>(l.target)->raw() != nullptr;
-        case LinkKind::Physics3D:
-            return static_cast<const physics::Body3D *>(l.target)->isValid();
-        case LinkKind::Audio3D:
-        default:
-            return true;
-    }
+    const LinkOps *ops = linkOps(l.kind);
+    if (!ops || !ops->alive) return true;
+    return ops->alive(l.target);
 }
 
 /** Drop links whose target was destroyed (prevents dangling-pointer sync). */

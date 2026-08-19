@@ -59,12 +59,6 @@ if(NOT _cases)
   message(FATAL_ERROR "no test cases discovered from ${ZEROERR_EXE}")
 endif()
 
-# Escape a string for use inside a C++ std::regex.
-function(_zeroerr_escape_regex _out_var _in)
-  string(REGEX REPLACE "([][+.*()^$|\\\\])" "\\\\\\1" _escaped "${_in}")
-  set(${_out_var} "${_escaped}" PARENT_SCOPE)
-endfunction()
-
 # 2) Unique source files (by basename) that own at least one test case.
 set(_bundle_files "")
 foreach(_entry IN LISTS _cases)
@@ -81,21 +75,23 @@ endforeach()
 #    - one "bundle/<basename>" per file that runs all of the file's cases in
 #      a single process (--file=<basename regex>, --quiet) so the default
 #      `make test` run spawns ~100 processes instead of ~1400.
+#
+# Test names and source basenames only contain [A-Za-z0-9_.], so no regex
+# escaping is applied: backslash-escaping (e.g. \.) produced "Invalid escape
+# sequence" in CMake's quoted-string parser (CMP0010) on some CMake versions.
 set(_content "")
 foreach(_basename IN LISTS _bundle_files)
-  _zeroerr_escape_regex(_escaped_file "${_basename}")
   string(APPEND _content
-    "add_test(\"bundle/${_basename}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_escaped_file}\")\n"
+    "add_test(\"bundle/${_basename}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_basename}\")\n"
     "set_tests_properties(\"bundle/${_basename}\" PROPERTIES LABELS \"bundle\")\n")
   foreach(_entry IN LISTS _cases)
     string(REPLACE "|" ";" _parts "${_entry}")
     list(GET _parts 0 _name)
     list(GET _parts 1 _file)
     if(_file STREQUAL _basename)
-      _zeroerr_escape_regex(_escaped "${_name}")
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
-        "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_escaped}$\")\n")
+        "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n")
     endif()
   endforeach()
 endforeach()

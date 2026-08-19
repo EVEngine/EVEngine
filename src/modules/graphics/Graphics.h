@@ -486,13 +486,16 @@ public:
 
     /**
      * Instanced voxel face rectangles (32-bit packed instances).
+     * ao: optional per-instance ambient-occlusion words (2 bits per corner,
+     * 0..3, shader corner order); null → full bright.
      * faceDir: "posX"|"negX"|"posY"|"negY"|"posZ"|"negZ" (also "+x"/"-x"/…).
      * Requires begin3DFrame(); uses viewProj from setMesh3DViewProj.
      * atlas may be null → white; tilesPerRow subdivides atlas for texture indices.
      */
     virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
                                         float originY, float originZ, const std::string &faceDir,
-                                        Texture *atlas, int tilesPerRow = 16) = 0;
+                                        Texture *atlas, int tilesPerRow = 16,
+                                        const uint32_t *ao = nullptr) = 0;
 
     /**
      * Specular IBL environment for subsequent default mesh draws.

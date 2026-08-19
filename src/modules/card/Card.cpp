@@ -1,15 +1,11 @@
 #include "card/Card.h"
 
-#include "data/DataModule.h"
-#include "data/JsonDocument.h"
+#include "common/Json.h"
 #include "graphics/Graphics.h"
 
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
-#include <memory>
 
 namespace eve::card {
 
@@ -17,54 +13,19 @@ Module_IMPL(Card, new Card());
 
 namespace {
 
-std::string jsonStr(Poco::JSON::Object::Ptr o, const char *key, const std::string &fallback = {}) {
-    if (!o || !o->has(key)) return fallback;
-    try {
-        return o->get(key).convert<std::string>();
-    } catch (...) {
-    }
-    return fallback;
-}
+using eve::json::Value;
 
-int jsonInt(Poco::JSON::Object::Ptr o, const char *key, int fallback = 0) {
-    if (!o || !o->has(key)) return fallback;
-    try {
-        return o->get(key).convert<int>();
-    } catch (...) {
-    }
-    return fallback;
-}
-
-std::vector<float> jsonFloatArray(Poco::JSON::Object::Ptr o, const char *key) {
-    std::vector<float> out;
-    if (!o || !o->has(key)) return out;
-    try {
-        auto arr = o->getArray(key);
-        if (!arr) return out;
-        out.reserve(arr->size());
-        for (size_t i = 0; i < arr->size(); ++i) {
-            try {
-                out.push_back(static_cast<float>(arr->get(i).convert<double>()));
-            } catch (...) {
-                out.push_back(0.f);
-            }
-        }
-    } catch (...) {
-    }
-    return out;
-}
-
-bool parseDefinition(Poco::JSON::Object::Ptr o, std::unordered_map<std::string, CardDefinition> &defs) {
-    std::string id = jsonStr(o, "id");
+bool parseDefinition(Value o, std::unordered_map<std::string, CardDefinition> &defs) {
+    std::string id = o.getString("id");
     if (id.empty()) return false;
     CardDefinition def;
     def.id = id;
-    def.name = jsonStr(o, "name", id);
-    def.kind = jsonStr(o, "kind", "creature");
-    def.cost = jsonInt(o, "cost");
-    def.attack = jsonInt(o, "attack");
-    def.health = jsonInt(o, "health");
-    auto tint = jsonFloatArray(o, "tint");
+    def.name = o.getString("name", id);
+    def.kind = o.getString("kind", "creature");
+    def.cost = o.getInt("cost");
+    def.attack = o.getInt("attack");
+    def.health = o.getInt("health");
+    auto tint = o.getFloatArray("tint");
     if (tint.size() >= 3) def.tint = glm::vec3(tint[0], tint[1], tint[2]);
     defs[id] = def;
     return true;
@@ -79,24 +40,15 @@ Card::~Card() = default;
 // ---------------------------------------------------------------------------
 
 int Card::registerCardsFromJson(const std::string &json) {
-    auto *dm = eve::data::DataModule::create();
-    std::string err;
-    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
-    if (!doc) return 0;
+    const eve::json::Document doc = eve::json::Document::parse(json);
+    if (!doc.valid()) return 0;
+    const Value root = doc.root();
     int n = 0;
-    if (doc->isArray()) {
-        Poco::JSON::Array::Ptr arr = doc->array();
-        for (size_t i = 0; i < arr->size(); ++i) {
-            Poco::JSON::Object::Ptr o;
-            try {
-                o = arr->getObject(i);
-            } catch (...) {
-                continue;
-            }
-            if (o && parseDefinition(o, defs_)) ++n;
-        }
-    } else if (doc->isObject()) {
-        if (parseDefinition(doc->object(), defs_)) ++n;
+    if (root.isArray()) {
+        for (size_t i = 0; i < root.size(); ++i)
+            if (parseDefinition(root.at(i), defs_)) ++n;
+    } else if (root.isObject()) {
+        if (parseDefinition(root, defs_)) ++n;
     }
     return n;
 }

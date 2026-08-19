@@ -28,7 +28,7 @@ public:
     Module_REG(Cmdline);
 
     int Run(std::string path, std::string root, bool debug = false, int dapPort = 0,
-            int mcpPort = 0);
+            int mcpPort = 0, std::string devServer = "");
 
     // build the project, need to download tools and source code
     int Build(std::string path, std::string output, std::string platform);
@@ -46,7 +46,7 @@ public:
     int Zip(std::string path);
 
     // start dev server for hot reload
-    int DevServer(std::string path);
+    int DevServer(std::string path, int port = 8765);
 
     // get third-party source code
     int Get(std::string url);

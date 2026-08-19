@@ -2,6 +2,7 @@
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/EcsScriptPack.h"
 #include "gpgpu/GpuBuffer.h"
+#include "gpgpu/Sequence.h"
 #include "gpgpu/ShaderSystem.h"
 
 #include "common/Exception.h"
@@ -100,6 +101,18 @@ GpuBuffer *Gpgpu::newBuffer(int byteSize, const std::string &usage) {
 #endif
 }
 
+Sequence *Gpgpu::newSequence() {
+#ifdef EVENGINE_WEBGPU
+    // The class exists on every backend; it reports isAvailable()==false and
+    // throws on use when the active backend is not Vulkan.
+    return new Sequence();
+#else
+    if (currentGraphicsBackend() != "vulkan")
+        throw Exception("Gpgpu.newSequence: requires vulkan Graphics backend");
+    return new Sequence();
+#endif
+}
+
 void Gpgpu::dispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ) {
     if (!shader) return;
 #ifdef EVENGINE_WEBGPU
@@ -135,6 +148,16 @@ void Gpgpu::expose(ssq::Table &table) {
     buf.addFunc("writeFloat32", &GpuBuffer::writeFloat32);
     buf.addFunc("readFloat32", &GpuBuffer::readFloat32);
     buf.addFunc("fillFloat32", &GpuBuffer::fillFloat32);
+
+    auto seq = table.addClass<Sequence>(
+        "GpuSequence",
+        std::function<Sequence *()>([]() -> Sequence * { return new Sequence(); }), true);
+    seq.addFunc("isAvailable", &Sequence::isAvailable);
+    seq.addFunc("begin", &Sequence::begin);
+    seq.addFunc("recordUpload", &Sequence::recordUpload);
+    seq.addFunc("recordDownload", &Sequence::recordDownload);
+    seq.addFunc("recordDispatch", &Sequence::recordDispatch);
+    seq.addFunc("submit", &Sequence::submit);
 
     // Native ECS↔GPU helper (used by eve.ShaderSystem script class).
     auto ecsSys = table.addClass<ShaderSystem>(
@@ -172,6 +195,7 @@ void Gpgpu::expose(ssq::Class &cls) {
     cls.addFunc("newShaderFromBytecode", &Gpgpu::newShaderFromBytecode);
     cls.addFunc("newShaderFromSpvFile", &Gpgpu::newShaderFromSpvFile);
     cls.addFunc("newBuffer", &Gpgpu::newBuffer);
+    cls.addFunc("newSequence", &Gpgpu::newSequence);
     cls.addFunc("dispatch", &Gpgpu::dispatch);
 }
 

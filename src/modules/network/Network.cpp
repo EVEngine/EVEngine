@@ -5,6 +5,10 @@
 #include "network/HttpRequest.h"
 #include "network/Channel.h"
 #include "network/Session.h"
+#include "network/NetStream.h"
+#include "network/UdpLink.h"
+#include "network/NetHost.h"
+#include "network/NetRpc.h"
 #include "data/ByteData.h"
 #include "event/Event.h"
 
@@ -17,9 +21,56 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <algorithm>
+#include <chrono>
 #include <functional>
 
 namespace eve::network {
+
+namespace {
+
+void callScript1(const ssq::Object& obj, const std::string& s) {
+    if (obj.isEmpty()) return;
+    ssq::Function f = obj.toFunction();
+    if (f.isEmpty()) return;
+    HSQUIRRELVM raw = f.getHandle();
+    SQInteger top = sq_gettop(raw);
+    sq_pushobject(raw, f.getRaw());
+    sq_pushroottable(raw);
+    ssq::detail::pushValue(raw, s);
+    sq_call(raw, 2, SQFalse, SQTrue);
+    sq_settop(raw, top);
+}
+
+void callScript2(const ssq::Object& obj, int64_t a, const std::string& s) {
+    if (obj.isEmpty()) return;
+    ssq::Function f = obj.toFunction();
+    if (f.isEmpty()) return;
+    HSQUIRRELVM raw = f.getHandle();
+    SQInteger top = sq_gettop(raw);
+    sq_pushobject(raw, f.getRaw());
+    sq_pushroottable(raw);
+    ssq::detail::pushValue(raw, a);
+    ssq::detail::pushValue(raw, s);
+    sq_call(raw, 3, SQFalse, SQTrue);
+    sq_settop(raw, top);
+}
+
+void callScript3(const ssq::Object& obj, int64_t a, int64_t b, const std::string& s) {
+    if (obj.isEmpty()) return;
+    ssq::Function f = obj.toFunction();
+    if (f.isEmpty()) return;
+    HSQUIRRELVM raw = f.getHandle();
+    SQInteger top = sq_gettop(raw);
+    sq_pushobject(raw, f.getRaw());
+    sq_pushroottable(raw);
+    ssq::detail::pushValue(raw, a);
+    ssq::detail::pushValue(raw, b);
+    ssq::detail::pushValue(raw, s);
+    sq_call(raw, 4, SQFalse, SQTrue);
+    sq_settop(raw, top);
+}
+
+}  // namespace
 
 Module_IMPL(Network, new Network());
 
@@ -54,6 +105,47 @@ Channel* Network::newChannel(TcpSocket* socket) {
 
 Session* Network::newSession() {
     return new Session();
+}
+
+NetWriter* Network::newWriter() {
+    return new NetWriter();
+}
+
+NetReader* Network::newReader(std::string bytes) {
+    auto* r = new NetReader();
+    r->setBytes(bytes);
+    return r;
+}
+
+UdpLink* Network::newUdpLink(UdpSocket* socket) {
+    if (!socket) return nullptr;
+    auto* link = new UdpLink(this, socket);
+    bindUdpLink(socket, link);
+    return link;
+}
+
+NetRpc* Network::newRpc(UdpLink* link) {
+    return link ? new NetRpc(link) : nullptr;
+}
+
+NetHost* Network::newHost() {
+    return new NetHost(this);
+}
+
+void Network::bindUdpLink(UdpSocket* sock, UdpLink* link) {
+    if (sock) udpLinks_[sock] = link;
+}
+
+void Network::unbindUdpLink(UdpSocket* sock) {
+    if (sock) udpLinks_.erase(sock);
+}
+
+void Network::bindUdpHost(UdpSocket* sock, NetHost* host) {
+    if (sock) udpHosts_[sock] = host;
+}
+
+void Network::unbindUdpHost(UdpSocket* sock) {
+    if (sock) udpHosts_.erase(sock);
 }
 
 void Network::setTimeout(int ms) {
@@ -149,6 +241,7 @@ void Network::pollSockets() {
             }
         }
         if (sock->isConnected() && sock->stream()) {
+            sock->flushSend();
             try {
                 char buf[64 * 1024];
                 int n = sock->stream()->receiveBytes(buf, sizeof(buf));
@@ -176,11 +269,12 @@ void Network::pollSockets() {
     }
     for (UdpSocket* sock : udpCopy) {
         if (!sock || !sock->datagram()) continue;
-        try {
-            char buf[64 * 1024];
-            Poco::Net::SocketAddress sender;
-            int n = sock->datagram()->receiveFrom(buf, sizeof(buf), sender);
-            if (n > 0) {
+        for (int i = 0; i < 64; ++i) {
+            try {
+                char buf[64 * 1024];
+                Poco::Net::SocketAddress sender;
+                int n = sock->datagram()->receiveFrom(buf, sizeof(buf), sender);
+                if (n <= 0) break;  // would-block
                 NetCompletion c;
                 c.type   = NetEvType::Data;
                 c.kind   = NetKind::Udp;
@@ -188,9 +282,11 @@ void Network::pollSockets() {
                 c.bytes  = std::make_shared<std::vector<char>>(buf, buf + n);
                 c.peer   = sender.toString();
                 post(std::move(c));
+            } catch (const Poco::Exception&) {
+                break;
+            } catch (...) {
+                break;
             }
-        } catch (const Poco::Exception&) {
-        } catch (...) {
         }
     }
 }
@@ -267,7 +363,27 @@ void Network::emitCompletion(const NetCompletion& c) {
 void Network::pump() {
     std::vector<NetCompletion> batch;
     if (worker_) worker_->drain(batch);
-    for (auto& c : batch) emitCompletion(c);
+    const int64_t now = std::chrono::duration_cast<std::chrono::milliseconds>(
+                            std::chrono::steady_clock::now().time_since_epoch())
+                            .count();
+    for (auto& c : batch) {
+        if (c.type == NetEvType::Data && c.kind == NetKind::Udp) {
+            auto* sock = static_cast<UdpSocket*>(c.handle);
+            auto hit = udpHosts_.find(sock);
+            if (hit != udpHosts_.end()) {
+                if (c.bytes) hit->second->onDatagram(*c.bytes, c.peer);
+                continue;
+            }
+            auto lit = udpLinks_.find(sock);
+            if (lit != udpLinks_.end()) {
+                if (c.bytes) lit->second->onDatagram(*c.bytes, c.peer);
+                continue;
+            }
+        }
+        emitCompletion(c);
+    }
+    for (auto& kv : udpHosts_) kv.second->pump(now);
+    for (auto& kv : udpLinks_) kv.second->pump(now);
 }
 
 void Network::expose(ssq::Table& table) {
@@ -319,6 +435,131 @@ void Network::expose(ssq::Table& table) {
     sess.addFunc("get", &Session::get);
     sess.addFunc("remove", &Session::remove);
     sess.addFunc("closeAll", &Session::closeAll);
+
+    auto writer = table.addClass<NetWriter>(
+        "NetWriter", std::function<NetWriter*()>([]() { return new NetWriter(); }), true);
+    writer.addFunc("writeU8", [](NetWriter* w, int64_t v) { w->writeU8(static_cast<uint8_t>(v)); });
+    writer.addFunc("writeI8", [](NetWriter* w, int64_t v) { w->writeI8(static_cast<int8_t>(v)); });
+    writer.addFunc("writeU16", [](NetWriter* w, int64_t v) { w->writeU16(static_cast<uint16_t>(v)); });
+    writer.addFunc("writeI16", [](NetWriter* w, int64_t v) { w->writeI16(static_cast<int16_t>(v)); });
+    writer.addFunc("writeU32", [](NetWriter* w, int64_t v) { w->writeU32(static_cast<uint32_t>(v)); });
+    writer.addFunc("writeI32", [](NetWriter* w, int64_t v) { w->writeI32(static_cast<int32_t>(v)); });
+    writer.addFunc("writeU64", [](NetWriter* w, int64_t v) { w->writeU64(static_cast<uint64_t>(v)); });
+    writer.addFunc("writeI64", [](NetWriter* w, int64_t v) { w->writeI64(static_cast<int64_t>(v)); });
+    writer.addFunc("writeF32", &NetWriter::writeF32);
+    writer.addFunc("writeF64", &NetWriter::writeF64);
+    writer.addFunc("writeBool", &NetWriter::writeBool);
+    writer.addFunc("writeString", &NetWriter::writeString);
+    writer.addFunc("writeBytes", [](NetWriter* w, eve::data::ByteData* d) {
+        if (d) w->writeBytes(d->getData(), d->getSize());
+    });
+    writer.addFunc("toString", [](NetWriter* w) { return w->toString(); });
+    writer.addFunc("size", [](NetWriter* w) { return static_cast<int64_t>(w->size()); });
+
+    auto reader = table.addClass<NetReader>(
+        "NetReader", std::function<NetReader*()>([]() { return new NetReader(); }), true);
+    reader.addFunc("init", [](NetReader* r, eve::data::ByteData* d) {
+        return d ? r->init(d->getData(), d->getSize()) : false;
+    });
+    reader.addFunc("initString", [](NetReader* r, const std::string& s) { return r->setBytes(s); });
+    reader.addFunc("u8", [](NetReader* r) { return static_cast<int64_t>(r->u8()); });
+    reader.addFunc("i8", [](NetReader* r) { return static_cast<int64_t>(r->i8()); });
+    reader.addFunc("u16", [](NetReader* r) { return static_cast<int64_t>(r->u16()); });
+    reader.addFunc("i16", [](NetReader* r) { return static_cast<int64_t>(r->i16()); });
+    reader.addFunc("u32", [](NetReader* r) { return static_cast<int64_t>(r->u32()); });
+    reader.addFunc("i32", [](NetReader* r) { return static_cast<int64_t>(r->i32()); });
+    reader.addFunc("u64", [](NetReader* r) { return static_cast<int64_t>(r->u64()); });
+    reader.addFunc("i64", [](NetReader* r) { return static_cast<int64_t>(r->i64()); });
+    reader.addFunc("f32", &NetReader::f32);
+    reader.addFunc("f64", &NetReader::f64);
+    reader.addFunc("bool", &NetReader::b);
+    reader.addFunc("str", [](NetReader* r) { return r->str(); });
+    reader.addFunc("bytes", [](NetReader* r, int64_t n) {
+        auto v = r->bytes(static_cast<size_t>(n));
+        return std::string(v.data(), v.size());
+    });
+    reader.addFunc("remaining", [](NetReader* r) { return static_cast<int64_t>(r->remaining()); });
+    reader.addFunc("pos", [](NetReader* r) { return static_cast<int64_t>(r->pos()); });
+    reader.addFunc("ok", [](NetReader* r) { return r->ok(); });
+
+    auto link = table.addClass<UdpLink>(
+        "UdpLink",
+        std::function<UdpLink*()>([]() { return new UdpLink(nullptr, nullptr); }), true);
+    link.addFunc("setRemote", &UdpLink::setRemote);
+    link.addFunc("setRemoteString", &UdpLink::setRemoteString);
+    link.addFunc("sendReliable", [](UdpLink* l, int64_t ch, const std::string& s) {
+        l->sendString(UdpLink::MsgType::Reliable, static_cast<uint8_t>(ch), s);
+    });
+    link.addFunc("sendUnreliable", [](UdpLink* l, int64_t ch, const std::string& s) {
+        l->sendString(UdpLink::MsgType::Unreliable, static_cast<uint8_t>(ch), s);
+    });
+    link.addFunc("sendOrdered", [](UdpLink* l, int64_t ch, const std::string& s) {
+        l->sendString(UdpLink::MsgType::UnreliableOrdered, static_cast<uint8_t>(ch), s);
+    });
+    link.addFunc("onMessage", [](UdpLink* l, ssq::Object fn) {
+        if (!l) return;
+        l->setMessageHandler(
+            [fn](UdpLink::MsgType, uint8_t ch, const char* d, size_t n) {
+                callScript2(fn, ch, std::string(d, n));
+            });
+    });
+    link.addFunc("setLossRate", &UdpLink::setLossRate);
+    link.addFunc("setTimeoutMs", &UdpLink::setTimeoutMs);
+    link.addFunc("isAlive", [](UdpLink* l) { return l && l->isAlive(); });
+    link.addFunc("peer", &UdpLink::peer);
+    link.addFunc("peerId", [](UdpLink* l) { return static_cast<int64_t>(l->peerId()); });
+    link.addFunc("pendingReliable",
+                 [](UdpLink* l) { return static_cast<int64_t>(l->pendingReliable()); });
+    link.addFunc("pendingFragments",
+                 [](UdpLink* l) { return static_cast<int64_t>(l->pendingFragments()); });
+
+    auto rpc = table.addClass<NetRpc>(
+        "NetRpc", std::function<NetRpc*()>([]() { return new NetRpc(nullptr); }), true);
+    rpc.addFunc("callRpc", [](NetRpc* r, int64_t msgId, const std::string& payload,
+                              bool reliable) {
+        r->callString(static_cast<uint16_t>(msgId), payload, reliable);
+    });
+    rpc.addFunc("registerRpc", [](NetRpc* r, int64_t msgId, ssq::Object fn) {
+        r->registerScript(static_cast<uint16_t>(msgId), fn);
+    });
+
+    auto host = table.addClass<NetHost>(
+        "NetHost", std::function<NetHost*()>([]() { return new NetHost(nullptr); }), true);
+    host.addFunc("start", &NetHost::start);
+    host.addFunc("onMessage", [](NetHost* h, ssq::Object fn) {
+        if (!h) return;
+        h->setMessageHandler(
+            [fn](uint32_t peerId, UdpLink::MsgType, uint8_t ch, const char* d, size_t n) {
+                callScript3(fn, peerId, ch, std::string(d, n));
+            });
+    });
+    host.addFunc("onPeerConnected", [](NetHost* h, ssq::Object fn) {
+        if (!h) return;
+        h->setPeerConnectedHandler([fn](uint32_t id) { callScript2(fn, id, ""); });
+    });
+    host.addFunc("onPeerDisconnected", [](NetHost* h, ssq::Object fn) {
+        if (!h) return;
+        h->setPeerDisconnectedHandler([fn](uint32_t id) { callScript2(fn, id, ""); });
+    });
+    host.addFunc("sendReliable", [](NetHost* h, int64_t peerId, int64_t ch,
+                                    const std::string& s) {
+        h->sendStringTo(static_cast<uint32_t>(peerId), UdpLink::MsgType::Reliable,
+                        static_cast<uint8_t>(ch), s);
+    });
+    host.addFunc("sendUnreliable", [](NetHost* h, int64_t peerId, int64_t ch,
+                                      const std::string& s) {
+        h->sendStringTo(static_cast<uint32_t>(peerId), UdpLink::MsgType::Unreliable,
+                        static_cast<uint8_t>(ch), s);
+    });
+    host.addFunc("sendOrdered", [](NetHost* h, int64_t peerId, int64_t ch,
+                                   const std::string& s) {
+        h->sendStringTo(static_cast<uint32_t>(peerId), UdpLink::MsgType::UnreliableOrdered,
+                        static_cast<uint8_t>(ch), s);
+    });
+    host.addFunc("link", &NetHost::linkByPeerId);
+    host.addFunc("peerCount", [](NetHost* h) { return static_cast<int64_t>(h->peerCount()); });
+    host.addFunc("setLossRate", &NetHost::setLossRate);
+    host.addFunc("setTimeoutMs", &NetHost::setTimeoutMs);
 }
 
 void Network::expose(ssq::Class& cls) {
@@ -328,6 +569,11 @@ void Network::expose(ssq::Class& cls) {
     cls.addFunc("newHttp", &Network::newHttp);
     cls.addFunc("newChannel", &Network::newChannel);
     cls.addFunc("newSession", &Network::newSession);
+    cls.addFunc("newWriter", &Network::newWriter);
+    cls.addFunc("newReader", &Network::newReader);
+    cls.addFunc("newUdpLink", &Network::newUdpLink);
+    cls.addFunc("newRpc", &Network::newRpc);
+    cls.addFunc("newHost", &Network::newHost);
     cls.addFunc("pump", &Network::pump);
     cls.addFunc("setTimeout", &Network::setTimeout);
     cls.addFunc("setVerifySsl", &Network::setVerifySsl);

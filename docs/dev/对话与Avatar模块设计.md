@@ -194,3 +194,31 @@ test/dialogue.cpp
 - [x] Dialogue 口型：`setLipSync*` 在打字阶段驱动 speaker 参数 / Image 图层 alpha
 - [ ] 正式 Cubism Core 渲染实现（需自带 SDK，放在用户插件中）
 - [ ] 音频波形口型（当前为打字机正弦包络，不依赖 audio）
+
+## 程序化对话 v1：内容模型 / 变量 / 条件 / 台词池（2026-08-18）
+
+在保持「剧情仍由 Squirrel 驱动」的前提下，为程序化生成补齐数据与运行时。
+
+### 变量（双区）
+- `setVar(name, value, scope)`：value 支持 int / float / bool / string；scope 为 `"global" | "scene"`。
+- `getVarType / getVarInt / getVarFloat / getVarBool / getVarString / hasVar / clearVar / clearVars(scope)`（scope 也支持 `"all"`）。
+- scene 区在 `Dialogue::update` 内感知 `eve.Scene` 当前选中 host 名，切换时自动清空；global 区不动。
+
+### 条件
+- 结构化表：`{ var, op, value }`（op：eq/ne/gt/ge/lt/le/has/missing）、`{ all=[...] }` / `{ any=[...] }` / `{ not=... }`、`{ script="name" }`。
+- `registerCondition(name, fn)` 注册脚本谓词，`fn(ctx)` 返回 bool，ctx = `{ vars, params, lineId }`。
+- `evalCondition(table)` 可在脚本里直接复用。
+
+### 台词池
+- `loadPoolsFromTable(table)`：根表 `{ pools = { <poolId> = { noRepeat = N, lines = [ ... ] } } }`；追加注册，同名池整体替换。
+- 行字段：`id`（缺省 `poolId.序号`）、`speaker`（空=旁白）、`text`（字面量，支持 `{var}` 替换）或 `i18n`（翻译键，参数=变量+pick 参数）、`weight`（缺省 1，≤0 不参与随机）、`when`、`meta`（字符串表；`expression` / `motion` 播放时自动应用到绑定 Avatar，其余字段经 `getCurrentLineMeta` 暴露）、`tags`。
+- `pickLine(poolId, params)`：when 过滤 + 加权随机 + 每池最近 N 条去重（`noRepeat` 缺省 3，无候选时回退全池）。
+- `playLine(lineId, params)` / `playPool(poolId, params)`：解析文本 → `say/narrate` → 应用 meta。
+- `setRandomSeed(seed)` / `getRandomSeed()`：选择器内部 xorshift32，可复现。
+- `getLastPoolsError()` 返回首次错误；`clearPools / getPoolCount / getPoolId / hasPool` 用于池管理。
+
+### .dnut 内容格式（增强 nut）
+- C++ 解析器 `src/modules/dialogue/DnutParser.cpp`：`dlg.loadPoolsFromDnut(source, path)` / `dlg.loadPoolsFromDnutFile(path)` 直接解析为池表并注册；错误经 `getLastPoolsError()` 读取（形如 `path:行: 信息`）。
+- 语法：`pool` 块、`when <条件> { ... }` 分组、`speaker: "文本"` / `- "文本"`（旁白）、属性 `weight / i18n / id / meta(...) / tags=[...]`（属性与台词同行）。
+- 条件语法糖 `mood == "happy" && hour >= 18` 编译为结构化 when 表；不引入第二套运行时。
+- 示例：`examples/dialogue/pools.dnut`；热重载走 `eve_asset_reload`（.dnut 变更时重新 runFile）。

@@ -24,6 +24,21 @@ public:
         std::function<SnapResult(const PlacementWorld &world, float worldX, float worldY)>;
     using ChangeHook = std::function<void(const BuildingChangeEvent &ev)>;
 
+    /** 3D 放置表面命中结果（真实世界坐标）。 */
+    struct PlacementHit {
+        float worldX = 0.f;
+        float worldY = 0.f;
+        float worldZ = 0.f;
+    };
+    /**
+     * 放置表面：把指针坐标（2D 场景为鼠标世界坐标；3D 场景由游戏自行做
+     * 射线/高度采样后传入平面坐标）换算成真实世界命中点。
+     * 引擎只提供接口 + 内置 "plane"（Y=常数平面），物理射线 / 高度场等
+     * 表面由游戏侧按接口实现。
+     */
+    using SurfaceFn = std::function<bool(const PlacementWorld &world, float x, float y,
+                                         PlacementHit *hit)>;
+
     static void registerValidateRule(const std::string &name, ValidateFn fn);
     static void unregisterValidateRule(const std::string &name);
     static bool hasValidateRule(const std::string &name);
@@ -36,11 +51,24 @@ public:
     static void unregisterChangeHook(const std::string &name);
     static bool hasChangeHook(const std::string &name);
 
+    static void registerSurface(const std::string &name, SurfaceFn fn);
+    static void unregisterSurface(const std::string &name);
+    static bool hasSurface(const std::string &name);
+    static bool surfaceHit(const PlacementWorld &world, const std::string &name, float x,
+                           float y, PlacementHit *hit);
+    static std::vector<std::string> surfaceNames();
+    /** 内置 "plane" 表面的常量高度（默认 0）。 */
+    static void setPlaneSurfaceHeight(float h);
+    static float getPlaneSurfaceHeight();
+
     /** 确保内置规则已注册（模块首次使用时自动调用）。 */
     static void ensureBuiltins();
 
     static SnapResult snap(const PlacementWorld &world, const std::string &buildingId, float worldX,
                            float worldY);
+    /** 3D 版本：按世界平面轴把 (wx, wy, wz) 映射到网格平面坐标再吸附。 */
+    static SnapResult snap3D(const PlacementWorld &world, const std::string &buildingId,
+                             float worldX, float worldY, float worldZ);
     static SnapResult snapWithMode(const PlacementWorld &world, const std::string &mode,
                                    float worldX, float worldY);
 
@@ -59,6 +87,10 @@ public:
     static bool canPlace(PlacementWorld *world, const std::string &buildingId, int cellX, int cellY,
                          float rotationDeg = 0.f, int excludeInstanceId = 0,
                          std::string *reason = nullptr);
+    /** 带 elevation 的校验（校验语义仍按 2D 占用/地形，elevation 只进 query 上下文）。 */
+    static bool canPlaceElev(PlacementWorld *world, const std::string &buildingId, int cellX,
+                             int cellY, float elevation, float rotationDeg = 0.f,
+                             int excludeInstanceId = 0, std::string *reason = nullptr);
 
     /** 成功返回 instanceId；失败返回 0。 */
     static int placeAt(PlacementWorld *world, const std::string &buildingId, int cellX, int cellY,
@@ -66,6 +98,9 @@ public:
     /** 先吸附再放置；free/自定义 snap 会保留吸附后的世界坐标。 */
     static int placeAtWorld(PlacementWorld *world, const std::string &buildingId, float worldX,
                             float worldY, float rotationDeg = 0.f);
+    /** 3D 版本：真实世界坐标 (wx, wy, wz)，按平面轴吸附后放置。 */
+    static int placeAtWorld3D(PlacementWorld *world, const std::string &buildingId, float worldX,
+                              float worldY, float worldZ, float rotationDeg = 0.f);
     static int placeGhost(PlacementWorld *world, Ghost *ghost);
 
     static bool removeBuilding(PlacementWorld *world, int instanceId);
@@ -98,6 +133,8 @@ private:
     static std::unordered_map<std::string, ValidateFn> &validateRules();
     static std::unordered_map<std::string, SnapFn> &snapRules();
     static std::unordered_map<std::string, ChangeHook> &changeHooks();
+    static std::unordered_map<std::string, SurfaceFn> &surfaces();
+    static float &planeSurfaceHeight();
     static std::vector<BuildingChangeEvent> &eventQueue();
     static int &instanceCounter();
     static bool &builtinsReady();

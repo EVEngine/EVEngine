@@ -27,5 +27,11 @@ void freeGameArchiveMemory(void *ptr);
 /** Absolute path to the native library / "executable" (best-effort). */
 std::string getExecutablePath();
 
+/**
+ * Writable directory used to stage remote hot-reload downloads
+ * (<internal storage>/hotreload). Created on first use.
+ */
+std::string getHotReloadDirectory();
+
 }  // namespace android
 }  // namespace eve

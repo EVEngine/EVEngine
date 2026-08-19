@@ -26,6 +26,12 @@ void Ghost::setWorld(float worldX, float worldY) {
     reason_.clear();
 }
 
+void Ghost::setElevation(float elevation) {
+    elevation_ = elevation;
+    valid_ = false;
+    reason_.clear();
+}
+
 void Ghost::setRotationDeg(float deg) {
     rotationDeg_ = deg;
     valid_ = false;
@@ -43,8 +49,32 @@ void Ghost::setFromWorld(PlacementWorld *world, float worldX, float worldY) {
     cellY_ = s.cellY;
     worldX_ = s.worldX;
     worldY_ = s.worldY;
+    elevation_ = s.elevation;
     valid_ = false;
     reason_.clear();
+}
+
+void Ghost::setFromWorld3D(PlacementWorld *world, float worldX, float worldY, float worldZ) {
+    if (!world) return;
+    const SnapResult s = PlacementSystem::snap3D(*world, buildingId_, worldX, worldY, worldZ);
+    cellX_ = s.cellX;
+    cellY_ = s.cellY;
+    worldX_ = s.worldX;
+    worldY_ = s.worldY;
+    elevation_ = s.elevation;
+    valid_ = false;
+    reason_.clear();
+}
+
+void Ghost::setFromSurface(PlacementWorld *world, const std::string &surface, float x, float y) {
+    if (!world) return;
+    PlacementSystem::PlacementHit hit;
+    if (!PlacementSystem::surfaceHit(*world, surface, x, y, &hit)) {
+        valid_ = false;
+        reason_ = "no_surface_hit";
+        return;
+    }
+    setFromWorld3D(world, hit.worldX, hit.worldY, hit.worldZ);
 }
 
 bool Ghost::validate(PlacementWorld *world) {
@@ -55,7 +85,8 @@ bool Ghost::validate(PlacementWorld *world) {
     }
     rotationDeg_ = PlacementSystem::normalizeRotation(buildingId_, rotationDeg_);
     std::string reason;
-    valid_ = PlacementSystem::canPlace(world, buildingId_, cellX_, cellY_, rotationDeg_, 0, &reason);
+    valid_ = PlacementSystem::canPlaceElev(world, buildingId_, cellX_, cellY_, elevation_,
+                                           rotationDeg_, 0, &reason);
     reason_ = reason;
     return valid_;
 }
