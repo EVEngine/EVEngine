@@ -95,10 +95,9 @@ graphics::Texture *assimpTexture(graphics::Graphics *gfx, const aiScene *scene,
     return textureFromFile(gfx, modelPath, path);
 }
 
-std::unique_ptr<model3d::ModelData> loadModel(model3d::Model3D *models,
-                                              const std::string &path) {
+eve::ref<model3d::ModelData> loadModel(model3d::Model3D *models, const std::string &path) {
     if (!std::filesystem::is_regular_file(std::filesystem::path(path)))
-        return std::unique_ptr<model3d::ModelData>(models->newModelDataFromFile(path));
+        return models->newModelDataFromFile(path);  // cache-owned resource
     std::ifstream input(path, std::ios::binary | std::ios::ate);
     if (!input) throw std::runtime_error("cannot open model: " + path);
     const std::streamsize size = input.tellg();
@@ -108,8 +107,7 @@ std::unique_ptr<model3d::ModelData> loadModel(model3d::Model3D *models,
     if (!input.read(reinterpret_cast<char *>(bytes.data()), size))
         throw std::runtime_error("cannot read model: " + path);
     data::ByteData source(bytes.data(), bytes.size());
-    return std::unique_ptr<model3d::ModelData>(
-        models->newModelData(&source, std::filesystem::path(path).extension().string()));
+    return models->newModelData(&source, std::filesystem::path(path).extension().string());
 }
 }
 
@@ -223,7 +221,7 @@ bool HouseLayout::validate(const HouseComponentLibrary &library, std::string *er
 std::vector<graphics::Renderable3D *> HouseLayout::instantiate(graphics::Graphics *gfx, model3d::Model3D *models, const HouseComponentLibrary &library, std::string *error) const {
     std::vector<graphics::Renderable3D *> entities;
     if (!gfx || !models) { if (error) *error = "graphics and model3d are required"; return entities; }
-    std::unordered_map<std::string, std::unique_ptr<model3d::ModelData>> data;
+    std::unordered_map<std::string, eve::ref<model3d::ModelData>> data;
     struct CachedPart {
         graphics::Mesh *mesh = nullptr;
         graphics::Texture *texture = nullptr;
@@ -238,8 +236,11 @@ std::vector<graphics::Renderable3D *> HouseLayout::instantiate(graphics::Graphic
     try {
         for (const auto &i : instances) {
             const auto *c = library.find(i.componentId); if (!c) continue;
-            auto &model = data[c->modelPath];
-            if (!model) model = loadModel(models, c->modelPath);
+            // eve::ref cannot represent null, so look up before default-inserting.
+            auto modelIt = data.find(c->modelPath);
+            if (modelIt == data.end())
+                modelIt = data.emplace(c->modelPath, loadModel(models, c->modelPath)).first;
+            model3d::ModelData *model = modelIt->second.get();
             // Material overrides belong to a component, so two components may safely reuse the
             // same GLB with different architectural finishes.
             auto &cached = parts[c->id];

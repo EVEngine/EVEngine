@@ -612,6 +612,35 @@ TEST_CASE("model3d.newModelDataFromFile.missingThrows") {
     CHECK(threw);
 }
 
+TEST_CASE("model3d.newModelDataFromFile.cached") {
+    const std::string objPath = pathBesideThisSource("sofa.obj");
+    REQUIRE(!readBinaryFile(objPath).empty());
+
+    std::string testDir = pathBesideThisSource("");
+    if (!testDir.empty() && (testDir.back() == '/' || testDir.back() == '\\'))
+        testDir.pop_back();
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_cache", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(testDir);
+    REQUIRE(fs->mount(testDir, "", false));
+
+    auto *mod = eve::model3d::Model3D::create();
+    eve::model3d::ModelData *a = mod->newModelDataFromFile("sofa.obj");
+    eve::model3d::ModelData *b = mod->newModelDataFromFile("sofa.obj");
+    REQUIRE(a != nullptr);
+    CHECK(a == b);  // identical requests share one decoded scene
+
+    eve::model3d::ModelLoadOptions opt;
+    opt.joinIdenticalVertices = false;
+    eve::model3d::ModelData *c = mod->newModelDataFromFile("sofa.obj", opt);
+    REQUIRE(c != nullptr);
+    CHECK(c != a);  // different decode options are a different cache entry
+
+    CHECK(fs->unmount(testDir));
+}
+
 TEST_CASE("model3d.Model3D.getName") {
     auto *mod = eve::model3d::Model3D::create();
     CHECK(mod->getName() == "Model3D");
@@ -685,7 +714,6 @@ TEST_CASE("model3d.newModelDataFromFile.sofaObjMtl") {
     }
     CHECK(totalVerts > 0);
     CHECK(totalFaces > 0);
-    delete md;
 
     CHECK(fs->unmount(testDir));
 }
@@ -758,7 +786,6 @@ TEST_CASE("model3d.render.sofaObjMtl") {
     auto *md = mod->newModelDataFromFile("sofa.obj");
     REQUIRE(md != nullptr);
     renderModelSmoke(md, "model3d_sofa.png");
-    delete md;
 
     CHECK(fs->unmount(testDir));
 }
@@ -846,7 +873,6 @@ TEST_CASE("model3d.materialApi.gltf") {
     // Double-sided flag exists on glTF assets that set it; absence is fine here.
     CHECK(!md->getMaterialTwoSided(0));
 
-    delete md;
     CHECK(fs->unmount(dir));
 }
 
@@ -890,7 +916,6 @@ TEST_CASE("model3d.buildRenderable.objMtl") {
     CHECK(eve::model3d::buildRenderable(*gfx, nullptr, 0) == nullptr);
 
     win->close();
-    delete md;
     CHECK(fs->unmount(testDir));
 }
 
@@ -1098,6 +1123,5 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     delete frame;
 
     win->close();
-    delete md;
     CHECK(fs->unmount(dir));
 }

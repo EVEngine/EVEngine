@@ -16,6 +16,9 @@ public:
     SoundData(std::vector<uint8_t> pcm, int sampleRate, int bitDepth, int channels);
     ~SoundData() override;
 
+    /** @brief Replace this buffer with `replacement`'s (cache reload). */
+    void adopt(eve::Resource &replacement) override;
+
     /** @brief Format metadata. */
     int getSampleCount() const;
     int getSampleRate() const;

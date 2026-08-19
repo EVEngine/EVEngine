@@ -91,6 +91,9 @@ public:
     const aiScene *getScene() const;
     const aiMesh *getMesh(int meshIndex) const;
 
+    /** @brief Replace this scene with `replacement`'s (cache reload). */
+    void adopt(eve::Resource &replacement) override;
+
 private:
     const aiMesh *meshAt(int meshIndex) const;
     const aiMaterial *materialAt(int matIndex) const;

@@ -29,7 +29,7 @@ local data = font.newFontDataFromFile("fonts/game.ttf", 24);
 
 - 按位图宽度排版：忽略 bearing、advance 和 kerning 会错位。
 - 字体文件不存在仍继续：加载阶段应提供 fallback。
-- 每帧创建 FontData：会重复解析字体。
+- 每帧创建 FontData：`newFontDataFromFile` 已走统一资源缓存（同一路径 + 字号共享一份 face，文件变化时原地刷新），但仍应避免每帧调用；`newFontData(Data, size)` 的内存路径不缓存。
 
 ## API 快查
 

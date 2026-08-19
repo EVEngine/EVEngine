@@ -2,11 +2,11 @@
 
 **脚本入口：** `eve.Image()`
 
-说明 Image 的 C++ 能力与当前 Squirrel 绑定边界；当前脚本入口只公开模块身份查询。
+说明 Image 的 C++ 能力与当前 Squirrel 绑定边界；脚本入口公开模块身份查询与按路径解码图片。
 
 ## 基本用法
 
-当前 `eve.Image()` 的脚本绑定只公开模块身份查询；`newImageData` 等 C++ 方法尚未绑定到 Squirrel。游戏脚本可以通过 `FontData.newGlyphImageData(...)` 获得已绑定的 `ImageData`；任意图片文件的直接解码目前主要供 C++ 和引擎内部资源加载流程使用：
+`eve.Image()` 的脚本绑定公开模块身份查询，以及 `newImageDataFromFile(path)`——从 VFS 路径经统一资源缓存解码图片（同一路径重复加载共享一份 ImageData，文件变化时原地刷新，见 `docs/dev/superpowers/specs/2026-08-20-unified-resource-cache.md`）。`newImageData(Data)` 等 C++ 方法尚未绑定到 Squirrel。游戏脚本还可以通过 `FontData.newGlyphImageData(...)` 获得已绑定的 `ImageData`：
 
 ```squirrel
 local image = eve.Image();
@@ -14,7 +14,7 @@ print(image.getName() + "\n");
 // 若已从 FontData 得到 ImageData，可交给 gfx.newTexture(imageData)。
 ```
 
-不要照搬 `Image.h` 中只面向 C++ 的方法到脚本。需要直接编辑像素时，应先确认目标方法已在 `Image::expose` 中注册。通过 `FontData` 暴露的 `ImageData` 目前支持 `getWidth` / `getHeight` / `getFormat` / `getSize` / `rotate`。
+不要照搬 `Image.h` 中只面向 C++ 的方法到脚本。需要直接编辑像素时，应先确认目标方法已在 `Image::expose` 中注册。通过 `FontData` 暴露的 `ImageData` 目前支持 `getWidth` / `getHeight` / `getFormat` / `getSize` / `rotate`；`newImageDataFromFile` 返回的 ImageData 由缓存持有，不要自行释放。
 
 ## 对象关系与调用时机
 
@@ -34,7 +34,11 @@ C++ `Image` 能创建和解码 `ImageData`，但当前 `Image::expose()` 仅绑�
 
 ### 判断脚本能否直接处理图片
 
-先检查 `Image::expose`：当前脚本侧不能调用 `newImageData` 解码任意文件。因此普通游戏资源应通过 Tilemap、模型加载器或其他已绑定资源入口载入，不要假设 C++ public 方法可用。
+先检查 `Image::expose`：脚本侧可直接用 `newImageDataFromFile(path)` 解码图片文件；其余 `newImageData(Data)` 等 C++ 方法仍未绑定，不要假设 C++ public 方法可用。
+
+### 从文件加载图片纹理
+
+`newImageDataFromFile(path)` 返回缓存共享的 ImageData，可直接交给 `gfx.newTexture(imageData)`；同一路径多次调用只解码一次，文件修改后由热重载在原地刷新。
 
 ### 从字体字形创建纹理
 

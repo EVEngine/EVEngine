@@ -3071,12 +3071,8 @@ Texture *Graphics::newTextureFromFile(const std::string &filename) {
     if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
 
     const std::string key = normalizeTexPath(filename);
-    auto *fs = filesystem::Filesystem::create();
-    std::unique_ptr<filesystem::FileData> fileData(fs->read(filename));
-    if (!fileData) throw Exception("newTextureFromFile: failed to read '%s'", filename.c_str());
-
     auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
+    eve::ref<image::ImageData> data(imgMod->newImageDataFromFile(filename));
 
     auto it = texturesByPath.find(key);
     if (it != texturesByPath.end() && it->second) {
@@ -3096,18 +3092,16 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
     auto it = texturesByPath.find(key);
     if (it == texturesByPath.end() || !it->second) return false;
 
-    auto *fs = filesystem::Filesystem::create();
-    std::unique_ptr<filesystem::FileData> fileData;
+    image::ImageData *data = nullptr;
     try {
-        fileData.reset(fs->read(filename));
+        auto *imgMod = image::Image::create();
+        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
+        data = cached.get();
     } catch (...) {
         return false;
     }
-    if (!fileData) return false;
-
-    auto *imgMod = image::Image::create();
-    std::unique_ptr<image::ImageData> data(imgMod->newImageData(fileData.get()));
-    return replaceTexturePixels(it->second, data.get());
+    if (!data) return false;
+    return replaceTexturePixels(it->second, data);
 }
 
 void Graphics::drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) {
