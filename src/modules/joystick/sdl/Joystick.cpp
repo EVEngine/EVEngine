@@ -1,6 +1,7 @@
 #include "joystick/sdl/Joystick.h"
 
 #include "common/Exception.h"
+#include "common/StartupTiming.h"
 
 #include <SDL2/SDL.h>
 
@@ -11,6 +12,7 @@
 namespace eve::joystick::sdl {
 
 Joystick::Joystick() {
+    StartupStage stage("joystick: SDL subsystem init + device enumeration");
     if (SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
         throw eve::Exception("Could not initialize SDL joystick subsystem (%s)", SDL_GetError());
 

@@ -79,19 +79,17 @@ ifneq ($(wildcard $(ANDROID_NDK)/build/cmake/android.toolchain.cmake),)
 endif
 
 ifeq ($(PLATFORM),win32)
-	HAS_WSL := $(shell wsl -e true >/dev/null 2>&1 && echo 1 || echo 0)
+	# Deferred (recursive) and VM-free: only expanded when ALL_DEBUG_TARGETS is
+	# actually used (make all / show-targets), and `wsl -l -q` lists distros
+	# without booting the WSL VM (`wsl -e true` cold-starts it, costing seconds
+	# on every make invocation -- including `make run`).
+	HAS_WSL = $(shell wsl -l -q >/dev/null 2>&1 && echo 1 || echo 0)
 endif
 
-ALL_DEBUG_TARGETS := build/$(PLATFORM)-debug
-ifeq ($(HAS_IOS),1)
-	ALL_DEBUG_TARGETS += build/ios-debug
-endif
-ifeq ($(HAS_ANDROID),1)
-	ALL_DEBUG_TARGETS += build/android-debug
-endif
-ifeq ($(HAS_WSL),1)
-	ALL_DEBUG_TARGETS += wsl/linux-debug
-endif
+ALL_DEBUG_TARGETS = build/$(PLATFORM)-debug \
+	$(if $(filter 1,$(HAS_IOS)),build/ios-debug) \
+	$(if $(filter 1,$(HAS_ANDROID)),build/android-debug) \
+	$(if $(filter 1,$(HAS_WSL)),wsl/linux-debug)
 
 # Desktop game directory for run/xxx. Empty (default) = run eve with no args,
 # no cd, so the current directory has no main.nut and eve falls back to the
