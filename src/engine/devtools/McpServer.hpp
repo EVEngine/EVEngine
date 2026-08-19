@@ -67,6 +67,8 @@ public:
     const std::string& gameRoot() const { return gameRoot_; }
 
 private:
+    // Immortal<McpServer> constructs the singleton (devtools/Immortal.hpp).
+    template <typename> friend struct Immortal;
     McpServer();
     ~McpServer();
 

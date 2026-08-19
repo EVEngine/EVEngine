@@ -9,6 +9,9 @@
 
 namespace eve::physics {
 
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
+
 Cloth::Cloth(int cols, int rows, float spacing, float originX, float originY)
     : cols_(cols), rows_(rows), spacing_(spacing), originX_(originX), originY_(originY) {
     if (cols_ < 2 || rows_ < 2)

@@ -28,6 +28,8 @@
 #include "data/ByteData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderControl.h"

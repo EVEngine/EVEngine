@@ -1,5 +1,5 @@
 # Orchestrate a release started by a GitHub Pre-release:
-#   start → strict tests (debug+release) → SDK zips → finish
+#   start → strict tests (debug+release) → SDK zips → finish (opens PRs)
 # See docs/dev/发布流程.md and scripts/release.py.
 
 name: Release
@@ -21,6 +21,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  checks: write
 
 jobs:
   start:
@@ -31,7 +32,7 @@ jobs:
       branch: ${{ steps.go.outputs.branch }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name || inputs.tag }}
@@ -70,12 +71,12 @@ jobs:
     secrets: inherit
 
   finish:
-    name: finish (promote + rebase dev)
+    name: finish (open PRs)
     needs: [start, sdk]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
           ref: ${{ needs.start.outputs.branch }}
@@ -89,5 +90,4 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main dev "${{ needs.start.outputs.tag }}" || true
           python3 scripts/release.py finish --tag "${{ needs.start.outputs.tag }}"

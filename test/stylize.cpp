@@ -23,6 +23,8 @@
 #include "image/ImageData.h"
 #include "stylize/Stylize.h"
 #include "window/Window.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using eve::graphics::Canvas;
 using eve::graphics::Graphics;

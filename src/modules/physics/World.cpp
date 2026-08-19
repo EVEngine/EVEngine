@@ -15,6 +15,8 @@
 
 namespace eve::physics {
 namespace {
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 b2BodyType parseBodyType(const std::string &type) {
     if (type == "static") return b2_staticBody;

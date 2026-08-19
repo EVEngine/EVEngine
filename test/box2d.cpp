@@ -13,6 +13,8 @@
 #include <cmath>
 #include <memory>
 #include <vector>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::physics;
 using namespace eve::graphics;

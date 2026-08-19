@@ -15,6 +15,8 @@
 
 #include <cmath>
 #include <memory>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

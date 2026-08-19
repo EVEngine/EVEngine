@@ -8,6 +8,11 @@ docs/dev/模块编排与裁剪架构.md for how the output is interpreted.
     python3 scripts/module_depgraph.py            # graph + layers
     python3 scripts/module_depgraph.py --cycles   # cycles only
     python3 scripts/module_depgraph.py --check    # exit 1 on unlisted back-edge
+    python3 scripts/module_depgraph.py --check-layers
+                                                  # exit 1 when an include edge
+                                                  # climbs above the LAYER the
+                                                  # module declares in the
+                                                  # module manifest
 
 Only sub-path includes ("map/Map.h") count as a cross-module dependency;
 a bare <map> / <thread> / <filesystem> is a standard library header.
@@ -21,6 +26,7 @@ from collections import defaultdict
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODULES_DIR = os.path.join(REPO, "src", "modules")
+MANIFEST_FILE = os.path.join(REPO, "cmake", "module_manifest.cmake")
 
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s*[<"]([^">]+)[">]', re.M)
 SOURCE_EXT = (".cpp", ".cc", ".h", ".hpp")
@@ -32,13 +38,35 @@ KNOWN_BACK_EDGES = {
     # window/Window.cpp, window/sdl/Window.cpp: the window owns the Graphics
     # pointer and decodes its own icon image.
     ("window", "graphics"),
-    ("window", "image"),
     # scene/Scene.cpp: pickScreenAt and collectFrustumIdsAt take a
     # graphics::Camera3D and read its projection. Everything else about scene is
     # now renderer-agnostic (graphics registers its own link kinds), so these two
     # entry points are what is left to move out to camera/graphics.
     ("scene", "graphics"),
 }
+
+# eve_declare_module(NAME <m> ... LAYER <n> ...) blocks in the module manifest.
+DECLARE_RE = re.compile(r"eve_declare_module\((.*?)\)", re.S)
+NAME_RE = re.compile(r"NAME\s+(\S+)")
+LAYER_RE = re.compile(r"LAYER\s+(-?\d+)")
+
+
+def declared_layers():
+    """Return {module: declared LAYER} parsed from cmake/module_manifest.cmake.
+
+    The manifest is the single source of truth for the *declared* module
+    layers. The computed layers printed by the default report are derived from
+    the include graph instead; this check exists to keep the two in step.
+    """
+    with open(MANIFEST_FILE, encoding="utf-8") as handle:
+        text = handle.read()
+    result = {}
+    for block in DECLARE_RE.findall(text):
+        name = NAME_RE.search(block)
+        layer = LAYER_RE.search(block)
+        if name and layer:
+            result[name.group(1)] = int(layer.group(1))
+    return result
 
 
 def scan():
@@ -112,12 +140,61 @@ def cycles(edges, ignore=frozenset()):
     return found
 
 
+def check_declared_layers(edges, header_edges):
+    """Exit 1 when an include edge climbs above the declared module LAYER.
+
+    The manifest declares each module's layer (cmake/module_manifest.cmake).
+    A module may only include headers from modules declared at the same or a
+    lower layer; an edge toward a *strictly higher* layer is a layering
+    violation and is reported (KNOWN_BACK_EDGES whitelists accepted debt).
+    Same-layer edges (e.g. window -> image) are allowed, matching the DEPS the
+    manifest itself declares.
+    """
+    layers_map = declared_layers()
+    missing = sorted(m for m in set(edges) | {b for deps in edges.values() for b in deps}
+                     if m not in layers_map)
+    if missing:
+        print("warning: modules missing a LAYER declaration in the manifest: "
+              + ", ".join(missing), file=sys.stderr)
+
+    actual = {(a, b) for a, deps in edges.items() for b in deps}
+    offenders = sorted(
+        (a, b) for (a, b) in actual
+        if a in layers_map and b in layers_map
+        and layers_map[b] > layers_map[a]
+        and (a, b) not in KNOWN_BACK_EDGES
+    )
+    stale = sorted(
+        (a, b) for (a, b) in KNOWN_BACK_EDGES
+        if (a, b) in actual
+        and (a not in layers_map or b not in layers_map
+             or layers_map[b] <= layers_map[a])
+    )
+
+    for a, b in offenders:
+        marker = "*" if (a, b) in header_edges else " "
+        print(f"error: layer violation {a}(L{layers_map[a]}) -> {b}(L{layers_map[b]}){marker}",
+              file=sys.stderr)
+    for a, b in stale:
+        print(f"note: {a} -> {b} no longer violates the declared layers; "
+              "drop it from KNOWN_BACK_EDGES", file=sys.stderr)
+
+    if offenders:
+        return 1
+    print(f"ok: no declared-layer violations "
+          f"({len(KNOWN_BACK_EDGES)} known back-edges, {len(stale)} now stale)")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cycles", action="store_true", help="report dependency cycles only")
     parser.add_argument("--check", action="store_true",
                         help="fail when a back-edge outside KNOWN_BACK_EDGES appears")
+    parser.add_argument("--check-layers", action="store_true",
+                        help="fail when an include edge climbs above the module's "
+                             "declared manifest LAYER")
     args = parser.parse_args()
 
     modules, edges, header_edges = scan()
@@ -149,6 +226,9 @@ def main():
             return 1
         print(f"ok: no new back-edges ({len(KNOWN_BACK_EDGES)} known, {len(stale)} now stale)")
         return 0
+
+    if args.check_layers:
+        return check_declared_layers(edges, header_edges)
 
     by_layer = defaultdict(list)
     for module in modules:

@@ -4,8 +4,10 @@
 #include "graphics/Graphics.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <squirrel.h>
 
 #include <algorithm>
+#include <cstdint>
 
 namespace eve::card {
 
@@ -31,9 +33,62 @@ bool parseDefinition(Value o, std::unordered_map<std::string, CardDefinition> &d
     return true;
 }
 
+template <typename T>
+T *resolve(const ecs::EntityHandle &h) {
+    return static_cast<T *>(ecs::try_get(h));
+}
+
+void destroyHandles(std::vector<ecs::EntityHandle> &hs) {
+    for (auto &h : hs) {
+        if (ecs::Entity *e = ecs::try_get(h)) ecs::DestroyEntity(e);
+    }
+    hs.clear();
+}
+
+template <typename T>
+void registerCppEntityClassForScript() {
+    eve::registerCppEntityView(typeid(T *).hash_code(), [](ssq::Array &out) {
+        HSQUIRRELVM vm = out.getHandle();
+        sq_pushobject(vm, out.getRaw());
+        ecs::Table *table = ecs::current();
+        if (table == nullptr) {
+            sq_pop(vm, 1);
+            return;
+        }
+        ecs::IComponentManager &cm = table->getOrCreateManager<T>();
+        auto *reg = cm.getOrCreateRegistryComponentBuffer<T>();
+        std::vector<ecs::IComponentBuffer *> stack;
+        stack.push_back(reg);
+        while (!stack.empty()) {
+            ecs::IComponentBuffer *buf = stack.back();
+            stack.pop_back();
+            auto *r = dynamic_cast<ecs::IRegistryComponentBuffer *>(buf);
+            if (r != nullptr) {
+                for (uint32_t i = 0; i < r->entity_count(); ++i) {
+                    ecs::Entity *ent = r->entity_at(i);
+                    if (ent != nullptr && ecs::is_entity_visible(ent)) {
+                        ssq::detail::pushByPtr<T>(vm, static_cast<T *>(ent));
+                        sq_arrayappend(vm, -2);
+                    }
+                }
+            }
+            if (buf->children != nullptr) stack.push_back(buf->children);
+            if (buf->next != nullptr) stack.push_back(buf->next);
+        }
+        sq_pop(vm, 1);
+    });
+}
+
 }  // namespace
 
-Card::~Card() = default;
+Card::~Card() {
+    destroyHandles(hands_);
+    destroyHandles(decks_);
+    destroyHandles(zones_);
+    destroyHandles(cards_);
+    activeDeck_ = nullptr;
+    activeConfig_ = nullptr;
+}
 
 // ---------------------------------------------------------------------------
 // 卡牌类型定义
@@ -119,46 +174,43 @@ LayoutConfig *Card::newConfig() {
 CardData *Card::newCard(const std::string &defId) {
     const CardDefinition *d = findDef(defId);
     if (!d) return nullptr;
-    auto c = std::make_unique<CardData>();
-    c->id = defId + "#" + std::to_string(nextInstance_++);
-    c->name = d->name;
-    c->kind = d->kind;
-    c->cost = d->cost;
-    c->attack = d->attack;
-    c->health = d->health;
-    c->tint = d->tint;
-    CardData *raw = c.get();
-    cards_.push_back(std::move(c));
-    return raw;
+    CardData *c = CardData::createCard();
+    c->identity()->id = defId + "#" + std::to_string(nextInstance_++);
+    c->identity()->name = d->name;
+    c->identity()->kind = d->kind;
+    c->stats()->cost = d->cost;
+    c->stats()->attack = d->attack;
+    c->stats()->health = d->health;
+    c->visual()->tint = d->tint;
+    cards_.push_back(ecs::handle_of(c));
+    return c;
 }
 
 Deck *Card::newDeck() {
-    auto d = std::make_unique<Deck>();
-    Deck *raw = d.get();
-    decks_.push_back(std::move(d));
-    activeDeck_ = raw;
-    return raw;
+    Deck *d = Deck::createDeck();
+    decks_.push_back(ecs::handle_of(d));
+    activeDeck_ = d;
+    return d;
 }
 
 Zone *Card::newZone(const std::string &id, const std::string &label, float x, float y, float w, float h) {
-    auto z = std::make_unique<Zone>();
-    z->id = id;
-    z->label = label;
-    z->x = x;
-    z->y = y;
-    z->w = w;
-    z->h = h;
-    Zone *raw = z.get();
-    zones_.push_back(std::move(z));
-    return raw;
+    Zone *z = Zone::createZone();
+    auto *R = z->rect().operator->();
+    R->id = id;
+    R->label = label;
+    R->x = x;
+    R->y = y;
+    R->w = w;
+    R->h = h;
+    zones_.push_back(ecs::handle_of(z));
+    return z;
 }
 
 Hand *Card::newHand(LayoutConfig *cfg) {
-    auto h = std::make_unique<Hand>();
-    h->config = cfg;
-    Hand *raw = h.get();
-    hands_.push_back(std::move(h));
-    return raw;
+    Hand *h = Hand::createHand();
+    h->meta()->config = cfg;
+    hands_.push_back(ecs::handle_of(h));
+    return h;
 }
 
 // ---------------------------------------------------------------------------
@@ -175,12 +227,14 @@ int Card::handCount() const { return static_cast<int>(hands_.size()); }
 
 Hand *Card::getHand(int index) const {
     if (index < 0 || static_cast<size_t>(index) >= hands_.size()) return nullptr;
-    return hands_[static_cast<size_t>(index)].get();
+    return resolve<Hand>(hands_[static_cast<size_t>(index)]);
 }
 
 Hand *Card::findHand(const std::string &owner) const {
-    for (const auto &h : hands_)
-        if (h->owner == owner) return h.get();
+    for (const auto &h : hands_) {
+        Hand *hand = resolve<Hand>(h);
+        if (hand && hand->meta()->owner == owner) return hand;
+    }
     return nullptr;
 }
 
@@ -188,7 +242,7 @@ int Card::zoneCount() const { return static_cast<int>(zones_.size()); }
 
 Zone *Card::getZone(int index) const {
     if (index < 0 || static_cast<size_t>(index) >= zones_.size()) return nullptr;
-    return zones_[static_cast<size_t>(index)].get();
+    return resolve<Zone>(zones_[static_cast<size_t>(index)]);
 }
 
 Deck *Card::getDeck() const { return activeDeck_; }
@@ -199,10 +253,10 @@ CardData *Card::drawCard(const std::string &handOwner) {
     CardData *c = activeDeck_->draw();
     if (!c) return nullptr;
     if (activeConfig_) {
-        c->x = activeConfig_->deckX;
-        c->y = activeConfig_->deckY;
+        c->layout()->x = activeConfig_->deckX;
+        c->layout()->y = activeConfig_->deckY;
     }
-    c->state = CardState::Deck;
+    c->state()->phase = CardState::Deck;
     h->addCard(c);
     return c;
 }
@@ -214,15 +268,23 @@ CardData *Card::drawCard(const std::string &handOwner) {
 void Card::update(float dt, float mx, float my, bool down) {
     std::vector<Zone *> zonePtrs;
     zonePtrs.reserve(zones_.size());
-    for (auto &z : zones_) zonePtrs.push_back(z.get());
-    for (auto &h : hands_) h->update(dt, mx, my, down, zonePtrs, events_);
+    for (auto &h : zones_) {
+        if (Zone *z = resolve<Zone>(h)) zonePtrs.push_back(z);
+    }
+    for (auto &h : hands_) {
+        if (Hand *hand = resolve<Hand>(h)) hand->update(dt, mx, my, down, zonePtrs, events_);
+    }
 }
 
 void Card::render(graphics::Graphics *gfx) {
     if (activeConfig_ && activeConfig_->showZones) {
-        for (auto &z : zones_) z->render(gfx, true);
+        for (auto &h : zones_) {
+            if (Zone *z = resolve<Zone>(h)) z->render(gfx, true);
+        }
     }
-    for (auto &h : hands_) h->render(gfx);
+    for (auto &h : hands_) {
+        if (Hand *hand = resolve<Hand>(h)) hand->render(gfx);
+    }
 }
 
 void Card::renderDeck(graphics::Graphics *gfx) {
@@ -282,6 +344,11 @@ void Card::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Card::create, false);
     expose(cls);
 
+    registerCppEntityClassForScript<CardData>();
+    registerCppEntityClassForScript<Hand>();
+    registerCppEntityClassForScript<Deck>();
+    registerCppEntityClassForScript<Zone>();
+
     // LayoutConfig —— 全部布局参数（UiCard Configs）
     auto cfgCls = table.addClass<LayoutConfig>(
         "LayoutConfig", std::function<LayoutConfig *()>([]() -> LayoutConfig * { return nullptr; }), false);
@@ -323,52 +390,53 @@ void Card::expose(ssq::Table &table) {
     // CardData
     auto cardCls = table.addClass<CardData>(
         "CardData", std::function<CardData *()>([]() -> CardData * { return nullptr; }), false);
-    cardCls.addFunc("getId", [](CardData *c) -> std::string { return c ? c->id : std::string{}; });
-    cardCls.addFunc("setId", [](CardData *c, const std::string &v) { if (c) c->id = v; });
-    cardCls.addFunc("getName", [](CardData *c) -> std::string { return c ? c->name : std::string{}; });
-    cardCls.addFunc("setName", [](CardData *c, const std::string &v) { if (c) c->name = v; });
-    cardCls.addFunc("getKind", [](CardData *c) -> std::string { return c ? c->kind : std::string{}; });
-    cardCls.addFunc("setKind", [](CardData *c, const std::string &v) { if (c) c->kind = v; });
-    cardCls.addFunc("getCost", [](CardData *c) -> int { return c ? c->cost : 0; });
-    cardCls.addFunc("setCost", [](CardData *c, int v) { if (c) c->cost = v; });
-    cardCls.addFunc("getAttack", [](CardData *c) -> int { return c ? c->attack : 0; });
-    cardCls.addFunc("setAttack", [](CardData *c, int v) { if (c) c->attack = v; });
-    cardCls.addFunc("getHealth", [](CardData *c) -> int { return c ? c->health : 0; });
-    cardCls.addFunc("setHealth", [](CardData *c, int v) { if (c) c->health = v; });
-    cardCls.addFunc("isFaceUp", [](CardData *c) -> bool { return c ? c->faceUp : true; });
-    cardCls.addFunc("setFaceUp", [](CardData *c, bool v) { if (c) c->faceUp = v; });
-    cardCls.addFunc("isDisabled", [](CardData *c) -> bool { return c ? c->disabled : false; });
-    cardCls.addFunc("setDisabled", [](CardData *c, bool v) { if (c) c->disabled = v; });
+    cardCls.addFunc("getId", [](CardData *c) -> std::string { return c ? c->identity()->id : std::string{}; });
+    cardCls.addFunc("setId", [](CardData *c, const std::string &v) { if (c) c->identity()->id = v; });
+    cardCls.addFunc("getName", [](CardData *c) -> std::string { return c ? c->identity()->name : std::string{}; });
+    cardCls.addFunc("setName", [](CardData *c, const std::string &v) { if (c) c->identity()->name = v; });
+    cardCls.addFunc("getKind", [](CardData *c) -> std::string { return c ? c->identity()->kind : std::string{}; });
+    cardCls.addFunc("setKind", [](CardData *c, const std::string &v) { if (c) c->identity()->kind = v; });
+    cardCls.addFunc("getCost", [](CardData *c) -> int { return c ? c->stats()->cost : 0; });
+    cardCls.addFunc("setCost", [](CardData *c, int v) { if (c) c->stats()->cost = v; });
+    cardCls.addFunc("getAttack", [](CardData *c) -> int { return c ? c->stats()->attack : 0; });
+    cardCls.addFunc("setAttack", [](CardData *c, int v) { if (c) c->stats()->attack = v; });
+    cardCls.addFunc("getHealth", [](CardData *c) -> int { return c ? c->stats()->health : 0; });
+    cardCls.addFunc("setHealth", [](CardData *c, int v) { if (c) c->stats()->health = v; });
+    cardCls.addFunc("isFaceUp", [](CardData *c) -> bool { return c ? c->visual()->faceUp : true; });
+    cardCls.addFunc("setFaceUp", [](CardData *c, bool v) { if (c) c->visual()->faceUp = v; });
+    cardCls.addFunc("isDisabled", [](CardData *c) -> bool { return c ? c->visual()->disabled : false; });
+    cardCls.addFunc("setDisabled", [](CardData *c, bool v) { if (c) c->visual()->disabled = v; });
     cardCls.addFunc("getState", [](CardData *c) -> std::string {
-        return c ? cardStateName(c->state) : std::string{};
+        return c ? cardStateName(c->state()->phase) : std::string{};
     });
     cardCls.addFunc("setState", [](CardData *c, const std::string &v) {
         if (!c) return;
-        if (v == "deck") c->state = CardState::Deck;
-        else if (v == "hand") c->state = CardState::Hand;
-        else if (v == "hovered") c->state = CardState::Hovered;
-        else if (v == "dragging") c->state = CardState::Dragging;
-        else if (v == "returning") c->state = CardState::Returning;
-        else if (v == "played") c->state = CardState::Played;
-        else if (v == "discarded") c->state = CardState::Discarded;
-        else if (v == "disabled") c->state = CardState::Disabled;
+        auto *st = c->state().operator->();
+        if (v == "deck") st->phase = CardState::Deck;
+        else if (v == "hand") st->phase = CardState::Hand;
+        else if (v == "hovered") st->phase = CardState::Hovered;
+        else if (v == "dragging") st->phase = CardState::Dragging;
+        else if (v == "returning") st->phase = CardState::Returning;
+        else if (v == "played") st->phase = CardState::Played;
+        else if (v == "discarded") st->phase = CardState::Discarded;
+        else if (v == "disabled") st->phase = CardState::Disabled;
     });
-    cardCls.addFunc("getTintR", [](CardData *c) -> float { return c ? c->tint.r : 0.f; });
-    cardCls.addFunc("getTintG", [](CardData *c) -> float { return c ? c->tint.g : 0.f; });
-    cardCls.addFunc("getTintB", [](CardData *c) -> float { return c ? c->tint.b : 0.f; });
+    cardCls.addFunc("getTintR", [](CardData *c) -> float { return c ? c->visual()->tint.r : 0.f; });
+    cardCls.addFunc("getTintG", [](CardData *c) -> float { return c ? c->visual()->tint.g : 0.f; });
+    cardCls.addFunc("getTintB", [](CardData *c) -> float { return c ? c->visual()->tint.b : 0.f; });
     cardCls.addFunc("setTint", [](CardData *c, float r, float g, float b) {
-        if (c) c->tint = glm::vec3(r, g, b);
+        if (c) c->visual()->tint = glm::vec3(r, g, b);
     });
-    cardCls.addFunc("setArt", [](CardData *c, graphics::Texture *t) { if (c) c->texture = t; });
-    cardCls.addFunc("getArt", [](CardData *c) -> graphics::Texture * { return c ? c->texture : nullptr; });
-    cardCls.addFunc("getX", [](CardData *c) -> float { return c ? c->x : 0.f; });
-    cardCls.addFunc("getY", [](CardData *c) -> float { return c ? c->y : 0.f; });
-    cardCls.addFunc("getW", [](CardData *c) -> float { return c ? c->w : 0.f; });
-    cardCls.addFunc("getH", [](CardData *c) -> float { return c ? c->h : 0.f; });
-    cardCls.addFunc("getScale", [](CardData *c) -> float { return c ? c->scale : 0.f; });
-    cardCls.addFunc("getAlpha", [](CardData *c) -> float { return c ? c->alpha : 0.f; });
-    cardCls.addFunc("isHovered", [](CardData *c) -> bool { return c ? c->hovered : false; });
-    cardCls.addFunc("isDragging", [](CardData *c) -> bool { return c ? c->dragging : false; });
+    cardCls.addFunc("setArt", [](CardData *c, graphics::Texture *t) { if (c) c->visual()->texture = t; });
+    cardCls.addFunc("getArt", [](CardData *c) -> graphics::Texture * { return c ? c->visual()->texture : nullptr; });
+    cardCls.addFunc("getX", [](CardData *c) -> float { return c ? c->layout()->x : 0.f; });
+    cardCls.addFunc("getY", [](CardData *c) -> float { return c ? c->layout()->y : 0.f; });
+    cardCls.addFunc("getW", [](CardData *c) -> float { return c ? c->layout()->w : 0.f; });
+    cardCls.addFunc("getH", [](CardData *c) -> float { return c ? c->layout()->h : 0.f; });
+    cardCls.addFunc("getScale", [](CardData *c) -> float { return c ? c->layout()->scale : 0.f; });
+    cardCls.addFunc("getAlpha", [](CardData *c) -> float { return c ? c->layout()->alpha : 0.f; });
+    cardCls.addFunc("isHovered", [](CardData *c) -> bool { return c ? c->state()->hovered : false; });
+    cardCls.addFunc("isDragging", [](CardData *c) -> bool { return c ? c->state()->dragging : false; });
     cardCls.addFunc("hit", [](CardData *c, float px, float py) -> bool { return c && c->hit(px, py); });
     cardCls.addFunc("describe", [](CardData *c) -> std::string { return c ? c->describe() : std::string{}; });
 
@@ -387,29 +455,31 @@ void Card::expose(ssq::Table &table) {
     // Zone
     auto zoneCls = table.addClass<Zone>(
         "Zone", std::function<Zone *()>([]() -> Zone * { return nullptr; }), false);
-    zoneCls.addFunc("getId", [](Zone *z) -> std::string { return z ? z->id : std::string{}; });
-    zoneCls.addFunc("setId", [](Zone *z, const std::string &v) { if (z) z->id = v; });
-    zoneCls.addFunc("getLabel", [](Zone *z) -> std::string { return z ? z->label : std::string{}; });
-    zoneCls.addFunc("setLabel", [](Zone *z, const std::string &v) { if (z) z->label = v; });
-    zoneCls.addFunc("getX", [](Zone *z) -> float { return z ? z->x : 0.f; });
-    zoneCls.addFunc("getY", [](Zone *z) -> float { return z ? z->y : 0.f; });
-    zoneCls.addFunc("getW", [](Zone *z) -> float { return z ? z->w : 0.f; });
-    zoneCls.addFunc("getH", [](Zone *z) -> float { return z ? z->h : 0.f; });
+    zoneCls.addFunc("getId", [](Zone *z) -> std::string { return z ? z->rect()->id : std::string{}; });
+    zoneCls.addFunc("setId", [](Zone *z, const std::string &v) { if (z) z->rect()->id = v; });
+    zoneCls.addFunc("getLabel", [](Zone *z) -> std::string { return z ? z->rect()->label : std::string{}; });
+    zoneCls.addFunc("setLabel", [](Zone *z, const std::string &v) { if (z) z->rect()->label = v; });
+    zoneCls.addFunc("getX", [](Zone *z) -> float { return z ? z->rect()->x : 0.f; });
+    zoneCls.addFunc("getY", [](Zone *z) -> float { return z ? z->rect()->y : 0.f; });
+    zoneCls.addFunc("getW", [](Zone *z) -> float { return z ? z->rect()->w : 0.f; });
+    zoneCls.addFunc("getH", [](Zone *z) -> float { return z ? z->rect()->h : 0.f; });
     zoneCls.addFunc("setRect", [](Zone *z, float x, float y, float w, float h) {
-        if (z) { z->x = x; z->y = y; z->w = w; z->h = h; }
+        if (!z) return;
+        auto *R = z->rect().operator->();
+        R->x = x; R->y = y; R->w = w; R->h = h;
     });
-    zoneCls.addFunc("getColorR", [](Zone *z) -> float { return z ? z->color.r : 0.f; });
-    zoneCls.addFunc("getColorG", [](Zone *z) -> float { return z ? z->color.g : 0.f; });
-    zoneCls.addFunc("getColorB", [](Zone *z) -> float { return z ? z->color.b : 0.f; });
+    zoneCls.addFunc("getColorR", [](Zone *z) -> float { return z ? z->rect()->color.r : 0.f; });
+    zoneCls.addFunc("getColorG", [](Zone *z) -> float { return z ? z->rect()->color.g : 0.f; });
+    zoneCls.addFunc("getColorB", [](Zone *z) -> float { return z ? z->rect()->color.b : 0.f; });
     zoneCls.addFunc("setColor", [](Zone *z, float r, float g, float b) {
-        if (z) z->color = glm::vec3(r, g, b);
+        if (z) z->rect()->color = glm::vec3(r, g, b);
     });
-    zoneCls.addFunc("getAlpha", [](Zone *z) -> float { return z ? z->alpha : 0.f; });
-    zoneCls.addFunc("setAlpha", [](Zone *z, float v) { if (z) z->alpha = v; });
-    zoneCls.addFunc("isEnabled", [](Zone *z) -> bool { return z ? z->enabled : false; });
-    zoneCls.addFunc("setEnabled", [](Zone *z, bool v) { if (z) z->enabled = v; });
-    zoneCls.addFunc("addAcceptKind", [](Zone *z, const std::string &k) { if (z) z->acceptKinds.push_back(k); });
-    zoneCls.addFunc("clearAcceptKinds", [](Zone *z) { if (z) z->acceptKinds.clear(); });
+    zoneCls.addFunc("getAlpha", [](Zone *z) -> float { return z ? z->rect()->alpha : 0.f; });
+    zoneCls.addFunc("setAlpha", [](Zone *z, float v) { if (z) z->rect()->alpha = v; });
+    zoneCls.addFunc("isEnabled", [](Zone *z) -> bool { return z ? z->rect()->enabled : false; });
+    zoneCls.addFunc("setEnabled", [](Zone *z, bool v) { if (z) z->rect()->enabled = v; });
+    zoneCls.addFunc("addAcceptKind", [](Zone *z, const std::string &k) { if (z) z->filter()->acceptKinds.push_back(k); });
+    zoneCls.addFunc("clearAcceptKinds", [](Zone *z) { if (z) z->filter()->acceptKinds.clear(); });
     zoneCls.addFunc("accepts", [](Zone *z, CardData *c) -> bool { return z && z->accepts(c); });
     zoneCls.addFunc("contains", [](Zone *z, float px, float py) -> bool { return z && z->contains(px, py); });
     zoneCls.addFunc("render", [](Zone *z, graphics::Graphics *gfx, bool showLabel) {
@@ -419,16 +489,16 @@ void Card::expose(ssq::Table &table) {
     // Hand
     auto handCls = table.addClass<Hand>(
         "Hand", std::function<Hand *()>([]() -> Hand * { return nullptr; }), false);
-    handCls.addFunc("getOwner", [](Hand *h) -> std::string { return h ? h->owner : std::string{}; });
-    handCls.addFunc("setOwner", [](Hand *h, const std::string &v) { if (h) h->owner = v; });
-    handCls.addFunc("getConfig", [](Hand *h) -> LayoutConfig * { return h ? h->config : nullptr; });
-    handCls.addFunc("setConfig", [](Hand *h, LayoutConfig *c) { if (h) h->config = c; });
-    handCls.addFunc("isFaceDown", [](Hand *h) -> bool { return h ? h->faceDown : false; });
-    handCls.addFunc("setFaceDown", [](Hand *h, bool v) { if (h) h->faceDown = v; });
-    handCls.addFunc("isPeek", [](Hand *h) -> bool { return h ? h->peek : false; });
-    handCls.addFunc("setPeek", [](Hand *h, bool v) { if (h) h->peek = v; });
-    handCls.addFunc("isInteractive", [](Hand *h) -> bool { return h ? h->interactive : true; });
-    handCls.addFunc("setInteractive", [](Hand *h, bool v) { if (h) h->interactive = v; });
+    handCls.addFunc("getOwner", [](Hand *h) -> std::string { return h ? h->meta()->owner : std::string{}; });
+    handCls.addFunc("setOwner", [](Hand *h, const std::string &v) { if (h) h->meta()->owner = v; });
+    handCls.addFunc("getConfig", [](Hand *h) -> LayoutConfig * { return h ? h->meta()->config : nullptr; });
+    handCls.addFunc("setConfig", [](Hand *h, LayoutConfig *c) { if (h) h->meta()->config = c; });
+    handCls.addFunc("isFaceDown", [](Hand *h) -> bool { return h ? h->meta()->faceDown : false; });
+    handCls.addFunc("setFaceDown", [](Hand *h, bool v) { if (h) h->meta()->faceDown = v; });
+    handCls.addFunc("isPeek", [](Hand *h) -> bool { return h ? h->meta()->peek : false; });
+    handCls.addFunc("setPeek", [](Hand *h, bool v) { if (h) h->meta()->peek = v; });
+    handCls.addFunc("isInteractive", [](Hand *h) -> bool { return h ? h->meta()->interactive : true; });
+    handCls.addFunc("setInteractive", [](Hand *h, bool v) { if (h) h->meta()->interactive = v; });
     handCls.addFunc("addCard", &Hand::addCard);
     handCls.addFunc("removeCard", &Hand::removeCard);
     handCls.addFunc("clear", &Hand::clear);

@@ -5,13 +5,19 @@
 #include <glm/vec4.hpp>
 #include <optional>
 
-typedef glm::vec4 Color;
-
 namespace eve::image {
 class ImageData;
 }
 
 namespace eve::graphics {
+
+/**
+ * @brief RGBA color, used by every graphics draw call.
+ * Lives inside eve::graphics so including Canvas.h/Graphics.h cannot pollute
+ * the global namespace (old code outside this namespace should either
+ * qualify eve::graphics::Color or add a file-local using-declaration).
+ */
+using Color = glm::vec4;
 
 class Texture;
 
