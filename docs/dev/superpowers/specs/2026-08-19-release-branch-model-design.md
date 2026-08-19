@@ -148,6 +148,15 @@ layering 作业（无网络、无工具链依赖）。独立发布的工具版�
 - 五平台 SDK 作业与可用性测试、上传 artifact 保持不变。
 - `test-sdk.sh` 接收期望版本（tag 去 `v`），精确校验 `share/eve/VERSION` 与 `eve -v`；
   publish 作业在上传前对每个 zip 的 `share/eve/VERSION` 与 tag 交叉校验。
+- SDK 内容：`install_sdk.cmake` 按 `EVE_ENABLED_MODULES` 自动导出模块头文件；
+  `share/eve/licenses/` 打包引擎与第三方许可证；`test-sdk.sh` 增加 C++ 插件编译
+  与 Android APK 组装冒烟；publish 生成并上传 `SHA256SUMS`。
+
+### `cleanup-branches.yml`（新建）
+
+- 每周一 02:00 UTC 定时 + `workflow_dispatch`。
+- `release.py cleanup-branches`：删除已并入 `main`/`dev` 的 `vX.X.X` /
+  `promote/*` / `rebase/*` 分支（tag、`main`、`dev` 永不删除）。
 - **不再** `gh release edit --prerelease=false`；升正式版只在 `release.py finish`。
 
 ### `release.yml`（新建）

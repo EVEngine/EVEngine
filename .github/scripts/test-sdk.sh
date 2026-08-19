@@ -31,10 +31,64 @@ EXPECTED="${3:-}"
 case "$PLAT" in
   win32)           RUNTIME="eve.exe" ;;
   linux|macosx)    RUNTIME="eve" ;;
+  android)         RUNTIME="" ;;   # verified by the APK smoke below
   *) echo "SKIP: no host runtime to test for platform '$PLAT'"; exit 0 ;;
 esac
 
 fail() { echo "ERROR: $*" >&2; exit 1; }
+
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+
+# --- Android: assemble an APK from the SDK packaging template ----------------
+# Hard gate: the template + SDK libs + a minimal game must produce an APK.
+if [ "$PLAT" = "android" ]; then
+  if [ -z "${ANDROID_SDK:-}" ] || [ -z "${JAVA_HOME:-}" ]; then
+    echo "SKIP: android APK smoke needs ANDROID_SDK + JAVA_HOME in the environment"
+    exit 0
+  fi
+  [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
+  [ "$(cat "$SDK/share/eve/TARGET_PLATFORM")" = "android" ] || fail "TARGET_PLATFORM != android"
+  VERSION_FILE="$(cat "$SDK/share/eve/VERSION")"
+  if [ -n "$EXPECTED" ] && [ "$VERSION_FILE" != "$EXPECTED" ]; then
+    fail "share/eve/VERSION '$VERSION_FILE' != expected '$EXPECTED'"
+  fi
+  TEMPLATE="$SDK/platform/apk"
+  [ -f "$TEMPLATE/gradlew" ] || [ -f "$TEMPLATE/gradlew.bat" ] || fail "android SDK missing gradle template"
+
+  JNI="$TEMPLATE/app/src/main/jniLibs/arm64-v8a"
+  mkdir -p "$JNI"
+  [ -f "$SDK/lib/libmain.so" ] || fail "missing lib/libmain.so"
+  cp "$SDK/lib/libmain.so" "$JNI/"
+  for lib in libSDL2.so libhidapi.so libc++_shared.so; do
+    [ -f "$SDK/lib/$lib" ] && cp "$SDK/lib/$lib" "$JNI/"
+  done
+
+  GAME="$TEMPLATE/app/src/main/assets/game"
+  mkdir -p "$GAME"
+  cat > "$GAME/config.nut" <<'EOF'
+config = { width=320 height=240 title="sdk-test" debug=false hotReload=false };
+EOF
+  cat > "$GAME/main.nut" <<'EOF'
+eve_init = function() { print("SDK_TEST_GAME_OK\n"); };
+eve_update = function(dt) {};
+EOF
+  printf 'sdk.dir=%s\n' "$ANDROID_SDK" > "$TEMPLATE/local.properties"
+
+  echo "== [test-sdk] assembling APK from $TEMPLATE =="
+  ( cd "$TEMPLATE" && sh gradlew :app:assembleDebug --no-daemon --console=plain ) \
+    >"$WORK/apk-build.log" 2>&1
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    tail -n 40 "$WORK/apk-build.log"
+    fail "gradle assembleDebug failed"
+  fi
+  APK="$TEMPLATE/app/build/outputs/apk/debug/app-debug.apk"
+  [ -f "$APK" ] || fail "assembleDebug did not produce app-debug.apk"
+  echo "OK: android APK assembled: $(basename "$APK") ($(du -h "$APK" | cut -f1))"
+  echo "== [test-sdk] PASS (android) =="
+  exit 0
+fi
 
 echo "== [test-sdk] platform=$PLAT sdk=$SDK runtime=$RUNTIME =="
 
@@ -72,8 +126,6 @@ fi
 echo "OK: host runtime executes"
 
 # --- 3 + 4. zip + package a sample game ----------------------------------------
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
 GAME="$WORK/sample"
 mkdir -p "$GAME/assets"
 cat > "$GAME/config.nut" <<'EOF'
@@ -98,6 +150,63 @@ if [ "$PLAT" = "win32" ]; then
 fi
 echo "OK: eve package produced runnable game folder:"
 ls -1 "$PKG" | sed 's/^/    /'
+
+# --- 5. Native C++ plugin compiles against the SDK -----------------------------
+# Hard gate: find_package(EVEngine) + add_eve_plugin() is the SDK's primary
+# consumer path; a plugin must configure, compile and link on the host.
+PLUGIN="$WORK/plugin"
+mkdir -p "$PLUGIN"
+cat > "$PLUGIN/CMakeLists.txt" <<'EOF'
+cmake_minimum_required(VERSION 3.21)
+project(eve_sdk_plugin LANGUAGES CXX)
+find_package(EVEngine REQUIRED)
+add_eve_plugin(eve_sdk_plugin SOURCES plugin.cpp)
+EOF
+cat > "$PLUGIN/plugin.cpp" <<'EOF'
+#include "common/Export.h"
+#include "common/Module.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
+namespace eve::sdktest {
+class SdkTestPlugin : public Module {
+public:
+    Module_REG(SdkTestPlugin);
+    SdkTestPlugin() = default;
+    ~SdkTestPlugin() override = default;
+};
+Module_IMPL(SdkTestPlugin, new SdkTestPlugin());
+void SdkTestPlugin::expose(ssq::Table& table) {
+    auto cls = table.addClass(name, SdkTestPlugin::create, false);
+    expose(cls);
+}
+void SdkTestPlugin::expose(ssq::Class& cls) {
+    cls.addFunc("getName", &SdkTestPlugin::getName);
+}
+}  // namespace eve::sdktest
+
+EVE_PLUGIN_EXPORT int eve_plugin_init(void) { return 0; }
+EOF
+
+CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE=Release)
+if [ "$PLAT" = "win32" ]; then
+  CMAKE_ARGS+=(-G "Visual Studio 17 2022" -A x64)
+fi
+cmake "${CMAKE_ARGS[@]}" >"$WORK/plugin-cmake.log" 2>&1 || {
+  tail -n 30 "$WORK/plugin-cmake.log"
+  fail "plugin cmake configure failed"
+}
+cmake --build "$PLUGIN/build" --config Release --parallel 2 >"$WORK/plugin-build.log" 2>&1 || {
+  tail -n 40 "$WORK/plugin-build.log"
+  fail "plugin cmake build failed"
+}
+case "$PLAT" in
+  win32)   PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.dll' | head -1)" ;;
+  macosx)  PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.dylib' | head -1)" ;;
+  *)       PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.so' | head -1)" ;;
+esac
+[ -n "$PLUGIN_OUT" ] || fail "plugin shared library not produced"
+echo "OK: native C++ plugin compiled: $(basename "$PLUGIN_OUT")"
 
 # --- Best-effort: run the packaged game from memory -----------------------------
 echo "== best-effort in-memory run =="

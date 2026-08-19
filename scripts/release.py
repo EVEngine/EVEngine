@@ -12,6 +12,9 @@ from typing import Callable
 
 TAG_RE = re.compile(r"^v([0-9]+)\.([0-9]+)\.([0-9]+)$")
 PROMOTE_HEAD_RE = re.compile(r"^promote/v[0-9]+\.[0-9]+\.[0-9]+$")
+VERSION_BRANCH_RE = re.compile(r"^v([0-9]+)\.([0-9]+)\.([0-9]+)$")
+PROMOTE_BRANCH_RE = re.compile(r"^promote/v([0-9]+)\.([0-9]+)\.([0-9]+)$")
+REBASE_BRANCH_RE = re.compile(r"^rebase/v([0-9]+)\.([0-9]+)\.([0-9]+)$")
 DOC_FILES = frozenset({"README.md", "Readme.md", "Readme.en.md", "Doxyfile"})
 DEV_BRANCH = "dev"
 MAIN_BRANCH = "main"
@@ -640,6 +643,49 @@ def cmd_check_main_pr(runner: Runner, *, head_ref: str | None = None) -> None:
     raise SystemExit(1)
 
 
+def cmd_cleanup_branches(runner: Runner, *, dry_run: bool = False) -> None:
+    """Delete release branches once their PRs have been merged.
+
+    - vX.Y.Z: deleted when its -dev write-back reached `dev` (rebase PR merged)
+    - promote/vX.Y.Z: deleted when its official commit reached `main`
+    - rebase/vX.Y.Z: deleted when its tip reached `dev`
+
+    The tag refs/tags/vX.Y.Z is never touched, so re-runs of the release
+    pipeline can still recreate the branch. `main` / `dev` are never deleted.
+    """
+    runner.run(["git", "fetch", "origin", "--prune"])
+    refs = runner.run(
+        ["git", "for-each-ref", "--format=%(refname:short) %(objectname)", "refs/remotes/origin"]
+    )
+    deleted: list[str] = []
+    for line in refs.splitlines():
+        if not line.strip():
+            continue
+        short, sha = line.split(" ", 1)
+        if not short.startswith("origin/"):
+            continue
+        name = short[len("origin/"):]
+        if VERSION_BRANCH_RE.fullmatch(name):
+            target = DEV_BRANCH
+        elif PROMOTE_BRANCH_RE.fullmatch(name):
+            target = MAIN_BRANCH
+        elif REBASE_BRANCH_RE.fullmatch(name):
+            target = DEV_BRANCH
+        else:
+            continue
+        if not _is_ancestor(runner, sha, f"origin/{target}"):
+            print(f"keep {name}: not merged into {target}")
+            continue
+        if dry_run:
+            print(f"+ delete {name} (merged into {target})")
+            continue
+        runner.run(["git", "push", "origin", "--delete", f"refs/heads/{name}"])
+        deleted.append(name)
+        print(f"deleted {name} (merged into {target})")
+    if not deleted and not dry_run:
+        print("no release branches to clean up")
+
+
 def cmd_sync_docs(runner: Runner, *, dry_run: bool = False) -> None:
     runner.run(["git", "fetch", "origin", MAIN_BRANCH, DEV_BRANCH])
     log = runner.run(
@@ -725,6 +771,7 @@ def main(
     sub.add_parser("sync-docs")
     sub.add_parser("check-main-pr")
     sub.add_parser("check-versions")
+    sub.add_parser("cleanup-branches")
     args = parser.parse_args(argv)
 
     real = runner or RealRunner(dry_run=args.dry_run)
@@ -747,6 +794,8 @@ def main(
         cmd_check_main_pr(real)
     elif args.cmd == "check-versions":
         cmd_check_versions(real, root=root)
+    elif args.cmd == "cleanup-branches":
+        cmd_cleanup_branches(real, dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

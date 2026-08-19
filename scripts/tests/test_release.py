@@ -293,6 +293,53 @@ class CheckVersionsTest(unittest.TestCase):
                 release.cmd_check_versions(release.FakeRunner(), root=root)
 
 
+class CleanupBranchesTest(unittest.TestCase):
+    def _runner(self):
+        r = release.FakeRunner()
+        r.when(["git", "fetch", "origin", "--prune"], stdout="")
+        r.when(
+            [
+                "git",
+                "for-each-ref",
+                "--format=%(refname:short) %(objectname)",
+                "refs/remotes/origin",
+            ],
+            stdout=(
+                "origin/main mmm\n"
+                "origin/dev ddd\n"
+                "origin/v0.1.0 aaa\n"
+                "origin/v0.2.0 bbb\n"
+                "origin/promote/v0.1.0 ccc\n"
+                "origin/rebase/v0.1.0 dd2\n"
+                "origin/feature-x fff\n"
+            ),
+        )
+        r.when(["git", "merge-base", "--is-ancestor", "aaa", "origin/dev"], rc=0)
+        r.when(["git", "merge-base", "--is-ancestor", "bbb", "origin/dev"], rc=1)
+        r.when(["git", "merge-base", "--is-ancestor", "ccc", "origin/main"], rc=0)
+        r.when(["git", "merge-base", "--is-ancestor", "dd2", "origin/dev"], rc=0)
+        r.when(["git", "push", "origin", "--delete"], stdout="")
+        return r
+
+    def test_deletes_merged_branches_only(self):
+        r = self._runner()
+        release.cmd_cleanup_branches(r)
+        deletes = [c for c in r.calls if "--delete" in c]
+        self.assertEqual(
+            deletes,
+            [
+                ["git", "push", "origin", "--delete", "refs/heads/v0.1.0"],
+                ["git", "push", "origin", "--delete", "refs/heads/promote/v0.1.0"],
+                ["git", "push", "origin", "--delete", "refs/heads/rebase/v0.1.0"],
+            ],
+        )
+
+    def test_dry_run_never_pushes(self):
+        r = self._runner()
+        release.cmd_cleanup_branches(r, dry_run=True)
+        self.assertFalse(any(c[:2] == ["git", "push"] for c in r.calls))
+
+
 class FinishTest(unittest.TestCase):
     def _base(self, *, on_main: bool = False):
         r = release.FakeRunner()

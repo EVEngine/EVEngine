@@ -278,6 +278,45 @@ class ReleaseGitIntegrationTest(unittest.TestCase):
         self.assertEqual(dev_conflict, self._remote_ref("refs/heads/dev"))
         self.assertEqual(self.main_sha, self._remote_ref("refs/heads/main"))
 
+    def test_cleanup_branches_after_prs_merged(self) -> None:
+        work = self._fresh_clone()
+        release.cmd_start(
+            FakeGhRunner(cwd=work),
+            tag=TAG,
+            cmake_path=work / "CMakeLists.txt",
+            repo_root=work,
+            ci=True,
+        )
+        work2 = self._fresh_clone()
+        release.cmd_finish(
+            FakeGhRunner(cwd=work2),
+            tag=TAG,
+            cmake_path=work2 / "CMakeLists.txt",
+            repo_root=work2,
+        )
+
+        # Simulate the human merging both PRs: promote -> main, rebase -> dev.
+        official = _run(["git", "rev-parse", "refs/tags/v0.1.0"], cwd=work2)
+        _run(["git", "checkout", "-q", "-B", "main", "refs/remotes/origin/main"], cwd=work2)
+        _run(["git", "merge", "-q", "--no-ff", official, "-m", "promote v0.1.0"], cwd=work2)
+        _run(["git", "push", "-q", "origin", "main"], cwd=work2)
+        _run(["git", "checkout", "-q", "-B", "dev", "refs/remotes/origin/dev"], cwd=work2)
+        _run(["git", "merge", "-q", "--ff-only", "refs/remotes/origin/rebase/v0.1.0"], cwd=work2)
+        _run(["git", "push", "-q", "origin", "dev"], cwd=work2)
+
+        work3 = self._fresh_clone()
+        release.cmd_cleanup_branches(FakeGhRunner(cwd=work3))
+
+        for ref in (
+            "refs/heads/v0.1.0",
+            "refs/heads/promote/v0.1.0",
+            "refs/heads/rebase/v0.1.0",
+        ):
+            self.assertIsNone(self._remote_ref(ref), ref)
+        self.assertIsNotNone(self._remote_ref("refs/heads/main"))
+        self.assertIsNotNone(self._remote_ref("refs/heads/dev"))
+        self.assertIsNotNone(self._remote_ref("refs/tags/v0.1.0"))
+
 
 if __name__ == "__main__":
     unittest.main()

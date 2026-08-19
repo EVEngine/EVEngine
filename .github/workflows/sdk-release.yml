@@ -155,6 +155,11 @@ jobs:
             CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
+      - name: Test android SDK usability (assemble APK)
+        env:
+          TAG: ${{ inputs.tag }}
+        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/android android "${TAG#v}"
+
       - name: Package SDK zip
         env:
           TAG: ${{ inputs.tag }}
@@ -357,6 +362,9 @@ jobs:
     name: Attach SDKs
     needs: [windows, android, macos, ios, linux]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Download all SDK artifacts
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -367,6 +375,31 @@ jobs:
 
       - name: List packages
         run: ls -lh artifacts/
+
+      - name: Generate SHA256SUMS
+        run: |
+          python3 - <<'PYEOF'
+          import hashlib
+          import pathlib
+
+          files = sorted(pathlib.Path("artifacts").glob("eve-sdk-*.zip"))
+          if not files:
+              raise SystemExit("no eve-sdk-*.zip found under artifacts/")
+          with open("artifacts/SHA256SUMS", "w", encoding="utf-8") as fh:
+              for path in files:
+                  digest = hashlib.sha256(path.read_bytes()).hexdigest()
+                  fh.write(f"{digest}  {path.name}\n")
+          print(open("artifacts/SHA256SUMS", encoding="utf-8").read())
+          PYEOF
+
+      - name: Attest build provenance (best-effort)
+        # Requires the repository's artifact attestations setting; non-blocking
+        # until the maintainer enables it. Attestations bind to the zips by
+        # digest, so they survive the GitHub Release upload.
+        continue-on-error: true
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45 # v2
+        with:
+          subject-path: artifacts/eve-sdk-*.zip
 
       - name: Verify SDK versions match the release tag
         env:
@@ -406,10 +439,11 @@ jobs:
           shopt -s nullglob
           zips=(artifacts/eve-sdk-*.zip)
           if [ ${#zips[@]} -lt 5 ]; then
-            echo "Expected 5 SDK zips (win32/android/macosx/ios/linux), found ${#zips[@]}:"
+            echo "Expected 5 SDK zips (win32/android/macosx/ios/linux), found ${#zips[@]}:" 
             printf '  %s\n' "${zips[@]}"
             exit 1
           fi
+          zips+=(artifacts/SHA256SUMS)
           gh release upload "$TAG" "${zips[@]}" --repo "$REPO" --clobber
           echo "Attached SDKs to $TAG:"
           printf '  %s\n' "${zips[@]}"
