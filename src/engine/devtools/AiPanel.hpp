@@ -65,6 +65,8 @@ public:
     size_t maxEntries() const { return maxEntries_; }
 
 private:
+    // Immortal<AiPanel> constructs the singleton (devtools/Immortal.hpp).
+    template <typename> friend struct Immortal;
     AiPanel() = default;
 
     static std::string nowStamp();

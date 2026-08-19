@@ -15,6 +15,9 @@
 #include "graphics/Graphics.h"
 #include "window/Window.h"
 
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
+
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <fstream>

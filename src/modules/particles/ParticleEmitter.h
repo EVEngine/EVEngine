@@ -35,6 +35,10 @@ class Skeleton3D;
 
 namespace eve::particles {
 
+// Color lives in eve::graphics (see graphics/Canvas.h); re-expose it here so
+// particle code keeps the unqualified form.
+using eve::graphics::Color;
+
 /** @brief Single live particle (CPU simulation). */
 struct Particle {
     float x = 0.f;

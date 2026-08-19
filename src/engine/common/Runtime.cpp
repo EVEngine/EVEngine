@@ -58,6 +58,14 @@ SQUserPointer objectIdentity(const HSQOBJECT& object) {
     return reinterpret_cast<SQUserPointer>(object._unVal.pRefCounted);
 }
 
+std::unique_ptr<ssq::VM> createVm(size_t stackSize, ssq::Libs::Flag libraries) {
+    // Validate before constructing the VM: with assertions compiled out the
+    // check must not be the only thing standing between a bad stack size and a
+    // half-constructed runtime.
+    EV_PARAM_CHECK(stackSize > 0, "Runtime stack size must be positive");
+    return std::make_unique<ssq::VM>(stackSize, libraries);
+}
+
 }  // namespace
 
 struct Runtime::ScriptRecord {
@@ -110,9 +118,7 @@ Runtime::Scope::Scope(Scope&& other) noexcept
     : runtime_(std::exchange(other.runtime_, nullptr)) {}
 
 Runtime::Runtime(size_t stackSize, ssq::Libs::Flag libraries)
-    : vm_(std::make_unique<ssq::VM>(stackSize, libraries)) {
-    EV_PARAM_CHECK(stackSize > 0, "Runtime stack size must be positive");
-}
+    : vm_(createVm(stackSize, libraries)) {}
 
 Runtime::~Runtime() { shutdown(); }
 
