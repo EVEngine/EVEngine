@@ -7,7 +7,7 @@
 namespace eve::procgen {
 
 /**
- * Configurable generation sink.
+ * @brief Configurable generation sink.
  * target: "grid" | "tilelayer" | "json"
  */
 class OutputSpec {

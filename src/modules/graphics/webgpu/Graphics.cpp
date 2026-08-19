@@ -2325,9 +2325,11 @@ void Graphics::endGBufferPass() {
 
 void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
                                       float originY, float originZ, const std::string &faceDir,
-                                      Texture *atlas, int tilesPerRow) {
+                                      Texture *atlas, int tilesPerRow, const uint32_t *ao) {
     if (!device || count <= 0 || !packed) return;
     if (!voxelUnitQuadVerts) return;
+    // TODO(webgpu): bake ao (2 bits per corner) into the WGSL voxel shader.
+    (void)ao;
     frameHad3DThisFrame = true;
     frameHad3D = true;
 

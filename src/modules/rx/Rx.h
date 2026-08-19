@@ -10,11 +10,12 @@
 
 namespace eve::rx {
 
-// ---------------------------------------------------------------------------
-// Value: runtime variant used by the script-facing (Squirrel) streams. The C++
-// core is templated (Observer<T>/Observable<T>/Subject<T>); the module binds a
-// Value-typed specialization so scripts can push nil/int/float/bool/string/ptr.
-// ---------------------------------------------------------------------------
+/**
+ * @brief Runtime variant used by the script-facing (Squirrel) streams.
+ * The C++ core is templated (Observer<T>/Observable<T>/Subject<T>); the module
+ * binds a Value-typed specialization so scripts can push nil/int/float/bool/
+ * string/ptr.
+ */
 class Value {
 public:
     enum class Type { Nil, Int, Float, Bool, String, Ptr };
@@ -26,31 +27,37 @@ public:
     std::string s;
     void*       p = nullptr;
 
+    /** @brief Constructs a nil value. */
     static Value makeNil() { return {}; }
+    /** @brief Constructs an integer value. */
     static Value makeInt(int64_t v) {
         Value x;
         x.type = Type::Int;
         x.i    = v;
         return x;
     }
+    /** @brief Constructs a floating-point value. */
     static Value makeFloat(double v) {
         Value x;
         x.type = Type::Float;
         x.f    = v;
         return x;
     }
+    /** @brief Constructs a boolean value. */
     static Value makeBool(bool v) {
         Value x;
         x.type = Type::Bool;
         x.b    = v;
         return x;
     }
+    /** @brief Constructs a string value (takes ownership). */
     static Value makeString(std::string v) {
         Value x;
         x.type = Type::String;
         x.s    = std::move(v);
         return x;
     }
+    /** @brief Constructs a pointer value (borrowed, not owned). */
     static Value makePtr(void* v) {
         Value x;
         x.type = Type::Ptr;
@@ -58,6 +65,7 @@ public:
         return x;
     }
 
+    /** @brief Type predicates. */
     bool isNil() const { return type == Type::Nil; }
     bool isInt() const { return type == Type::Int; }
     bool isFloat() const { return type == Type::Float; }
@@ -65,20 +73,24 @@ public:
     bool isString() const { return type == Type::String; }
     bool isPtr() const { return type == Type::Ptr; }
 
+    /** @brief Converters (throw eve::Exception on type mismatch). */
     int64_t  toInt() const;
     double   toFloat() const;
     bool     toBool() const;
     std::string toString() const;
 
+    /** @brief Value equality across the supported types. */
     bool equals(const Value& o) const;
 };
 
-// ---------------------------------------------------------------------------
-// Subscription: RAII-ish dispose handle.
-// ---------------------------------------------------------------------------
+/**
+ * @brief RAII-style dispose handle for an active stream subscription.
+ * Disposing unsubscribes from the source; move-only.
+ */
 class Subscription {
 public:
     Subscription() = default;
+    /** @brief Wraps a dispose callback (usually unsubscribing from a Subject). */
     explicit Subscription(std::function<void()> dispose) : dispose_(std::move(dispose)) {}
     Subscription(const Subscription&) = delete;
     Subscription& operator=(const Subscription&) = delete;
@@ -98,6 +110,7 @@ public:
     }
     ~Subscription() { dispose(); }
 
+    /** @brief Runs the dispose callback once; idempotent. */
     void dispose() {
         if (dispose_ && !disposed_) {
             disposed_ = true;
@@ -106,6 +119,7 @@ public:
             fn();
         }
     }
+    /** @brief True once dispose() has run (or the handle was moved from). */
     bool isDisposed() const { return disposed_; }
 
 private:
@@ -113,9 +127,11 @@ private:
     bool                  disposed_ = false;
 };
 
-// ---------------------------------------------------------------------------
-// Observer: callbacks pushed to a subscriber.
-// ---------------------------------------------------------------------------
+/**
+ * @brief Callback bundle pushed to a subscriber.
+ * Once error() or completed() fires the observer is stopped and later
+ * notifications are ignored.
+ */
 template <typename T>
 class Observer {
 public:
@@ -123,21 +139,29 @@ public:
     using ErrorFn     = std::function<void(const std::string&)>;
     using CompletedFn = std::function<void()>;
 
+    /** @brief Value callback. */
     NextFn      onNext;
+    /** @brief Error callback (terminal). */
     ErrorFn     onError;
+    /** @brief Completion callback (terminal). */
     CompletedFn onCompleted;
 
+    /** @brief True after error()/completed() (or setStopped()). */
     bool isStopped() const { return stopped_; }
+    /** @brief Manually marks the observer stopped (used by operators). */
     void setStopped() const { stopped_ = true; }
 
+    /** @brief Delivers a value unless stopped. */
     void next(const T& v) const {
         if (!stopped_ && onNext) onNext(v);
     }
+    /** @brief Delivers a terminal error and stops. */
     void error(const std::string& e) const {
         if (stopped_) return;
         stopped_ = true;
         if (onError) onError(e);
     }
+    /** @brief Delivers a terminal completion and stops. */
     void completed() const {
         if (stopped_) return;
         stopped_ = true;
@@ -148,21 +172,25 @@ private:
     mutable bool stopped_ = false;
 };
 
-// ---------------------------------------------------------------------------
-// Observable: push-based source. Operators return a new (owned) Observable.
-// ---------------------------------------------------------------------------
+/**
+ * @brief Push-based stream source. Operators return a new (caller-owned)
+ * Observable; subscribe() returns a Subscription used to cancel.
+ */
 template <typename T>
 class Observable {
 public:
     virtual ~Observable() = default;
 
+    /** @brief Subscribes with a full observer; returns a cancel handle. */
     virtual Subscription subscribe(Observer<T> obs) = 0;
 
+    /** @brief Subscribes with a value callback only. */
     Subscription subscribe(typename Observer<T>::NextFn next) {
         Observer<T> obs;
         obs.onNext = std::move(next);
         return subscribe(std::move(obs));
     }
+    /** @brief Subscribes with value/error/completed callbacks. */
     Subscription subscribe(typename Observer<T>::NextFn next,
                            typename Observer<T>::ErrorFn error,
                            typename Observer<T>::CompletedFn completed) {
@@ -173,18 +201,24 @@ public:
         return subscribe(std::move(obs));
     }
 
-    // ---- LINQ-style operators (return new Observable, caller owns) ----
+    /** @brief Passes values through only when pred(v) is true. */
     Observable<T>* filter(std::function<bool(const T&)> pred);
+    /** @brief Transforms each value with fn. */
     template <typename R>
     Observable<R>* map(std::function<R(const T&)> fn);
+    /** @brief Emits at most the first n values, then completes. */
     Observable<T>* take(int n);
+    /** @brief Drops the first n values. */
     Observable<T>* skip(int n);
+    /** @brief Emits only the first value, then completes. */
     Observable<T>* first();
+    /** @brief Stops the stream when `other` emits or completes. */
     Observable<T>* takeUntil(Observable<T>* other);
+    /** @brief Suppresses consecutive duplicate values (uses operator==). */
     Observable<T>* distinctUntilChanged();
 };
 
-// ---- Internal: anonymous observable built from a subscribe function ----
+/** @brief Internal: observable built directly from a subscribe function. */
 template <typename T>
 class AnonymousObservable : public Observable<T> {
 public:
@@ -329,16 +363,17 @@ Observable<T>* Observable<T>::distinctUntilChanged() {
     });
 }
 
-// ---------------------------------------------------------------------------
-// Subject: multicast push-based. Both an Observable and an Observer source.
-// Thread-safe: onNext/onError/onCompleted/subscribe are mutex-protected.
-// ---------------------------------------------------------------------------
+/**
+ * @brief Multicast push-based stream: both an Observable and a push source.
+ * Thread-safe: onNext/onError/onCompleted/subscribe are mutex-protected.
+ */
 template <typename T>
 class Subject : public Observable<T> {
 public:
     using Observable<T>::subscribe;
     ~Subject() override = default;
 
+    /** @brief Registers an observer; returns a Subscription that unregisters it. */
     Subscription subscribe(Observer<T> obs) override {
         auto slot = std::make_shared<Slot>();
         slot->observer = std::move(obs);
@@ -356,22 +391,27 @@ public:
         return Subscription([this, slot]() { removeSlot(slot); });
     }
 
+    /** @brief Pushes a value to every registered observer. */
     void onNext(const T& v) { emit([&](Observer<T>& o) { o.next(v); }); }
+    /** @brief Pushes a terminal error and stops the subject. */
     void onError(const std::string& e) {
         emit([&](Observer<T>& o) { o.error(e); });
         markStopped();
     }
+    /** @brief Pushes a terminal completion and stops the subject. */
     void onCompleted() {
         emit([&](Observer<T>& o) { o.completed(); });
         markStopped();
     }
 
+    /** @brief True while at least one live observer is registered. */
     bool hasObservers() const {
         std::lock_guard<std::mutex> lock(mu_);
         for (const auto& s : slots_)
             if (!s->removed) return true;
         return false;
     }
+    /** @brief Number of live (non-disposed) observers. */
     int observerCount() const {
         std::lock_guard<std::mutex> lock(mu_);
         int n = 0;
@@ -415,15 +455,18 @@ private:
     bool                                 stopped_ = false;
 };
 
-// ---------------------------------------------------------------------------
-// BehaviorSubject: replays the latest value to new subscribers.
-// ---------------------------------------------------------------------------
+/**
+ * @brief Subject that replays the latest value to every new subscriber.
+ * setValue()/onNext() update the stored value and push it to observers.
+ */
 template <typename T>
 class BehaviorSubject : public Observable<T> {
 public:
     using Observable<T>::subscribe;
+    /** @brief Creates a subject with an initial (replayed) value. */
     explicit BehaviorSubject(T initial) : latest_(std::move(initial)) {}
 
+    /** @brief Replays the latest value, then subscribes the observer. */
     Subscription subscribe(Observer<T> obs) override {
         T latest;
         bool replay = false;
@@ -438,10 +481,12 @@ public:
         return base_.subscribe(std::move(obs));
     }
 
+    /** @brief Current stored value. */
     T getValue() const {
         std::lock_guard<std::mutex> lock(mu_);
         return latest_;
     }
+    /** @brief Stores a new value and pushes it to observers. */
     void setValue(T v) {
         T emitted;
         {
@@ -451,7 +496,9 @@ public:
         }
         base_.onNext(emitted);
     }
+    /** @brief Alias of setValue(). */
     void onNext(T v) { setValue(std::move(v)); }
+    /** @brief Stops replay and delivers a terminal error. */
     void onError(const std::string& e) {
         {
             std::lock_guard<std::mutex> lock(mu_);
@@ -459,6 +506,7 @@ public:
         }
         base_.onError(e);
     }
+    /** @brief Stops replay and delivers a terminal completion. */
     void onCompleted() {
         {
             std::lock_guard<std::mutex> lock(mu_);
@@ -466,6 +514,7 @@ public:
         }
         base_.onCompleted();
     }
+    /** @brief True while at least one live observer is registered. */
     bool hasObservers() const { return base_.hasObservers(); }
 
 private:
@@ -475,16 +524,18 @@ private:
     Subject<T>          base_;
 };
 
-// ---------------------------------------------------------------------------
-// ReplaySubject: buffers up to `capacity` (0 = unlimited) values and replays
-// them to every new subscriber.
-// ---------------------------------------------------------------------------
+/**
+ * @brief Subject that buffers up to `capacity` values (0 = unlimited) and
+ * replays the buffer to every new subscriber.
+ */
 template <typename T>
 class ReplaySubject : public Observable<T> {
 public:
     using Observable<T>::subscribe;
+    /** @brief Creates a replaying subject with the given buffer capacity. */
     explicit ReplaySubject(int capacity = 0) : capacity_(capacity) {}
 
+    /** @brief Replays buffered values, then subscribes the observer. */
     Subscription subscribe(Observer<T> obs) override {
         std::vector<T> replay;
         {
@@ -496,6 +547,7 @@ public:
         return base_.subscribe(std::move(obs));
     }
 
+    /** @brief Buffers and pushes a new value to observers. */
     void onNext(T v) {
         T emitted = v;
         {
@@ -506,12 +558,15 @@ public:
         }
         base_.onNext(emitted);
     }
+    /** @brief Delivers a terminal error to observers. */
     void onError(const std::string& e) {
         base_.onError(e);
     }
+    /** @brief Delivers a terminal completion to observers. */
     void onCompleted() {
         base_.onCompleted();
     }
+    /** @brief True while at least one live observer is registered. */
     bool hasObservers() const { return base_.hasObservers(); }
 
 private:
@@ -521,21 +576,26 @@ private:
     Subject<T>         base_;
 };
 
-// ---------------------------------------------------------------------------
-// ReactiveProperty: observable value. Reading returns the current value;
-// writing pushes the new value to subscribers (and the property itself).
-// ---------------------------------------------------------------------------
+/**
+ * @brief Observable value backed by a BehaviorSubject.
+ * get() returns the current value; set() stores and pushes it to subscribers.
+ */
 template <typename T>
 class ReactiveProperty {
 public:
+    /** @brief Creates a property with an initial value. */
     explicit ReactiveProperty(T initial = T()) : subject_(std::move(initial)) {}
 
+    /** @brief Current value. */
     T get() const { return subject_.getValue(); }
+    /** @brief Stores a new value and notifies subscribers. */
     void set(T v) { subject_.setValue(std::move(v)); }
 
+    /** @brief Subscribes with a full observer or a value callback. */
     Subscription subscribe(Observer<T> obs) { return subject_.subscribe(std::move(obs)); }
     Subscription subscribe(typename Observer<T>::NextFn next) { return subject_.subscribe(std::move(next)); }
 
+    /** @brief Underlying behavior subject / observable view. */
     BehaviorSubject<T>* asSubject() { return &subject_; }
     Observable<T>*      asObservable() { return &subject_; }
 

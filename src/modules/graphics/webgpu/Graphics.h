@@ -23,7 +23,7 @@ namespace eve::graphics::webgpu {
 class OffscreenCanvas;
 
 /**
- * Frame UBO for the mesh3d pipeline. Mirrors the std140 layout of the WGSL
+ * @brief Frame UBO for the mesh3d pipeline. Mirrors the std140 layout of the WGSL
  * `Frame` block and the legacy Vulkan Mesh3DUBO (so custom shader prefixes stay
  * compatible). See wgsl_shaders.h.
  */
@@ -46,7 +46,7 @@ struct Mesh3DUBO {
 static_assert(sizeof(Mesh3DUBO) == 608, "Mesh3DUBO layout must match the WGSL Frame block");
 
 /**
- * Texture resources backed by a wgpu texture + view + sampler + bind groups.
+ * @brief Texture resources backed by a wgpu texture + view + sampler + bind groups.
  */
 struct GpuTexture {
     wgpu::Texture texture;
@@ -65,7 +65,7 @@ struct GpuTexture {
 };
 
 /**
- * Vertex/index buffers for one mesh.
+ * @brief Vertex/index buffers for one mesh.
  */
 struct GpuMesh {
     wgpu::Buffer vertexBuffer;
@@ -77,7 +77,7 @@ struct GpuMesh {
 };
 
 /**
- * A compiled shader: one WebGPU pipeline + layout. Also holds the WGSL
+ * @brief A compiled shader: one WebGPU pipeline + layout. Also holds the WGSL
  * sources so custom shaders can be re-pipelined for offscreen targets.
  */
 struct GpuShader {
@@ -188,7 +188,7 @@ public:
                         Shader *shader) override;
     void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
                                 float originZ, const std::string &faceDir, Texture *atlas,
-                                int tilesPerRow = 16) override;
+                                int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DSceneDepth(Texture *depth) override;
@@ -232,9 +232,9 @@ public:
                std::optional<double> depth) override;
     Color getPixel(int x, int y) override;
 
-    /** Flush accumulated 2D batches into an offscreen canvas target. */
+    /** @brief Flush accumulated 2D batches into an offscreen canvas target. */
     void flush2DToCanvas(OffscreenCanvas *canvas);
-    /** Blocking CPU readback of an offscreen canvas or scene color target. */
+    /** @brief Blocking CPU readback of an offscreen canvas or scene color target. */
     Color getPixelImpl(OffscreenCanvas *canvas, int x, int y);
     image::ImageData *newImageDataImpl(OffscreenCanvas *canvas);
 

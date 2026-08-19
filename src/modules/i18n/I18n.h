@@ -10,7 +10,7 @@
 namespace eve::i18n {
 
 /**
- * Game localization (i18n) module.
+ * @brief Game localization (i18n) module.
  *
  * Locale tables map a translation key to a string (or a set of plural forms).
  * Keys use dot notation for namespacing, e.g. `menu.start` resolves the JSON
@@ -38,13 +38,14 @@ public:
     I18n() = default;
     ~I18n() override = default;
 
-    // ---- loading ----
+    /** @brief 加载语言表（JSON 文本 / 文件）。 */
     bool loadFromJson(const std::string &lang, const std::string &json);
     bool loadFromFile(const std::string &lang, const std::string &path);
+    /** @brief 卸载 / 清空语言表。 */
     void unload(const std::string &lang);
     void clear();
 
-    // ---- language management ----
+    /** @brief 语言管理：当前语言 / 默认语言回退。 */
     bool setLanguage(const std::string &lang);
     std::string getLanguage() const { return language_; }
     void setDefaultLanguage(const std::string &lang) { defaultLanguage_ = lang; }
@@ -53,7 +54,7 @@ public:
     std::string getLanguageAt(int index) const;
     bool hasLanguage(const std::string &lang) const;
 
-    // ---- lookup ----
+    /** @brief 翻译查找：按键（点号命名空间）取字符串。 */
     bool has(const std::string &key) const;
     std::string get(const std::string &key) const;
     std::string getWithParams(const std::string &key,
@@ -65,7 +66,7 @@ public:
     // ---- hot reload (poll from the game loop) ----
     void setAutoReload(bool enable) { autoReload_ = enable; }
     bool isAutoReload() const { return autoReload_; }
-    /** Re-read changed locale files; returns the number of reloads performed. */
+    /** @brief Re-read changed locale files; returns the number of reloads performed. */
     int update(float dt);
 
 private:

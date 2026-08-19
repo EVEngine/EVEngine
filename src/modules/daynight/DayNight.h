@@ -13,7 +13,7 @@ class Light3D;
 namespace eve::daynight {
 
 /**
- * DayNight module — a time-of-day cycle that drives the sun, sky and light.
+ * @brief DayNight module — a time-of-day cycle that drives the sun, sky and light.
  *
  * Advances a 24-hour clock (configurable speed) and, each frame, repositions
  * the directional sun to match the current solar elevation / azimuth. A
@@ -43,9 +43,9 @@ public:
     DayNight();
     ~DayNight() override;
 
-    /** Idempotent; builds lights / sky cubemap on first call. */
+    /** @brief Idempotent; builds lights / sky cubemap on first call. */
     void init(graphics::Graphics *gfx);
-    /** Advance the clock and push sun/sky/light state; before gfx.render3D(). */
+    /** @brief Advance the clock and push sun/sky/light state; before gfx.render3D(). */
     void update(float dt, graphics::Graphics *gfx);
 
     // ---- clock ----
@@ -55,19 +55,19 @@ public:
     float getSpeed() const;
     void setPaused(bool paused);
     bool isPaused() const;
-    /** True when the sun is below the horizon (night). */
+    /** @brief True when the sun is below the horizon (night). */
     bool isNight() const;
 
     // ---- sun ----
-    /** Solar elevation in degrees (max at local noon, ~70°). */
+    /** @brief Solar elevation in degrees (max at local noon, ~70°). */
     float getSunElevation() const;
-    /** Solar azimuth in degrees, measured clockwise from +Z. */
+    /** @brief Solar azimuth in degrees, measured clockwise from +Z. */
     float getSunAzimuth() const;
-    /** World-space direction pointing AT the sun (normalized). */
+    /** @brief World-space direction pointing AT the sun (normalized). */
     float getSunDirX() const;
     float getSunDirY() const;
     float getSunDirZ() const;
-    /** 0..1 sun energy; ramps to 0 below the horizon. */
+    /** @brief 0..1 sun energy; ramps to 0 below the horizon. */
     float getSunIntensity() const;
 
     // ---- sky / ambient (sampled by the scene) ----
@@ -84,15 +84,15 @@ public:
     bool isSkyboxEnabled() const;
 
     // ---- night lighting ----
-    /** Enable a named light system: "moonlight"|"starlight"|"fire"|"fireflies". */
+    /** @brief Enable a named light system: "moonlight"|"starlight"|"fire"|"fireflies". */
     void setNightLight(const std::string &name, bool enabled);
     bool isNightLight(const std::string &name) const;
     static const char *const kNamedLights[];
     static const int kNamedLightCount;
 
-    /** Position of the campfire point light (fire system). */
+    /** @brief Position of the campfire point light (fire system). */
     void setFirePosition(float x, float y, float z);
-    /** Add one firefly anchor (world space); up to kMaxFireflies. */
+    /** @brief Add one firefly anchor (world space); up to kMaxFireflies. */
     void addFirefly(float x, float y, float z);
     void clearFireflies();
     int getFireflyCount() const;

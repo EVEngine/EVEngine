@@ -10,7 +10,7 @@ namespace data
 {
 
 /**
- * Contains a reference to a subsection of an existing Data object.
+ * @brief Contains a reference to a subsection of an existing Data object.
  **/
 class DataView : public eve::Data
 {

@@ -18,7 +18,7 @@ namespace thread {
 class Channel;
 
 /**
- * Fixed-size worker pool. Owns worker std::threads; tasks run FIFO.
+ * @brief Fixed-size worker pool. Owns worker std::threads; tasks run FIFO.
  * Squirrel VM is not thread-safe — do not call into scripts from workers.
  */
 class ThreadPool {
@@ -33,25 +33,25 @@ public:
     int getPendingCount() const;
     bool isRunning() const;
 
-    /** Submit a C++ callable. Caller owns the Task wrapper; work owns its shared state. */
+    /** @brief Submit a C++ callable. Caller owns the Task wrapper; work owns its shared state. */
     Task *submit(std::function<void()> fn);
 
-    /** Sleep on a worker, then mark done — useful from scripts / tests. */
+    /** @brief Sleep on a worker, then mark done — useful from scripts / tests. */
     Task *submitSleep(int ms);
 
-    /** Sleep, then push a message onto a channel (cross-thread signalling). */
+    /** @brief Sleep, then push a message onto a channel (cross-thread signalling). */
     Task *submitPush(Channel *channel, std::string message, int delayMs = 0);
 
     /**
-     * Sleep, then post an Event on the main queue (thread-safe).
+     * @brief Sleep, then post an Event on the main queue (thread-safe).
      * Scripts poll via event.poll / event.pollData, or async helpers.
      */
     Task *submitPost(std::string name, std::string data = "", int delayMs = 0);
 
-    /** Block until idle. Throws when called by a worker belonging to this pool. */
+    /** @brief Block until idle. Throws when called by a worker belonging to this pool. */
     void waitAll();
 
-    /** Stop accepting work and join workers. Worker calls are rejected. Idempotent. */
+    /** @brief Stop accepting work and join workers. Worker calls are rejected. Idempotent. */
     void stop();
 
 private:

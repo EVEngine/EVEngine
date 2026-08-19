@@ -113,7 +113,8 @@ GAME ?=
 	reinstall/third-party/macosx reinstall/third-party/macosx-debug \
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
-	link-compile-commands download-classic-scenes download-skinned-character
+	link-compile-commands download-classic-scenes download-skinned-character \
+	docs
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
 all: $(ALL_DEBUG_TARGETS)
@@ -490,32 +491,70 @@ download-classic-scenes:
 download-skinned-character:
 	bash scripts/download_skinned_character.sh
 
+# ---- API documentation (Doxygen) ----
+#   make docs                 # generate docs/api/html from src/ + Doxyfile
+#   make docs CLEAN_DOCS=1    # remove the previous output first
+# Output is git-ignored (docs/api/); open docs/api/html/index.html afterwards.
+CLEAN_DOCS ?= 0
+
+docs: docs/api/html/index.html
+	@echo "API docs generated -> docs/api/html/index.html"
+
+docs/api/html/index.html: Doxyfile
+	@if command -v doxygen >/dev/null 2>&1; then \
+		if [ "$(CLEAN_DOCS)" = "1" ]; then rm -rf docs/api; fi; \
+		mkdir -p docs/api; \
+		doxygen Doxyfile; \
+	else \
+		echo "doxygen is not installed; install it first:"; \
+		echo "  Ubuntu/Debian/WSL: sudo apt install doxygen"; \
+		echo "  macOS:             brew install doxygen"; \
+		echo "  Windows:           choco install doxygen"; \
+		exit 1; \
+	fi
+
 # Optional name-prefix filter for platform targets: make test FILTER=graphics.print
+# (per-case run; use FILTER=bundle/<file> for a single-file bundle, e.g.
+#  FILTER=bundle/ClassicScenes.cpp).
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
+
+# Default: run tests per case (process-isolated; this is the fast path on CI —
+# main runs 1551 cases in ~2-11 min).  "bundle/<file>" entries stay registered
+# by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
+# ~70x slower when several shared one process on CI, so bundles are excluded
+# unless requested (FILTER=bundle/<file> or ctest -L bundle).
+CTEST_RUN_SEL = $(if $(filter bundle/%,$(FILTER)),-L bundle,-E '^bundle/')
+
+# ClassicScenes live-view pacing and perf benchmarks are tuned for humans
+# (4 s/phase, 120 timed frames).  `make test` uses fast headless defaults;
+# override for interactive runs: make test VIEW_SECONDS=4 PERF_FRAMES=120.
+VIEW_SECONDS ?= 0.3
+PERF_FRAMES ?= 30
+CTEST_ENV = EVENGINE_VIEW_SECONDS=$(VIEW_SECONDS) EVENGINE_PERF_FRAMES=$(PERF_FRAMES)
 
 # Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
 test/win32:
-	ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/win32-debug:
-	ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/linux:
-	ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/linux-debug:
-	ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/macosx:
-	ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 test/macosx-debug:
-	ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_FILTER)
+	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).
 test/%:
-	ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)'
+	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)'
 
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).
 run: run/$(PLATFORM)-debug

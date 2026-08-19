@@ -8,7 +8,7 @@ namespace eve::animation {
 class SpriteSheet;
 
 /**
- * Named 2D frame sequence referencing SpriteSheet frame indices.
+ * @brief Named 2D frame sequence referencing SpriteSheet frame indices.
  * Script type: `SpriteClip`.
  */
 class SpriteClip {
@@ -25,10 +25,10 @@ public:
     void setLoop(bool loop) { loop_ = loop; }
     bool getLoop() const { return loop_; }
 
-    /** Append one cell: sheetFrameIndex + display duration (seconds). */
+    /** @brief Append one cell: sheetFrameIndex + display duration (seconds). */
     void addFrame(int sheetFrameIndex, float duration = 0.1f);
 
-    /** Resolve name via sheet and append. */
+    /** @brief Resolve name via sheet and append. */
     void addFrameByName(SpriteSheet *sheet, const std::string &frameName, float duration = 0.1f);
 
     void clear();
@@ -39,12 +39,12 @@ public:
     float getDuration() const;
 
     /**
-     * Map absolute time (seconds) into a clip frame index.
+     * @brief Map absolute time (seconds) into a clip frame index.
      * When loop is false and t >= duration, returns last frame.
      */
     int frameAtTime(float timeSeconds) const;
 
-    /** Local time wrapped or clamped according to loop flag. */
+    /** @brief Local time wrapped or clamped according to loop flag. */
     float wrapTime(float timeSeconds) const;
 
 private:

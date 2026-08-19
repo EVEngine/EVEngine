@@ -41,11 +41,13 @@
 namespace eve
 {
 
+/** @brief Axis-aligned integer rectangle (screen/tile space). */
 struct Rect
 {
 	int x, y;
 	int w, h;
 
+	/** @brief Component-wise equality. */
 	bool operator == (const Rect &rhs) const
 	{
 		return x == rhs.x && y == rhs.y && w == rhs.w && h == rhs.h;

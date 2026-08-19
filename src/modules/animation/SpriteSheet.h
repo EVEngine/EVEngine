@@ -11,7 +11,7 @@ class Quad;
 namespace eve::animation {
 
 /**
- * Sprite-sheet / texture-atlas frame table (pixel rects).
+ * @brief Sprite-sheet / texture-atlas frame table (pixel rects).
  *
  * Frames may be added by name or generated from a uniform grid.
  * Does not own a Texture — pair with Graphics textures in script.
@@ -25,11 +25,11 @@ public:
     SpriteSheet(const SpriteSheet &)            = delete;
     SpriteSheet &operator=(const SpriteSheet &) = delete;
 
-    /** Append a named frame. Returns frame index. Empty name → "frameN". */
+    /** @brief Append a named frame. Returns frame index. Empty name → "frameN". */
     int addFrame(const std::string &name, int x, int y, int w, int h);
 
     /**
-     * Generate frames in row-major order from a grid.
+     * @brief Generate frames in row-major order from a grid.
      * frameW/frameH are cell sizes; margin is outer padding; spacing is gap between cells.
      * Returns number of frames added.
      */
@@ -46,7 +46,7 @@ public:
     int         getFrameWidth(int index) const;
     int         getFrameHeight(int index) const;
 
-    /** Write pixel viewport into an existing Quad (does not allocate). */
+    /** @brief Write pixel viewport into an existing Quad (does not allocate). */
     void applyToQuad(graphics::Quad *quad, int frameIndex) const;
 
 private:

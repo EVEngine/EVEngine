@@ -25,9 +25,14 @@ endif()
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
+option(EVENGINE_ENABLE_ASSERTS
+    "Keep zeroerr ASSERT checks (parameter validation, invariants) in non-Debug builds.
+     Debug builds always enable them; this option is for Release-style builds."
+    OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
+message("Enable asserts in non-Debug builds: " ${EVENGINE_ENABLE_ASSERTS})
 if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
 endif()
@@ -146,8 +151,12 @@ function(main)
 
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
-    # Strip ASSERT macros in non-Debug (upstream ZEROERR_NO_ASSERT under NDEBUG is commented out).
-    add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:ZEROERR_NO_ASSERT>)
+    # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
+    # NDEBUG is commented out), unless assertions were explicitly enabled with
+    # -DEVENGINE_ENABLE_ASSERTS=ON. See src/engine/common/Assert.h.
+    if(NOT EVENGINE_ENABLE_ASSERTS)
+        add_compile_definitions($<$<NOT:$<CONFIG:Debug>>:ZEROERR_NO_ASSERT>)
+    endif()
 
     # Platform CMake may set EVENGINE_PLATFORM_LIB; clear stale cache from other platforms.
     unset(EVENGINE_PLATFORM_LIB CACHE)
@@ -158,6 +167,22 @@ function(main)
 
     if(BUILD_TESTING)
         add_subdirectory(test)
+    endif()
+
+    # Doxygen API documentation: `cmake --build <build dir> --target docs`
+    # (equivalent to `make docs`; output lands in docs/api/html).
+    find_package(Doxygen QUIET)
+    if(DOXYGEN_FOUND)
+        add_custom_target(docs
+            COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Generating Doxygen API documentation (docs/api/html)"
+            VERBATIM)
+    else()
+        add_custom_target(docs
+            COMMAND ${CMAKE_COMMAND} -E echo
+                "doxygen not found; install it (apt install doxygen / brew install doxygen / choco install doxygen) to generate API docs"
+            VERBATIM)
     endif()
 
     include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
@@ -729,6 +754,18 @@ function(load_third_party)
     endif()
 
     ensure_third_party_checkout()
+    # Normal generation for assets without authored normals: medialoader maps
+    # generateNormalsIfMissing to aiProcess_GenNormals (per-face, flat shading).
+    # Patch the cloned tree (idempotent, same pattern as the ENABLE_DATA edit
+    # below) to request aiProcess_GenSmoothNormals, so sphere-like models shade
+    # smoothly while hard edges (default smoothing angle 80 degrees) keep seams.
+    set(_eve_ml_loader "${CMAKE_SOURCE_DIR}/third-party/medialoader/model/ModelLoader.cpp")
+    if(EXISTS "${_eve_ml_loader}")
+        file(READ "${_eve_ml_loader}" _eve_ml_loader_text)
+        string(REPLACE "aiProcess_GenNormals" "aiProcess_GenSmoothNormals"
+                       _eve_ml_loader_text "${_eve_ml_loader_text}")
+        file(WRITE "${_eve_ml_loader}" "${_eve_ml_loader_text}")
+    endif()
     # EVEngine's database module uses POCO Data and its bundled SQLite connector.
     # The third-party aggregate disables these by default to reduce its footprint;
     # enable the two targets in the checked-out aggregate before configuring it.

@@ -6,6 +6,7 @@ from __future__ import annotations
 import struct
 import subprocess
 import sys
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,7 +44,7 @@ def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
 def compile_shader(src: Path, stage: str) -> Path:
     out = src.with_suffix(".spv")
     # Prefer glslc, fall back to glslangValidator.
-    if subprocess.run(["which", "glslc"], capture_output=True).returncode == 0:
+    if shutil.which("glslc"):
         cmd = ["glslc", f"-fshader-stage={stage}", str(src), "-o", str(out)]
     else:
         cmd = ["glslangValidator", "-V", str(src), "-o", str(out)]

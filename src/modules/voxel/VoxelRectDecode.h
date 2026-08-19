@@ -5,7 +5,7 @@
 
 namespace eve::voxel {
 
-/** One decoded face rectangle in world space (mirrors voxel_rect.vert). */
+/** @brief One decoded face rectangle in world space (mirrors voxel_rect.vert). */
 struct DecodedRect {
     float corners[4][3]{};  // (0,0), (1,0), (1,1), (0,1)
     float normal[3]{};
@@ -13,14 +13,16 @@ struct DecodedRect {
     int tex = 0;
     float width = 1.f;
     float height = 1.f;
+    uint8_t ao[4] = {3, 3, 3, 3};  // per-corner 0..3, shader corner order
 };
 
 /**
- * CPU mirror of the instanced voxel vertex shader placement / UV logic.
+ * @brief CPU mirror of the instanced voxel vertex shader placement / UV logic.
  * Used by unit tests to validate packing ↔ geometry without a GPU.
  */
 inline DecodedRect decodePackedRect(PackedRect rect, FaceDir dir, float originX, float originY,
-                                    float originZ, int tilesPerRow = 16) {
+                                    float originZ, int tilesPerRow = 16,
+                                    uint32_t aoWord = 0xFFu) {
     DecodedRect out;
     const float ix = float(rect.x());
     const float iy = float(rect.y());
@@ -30,6 +32,8 @@ inline DecodedRect decodePackedRect(PackedRect rect, FaceDir dir, float originX,
     out.width = w;
     out.height = h;
     out.tex = rect.tex();
+
+    for (int i = 0; i < 4; ++i) out.ao[i] = uint8_t((aoWord >> (2 * i)) & 3u);
 
     const float corners2[4][2] = {{0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}};
     for (int i = 0; i < 4; ++i) {
@@ -93,7 +97,7 @@ inline DecodedRect decodePackedRect(PackedRect rect, FaceDir dir, float originX,
     return out;
 }
 
-/** True when triangle (0,2,1) winding matches outward normal (matches GPU index order). */
+/** @brief True when triangle (0,2,1) winding matches outward normal (matches GPU index order). */
 inline bool decodedWindingMatchesNormal(const DecodedRect &q) {
     // GPU draws 0-2-1 and 0-3-2 (see ensureVoxelUnitQuad).
     const float e1x = q.corners[2][0] - q.corners[0][0];
@@ -108,7 +112,7 @@ inline bool decodedWindingMatchesNormal(const DecodedRect &q) {
     return cx * q.normal[0] + cy * q.normal[1] + cz * q.normal[2] > 0.f;
 }
 
-/** True when the second GPU triangle (0,3,2) also matches the outward normal. */
+/** @brief True when the second GPU triangle (0,3,2) also matches the outward normal. */
 inline bool decodedSecondTriangleMatchesNormal(const DecodedRect &q) {
     const float e1x = q.corners[3][0] - q.corners[0][0];
     const float e1y = q.corners[3][1] - q.corners[0][1];

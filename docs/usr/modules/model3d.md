@@ -11,6 +11,29 @@ local models = eve.Model3D();
 local mesh = models.newModelDataFromFile("models/hero.glb");
 ```
 
+## 读取材质并装配渲染对象
+
+`ModelData` 可以直接读取材质参数（base color、metallic/roughness、贴图路径与内嵌贴图），
+然后交给 `createRenderable` 一键装配成可渲染的 `Renderable3D`：
+
+```squirrel
+local models = eve.Model3D();
+local md = models.newModelDataFromFile("models/hero.glb");
+
+// 材质查询（texture 类型名：base_color / diffuse / normals / height / emissive / ...）
+local mi = md.getMaterialIndex(0);               // mesh 0 使用的材质槽
+local r = md.getMaterialBaseColorR(mi);          // 基色（glTF BASE_COLOR，OBJ 回退 DIFFUSE）
+local metallic = md.getMaterialMetallicFactor(mi);
+local roughness = md.getMaterialRoughnessFactor(mi);
+local path = md.getMaterialTexturePath(mi, "base_color");  // 外部路径或 "*N"（内嵌）
+
+// 装配：节点变换烘焙进顶点，材质/贴图自动应用
+local renderable = models.createRenderable(gfx, md, 0);
+```
+
+内嵌贴图（glTF/FBX 内嵌 PNG/JPEG）用 `getEmbeddedTextureCount()` 查询，
+`getEmbeddedTextureImageData(idx)` 解码为 `ImageData`（调用方负责释放）。
+
 ## 对象关系与调用时机
 
 `Model3D` 只负责加载 `ModelData`；ModelData 包含 mesh/material 数据和统计信息。GPU mesh、材质实例、摄像机与实际 draw 属于 Graphics。
@@ -36,9 +59,18 @@ local mesh = models.newModelDataFromFile("models/hero.glb");
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `empty()`、`getFaceCount()`、`getMaterialCount()`、`getMeshCount()`、`getName()`、`getVertexCount()`、`hasNormals()`、`hasTexCoords()`
+- 材质：`getMaterialIndex()`、`getMaterialName()`、`getMaterialBaseColorR/G/B/A()`、`getMaterialMetallicFactor()`、`getMaterialRoughnessFactor()`、`getMaterialOpacity()`、`getMaterialTwoSided()`、`getMaterialTextureSlotCount()`、`getMaterialTexturePath()`、`getMaterialTextureEmbeddedIndex()`
+- 内嵌贴图：`getEmbeddedTextureCount()`、`getEmbeddedTextureName()`、`getEmbeddedTextureWidth()`、`getEmbeddedTextureHeight()`、`getEmbeddedTextureImageData()`
 - 蒙皮：`hasBones()`、`getBoneCount()`、`getBoneName()`、`getInverseBindMatrixElement()`、`getBoneWeightCount()`、`getBoneWeightVertex()`、`getBoneWeightValue()`
 - 动画剪辑：`getAnimationCount()`、`getAnimationName()`
-- `newModelData()`、`newModelDataFromFile()`
+- `newModelData()`、`newModelDataFromFile()`、`createRenderable()`
+
+`createRenderable(gfx, modelData, meshIndex)` 内部等价于 C++ 的
+`model3d::buildRenderable`（节点世界变换烘焙进顶点，材质 tint / metallic / roughness 与
+albedo、normal、height 贴图自动应用，内嵌/外部贴图均可解析）。
+
+> 注意：Squirrel 绑定按完整参数个数校验，`getMaterialTexturePath` /
+> `getMaterialTextureEmbeddedIndex` 需要显式传 `slot`（默认 0）。
 
 ## 使用要点
 

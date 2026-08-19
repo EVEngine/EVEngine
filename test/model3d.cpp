@@ -3,6 +3,7 @@
 
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
+#include "model3d/ModelRenderer.h"
 #include "data/ByteData.h"
 #include "filesystem/Filesystem.h"
 #include "common/Exception.h"
@@ -28,6 +29,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -51,6 +53,80 @@ std::vector<char> readBinaryFile(const std::string &path) {
     if (!in)
         return {};
     return std::vector<char>((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+}
+
+std::string base64Encode(const uint8_t *data, size_t size) {
+    static const char tbl[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string out;
+    out.reserve(((size + 2) / 3) * 4);
+    for (size_t i = 0; i < size; i += 3) {
+        const uint32_t a = data[i];
+        const uint32_t b = i + 1 < size ? data[i + 1] : 0;
+        const uint32_t c = i + 2 < size ? data[i + 2] : 0;
+        const uint32_t v = (a << 16) | (b << 8) | c;
+        out += tbl[(v >> 18) & 63];
+        out += tbl[(v >> 12) & 63];
+        out += (i + 1 < size) ? tbl[(v >> 6) & 63] : '=';
+        out += (i + 2 < size) ? tbl[v & 63] : '=';
+    }
+    return out;
+}
+
+void appendF32LE(std::vector<uint8_t> &bin, float v) {
+    uint32_t bits = 0;
+    std::memcpy(&bits, &v, 4);
+    bin.push_back(uint8_t(bits));
+    bin.push_back(uint8_t(bits >> 8));
+    bin.push_back(uint8_t(bits >> 16));
+    bin.push_back(uint8_t(bits >> 24));
+}
+
+void appendU16LE(std::vector<uint8_t> &bin, uint16_t v) {
+    bin.push_back(uint8_t(v));
+    bin.push_back(uint8_t(v >> 8));
+}
+
+/**
+ * Minimal glTF 2.0 quad (XY plane facing +Z) with an embedded PNG base color
+ * texture: top half red, bottom half blue. Y=+1 maps to v=0 so a correctly
+ * oriented render shows red on top / blue on bottom.
+ */
+std::string makeUvOrientationGltf(const std::string &pngBase64) {
+    std::vector<uint8_t> bin;
+    const float pos[4][3] = {{-1.f, -1.f, 0.f}, {1.f, -1.f, 0.f}, {-1.f, 1.f, 0.f}, {1.f, 1.f, 0.f}};
+    const float nrm[4][3] = {{0.f, 0.f, 1.f}, {0.f, 0.f, 1.f}, {0.f, 0.f, 1.f}, {0.f, 0.f, 1.f}};
+    const float uv[4][2] = {{0.f, 1.f}, {1.f, 1.f}, {0.f, 0.f}, {1.f, 0.f}};
+    for (const auto &p : pos)
+        for (float c : p) appendF32LE(bin, c);
+    for (const auto &n : nrm)
+        for (float c : n) appendF32LE(bin, c);
+    for (const auto &t : uv)
+        for (float c : t) appendF32LE(bin, c);
+    const uint16_t idx[6] = {0, 1, 2, 2, 1, 3};
+    for (uint16_t i : idx) appendU16LE(bin, i);
+    if (bin.size() != 140) return {};
+
+    const std::string binBase64 = base64Encode(bin.data(), bin.size());
+    return std::string(
+               "{\"asset\":{\"version\":\"2.0\"},\"scene\":0,\"scenes\":[{\"nodes\":[0]}],"
+               "\"nodes\":[{\"mesh\":0}],"
+               "\"meshes\":[{\"primitives\":[{\"attributes\":{\"POSITION\":0,\"NORMAL\":1,"
+               "\"TEXCOORD_0\":2},\"indices\":3,\"material\":0}]}],"
+               "\"materials\":[{\"pbrMetallicRoughness\":{\"baseColorTexture\":{\"index\":0},"
+               "\"metallicFactor\":0.0,\"roughnessFactor\":1.0}}],"
+               "\"textures\":[{\"source\":0}],"
+               "\"images\":[{\"uri\":\"data:image/png;base64,") +
+           pngBase64 + "\"}],\"buffers\":[{\"uri\":\"data:application/octet-stream;base64," +
+           binBase64 + "\",\"byteLength\":140}],\"bufferViews\":[" +
+           "{\"buffer\":0,\"byteOffset\":0,\"byteLength\":48,\"target\":34962}," +
+           "{\"buffer\":0,\"byteOffset\":48,\"byteLength\":48,\"target\":34962}," +
+           "{\"buffer\":0,\"byteOffset\":96,\"byteLength\":32,\"target\":34962}," +
+           "{\"buffer\":0,\"byteOffset\":128,\"byteLength\":12,\"target\":34963}],"
+           "\"accessors\":[" +
+           "{\"bufferView\":0,\"componentType\":5126,\"count\":4,\"type\":\"VEC3\"}," +
+           "{\"bufferView\":1,\"componentType\":5126,\"count\":4,\"type\":\"VEC3\"}," +
+           "{\"bufferView\":2,\"componentType\":5126,\"count\":4,\"type\":\"VEC2\"}," +
+           "{\"bufferView\":3,\"componentType\":5123,\"count\":6,\"type\":\"SCALAR\"}]}";
 }
 
 float luma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
@@ -683,4 +759,343 @@ TEST_CASE("model3d.render.sofaObjMtl") {
     delete md;
 
     CHECK(fs->unmount(testDir));
+}
+
+TEST_CASE("model3d.materialApi.objMtl") {
+    const std::string objPath = pathBesideThisSource("sofa.obj");
+    const std::string mtlPath = pathBesideThisSource("sofa.mtl");
+    REQUIRE(!readBinaryFile(objPath).empty());
+    REQUIRE(!readBinaryFile(mtlPath).empty());
+
+    std::string testDir = pathBesideThisSource("");
+    if (!testDir.empty() && (testDir.back() == '/' || testDir.back() == '\\'))
+        testDir.pop_back();
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_material_obj", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(testDir);
+    REQUIRE(fs->mount(testDir, "", false));
+
+    auto *mod = eve::model3d::Model3D::create();
+    auto *md = mod->newModelDataFromFile("sofa.obj");
+    REQUIRE(md != nullptr);
+    REQUIRE(md->getMaterialCount() >= 5);
+
+    const int mi = md->getMaterialIndex(0);
+    REQUIRE(mi >= 0);
+    REQUIRE(mi < md->getMaterialCount());
+
+    const std::string name = md->getMaterialName(mi);
+    REQUIRE(!name.empty());
+
+    // Blender Kd lands in DIFFUSE (BASE_COLOR fallback).
+    const float r = md->getMaterialBaseColorR(mi);
+    const float g = md->getMaterialBaseColorG(mi);
+    const float b = md->getMaterialBaseColorB(mi);
+    CHECK(r > 0.05f);
+    CHECK(g > 0.05f);
+    CHECK(b > 0.05f);
+    CHECK(md->getMaterialBaseColorA(mi) == 1.f);
+    // No PBR factors in OBJ/MTL: defaults.
+    CHECK(md->getMaterialMetallicFactor(mi) == 0.f);
+    CHECK(md->getMaterialRoughnessFactor(mi) == 0.45f);
+    // sofa.mtl has no map_Kd.
+    CHECK(md->getMaterialTextureSlotCount(mi, "diffuse") == 0);
+    CHECK(md->getMaterialTexturePath(mi, "diffuse").empty());
+    CHECK(md->getMaterialTextureEmbeddedIndex(mi, "diffuse") == -1);
+    CHECK(md->getMaterialTextureSlotCount(mi, "base_color") == 0);
+    // Unknown texture type names are rejected.
+    CHECK(md->getMaterialTextureSlotCount(mi, "bogus") == 0);
+    CHECK(md->getMaterialTexturePath(mi, "bogus").empty());
+
+    delete md;
+    CHECK(fs->unmount(testDir));
+}
+
+TEST_CASE("model3d.materialApi.gltf") {
+    // CesiumMan.gltf references the external CesiumMan_data.bin buffer, so the
+    // glTF must be loaded through the VFS (in-memory decode cannot resolve it).
+    const std::string dir = pathBesideThisSource("assets/skinned/cesium_man/glTF/");
+    REQUIRE(!readBinaryFile(dir + "CesiumMan.gltf").empty());
+    REQUIRE(!readBinaryFile(dir + "CesiumMan_data.bin").empty());
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_material_gltf", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(dir);
+    REQUIRE(fs->mount(dir, "", false));
+
+    auto *mod = eve::model3d::Model3D::create();
+    auto *md = mod->newModelDataFromFile("CesiumMan.gltf");
+    REQUIRE(md != nullptr);
+    REQUIRE(md->getMaterialCount() >= 1);
+    CHECK(md->getMaterialIndex(0) == 0);
+    CHECK(!md->getMaterialName(0).empty());
+    CHECK(md->hasNormals(0));
+    CHECK(md->hasTexCoords(0));
+
+    // CesiumMan material: metallic 0 / roughness 1, external base color JPEG.
+    CHECK(md->getMaterialMetallicFactor(0) == 0.f);
+    CHECK(md->getMaterialRoughnessFactor(0) == 1.f);
+    CHECK(md->getMaterialTextureSlotCount(0, "base_color") == 1);
+    CHECK(md->getMaterialTexturePath(0, "base_color") == "CesiumMan_img0.jpg");
+    CHECK(md->getMaterialTextureEmbeddedIndex(0, "base_color") == -1);
+    // Double-sided flag exists on glTF assets that set it; absence is fine here.
+    CHECK(!md->getMaterialTwoSided(0));
+
+    delete md;
+    CHECK(fs->unmount(dir));
+}
+
+TEST_CASE("model3d.buildRenderable.objMtl") {
+    std::string testDir = pathBesideThisSource("");
+    if (!testDir.empty() && (testDir.back() == '/' || testDir.back() == '\\'))
+        testDir.pop_back();
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_build_obj", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(testDir);
+    REQUIRE(fs->mount(testDir, "", false));
+
+    auto *mod = eve::model3d::Model3D::create();
+    auto *md = mod->newModelDataFromFile("sofa.obj");
+    REQUIRE(md != nullptr);
+    REQUIRE(md->getMeshCount() >= 1);
+
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    auto *ent = mod->createRenderable(gfx, md, 0);
+    REQUIRE(ent != nullptr);
+    REQUIRE(ent->meshRenderer()->mesh != nullptr);
+    REQUIRE(ent->meshRenderer()->mesh->indexCount > 0);
+    const int mi = md->getMaterialIndex(0);
+    if (mi >= 0) {
+        CHECK(ent->meshRenderer()->r == md->getMaterialBaseColorR(mi));
+        CHECK(ent->meshRenderer()->g == md->getMaterialBaseColorG(mi));
+        CHECK(ent->meshRenderer()->b == md->getMaterialBaseColorB(mi));
+        CHECK(ent->meshRenderer()->metallic == md->getMaterialMetallicFactor(mi));
+        CHECK(ent->meshRenderer()->roughness == md->getMaterialRoughnessFactor(mi));
+    }
+
+    // Invalid indices return nullptr without throwing.
+    CHECK(mod->createRenderable(gfx, md, 999) == nullptr);
+    CHECK(eve::model3d::buildRenderable(*gfx, md, 999) == nullptr);
+    CHECK(eve::model3d::buildRenderable(*gfx, nullptr, 0) == nullptr);
+
+    win->close();
+    delete md;
+    CHECK(fs->unmount(testDir));
+}
+
+TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
+    // 4x2 texture: top row red, bottom row blue.
+    const int tw = 4;
+    const int th = 2;
+    std::vector<uint8_t> px(size_t(tw) * size_t(th) * 4);
+    for (int y = 0; y < th; ++y) {
+        for (int x = 0; x < tw; ++x) {
+            uint8_t *p = px.data() + (size_t(y) * tw + size_t(x)) * 4;
+            const bool top = (y == 0);
+            p[0] = top ? 255 : 0;
+            p[1] = 0;
+            p[2] = top ? 0 : 255;
+            p[3] = 255;
+        }
+    }
+    eve::image::Image::create();
+    eve::image::ImageData pngImg(tw, th, "RGBA8", px.data(), false);
+    eve::filesystem::FileData *png =
+        pngImg.encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, "gltf_uv.png", false);
+    REQUIRE(png != nullptr);
+    REQUIRE(png->getSize() > 0);
+    const std::string gltfText =
+        makeUvOrientationGltf(base64Encode(static_cast<const uint8_t *>(png->getData()), png->getSize()));
+    delete png;
+
+    auto *mod = eve::model3d::Model3D::create();
+    eve::data::ByteData data(gltfText.data(), gltfText.size());
+    auto *md = mod->newModelData(&data, ".gltf");
+    REQUIRE(md != nullptr);
+    REQUIRE(md->getMeshCount() >= 1);
+
+    // Material API on the synthetic file: PBR factors + embedded texture.
+    CHECK(md->getMaterialMetallicFactor(0) == 0.f);
+    CHECK(md->getMaterialRoughnessFactor(0) == 1.f);
+    CHECK(md->getMaterialTextureSlotCount(0, "base_color") == 1);
+    CHECK(md->getMaterialTexturePath(0, "base_color") == "*0");
+    CHECK(md->getMaterialTextureEmbeddedIndex(0, "base_color") == 0);
+    CHECK(md->getEmbeddedTextureCount() == 1);
+    CHECK(md->getEmbeddedTextureWidth(0) > 0);  // compressed blob: width == byte length
+    CHECK(md->getEmbeddedTextureHeight(0) == 0);  // compressed blob
+
+    eve::image::ImageData *decoded = md->getEmbeddedTextureImageData(0);
+    REQUIRE(decoded != nullptr);
+    CHECK(decoded->getWidth() == tw);
+    CHECK(decoded->getHeight() == th);
+    CHECK(decoded->getFormat() == "RGBA8");
+    {
+        const auto top = decoded->getPixel(0, 0);
+        const auto bot = decoded->getPixel(0, 1);
+        CHECK(top.r > top.b);
+        CHECK(bot.b > bot.r);
+    }
+    delete decoded;
+
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    auto *ent = mod->createRenderable(gfx, md, 0);
+    REQUIRE(ent != nullptr);
+    REQUIRE(ent->meshRenderer()->mesh != nullptr);
+    REQUIRE(ent->meshRenderer()->texture != nullptr);  // embedded texture decoded + uploaded
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 3.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setUp(0.f, 1.f, 0.f);
+    cam->data()->nearZ = 0.05f;
+    cam->data()->farZ = 100.f;
+
+    RenderSystem3D::setDirectionalLight(0.f, 0.f, -1.f, 1.5f, 1.5f, 1.5f);
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(Color(0.f, 0.f, 0.f, 1.f));
+
+    for (int i = 0; i < 8; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    // Straight-on quad: world +Y (texture v=0, red) must land on the upper half.
+    const Color top = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 4);
+    const Color bot = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() * 3 / 4);
+    CHECK(luma(top) > 0.05f);
+    CHECK(luma(bot) > 0.05f);
+    CHECK(top.r > top.b);  // red on top → not V-flipped
+    CHECK(bot.b > bot.r);  // blue on bottom
+
+    eve::image::Image::create();
+    eve::image::ImageData *frame = gfx->newImageData();
+    REQUIRE(frame != nullptr);
+    eve::filesystem::FileData *framePng =
+        frame->encode(medialoader::FormatHandler::ENCODED_PNG, "model3d_gltf_uv.png", false);
+    REQUIRE(framePng != nullptr);
+    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
+    std::error_code ec;
+    std::filesystem::create_directories(outDir, ec);
+    const std::string outPath = outDir + "/model3d_gltf_uv.png";
+    {
+        std::ofstream out(outPath, std::ios::binary);
+        REQUIRE(out.good());
+        out.write(static_cast<const char *>(framePng->getData()),
+                  static_cast<std::streamsize>(framePng->getSize()));
+        REQUIRE(out.good());
+    }
+    std::printf("model3d render saved: %s\n", outPath.c_str());
+    delete framePng;
+    delete frame;
+
+    win->close();
+    delete md;
+}
+
+TEST_CASE("model3d.render.cesiumManGltf") {
+    const std::string dir = pathBesideThisSource("assets/skinned/cesium_man/glTF/");
+    REQUIRE(!readBinaryFile(dir + "CesiumMan.gltf").empty());
+    REQUIRE(!readBinaryFile(dir + "CesiumMan_img0.jpg").empty());
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs->setIdentity("ev_ut_model3d_gltf", true));
+    REQUIRE(fs->setupWriteDirectory());
+    fs->allowMountingForPath(dir);
+    REQUIRE(fs->mount(dir, "", false));
+
+    auto *mod = eve::model3d::Model3D::create();
+    auto *md = mod->newModelDataFromFile("CesiumMan.gltf");
+    REQUIRE(md != nullptr);
+    REQUIRE(md->getMeshCount() >= 1);
+
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx);
+    resetScene3D();
+
+    auto *ent = mod->createRenderable(gfx, md, 0);
+    REQUIRE(ent != nullptr);
+    REQUIRE(ent->meshRenderer()->mesh != nullptr);
+    REQUIRE(ent->meshRenderer()->texture != nullptr);  // CesiumMan_img0.jpg resolved via VFS
+
+    Bounds b = boundsOf(md);
+    REQUIRE(b.valid);
+    const float cx = b.centerX();
+    const float cy = b.centerY();
+    const float cz = b.centerZ();
+    const float rad = std::max(0.5f, b.radius());
+
+    auto *cam = Camera3D::createCamera();
+    cam->setTarget(cx, cy, cz);
+    cam->setEye(cx + rad * 0.9f, cy + rad * 0.55f, cz + rad * 1.8f);
+    cam->data()->nearZ = std::max(0.05f, rad * 0.01f);
+    cam->data()->farZ = std::max(100.f, rad * 20.f);
+
+    RenderSystem3D::setDirectionalLight(-(cx + rad * 0.9f), -(cy + rad * 0.55f) + rad * 1.2f,
+                                        -(cz + rad * 1.8f), 1.8f, 1.8f, 1.8f);
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.18f, 1.f));
+
+    for (int i = 0; i < 60; ++i) {
+        if (ecs::current()->getManager<Renderable3D>() != nullptr) {
+            auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
+            for (auto it = view.begin(); it != view.end(); ++it) {
+                auto [xf, mr] = *it;
+                if (!mr->visible) continue;
+                xf->yaw = float(i) * 0.05f;
+            }
+        }
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) break;
+        }
+        SDL_Delay(16);
+    }
+
+    const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+    CHECK(luma(mid) > 0.05f);
+
+    eve::image::Image::create();
+    eve::image::ImageData *frame = gfx->newImageData();
+    REQUIRE(frame != nullptr);
+    eve::filesystem::FileData *png =
+        frame->encode(medialoader::FormatHandler::ENCODED_PNG, "model3d_cesium_man.png", false);
+    REQUIRE(png != nullptr);
+    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
+    std::error_code ec;
+    std::filesystem::create_directories(outDir, ec);
+    const std::string outPath = outDir + "/model3d_cesium_man.png";
+    {
+        std::ofstream out(outPath, std::ios::binary);
+        REQUIRE(out.good());
+        out.write(static_cast<const char *>(png->getData()), static_cast<std::streamsize>(png->getSize()));
+        REQUIRE(out.good());
+    }
+    std::printf("model3d render saved: %s (materials=%d)\n", outPath.c_str(), md->getMaterialCount());
+    delete png;
+    delete frame;
+
+    win->close();
+    delete md;
+    CHECK(fs->unmount(dir));
 }

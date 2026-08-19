@@ -4,6 +4,7 @@
 #include "network/NetTypes.h"
 #include "data/ByteData.h"
 #include "event/Event.h"
+#include "common/Assert.h"
 #include "common/Module.h"
 
 #include <cstring>
@@ -26,7 +27,9 @@ uint32_t readBe32(const char* p) {
 
 }  // namespace
 
-Channel::Channel(TcpSocket* socket) : socket_(socket) {}
+Channel::Channel(TcpSocket* socket) : socket_(socket) {
+    EV_PARAM_CHECK(socket != nullptr, "channel requires a TCP socket");
+}
 
 Channel::~Channel() {
     if (socket_ && socket_->network()) socket_->network()->unbindChannel(socket_);

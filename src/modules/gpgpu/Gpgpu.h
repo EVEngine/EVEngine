@@ -11,7 +11,7 @@ class GpuBuffer;
 class Sequence;
 
 /**
- * GPGPU module — compute shaders + storage buffers via the active Graphics backend.
+ * @brief GPGPU module — compute shaders + storage buffers via the active Graphics backend.
  * Uses the graphics queue when no dedicated compute family exists (Apple/MoltenVK).
  *
  * Script: `gpgpu <- eve.Gpgpu(); shader <- gpgpu.newShader(glsl);`
@@ -23,32 +23,32 @@ public:
     Gpgpu() = default;
     ~Gpgpu() override = default;
 
-    /** True when the active Graphics backend can run compute (device initialized). */
+    /** @brief True when the active Graphics backend can run compute (device initialized). */
     bool isAvailable() const;
 
-    /** Compile compute source for the active backend (Vulkan: GLSL via glslc). */
+    /** @brief Compile compute source for the active backend (Vulkan: GLSL via glslc). */
     ComputeShader *newShader(const std::string &source);
 
-    /** Load precompiled compute bytecode from Filesystem path (Vulkan: SPIR-V). */
+    /** @brief Load precompiled compute bytecode from Filesystem path (Vulkan: SPIR-V). */
     ComputeShader *newShaderFromBytecode(const std::string &path);
 
-    /** Vulkan SPIR-V compatibility wrapper → newShaderFromBytecode. */
+    /** @brief Vulkan SPIR-V compatibility wrapper → newShaderFromBytecode. */
     ComputeShader *newShaderFromSpvFile(const std::string &path);
 
     /**
-     * Allocate a GPU buffer.
+     * @brief Allocate a GPU buffer.
      * usage: "storage" (SSBO, device-local) | "staging" (host-visible transfer).
      */
     GpuBuffer *newBuffer(int byteSize, const std::string &usage = "storage");
 
     /**
-     * Create a Kompute-style command Sequence: record buffer transfers and
+     * @brief Create a Kompute-style command Sequence: record buffer transfers and
      * compute dispatches into one command buffer, then submit() once.
      */
     Sequence *newSequence();
 
     /**
-     * Record + submit a compute dispatch and wait for completion (sync).
+     * @brief Record + submit a compute dispatch and wait for completion (sync).
      * groups*: workgroup counts (not thread counts).
      */
     void dispatch(ComputeShader *shader, int groupsX, int groupsY = 1, int groupsZ = 1);

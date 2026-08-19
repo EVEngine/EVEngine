@@ -18,7 +18,7 @@ class ImageData;
 namespace eve::stylize {
 
 /**
- * Stylized / NPR rendering module — stable public surface for future expansion.
+ * @brief Stylized / NPR rendering module — stable public surface for future expansion.
  *
  * Built-in style ids (string, no enums):
  *   - "cartoon"    — cel post (+ mesh)
@@ -48,7 +48,7 @@ public:
     bool        hasMeshStyle(const std::string &style) const;
 
     /**
-     * Feature query. Known features:
+     * @brief Feature query. Known features:
      *   "post"    — StylePass / newPostShader
      *   "mesh"    — newMeshShader
      *   "cpu"     — processImage
@@ -56,15 +56,15 @@ public:
      */
     bool supports(const std::string &style, const std::string &feature) const;
 
-    /** Introspect built-in post param names (empty for unknown / custom-only ids). */
+    /** @brief Introspect built-in post param names (empty for unknown / custom-only ids). */
     int         getStyleParamCount(const std::string &style) const;
     std::string getStyleParamName(const std::string &style, int index) const;
 
-    /** Post-process StylePass (shader owned by Graphics). */
+    /** @brief Post-process StylePass (shader owned by Graphics). */
     StylePass *newPass(graphics::Graphics *gfx, const std::string &style);
 
     /**
-     * Wrap an already-created post Shader (custom SPIR-V / future registered styles).
+     * @brief Wrap an already-created post Shader (custom SPIR-V / future registered styles).
      * `styleId` is a label only; capability tables are not updated.
      * Shader must already declare its float uniforms.
      */
@@ -73,14 +73,14 @@ public:
     /** Empty multi-pass chain (caller adds StylePass*). */
     StyleChain *newChain();
 
-    /** Raw post Shader with defaults (owned by Graphics). */
+    /** @brief Raw post Shader with defaults (owned by Graphics). */
     graphics::Shader *newPostShader(graphics::Graphics *gfx, const std::string &style);
 
-    /** Mesh3D Shader for cartoon/ink (owned by Graphics). */
+    /** @brief Mesh3D Shader for cartoon/ink (owned by Graphics). */
     graphics::Shader *newMeshShader(graphics::Graphics *gfx, const std::string &style);
 
     /**
-     * CPU fallback stylization for ImageData (RGBA8).
+     * @brief CPU fallback stylization for ImageData (RGBA8).
      * Caller owns returned ImageData*.
      */
     image::ImageData *processImage(image::ImageData *src, const std::string &style);

@@ -5,7 +5,7 @@
 
 namespace eve::editor {
 
-/** Simple editor chrome regions: left / right / top / bottom / center. */
+/** @brief Simple editor chrome regions: left / right / top / bottom / center. */
 class EditorDock {
 public:
     EditorDock();

@@ -11,7 +11,7 @@ namespace eve::graphics {
 class Graphics;
 
 /**
- * GPU texture created via Graphics::newTexture.
+ * @brief GPU texture created via Graphics::newTexture.
  * Owns GPU resources through an opaque backend handle.
  */
 class Texture : public Drawable {
@@ -20,7 +20,7 @@ public:
     ~Texture() override;
 
     void draw(Graphics *gfx, const glm::mat4 &matrix) const override;
-    /** Black silhouette using texture alpha (volumetric occlusion map). */
+    /** @brief Black silhouette using texture alpha (volumetric occlusion map). */
     void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
 
     int getWidth() const { return width; }

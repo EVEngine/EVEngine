@@ -4024,15 +4024,18 @@ vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
     auto frag = embeddedSpirv(voxel_rect_frag_spv);
     ShaderModulePair modules(device, vert, frag);
 
-    vk::VertexInputBindingDescription bindings[2]{};
+    vk::VertexInputBindingDescription bindings[3]{};
     bindings[0].binding = 0;
     bindings[0].stride = sizeof(glm::vec2);
     bindings[0].inputRate = vk::VertexInputRate::eVertex;
     bindings[1].binding = 1;
     bindings[1].stride = sizeof(uint32_t);
     bindings[1].inputRate = vk::VertexInputRate::eInstance;
+    bindings[2].binding = 2;
+    bindings[2].stride = sizeof(uint32_t);
+    bindings[2].inputRate = vk::VertexInputRate::eInstance;
 
-    vk::VertexInputAttributeDescription attrs[2]{};
+    vk::VertexInputAttributeDescription attrs[3]{};
     attrs[0].location = 0;
     attrs[0].binding = 0;
     attrs[0].format = vk::Format::eR32G32Sfloat;
@@ -4041,11 +4044,15 @@ vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
     attrs[1].binding = 1;
     attrs[1].format = vk::Format::eR32Uint;
     attrs[1].offset = 0;
+    attrs[2].location = 2;
+    attrs[2].binding = 2;
+    attrs[2].format = vk::Format::eR32Uint;
+    attrs[2].offset = 0;
 
     vk::PipelineVertexInputStateCreateInfo vi{};
-    vi.vertexBindingDescriptionCount = 2;
+    vi.vertexBindingDescriptionCount = 3;
     vi.pVertexBindingDescriptions = bindings;
-    vi.vertexAttributeDescriptionCount = 2;
+    vi.vertexAttributeDescriptionCount = 3;
     vi.pVertexAttributeDescriptions = attrs;
 
     // Unit-quad indices 0-2-1 / 0-3-2 are object-space CCW for outward faces.
@@ -4106,7 +4113,7 @@ vkb::BoundSet Graphics::voxelRectSetFor(GpuTexture *gpuTex) {
 
 void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
                                       float originY, float originZ, const std::string &faceDir,
-                                      Texture *atlas, int tilesPerRow) {
+                                      Texture *atlas, int tilesPerRow, const uint32_t *ao) {
     ASSERT(initialized);
     if (!initialized) throw Exception("drawVoxelFaceInstances: graphics not initialized");
     if (!swapchainPassOpen) throw Exception("drawVoxelFaceInstances: call begin3DFrame first");
@@ -4149,6 +4156,26 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     }
     slot.buffer.updateLocal(frameToken(), packed, size_t(bytes));
 
+    // Ambient-occlusion words (null → full bright). Kept parallel to packed.
+    const uint32_t defaultAO = 0xFFu;  // all four corners AO=3
+    std::vector<uint32_t> aoDefaults;
+    if (!ao) {
+        aoDefaults.assign(size_t(count), defaultAO);
+        ao = aoDefaults.data();
+    }
+    const vk::DeviceSize aoBytes = vk::DeviceSize(count) * sizeof(uint32_t);
+    if (slot.aoCapacityBytes < size_t(aoBytes) || !slot.aoBuffer.buffer) {
+        const size_t alloc = std::max(size_t(aoBytes),
+                                      slot.aoCapacityBytes ? slot.aoCapacityBytes * 2
+                                                           : size_t(aoBytes));
+        slot.aoBuffer.allocate(frameToken(), device, vk::BufferUsageFlagBits::eVertexBuffer,
+                               vk::DeviceSize(alloc),
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+        slot.aoCapacityBytes = alloc;
+    }
+    slot.aoBuffer.updateLocal(frameToken(), ao, size_t(aoBytes));
+
     VoxelRectPC pc{};
     pc.viewProj = mesh3dFrameUbo.mvp;
     pc.chunkOrigin = glm::vec4(originX, originY, originZ, float(face));
@@ -4163,9 +4190,9 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     cb.pushConstants(voxelRectPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(VoxelRectPC),
                      &pc);
 
-    vk::Buffer vbufs[2] = {voxelUnitQuadVerts.buffer, slot.buffer.buffer};
-    vk::DeviceSize offsets[2] = {0, 0};
-    cb.bindVertexBuffers(0, 2, vbufs, offsets);
+    vk::Buffer vbufs[3] = {voxelUnitQuadVerts.buffer, slot.buffer.buffer, slot.aoBuffer.buffer};
+    vk::DeviceSize offsets[3] = {0, 0, 0};
+    cb.bindVertexBuffers(0, 3, vbufs, offsets);
     cb.bindIndexBuffer(voxelUnitQuadIndices.buffer, 0, vk::IndexType::eUint32);
     cb.drawIndexed(6, uint32_t(count), 0, 0, 0);
 }

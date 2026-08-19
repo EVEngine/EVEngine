@@ -7,7 +7,10 @@
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/NetException.h>
+#include <Poco/Net/SocketDefs.h>
 #include <Poco/Timespan.h>
+
+#include <cstring>
 
 namespace eve::network {
 
@@ -59,7 +62,9 @@ bool TcpSocket::connect(std::string host, uint16_t port) {
         c.handle = self;
         try {
             auto sock = std::make_unique<Poco::Net::StreamSocket>();
-            sock->connect(Poco::Net::SocketAddress(host, port), Poco::Timespan(self->net_->getTimeout(), 0));
+            int timeoutMs = self->net_->getTimeout();
+            sock->connect(Poco::Net::SocketAddress(host, port),
+                          Poco::Timespan(timeoutMs / 1000, (timeoutMs % 1000) * 1000));
             sock->setBlocking(false);
             self->setConnectedSocket(std::move(sock));
             c.type   = NetEvType::Conn;
@@ -127,42 +132,9 @@ TcpSocket* TcpSocket::accept() {
 }
 
 bool TcpSocket::send(eve::data::ByteData* data) {
-    if (!data || !stream_ || !connected_ || !net_ || !net_->worker()) return false;
+    if (!data || !net_) return false;
     size_t n = data->getSize();
-    if (sendQueued_ + n > kMaxSendBuffer) {
-        NetCompletion c;
-        c.type   = NetEvType::Err;
-        c.kind   = NetKind::Tcp;
-        c.handle = this;
-        c.reason = "limit";
-        net_->post(std::move(c));
-        return false;
-    }
-    auto buf = std::make_shared<std::vector<char>>(
-        static_cast<char*>(data->getData()),
-        static_cast<char*>(data->getData()) + n);
-    addSendQueued(n);
-    auto* self = this;
-    net_->worker()->submit([self, buf, n]() {
-        try {
-            if (!self->stream_) {
-                self->subSendQueued(n);
-                return;
-            }
-            int sent = self->stream_->sendBytes(buf->data(), static_cast<int>(buf->size()));
-            (void)sent;
-            self->subSendQueued(n);
-        } catch (...) {
-            self->subSendQueued(n);
-            NetCompletion c;
-            c.type   = NetEvType::Err;
-            c.kind   = NetKind::Tcp;
-            c.handle = self;
-            c.reason = "closed";
-            self->net_->post(std::move(c));
-        }
-    });
-    return true;
+    return queueSend(data->getData(), n);
 }
 
 bool TcpSocket::sendString(std::string s) {
@@ -171,10 +143,92 @@ bool TcpSocket::sendString(std::string s) {
     return send(&data);
 }
 
+bool TcpSocket::queueSend(const void* d, size_t n) {
+    if (!d || n == 0) return false;
+    const char* p = static_cast<const char*>(d);
+    bool overLimit = false;
+    {
+        std::lock_guard<std::mutex> lock(sendMu_);
+        overLimit = pendingSend_.size() + n > kMaxSendBuffer;
+        if (!overLimit) pendingSend_.insert(pendingSend_.end(), p, p + n);
+    }
+    if (overLimit) {
+        NetCompletion c;
+        c.type   = NetEvType::Err;
+        c.kind   = NetKind::Tcp;
+        c.handle = this;
+        c.reason = "limit";
+        if (net_) net_->post(std::move(c));
+        return false;
+    }
+    return true;
+}
+
+size_t TcpSocket::pendingSendBytes() const {
+    std::lock_guard<std::mutex> lock(sendMu_);
+    return pendingSend_.size();
+}
+
+void TcpSocket::clearPendingSend() {
+    std::lock_guard<std::mutex> lock(sendMu_);
+    pendingSend_.clear();
+}
+
+void TcpSocket::flushSend() {
+    if (!stream_ || !connected_) return;
+
+    std::vector<char> local;
+    {
+        std::lock_guard<std::mutex> lock(sendMu_);
+        if (pendingSend_.empty()) return;
+        local.swap(pendingSend_);
+    }
+
+    size_t off = 0;
+    bool failed = false;
+    while (off < local.size()) {
+        try {
+            int n = stream_->sendBytes(local.data() + static_cast<long>(off),
+                                       static_cast<int>(local.size() - off));
+            if (n <= 0) break;  // non-blocking would-block (Poco returns -1) or zero progress
+            off += static_cast<size_t>(n);
+        } catch (const Poco::TimeoutException&) {
+            break;  // would block; keep the remainder for the next poll
+        } catch (const Poco::IOException& e) {
+            // Poco maps EAGAIN/WSAEWOULDBLOCK to IOException("Operation would
+            // block") on some platforms instead of returning -1. Non-fatal.
+            if (e.code() == POCO_EWOULDBLOCK || e.code() == POCO_EAGAIN) break;
+            failed = true;
+            break;
+        } catch (...) {
+            failed = true;
+            break;
+        }
+    }
+
+    if (failed && net_) {
+        NetCompletion c;
+        c.type   = NetEvType::Err;
+        c.kind   = NetKind::Tcp;
+        c.handle = this;
+        c.reason = "closed";
+        net_->post(std::move(c));
+        close();
+    }
+
+    if (!failed && off < local.size()) {
+        std::lock_guard<std::mutex> lock(sendMu_);
+        pendingSend_.insert(pendingSend_.begin(),
+                            local.begin() + static_cast<long>(off),
+                            local.end());
+    }
+}
+
 void TcpSocket::close() {
     if (net_) net_->unwatchTcp(this);
     connected_ = false;
     listening_ = false;
+    clearPendingSend();
     try {
         if (stream_) stream_->close();
     } catch (...) {

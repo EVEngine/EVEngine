@@ -8,7 +8,7 @@
 namespace eve::procgen {
 
 /**
- * Build a deterministic procedural skyscraper. Registered as the `mesh.skyscraper` recipe.
+ * @brief Build a deterministic procedural skyscraper. Registered as the `mesh.skyscraper` recipe.
  *
  * The tower is a stack of setback tiers, each a solid box whose footprint shrinks as it rises.
  * Every facade is a subdivided window grid: each cell emits a small window quad raised slightly

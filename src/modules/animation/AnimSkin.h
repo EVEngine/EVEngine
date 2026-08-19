@@ -15,7 +15,7 @@ class AnimSkeleton;
 class AnimPose;
 
 /**
- * CPU linear-blend skinning binding for one mesh against an AnimSkeleton.
+ * @brief CPU linear-blend skinning binding for one mesh against an AnimSkeleton.
  *
  * Built from Assimp skin data on ModelData (bone names, inverse-bind matrices,
  * per-vertex weights). Call skinPositions() after AnimPose::computeWorld().
@@ -33,7 +33,7 @@ public:
     AnimSkin &operator=(const AnimSkin &) = delete;
 
     /**
-     * Build skin binding for meshIndex on model, mapping bone names onto skeleton.
+     * @brief Build skin binding for meshIndex on model, mapping bone names onto skeleton.
      * Throws if the mesh has no bones or no bone names match the skeleton.
      * Returned pointer is owned by the caller / script GC.
      */
@@ -44,46 +44,46 @@ public:
     int getBoneCount() const { return static_cast<int>(skeletonBone_.size()); }
     int getInfluenceCount() const { return kMaxInfluences; }
 
-    /** Skeleton bone index used by skin joint i (-1 if unused). */
+    /** @brief Skeleton bone index used by skin joint i (-1 if unused). */
     int getSkeletonBone(int skinBoneIndex) const;
     std::string getSkinBoneName(int skinBoneIndex) const;
 
-    /** Inverse-bind matrix element (column-major, 0..15) for skin joint i. */
+    /** @brief Inverse-bind matrix element (column-major, 0..15) for skin joint i. */
     float getInverseBindElement(int skinBoneIndex, int elementIndex) const;
 
     /**
-     * Linear-blend skin bind-pose positions into outPosXYZ (vertexCount*3 floats).
+     * @brief Linear-blend skin bind-pose positions into outPosXYZ (vertexCount*3 floats).
      * pose must already have computeWorld(skeleton) applied and match the skeleton
      * used at fromModel time.
      */
     void skinPositions(const AnimPose *pose, float *outPosXYZ) const;
 
     /**
-     * Convenience: skin into a vector sized vertexCount*3.
+     * @brief Convenience: skin into a vector sized vertexCount*3.
      * Returns false if pose is null or bone count mismatches.
      */
     bool skinPositionsTo(const AnimPose *pose, std::vector<float> &outPosXYZ) const;
 
     /**
-     * Skin into an internal cache readable via getSkinnedPosition*.
+     * @brief Skin into an internal cache readable via getSkinnedPosition*.
      * Returns false if pose is null or there are no vertices.
      */
     bool updateSkinnedPositions(const AnimPose *pose);
 
-    /** True after a successful updateSkinnedPositions(). */
+    /** @brief True after a successful updateSkinnedPositions(). */
     bool hasSkinnedPositions() const { return skinnedValid_; }
 
-    /** Cached skinned position component (requires updateSkinnedPositions). */
+    /** @brief Cached skinned position component (requires updateSkinnedPositions). */
     float getSkinnedPositionX(int vertexIndex) const;
     float getSkinnedPositionY(int vertexIndex) const;
     float getSkinnedPositionZ(int vertexIndex) const;
 
-    /** Bind-pose (unskinned) position component for vertex v (0..vertexCount-1). */
+    /** @brief Bind-pose (unskinned) position component for vertex v (0..vertexCount-1). */
     float getBindPositionX(int vertexIndex) const;
     float getBindPositionY(int vertexIndex) const;
     float getBindPositionZ(int vertexIndex) const;
 
-    /** Influence slot i (0..3) for vertex: skeleton bone index or -1. */
+    /** @brief Influence slot i (0..3) for vertex: skeleton bone index or -1. */
     int   getVertexBone(int vertexIndex, int influenceIndex) const;
     float getVertexWeight(int vertexIndex, int influenceIndex) const;
 
