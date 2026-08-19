@@ -179,6 +179,19 @@ else()
   target_link_libraries(unit_test eve_engine_includes)
 endif()
 
+# zeroerr's REQUIRE/CHECK/ASSERT are compiled out under ZEROERR_NO_ASSERT
+# (the root CMakeLists strips them from non-Debug builds). That silently
+# deletes test setup calls written as REQUIRE(initSideEffect()), which made
+# every graphics test fail in Release with "graphics not initialized". Keep
+# test assertions live in the test binary so Release CI actually asserts.
+foreach(_eve_test_tgt IN ITEMS unit_test main)
+  if(TARGET ${_eve_test_tgt})
+    target_compile_options(${_eve_test_tgt} PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  endif()
+endforeach()
+
 # Several tests include Poco headers (data, mcp, dap, remotesync). MSVC would
 # otherwise #pragma-comment PocoFoundationd.lib, which the third-party prefix
 # does not ship (it installs PocoFoundationmdd.lib).
