@@ -25,6 +25,12 @@
 set -euo pipefail
 
 SDK="${1:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
+# find_package(EVEngine) does not resolve a relative EVEngine_DIR; normalize
+# the SDK root to an absolute path so the consumer configure is reproducible.
+case "$SDK" in
+  /*) ;;
+  *) SDK="$(cd "$(dirname "$SDK")" && pwd)/$(basename "$SDK")" ;;
+esac
 PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
 EXPECTED="${3:-}"
 
@@ -196,7 +202,9 @@ EOF
 
 CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE=Release)
 if [ "$PLAT" = "win32" ]; then
-  CMAKE_ARGS+=(-G "Visual Studio 17 2022" -A x64)
+  # Default generator: GitHub-hosted windows images ship VS 2026, local dev
+  # machines may have 2022/2026. Let CMake pick the installed instance.
+  CMAKE_ARGS+=(-A x64)
 fi
 cmake "${CMAKE_ARGS[@]}" >"$WORK/plugin-cmake.log" 2>&1 || {
   tail -n 30 "$WORK/plugin-cmake.log"
