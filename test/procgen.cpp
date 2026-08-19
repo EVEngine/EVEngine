@@ -2257,8 +2257,16 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
 }
 
 TEST_CASE("graphics.water.paramsRoundTrip") {
+    auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
+    REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
+    win->setGraphics(gfx);
+    eve::window::WindowSettings settings;
+    settings.width = 128;
+    settings.height = 128;
+    settings.centered = true;
+    REQUIRE(win->setWindowSettings(settings));
     Water *w = gfx->newWater();
     REQUIRE(w != nullptr);
     REQUIRE(w->getShader() != nullptr);
@@ -2290,6 +2298,7 @@ TEST_CASE("graphics.water.paramsRoundTrip") {
     CHECK(Water::paramCount() > 0);
     CHECK(!Water::paramName(0).empty());
     delete w;
+    win->close();
 }
 
 TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
