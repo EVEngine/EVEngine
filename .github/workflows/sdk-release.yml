@@ -352,7 +352,9 @@ jobs:
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
           # Normalize to the canonical mirror so apt has a reachable source.
           sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
           apt_ok=0
