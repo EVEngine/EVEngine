@@ -9,3 +9,5 @@ UnitSciptTest(Mouse, mouse_content);
     }
 
 TestScript(basic)
+TestScript(relativeMode)
+TestScript(visibility)

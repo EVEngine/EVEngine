@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Mouse()`
 
-查询鼠标位置、按键和相对移动模式。
+查询鼠标位置、按键、相对模式与可见性。
 
 ## 基本用法
 
@@ -14,7 +14,7 @@ if (mouse.isDown(1)) fireAt(mx, my);
 
 ## 对象关系与调用时机
 
-`Mouse` 当前脚本绑定只提供坐标、按键和可见状态查询。坐标位于窗口空间；世界命中测试需要用当前相机反变换。
+`Mouse` 脚本绑定提供坐标、按键、可见性、抓取与相对模式。坐标位于窗口空间；世界命中测试需要用当前相机反变换。
 
 ## 目标导向指南
 
@@ -24,19 +24,30 @@ if (mouse.isDown(1)) fireAt(mx, my);
 
 ### 显示或隐藏游戏光标
 
-用 `isVisible()` 查询当前状态。当前脚本绑定未提供相对模式或设定可见性的接口；第一人称相机应通过原生输入扩展实现，不能假设 Mouse 的 C++ 后端能力已绑定。
+用 `setVisible(bool)` / `isVisible()` 控制并查询光标可见性。
+
+### 第一人称视角（相对模式）
+
+```squirrel
+mouse.setRelativeMode(true);   // 光标锁定并隐藏，只报告相对移动
+mouse.setRelativeMode(false);  // 恢复绝对坐标
+```
+
+相对模式下 `getX()` / `getY()` 返回累积位置；如需逐帧增量，应在 `eve_update` 内记录上一帧值求差。
+`setGrabbed(bool)` / `isGrabbed()` 控制窗口鼠标抓取（平台行为差异见 `mouse/sdl/Mouse.cpp`）。
 
 ## 常见问题
 
 - 把按钮编号与键盘名混用：鼠标按钮使用整数编号。
 - UI 已捕获鼠标仍触发游戏点击：先检查 `ui.wantCaptureMouse()`。
-- 假设存在相对模式 setter：当前脚本绑定没有该接口。
+- 相对模式请求失败：SDL 在无聚焦窗口等情况下可能拒绝，`setRelativeMode()` 返回 `false`，调用方应检查返回值。
 
 ## API 快查
 
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
-- `getName()`、`getX()`、`getY()`、`isDown()`、`isVisible()`
+- `getName()`、`getX()`、`getY()`、`setX()`、`setY()`、`setPosition()`、`isDown()`、
+  `setVisible()`、`isVisible()`、`setGrabbed()`、`isGrabbed()`、`setRelativeMode()`、`getRelativeMode()`
 
 ## 使用要点
 
