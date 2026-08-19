@@ -11,10 +11,12 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/JSON/Stringifier.h>
+#endif
 
 #include <algorithm>
 #include <chrono>
@@ -51,9 +53,11 @@ void callScriptHandler(ssq::Function &fn, const std::string &kind, const UIEvent
     sq_settop(vm, top);
 }
 
+#if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 // JSON UI asset helpers (defined below saveTreeJson/loadTreeJson).
 void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o);
 WidgetDesc descFromJson(const Poco::JSON::Object &o);
+#endif
 
 /** Script base: `class X extends eve.UIComponent { function build() { ... } }`. */
 const char *kUIComponentScript = R"SQ(
@@ -791,6 +795,7 @@ std::string UI::getStats() const {
     return buf;
 }
 
+#if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 std::string UI::saveTreeJson() const {
     if (!selected_) return "{}";
     auto t = selected_->tree();
@@ -816,6 +821,11 @@ bool UI::loadTreeJson(const std::string &json) {
         return false;
     }
 }
+#else
+// The Emscripten/WebGPU runtime trims Poco; keep the API but no-op.
+std::string UI::saveTreeJson() const { return "{}"; }
+bool UI::loadTreeJson(const std::string &) { return false; }
+#endif
 
 graphics::Canvas *UI::viewportCanvas(const std::string &id) {
     if (!selected_ || id.empty()) return nullptr;
@@ -867,6 +877,7 @@ float UI::viewportWheel(const std::string &id) {
     return 0.f;
 }
 
+#if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 namespace {
 
 const char *nodeTypeName(NodeType t) {
@@ -1071,6 +1082,7 @@ WidgetDesc descFromJson(const Poco::JSON::Object &o) {
 }
 
 }  // namespace
+#endif
 
 void UI::mountSimple(const std::string &title, const std::string &labelText,
                      const std::string &buttonText) {
