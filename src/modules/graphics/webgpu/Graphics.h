@@ -202,6 +202,7 @@ public:
     void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
                          float windAngle, float coverage, float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
+    void setMesh3DClusteredActive(bool active) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;

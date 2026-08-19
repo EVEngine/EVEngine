@@ -148,13 +148,18 @@ void ParticleSimSystem::update(float dt) {
                           ParticleEmitter::SkinSource, ParticleEmitter::GpuSim>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, sim, draw, attach, skinSrc, gpuSim] = *it;
+        (void)gpuSim;
         if (sim->alive <= 0 && emitterOffscreen(*cfg, *draw)) continue;
         syncEmitterSources(*cfg, *sim, *attach, *skinSrc);
-        if (cfg->gpuSimulation) {
-            if (!stepEmitterSimGpu(*cfg, *sim, *gpuSim, dt)) stepEmitterSim(*cfg, *sim, dt);
-        } else {
-            stepEmitterSim(*cfg, *sim, dt);
-        }
+        // gpuSimulation is accepted for config compatibility, but the legacy
+        // upload → dispatch → synchronous-readback path (stepEmitterSimGpu)
+        // stalls the whole GPU queue per emitter per frame (three
+        // executeImmediately round trips) and still runs the CPU-side
+        // collision/death/compaction pass afterwards — a net loss against the
+        // CPU integrator. All emitters integrate on the CPU here; a real GPU
+        // path must keep particle state GPU-resident and render from the SSBO
+        // directly (no readback).
+        stepEmitterSim(*cfg, *sim, dt);
     }
 }
 

@@ -8,6 +8,7 @@
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
 #include "vkbuilder.hpp"
+#include <array>
 #include <atomic>
 #include <memory>
 #include <optional>
@@ -136,8 +137,21 @@ struct GpuTexture {
 };
 
 struct GpuMesh {
+    /** @brief Ring copies for per-frame updated meshes (skin/morph/sprite
+     *  stack). Writing the next copy never races with in-flight frames, so
+     *  dynamic updates need no device-wide wait. Only allocated once a mesh
+     *  is actually updated (static meshes keep a single copy). */
+    static constexpr size_t kDynamicVertexCopies = 3;
     vkb::HostVertexBuffer vertices;
     vkb::GenericBuffer indices;
+    std::array<vkb::HostVertexBuffer, kDynamicVertexCopies> dynVertices;
+    std::array<vkb::GenericBuffer, kDynamicVertexCopies> dynIndices;
+    /** @brief CPU index copy for dynamic meshes (also normalizes 16-bit
+     *  static indices to 32-bit ring buffers). */
+    std::vector<uint32_t> cpuIndices;
+    /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
+    uint64_t dynamicWriteCount = 0;
+    bool dynamic = false;
     uint32_t indexCount = 0;
     vk::IndexType indexType = vk::IndexType::eUint32;
 };
@@ -269,6 +283,7 @@ public:
     void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
                          float windAngle, float coverage, float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
+    void setMesh3DClusteredActive(bool active) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
@@ -370,9 +385,12 @@ private:
     void queueSceneColorResolve();
     void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
     void uploadClusteredLighting(const ClusteredLightingUpload &upload);
+    void ensureMesh3dStrides();
+    void ensureMesh3dRing(Mesh3dFrameSlots &fslots);
+    void ensureMesh3dClusteredRing(Mesh3dClusteredFrameSlots &fslots);
     vkb::BoundSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
-                                       GpuTexture *envTex, GpuTexture *heightTex,
-                                       Mesh3dClusteredFrameSlots &fslots, size_t uboSlot);
+                                        GpuTexture *envTex, GpuTexture *heightTex,
+                                        Mesh3dClusteredFrameSlots &fslots);
     void ensureOffscreenPipelines();
     void ensureShaderOffscreenPipeline(Shader *shader);
     vk::Pipeline createTexturedStylePipeline(const std::vector<uint32_t> &vert,
@@ -427,8 +445,8 @@ private:
     void captureSwapchainImage(uint32_t imageIndex);
     void ensurePresentCaptureHook();
     vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                              GpuTexture *heightTex, GpuTexture *depthTex,
-                              Mesh3dFrameSlots &fslots, size_t uboSlot);
+                               GpuTexture *heightTex, GpuTexture *depthTex,
+                               Mesh3dFrameSlots &fslots);
     void ensureDefaultEnvCubemap();
     void ensureFlatNormalTexture3D();
     void ensureFlatHeightTexture3D();
@@ -519,16 +537,19 @@ private:
                    (std::hash<GpuTexture *>()(k.depth) << 4);
         }
     };
-    struct Mesh3dUboSlot {
-        vkb::GenericBuffer ubo;
-        vkb::GenericBuffer shadowUbo;
-        std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
-    };
-    // Per-frame-slot UBO arenas, keyed by Present::frames_in_flight so a frame
+    // Per-frame-slot UBO rings, keyed by Present::frames_in_flight so a frame
     // never overwrites a UBO that an in-flight frame is still reading.
+    // Per-draw data is written at dynamic offsets into the ring and the same
+    // descriptor set (cached per texture combination) is re-bound with a new
+    // offset, so descriptor-pool usage is bounded by texture count instead of
+    // growing with draw count.
     struct Mesh3dFrameSlots {
-        std::vector<Mesh3dUboSlot> slots;
+        vkb::GenericBuffer uboRing;     // capacity * mesh3dUboStride bytes
+        vkb::GenericBuffer shadowRing;  // capacity * shadowUboStride bytes
+        size_t capacity = 0;            // per-draw slot count the rings hold
         size_t drawIndex = 0;
+        size_t lastDrawCount = 0;
+        std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture *whiteTexture = nullptr;
@@ -571,16 +592,23 @@ private:
         size_t indicesCap = 0;
     };
     std::vector<ClusteredStorage> clusteredStorages;  // per swapchain frame slot
-    struct Mesh3dClusteredUboSlot {
-        vkb::GenericBuffer ubo;
-        vkb::GenericBuffer shadowUbo;
+    struct Mesh3dClusteredFrameSlots {
+        vkb::GenericBuffer uboRing;     // capacity * mesh3dClusteredUboStride bytes
+        vkb::GenericBuffer shadowRing;  // capacity * shadowUboStride bytes
+        size_t capacity = 0;
+        size_t drawIndex = 0;
+        size_t lastDrawCount = 0;
         std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
     };
-    struct Mesh3dClusteredFrameSlots {
-        std::vector<Mesh3dClusteredUboSlot> slots;
-        size_t drawIndex = 0;
-    };
     std::vector<Mesh3dClusteredFrameSlots> mesh3dClusteredFrameSlots;
+
+    /** @brief Dynamic-offset strides aligned to minUniformBufferOffsetAlignment. */
+    uint32_t mesh3dUboStride = 0;
+    uint32_t shadowUboStride = 0;
+    uint32_t mesh3dClusteredUboStride = 0;
+    /** @brief Last pipeline bound in drawMeshShader, so identical binds are skipped. */
+    vk::Pipeline lastMesh3dPipeline = nullptr;
+    vk::Pipeline lastMesh3dClusteredPipeline = nullptr;
 
     // Ping-pong copies so frame N+1 can write while frame N still samples.
     static constexpr uint32_t kAsyncResourceCopies = 2;
