@@ -19,6 +19,8 @@ Thread::Thread() = default;
 Thread::~Thread() {
     if (defaultPool_)
         defaultPool_->stop();
+    if (defaultJobSystem_)
+        defaultJobSystem_->stop();
 }
 
 int Thread::getHardwareConcurrency() const {
@@ -37,6 +39,13 @@ ThreadPool *Thread::newThreadPool(int workerCount) {
     if (workerCount < 0)
         throw eve::Exception("Thread::newThreadPool: workerCount must be >= 0");
     return new ThreadPool(workerCount);
+}
+
+JobSystem *Thread::getJobSystem() {
+    std::lock_guard<std::mutex> lock(mu_);
+    if (!defaultJobSystem_)
+        defaultJobSystem_ = std::unique_ptr<JobSystem>(createJobSystem(getHardwareConcurrency()));
+    return defaultJobSystem_.get();
 }
 
 Channel *Thread::getChannel(std::string name) {
