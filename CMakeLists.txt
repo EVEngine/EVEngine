@@ -4,6 +4,9 @@ project(EVEngine)
 set(EVENGINE_MAJOR_VERSION "0")
 set(EVENGINE_MINOR_VERSION "1")
 set(EVENGINE_PATCH_VERSION "0")
+set(EVENGINE_DEV_VERSION "-dev")
+
+set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
 
 option(BUILD_TESTING "enable testing" ON)
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
@@ -169,21 +172,8 @@ function(main)
         add_subdirectory(test)
     endif()
 
-    # Doxygen API documentation: `cmake --build <build dir> --target docs`
-    # (equivalent to `make docs`; output lands in docs/api/html).
-    find_package(Doxygen QUIET)
-    if(DOXYGEN_FOUND)
-        add_custom_target(docs
-            COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            COMMENT "Generating Doxygen API documentation (docs/api/html)"
-            VERBATIM)
-    else()
-        add_custom_target(docs
-            COMMAND ${CMAKE_COMMAND} -E echo
-                "doxygen not found; install it (apt install doxygen / brew install doxygen / choco install doxygen) to generate API docs"
-            VERBATIM)
-    endif()
+    # Doxygen documentation lives in docs/CMakeLists.txt (`--target docs`).
+    add_subdirectory(docs)
 
     include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
     eve_stage_timidity_share()

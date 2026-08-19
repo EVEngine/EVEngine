@@ -8,7 +8,7 @@ Evolutionary Vision Engine
 
 - [Game developer docs](docs/usr/README.md): install, run, and project layout; [module handbook](docs/usr/MODULES.md) covers script APIs and examples one by one.
 - [Engine developer docs](docs/dev/README.md): architecture, module design, testing strategy, and implementation notes.
-- [C++ API reference (Doxygen)](docs/api/html/index.html): generated from `src/` — run `make docs` after installing doxygen (config: [`Doxyfile`](Doxyfile)).
+- [C++ API reference (Doxygen)](docs/api/html/index.html): generated from `src/` and `docs/usr/` — run `make docs` after installing doxygen (config: [`docs/Doxyfile.in`](docs/Doxyfile.in)).
 
 Many game engines are slow to iterate, hard to debug, and awkward for rapid prototyping. EVEngine aims to be a simple, practical engine focused on 2D and third-person 3D gameplay components—not a full-featured 3D scene-management suite.
 
@@ -236,6 +236,8 @@ cd EVEngine
 # If you already cloned without submodules:
 # git submodule update --init --recursive
 ```
+
+The default clone is `main` (latest release). Engine development happens on `dev`: `git checkout dev && git pull`.
 
 The first CMake configure pulls `third-party` automatically; if the directory already exists with a `CMakeLists.txt`, the local copy is used. ECS uses submodule [`external/ECS.hpp`](https://github.com/sunxfancy/ECS.hpp); IK uses [`external/ik.hpp`](https://github.com/sunxfancy/ik.hpp).
 

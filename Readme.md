@@ -8,7 +8,7 @@ Evolutionary Vision Engine
 
 - [游戏开发者文档](docs/usr/README.md)：安装、运行与项目结构；[模块使用手册](docs/usr/MODULES.md)逐个说明脚本 API 和示例。
 - [开发者文档](docs/dev/README.md)：架构、模块设计、测试策略与实施记录。
-- [C++ API 参考（Doxygen）](docs/api/html/index.html)：由 `src/` 生成，安装 doxygen 后执行 `make docs` 即可（配置见 [`Doxyfile`](Doxyfile)）。
+- [C++ API 参考（Doxygen）](docs/api/html/index.html)：由 `src/` 与 `docs/usr/` 生成，安装 doxygen 后执行 `make docs` 即可（配置见 [`docs/Doxyfile.in`](docs/Doxyfile.in)）。
 
 针对很多游戏引擎开发效率低，难以调试，难以动态快速实现游戏原型，我们这里设计一款非常简单好用的游戏引擎。主要提供对2d、第三人称3d的游戏组件功能，不提供复杂3d游戏引擎中的3d场景管理等功能
 
@@ -236,6 +236,8 @@ cd EVEngine
 # 若已 clone 未带子模块：
 # git submodule update --init --recursive
 ```
+
+默认克隆的是 `main`（最新正式版）。参与引擎开发请基于 `dev`：`git checkout dev && git pull`。
 
 首次 CMake 配置时会自动拉取 `third-party`；若目录已存在且含 `CMakeLists.txt`，则直接使用本地副本。ECS 使用子模块 [`external/ECS.hpp`](https://github.com/sunxfancy/ECS.hpp)；IK 使用子模块 [`external/ik.hpp`](https://github.com/sunxfancy/ik.hpp)。
 
