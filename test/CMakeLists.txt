@@ -60,6 +60,7 @@ file(GLOB all_test_cpp
   inventory.cpp
   building.cpp
   buildingfx.cpp
+  card.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -282,6 +283,7 @@ set(EVELIBS
   EVInventory
   EVBuilding
   EVBuildingFx
+  EVCard
   EVAvatar
   EVDialogue
   EVProcgen
