@@ -198,7 +198,6 @@ TEST_CASE("spritestack.render.verticalStack") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -291,7 +290,6 @@ TEST_CASE("spritestack.render.gbufferOutline") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -387,7 +385,6 @@ TEST_CASE("spritestack.render.batchShadow") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -490,7 +487,6 @@ TEST_CASE("spritestack.render.atlasStrip") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -574,7 +570,6 @@ TEST_CASE("spritestack.render.csmShadow") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -685,7 +680,6 @@ TEST_CASE("spritestack.render.horizontalMode") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -754,7 +748,6 @@ TEST_CASE("spritestack.render.batch") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -847,7 +840,6 @@ TEST_CASE("spritestack.render.shadowAndOutline") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;

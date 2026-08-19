@@ -37,7 +37,6 @@ TEST_CASE("Quad.spriteAtlasSamplesSubRect") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;

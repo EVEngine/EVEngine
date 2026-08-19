@@ -350,7 +350,6 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width    = 1280;
     s.height   = 720;

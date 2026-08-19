@@ -204,7 +204,6 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 800;
     s.height = 480;

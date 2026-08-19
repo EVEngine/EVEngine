@@ -511,7 +511,6 @@ TEST_CASE("rpg.simulation.villageDefenseSystems") {
         auto *win = eve::window::Window::create();
         auto *gfx = Graphics::create();
         if (win && gfx) {
-            win->setGraphics(gfx);
             eve::window::WindowSettings ws;
             ws.width = 320;
             ws.height = 240;

@@ -13,12 +13,15 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-# Each of graphics / physics / audio has a SceneLinks.cpp registering the link
-# kinds it owns (scene/SceneLink.h). They all share the basename, so dropping
-# scene drops all three in one rule.
+# graphics/SceneLinks.cpp registers the link kinds graphics owns and
+# graphics/ScenePicking.cpp implements the scene picking entry points that
+# need a complete Camera3D; both include scene headers, so dropping scene
+# drops both files. physics / audio each have their own SceneLinks.cpp with
+# the same basename, so one rule covers all three.
 eve_module_enabled(scene _has_scene)
 if(NOT _has_scene)
-  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp"
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp;ScenePicking.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 

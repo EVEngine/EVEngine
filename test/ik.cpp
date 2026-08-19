@@ -334,7 +334,6 @@ TEST_CASE("ik.solver2d.armReachPreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 560;
     s.height = 420;

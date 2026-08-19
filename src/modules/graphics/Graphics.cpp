@@ -1,4 +1,5 @@
 #include "graphics/Graphics.h"
+#include "common/Capability.h"
 #include "common/config.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
@@ -42,6 +43,14 @@
 #include <memory>
 
 namespace eve::graphics {
+
+Graphics::Graphics() {
+    // The window module owns the native window; we own the render surface.
+    // Register as its surface host so window never has to include graphics.
+    // The query happens after native window creation, so this pointer is valid
+    // by the time it is used; see common/WindowSurfaceHost.h.
+    eve::cap::provide<IWindowSurfaceHost>(this);
+}
 
 #ifdef EVENGINE_WEBGPU
 Module_IMPL(Graphics, new eve::graphics::webgpu::Graphics());

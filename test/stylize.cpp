@@ -315,7 +315,6 @@ TEST_CASE("stylize.api.passFromShaderAndChain") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 128;
     s.height = 96;
@@ -368,7 +367,6 @@ TEST_CASE("stylize.gpu.postPassAndMeshShader") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 256;
     s.height = 192;
@@ -426,7 +424,6 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 512;
     s.height = 384;

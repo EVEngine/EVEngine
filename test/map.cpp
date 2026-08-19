@@ -816,7 +816,6 @@ TEST_CASE("map.render.orthoAndIsoPreview") {
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 400;

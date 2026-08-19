@@ -133,7 +133,6 @@ TEST_CASE("softbody.render.clothAndFluidPreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 720;
     s.height = 420;

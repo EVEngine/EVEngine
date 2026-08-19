@@ -6,15 +6,16 @@
 #endif
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <iostream>
 #include <vector>
 
+#include "common/Capability.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
+#include "common/WindowSurfaceHost.h"
 #include "common/config.h"
-#include "graphics/Graphics.h"
-#include "image/ImageData.h"
 
 #ifdef EVENGINE_ANDROID
 #include "android/android.h"
@@ -33,10 +34,6 @@
 #endif
 
 namespace eve {
-
-namespace graphic{
-    class Graphics;
-}
 
 namespace window {
 namespace sdl {
@@ -57,8 +54,6 @@ Window::Window() : open(false) {
 }
 
 Window::~Window() { SDL_QuitSubSystem(SDL_INIT_VIDEO); }
-
-void Window::setGraphics(graphics::Graphics *graphics) { this->graphics = graphics; }
 
 void Window::setSize(int width, int height) {
     WindowSettings f = settings;
@@ -152,7 +147,7 @@ bool Window::setWindowSettings(WindowSettings f) {
     }
 
     // Make sure the window keeps any previously set icon.
-    if (icon) setIcon(icon);
+    if (!iconRgba.empty()) setIconRGBA(iconRgba.data(), iconWidth, iconHeight);
 
     // Make sure the mouse keeps its previous grab setting.
     // setMouseGrab(mouseGrabbed);
@@ -181,7 +176,7 @@ bool Window::setWindowSettings(WindowSettings f) {
 
     updateSettings(f, false);
 
-    if (graphics) {
+    if (auto* surfaceHost = eve::cap::query<IWindowSurfaceHost>()) {
         int pw = 0, ph = 0;
 #ifdef EVENGINE_WEBGPU
         // No Vulkan drawable-size helper on WebGPU; the window size is the
@@ -198,9 +193,9 @@ bool Window::setWindowSettings(WindowSettings f) {
         pixelHeight = ph;
         {
             StartupStage stage("window: graphics initWithWindow");
-            graphics->initWithWindow(window);
+            surfaceHost->initWithWindow(window);
         }
-        graphics->setViewportSize(f.width, f.height, pw, ph);
+        surfaceHost->setViewportSize(f.width, f.height, pw, ph);
     }
     open = true;
     return true;
@@ -489,28 +484,9 @@ void Window::requestAttention(bool continuous) {
 #endif
 }
 
-bool Window::setIcon(image::ImageData *image_data) {
-    if (!image_data)
-        return false;
+bool Window::setIconRGBA(const uint8_t* rgba, int width, int height) {
+    if (!rgba || width <= 0 || height <= 0) return false;
 
-    // SDL_SetWindowIcon expects tightly packed 32-bit RGBA pixels. Normalize
-    // any other ImageData pixel format to RGBA8 first.
-    image::ImageData *rgba      = image_data;
-    image::ImageData *converted = nullptr;
-    if (image_data->getFormat() != "RGBA8") {
-        const int w = image_data->getWidth();
-        const int h = image_data->getHeight();
-        converted   = new image::ImageData(w, h, "RGBA8");
-        for (int y = 0; y < h; ++y)
-            for (int x = 0; x < w; ++x)
-                converted->setPixel(x, y, image_data->getPixel(x, y));
-        rgba = converted;
-    }
-
-    const int w = rgba->getWidth();
-    const int h = rgba->getHeight();
-
-    // ImageData stores RGBA8 channels in memory as [R, G, B, A].
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     const Uint32 rmask = 0xFF000000;
     const Uint32 gmask = 0x00FF0000;
@@ -523,10 +499,9 @@ bool Window::setIcon(image::ImageData *image_data) {
     const Uint32 amask = 0xFF000000;
 #endif
 
-    SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(rgba->getData(), w, h, 32, w * 4,
-                                                    rmask, gmask, bmask, amask);
+    SDL_Surface* surface =
+        SDL_CreateRGBSurfaceFrom(const_cast<uint8_t*>(rgba), width, height, 32, width * 4, rmask, gmask, bmask, amask);
     if (!surface) {
-        delete converted;
         throw Exception("Could not create window icon surface: %s", SDL_GetError());
     }
 
@@ -535,19 +510,16 @@ bool Window::setIcon(image::ImageData *image_data) {
 
     SDL_FreeSurface(surface);
 
-    icon = image_data;
+    iconRgba.assign(rgba, rgba + static_cast<size_t>(width) * height * 4);
+    iconWidth  = width;
+    iconHeight = height;
 
 #ifdef EVENGINE_MACOSX
     // SDL only updates the titlebar/mini window icon on macOS; refresh the Dock icon too.
-    eve::macosx::setIcon(rgba);
+    eve::macosx::setIconRGBA(rgba, width, height);
 #endif
 
-    delete converted;
     return true;
-}
-
-image::ImageData *Window::getIcon() const {
-    return icon;
 }
 
 bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowflags, int msaa, bool stencil, int depth) {
@@ -564,17 +536,10 @@ bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowfla
 void Window::close() { close(true); }
 
 void Window::close(bool allowExceptions) {
-    if (graphics) {
-        // if (allowExceptions && graphics->isCanvasActive())
-        // 	throw Exception("close cannot be called while a Canvas is active in love.graphics.");
-
-        // graphics->unSetMode();
-    }
-
     if (window) {
         // ImGui / swapchain teardown needs the native window and surface still
         // alive. Destroy the SDL window only after graphics has dropped them.
-        if (graphics) graphics->onNativeWindowDestroyed();
+        if (auto* surfaceHost = eve::cap::query<IWindowSurfaceHost>()) surfaceHost->onNativeWindowDestroyed();
 
         SDL_DestroyWindow(window);
         window = nullptr;
@@ -599,8 +564,9 @@ void Window::updateSettings(const WindowSettings &newsettings, bool updateGraphi
         SDL_Vulkan_GetDrawableSize(window, &pixelWidth, &pixelHeight);
 #endif
     }
-    if (updateGraphicsViewport && graphics && window) {
-        graphics->setViewportSize(windowWidth, windowHeight, pixelWidth, pixelHeight);
+    if (updateGraphicsViewport && window) {
+        if (auto* surfaceHost = eve::cap::query<IWindowSurfaceHost>())
+            surfaceHost->setViewportSize(windowWidth, windowHeight, pixelWidth, pixelHeight);
     }
 }
 

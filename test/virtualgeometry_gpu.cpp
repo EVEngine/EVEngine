@@ -19,7 +19,6 @@ bool tryInitGpuWindow() {
     auto *win = eve::window::Window::create();
     auto *gfx = eve::graphics::Graphics::create();
     if (!win || !gfx) return false;
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;

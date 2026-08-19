@@ -743,7 +743,6 @@ TEST_CASE("particles.render.fireAndSmokePreview") {
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 480;
     s.height = 360;

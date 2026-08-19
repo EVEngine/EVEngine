@@ -387,7 +387,6 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 480;
     s.height = 640;

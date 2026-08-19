@@ -271,7 +271,6 @@ TEST_CASE("housegen.renderPreview") {
     auto *gfx = Graphics::create();
     REQUIRE(window != nullptr);
     REQUIRE(gfx != nullptr);
-    window->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 960;
     settings.height = 640;
@@ -479,7 +478,6 @@ TEST_CASE("housegen.materialPreview") {
     REQUIRE(window != nullptr);
     REQUIRE(gfx != nullptr);
     REQUIRE(models != nullptr);
-    window->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 960;
     settings.height = 640;

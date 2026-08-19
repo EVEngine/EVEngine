@@ -84,7 +84,6 @@ TEST_CASE("Lighting2D.pointLightBrightensNearbyUnlitSprite") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -157,7 +156,6 @@ TEST_CASE("Lighting2D.normalMapLitSideBrighter") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;

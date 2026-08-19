@@ -63,7 +63,6 @@ TEST_CASE("graphics.Shader.customSpvOnSprite") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -111,7 +110,6 @@ TEST_CASE("graphics.Shader.newShaderGlslc") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 160;
     s.height = 120;

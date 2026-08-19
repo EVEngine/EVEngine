@@ -45,7 +45,6 @@ TEST_CASE("demo.newPlanetTexture") {
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 64;
     s.height = 64;

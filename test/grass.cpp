@@ -408,7 +408,6 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     gfx->setMsaaSamples(0);
     eve::window::WindowSettings s;
     s.width = 960;

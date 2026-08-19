@@ -101,7 +101,7 @@ eve_declare_module(NAME building LAYER 0 SCRIPT Building
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME window REQUIRED LAYER 1 SCRIPT Window SLOT win
-                   DEPS event graphics image
+                   DEPS event
                    THIRDPARTY sdl2)
 eve_declare_module(NAME image LAYER 1 SCRIPT Image
                    DEPS filesystem
@@ -222,10 +222,11 @@ eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
 # ---------------------------------------------------------------------------
 
 # Renderables, bodies and audio sources attach through registered link kinds
-# (scene/SceneLink.h), so scene no longer depends on those modules; graphics
-# remains only because pickScreenAt / collectFrustumIdsAt take a Camera3D.
+# (scene/SceneLink.h), so scene no longer depends on those modules. The two
+# picking entry points that take a Camera3D are implemented in the graphics
+# module (graphics/ScenePicking.cpp, excluded when scene is off).
 eve_declare_module(NAME scene LAYER 1 SCRIPT Scene SLOT scene
-                   DEPS graphics spatial
+                   DEPS spatial
                    THIRDPARTY poco
                    GROUP 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles

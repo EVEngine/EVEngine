@@ -313,7 +313,6 @@ void previewHex(Map *mapMod, TileLayer *layer, int spawnTx, int spawnTy, int exi
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 960;
     ws.height = 540;

@@ -104,7 +104,6 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 480;
@@ -196,7 +195,6 @@ TEST_CASE("GraphicsSmoke.newTextureFromFileThrowsOnMissing") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -223,7 +221,6 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 480;
@@ -301,7 +298,6 @@ TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;

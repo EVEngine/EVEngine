@@ -1,4 +1,5 @@
-﻿#include <cstdlib>
+#include <cstdlib>
+#include <vector>
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -16,7 +17,6 @@ void openWindow(eve::window::Window*& win, eve::graphics::Graphics*& gfx, int w 
     gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     WindowSettings s;
     s.width      = static_cast<uint16_t>(w);
     s.height     = static_cast<uint16_t>(h);
@@ -173,7 +173,6 @@ TEST_CASE("window.zeroSizeUsesDesktopDimensions") {
     gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
 
     WindowSettings s = makeSettings(0, 0);
     REQUIRE(win->setWindowSettings(s));
@@ -300,34 +299,30 @@ TEST_CASE("window.requestAttentionNoCrash") {
     win->requestAttention(false);
 }
 
-TEST_CASE("window.setAndGetIcon") {
+TEST_CASE("window.setIconRGBA") {
     eve::window::Window* win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
     openWindow(win, gfx, 320, 240);
 
-    // Window borrows the ImageData pointer, so it must outlive the window.
-    static eve::image::ImageData icon(32, 32, "RGBA8");
-    for (int y = 0; y < 32; ++y)
-        for (int x = 0; x < 32; ++x)
-            icon.setPixel(x, y, eve::image::ImageData::Colorf{1.0f, 0.0f, 0.0f, 1.0f});
-
-    CHECK(win->getIcon() == nullptr);
-    CHECK(win->setIcon(&icon));
-    CHECK(win->getIcon() == &icon);
+    static std::vector<uint8_t> pixels(32 * 32 * 4, 0);
+    for (size_t i = 0; i < pixels.size(); i += 4) {
+        pixels[i]     = 255;  // R
+        pixels[i + 3] = 255;  // A
+    }
+    CHECK(win->setIconRGBA(pixels.data(), 32, 32));
 
     // Recreating the window (e.g. via setWindowSettings) must re-apply the icon.
     WindowSettings s = makeSettings(320, 240);
     REQUIRE(win->setWindowSettings(s));
     CHECK(win->getHandle() != nullptr);
-    CHECK(win->getIcon() == &icon);
 
     win->close();
 }
 
-TEST_CASE("window.setIconNullFails") {
+TEST_CASE("window.setIconRGBANullFails") {
     auto* win = eve::window::Window::create();
     REQUIRE(win != nullptr);
-    CHECK(!win->setIcon(nullptr));
+    CHECK(!win->setIconRGBA(nullptr, 32, 32));
 }
 
 TEST_CASE("window.showMessageBoxOptional") {

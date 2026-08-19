@@ -300,7 +300,6 @@ TEST_CASE("map.path.astar.routePreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 400;

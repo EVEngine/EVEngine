@@ -1,37 +1,38 @@
 #pragma once
 
+#include <assimp/matrix4x4.h>
+#include <cstdint>
+#include <glm/glm.hpp>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 #include "common/Module.h"
+#include "common/WindowSurfaceHost.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
 #include "graphics/BlendMode.h"
-#include "graphics/Shader.h"
-#include "graphics/Drawable.h"
 #include "graphics/Canvas.h"
+#include "graphics/ClusteredLight.h"
+#include "graphics/Drawable.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Shadow.h"
 #include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
-#include "graphics/Mesh.h"
-#include "graphics/Quad.h"
-#include "graphics/Font.h"
-#include "graphics/Light.h"
-#include "graphics/ClusteredLight.h"
-#include "graphics/Shadow.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Grass.h"
 #include "graphics/Waterfall.h"
-#include "graphics/Outline.h"
-#include "graphics/Material.h"
-#include "graphics/GBuffer.h"
-#include "graphics/RenderControl.h"
-#include <vector>
-#include <optional>
-#include <cstdint>
-#include <string>
-#include <memory>
-#include <glm/glm.hpp>
-#include <assimp/matrix4x4.h>
 
 struct aiMesh;
 
@@ -39,9 +40,10 @@ namespace eve::graphics {
 
 class Camera3D;
 
-class Graphics : public Module, public Canvas {
+class Graphics : public Module, public Canvas, public IWindowSurfaceHost {
 public:
     Module_REG(Graphics);
+    Graphics();
     virtual ~Graphics() {}
 
     /**
@@ -575,7 +577,7 @@ public:
     virtual int getMsaaSamples() const { return msaaSamples; }
 
     /** @brief Pause/resume presenting (Android background / foreground). */
-    void setActive(bool active) {
+    void setActive(bool active) override {
         graphicsActive = active;
         if (active)
             markSwapchainDirty();
@@ -590,7 +592,7 @@ public:
      * (Android background/foreground destroys the native window). Safe to call
      * from a non-render thread; the actual work happens on the render thread.
      */
-    virtual void requestSurfaceRecreate() {}
+    void requestSurfaceRecreate() override {}
 
     /**
      * @brief Called by the Window module when the native window backing the render

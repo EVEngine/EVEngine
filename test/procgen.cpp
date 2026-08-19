@@ -451,7 +451,6 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 900;
     ws.height = 700;
@@ -606,7 +605,6 @@ TEST_CASE("procgen.mesh.bush.renderDump") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings ws;
     ws.width = 900;
     ws.height = 700;
@@ -969,7 +967,6 @@ TEST_CASE("procgen.render.hexplanetPng") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 768;
     settings.height = 768;
@@ -1049,7 +1046,6 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 256;
     settings.height = 256;
@@ -1148,7 +1144,6 @@ TEST_CASE("procgen.render.skyscraperPng") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 720;
@@ -1989,7 +1984,6 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 720;
     s.height = 420;
@@ -2215,7 +2209,6 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 128;
     settings.height = 128;
@@ -2295,7 +2288,6 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 256;
     settings.height = 256;
@@ -2447,7 +2439,6 @@ TEST_CASE("graphics.water.render.plane") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;
@@ -2589,7 +2580,6 @@ TEST_CASE("graphics.water.render.ssr") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;
@@ -2737,7 +2727,6 @@ TEST_CASE("graphics.render3d.toCanvas") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 320;
     s.height = 240;
@@ -2810,7 +2799,6 @@ TEST_CASE("graphics.water.render.planar") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 640;
     settings.height = 480;

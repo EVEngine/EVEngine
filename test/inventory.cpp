@@ -351,7 +351,6 @@ TEST_CASE("inventory.bag.uiPreview") {
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 520;
     s.height = 420;

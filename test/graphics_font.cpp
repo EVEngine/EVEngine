@@ -52,7 +52,6 @@ struct GraphicsFixture {
     GraphicsFixture(int w = 320, int h = 240) {
         win = eve::window::Window::create();
         gfx = Graphics::create();
-        win->setGraphics(gfx);
         eve::window::WindowSettings s;
         s.width    = static_cast<uint16_t>(w);
         s.height   = static_cast<uint16_t>(h);

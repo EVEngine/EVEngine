@@ -1166,7 +1166,6 @@ TEST_CASE("graphics.imageAudit.pipelineConfigs") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 480;
     s.height = 360;
@@ -1390,7 +1389,6 @@ TEST_CASE("graphics.imageAudit.materialsAndCamera") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1522,7 +1520,6 @@ TEST_CASE("graphics.imageAudit.postFx") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1679,7 +1676,6 @@ TEST_CASE("graphics.imageAudit.composite2d3d") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1735,7 +1731,6 @@ TEST_CASE("graphics.imageAudit.stylizeAndSsaa") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1794,7 +1789,6 @@ TEST_CASE("graphics.imageAudit.multiObjectLod") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1882,7 +1876,6 @@ TEST_CASE("graphics.imageAudit.lightsAndXform") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -1945,7 +1938,6 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2026,7 +2018,6 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2071,7 +2062,6 @@ TEST_CASE("graphics.imageAudit.occlusionScatter") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2141,7 +2131,6 @@ TEST_CASE("graphics.imageAudit.textureSources") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2193,7 +2182,6 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2263,7 +2251,6 @@ TEST_CASE("graphics.imageAudit.sprite2dCamera") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2339,7 +2326,6 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2408,7 +2394,6 @@ TEST_CASE("graphics.imageAudit.voxelAndHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2470,7 +2455,6 @@ TEST_CASE("graphics.imageAudit.uiAndMap") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2553,7 +2537,6 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2590,7 +2573,6 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2650,7 +2632,6 @@ TEST_CASE("graphics.imageAudit.reloadTex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2680,7 +2661,6 @@ TEST_CASE("graphics.imageAudit.morphInflate") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2738,7 +2718,6 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2814,7 +2793,6 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -2956,7 +2934,6 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3042,7 +3019,6 @@ TEST_CASE("graphics.imageAudit.materialHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3086,7 +3062,6 @@ TEST_CASE("graphics.imageAudit.clusteredHair") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3146,7 +3121,6 @@ TEST_CASE("graphics.imageAudit.clothFluid") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3204,7 +3178,6 @@ TEST_CASE("graphics.imageAudit.particlePresets") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3259,7 +3232,6 @@ TEST_CASE("graphics.imageAudit.mapPath") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3337,7 +3309,6 @@ TEST_CASE("graphics.imageAudit.reloadTexBytes") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3389,7 +3360,6 @@ TEST_CASE("graphics.imageAudit.postQuality") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3481,7 +3451,6 @@ TEST_CASE("graphics.imageAudit.dualIsoFov") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3569,7 +3538,6 @@ TEST_CASE("graphics.imageAudit.avatarImage") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3617,7 +3585,6 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3664,7 +3631,6 @@ TEST_CASE("graphics.imageAudit.box2dDebug") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3715,7 +3681,6 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3778,7 +3743,6 @@ TEST_CASE("graphics.imageAudit.sceneGraph") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;
@@ -3825,7 +3789,6 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 400;
     s.height = 300;

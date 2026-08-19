@@ -42,7 +42,6 @@ void openGfx(eve::window::Window *&win, eve::graphics::Graphics *&gfx, int w = 3
     gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = w;
     s.height = h;

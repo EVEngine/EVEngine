@@ -29,7 +29,6 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 480;
@@ -110,7 +109,6 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 720;
     s.height = 480;
@@ -210,7 +208,6 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     REQUIRE(gfx != nullptr);
     REQUIRE(ui != nullptr);
 
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 800;
     s.height = 600;

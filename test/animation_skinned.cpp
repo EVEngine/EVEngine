@@ -135,7 +135,6 @@ void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 512, int h
     gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width  = static_cast<uint16_t>(w);
     s.height = static_cast<uint16_t>(h);
