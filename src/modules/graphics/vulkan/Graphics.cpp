@@ -555,9 +555,9 @@ vk::CommandBuffer &Graphics::currentPresentCb() {
     return presentRecording.commandBuffer();
 }
 
-vk::CommandBuffer &Graphics::currentDrawCb() {
-    if (sceneSecondaryActive && !frameSecondaryCbs.empty())
-        return currentFrameSecondaryCbs().buffers[kForwardSecondary];
+vk::CommandBuffer Graphics::currentDrawCb() {
+    if (sceneSecondaryActive && forwardRecorder_)
+        return forwardRecorder_.cb();
     return currentPresentCb();
 }
 
@@ -577,6 +577,66 @@ Graphics::FrameSecondaryCbs &Graphics::currentFrameSecondaryCbs() {
         slot.created = true;
     }
     return slot;
+}
+
+RecordingSecondary::~RecordingSecondary() {
+    // An abandoned recording means the frame's command ordering broke; fail
+    // loudly in debug builds instead of submitting a half-recorded buffer.
+    ASSERT(static_cast<VkCommandBuffer>(cb_) == VK_NULL_HANDLE);
+}
+
+ReadySecondary RecordingSecondary::finish() {
+    ASSERT(static_cast<VkCommandBuffer>(cb_) != VK_NULL_HANDLE);
+    vk::CommandBuffer done = cb_;
+    cb_ = nullptr;
+    done.end();
+    return ReadySecondary(done);
+}
+
+void executeSecondary(vk::CommandBuffer primary, const ReadySecondary &ready) {
+    ASSERT(static_cast<VkCommandBuffer>(ready.cb_) != VK_NULL_HANDLE);
+    primary.executeCommands(1, &ready.cb_);
+}
+
+RenderPassExecutor::RenderPassExecutor(vk::CommandBuffer primary, vk::RenderPass renderPass,
+                                       vk::Framebuffer framebuffer, vk::Rect2D area,
+                                       const vk::ClearValue *clears, uint32_t clearCount)
+    : primary_(primary) {
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = renderPass;
+    rpBegin.framebuffer = framebuffer;
+    rpBegin.renderArea = area;
+    rpBegin.clearValueCount = clearCount;
+    rpBegin.pClearValues = clears;
+    primary_.beginRenderPass(rpBegin, vk::SubpassContents::eSecondaryCommandBuffers);
+}
+
+RenderPassExecutor::~RenderPassExecutor() {
+    if (!secondaries_.empty())
+        primary_.executeCommands(uint32_t(secondaries_.size()), secondaries_.data());
+    primary_.endRenderPass();
+}
+
+void RenderPassExecutor::add(ReadySecondary ready) {
+    ASSERT(static_cast<VkCommandBuffer>(ready.cb_) != VK_NULL_HANDLE);
+    secondaries_.push_back(ready.cb_);
+}
+
+RecordingSecondary Graphics::beginSecondary(uint32_t index, vk::RenderPass renderPass,
+                                            vk::Framebuffer framebuffer) {
+    auto &slot = currentFrameSecondaryCbs();
+    ASSERT(index < slot.buffers.size());
+    vk::CommandBuffer secondary = slot.buffers[index];
+    vk::CommandBufferInheritanceInfo inheritance{};
+    inheritance.renderPass = renderPass;
+    inheritance.subpass = 0;
+    inheritance.framebuffer = framebuffer;
+    vk::CommandBufferBeginInfo beginInfo{};
+    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit |
+                      vk::CommandBufferUsageFlagBits::eRenderPassContinue;
+    beginInfo.pInheritanceInfo = &inheritance;
+    secondary.begin(beginInfo);
+    return RecordingSecondary(secondary);
 }
 
 vkb::FrameSlot Graphics::frameToken() const {
@@ -673,23 +733,10 @@ void Graphics::dropPendingOffscreenPasses() {
     gbufferPassDraws.clear();
 }
 
-void Graphics::recordShadowCascadeSecondary(vk::CommandBuffer secondary, int cascade) {
-    auto &slot = currentShadowMap();
+ReadySecondary Graphics::recordShadowCascadeSecondary(RecordingSecondary recorder, int cascade) {
     const uint32_t size = uint32_t(ShadowConfig::kMapSize);
+    vk::CommandBuffer secondary = recorder.cb();
 
-    vk::CommandBufferBeginInfo beginInfo{};
-    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-    secondary.begin(beginInfo);
-
-    vk::ClearValue clear{};
-    clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    vk::RenderPassBeginInfo rpBegin{};
-    rpBegin.renderPass = shadowRenderPass;
-    rpBegin.framebuffer = slot.framebuffers[cascade];
-    rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
-    rpBegin.clearValueCount = 1;
-    rpBegin.pClearValues = &clear;
-    secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     setViewportAndScissor(secondary, size, size);
     secondary.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
     bool alphaBound = false;
@@ -715,31 +762,15 @@ void Graphics::recordShadowCascadeSecondary(vk::CommandBuffer secondary, int cas
                                 vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &d.mvp);
         drawIndexedMesh(secondary, *gpuMesh);
     }
-    secondary.endRenderPass();
-    secondary.end();
+    return recorder.finish();
 }
 
-void Graphics::recordGBufferSecondary(vk::CommandBuffer secondary) {
+ReadySecondary Graphics::recordGBufferSecondary(RecordingSecondary recorder) {
     auto *slot = currentGBufferSlot();
     const uint32_t w = uint32_t(gbufferWidth);
     const uint32_t h = uint32_t(gbufferHeight);
+    vk::CommandBuffer secondary = recorder.cb();
 
-    vk::CommandBufferBeginInfo beginInfo{};
-    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-    secondary.begin(beginInfo);
-
-    std::array<vk::ClearValue, 4> clears{};
-    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    vk::RenderPassBeginInfo rpBegin{};
-    rpBegin.renderPass = gbufferRenderPass;
-    rpBegin.framebuffer = slot->framebuffer;
-    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
-    rpBegin.clearValueCount = uint32_t(clears.size());
-    rpBegin.pClearValues = clears.data();
-    secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     setViewportAndScissor(secondary, w, h);
     secondary.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
     bool alphaBound = false;
@@ -763,8 +794,7 @@ void Graphics::recordGBufferSecondary(vk::CommandBuffer secondary) {
                                 0, sizeof(GBufferPush), &d.push);
         drawIndexedMesh(secondary, *gpuMesh);
     }
-    secondary.endRenderPass();
-    secondary.end();
+    return recorder.finish();
 }
 
 void Graphics::recordDeferredPassesParallel() {
@@ -784,40 +814,62 @@ void Graphics::recordDeferredPassesParallel() {
         return;
     }
 
-    auto &cbs = currentFrameSecondaryCbs();
     auto &cb = currentPresentCb();
 
     // Record each deferred pass into its own secondary command buffer on the
-    // JobSystem workers; the primary only chains them with vkCmdExecuteCommands.
+    // JobSystem workers; each job records its own secondary buffer (one buffer
+    // per pass), so beginSecondary()/finish() are never contended. The
+    // ReadySecondary results are only readable by the render thread after
+    // group->wait(), and only RenderPassExecutor can execute them.
     // The record jobs come from the per-frame arena, so recording allocates no
     // job control blocks per frame.
     auto *jobs = thread::Thread::create()->getJobSystem();
     jobs->beginFrame();
+    // Pre-create this frame slot's secondary buffers on the render thread:
+    // beginSecondary() runs on JobSystem workers, and allocating the command
+    // pool / resizing the slot vector there would race.
+    (void)currentFrameSecondaryCbs();
     thread::TaskGroup *group = jobs->createFrameTaskGroup();
+    std::array<ReadySecondary, ShadowConfig::kCascades + 2> ready{};
     if (hasShadow) {
         for (int c = 0; c < ShadowConfig::kCascades; ++c) {
             if ((shadowPendingMask & (1u << c)) == 0) continue;
             const uint32_t idx = kShadowSecondaryBase + uint32_t(c);
-            group->fork([this, &cbs, idx, c] {
-                recordShadowCascadeSecondary(cbs.buffers[idx], c);
+            group->fork([this, idx, c, &ready] {
+                RecordingSecondary recorder =
+                    beginSecondary(idx, vk::RenderPass(shadowRenderPass),
+                                   currentShadowMap().framebuffers[c]);
+                ready[idx] = recordShadowCascadeSecondary(std::move(recorder), c);
             });
         }
     }
     if (hasGBuffer) {
-        group->fork([this, &cbs] { recordGBufferSecondary(cbs.buffers[kGBufferSecondary]); });
+        group->fork([this, &ready] {
+            RecordingSecondary recorder =
+                beginSecondary(kGBufferSecondary, vk::RenderPass(gbufferRenderPass),
+                               currentGBufferSlot()->framebuffer);
+            ready[kGBufferSecondary] = recordGBufferSecondary(std::move(recorder));
+        });
     }
     group->wait();
     jobs->endFrame();  // arena-owned group; do not delete
 
     // Layout transitions stay on the render thread (image layout tracking is
-    // not thread-safe); the secondaries only contain the render-pass instances.
+    // not thread-safe); RenderPassExecutor opens each render pass, executes the
+    // ready secondaries and closes it — one render pass instance per cascade.
     if (hasShadow) {
         auto &slot = currentShadowMap();
         slot.image.beginDepthAttachment();
+        const uint32_t size = uint32_t(ShadowConfig::kMapSize);
+        vk::ClearValue clear{};
+        clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
         for (int c = 0; c < ShadowConfig::kCascades; ++c) {
             if ((shadowPendingMask & (1u << c)) == 0) continue;
-            const uint32_t idx = kShadowSecondaryBase + uint32_t(c);
-            cb.executeCommands(1, &cbs.buffers[idx]);
+            RenderPassExecutor pass(cb, vk::RenderPass(shadowRenderPass),
+                                    slot.framebuffers[c],
+                                    vk::Rect2D{{0, 0}, {size, size}}, &clear, 1);
+            if (ready[kShadowSecondaryBase + uint32_t(c)])
+                pass.add(std::move(ready[kShadowSecondaryBase + uint32_t(c)]));
         }
         slot.image.endSampledLayout();
         shadowPendingMask = 0;
@@ -829,7 +881,18 @@ void Graphics::recordDeferredPassesParallel() {
         slot->depthColor.beginColorAttachment();
         slot->albedo.beginColorAttachment();
         slot->depth.beginDepthAttachment();
-        cb.executeCommands(1, &cbs.buffers[kGBufferSecondary]);
+        const uint32_t w = uint32_t(gbufferWidth);
+        const uint32_t h = uint32_t(gbufferHeight);
+        std::array<vk::ClearValue, 4> clears{};
+        clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+        clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
+        clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+        clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+        RenderPassExecutor pass(cb, vk::RenderPass(gbufferRenderPass), slot->framebuffer,
+                                vk::Rect2D{{0, 0}, {w, h}}, clears.data(),
+                                uint32_t(clears.size()));
+        if (ready[kGBufferSecondary])
+            pass.add(std::move(ready[kGBufferSecondary]));
         slot->normal.endSampledLayout();
         slot->depthColor.endSampledLayout();
         slot->albedo.endSampledLayout();
@@ -1725,10 +1788,7 @@ void Graphics::createSceneColorResources(int width, int height) {
 bool Graphics::beginSceneColorRenderPass() {
     auto *slot = currentSceneColorSlot();
     if (!slot || !sceneColorRenderPass || !slot->framebuffer) return false;
-    auto &secondary = currentFrameSecondaryCbs().buffers[kForwardSecondary];
-    vk::CommandBufferBeginInfo beginInfo{};
-    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-    secondary.begin(beginInfo);
+    auto &cb = currentPresentCb();
     const bool msaa = sceneColorSamples != vk::SampleCountFlagBits::e1;
     // A=1 marks sky / far plane so SSGI skips uncleared pixels.
     if (msaa) {
@@ -1748,7 +1808,7 @@ bool Graphics::beginSceneColorRenderPass() {
         slot->msaaColor.beginColorAttachment();
         slot->color.beginColorAttachment();
         slot->depth.beginDepthAttachment();
-        secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+        cb.beginRenderPass(rpBegin, vk::SubpassContents::eSecondaryCommandBuffers);
     } else {
         std::array<vk::ClearValue, 2> clears{};
         clears[0].color = vk::ClearColorValue(
@@ -1763,9 +1823,12 @@ bool Graphics::beginSceneColorRenderPass() {
         rpBegin.pClearValues = clears.data();
         slot->color.beginColorAttachment();
         slot->depth.beginDepthAttachment();
-        secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+        cb.beginRenderPass(rpBegin, vk::SubpassContents::eSecondaryCommandBuffers);
     }
-    setViewportAndScissor(secondary, uint32_t(sceneColorWidth), uint32_t(sceneColorHeight));
+    forwardRecorder_ =
+        beginSecondary(kForwardSecondary, vk::RenderPass(sceneColorRenderPass), slot->framebuffer);
+    setViewportAndScissor(forwardRecorder_.cb(), uint32_t(sceneColorWidth),
+                          uint32_t(sceneColorHeight));
     sceneColorPassOpen = true;
     sceneSecondaryActive = true;
     return true;
@@ -1773,15 +1836,13 @@ bool Graphics::beginSceneColorRenderPass() {
 
 void Graphics::endSceneColorRenderPass() {
     if (!sceneColorPassOpen) return;
-    auto &secondary = currentFrameSecondaryCbs().buffers[kForwardSecondary];
-    secondary.endRenderPass();
+    auto &cb = currentPresentCb();
+    ReadySecondary ready = std::move(forwardRecorder_).finish();
+    executeSecondary(cb, ready);
+    cb.endRenderPass();
     sceneColorPassOpen = false;
     if (auto *slot = currentSceneColorSlot())
         slot->color.endSampledLayout();
-    secondary.end();
-    // Execute the forward-pass secondary from the single present command
-    // buffer before the scene resolve / swapchain passes are recorded.
-    currentPresentCb().executeCommands(1, &secondary);
     sceneSecondaryActive = false;
 }
 
@@ -4277,7 +4338,9 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
                                       Texture *atlas, int tilesPerRow, const uint32_t *ao) {
     ASSERT(initialized);
     if (!initialized) throw Exception("drawVoxelFaceInstances: graphics not initialized");
-    if (!swapchainPassOpen) throw Exception("drawVoxelFaceInstances: call begin3DFrame first");
+    if (!swapchainPassOpen) {
+        throw Exception("drawVoxelFaceInstances: call begin3DFrame first");
+    }
     if (!voxelRectPipeline) createVoxelRectPipeline();
     if (!packed || count <= 0) return;
 
@@ -4343,7 +4406,7 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     pc.atlasInfo = glm::vec4(float(std::max(1, tilesPerRow)), 0.f, 0.f, 0.f);
     pc.tint = mesh3dFrameUbo.tint;
 
-    auto &cb = currentDrawCb();
+    auto cb = currentDrawCb();
     vk::DescriptorSet set = voxelRectSetFor(gpuTex);
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, voxelRectPipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, voxelRectPipelineLayout, 0, 1, &set, 0,
@@ -5188,7 +5251,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     const float envIntensity = (mesh3dEnvTexture && mesh3dEnvIntensity > 0.f) ? mesh3dEnvIntensity : 0.f;
 
     const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline;
-    auto &cb = currentDrawCb();
+    auto cb = currentDrawCb();
 
     auto makeShadowUbo = [&]() {
         ShadowUBO s = mesh3dShadows.ubo;

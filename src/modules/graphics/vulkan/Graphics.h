@@ -20,6 +20,118 @@
 namespace eve::graphics::vulkan {
 
 class OffscreenCanvas;
+class Graphics;
+
+// ---------------------------------------------------------------------------
+// Secondary command buffer recording lifecycle.
+//
+// Vulkan's command-buffer state machine (spec 5.2) restricts the legal order
+// of operations:
+//   Initial -> Recording -> Executable -> Pending -> Executable (after fence)
+// A secondary command buffer must be fully recorded (vkEndCommandBuffer) and
+// therefore Executable before vkCmdExecuteCommands may reference it, and a
+// RENDER_PASS_CONTINUE secondary may only be executed while the primary is
+// recording the compatible render pass. These types make that ordering
+// structural instead of "remember to call things in the right order":
+//   * RecordingSecondary can only be turned into ReadySecondary via finish();
+//   * ReadySecondary's raw handle is only reachable through executeSecondary();
+//   * RenderPassExecutor opens the primary's render pass and executes every
+//     added secondary on destruction — a render pass can never be left open,
+//     executed twice, or executed before its secondaries finished recording.
+// ---------------------------------------------------------------------------
+
+/**
+ * @brief A fully recorded secondary command buffer (move-only).
+ *
+ * Only obtainable from RecordingSecondary::finish(); only executeSecondary()
+ * and RenderPassExecutor may access its raw handle, so an unfinished or
+ * still-recording buffer can never reach vkCmdExecuteCommands.
+ */
+class ReadySecondary {
+public:
+    ReadySecondary() = default;
+    ReadySecondary(const ReadySecondary &) = delete;
+    ReadySecondary &operator=(const ReadySecondary &) = delete;
+    ReadySecondary(ReadySecondary &&) noexcept = default;
+    ReadySecondary &operator=(ReadySecondary &&) noexcept = default;
+
+    /** @brief Whether this holds a recorded buffer (false when a job failed). */
+    explicit operator bool() const { return cb_ != nullptr; }
+
+private:
+    friend class RecordingSecondary;
+    friend class RenderPassExecutor;
+    friend void executeSecondary(vk::CommandBuffer primary, const ReadySecondary &ready);
+    explicit ReadySecondary(vk::CommandBuffer cb) : cb_(cb) {}
+    vk::CommandBuffer cb_ = nullptr;
+};
+
+/**
+ * @brief A secondary command buffer currently being recorded (move-only).
+ *
+ * Created by Graphics::beginSecondary(); the caller records draw commands via
+ * cb() and must call finish() exactly once. The destructor asserts the
+ * recorder was finished, so an abandoned recording is a debug-build failure
+ * instead of silently corrupting the frame.
+ */
+class RecordingSecondary {
+public:
+    RecordingSecondary() = default;
+    ~RecordingSecondary();
+    RecordingSecondary(const RecordingSecondary &) = delete;
+    RecordingSecondary &operator=(const RecordingSecondary &) = delete;
+    RecordingSecondary(RecordingSecondary &&) noexcept = default;
+    RecordingSecondary &operator=(RecordingSecondary &&) noexcept = default;
+
+    /** @brief The command buffer being recorded (nullptr when inactive). */
+    vk::CommandBuffer cb() const { return cb_; }
+    explicit operator bool() const { return cb_ != nullptr; }
+
+    /**
+     * @brief End recording and hand the buffer over as ready to execute.
+     * @return ReadySecondary (only executable via executeSecondary()).
+     */
+    ReadySecondary finish();
+
+private:
+    friend class Graphics;
+    friend class ReadySecondary;
+    explicit RecordingSecondary(vk::CommandBuffer cb) : cb_(cb) {}
+    vk::CommandBuffer cb_ = nullptr;
+};
+
+/**
+ * @brief Execute a recorded secondary command buffer from the primary.
+ * @param primary Command buffer currently recording a compatible render pass.
+ * @param ready   Fully recorded secondary (from finish()).
+ */
+void executeSecondary(vk::CommandBuffer primary, const ReadySecondary &ready);
+
+/**
+ * @brief RAII render-pass on the primary for secondary command buffers.
+ *
+ * Constructor begins the render pass with SubpassContents::eSecondaryCommandBuffers
+ * (caller must have done the attachment layout transitions and provides the
+ * clears). add() collects ready secondaries; the destructor executes them in
+ * order and ends the render pass. While this object is alive the caller must
+ * not record any other render pass or draw commands on the primary.
+ */
+class RenderPassExecutor {
+public:
+    RenderPassExecutor(vk::CommandBuffer primary, vk::RenderPass renderPass,
+                       vk::Framebuffer framebuffer, vk::Rect2D area,
+                       const vk::ClearValue *clears, uint32_t clearCount);
+    ~RenderPassExecutor();
+    RenderPassExecutor(const RenderPassExecutor &) = delete;
+    RenderPassExecutor &operator=(const RenderPassExecutor &) = delete;
+
+    /** @brief Queue a ready secondary for execution at the end of the pass. */
+    void add(ReadySecondary ready);
+
+private:
+    vk::CommandBuffer primary_;
+    std::vector<vk::CommandBuffer> secondaries_;
+};
 
 struct ColorVertex {
     glm::vec2 pos;
@@ -672,9 +784,25 @@ private:
     std::vector<FrameSecondaryCbs> frameSecondaryCbs;  // per swapchain frame slot
     bool sceneSecondaryActive = false;
     FrameSecondaryCbs &currentFrameSecondaryCbs();
+    /**
+     * @brief Begin recording one of this frame's secondary command buffers.
+     *
+     * Centralizes the inheritance info / RENDER_PASS_CONTINUE begin flags, so
+     * every secondary is begun with the exact state the primary's render pass
+     * expects. Must only be called after the current frame slot's fence was
+     * waited (the acquire in beginPresentCommandBuffer).
+     *
+     * @param index Index into FrameSecondaryCbs::buffers.
+     * @param renderPass Render pass the secondary inherits from.
+     * @param framebuffer Framebuffer of that render pass instance.
+     * @return Recording secondary; call finish() once recording is done.
+     */
+    RecordingSecondary beginSecondary(uint32_t index, vk::RenderPass renderPass,
+                                      vk::Framebuffer framebuffer);
+    RecordingSecondary forwardRecorder_;
     void recordDeferredPassesParallel();
-    void recordShadowCascadeSecondary(vk::CommandBuffer secondary, int cascade);
-    void recordGBufferSecondary(vk::CommandBuffer secondary);
+    ReadySecondary recordShadowCascadeSecondary(RecordingSecondary recorder, int cascade);
+    ReadySecondary recordGBufferSecondary(RecordingSecondary recorder);
 
     struct SceneColorSlot {
         vkb::ColorTarget msaaColor;
@@ -855,7 +983,7 @@ private:
      * forward-pass secondary command buffer when one is open, otherwise the
      * present command buffer (2D / fallback / offscreen paths).
      */
-    vk::CommandBuffer &currentDrawCb();
+    vk::CommandBuffer currentDrawCb();
     vkb::FrameSlot frameToken() const;
     /** @brief Drain in-flight frames before mutating a GPU object sampled/read by them. */
     void waitForSharedGpuResources();
