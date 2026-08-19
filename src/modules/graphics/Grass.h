@@ -15,7 +15,7 @@ class Mesh;
 class Texture;
 
 /**
- * @brief t3ssel8r-style stylized grass.
+ * t3ssel8r-style stylized grass.
  *
  * Pipeline:
  *   1. Blue-noise (Poisson disk) or Halton samples on a terrain mesh
@@ -38,7 +38,7 @@ struct SampleParams {
     float radius = 0.14f;
     int maxPoints = 8192;
     uint32_t seed = 1;
-    /** @brief Skip faces whose Y-up slope is below this (0 = keep walls). */
+    /** Skip faces whose Y-up slope is below this (0 = keep walls). */
     float minSlopeDot = 0.25f;
 };
 
@@ -49,18 +49,18 @@ struct BillboardMesh {
     std::vector<uint32_t> indices;
 };
 
-/** @brief Fast Poisson-disk / dart-throwing blue noise on a triangle mesh. */
+/** Fast Poisson-disk / dart-throwing blue noise on a triangle mesh. */
 std::vector<Point> samplePoisson(const float *posXYZ, const float *nrmXYZ, int vertexCount,
                                  const uint32_t *indices, int indexCount,
                                  const SampleParams &params = {});
 
-/** @brief Area-weighted Halton samples (deterministic, evenly spread). */
+/** Area-weighted Halton samples (deterministic, evenly spread). */
 std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int vertexCount,
                                 const uint32_t *indices, int indexCount, int count,
                                 uint32_t seed = 1, float minSlopeDot = 0.25f);
 
 /**
- * @brief Expand a unit rectangle per point. Vertex layout:
+ * Expand a unit rectangle per point. Vertex layout:
  *   pos    = grass root
  *   uv     = quad corner in [0,1]^2  (0.5, 0) is the root
  *   normal.x = instance id, normal.y = scale, normal.z = alwaysDark (0/1)
@@ -68,11 +68,11 @@ std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int ve
 BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.62f,
                               float height = 0.95f, bool alwaysDark = false);
 
-/** @brief Discrete 4-frame index with a per-instance phase offset. */
+/** Discrete 4-frame index with a per-instance phase offset. */
 int swayFrame(float time, float frameDuration, uint32_t instanceId, int frameCount = 4);
 
 /**
- * @brief Procedural 4-frame fallback atlas (horizontal strip). GPU paths should load
+ * Procedural 4-frame fallback atlas (horizontal strip). GPU paths should load
  * authored 2x2 PNG masks via packSwayAtlasRGBA / createSwayAtlasFromFiles.
  */
 void makeSwayAtlasRGBA(int frameW, int frameH, int frames, std::vector<uint8_t> &rgbaOut);
@@ -81,7 +81,7 @@ int swayAtlasHeight(int frameH);
 
 Texture *createSwayAtlas(Graphics *gfx, int frameW = 64, int frameH = 64, int frames = 4);
 
-/** @brief Layout of a packed 2x2-per-variant sway atlas (4 grass + 2 leaf typical). */
+/** Layout of a packed 2x2-per-variant sway atlas (4 grass + 2 leaf typical). */
 struct PackedAtlasInfo {
     int width = 0;
     int height = 0;
@@ -93,7 +93,7 @@ struct PackedAtlasInfo {
     int frames = 4;
 };
 
-/** @brief Load white-on-black (or RGBA) 2x2 sway PNGs and pack them into one atlas. */
+/** Load white-on-black (or RGBA) 2x2 sway PNGs and pack them into one atlas. */
 void packSwayAtlasRGBA(const std::vector<std::string> &grassFiles,
                        const std::vector<std::string> &leafFiles, std::vector<uint8_t> &rgbaOut,
                        PackedAtlasInfo &info);
@@ -111,20 +111,20 @@ void setFrameDuration(Shader *shader, float seconds);
 int paramCount();
 std::string paramName(int index);
 
-/** @brief Unit XZ plane (Y-up) for tests / demos. */
+/** Unit XZ plane (Y-up) for tests / demos. */
 void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> &posXYZ,
                std::vector<float> &nrmXYZ, std::vector<uint32_t> &indices);
 
 }  // namespace grass
 
 /**
- * @brief Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*;
+ * Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*;
  * GPU Mesh / Shader / Texture are owned by Graphics.
  */
 class GrassField {
 public:
     struct BakeParams {
-        /** @brief Poisson spacing. Keep this well below `width` so tufts overlap. */
+        /** Poisson spacing. Keep this well below `width` so tufts overlap. */
         float denseRadius = 0.14f;
         float sparseRadius = 0.62f;
         int maxDense = 8192;
@@ -136,7 +136,7 @@ public:
         int atlasFrameW = 64;
         int atlasFrameH = 64;
         int atlasFrames = 4;
-        /** @brief Authored 2x2 sway masks (4 grass + 2 leaf). Empty = procedural strip. */
+        /** Authored 2x2 sway masks (4 grass + 2 leaf). Empty = procedural strip. */
         std::vector<std::string> grassAtlasFiles;
         std::vector<std::string> leafAtlasFiles;
     };

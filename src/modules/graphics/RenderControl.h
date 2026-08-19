@@ -11,7 +11,7 @@ namespace eve::graphics {
 class Graphics;
 
 /**
- * @brief Declarative, compilable 3D render control.
+ * Declarative, compilable 3D render control.
  *
  * Callers enable/disable string features, then compile() into an ordered pass
  * list consumed by RenderSystem3D. Unknown feature names are ignored (supports()
@@ -54,20 +54,20 @@ public:
     void disable(const std::string &feature);
     bool isEnabled(const std::string &feature) const;
 
-    /** @brief Rebuild the executable pass list from current feature flags. */
+    /** Rebuild the executable pass list from current feature flags. */
     void compile();
     bool isCompiled() const { return compiled_ && !dirty_; }
     bool isDirty() const { return dirty_; }
 
     int getPassCount() const { return int(passes_.size()); }
-    /** @brief Pass names: "shadow" | "gbuffer" | "forward" | "hair" */
+    /** Pass names: "shadow" | "gbuffer" | "forward" | "hair" */
     std::string getPassName(int index) const;
     bool hasPass(const std::string &name) const;
 
     GBuffer *getGBuffer() { return &gbuffer_; }
     const GBuffer *getGBuffer() const { return &gbuffer_; }
 
-    /** @brief Ensure compiled; no-op when already clean. */
+    /** Ensure compiled; no-op when already clean. */
     void ensureCompiled();
 
 private:

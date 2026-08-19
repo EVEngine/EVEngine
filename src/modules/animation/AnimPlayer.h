@@ -8,7 +8,7 @@ class AnimClip;
 class AnimSkeleton;
 
 /**
- * @brief Single-clip (or cross-fading) 3D animation player.
+ * Single-clip (or cross-fading) 3D animation player.
  * Script type: `AnimPlayer`.
  */
 class AnimPlayer {
@@ -22,7 +22,7 @@ public:
     AnimSkeleton *getSkeleton() const { return skeleton_; }
 
     void play(AnimClip *clip);
-    /** @brief Cross-fade to clip over blendSeconds (keeps sampling previous until done). */
+    /** Cross-fade to clip over blendSeconds (keeps sampling previous until done). */
     void crossFade(AnimClip *clip, float blendSeconds);
 
     void stop();
@@ -42,7 +42,7 @@ public:
     AnimClip *getClip() const { return clip_; }
     AnimPose *getPose();
 
-    /** @brief Advance playback and sample into internal pose. */
+    /** Advance playback and sample into internal pose. */
     void update(float dt);
 
 private:

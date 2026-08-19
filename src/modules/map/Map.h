@@ -16,7 +16,7 @@ class Graphics;
 namespace eve::map {
 
 /**
- * @brief Map module — factory + script binding for 2D tilemaps.
+ * Map module — factory + script binding for 2D tilemaps.
  * Per-frame: TileConfigSystem (hot reload) → unified sprite+tile render.
  * Pathfinding: newPathfinder / newPathfinderSize → A* + Flow Field group paths.
  * FOV: newFov / newFovSize → shadowcast visibility + explored memory.
@@ -29,26 +29,26 @@ public:
 
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);
 
-    /** @brief Pathfinder bound to a TileLayer (syncs walkability from GIDs). */
+    /** Pathfinder bound to a TileLayer (syncs walkability from GIDs). */
     Pathfinder *newPathfinder(TileLayer *layer);
-    /** @brief Custom grid pathfinder (no layer); fill with setBlocked / setCellCost. */
+    /** Custom grid pathfinder (no layer); fill with setBlocked / setCellCost. */
     Pathfinder *newPathfinderSize(int mapW, int mapH);
 
-    /** @brief FOV bound to a TileLayer (syncs opacity from opaque GIDs). */
+    /** FOV bound to a TileLayer (syncs opacity from opaque GIDs). */
     Fov *newFov(TileLayer *layer);
-    /** @brief Custom grid FOV (no layer); fill with setOpaque. */
+    /** Custom grid FOV (no layer); fill with setOpaque. */
     Fov *newFovSize(int mapW, int mapH);
-    /** @brief Volume FOV (W×H×D voxels); mode defaults to volume. */
+    /** Volume FOV (W×H×D voxels); mode defaults to volume. */
     Fov *newFovVolume(int mapW, int mapH, int depth);
 
     /**
-     * @brief Load map JSON (Tiled-compatible subset or EVEngine simplified format).
+     * Load map JSON (Tiled-compatible subset or EVEngine simplified format).
      * Creates one TileLayer per tile layer; returns the first (nullptr on failure).
      * Refreshes the module object cache from objectgroup layers.
      */
     TileLayer *newLayerFromFile(const std::string &path);
 
-    /** @brief Same as newLayerFromFile but returns how many layers were created (0 on failure). */
+    /** Same as newLayerFromFile but returns how many layers were created (0 on failure). */
     int loadFromFile(const std::string &path);
 
     void update(float dt);
@@ -56,7 +56,7 @@ public:
     int pollConfigs();
 
     int getLayerCount() const;
-    /** @brief Layer created by the most recent loadFromFile/newLayerFromFile call. */
+    /** Layer created by the most recent loadFromFile/newLayerFromFile call. */
     TileLayer *getLayer(int index) const;
 
     int getObjectCount() const;
@@ -68,21 +68,21 @@ public:
     float getObjectHeight(int i) const;
     int getObjectGid(int i) const;
 
-    /** @brief Replace object cache (used by load / hot reload). */
+    /** Replace object cache (used by load / hot reload). */
     void setObjects(std::vector<MapObject> objects);
 
     /**
-     * @brief Dual-grid resolve: paint logic (filled/empty), fill display with 15-tile
+     * Dual-grid resolve: paint logic (filled/empty), fill display with 15-tile
      * autotiles on a half-offset grid. See DualGrid.h.
      * filledGid 0 = any non-zero logic cell counts as filled.
      */
     bool resolveDualGrid(TileLayer *logic, TileLayer *display);
     bool resolveDualGridFilled(TileLayer *logic, TileLayer *display, int filledGid);
-    /** @brief 4-bit corner mask at display cell (dx,dy); see DualGrid.h. */
+    /** 4-bit corner mask at display cell (dx,dy); see DualGrid.h. */
     int dualGridMaskAt(TileLayer *logic, int dx, int dy, int filledGid);
-    /** @brief Default atlas frame for mask (-1 = empty). */
+    /** Default atlas frame for mask (-1 = empty). */
     int dualGridFrame(int mask);
-    /** @brief Projection-correct half-step origin delta for a logic layer. */
+    /** Projection-correct half-step origin delta for a logic layer. */
     float dualGridOffsetX(TileLayer *logic);
     float dualGridOffsetY(TileLayer *logic);
     std::string lastDualGridError() const;

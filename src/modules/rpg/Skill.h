@@ -43,7 +43,7 @@ public:
     static int count();
 
     /**
-     * @brief 从 JSON 数组批量注册技能定义，返回成功注册数量。元素形如：
+     * 从 JSON 数组批量注册技能定义，返回成功注册数量。元素形如：
      * {
      *   "id": "fireball", "cooldown": 4, "castTime": 1.2, "targetType": "single",
      *   "costs": [{"attribute":"mana","amount":20}],

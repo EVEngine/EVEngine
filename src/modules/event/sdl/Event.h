@@ -15,21 +15,21 @@ public:
 	virtual ~Event();
 
 	/**
-	 * @brief Pumps the event queue. This function gathers all the pending input information
+	 * Pumps the event queue. This function gathers all the pending input information
 	 * from devices and places it on the event queue. Normally not needed if you poll
 	 * for events.
 	 **/
 	void pump() override;
 
 	/**
-	 * @brief Waits for the next event (indefinitely). Useful for creating games where
+	 * Waits for the next event (indefinitely). Useful for creating games where
 	 * the screen and game state only needs updating when the user interacts with
 	 * the window.
 	 **/
 	Message *wait() override;
 
 	/**
-	 * @brief Clears the event queue.
+	 * Clears the event queue.
 	 */
 	void clear() override;
 

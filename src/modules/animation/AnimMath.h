@@ -5,7 +5,7 @@
 
 namespace eve::animation {
 
-/** @brief Local TRS used by skeletal animation (quaternion xyzw). */
+/** Local TRS used by skeletal animation (quaternion xyzw). */
 struct TransformTRS {
     float px = 0.f, py = 0.f, pz = 0.f;
     float qx = 0.f, qy = 0.f, qz = 0.f, qw = 1.f;
@@ -82,7 +82,7 @@ inline TransformTRS blendTRS(const TransformTRS &a, const TransformTRS &b, float
     return out;
 }
 
-/** @brief Rotate unit +Z by yaw (radians) around Y — used for planar facing. */
+/** Rotate unit +Z by yaw (radians) around Y — used for planar facing. */
 inline void yawToForward(float yaw, float &fx, float &fz) {
     fx = std::sin(yaw);
     fz = std::cos(yaw);
@@ -91,7 +91,7 @@ inline void yawToForward(float yaw, float &fx, float &fz) {
 inline float length2(float x, float z) { return std::sqrt(x * x + z * z); }
 
 /**
- * @brief Column-major 4x4 matrix (OpenGL / glTF / Assimp-compatible layout).
+ * Column-major 4x4 matrix (OpenGL / glTF / Assimp-compatible layout).
  * Elements: m[col * 4 + row].
  */
 struct Mat4 {

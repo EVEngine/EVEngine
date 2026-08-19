@@ -18,7 +18,7 @@ struct EVENGINE_API AiLogEntry {
 };
 
 /**
- * @brief In-engine AI / MCP session surface for DevTools.
+ * In-engine AI / MCP session surface for DevTools.
  *
  * Records recent MCP tool calls and free-form notes so humans (ImGui panel /
  * script API) and agents (MCP resource `eve://ai-session`) share one log.
@@ -48,11 +48,11 @@ public:
     std::vector<AiLogEntry> recentLog(size_t max = 64) const;
     std::string formatLog(size_t max = 64) const;
 
-    /** @brief Compact status line for overlays / MCP resources. */
+    /** Compact status line for overlays / MCP resources. */
     std::string statusLine() const;
 
     /**
-     * @brief Optional ImGui draw hook. Default no-op: in-engine AI status is exposed
+     * Optional ImGui draw hook. Default no-op: in-engine AI status is exposed
      * via MCP / `eve.dev.ai`. ImGui drawing is registered by the host so
      * EVDevTools does not need to include imgui.h.
      */

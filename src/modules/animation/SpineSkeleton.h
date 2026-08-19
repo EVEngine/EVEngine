@@ -8,7 +8,7 @@
 namespace eve::animation {
 
 /**
- * @brief Runtime Spine skeleton pose (local + world bone transforms, slot attachments).
+ * Runtime Spine skeleton pose (local + world bone transforms, slot attachments).
  * Script type: `SpineSkeleton`.
  */
 class SpineSkeleton {
@@ -45,7 +45,7 @@ public:
     float getBoneWorldRotation(int index) const;
     float getBoneWorldScaleX(int index) const;
     float getBoneWorldScaleY(int index) const;
-    /** @brief World 2x2 matrix columns (a,c) / (b,d) used for local→world offset. */
+    /** World 2x2 matrix columns (a,c) / (b,d) used for local→world offset. */
     void getBoneWorldMatrix(int index, float &a, float &b, float &c, float &d) const;
 
     int         getSlotCount() const;

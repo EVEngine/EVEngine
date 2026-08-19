@@ -10,7 +10,7 @@ namespace eve {
 namespace thread {
 
 /**
- * @brief A job executed by a ThreadPool worker.
+ * A job executed by a ThreadPool worker.
  * Status strings (no enums): "pending" | "running" | "done" | "failed".
  */
 class Task {
@@ -23,7 +23,7 @@ public:
     bool hasFailed() const;
     std::string getError() const;
 
-    /** @brief Block until the task finishes (done or failed). */
+    /** Block until the task finishes (done or failed). */
     void wait();
 
     // Internal — called by ThreadPool workers.

@@ -6,7 +6,7 @@
 namespace eve::graphics {
 
 /**
- * @brief CPU reference for texture cell-bombing math (matches tex_cell_bomb.glsl).
+ * CPU reference for texture cell-bombing math (matches tex_cell_bomb.glsl).
  * Used by unit tests; the GPU path lives in mesh3d*.frag.
  */
 struct TexCellBombParams {
@@ -32,7 +32,7 @@ inline void texBombHash22(float x, float y, float &ox, float &oy) {
     oy -= std::floor(oy);
 }
 
-/** @brief Map UV → bombed sample UV for the dominant (floor) cell; strength≤0 → identity. */
+/** Map UV → bombed sample UV for the dominant (floor) cell; strength≤0 → identity. */
 inline void texCellBombSampleUV(float u, float v, const TexCellBombParams &p, float &ou,
                                 float &ov) {
     if (p.strength < 1e-4f) {

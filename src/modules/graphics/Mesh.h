@@ -10,7 +10,7 @@
 namespace eve::graphics {
 
 /**
- * @brief GPU mesh handle (+ optional CPU morph targets).
+ * GPU mesh handle (+ optional CPU morph targets).
  *
  * Morph pipeline: initMorphBase / addMorphTarget* → setMorphWeight →
  * Graphics::bakeMeshMorph (uploads blended positions to the host-visible VBO).
@@ -22,7 +22,7 @@ public:
 
     void draw(Graphics * /*gfx*/, const glm::mat4 & /*matrix*/) const override {}
     /**
-     * @brief Screen-space black proxy for volumetric occlusion.
+     * Screen-space black proxy for volumetric occlusion.
      * Interprets matrix as 2D affine (translation + scale) and fills a solid rect —
      * callers should pass a pixel-space placement (e.g. projected AABB).
      */
@@ -30,12 +30,12 @@ public:
 
     // ---- morph targets (CPU) ----
     void clearMorphData();
-    /** @brief Capture base pose (xyz packed). Optional normals/uvs (same vertex count). */
+    /** Capture base pose (xyz packed). Optional normals/uvs (same vertex count). */
     void initMorphBase(int vertexCount, const float *posXYZ, const float *nrmXYZ = nullptr,
                        const float *uvST = nullptr);
     /** Delta morph: target = base + delta * weight. */
     bool addMorphTarget(const std::string &name, const float *deltaPosXYZ);
-    /** @brief Absolute morph (Assimp aiAnimMesh style): stored as delta from base. */
+    /** Absolute morph (Assimp aiAnimMesh style): stored as delta from base. */
     bool addMorphTargetAbsolute(const std::string &name, const float *absPosXYZ);
 
     int getVertexCount() const;
@@ -49,7 +49,7 @@ public:
     void markMorphClean() { morphDirty_ = false; }
     bool hasMorphData() const { return !basePos_.empty(); }
 
-    /** @brief Bake current weights into outPos / outNrm (xyz packed). */
+    /** Bake current weights into outPos / outNrm (xyz packed). */
     void computeMorphedPositions(std::vector<float> &outPos, std::vector<float> &outNrm) const;
 
     const std::vector<float> &baseUv() const { return baseUv_; }

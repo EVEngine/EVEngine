@@ -8,7 +8,6 @@ Evolutionary Vision Engine
 
 - [游戏开发者文档](docs/usr/README.md)：安装、运行与项目结构；[模块使用手册](docs/usr/MODULES.md)逐个说明脚本 API 和示例。
 - [开发者文档](docs/dev/README.md)：架构、模块设计、测试策略与实施记录。
-- [C++ API 参考（Doxygen）](docs/api/html/index.html)：由 `src/` 生成，安装 doxygen 后执行 `make docs` 即可（配置见 [`Doxyfile`](Doxyfile)）。
 
 针对很多游戏引擎开发效率低，难以调试，难以动态快速实现游戏原型，我们这里设计一款非常简单好用的游戏引擎。主要提供对2d、第三人称3d的游戏组件功能，不提供复杂3d游戏引擎中的3d场景管理等功能
 

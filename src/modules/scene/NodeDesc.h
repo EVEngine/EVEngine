@@ -9,15 +9,15 @@ namespace eve::scene {
 class SceneHost;
 
 /**
- * @brief Declarative scene-node description (build once / on dirty → flatten into SceneHost::Tree).
+ * Declarative scene-node description (build once / on dirty → flatten into SceneHost::Tree).
  * Isomorphic to eve::ui::WidgetDesc.
  */
 struct NodeDesc {
     std::string id;
-    /** @brief Reconciliation key; defaults to id when empty. */
+    /** Reconciliation key; defaults to id when empty. */
     std::string key;
     std::string name;
-    /** @brief "2d" or "3d" (string enum per module convention). */
+    /** "2d" or "3d" (string enum per module convention). */
     std::string space = "3d";
     bool visible = true;
     std::vector<std::string> tags;
@@ -107,12 +107,12 @@ struct NodeDesc {
 
 NodeDesc node(std::string id, std::vector<NodeDesc> children = {}, std::string name = "");
 NodeDesc group(std::vector<NodeDesc> children = {}, std::string id = "");
-/** @brief Conditional: include `child` only when `cond` is true (empty group otherwise). */
+/** Conditional: include `child` only when `cond` is true (empty group otherwise). */
 NodeDesc when(bool cond, NodeDesc child);
 NodeDesc whenElse(bool cond, NodeDesc ifTrue, NodeDesc ifFalse);
 
 void applyTree(SceneHost *host, NodeDesc root);
-/** @brief Key-aware patch when structure matches; else full replace. Returns true if full rebuild. */
+/** Key-aware patch when structure matches; else full replace. Returns true if full rebuild. */
 bool applyTreeReconcile(SceneHost *host, NodeDesc root);
 
 }  // namespace eve::scene

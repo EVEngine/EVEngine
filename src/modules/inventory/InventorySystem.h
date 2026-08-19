@@ -42,11 +42,11 @@ public:
     static void unregisterChangeHook(const std::string &name);
     static bool hasChangeHook(const std::string &name);
 
-    /** @brief 确保内置规则已注册（模块首次使用时自动调用）。 */
+    /** 确保内置规则已注册（模块首次使用时自动调用）。 */
     static void ensureBuiltins();
 
     static bool canAdd(Bag *bag, const std::string &itemId, int quantity, std::string *reason = nullptr);
-    /** @brief 返回实际放入数量（可能部分成功）。 */
+    /** 返回实际放入数量（可能部分成功）。 */
     static int addItem(Bag *bag, const std::string &itemId, int quantity);
     static int removeItem(Bag *bag, const std::string &itemId, int quantity);
     static int removeAt(Bag *bag, int slot, int quantity);

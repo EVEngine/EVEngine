@@ -35,7 +35,7 @@ class Skeleton3D;
 
 namespace eve::particles {
 
-/** @brief Single live particle (CPU simulation). */
+/** Single live particle (CPU simulation). */
 struct Particle {
     float x = 0.f;
     float y = 0.f;
@@ -50,14 +50,14 @@ struct Particle {
     float size = 1.f;
     float rot = 0.f;
     float spin = 0.f;
-    /** @brief Flipbook frame progress (float frame index; grid resolved at render). */
+    /** Flipbook frame progress (float frame index; grid resolved at render). */
     float frame = 0.f;
-    /** @brief Random noise phase per particle (turbulence offset). */
+    /** Random noise phase per particle (turbulence offset). */
     float noisePhase = 0.f;
 };
 
 /**
- * @brief ECS emitter entity. Script configures components; ParticleSimSystem /
+ * ECS emitter entity. Script configures components; ParticleSimSystem /
  * ParticleRenderSystem drive per-frame update & draw.
  */
 class ParticleEmitter : public ecs::Entity {
@@ -67,7 +67,7 @@ public:
     void release() override {}
 
     struct Config {
-        /** @brief Timed burst emission (fired once while the emitter is active). */
+        /** Timed burst emission (fired once while the emitter is active). */
         struct Burst {
             float time = 0.f;
             int count = 0;
@@ -95,24 +95,24 @@ public:
         float sizeVariation = 0.f;  // 0..1
         float spinMin = 0.f;
         float spinMax = 0.f;
-        /** @brief Gravity applied every step (world units/s²). */
+        /** Gravity applied every step (world units/s²). */
         float gravityX = 0.f;
         float gravityY = 0.f;
-        /** @brief Per-second velocity damping fraction in [0,1]. */
+        /** Per-second velocity damping fraction in [0,1]. */
         float damping = 0.f;
-        /** @brief Max speed; 0 = unlimited. Applied after forces each step. */
+        /** Max speed; 0 = unlimited. Applied after forces each step. */
         float limitVelocity = 0.f;
-        /** @brief Optional speed multiplier curve over lifetime. */
+        /** Optional speed multiplier curve over lifetime. */
         ParticleCurve velocityCurve;
-        /** @brief Fraction [0,1] of the emitter's current velocity added to new particles. */
+        /** Fraction [0,1] of the emitter's current velocity added to new particles. */
         float inheritVelocity = 0.f;
-        /** @brief "world" (default) or "local" (particles track the emitter). */
+        /** "world" (default) or "local" (particles track the emitter). */
         std::string simSpace = "world";
-        /** @brief Turbulence: random per-particle acceleration scaled by strength. */
+        /** Turbulence: random per-particle acceleration scaled by strength. */
         float noiseStrength = 0.f;
         float noiseFrequency = 1.f;
         float noiseSpeed = 1.f;
-        /** @brief "none" | "kill" | "bounce" | "stop" on collision. */
+        /** "none" | "kill" | "bounce" | "stop" on collision. */
         std::string collisionMode = "none";
         float collisionRadius = 0.f;          // 0 = particle size/2
         float collisionRestitution = 0.6f;
@@ -122,21 +122,21 @@ public:
         float boundsMinY = 0.f;
         float boundsMaxX = 0.f;
         float boundsMaxY = 0.f;
-        /** @brief Query the engine-level world collision resolver each step. */
+        /** Query the engine-level world collision resolver each step. */
         bool worldCollision = false;
-        /** @brief "billboard" (default) | "stretched" (elongate along velocity). */
+        /** "billboard" (default) | "stretched" (elongate along velocity). */
         std::string renderMode = "billboard";
         float stretchFactor = 1.f;
-        /** @brief Buffer-full strategy: "drop" (default) | "pause" | "warn". */
+        /** Buffer-full strategy: "drop" (default) | "pause" | "warn". */
         std::string overflowMode = "drop";
-        /** @brief Cap per-step delta time (0 = unlimited). */
+        /** Cap per-step delta time (0 = unlimited). */
         float maxDeltaTime = 0.f;
-        /** @brief Prewarm seconds simulated in start() so the effect is pre-filled. */
+        /** Prewarm seconds simulated in start() so the effect is pre-filled. */
         float prewarmSeconds = 0.f;
-        /** @brief Opt-in GPU-accelerated simulation (falls back to CPU when unavailable). */
+        /** Opt-in GPU-accelerated simulation (falls back to CPU when unavailable). */
         bool gpuSimulation = false;
         std::vector<Burst> bursts;
-        /** @brief Radial attract/repel force fields (strength > 0 attract, < 0 repel). */
+        /** Radial attract/repel force fields (strength > 0 attract, < 0 repel). */
         struct ForceField {
             float x = 0.f;
             float y = 0.f;
@@ -145,7 +145,7 @@ public:
             float falloff = 1.f;  // exponent; 1 = linear
         };
         std::vector<ForceField> forceFields;
-        /** @brief Emitter-level 2D light emission (pooled Light2D entities). */
+        /** Emitter-level 2D light emission (pooled Light2D entities). */
         struct LightCfg {
             bool enabled = false;
             int max = 4;              // capped at 8 per emitter (engine limit per canvas)
@@ -155,29 +155,29 @@ public:
             float g = 1.f;
             float b = 1.f;
         } lights;
-        /** @brief Script-linked sub-emitters (birth / death / collision triggers). */
+        /** Script-linked sub-emitters (birth / death / collision triggers). */
         struct SubEmitter {
             ParticleEmitter *target = nullptr;
             std::string trigger = "birth";  // "birth" | "death" | "collision"
             float inheritVelocity = 0.f;
         };
         std::vector<SubEmitter> subEmitters;
-        /** @brief Initial rotation in degrees (random between min/max; radians at sim time). */
+        /** Initial rotation in degrees (random between min/max; radians at sim time). */
         float startRotMin = 0.f;
         float startRotMax = 0.f;
-        /** @brief Flipbook grid. 1x1 = static full texture. frameRate = frames/sec (0 = static). */
+        /** Flipbook grid. 1x1 = static full texture. frameRate = frames/sec (0 = static). */
         int hframes = 1;
         int vframes = 1;
         float frameRate = 0.f;
-        /** @brief 0..1 fraction: randomize the starting frame up to this fraction of the sheet. */
+        /** 0..1 fraction: randomize the starting frame up to this fraction of the sheet. */
         float frameRandomStart = 0.f;
-        /** @brief Optional multi-stop gradient; overrides colorStart/colorEnd when non-empty. */
+        /** Optional multi-stop gradient; overrides colorStart/colorEnd when non-empty. */
         ParticleGradient colorGradient;
-        /** @brief Optional size scale curve over lifetime; overrides sizeStart/sizeEnd. */
+        /** Optional size scale curve over lifetime; overrides sizeStart/sizeEnd. */
         ParticleCurve sizeCurve;
-        /** @brief Optional extra rotation (degrees) over lifetime; added on top of spin. */
+        /** Optional extra rotation (degrees) over lifetime; added on top of spin. */
         ParticleCurve rotationCurve;
-        /** @brief "none" | "ellipse" | "rect" (≤15). */
+        /** "none" | "ellipse" | "rect" (≤15). */
         std::string areaType = "none";
         float areaX = 0.f;
         float areaY = 0.f;
@@ -210,7 +210,7 @@ public:
         bool visible = true;
     };
 
-    /** @brief Bound config file for hot reload (empty path = unbound). */
+    /** Bound config file for hot reload (empty path = unbound). */
     struct Resource {
         std::string path;
         std::string texturePath;
@@ -219,7 +219,7 @@ public:
     };
 
     /**
-     * @brief Optional bone attachment. When enabled, syncAttach() writes Config.x/y
+     * Optional bone attachment. When enabled, syncAttach() writes Config.x/y
      * (and optionally direction) from a live skeleton each frame.
      * Particles remain 2D; 3D bone XYZ is projected via plane + scale.
      *
@@ -241,7 +241,7 @@ public:
         float offsetX = 0.f;
         float offsetY = 0.f;
         float offsetZ = 0.f;
-        /** @brief "xy" | "xz" | "yz" — axes mapped to particle plane (3D sources). */
+        /** "xy" | "xz" | "yz" — axes mapped to particle plane (3D sources). */
         std::string plane = "xy";
         float scale = 1.f;
         bool followRotation = false;
@@ -249,7 +249,7 @@ public:
     };
 
     /**
-     * @brief Optional skinned-mesh surface source. When enabled, newly spawned
+     * Optional skinned-mesh surface source. When enabled, newly spawned
      * particles sample random (optionally bone-filtered) skinned vertices.
      */
     struct SkinSource {
@@ -258,22 +258,22 @@ public:
         animation::AnimSkeleton *skeleton = nullptr;  // optional (name filter)
         int filterBone = -1;                          // skeleton bone index, -1 = all
         float minWeight = 0.f;
-        /** @brief "xy" | "xz" | "yz" */
+        /** "xy" | "xz" | "yz" */
         std::string plane = "xy";
         float scale = 1.f;
         bool enabled = false;
-        /** @brief Vertex indices eligible for sampling (rebuilt when filter changes). */
+        /** Vertex indices eligible for sampling (rebuilt when filter changes). */
         std::vector<int> candidates;
         bool candidatesDirty = true;
         int lastSkinnedFrame = -1;
     };
 
-    /** @brief Pooled Light2D entities driven by ParticleLightSystem (lights.enabled). */
+    /** Pooled Light2D entities driven by ParticleLightSystem (lights.enabled). */
     struct Lights {
         std::vector<graphics::Light2D *> pool;
     };
 
-    /** @brief GPU-accelerated simulation state (see ParticleGpuKernel.h for layout). */
+    /** GPU-accelerated simulation state (see ParticleGpuKernel.h for layout). */
     struct GpuSim {
         bool enabled = false;
         bool initialized = false;
@@ -415,7 +415,7 @@ public:
     int getCount();
     int getBufferSize();
 
-    /** @brief Named preset: "spark" / "smoke" / "fire". Unknown → no-op. */
+    /** Named preset: "spark" / "smoke" / "fire". Unknown → no-op. */
     void applyPreset(const std::string &name);
 
     bool applyConfig(const std::string &json);
@@ -440,9 +440,9 @@ public:
     void detach();
     bool isAttached();
     int getAttachBone();
-    /** @brief "none" | "anim" | "spine" | "ik2d" | "ik3d" */
+    /** "none" | "anim" | "spine" | "ik2d" | "ik3d" */
     std::string getAttachKind();
-    /** @brief Sync Config.x/y (and direction) from the attached bone. Also called by ParticleSimSystem. */
+    /** Sync Config.x/y (and direction) from the attached bone. Also called by ParticleSimSystem. */
     void syncAttach();
 
     // --- Skinned mesh surface emission ---
@@ -454,21 +454,21 @@ public:
     void setSkinScale(float scale);
     void clearSkinSource();
     bool hasSkinSource();
-    /** @brief Burst-emit `count` particles from the current skinned surface. */
+    /** Burst-emit `count` particles from the current skinned surface. */
     void emitFromSkin(int count);
 };
 
 void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
 void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
-/** @brief GPU-accelerated integration step; false = unavailable, caller falls back to CPU. */
+/** GPU-accelerated integration step; false = unavailable, caller falls back to CPU. */
 bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
                        ParticleEmitter::GpuSim &gpu, float dt);
-/** @brief World collision query used by emitters with worldCollision enabled. */
+/** World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
 void setWorldCollisionResolver(WorldCollisionFn fn);
 WorldCollisionFn getWorldCollisionResolver();
-/** @brief Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource. */
+/** Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource. */
 void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
                         ParticleEmitter::Attach &attach, ParticleEmitter::SkinSource &skinSrc);
 bool sampleSkinSpawn(ParticleEmitter::SkinSource &skinSrc, ParticleEmitter::Sim &sim, float &outX,

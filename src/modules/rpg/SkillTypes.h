@@ -7,12 +7,12 @@
 
 namespace eve::rpg {
 
-/** @brief 单个已学会技能的运行时状态（冷却）。 */
+/** 单个已学会技能的运行时状态（冷却）。 */
 struct SkillRuntime {
     float cooldownRemaining = 0.f;
 };
 
-/** @brief 施法状态：同一时间每个 actor 只有一个进行中的引导/读条（可按需扩展为多槽）。 */
+/** 施法状态：同一时间每个 actor 只有一个进行中的引导/读条（可按需扩展为多槽）。 */
 struct CastingState {
     bool active = false;
     std::string skillId;
@@ -21,7 +21,7 @@ struct CastingState {
     class RPGActor *target = nullptr;
 };
 
-/** @brief 技能释放结算事件：由 SkillSystem 在读条完成 / 瞬发技能释放时产生。 */
+/** 技能释放结算事件：由 SkillSystem 在读条完成 / 瞬发技能释放时产生。 */
 struct SkillCastEvent {
     class RPGActor *caster = nullptr;
     class RPGActor *target = nullptr;  ///< 可能为空（自身或无目标技能）

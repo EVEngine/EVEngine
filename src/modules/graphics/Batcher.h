@@ -8,7 +8,7 @@ namespace eve::graphics {
 
 class Texture;
 
-/** @brief CPU-side vertex for 2D batching (logical or NDC depending on stage). */
+/** CPU-side vertex for 2D batching (logical or NDC depending on stage). */
 struct BatchVertex {
     glm::vec2 pos;
     glm::vec4 color;
@@ -16,7 +16,7 @@ struct BatchVertex {
 };
 
 /**
- * @brief Accumulates solid / textured quads in logical (Y-down) coordinates.
+ * Accumulates solid / textured quads in logical (Y-down) coordinates.
  * Used by RenderSystem; not a public script API.
  */
 class Batcher {
@@ -27,7 +27,7 @@ public:
     void addTexturedRect(float x, float y, float w, float h, const Color &color,
                          float u0, float v0, float u1, float v1,
                          bool rotatedUV = false);
-    /** @brief Textured quad rotated `degrees` (clockwise, screen Y-down) around (cx, cy). */
+    /** Textured quad rotated `degrees` (clockwise, screen Y-down) around (cx, cy). */
     void addTexturedRectRotated(float cx, float cy, float w, float h, float degrees,
                                 const Color &color, float u0, float v0, float u1, float v1,
                                 bool rotatedUV = false);

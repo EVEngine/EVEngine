@@ -14,7 +14,7 @@ class SpriteClip;
 class SpriteSheet;
 
 /**
- * @brief 2D sprite-sheet clip player.
+ * 2D sprite-sheet clip player.
  *
  * Advances frame time, optionally keeps a bound Quad in sync with the current
  * sheet cell. Register with Animation for module-level `anim.update(dt)`.
@@ -28,7 +28,7 @@ public:
     SpriteAnim(const SpriteAnim &)            = delete;
     SpriteAnim &operator=(const SpriteAnim &) = delete;
 
-    /** @brief Optional sheet used by applyToQuad / bindQuad. */
+    /** Optional sheet used by applyToQuad / bindQuad. */
     void         setSheet(SpriteSheet *sheet);
     SpriteSheet *getSheet() const { return sheet_; }
 
@@ -49,21 +49,21 @@ public:
     bool isFinished() const { return finished_; }
 
     SpriteClip *getClip() const { return clip_; }
-    /** @brief Index inside the current clip (0..clipFrameCount-1), or -1. */
+    /** Index inside the current clip (0..clipFrameCount-1), or -1. */
     int getClipFrame() const { return clipFrame_; }
-    /** @brief Sheet frame index for the current cell, or -1. */
+    /** Sheet frame index for the current cell, or -1. */
     int getSheetFrame() const;
 
-    /** @brief Keep this Quad's viewport updated each update/play. */
+    /** Keep this Quad's viewport updated each update/play. */
     void           bindQuad(graphics::Quad *quad);
     void           unbindQuad();
     graphics::Quad *getBoundQuad() const { return boundQuad_; }
 
-    /** @brief Write current sheet frame into quad (requires sheet). */
+    /** Write current sheet frame into quad (requires sheet). */
     void applyToQuad(graphics::Quad *quad) const;
 
     /**
-     * @brief Advance playback. Returns true while still active (playing or paused).
+     * Advance playback. Returns true while still active (playing or paused).
      * Auto-applies to boundQuad when sheet is set.
      */
     bool update(float dt);

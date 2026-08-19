@@ -16,7 +16,7 @@ namespace physfs {
 class File : public eve::filesystem::File {
 public:
     /**
-     * @brief Constructs an File with the given ilename.
+     * Constructs an File with the given ilename.
      * @param filename The relative filepath of the file to load.
      **/
     File(std::string filename);

@@ -21,7 +21,7 @@ public:
     bool generate(const std::string &id, const Params &params, Grid2D &out, std::string &error) const;
     std::vector<std::string> list() const;
 
-    /** @brief Register built-in DTL / custom map algorithms (idempotent). */
+    /** Register built-in DTL / custom map algorithms (idempotent). */
     void registerBuiltins();
 
 private:

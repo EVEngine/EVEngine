@@ -10,7 +10,7 @@
 namespace eve::procgen {
 
 /**
- * @brief Intermediate 2D generation result. `cells` store semantic ids (see Semantic.h),
+ * Intermediate 2D generation result. `cells` store semantic ids (see Semantic.h),
  * not tile GIDs — convert via Palette when applying to a TileLayer.
  */
 class Grid2D {
@@ -24,7 +24,7 @@ public:
     void fill(int semantic);
 
     /**
-     * @brief Per-cell detail layer (0..255), parallel to `cells`. Semantics stay in
+     * Per-cell detail layer (0..255), parallel to `cells`. Semantics stay in
      * `cells` (palette/GID compatible); `detail` carries algorithm-specific
      * extras such as wall-autotile direction masks, floor-pattern variants and
      * decor tile indices. Semantics that have no detail use 0.
@@ -36,7 +36,7 @@ public:
     std::string getMeta(const std::string &key, const std::string &defaultValue) const;
 
     void clearObjects();
-    /** @brief Script-friendly: name/type + tile coords. */
+    /** Script-friendly: name/type + tile coords. */
     void addObjectAt(const std::string &name, const std::string &type, float x, float y);
     void addObject(const std::string &name, const std::string &type, float x, float y, float width,
                    float height, int gid);

@@ -14,7 +14,7 @@
 
 namespace eve::procgen {
 
-/** @brief Recipe returns a new RGBA8 ImageData (caller owns), or nullptr on failure. */
+/** Recipe returns a new RGBA8 ImageData (caller owns), or nullptr on failure. */
 using TextureRecipeFn =
     std::function<image::ImageData *(const Params &params, std::string &error)>;
 
@@ -52,7 +52,7 @@ struct TextureGenContext {
 void paintHeightToImage(image::ImageData &img, const std::vector<float> &height, int w, int h,
                         const ColorRamp &ramp, int bands, int pixelSize);
 
-/** @brief Sample a height function over the full [w×h] grid into `height` (clamped to [0,1]). */
+/** Sample a height function over the full [w×h] grid into `height` (clamped to [0,1]). */
 void fillHeightField(const TextureGenContext &ctx,
                      const std::function<float(float, float, const NoiseField &)> &fn,
                      std::vector<float> &height);
@@ -61,7 +61,7 @@ image::ImageData *heightToNormalImage(const std::vector<float> &height, int w, i
                                       float strength, bool seamless);
 
 /**
- * @brief PBR surface defaults for a generated material. Every map in a PBR set is
+ * PBR surface defaults for a generated material. Every map in a PBR set is
  * derived from the same displacement field (see TextureRecipeDef).
  */
 struct PbrParams {
@@ -76,7 +76,7 @@ struct PbrParams {
 };
 
 /**
- * @brief A procedural texture is fully described by an albedo ramp + a displacement
+ * A procedural texture is fully described by an albedo ramp + a displacement
  * field + PBR knobs. From one definition both an albedo recipe (ImageData) and
  * a full PBR set (albedo/normal/roughness/metallic/height/ao) are produced.
  */
@@ -87,7 +87,7 @@ struct TextureRecipeDef {
     PbrParams   pbr;
 };
 
-/** @brief All built-in texture definitions (albedo + PBR). Populated lazily. */
+/** All built-in texture definitions (albedo + PBR). Populated lazily. */
 const std::vector<TextureRecipeDef> &builtinTextureDefs();
 
 }  // namespace eve::procgen

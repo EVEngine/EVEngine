@@ -20,7 +20,7 @@ struct EVENGINE_API ConsoleLine {
 };
 
 /**
- * @brief In-engine runtime console / log ring buffer for DevTools.
+ * In-engine runtime console / log ring buffer for DevTools.
  *
  * Provides a single place for script and engine messages: leveled log lines,
  * capture of Squirrel `print` / script errors, and a Squirrel REPL
@@ -46,7 +46,7 @@ public:
     bool isVisible() const;
     void toggleVisible();
 
-    /** @brief Append a leveled log line (thread-safe). */
+    /** Append a leveled log line (thread-safe). */
     void addLog(std::string level, std::string text);
     void addInfo(std::string text);
     void addWarn(std::string text);
@@ -57,19 +57,19 @@ public:
     std::vector<ConsoleLine> recent(size_t max = 128) const;
     std::string format(size_t max = 128) const;
 
-    /** @brief Attach to a Squirrel VM: capture `print`/script errors into the log. */
+    /** Attach to a Squirrel VM: capture `print`/script errors into the log. */
     void attach(HSQUIRRELVM vm);
     void detach();
     bool isAttached() const { return vm_ != nullptr; }
 
     /**
-     * @brief Evaluate a Squirrel expression against the root table and return a
+     * Evaluate a Squirrel expression against the root table and return a
      * formatted result (or error message). Works as a runtime REPL.
      */
     std::string eval(const std::string& expression);
 
     /**
-     * @brief Optional ImGui draw hook. Default no-op: console UI is registered by the
+     * Optional ImGui draw hook. Default no-op: console UI is registered by the
      * host (see setImGuiDrawer) so EVDevTools does not include imgui.h.
      */
     void drawImGui();

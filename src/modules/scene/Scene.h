@@ -39,7 +39,7 @@ namespace eve::scene {
 class SceneObject;
 
 /**
- * @brief Declarative scene module (eve.Scene).
+ * Declarative scene module (eve.Scene).
  *
  * Isomorphic to eve::ui::UI: named SceneHost graphs, NodeDesc + SceneComponent.build,
  * mount / remountReconcile / beginBuild. TransformSystem propagates world matrices
@@ -51,52 +51,34 @@ public:
     Scene() = default;
     ~Scene() override = default;
 
-    /** @brief Creates/replaces a named host from a NodeDesc tree and selects it. */
     SceneHost *mountAs(const std::string &name, NodeDesc root);
-    /** @brief Mounts the tree as an auto-named host and selects it. */
     SceneHost *mount(NodeDesc root);
-    /** @brief Replaces the selected host's tree. */
     SceneHost *remount(NodeDesc root);
-    /** @brief Remount with key reconcile (props-only when structure matches). */
+    /** Remount with key reconcile (props-only when structure matches). */
     SceneHost *remountReconcile(NodeDesc root);
-    /** @brief Creates/replaces a named host (does not select it). */
     SceneHost *remountAs(const std::string &name, NodeDesc root);
 
-    /** @brief Selects a named host; false when it does not exist. */
     bool select(const std::string &name);
-    /** @brief Finds a host by name, or nullptr. */
     SceneHost *findHost(const std::string &name) const;
-    /** @brief Finds the host bound to an owner id, or nullptr. */
     SceneHost *findHostByOwner(uint32_t ownerId) const;
-    /** @brief Currently selected host, or nullptr. */
     SceneHost *current() const { return selected_; }
-    /** @brief Binds the selected host to a UI/scene owner id. */
     void bindOwner(uint32_t ownerId);
 
-    /** @brief Shows/hides every host (or the selected one when a host is selected). */
     void setHostVisible(bool visible);
-    /** @brief Sets the render layer of every host (or the selected one). */
     void setHostLayer(int layer);
 
-    /** @brief Propagate transforms (+ link sync) for all hosts (or current if selected). */
+    /** Propagate transforms (+ link sync) for all hosts (or current if selected). */
     void updateTransforms();
-    /** @brief Propagate transforms for every host regardless of selection. */
     void updateTransformsAll();
 
-    /** @brief Script-friendly TRS setters on the current host; each marks the transform dirty. */
+    /** Script-friendly: set local TRS on node id in current host; marks transform dirty. */
     bool setNodePosition(const std::string &id, float x, float y, float z);
-    /** @brief Sets the local rotation (yaw/pitch/roll in degrees) of a node. */
     bool setNodeRotation(const std::string &id, float yaw, float pitch, float roll);
-    /** @brief Sets the local scale of a node. */
     bool setNodeScale(const std::string &id, float sx, float sy, float sz);
-    /** @brief Shows/hides a node. */
     bool setNodeVisible(const std::string &id, bool visible);
 
-    /** @brief Links a 2D renderable to a node in the current host. */
     bool linkRenderable2D(const std::string &nodeId, graphics::Renderable2D *r);
-    /** @brief Links a 3D renderable to a node in the current host. */
     bool linkRenderable3D(const std::string &nodeId, graphics::Renderable3D *r);
-    /** @brief Removes every link on a node in the current host. */
     bool unlinkNode(const std::string &nodeId);
 
     // --- Generic link system (host-scoped primitives; script wrappers in
@@ -113,9 +95,9 @@ public:
                         graphics::Camera3D *c);
     bool linkAudio3DAt(const std::string &hostName, const std::string &nodeId,
                        audio::Source *s);
-    /** @brief Remove every link on the node. */
+    /** Remove every link on the node. */
     bool unlinkNodeAt(const std::string &hostName, const std::string &nodeId);
-    /** @brief Remove links of one kind ("renderable2d"|"renderable3d"|"physics2d"|...). */
+    /** Remove links of one kind ("renderable2d"|"renderable3d"|"physics2d"|...). */
     bool unlinkNodeKindAt(const std::string &hostName, const std::string &nodeId,
                           const std::string &kind);
     int linkCountAt(const std::string &hostName, const std::string &nodeId);
@@ -144,10 +126,10 @@ public:
                                       const std::string &nodeId, float x, float y,
                                       float z) const;
 
-    /** @brief Reparent by id; empty parentId detaches. Cycle-safe. */
+    /** Reparent by id; empty parentId detaches. Cycle-safe. */
     bool setNodeParentAt(const std::string &hostName, const std::string &childId,
                          const std::string &parentId);
-    /** @brief Detach node from its parent (arena node stays; rebuild to delete). */
+    /** Detach node from its parent (arena node stays; rebuild to delete). */
     bool removeNodeAt(const std::string &hostName, const std::string &nodeId);
     bool addChildAt(const std::string &hostName, const std::string &parentId,
                     const std::string &childId);
@@ -158,7 +140,7 @@ public:
                              float qx, float qy, float qz, float qw);
     std::vector<float> getNodeQuaternionAt(const std::string &hostName,
                                            const std::string &nodeId) const;
-    /** @brief Orient node so its local +Z axis points at (tx,ty,tz). */
+    /** Orient node so its local +Z axis points at (tx,ty,tz). */
     bool setNodeLookAtAt(const std::string &hostName, const std::string &nodeId,
                          float tx, float ty, float tz);
 
@@ -176,7 +158,7 @@ public:
     int getNodeLayerAt(const std::string &hostName, const std::string &nodeId) const;
 
     /**
-     * @brief Register a script callback for node lifecycle events on a host:
+     * Register a script callback for node lifecycle events on a host:
      * cb(action, nodeId, parentId) with action in
      * {"node_added","node_removed","node_moved","node_changed"}.
      * Pass null cb to clear. Rooted for the process lifetime.
@@ -196,21 +178,21 @@ public:
     bool deserializeHostAt(const std::string &hostName, const std::string &json);
 
     // --- Picking ---
-    /** @brief Nearest node id hit by a world ray (nodes with bounds), or "". */
+    /** Nearest node id hit by a world ray (nodes with bounds), or "". */
     std::string pickRayAt(const std::string &hostName, float ox, float oy, float oz,
                           float dx, float dy, float dz) const;
-    /** @brief Screen-space picking through a Camera3D (camera.screenToRay). */
+    /** Screen-space picking through a Camera3D (camera.screenToRay). */
     std::string pickScreenAt(const std::string &hostName, graphics::Camera3D *cam,
                              float screenX, float screenY, float viewW, float viewH) const;
 
     // --- Culling / spatial index ---
-    /** @brief Ids of nodes whose world AABB intersects the camera frustum. */
+    /** Ids of nodes whose world AABB intersects the camera frustum. */
     std::vector<std::string> collectFrustumIdsAt(const std::string &hostName,
                                                  graphics::Camera3D *cam, float viewW,
                                                  float viewH) const;
-    /** @brief Insert every bounded node's world AABB into an octree (id = arena index). */
+    /** Insert every bounded node's world AABB into an octree (id = arena index). */
     bool syncSpatialIndexAt(const std::string &hostName, spatial::Octree *ot) const;
-    /** @brief Map a spatial-index id (arena index) back to a node id. */
+    /** Map a spatial-index id (arena index) back to a node id. */
     std::string nodeIdFromSpatialIdAt(const std::string &hostName, int index) const;
 
     // --- Query / traverse (current host; script-friendly, id-based) ---
@@ -230,7 +212,7 @@ public:
     std::vector<std::string> collectIdsByName(const std::string &name);
     std::vector<std::string> collectIdsVisible(bool visible);
     std::vector<std::string> collectChildIds(const std::string &parentId);
-    /** @brief DFS order of ids under root (same as collectIds). Kept for script naming clarity. */
+    /** DFS order of ids under root (same as collectIds). Kept for script naming clarity. */
     std::vector<std::string> walkDepthFirstIds();
     std::vector<std::string> walkBreadthFirstIds();
 
@@ -254,19 +236,19 @@ public:
     // script wrappers injected in expose(); see kSceneEntityScript.
     // ------------------------------------------------------------------
 
-    /** @brief Host-qualified resolution: empty hostName → currently selected host. */
+    /** Host-qualified resolution: empty hostName → currently selected host. */
     SceneHost *resolveHost(const std::string &hostName) const;
 
-    /** @brief Root one script instance on a node (creates SceneObject lazily). */
+    /** Root one script instance on a node (creates SceneObject lazily). */
     bool rootEntity(const std::string &hostName, const std::string &nodeId,
                     ssq::Object instance);
-    /** @brief Remove a rooted script instance by its index in the binding list. */
+    /** Remove a rooted script instance by its index in the binding list. */
     bool unrootEntityAt(const std::string &hostName, const std::string &nodeId,
                         int index);
-    /** @brief Call cb(instance, index) for every rooted instance; returns count. */
+    /** Call cb(instance, index) for every rooted instance; returns count. */
     int forEachEntity(const std::string &hostName, const std::string &nodeId,
                       ssq::Object cb);
-    /** @brief updateTransformsAll() + call update(dt) on every rooted instance. */
+    /** updateTransformsAll() + call update(dt) on every rooted instance. */
     void updateScripts(float dt);
 
     std::string currentHostName() const;
@@ -284,11 +266,11 @@ private:
     SceneObject *findSceneObjectById(uint32_t id) const;
     SceneObject *ensureSceneObject(SceneHost *host, SceneNode *node,
                                    const std::string &hostName);
-    /** @brief Destroy bindings whose host/node no longer resolves; self-heal meta. */
+    /** Destroy bindings whose host/node no longer resolves; self-heal meta. */
     void pruneOrphanObjects();
-    /** @brief Fire onDetach + destroy() and release every rooted instance. */
+    /** Fire onDetach + destroy() and release every rooted instance. */
     void teardownBindings(SceneObject *obj);
-    /** @brief Sync script instance hostName/nodeId fields from SceneObject::Meta. */
+    /** Sync script instance hostName/nodeId fields from SceneObject::Meta. */
     void syncBindingRefs(SceneObject *obj);
 
     bool callMethod(HSQOBJECT inst, const char *name, float dt);

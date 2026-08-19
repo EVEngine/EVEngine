@@ -306,9 +306,9 @@ public:
     vk::Format getDepthFormat() const { return depthFormat; }
     vk::RenderPass getSwapchainRenderPass() const { return renderpass; }
     vk::RenderPass getUiMsaaRenderPass() const { return uiRenderPass; }
-    /** @brief Sample count the UI MSAA pass runs with (matches getUiMsaaRenderPass). */
+    /** Sample count the UI MSAA pass runs with (matches getUiMsaaRenderPass). */
     vk::SampleCountFlagBits getUiMsaaSamples() const { return uiColorSamples; }
-    /** @brief Create the UI MSAA render pass (once) and its color targets for ImGui init. */
+    /** Create the UI MSAA render pass (once) and its color targets for ImGui init. */
     void ensureUiColorResources() {
         createUiColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
     }
@@ -349,14 +349,14 @@ private:
     void destroyUiColorTargets();
     void destroyUiColorResources();
     void queueUiResolve();
-    /** @brief Render the present overlay (ImGui) into the UI MSAA pass and queue resolve. */
+    /** Render the present overlay (ImGui) into the UI MSAA pass and queue resolve. */
     bool renderUiOverlayPass();
     void recordPendingShadowPasses();
     void recordPendingGBufferPass();
     void dropPendingOffscreenPasses();
-    /** @brief acquire + record deferred shadow/gbuffer + begin swapchain RP. */
+    /** acquire + record deferred shadow/gbuffer + begin swapchain RP. */
     bool beginSwapchainRenderPass();
-    /** @brief Begin the swapchain color+depth RP on an already-acquired present CB. */
+    /** Begin the swapchain color+depth RP on an already-acquired present CB. */
     void beginSwapchainColorPass();
     bool beginSceneColorRenderPass();
     void endSceneColorRenderPass();
@@ -380,7 +380,7 @@ private:
                                            vk::PipelineLayout layout,
                                            const vkb::BuiltRenderPass &rp,
                                            vk::SampleCountFlagBits samples);
-    /** @brief X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
+    /** X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
     vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
                                           vk::PipelineLayout layout,
@@ -391,16 +391,16 @@ private:
                                           vk::PipelineLayout layout,
                                           const vkb::BuiltRenderPass &rp,
                                           vk::SampleCountFlagBits samples);
-    /** @brief Rebuild scene-pass pipelines against the given render pass / sample count. */
+    /** Rebuild scene-pass pipelines against the given render pass / sample count. */
     void ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                                   vk::SampleCountFlagBits samples);
-    /** @brief Clamp a requested sample count to the device-supported set (0/1/2/4/8). */
+    /** Clamp a requested sample count to the device-supported set (0/1/2/4/8). */
     int clampMsaaSamples(int requested) const;
-    /** @brief Render pass a scene-pass pipeline should be built against right now. */
+    /** Render pass a scene-pass pipeline should be built against right now. */
     const vkb::BuiltRenderPass &activeScenePass() const {
         return sceneColorRenderPass ? sceneColorRenderPass : renderpass;
     }
-    /** @brief Sample count the scene pass is currently running with (e1 when no MSAA). */
+    /** Sample count the scene pass is currently running with (e1 when no MSAA). */
     vk::SampleCountFlagBits activeSceneSamples() const {
         return sceneColorRenderPass ? sceneColorSamples : vk::SampleCountFlagBits::e1;
     }
@@ -429,9 +429,9 @@ private:
     void ensureFlatHeightTexture3D();
     vk::Sampler createVkSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
     void writeCombinedImageDescriptor(GpuTexture *gpu);
-    /** @brief Rebuild surface/swapchain when dirty. Returns false if surface not ready. */
+    /** Rebuild surface/swapchain when dirty. Returns false if surface not ready. */
     bool rebuildSwapchainIfNeeded();
-    /** @brief acquire + begin command buffer; recreates swapchain and retries on failure. */
+    /** acquire + begin command buffer; recreates swapchain and retries on failure. */
     bool beginPresentCommandBuffer();
 
     bool initialized = false;
@@ -821,7 +821,7 @@ private:
     size_t currentFrameSlot() const;
     vk::CommandBuffer &currentPresentCb();
     vkb::FrameSlot frameToken() const;
-    /** @brief Drain in-flight frames before mutating a GPU object sampled/read by them. */
+    /** Drain in-flight frames before mutating a GPU object sampled/read by them. */
     void waitForSharedGpuResources();
     void invalidateTextureBindings();
 };

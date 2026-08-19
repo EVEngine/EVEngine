@@ -9,7 +9,7 @@
 
 namespace eve::spatial {
 
-/** @brief Uniform-grid spatial hash for 3D AABB / sphere queries. */
+/** Uniform-grid spatial hash for 3D AABB / sphere queries. */
 class SpatialHash3D {
 public:
     explicit SpatialHash3D(float cellSize = 64.f);

@@ -1,6 +1,5 @@
 #include "common/Runtime.h"
 
-#include "common/Assert.h"
 #include "common/Module.h"
 
 #include <algorithm>
@@ -110,9 +109,7 @@ Runtime::Scope::Scope(Scope&& other) noexcept
     : runtime_(std::exchange(other.runtime_, nullptr)) {}
 
 Runtime::Runtime(size_t stackSize, ssq::Libs::Flag libraries)
-    : vm_(std::make_unique<ssq::VM>(stackSize, libraries)) {
-    EV_PARAM_CHECK(stackSize > 0, "Runtime stack size must be positive");
-}
+    : vm_(std::make_unique<ssq::VM>(stackSize, libraries)) {}
 
 Runtime::~Runtime() { shutdown(); }
 
@@ -152,10 +149,7 @@ ssq::VM& Runtime::vm() noexcept { return *vm_; }
 const ssq::VM& Runtime::vm() const noexcept { return *vm_; }
 HSQUIRRELVM Runtime::handle() const noexcept { return vm_ ? vm_->getHandle() : nullptr; }
 ssq::Table Runtime::root() const { return ssq::Table(static_cast<const ssq::Object&>(*vm_)); }
-ssq::Table Runtime::table(const char* name) const {
-    EV_PARAM_CHECK(name != nullptr && name[0] != '\0', "table name must not be null or empty");
-    return ssq::Table(vm_->find(name));
-}
+ssq::Table Runtime::table(const char* name) const { return ssq::Table(vm_->find(name)); }
 
 Runtime* Runtime::current() noexcept {
     return runtime_stack.empty() ? nullptr : runtime_stack.back();
@@ -185,7 +179,6 @@ Runtime::ScriptId Runtime::compileSource(std::string source, std::string sourceN
 }
 
 Runtime::ScriptId Runtime::compileFile(const std::string& path) {
-    EV_PARAM_CHECK(!path.empty(), "script file path must not be empty");
     if (stopped_) throw ScriptException(ScriptStage::Compile, path, 0, "runtime is shut down");
     auto scope = enter();
     auto stack = guard();
@@ -253,7 +246,6 @@ Runtime::ScriptId Runtime::runFile(const std::string& path) {
 }
 
 const ReflectedClass& Runtime::reflectClass(const std::string& name, const std::string& source) {
-    EV_PARAM_CHECK(!name.empty(), "reflected class name must not be empty");
     auto scope = enter();
     auto stack = guard();
     try {
@@ -359,10 +351,7 @@ std::vector<ReflectedClass> Runtime::reflectedClasses() const {
     return result;
 }
 
-ssq::Class Runtime::findClass(const std::string& name) const {
-    EV_PARAM_CHECK(!name.empty(), "class name must not be empty");
-    return vm_->findClass(name.c_str());
-}
+ssq::Class Runtime::findClass(const std::string& name) const { return vm_->findClass(name.c_str()); }
 
 void Runtime::notifyLifecycle(const ScriptInfo& info) noexcept {
     if (!lifecycle_handler_) return;

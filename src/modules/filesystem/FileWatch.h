@@ -15,7 +15,7 @@
 namespace eve::filesystem {
 
 /**
- * @brief OS directory watch with a main-thread event queue.
+ * OS directory watch with a main-thread event queue.
  * Desktop/mobile: backed by Poco::DirectoryWatcher (see FileWatch.cpp).
  * WebGPU (Emscripten): the browser VFS has no native file watching, so this is
  * a no-op stub — add()/remove() return false, poll() returns false.
@@ -43,13 +43,13 @@ public:
     bool add(const std::string &realDir, const std::string &filterName, const std::string &reportPath,
              int scanInterval = 1);
 
-    /** @brief Remove by reportPath previously passed to add(). */
+    /** Remove by reportPath previously passed to add(). */
     bool remove(const std::string &reportPath);
     void clear();
 
     int count() const;
 
-    /** @brief Pop one event; false if empty. */
+    /** Pop one event; false if empty. */
     bool poll(Event &out);
 
 private:

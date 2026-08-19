@@ -75,7 +75,7 @@ public:
     bool              setIcon(image::ImageData *image_data) override;
     image::ImageData *getIcon() const override;
 
-    /** @brief Used by event backend on resize to refresh drawable size / viewport. */
+    /** Used by event backend on resize to refresh drawable size / viewport. */
     void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);
 
 private:

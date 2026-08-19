@@ -23,7 +23,7 @@ namespace eve::graphics::webgpu {
 class OffscreenCanvas;
 
 /**
- * @brief Frame UBO for the mesh3d pipeline. Mirrors the std140 layout of the WGSL
+ * Frame UBO for the mesh3d pipeline. Mirrors the std140 layout of the WGSL
  * `Frame` block and the legacy Vulkan Mesh3DUBO (so custom shader prefixes stay
  * compatible). See wgsl_shaders.h.
  */
@@ -46,7 +46,7 @@ struct Mesh3DUBO {
 static_assert(sizeof(Mesh3DUBO) == 608, "Mesh3DUBO layout must match the WGSL Frame block");
 
 /**
- * @brief Texture resources backed by a wgpu texture + view + sampler + bind groups.
+ * Texture resources backed by a wgpu texture + view + sampler + bind groups.
  */
 struct GpuTexture {
     wgpu::Texture texture;
@@ -65,7 +65,7 @@ struct GpuTexture {
 };
 
 /**
- * @brief Vertex/index buffers for one mesh.
+ * Vertex/index buffers for one mesh.
  */
 struct GpuMesh {
     wgpu::Buffer vertexBuffer;
@@ -77,7 +77,7 @@ struct GpuMesh {
 };
 
 /**
- * @brief A compiled shader: one WebGPU pipeline + layout. Also holds the WGSL
+ * A compiled shader: one WebGPU pipeline + layout. Also holds the WGSL
  * sources so custom shaders can be re-pipelined for offscreen targets.
  */
 struct GpuShader {
@@ -232,9 +232,9 @@ public:
                std::optional<double> depth) override;
     Color getPixel(int x, int y) override;
 
-    /** @brief Flush accumulated 2D batches into an offscreen canvas target. */
+    /** Flush accumulated 2D batches into an offscreen canvas target. */
     void flush2DToCanvas(OffscreenCanvas *canvas);
-    /** @brief Blocking CPU readback of an offscreen canvas or scene color target. */
+    /** Blocking CPU readback of an offscreen canvas or scene color target. */
     Color getPixelImpl(OffscreenCanvas *canvas, int x, int y);
     image::ImageData *newImageDataImpl(OffscreenCanvas *canvas);
 

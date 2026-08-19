@@ -14,7 +14,7 @@ namespace eve::virtualgeometry {
 class VirtualGeometryRenderer;
 
 /**
- * @brief Virtual-geometry module — Nanite-style virtualized geometry rendering on top
+ * Virtual-geometry module — Nanite-style virtualized geometry rendering on top
  * of the active Graphics backend (Vulkan). See docs/dev/VIRTUAL_GEOMETRY.md.
  *
  * Script:
@@ -28,10 +28,10 @@ public:
     VirtualGeometry() = default;
     ~VirtualGeometry() override = default;
 
-    /** @brief True when the active Graphics backend can run virtual geometry. */
+    /** True when the active Graphics backend can run virtual geometry. */
     bool isAvailable() const;
 
-    /** @brief Create a virtual-geometry renderer (holds GPU buffers). */
+    /** Create a virtual-geometry renderer (holds GPU buffers). */
     VirtualGeometryRenderer *newRenderer();
 };
 

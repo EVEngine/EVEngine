@@ -7,7 +7,7 @@
 namespace eve::virtualgeometry {
 
 /**
- * @brief CPU preprocessor that builds a Nanite-style hierarchical cluster DAG from a
+ * CPU preprocessor that builds a Nanite-style hierarchical cluster DAG from a
  * triangle mesh:
  *
  *   1. Meshletization (LOD0): greedily partition the mesh into connected
@@ -36,7 +36,7 @@ public:
         float lodTargetRatio = 0.5f;      // parent keeps this fraction of triangles
     };
 
-    /** @brief Returns false on empty/invalid input. */
+    /** Returns false on empty/invalid input. */
     bool build(const MeshInput &in, const Options &opt, VirtualGeometryAsset &out);
 };
 

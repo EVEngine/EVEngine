@@ -23,7 +23,7 @@ constexpr int componentFloatCount() {
     return int(sizeof(Comp) / sizeof(float));
 }
 
-/** @brief Count live entities matching View<Base, Comp>. */
+/** Count live entities matching View<Base, Comp>. */
 template <typename Base, typename Comp>
 int countViewEntities() {
     int n = 0;
@@ -34,7 +34,7 @@ int countViewEntities() {
 }
 
 /**
- * @brief Pack View<Base, Comp> into ShaderSystem binding as AoS floats.
+ * Pack View<Base, Comp> into ShaderSystem binding as AoS floats.
  * Returns entity count (0 if empty).
  */
 template <typename Base, typename Comp>
@@ -62,7 +62,7 @@ int packViewComponent(ShaderSystem &sys, int binding) {
 }
 
 /**
- * @brief Write ShaderSystem binding floats back into View<Base, Comp> (same order as pack).
+ * Write ShaderSystem binding floats back into View<Base, Comp> (same order as pack).
  * `count` should be the value returned by packViewComponent.
  */
 template <typename Base, typename Comp>
@@ -81,7 +81,7 @@ void unpackViewComponent(ShaderSystem &sys, int binding, int count) {
 }
 
 /**
- * @brief Pack + dispatch + unpack a single-component GPU system.
+ * Pack + dispatch + unpack a single-component GPU system.
  * Additional bindings must be uploaded by the caller before this helper, or use
  * ShaderSystem manually for multi-buffer systems.
  */

@@ -9,7 +9,7 @@
 namespace eve::procgen {
 
 /**
- * @brief Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).
+ * Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).
  *
  * `sample(x, y)` maps any continuous map coordinate (tile/world units) to a
  * height in [0, 1] by default. Same coordinate + same config ⇒ same height.
@@ -29,18 +29,18 @@ public:
     TerrainSampler() = default;
 
     float sample(float x, float y) const;
-    /** @brief Height at the center of map tile (tileX, tileY). */
+    /** Height at the center of map tile (tileX, tileY). */
     float sampleTile(int tileX, int tileY) const;
     std::function<float(float, float)> asFunction() const;
 
     void      setSeed(uint32_t seed);
     uint32_t  getSeed() const;
-    /** @brief Cycles per world unit (alias of frequency). Default 1/32. */
+    /** Cycles per world unit (alias of frequency). Default 1/32. */
     void      setScale(float scale);
     float     getScale() const;
     void      setFrequency(float frequency);
     float     getFrequency() const;
-    /** @brief Distance per large oscillation. Sets frequency = 1/wavelength. */
+    /** Distance per large oscillation. Sets frequency = 1/wavelength. */
     void      setWavelength(float wavelength);
     float     getWavelength() const;
     void      setOctaves(int octaves);
@@ -59,7 +59,7 @@ public:
     float     getContinent() const;
     void      setIsland(float island);
     float     getIsland() const;
-    /** @brief Shore width of the land mask smoothstep. Smaller = cleaner, harder coast. */
+    /** Shore width of the land mask smoothstep. Smaller = cleaner, harder coast. */
     void      setCoastSoftness(float softness);
     float     getCoastSoftness() const;
     void      setWorldSize(int width, int height);

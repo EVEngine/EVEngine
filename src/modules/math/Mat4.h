@@ -7,7 +7,7 @@ namespace eve::math {
 class Vec2;
 class Vec3;
 
-/** @brief Column-major 4x4 matrix wrapping glm::mat4. */
+/** Column-major 4x4 matrix wrapping glm::mat4. */
 class Mat4 {
 public:
     Mat4();
@@ -27,7 +27,7 @@ public:
     Vec3 *transformVec3(const Vec3 *v) const;
     Vec2 *transformPoint2(const Vec2 *v) const;
 
-    /** @brief Column-major element 0..15. */
+    /** Column-major element 0..15. */
     float get(int index) const;
     void  set(int index, float value);
 

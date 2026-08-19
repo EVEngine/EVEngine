@@ -10,7 +10,7 @@ class Solver2D;
 class Solver3D;
 
 /**
- * @brief Inverse Kinematics module — wraps header-only sunxfancy/ik.hpp (FABRIK).
+ * Inverse Kinematics module — wraps header-only sunxfancy/ik.hpp (FABRIK).
  * Script: `ik <- eve.IK();`
  *
  * Provides 2D/3D skeleton + solver factories. No overloads: use Skeleton2D /

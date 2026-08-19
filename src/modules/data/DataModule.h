@@ -25,7 +25,7 @@ enum ContainerType
 };
 
 /**
- * @brief Compresses a block of memory using the given compression format.
+ * Compresses a block of memory using the given compression format.
  *
  * @param format The compression format to use.
  * @param rawbytes The data to compress.
@@ -38,7 +38,7 @@ enum ContainerType
 CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize, int level = -1);
 
 /**
- * @brief Decompresses existing compressed data into raw bytes.
+ * Decompresses existing compressed data into raw bytes.
  *
  * @param[in] data The compressed data to decompress.
  * @param[out] decompressedsize The size in bytes of the decompressed data.
@@ -47,7 +47,7 @@ CompressedData *compress(std::string format, const char *rawbytes, size_t rawsiz
 char *decompress(CompressedData *data, size_t &decompressedsize);
 
 /**
- * @brief Decompresses existing compressed data into raw bytes.
+ * Decompresses existing compressed data into raw bytes.
  *
  * @param[in] format The compression format the data is in.
  * @param[in] cbytes The compressed data to decompress.
@@ -63,7 +63,7 @@ char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen,
 char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen);
 
 /**
- * @brief Hash the input, producing an set of bytes as output.
+ * Hash the input, producing an set of bytes as output.
  *
  * @param[in] function The selected hash function.
  * @param[in] input The input data to hash.

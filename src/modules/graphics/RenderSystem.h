@@ -13,7 +13,7 @@ namespace eve::graphics {
 
 class Canvas;
 
-/** @brief Declarative 2D camera (viewport center + zoom). */
+/** Declarative 2D camera (viewport center + zoom). */
 class Camera2D : public ecs::Entity {
 public:
     ENTITY(Camera2D, ecs::Entity)
@@ -44,7 +44,7 @@ public:
 
     void setAmbient(float r, float g, float b);
 
-    /** @brief World-space look-at center and zoom (1 = identity). */
+    /** World-space look-at center and zoom (1 = identity). */
     void  setPosition(float x, float y);
     float getX();
     float getY();
@@ -52,7 +52,7 @@ public:
     float getZoom();
 
     /**
-     * @brief Convert screen pixel (origin top-left of viewport) to world coordinates.
+     * Convert screen pixel (origin top-left of viewport) to world coordinates.
      * viewW/viewH are the current drawable size (e.g. gfx.getWidth/Height).
      */
     float screenToWorldX(float screenX, float screenY, float viewW, float viewH);
@@ -61,7 +61,7 @@ public:
     float worldToScreenY(float worldX, float worldY, float viewW, float viewH);
 };
 
-/** @brief Default renderable entity for declarative 2D sprites / solid quads. */
+/** Default renderable entity for declarative 2D sprites / solid quads. */
 class Renderable2D : public ecs::Entity {
 public:
     ENTITY(Renderable2D, ecs::Entity)
@@ -101,17 +101,17 @@ public:
 
 class Graphics;
 
-/** @brief Walks ECS Renderable2D views and draws via Graphics batch path. */
+/** Walks ECS Renderable2D views and draws via Graphics batch path. */
 class RenderSystem {
 public:
-    /** @brief Full sprite pass + present (existing tests / sprite-only scenes). */
+    /** Full sprite pass + present (existing tests / sprite-only scenes). */
     static void render(Graphics &gfx);
 
-    /** @brief Append visible Renderable2D sprites into a shared queue. */
+    /** Append visible Renderable2D sprites into a shared queue. */
     static void collectSprites(std::vector<DrawItem2D> &out);
 
     /**
-     * @brief Sort and draw items. If present=true, calls gfx.present() at the end.
+     * Sort and draw items. If present=true, calls gfx.present() at the end.
      * Map::render uses present=false so the frame can continue drawing.
      */
     static void drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool present);

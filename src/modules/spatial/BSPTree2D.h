@@ -10,7 +10,7 @@
 namespace eve::spatial {
 
 /**
- * @brief Binary space partition tree (kd-style AABB splits) for 2D culling.
+ * Binary space partition tree (kd-style AABB splits) for 2D culling.
  * Alternating X/Y splits at node midplanes; spanning items stay on the node.
  */
 class BSPTree2D {

@@ -9,7 +9,7 @@ namespace eve::animation {
 class Animation;
 
 /**
- * @brief Property tween — interpolates named float properties from → to over time.
+ * Property tween — interpolates named float properties from → to over time.
  *
  * Absolute end: setFrom + setTo.
  * Relative delta (“变动差值”): setFrom + setDelta (to = from + delta at start),
@@ -28,7 +28,7 @@ public:
 
     void setFrom(const std::string &name, float value);
     void setTo(const std::string &name, float value);
-    /** @brief Relative change: end = start + delta (resolved when start() runs). */
+    /** Relative change: end = start + delta (resolved when start() runs). */
     void setDelta(const std::string &name, float delta);
 
     void setFromAngle(const std::string &name, float radians);
@@ -49,7 +49,7 @@ public:
     std::string getEase() const { return ease_; }
 
     /**
-     * @brief Play count: 1 = once (default), N = N cycles, -1 = infinite.
+     * Play count: 1 = once (default), N = N cycles, -1 = infinite.
      * Values < -1 are clamped to -1.
      */
     void setRepeat(int count);
@@ -72,23 +72,23 @@ public:
         return state_ == State::Delayed || state_ == State::Running || state_ == State::Paused;
     }
 
-    /** @brief Elapsed time in the current cycle (excludes delay). */
+    /** Elapsed time in the current cycle (excludes delay). */
     float getElapsed() const { return elapsed_; }
-    /** @brief Linear progress in the current cycle, [0,1]. */
+    /** Linear progress in the current cycle, [0,1]. */
     float getProgress() const;
-    /** @brief Eased progress used for interpolation, [0,1]. */
+    /** Eased progress used for interpolation, [0,1]. */
     float getEasedProgress() const;
 
     /**
-     * @brief Advance by dt seconds. Returns true while the tween is still active
+     * Advance by dt seconds. Returns true while the tween is still active
      * (delayed / running / paused).
      */
     bool update(float dt);
 
-    /** @brief Sample property at linear t in [0,1] using current from/to (no state change). */
+    /** Sample property at linear t in [0,1] using current from/to (no state change). */
     float evaluate(const std::string &name, float t) const;
 
-    /** @brief Names of all property tracks (stable order = insertion order). */
+    /** Names of all property tracks (stable order = insertion order). */
     int         getPropertyCount() const { return static_cast<int>(order_.size()); }
     std::string getPropertyName(int index) const;
 

@@ -16,7 +16,7 @@
 namespace eve::filesystem {
 
 /**
- * @brief Path→reload dispatcher for soft hot reload.
+ * Path→reload dispatcher for soft hot reload.
  * Driven from load.nut via pollWatch → tryReload; also used by watchTree.
  *
  * What a given file means is not known here. Modules that own an asset kind
@@ -39,17 +39,17 @@ public:
     ~HotReload() override;
 
     /**
-     * @brief Pin a path to one reloader kind ("particle" / "tilemap" / "texture" /
+     * Pin a path to one reloader kind ("particle" / "tilemap" / "texture" /
      * whatever a linked module registers), bypassing extension matching.
      * "auto" (the default) lets every reloader claim the path itself.
      */
     void bind(std::string path, std::string kind = "auto");
     void unbind(std::string path);
 
-    /** @brief Offer a (normalized) path to the registered reloaders; true if any reloaded. */
+    /** Offer a (normalized) path to the registered reloaders; true if any reloaded. */
     bool tryReload(std::string path);
 
-    /** @brief Recursively watch root and all subdirectories. Returns number of watches added. */
+    /** Recursively watch root and all subdirectories. Returns number of watches added. */
     int watchTree(std::string root = ".");
 
     /**

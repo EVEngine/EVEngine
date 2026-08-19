@@ -10,7 +10,7 @@ class AnimSkeleton;
 class MotionDatabase;
 
 /**
- * @brief Runtime motion matching player: builds a query feature from current pose +
+ * Runtime motion matching player: builds a query feature from current pose +
  * desired trajectory, searches MotionDatabase, cross-fades to best match.
  * Script type: `MotionMatcher`.
  */
@@ -25,12 +25,12 @@ public:
     AnimSkeleton    *getSkeleton() const { return skeleton_; }
     MotionDatabase  *getDatabase() const { return database_; }
 
-    /** @brief Desired planar velocity in character/world XZ (units/sec). */
+    /** Desired planar velocity in character/world XZ (units/sec). */
     void setDesiredVelocity(float x, float z);
     float getDesiredVelocityX() const { return desiredVelX_; }
     float getDesiredVelocityZ() const { return desiredVelZ_; }
 
-    /** @brief Desired facing yaw (radians, Y-up). */
+    /** Desired facing yaw (radians, Y-up). */
     void  setDesiredYaw(float yaw);
     float getDesiredYaw() const { return desiredYaw_; }
 
@@ -45,7 +45,7 @@ public:
     void  setVelocityWeight(float w);
     float getVelocityWeight() const { return velWeight_; }
 
-    /** @brief Skip rematching the same frame / nearby frames to reduce jitter. */
+    /** Skip rematching the same frame / nearby frames to reduce jitter. */
     void setIgnoreRadius(int frames);
     int  getIgnoreRadius() const { return ignoreRadius_; }
 
@@ -56,7 +56,7 @@ public:
 
     AnimPose *getPose();
 
-    /** @brief Force an immediate search (also called periodically from update). */
+    /** Force an immediate search (also called periodically from update). */
     void search();
 
     void update(float dt);

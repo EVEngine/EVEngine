@@ -6,7 +6,7 @@ namespace eve {
 namespace graphics {
 
 /**
- * @brief Right-handed, zero-to-one depth perspective for Vulkan swapchains.
+ * Right-handed, zero-to-one depth perspective for Vulkan swapchains.
  *
  * GLM's perspectiveRH_ZO matches Vulkan's Z range but keeps OpenGL's Y-up clip
  * space. Vulkan NDC has Y pointing down (same as our 2D Batcher), so without

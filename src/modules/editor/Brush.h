@@ -8,7 +8,7 @@
 namespace eve::editor {
 
 /**
- * @brief Unity GridBrushBase-inspired tile brush.
+ * Unity GridBrushBase-inspired tile brush.
  * Operates on TileBuffer; exposes preview + change list for UI / undo.
  */
 class Brush {
@@ -37,14 +37,14 @@ public:
     int getStampTile(int lx, int ly) const;
     void clearStamp();
 
-    /** @brief Apply current tool at / between cells. Returns cells changed. */
+    /** Apply current tool at / between cells. Returns cells changed. */
     int paintAt(TileBuffer *buffer, int tx, int ty);
     int eraseAt(TileBuffer *buffer, int tx, int ty);
     int floodFill(TileBuffer *buffer, int tx, int ty);
     int paintLine(TileBuffer *buffer, int x0, int y0, int x1, int y1);
     int paintRect(TileBuffer *buffer, int x0, int y0, int x1, int y1, bool filled);
 
-    /** @brief Fill preview buffer without mutating target. */
+    /** Fill preview buffer without mutating target. */
     int previewAt(TileBuffer *buffer, int tx, int ty);
     int previewLine(TileBuffer *buffer, int x0, int y0, int x1, int y1);
     int previewRect(TileBuffer *buffer, int x0, int y0, int x1, int y1, bool filled);

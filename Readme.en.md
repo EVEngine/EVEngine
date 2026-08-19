@@ -8,7 +8,6 @@ Evolutionary Vision Engine
 
 - [Game developer docs](docs/usr/README.md): install, run, and project layout; [module handbook](docs/usr/MODULES.md) covers script APIs and examples one by one.
 - [Engine developer docs](docs/dev/README.md): architecture, module design, testing strategy, and implementation notes.
-- [C++ API reference (Doxygen)](docs/api/html/index.html): generated from `src/` — run `make docs` after installing doxygen (config: [`Doxyfile`](Doxyfile)).
 
 Many game engines are slow to iterate, hard to debug, and awkward for rapid prototyping. EVEngine aims to be a simple, practical engine focused on 2D and third-person 3D gameplay components—not a full-featured 3D scene-management suite.
 

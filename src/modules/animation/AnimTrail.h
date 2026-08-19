@@ -12,7 +12,7 @@ namespace eve::animation {
 class AnimPose;
 
 /**
- * @brief Motion trail / afterimage recorder + 2D trajectory drawer.
+ * Motion trail / afterimage recorder + 2D trajectory drawer.
  *
  * Records timed samples (manual points or bone world positions) and draws a
  * fading path with `Graphics::drawSolidRect` (same dotted-segment style as Cloth).
@@ -36,22 +36,22 @@ public:
     AnimTrail(const AnimTrail &)            = delete;
     AnimTrail &operator=(const AnimTrail &) = delete;
 
-    /** @brief Max retained samples (ring). Clamped to >= 2. */
+    /** Max retained samples (ring). Clamped to >= 2. */
     void setCapacity(int capacity);
     int  getCapacity() const { return capacity_; }
 
-    /** @brief How long each sample lives (seconds). <= 0 keeps until capacity eviction. */
+    /** How long each sample lives (seconds). <= 0 keeps until capacity eviction. */
     void  setDuration(float seconds);
     float getDuration() const { return duration_; }
 
-    /** @brief Skip new samples closer than this distance to the newest point (0 = always add). */
+    /** Skip new samples closer than this distance to the newest point (0 = always add). */
     void  setMinDistance(float distance);
     float getMinDistance() const { return minDistance_; }
 
     void  setWidth(float pixels);
     float getWidth() const { return width_; }
 
-    /** @brief Head (newest) color; alpha fades toward 0 along the trail when fade is on. */
+    /** Head (newest) color; alpha fades toward 0 along the trail when fade is on. */
     void  setColor(float r, float g, float b, float a = 1.f);
     float getColorR() const { return colorR_; }
     float getColorG() const { return colorG_; }
@@ -61,12 +61,12 @@ public:
     void setFade(bool enable);
     bool getFade() const { return fade_; }
 
-    /** @brief "line" | "points". Invalid → exception. */
+    /** "line" | "points". Invalid → exception. */
     void        setStyle(const std::string &style);
     std::string getStyle() const;
 
     /**
-     * @brief Applied at draw time: screen = (x,y) * scale + offset.
+     * Applied at draw time: screen = (x,y) * scale + offset.
      * Useful when sampling bone world units into pixel space.
      */
     void  setDrawScale(float sx, float sy);
@@ -76,13 +76,13 @@ public:
     float getDrawOffsetX() const { return drawOffsetX_; }
     float getDrawOffsetY() const { return drawOffsetY_; }
 
-    /** @brief Append a 2D sample (z stored as 0). */
+    /** Append a 2D sample (z stored as 0). */
     void addPoint(float x, float y);
-    /** @brief Append a 3D sample (draw uses set plane / first two mapped axes via sampleBone). */
+    /** Append a 3D sample (draw uses set plane / first two mapped axes via sampleBone). */
     void addPoint3(float x, float y, float z);
 
     /**
-     * @brief Sample bone world position after `pose->computeWorld`.
+     * Sample bone world position after `pose->computeWorld`.
      * `plane` maps axes to draw (x,y): "xy" | "xz" | "yz".
      * Optional local offset is applied in bone world space (translation only).
      */
@@ -92,19 +92,19 @@ public:
 
     void clear();
 
-    /** @brief Age samples by dt; drop expired (when duration > 0). */
+    /** Age samples by dt; drop expired (when duration > 0). */
     void update(float dt);
 
     int   getPointCount() const { return static_cast<int>(points_.size()); }
-    /** @brief Index 0 = oldest retained sample; count-1 = newest. */
+    /** Index 0 = oldest retained sample; count-1 = newest. */
     float getPointX(int index) const;
     float getPointY(int index) const;
     float getPointZ(int index) const;
     float getPointAge(int index) const;
-    /** @brief Effective draw alpha in [0, colorA] after fade. */
+    /** Effective draw alpha in [0, colorA] after fade. */
     float getPointAlpha(int index) const;
 
-    /** @brief Draw trajectory in 2D pixel/world space via Graphics. */
+    /** Draw trajectory in 2D pixel/world space via Graphics. */
     void draw(graphics::Graphics *gfx);
 
 private:

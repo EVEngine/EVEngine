@@ -11,7 +11,7 @@ namespace eve::graphics {
 
 class Canvas;
 
-/** @brief GPU light packing for lit2d (std140-friendly). */
+/** GPU light packing for lit2d (std140-friendly). */
 struct Light2DGpu {
     glm::vec4 posRadius{0.f};  // xy = point pos or direction; w = radius (0 => directional)
     glm::vec4 color{0.f};      // rgb * intensity
@@ -25,7 +25,7 @@ struct Lighting2DUBO {
 };
 
 /**
- * @brief Declarative 2D light. Collected by RenderSystem (max 8 per canvas/frame).
+ * Declarative 2D light. Collected by RenderSystem (max 8 per canvas/frame).
  * type: "point" | "dir" (≤15 chars).
  */
 class Light2D : public ecs::Entity {
@@ -44,7 +44,7 @@ public:
         float intensity = 1.f;
         float radius = 200.f;
         bool enabled = true;
-        /** @brief Contribute as volumetric shaft source when collecting occlusion maps. */
+        /** Contribute as volumetric shaft source when collecting occlusion maps. */
         bool volumetric = false;
         float volumetricIntensity = 1.f;
         Canvas *canvas = nullptr;
@@ -81,7 +81,7 @@ public:
     void setCanvas(Canvas *canvas);
 };
 
-/** @brief GPU light packing for mesh3d / PBR (std140-friendly). */
+/** GPU light packing for mesh3d / PBR (std140-friendly). */
 struct Light3DGpu {
     glm::vec4 posRadius{0.f};  // xyz = point pos or direction; w = radius (0 => directional)
     glm::vec4 color{0.f};      // rgb * intensity
@@ -95,7 +95,7 @@ struct Lighting3DPack {
 };
 
 /**
- * @brief Declarative 3D light. Collected by RenderSystem3D (max 8 per frame).
+ * Declarative 3D light. Collected by RenderSystem3D (max 8 per frame).
  * type: "point" | "dir" (≤15 chars).
  */
 class Light3D : public ecs::Entity {

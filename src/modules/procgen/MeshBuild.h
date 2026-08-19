@@ -8,7 +8,7 @@
 namespace eve::procgen {
 
 /**
- * @brief CPU triangle mesh from procedural mesh recipes (e.g. marching cubes).
+ * CPU triangle mesh from procedural mesh recipes (e.g. marching cubes).
  * Positions/normals are xyz-packed; uvs are st-packed; indices are triangles.
  */
 class MeshBuild {

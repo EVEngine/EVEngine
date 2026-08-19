@@ -7,16 +7,13 @@
 
 namespace eve::gpgpu {
 
-/** @brief Vulkan 计算缓冲区实现（storage/vertex buffer + device memory）。 */
 class VulkanGpuBuffer final : public GpuBuffer {
 public:
     ~VulkanGpuBuffer() override;
 
-    /** @brief 缓冲区字节数 / 用途。 */
     int getSize() const override { return int(size_); }
     std::string getUsage() const override { return usage_; }
 
-    /** @brief 读写数据（ByteData / 浮点 / 原始字节）。 */
     void writeData(data::ByteData *data, int dstOffset = 0) override;
     data::ByteData *readData(int srcOffset = 0, int size = -1) override;
     void writeFloat32(int floatIndex, float value) override;

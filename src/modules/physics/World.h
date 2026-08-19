@@ -24,10 +24,6 @@ class Fixture;
 class ContactRelay;
 class DebugDraw;
 
-/**
- * @brief Box2D world wrapper (2D physics) with pixel-space coordinates.
- * Handles stepping, gravity, raycasts, AABB queries and contact/impact events.
- */
 class World {
 public:
     struct ContactEvent {
@@ -46,45 +42,33 @@ public:
         float normalImpulse = 0.f;
         float tangentImpulse = 0.f;
     };
-    /**
-     * @brief Creates a physics world.
-     * @param gravityX/gravityY  Gravity vector in pixels/s^2.
-     * @param sleep              Whether bodies may sleep when idle.
-     * @param meter              Pixels per meter conversion factor.
-     */
     World(float gravityX, float gravityY, bool sleep, float meter);
     ~World();
 
     World(const World &)            = delete;
     World &operator=(const World &) = delete;
 
-    /** @brief Steps the simulation by dt seconds (5 velocity / 2 position iterations). */
     void update(float dt);
-    /** @brief Steps with explicit iteration counts. */
     void updateFull(float dt, int velocityIterations, int positionIterations);
 
-    /** @brief Sets the world gravity vector in pixels/s^2. */
     void  setGravity(float gx, float gy);
     float getGravityX() const;
     float getGravityY() const;
 
-    /** @brief Changes the pixels-per-meter conversion. */
     void  setMeter(float pixelsPerMeter);
     float getMeter() const { return meter_; }
 
-    /** @brief bodyType: "static" | "kinematic" | "dynamic". x/y in pixels. */
+    /** bodyType: "static" | "kinematic" | "dynamic". x/y in pixels. */
     Body *newBody(const std::string &bodyType, float x, float y);
 
-    /** @brief Destroys a body (null is ignored). */
     void destroyBody(Body *body);
-    /** @brief Destroys the underlying Box2D world and resets event buffers. */
     void destroy();
 
-    /** @brief Optional: draw fixture AABBs via Graphics::drawSolidRect. */
+    /** Optional: draw fixture AABBs via Graphics::drawSolidRect. */
     void drawDebug(graphics::Graphics *gfx);
 
     /**
-     * @brief Closest raycast in pixel space from (x1,y1) to (x2,y2).
+     * Closest raycast in pixel space from (x1,y1) to (x2,y2).
      * Returns hit body id, or -1. Read hit details via getRayHit*.
      */
     int rayCast(float x1, float y1, float x2, float y2);
@@ -94,11 +78,11 @@ public:
     float getRayHitY() const { return rayHitY_; }
     float getRayHitNormalX() const { return rayHitNormalX_; }
     float getRayHitNormalY() const { return rayHitNormalY_; }
-    /** @brief Fraction along the segment [0,1] of the closest hit. */
+    /** Fraction along the segment [0,1] of the closest hit. */
     float getRayHitFraction() const { return rayHitFraction_; }
 
     /**
-     * @brief Query fixtures overlapping an axis-aligned box in pixel space (x,y,w,h).
+     * Query fixtures overlapping an axis-aligned box in pixel space (x,y,w,h).
      * Returns match count; read ids with getQueryBodyId(i).
      */
     int queryAABB(float x, float y, float w, float h);
@@ -128,15 +112,11 @@ public:
     float getImpactRelativeNormalSpeed(int index) const;
     float getImpactNormalImpulse(int index) const;
     float getImpactTangentImpulse(int index) const;
-    /** @brief Clears collected begin/end contact and impact event buffers. */
     void clearContactEvents();
 
-    /** @brief Converts a pixel-space length to meters. */
     float toMeters(float pixels) const;
-    /** @brief Converts a meter-space length to pixels. */
     float toPixels(float meters) const;
 
-    /** @brief The underlying Box2D world (advanced use). */
     b2World *raw() { return world_; }
     const b2World *raw() const { return world_; }
 

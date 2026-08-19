@@ -6,7 +6,7 @@
 namespace eve::voxel {
 
 /**
- * @brief Six axis-aligned face directions. Each chunk keeps a separate instance buffer
+ * Six axis-aligned face directions. Each chunk keeps a separate instance buffer
  * per direction so camera-facing sides can be culled / batched independently.
  *
  * Tangent axes for packed width/height:
@@ -67,7 +67,7 @@ inline bool faceDirFromName(const std::string &name, FaceDir &out) {
 }
 
 /**
- * @brief 绕 Y 轴旋转一个面方向 `quarterTurns` 个 90°（右手定则：+X → -Z → -X → +Z）。
+ * 绕 Y 轴旋转一个面方向 `quarterTurns` 个 90°（右手定则：+X → -Z → -X → +Z）。
  * 仅影响 4 个水平面（±X/±Z），±Y 顶/底保持不变。
  * 供方向性方块在注册各面纹理时旋转使用。
  */
@@ -81,7 +81,7 @@ inline FaceDir rotateFaceY(FaceDir dir, int quarterTurns) {
     return dir;
 }
 
-/** @brief Outward unit normal for the face. */
+/** Outward unit normal for the face. */
 inline void faceNormal(FaceDir d, float &nx, float &ny, float &nz) {
     nx = ny = nz = 0.f;
     switch (d) {

@@ -11,7 +11,7 @@ namespace eve::animation {
 class AnimSkeleton;
 
 /**
- * @brief Control-theory procedural pose driver: tracks a target AnimPose with
+ * Control-theory procedural pose driver: tracks a target AnimPose with
  * per-channel second-order / spring / PD dynamics (same laws as ControlAnim).
  * Script type: `ControlPose`.
  *
@@ -38,13 +38,13 @@ public:
     void        setIntegrator(const std::string &kind);
     std::string getIntegrator() const;
 
-    /** @brief Per-bone blend weight in [0,1]; 1 = full dynamics, 0 = hard snap to target. */
+    /** Per-bone blend weight in [0,1]; 1 = full dynamics, 0 = hard snap to target. */
     void  setBoneWeight(int boneIndex, float weight);
     float getBoneWeight(int boneIndex) const;
 
-    /** @brief Copy target pose. Channels without prior state snap; existing state keeps momentum. */
+    /** Copy target pose. Channels without prior state snap; existing state keeps momentum. */
     void setTargetPose(const AnimPose *target);
-    /** @brief Snap current state to the last target without changing the target. */
+    /** Snap current state to the last target without changing the target. */
     void snapToTarget();
 
     AnimPose *getPose();

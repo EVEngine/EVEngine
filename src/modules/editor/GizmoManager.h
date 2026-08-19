@@ -7,7 +7,7 @@
 namespace eve::editor {
 
 /**
- * @brief Babylon.js-style manager: toggles which transform modes are enabled and
+ * Babylon.js-style manager: toggles which transform modes are enabled and
  * routes pick/drag to the owned TransformGizmo (switching mode on best hit).
  */
 class GizmoManager {
@@ -30,7 +30,7 @@ public:
     void detach();
     bool isAttached() const { return attached_; }
 
-    /** @brief Pick across enabled modes; sets gizmo mode to the winning tool. */
+    /** Pick across enabled modes; sets gizmo mode to the winning tool. */
     std::string pick(float ox, float oy, float oz, float dx, float dy, float dz);
 
     bool beginDrag(const std::string &axis, float ox, float oy, float oz, float dx, float dy,

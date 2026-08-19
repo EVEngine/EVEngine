@@ -21,7 +21,7 @@
 
 namespace eve::rpg {
 
-/** @brief 效果里携带的一条属性修改规格（应用到 AttributeSystem::addModifier）。 */
+/** 效果里携带的一条属性修改规格（应用到 AttributeSystem::addModifier）。 */
 struct EffectModifierSpec {
     std::string attribute;
     std::string op = "add";
@@ -32,33 +32,33 @@ struct EffectModifierSpec {
 struct EffectDefinition {
     std::string id;
 
-    /** @brief "instant" | "duration" | "infinite"（未知值按 "instant" 处理）。 */
+    /** "instant" | "duration" | "infinite"（未知值按 "instant" 处理）。 */
     std::string durationPolicy = "instant";
     float duration = 0.f;  ///< durationPolicy == "duration" 时使用（秒）
 
-    /** @brief > 0 时为周期效果：每隔 period 秒产生一次 StatusTickEvent。 */
+    /** > 0 时为周期效果：每隔 period 秒产生一次 StatusTickEvent。 */
     float period = 0.f;
 
     /**
-     * @brief "none" | "refresh" | "extend" | "stack"，或 StatusSystem::registerStackPolicy 注册的名字。
+     * "none" | "refresh" | "extend" | "stack"，或 StatusSystem::registerStackPolicy 注册的名字。
      * 未知且未注册时按 "none" 处理。
      */
     std::string stackPolicy = "none";
     int maxStacks = 1;
 
-    /** @brief durationPolicy 为 duration/infinite 且 period<=0 时，apply 会直接写入这些修改器。 */
+    /** durationPolicy 为 duration/infinite 且 period<=0 时，apply 会直接写入这些修改器。 */
     std::vector<EffectModifierSpec> modifiers;
 
     std::vector<std::string> tags;
 
-    /** @brief 游戏自定义附加数据（图标路径、特效名、脚本钩子……）。 */
+    /** 游戏自定义附加数据（图标路径、特效名、脚本钩子……）。 */
     std::unordered_map<std::string, std::string> extra;
 
     bool hasTag(const std::string &tag) const;
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
-/** @brief 全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。 */
+/** 全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。 */
 class EffectRegistry {
 public:
     static void registerEffect(const EffectDefinition &def);
@@ -68,7 +68,7 @@ public:
     static int count();
 
     /**
-     * @brief 从 JSON 数组批量注册效果定义，返回成功注册的数量。
+     * 从 JSON 数组批量注册效果定义，返回成功注册的数量。
      * 每个元素形如：
      * {
      *   "id": "poison", "durationPolicy": "duration", "duration": 5,

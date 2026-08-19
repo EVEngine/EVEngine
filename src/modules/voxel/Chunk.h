@@ -12,7 +12,7 @@
 namespace eve::voxel {
 
 /**
- * @brief One 32³ voxel chunk with six direction-sorted packed-rect instance buffers.
+ * One 32³ voxel chunk with six direction-sorted packed-rect instance buffers.
  * Coordinates: chunk (cx,cy,cz) → world origin (cx*32, cy*32, cz*32).
  */
 class Chunk {
@@ -69,7 +69,7 @@ public:
     /** Explicitly invalidate the mesh (e.g. neighbor edit on a shared border). */
     void markDirty() { dirty_ = true; }
 
-    /** @brief Rebuild six face instance buffers via greedy meshing. */
+    /** Rebuild six face instance buffers via greedy meshing. */
     void remesh(const CubeTypeRegistry &types = CubeTypeRegistry::empty(),
                 ChunkSampler sampler = nullptr,
                 void *samplerUserData = nullptr) {
@@ -78,7 +78,7 @@ public:
         dirty_ = false;
     }
 
-    /** @brief Ensure mesh is up to date; remesh if dirty. */
+    /** Ensure mesh is up to date; remesh if dirty. */
     void ensureMeshed(const CubeTypeRegistry &types = CubeTypeRegistry::empty(),
                       ChunkSampler sampler = nullptr,
                       void *samplerUserData = nullptr) {

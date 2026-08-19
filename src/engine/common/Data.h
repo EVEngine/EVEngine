@@ -8,23 +8,23 @@ namespace eve {
 class Data : public Object {
 public:
     /**
-     * @brief Destructor.
+     * Destructor.
      **/
     virtual ~Data() {}
 
     /**
-     * @brief Creates a duplicate of Data derived class instance.
+     * Creates a duplicate of Data derived class instance.
      **/
     virtual Data *clone() const = 0;
 
     /**
-     * @brief Gets a pointer to the data. This pointer will obviously not
+     * Gets a pointer to the data. This pointer will obviously not
      * be valid if the Data object is destroyed.
      **/
     virtual void *getData() const = 0;
 
     /**
-     * @brief Gets the size of the Data in bytes.
+     * Gets the size of the Data in bytes.
      **/
     virtual size_t getSize() const = 0;
 

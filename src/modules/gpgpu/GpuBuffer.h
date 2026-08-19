@@ -10,7 +10,7 @@ class ByteData;
 namespace eve::gpgpu {
 
 /**
- * @brief Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers.
+ * Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers.
  * Squirrel-owned; derived class destroys GPU resources in destructor.
  */
 class GpuBuffer {
@@ -31,7 +31,7 @@ public:
     virtual float readFloat32(int floatIndex) = 0;
     virtual void fillFloat32(float value) = 0;
 
-    /** @brief Bulk float upload/download (one transfer). startIndex is in floats. */
+    /** Bulk float upload/download (one transfer). startIndex is in floats. */
     virtual void writeFloat32s(const float *data, int count, int startIndex = 0) = 0;
     virtual void readFloat32s(float *out, int count, int startIndex = 0) const = 0;
 

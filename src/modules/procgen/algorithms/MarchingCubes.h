@@ -11,7 +11,7 @@
 namespace eve::procgen {
 
 /**
- * @brief Classic Marching Cubes (Lorensen & Cline) over a regular scalar volume.
+ * Classic Marching Cubes (Lorensen & Cline) over a regular scalar volume.
  * Density >= isolevel is treated as solid; normals point toward empty space.
  *
  * `density` is row-major: index = x + y * nx + z * nx * ny, size nx*ny*nz.
@@ -20,15 +20,15 @@ namespace eve::procgen {
 bool marchingCubes(const float *density, int nx, int ny, int nz, float isolevel, MeshBuild &out,
                    std::string *error = nullptr);
 
-/** @brief Fill a density volume from a named field recipe (sphere / noise / terrain / torus). */
+/** Fill a density volume from a named field recipe (sphere / noise / terrain / torus). */
 bool fillDensityField(const Params &params, std::vector<float> &density, int &nx, int &ny, int &nz,
                       std::string &error);
 
-/** @brief Build mesh from Params (field + resolution + isolevel). */
+/** Build mesh from Params (field + resolution + isolevel). */
 bool generateMarchingCubesMesh(const Params &params, MeshBuild &out, std::string &error);
 
 /**
- * @brief Build the dual of a subdivided icosahedron. The result is a closed planet made
+ * Build the dual of a subdivided icosahedron. The result is a closed planet made
  * of hexagonal cells plus the twelve pentagons required by spherical topology.
  * Params: radius (1), subdivisions (2), tileInset (0.06, in [0, 0.5)).
  */

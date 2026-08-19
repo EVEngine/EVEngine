@@ -5,7 +5,7 @@
 namespace eve::ui {
 
 /**
- * @brief Unified UI design tokens (colors, geometry, typography).
+ * Unified UI design tokens (colors, geometry, typography).
  * Applied to ImGui each frame via applyThemeToImGui; metrics are design-time
  * units at uiScale=1 and are multiplied by the current UI scale.
  */
@@ -69,22 +69,22 @@ struct Theme {
     float fontScale = 1.f;
     bool navEnableKeyboard = true;
 
-    /** @brief Built-in presets with matching geometry; only colors differ. */
+    /** Built-in presets with matching geometry; only colors differ. */
     static Theme dark();
     static Theme light();
 };
 
 Theme &globalTheme();
-/** @brief Current preset name: "dark", "light", or "custom". */
+/** Current preset name: "dark", "light", or "custom". */
 const std::string &globalThemeName();
 
 void setGlobalTheme(const Theme &theme);
 void setGlobalTheme(const Theme &theme, const std::string &name);
 
-/** @brief Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown. */
+/** Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown. */
 bool setThemeByName(const std::string &name);
 
-/** @brief Logical (point-space) UI scale. Default 1.0. */
+/** Logical (point-space) UI scale. Default 1.0. */
 void setThemeUiScale(float scale);
 float themeUiScale();
 
@@ -95,7 +95,7 @@ float themeUiScale();
 void setThemeDpiScale(float dpiScale);
 float themeDpiScale();
 
-/** @brief Push tokens into ImGui style. Metrics are multiplied by uiScale (default: themeUiScale()). */
+/** Push tokens into ImGui style. Metrics are multiplied by uiScale (default: themeUiScale()). */
 void applyThemeToImGui(const Theme &theme);
 void applyThemeToImGui(const Theme &theme, float uiScale);
 

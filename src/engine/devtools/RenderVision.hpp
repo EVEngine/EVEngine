@@ -13,7 +13,7 @@ class Graphics;
 namespace eve::dev {
 
 /**
- * @brief Vision-model bridge for rendered-frame review (desktop / devtools only).
+ * Vision-model bridge for rendered-frame review (desktop / devtools only).
  *
  * Captures the current frame (Graphics readback), encodes it as a PNG data URL,
  * and sends it together with engine render parameters to an OpenAI-compatible
@@ -46,7 +46,7 @@ public:
     void setModel(std::string model);
     void setPath(std::string path);
     void setTimeoutMs(int ms);
-    /** @brief JSON description of current config (API key masked). */
+    /** JSON description of current config (API key masked). */
     std::string configJson();
     bool        configured();
 
@@ -55,20 +55,20 @@ public:
     std::string lastError() const;
 
     // --- Pending trigger (recorded off-main; dumped on main thread) ---
-    /** @brief Record that a breakpoint / critical site wants a vision dump. */
+    /** Record that a breakpoint / critical site wants a vision dump. */
     void notifyPending(const std::string& reason, const std::string& source, int line);
     bool pending() const;
     std::string pendingReason() const;
 
     /**
-     * @brief Main-thread capture + vision describe. Returns the description text, or
+     * Main-thread capture + vision describe. Returns the description text, or
      * a string starting with "error: " on failure. When `fresh` is false and a
      * cached description exists, returns the cache.
      */
     std::string describe(graphics::Graphics* gfx, const std::string& renderDataJson,
                          bool fresh, const std::string& reason = {});
 
-    /** @brief McpServer::poll hook: performs one pending dump when safe, clears flag. */
+    /** McpServer::poll hook: performs one pending dump when safe, clears flag. */
     void pollPending(graphics::Graphics* gfx, const std::string& renderDataJson);
 
 private:

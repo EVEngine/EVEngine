@@ -10,7 +10,7 @@
 namespace eve::voxel {
 
 /**
- * @brief Optional out-of-chunk neighbor sampler for seam culling.
+ * Optional out-of-chunk neighbor sampler for seam culling.
  * Receives chunk coordinates plus the (possibly out-of-range) local voxel
  * coords and returns the voxel id there (0 = air / unknown).
  * Null sampler → out-of-chunk neighbors are treated as air (old behavior).
@@ -19,7 +19,7 @@ using ChunkSampler = uint8_t (*)(void *userData, int chunkX, int chunkY, int chu
                                  int localX, int localY, int localZ);
 
 /**
- * @brief Greedy rectangle mesher for one 32³ dense voxel volume.
+ * Greedy rectangle mesher for one 32³ dense voxel volume.
  * Voxel storage: index = x + y*32 + z*32*32. Value 0 = air; 1..255 = type id.
  *
  * 每个体素的类型 id 通过注册表解析为“各面纹理 id”后合并；输出 PackedRect.tex
@@ -32,14 +32,14 @@ using ChunkSampler = uint8_t (*)(void *userData, int chunkX, int chunkY, int chu
  */
 class GreedyMesher {
 public:
-    /** @brief Mesh all six faces. Clears and fills `outFaces[6]`. */
+    /** Mesh all six faces. Clears and fills `outFaces[6]`. */
     static void meshChunk(const uint8_t *voxels, std::vector<PackedRect> outFaces[6],
                           const CubeTypeRegistry &types = CubeTypeRegistry::empty(),
                           ChunkSampler sampler = nullptr, void *samplerUserData = nullptr,
                           int chunkX = 0, int chunkY = 0, int chunkZ = 0,
                           std::vector<uint32_t> aoOut[6] = nullptr);
 
-    /** @brief Mesh a single face direction into `out` (appended; caller may clear). */
+    /** Mesh a single face direction into `out` (appended; caller may clear). */
     static void meshFace(const uint8_t *voxels, FaceDir dir, std::vector<PackedRect> &out,
                          const CubeTypeRegistry &types = CubeTypeRegistry::empty(),
                          ChunkSampler sampler = nullptr, void *samplerUserData = nullptr,

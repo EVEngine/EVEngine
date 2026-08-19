@@ -8,22 +8,18 @@
 namespace eve {
 namespace filesystem {
 
-/** @brief Data buffer paired with a filename (used for type identification). */
 class FileData : public Data {
 public:
-    /** @brief Allocates a buffer of the given size for the named file. */
     FileData(const std::string &filename, uint64_t size);
-    /** @brief Deep-copies another FileData. */
     FileData(const FileData &c);
 
     virtual ~FileData();
 
-    /** @brief Implements eve::Data. */
+    // Implements Data.
     FileData *clone() const;
     void *    getData() const { return data; }
     size_t    getSize() const { return size; }
 
-    /** @brief Filename, extension (without dot) and base name. */
     const std::string &getFilename() const { return filename; }
     const std::string &getExtension() const { return extension; }
     const std::string &getName() const { return name; }

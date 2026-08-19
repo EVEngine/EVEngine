@@ -11,7 +11,7 @@ namespace eve::gpgpu {
 class GpuBuffer;
 
 /**
- * @brief Pack script ECS entities' component number fields into a GpuBuffer (AoS).
+ * Pack script ECS entities' component number fields into a GpuBuffer (AoS).
  * entities: Squirrel array of entity instances
  * slot: component slot name on the entity (e.g. "pos")
  * fields: Squirrel array of field name strings (e.g. ["x","y"])
@@ -20,7 +20,7 @@ class GpuBuffer;
 int packScriptEntityFloats(ssq::Object entities, const std::string &slot,
                            ssq::Object fields, GpuBuffer *buf);
 
-/** @brief Inverse of packScriptEntityFloats; entityCount should match pack result. */
+/** Inverse of packScriptEntityFloats; entityCount should match pack result. */
 int unpackScriptEntityFloats(ssq::Object entities, const std::string &slot,
                              ssq::Object fields, GpuBuffer *buf, int entityCount);
 

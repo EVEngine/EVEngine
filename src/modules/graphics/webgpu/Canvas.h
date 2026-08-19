@@ -10,7 +10,7 @@
 namespace eve::graphics::webgpu {
 
 /**
- * @brief Offscreen render target (RGBA8Unorm color, optional Depth32Float).
+ * Offscreen render target (RGBA8Unorm color, optional Depth32Float).
  * 2D batches are flushed into the canvas texture by Graphics::flush2DToCanvas.
  */
 class OffscreenCanvas final : public eve::graphics::Canvas {

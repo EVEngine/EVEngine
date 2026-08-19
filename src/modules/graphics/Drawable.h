@@ -8,7 +8,7 @@ namespace eve::graphics
 class Graphics;
 
 /**
- * @brief Drawable base (textures, meshes, canvases).
+ * Drawable base (textures, meshes, canvases).
  *
  * Occlusion follows the same idea as mesh shadow casting: a drawable may
  * contribute a black silhouette to a volumetric light occlusion map via
@@ -19,16 +19,16 @@ public:
     virtual ~Drawable() {}
 
     /**
-	 * @brief Draws the object with the specified transformation matrix.
+	 * Draws the object with the specified transformation matrix.
 	 **/
     virtual void draw(Graphics* gfx, const glm::mat4& matrix) const = 0;
 
-    /** @brief When false, skipped by Graphics::drawOcclusion / volumetric occluder passes. */
+    /** When false, skipped by Graphics::drawOcclusion / volumetric occluder passes. */
     bool getCastOcclusion() const { return castOcclusion_; }
     void setCastOcclusion(bool cast) { castOcclusion_ = cast; }
 
     /**
-     * @brief Draw as an opaque black silhouette for volumetric occlusion maps
+     * Draw as an opaque black silhouette for volumetric occlusion maps
      * (screen-space god rays / light shafts). Default is a no-op; Texture /
      * Mesh override with 2D black rects (alpha preserved for textures).
      */

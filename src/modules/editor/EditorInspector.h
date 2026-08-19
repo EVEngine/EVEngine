@@ -5,7 +5,7 @@
 
 namespace eve::editor {
 
-/** @brief Property sheet descriptors + values (host renders via `ui`). */
+/** Property sheet descriptors + values (host renders via `ui`). */
 class EditorInspector {
 public:
     void clear();
@@ -47,7 +47,7 @@ public:
     bool isDirty(const std::string &id) const;
     void clearDirty(const std::string &id);
     void clearAllDirty();
-    /** @brief Returns next dirty field id, or "" if none. */
+    /** Returns next dirty field id, or "" if none. */
     std::string pollChangedId();
 
 private:

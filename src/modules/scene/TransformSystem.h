@@ -5,7 +5,7 @@ namespace eve::scene {
 class SceneHost;
 
 /**
- * @brief Propagates local TRS → world matrices for all SceneHost trees (or one host).
+ * Propagates local TRS → world matrices for all SceneHost trees (or one host).
  * Call after mount/reconcile or local transform edits.
  */
 class TransformSystem {

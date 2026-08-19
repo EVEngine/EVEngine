@@ -29,7 +29,7 @@ class ModelData;
 namespace eve::spritestack {
 
 /**
- * @brief CPU inputs for slicing a triangle mesh into sprite-stack layers.
+ * CPU inputs for slicing a triangle mesh into sprite-stack layers.
  *
  * Positions are required (vertexCount * 3). Normals / per-vertex colors are
  * optional; colors (0..1 RGB) are averaged per triangle, shaded by the face
@@ -45,7 +45,7 @@ struct SliceInput {
 };
 
 /**
- * @brief Slicer options. The mesh is cut into `layerCount` thin slabs along `axis`
+ * Slicer options. The mesh is cut into `layerCount` thin slabs along `axis`
  * ("x" | "y" | "z"); each slab is orthographically projected into an RGBA
  * image. Slab thickness defaults to AABB extent / layerCount when 0.
  */
@@ -63,26 +63,26 @@ struct SliceOptions {
 };
 
 /**
- * @brief Slice a triangle mesh into `layerCount` RGBA8 layer images (caller owns the
+ * Slice a triangle mesh into `layerCount` RGBA8 layer images (caller owns the
  * returned ImageData). Classic sprite stacking: vertical "bread slices" along
  * the chosen axis, later rendered as camera-facing billboards.
  */
 std::vector<image::ImageData *> sliceMeshToLayers(const SliceInput &input,
                                                   const SliceOptions &options);
 
-/** @brief Slice every mesh of a decoded model (assimp scene) with the same options. */
+/** Slice every mesh of a decoded model (assimp scene) with the same options. */
 std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *model,
                                                    const SliceOptions &options);
 
 /**
- * @brief Build a procedural CPU mesh ("box" | "cylinder" | "sphere" | "cone") and
+ * Build a procedural CPU mesh ("box" | "cylinder" | "sphere" | "cone") and
  * slice it — a self-contained asset-free path for tests / demos.
  */
 std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &kind,
                                                        const SliceOptions &options);
 
 /**
- * @brief A renderable pseudo-3D sprite stack: a column of layer textures drawn as
+ * A renderable pseudo-3D sprite stack: a column of layer textures drawn as
  * alpha-blended slices inside the 3D forward pass (call render() after
  * gfx.render3D() / RenderSystem3D::render and before present).
  *
@@ -103,7 +103,7 @@ public:
     SpriteStack3D(const SpriteStack3D &) = delete;
     SpriteStack3D &operator=(const SpriteStack3D &) = delete;
 
-    /** @brief One slice instance with its baked world transform and layer UV rect. */
+    /** One slice instance with its baked world transform and layer UV rect. */
     struct SliceDraw {
         glm::mat4 model{1.f};
         glm::vec4 uv{0.f, 0.f, 1.f, 1.f};
@@ -114,27 +114,27 @@ public:
     void setLayerCount(int count);
     int getLayerCount() const;
 
-    /** @brief Null texture clears the slot (that layer is skipped). */
+    /** Null texture clears the slot (that layer is skipped). */
     void setLayerTexture(graphics::Texture *texture, int index);
     graphics::Texture *getLayerTexture(int index) const;
 
-    /** @brief Upload RGBA8 ImageData layers (convenience around setLayerTexture). */
+    /** Upload RGBA8 ImageData layers (convenience around setLayerTexture). */
     void setLayerImage(graphics::Graphics *gfx, image::ImageData *img, int index);
-    /** @brief Upload each path via Graphics::newTextureFromFile (reloads in place). */
+    /** Upload each path via Graphics::newTextureFromFile (reloads in place). */
     void setLayerFile(graphics::Graphics *gfx, const std::string &path, int index);
     /**
-     * @brief Split one horizontal atlas strip into `layerCount` layers (layer i =
+     * Split one horizontal atlas strip into `layerCount` layers (layer i =
      * columns [i/count..(i+1)/count)). The strip stays one GPU texture; slices
      * sample their cell through per-layer UV rects.
      */
     void setLayersFromAtlas(graphics::Graphics *gfx, graphics::Texture *atlas,
                             int layerCount);
 
-    /** @brief World-space spacing between consecutive slices. */
+    /** World-space spacing between consecutive slices. */
     void setThickness(float thickness);
     float getThickness() const;
 
-    /** @brief Quad size for every slice (world units). Default 1 x 1. */
+    /** Quad size for every slice (world units). Default 1 x 1. */
     void setSize(float width, float height);
     float getWidth() const;
     float getHeight() const;
@@ -148,20 +148,20 @@ public:
     void setMode(const std::string &mode);  // "vertical" | "horizontal"
     std::string getMode() const;
 
-    /** @brief Pseudo-3D projected contact shadow (soft dark silhouette on the ground). */
+    /** Pseudo-3D projected contact shadow (soft dark silhouette on the ground). */
     void setShadowEnabled(bool enabled);
     bool getShadowEnabled() const;
     void setShadowOpacity(float opacity);
     void setShadowLight(float dx, float dy, float dz);
     void setShadowPlaneY(float y);
 
-    /** @brief Stylized rim outline: an expanded dark silhouette behind every slice. */
+    /** Stylized rim outline: an expanded dark silhouette behind every slice. */
     void setOutline(float width, float r = 0.f, float g = 0.f, float b = 0.f);
     float getOutlineWidth() const;
     void setOutlineColor(float r, float g, float b);
 
     /**
-     * @brief Contribute this stack to the G-buffer (via RenderSystem3D's extra-drawer
+     * Contribute this stack to the G-buffer (via RenderSystem3D's extra-drawer
      * hook) so post-processing that reads depth/normal (AO, outline) recognizes
      * the slice silhouettes instead of empty space.
      */
@@ -169,7 +169,7 @@ public:
     bool getGbufferEnabled() const;
 
     /**
-     * @brief Cast real CSM shadows: the stack's slices are drawn into the cascaded
+     * Cast real CSM shadows: the stack's slices are drawn into the cascaded
      * shadow map through the alpha-cutout shadow pipeline, so the silhouette
      * (not a solid quad) lands on receiving geometry. Requires a directional
      * light with castShadow, or the legacy directional light fallback.
@@ -177,11 +177,11 @@ public:
     void setCastShadow(bool cast);
     bool getCastShadow() const;
 
-    /** @brief Monotonic revision counter; SpriteStackBatch uses it to detect changes. */
+    /** Monotonic revision counter; SpriteStackBatch uses it to detect changes. */
     uint64_t getVersion() const { return version_; }
 
     /**
-     * @brief Draw all slices into the currently open 3D scene pass (Vulkan). Uses the
+     * Draw all slices into the currently open 3D scene pass (Vulkan). Uses the
      * active Camera3D when `camera` is null. Slices are sorted back-to-front
      * and depth-tested against the scene (depth writes stay off).
      */
@@ -240,7 +240,7 @@ private:
 };
 
 /**
- * @brief Multi-stack batching: draws every visible slice of the registered stacks as
+ * Multi-stack batching: draws every visible slice of the registered stacks as
  * ONE draw call per (texture, tint) group (all slice transforms and UV rects
  * are baked into a shared mesh, uploaded in place via Graphics::updateMeshVertices).
  *
@@ -293,7 +293,7 @@ private:
 };
 
 /**
- * @brief SpriteStack module: CPU slicing + SpriteStack3D factory.
+ * SpriteStack module: CPU slicing + SpriteStack3D factory.
  *
  * Script: `spritestack <- eve.SpriteStack();`
  */
@@ -303,9 +303,9 @@ public:
     SpriteStack() = default;
     ~SpriteStack() override = default;
 
-    /** @brief New empty stack (caller/VM owns; set layers before rendering). */
+    /** New empty stack (caller/VM owns; set layers before rendering). */
     SpriteStack3D *newStack(graphics::Graphics *gfx);
-    /** @brief New empty batch (caller/VM owns). */
+    /** New empty batch (caller/VM owns). */
     SpriteStackBatch *newBatch(graphics::Graphics *gfx);
 
     std::vector<image::ImageData *> slicePrimitive(const std::string &kind, int layerCount,

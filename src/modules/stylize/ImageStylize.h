@@ -8,7 +8,7 @@ class ImageData;
 
 namespace eve::stylize {
 
-/** @brief CPU NPR helpers — returns a new RGBA8 ImageData (caller owns). */
+/** CPU NPR helpers — returns a new RGBA8 ImageData (caller owns). */
 image::ImageData *processImageCpu(image::ImageData *src, const std::string &style);
 
 }  // namespace eve::stylize

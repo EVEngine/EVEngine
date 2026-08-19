@@ -6,7 +6,7 @@
 namespace eve::virtualgeometry {
 
 /**
- * @brief GPU-mirrored cluster node layout (std430, matches shaders/vg_*.comp).
+ * GPU-mirrored cluster node layout (std430, matches shaders/vg_*.comp).
  * Exactly 4 x uvec4 per cluster:
  *
  *   [0] bounds     = { f32x(cx), f32x(cy), f32x(cz), f32x(r) }
@@ -21,7 +21,7 @@ struct VgGpuCluster {
     std::uint32_t u3[4];
 };
 
-/** @brief CPU-side processed cluster (before packing into VgGpuCluster). */
+/** CPU-side processed cluster (before packing into VgGpuCluster). */
 struct VgCluster {
     float cx = 0.f, cy = 0.f, cz = 0.f, r = 0.f;  // bounding sphere
     std::uint32_t triStart = 0, triCount = 0;     // global triangle stream range
@@ -35,7 +35,7 @@ struct VgCluster {
 };
 
 /**
- * @brief Fully processed virtual-geometry asset (CPU representation).
+ * Fully processed virtual-geometry asset (CPU representation).
  * Produced by Builder from a Mesh; uploaded to GPU SSBOs by the backend.
  */
 struct VirtualGeometryAsset {
@@ -43,7 +43,7 @@ struct VirtualGeometryAsset {
     std::vector<float> positions;    // xyz packed, size = 3 * vertexCount
     std::vector<float> normals;      // optional xyz packed
 
-    /** @brief Flat global triangle stream; each entry is an index into positions. */
+    /** Flat global triangle stream; each entry is an index into positions. */
     std::vector<std::uint32_t> triangles;
 
     std::vector<VgCluster> clusters;

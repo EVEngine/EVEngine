@@ -9,11 +9,11 @@
 
 namespace eve::ui {
 
-/** @brief Declarative widget description (build once / on dirty → flatten into UIHost::Tree). */
+/** Declarative widget description (build once / on dirty → flatten into UIHost::Tree). */
 struct WidgetDesc {
     NodeType type = NodeType::Text;
     std::string id;
-    /** @brief Reconciliation key; defaults to id when empty. */
+    /** Reconciliation key; defaults to id when empty. */
     std::string key;
     std::string text;
     std::string valueText;
@@ -122,65 +122,51 @@ struct WidgetDesc {
     const std::string &reconcileKey() const { return key.empty() ? id : key; }
 };
 
-/** @brief Top-level window widget with a title bar. */
 WidgetDesc window(std::string title, std::vector<WidgetDesc> children = {}, std::string id = "root");
-/** @brief Static text label. */
 WidgetDesc text(std::string content, std::string id = "");
-/** @brief Clickable button; fires onClick. */
 WidgetDesc button(std::string label, std::string id = "", std::function<void()> onClick = {});
-/** @brief Plain group container. */
 WidgetDesc group(std::vector<WidgetDesc> children = {}, std::string id = "");
-/** @brief Holds the next widget on the same line as the previous one. */
 WidgetDesc sameLine(std::string id = "");
-/** @brief Horizontal separator line. */
 WidgetDesc separator(std::string id = "");
-/** @brief Checkbox with a label; fires onToggle. */
 WidgetDesc checkbox(std::string label, bool checked = false, std::string id = "",
                     std::function<void(bool)> onToggle = {});
-/** @brief Horizontal slider; fires onValue. */
 WidgetDesc slider(std::string label, float value, float minV, float maxV, std::string id = "",
                   std::function<void(float)> onValue = {});
-/** @brief Progress bar; fraction is clamped to [0,1]. */
 WidgetDesc progress(float fraction, std::string id = "", std::string overlay = "");
-/** @brief Editable text field; fires onTextChange. */
 WidgetDesc inputText(std::string label, std::string value, std::string id = "",
                      std::function<void(const std::string &)> onChange = {});
-/** @brief Collapsible header containing child widgets. */
 WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children = {},
                             std::string id = "", bool defaultOpen = true);
-/** @brief Scrollable child region with an explicit size. */
 WidgetDesc child(std::string id, std::vector<WidgetDesc> children = {}, float width = 0.f,
                  float height = 120.f);
 
-/** @brief Elastic layout container (row/column). Prefer `row` / `column` shorthands. */
+/** Elastic layout container (row/column). Prefer `row` / `column` shorthands. */
 WidgetDesc flex(FlexDirection direction, std::vector<WidgetDesc> children = {},
                 std::string id = "");
-/** @brief Horizontal elastic layout row. */
 WidgetDesc row(std::vector<WidgetDesc> children = {}, std::string id = "");
-/** @brief Vertical elastic layout column. */
 WidgetDesc column(std::vector<WidgetDesc> children = {}, std::string id = "");
-/** @brief Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent. */
+/** Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent. */
 WidgetDesc spacer(std::string id = "", float grow = 1.f);
 
-/** @brief Conditional: include `child` only when `cond` is true (empty group otherwise). */
+/** Conditional: include `child` only when `cond` is true (empty group otherwise). */
 WidgetDesc when(bool cond, WidgetDesc child);
 WidgetDesc whenElse(bool cond, WidgetDesc ifTrue, WidgetDesc ifFalse);
 
 /**
- * @brief Expand a string list into a Group of item widgets.
+ * Expand a string list into a Group of item widgets.
  * `itemFn(label, index)` builds each row; keys default to id.
  */
 WidgetDesc list(std::string listId, const std::vector<std::string> &items,
                 const std::function<WidgetDesc(const std::string &, int)> &itemFn);
 
-/** @brief Default list: one Button per item, id = listId + "/" + index. */
+/** Default list: one Button per item, id = listId + "/" + index. */
 WidgetDesc listButtons(std::string listId, const std::vector<std::string> &items);
 
-/** @brief Full replace flatten. */
+/** Full replace flatten. */
 void applyTree(UIHost *host, WidgetDesc root);
 
 /**
- * @brief Patch by key/id when structure (type + child keys) matches; otherwise full replace.
+ * Patch by key/id when structure (type + child keys) matches; otherwise full replace.
  * Returns true if a structural rebuild occurred.
  */
 bool applyTreeReconcile(UIHost *host, WidgetDesc root);

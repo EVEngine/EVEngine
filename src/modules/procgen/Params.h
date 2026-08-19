@@ -7,7 +7,7 @@
 namespace eve::procgen {
 
 /**
- * @brief Generation parameters. Algorithm-specific keys live in `values` as strings
+ * Generation parameters. Algorithm-specific keys live in `values` as strings
  * (no overloads; typed setters/getters for script convenience).
  */
 class Params {

@@ -6,7 +6,7 @@
 namespace eve::graphics {
 
 /**
- * @brief CPU reference for simple offset parallax (matches the scale / height convention
+ * CPU reference for simple offset parallax (matches the scale / height convention
  * of parallax_map.glsl POM; used by unit tests, not the GPU path).
  *
  * Height: white (1) = raised toward viewer. Depth = 1 - height.
@@ -18,7 +18,7 @@ struct ParallaxParams {
     float maxLayers = 32.f; // adaptive POM max steps
 };
 
-/** @brief Single-sample offset mapping (cheap approximation of the first POM step). */
+/** Single-sample offset mapping (cheap approximation of the first POM step). */
 inline void parallaxOffsetUV(float u, float v, float height01, float viewTSx, float viewTSy,
                              float viewTSz, float scale, float &ou, float &ov) {
     if (scale < 1e-5f) {

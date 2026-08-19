@@ -45,7 +45,7 @@ inline void copyMatrixToGrid(const std::vector<std::vector<std::uint_fast8_t>> &
     }
 }
 
-/** @brief Place spawn + stairs on walkable cells (floor/corridor/grass/dirt/sand). */
+/** Place spawn + stairs on walkable cells (floor/corridor/grass/dirt/sand). */
 inline void placeSpawnAndStairs(Grid2D &grid, uint32_t seed) {
     std::vector<std::pair<int, int>> walkable;
     walkable.reserve(size_t(grid.getWidth() * grid.getHeight() / 4));

@@ -12,7 +12,7 @@ class Func;
 class TF;
 
 /**
- * @brief Tensor element types.
+ * Tensor element types.
  *
  * Script-visible tensors are float32; int32 tensors are used for index data
  * (argmax outputs, embedding lookups, cast("int32")). Int32 values are stored
@@ -37,7 +37,7 @@ const char *dtypeName(DType dtype);
 bool parseDType(const std::string &name, DType &out);
 
 /**
- * @brief float32 / int32 tensor (rank 1–6), row-major.
+ * float32 / int32 tensor (rank 1–6), row-major.
  * Eager: owns a buffer. Symbolic: node in a Func graph (no buffer until run).
  */
 class Tensor {
@@ -45,10 +45,8 @@ public:
     static constexpr int kMaxRank = 6;
 
     Tensor() = default;
-    /** @brief 从 dims[0..rank) 创建 eager 张量。 */
     explicit Tensor(const int *dims, int rank);
     explicit Tensor(DType dtype, const int *dims, int rank);
-    /** @brief 按秩创建全零 eager 张量。 */
     Tensor(int d0);
     Tensor(int d0, int d1);
     Tensor(int d0, int d1, int d2);
@@ -56,7 +54,7 @@ public:
     Tensor(int d0, int d1, int d2, int d3, int d4);
     Tensor(int d0, int d1, int d2, int d3, int d4, int d5);
 
-    /** @brief Symbolic handle into a graph node. */
+    /** Symbolic handle into a graph node. */
     static Tensor *makeSymbolic(Graph *graph, int nodeId, const int *dims, int rank);
 
     bool        isSymbolic() const { return kind_ == Kind::Symbolic; }
@@ -108,7 +106,7 @@ public:
     void copyFrom(const Tensor *other);
     Tensor *clone() const;
 
-    /** @brief Eager 逐元素运算（符号张量会抛异常）。 */
+    // Eager instance sugar (throws if symbolic)
     Tensor *add(const Tensor *other) const;
     Tensor *sub(const Tensor *other) const;
     Tensor *multiply(const Tensor *other) const;
@@ -134,21 +132,18 @@ public:
     Tensor *maximumScalar(float s) const;
     Tensor *minimumScalar(float s) const;
 
-    /** @brief Eager 原地运算。 */
     void addInPlace(const Tensor *other);
     void multiplyInPlace(const Tensor *other);
     void addScalarInPlace(float s);
     void mulScalarInPlace(float s);
     void reluInPlace();
 
-    /** @brief 归约：求和 / 均值 / 最小 / 最大。 */
     float reduceSum() const;
     float reduceMean() const;
     float reduceMin() const;
     float reduceMax() const;
     float dot(const Tensor *other) const;
 
-    /** @brief 矩阵乘法 / 转置 / 变形。 */
     Tensor *matmul(const Tensor *other) const;
     Tensor *transpose() const;
     Tensor *permute(const int *order, int rank) const;
@@ -160,7 +155,6 @@ public:
     Tensor *reshape6(int d0, int d1, int d2, int d3, int d4, int d5) const;
     Tensor *flatten() const;
 
-    /** @brief 原始数据指针（eager）。 */
     float       *data();
     const float *data() const;
 

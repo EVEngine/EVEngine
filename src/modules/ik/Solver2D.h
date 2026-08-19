@@ -7,7 +7,7 @@
 
 namespace eve::ik {
 
-/** @brief FABRIK solver for Skeleton2D. Script type: `Solver2D`. */
+/** FABRIK solver for Skeleton2D. Script type: `Solver2D`. */
 class Solver2D {
 public:
     Solver2D() = default;
@@ -26,7 +26,7 @@ public:
     void  setForce(float force);
     float getForce() const;
 
-    /** @brief Overall pose blend: 0 = keep the input pose, 1 = full solve (default). */
+    /** Overall pose blend: 0 = keep the input pose, 1 = full solve (default). */
     void  setInfluence(float influence);
     float getInfluence() const;
 
@@ -34,12 +34,12 @@ public:
     void addTarget(int boneId, float x, float y, float weight = 1.f);
     int  getTargetCount() const;
 
-    /** @brief Returns true if every target is within tolerance. */
+    /** Returns true if every target is within tolerance. */
     bool solve(Skeleton2D *skeleton);
     void step(Skeleton2D *skeleton, float dt = 1.f);
 
     /**
-     * @brief FABRIK solve restricted to the bone chain rootBoneId..tipBoneId.
+     * FABRIK solve restricted to the bone chain rootBoneId..tipBoneId.
      * The chain root stays pinned and bones outside the chain are untouched;
      * only targets on the chain participate. See ChainSolver.h for details.
      */

@@ -18,7 +18,7 @@ class Object;
 namespace eve::dialogue {
 
 /**
- * @brief Generic JSON-like value tree used by the Squirrel bridge: dialogue pools and
+ * Generic JSON-like value tree used by the Squirrel bridge: dialogue pools and
  * conditions arrive as Squirrel tables and are converted into this structure
  * so the core loader/evaluator stays script-agnostic and unit-testable.
  */
@@ -79,7 +79,7 @@ struct DataValue {
 };
 
 /**
- * @brief Visual-novel style dialogue stage.
+ * Visual-novel style dialogue stage.
  * Script: `dlg <- eve.Dialogue();`
  *
  * Dialogue scripts remain Squirrel (functions / generators). This module only
@@ -91,7 +91,7 @@ public:
     Dialogue();
     ~Dialogue() override;
 
-    /** @brief 角色：注册 / 查询 / 绑定 Avatar。 */
+    // ---- characters ----
     bool registerCharacter(const std::string &id, const std::string &displayName);
     bool hasCharacter(const std::string &id) const;
     std::string getDisplayName(const std::string &id) const;
@@ -100,7 +100,7 @@ public:
     int getCharacterCount() const;
     std::string getCharacterId(int index) const;
 
-    /** @brief 舞台：显示/隐藏角色、槽位与表情/动作。 */
+    // ---- stage ----
     bool show(const std::string &id, const std::string &slot);
     bool hide(const std::string &id);
     bool isShown(const std::string &id) const;
@@ -112,7 +112,7 @@ public:
     /** Place visible avatars using normalized slot X * stageWidth. */
     void syncStage(float stageWidth, float stageHeight);
 
-    /** @brief 台词：说话/旁白、打字机效果与推进。 */
+    // ---- lines ----
     void say(const std::string &speakerId, const std::string &text);
     void narrate(const std::string &text);
     void setTypeSpeed(float charsPerSecond);
@@ -129,7 +129,7 @@ public:
     std::string getVisibleText() const;
     std::string getPhase() const;
 
-    /** @brief 口型同步：打字时驱动说话者 Avatar 参数。 */
+    // ---- lip sync (drives speaker avatar parameter while typing) ----
     void setLipSyncEnabled(bool enabled);
     bool isLipSyncEnabled() const { return lipSyncEnabled_; }
     void setLipSyncParameter(const std::string &name);
@@ -138,7 +138,7 @@ public:
     float getLipSyncAmplitude() const { return lipSyncAmplitude_; }
     float getLipSyncValue() const { return lipSyncValue_; }
 
-    /** @brief 选项：清空/添加/展示与选择。 */
+    // ---- choices ----
     void clearChoices();
     bool addChoice(const std::string &id, const std::string &label);
     void presentChoices();
@@ -223,9 +223,7 @@ public:
     std::string getCurrentLineMeta(const std::string &field) const;
     std::vector<std::string> getCurrentLineTags() const;
 
-    /** @brief 推进打字机 / 口型同步 / 阶段机；每帧调用。 */
     void update(float dt);
-    /** @brief 重置舞台与台词状态。 */
     void reset();
 
 private:

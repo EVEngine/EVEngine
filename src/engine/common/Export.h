@@ -1,6 +1,6 @@
 #pragma once
 
-/** @brief 宿主（eve / libmain）导出宏；插件从进程导入同一批符号。 */
+// Host (eve / libmain) exports; plugins import the same symbols from the process.
 #if defined(EVENGINE_PLUGIN)
 #  if defined(_WIN32)
 #    define EVENGINE_API __declspec(dllimport)
@@ -17,7 +17,7 @@
 #  endif
 #endif
 
-/** @brief eve.plugins.load 要求的 C ABI 入口（成功返回 0）。 */
+// C ABI entry required by eve.plugins.load (return 0 on success).
 #if defined(_WIN32)
 #  define EVE_PLUGIN_EXPORT extern "C" __declspec(dllexport)
 #else

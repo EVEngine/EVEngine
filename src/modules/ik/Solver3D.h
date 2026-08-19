@@ -7,7 +7,7 @@
 
 namespace eve::ik {
 
-/** @brief FABRIK solver for Skeleton3D. Script type: `Solver3D`. */
+/** FABRIK solver for Skeleton3D. Script type: `Solver3D`. */
 class Solver3D {
 public:
     Solver3D() = default;
@@ -26,7 +26,7 @@ public:
     void  setForce(float force);
     float getForce() const;
 
-    /** @brief Overall pose blend: 0 = keep the input pose, 1 = full solve (default). */
+    /** Overall pose blend: 0 = keep the input pose, 1 = full solve (default). */
     void  setInfluence(float influence);
     float getInfluence() const;
 
@@ -38,7 +38,7 @@ public:
     void step(Skeleton3D *skeleton, float dt = 1.f);
 
     /**
-     * @brief FABRIK solve restricted to the bone chain rootBoneId..tipBoneId.
+     * FABRIK solve restricted to the bone chain rootBoneId..tipBoneId.
      * The chain root stays pinned and bones outside the chain are untouched;
      * only targets on the chain participate. See ChainSolver.h for details.
      */
@@ -46,7 +46,7 @@ public:
     void stepChain(Skeleton3D *skeleton, int rootBoneId, int tipBoneId, float dt = 1.f);
 
     /**
-     * @brief Pole vector (magnet / hint): pulls the middle joints of a chain toward a
+     * Pole vector (magnet / hint): pulls the middle joints of a chain toward a
      * point so the limb bends in the desired direction. Applies to solveChain /
      * stepChain; weight is clamped to [0, 1].
      */
@@ -56,7 +56,7 @@ public:
     float getPoleWeight() const;
 
     /**
-     * @brief Tip orientation override: after solving, blends the tip bone's local
+     * Tip orientation override: after solving, blends the tip bone's local
      * yaw/pitch toward the given angles (weight in [0, 1]). Mirrors Godot's
      * override_tip_basis / Unity's target rotation weight.
      */

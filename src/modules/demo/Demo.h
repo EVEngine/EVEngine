@@ -16,7 +16,7 @@ class SoundData;
 namespace eve::demo {
 
 /**
- * @brief Optional demo-only helpers (procedural SFX / planet albedo).
+ * Optional demo-only helpers (procedural SFX / planet albedo).
  * Built only when EVENGINE_BUILD_DEMO=ON; other games need not link or compile this.
  */
 class Demo : public Module {
@@ -26,10 +26,10 @@ public:
     Demo();
     ~Demo() override;
 
-    /** @brief kind: "music" | "shoot" | "explode" | "hit" */
+    /** kind: "music" | "shoot" | "explode" | "hit" */
     sound::SoundData *newSound(const std::string &kind);
 
-    /** @brief Equirectangular planet albedo uploaded via Graphics::newTexture. */
+    /** Equirectangular planet albedo uploaded via Graphics::newTexture. */
     graphics::Texture *newPlanetTexture(graphics::Graphics *gfx);
 };
 

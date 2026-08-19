@@ -14,7 +14,7 @@ class ByteData;
 namespace eve::virtualgeometry {
 
 /**
- * @brief A virtual-geometry renderer: preprocesses a mesh into a cluster DAG, uploads
+ * A virtual-geometry renderer: preprocesses a mesh into a cluster DAG, uploads
  * it to the GPU, then each frame runs GPU-driven culling + a software rasterizer
  * into a visibility buffer.
  *
@@ -39,22 +39,22 @@ public:
     // ---- build (preprocess + upload) ----
     bool build(const float *positions, int vertexCount, const std::uint32_t *indices, int indexCount);
     bool build(const VirtualGeometryBuilder::MeshInput &in);
-    /** @brief Convenience: procedural unit icosphere, `subdiv` subdivision levels. */
+    /** Convenience: procedural unit icosphere, `subdiv` subdivision levels. */
     bool buildIcosphere(int subdiv);
 
     // ---- per-frame ----
     void setViewport(int width, int height, float fovYDeg, float errorPx = 1.0f);
     void setCamera(const float view[16], const float proj[16], const float model[16],
                    const float camPos[3]);
-    /** @brief Script-friendly: identity view (camera looking down -Z) + perspective. */
+    /** Script-friendly: identity view (camera looking down -Z) + perspective. */
     void setCameraSimple(float camX, float camY, float camZ, float nearZ = 0.1f, float farZ = 100.f);
-    /** @brief Spin the virtualized model about Y by `yaw` radians each frame. */
+    /** Spin the virtualized model about Y by `yaw` radians each frame. */
     void setModelYaw(float yaw);
-    /** @brief Run cull + raster; returns the number of visible clusters. */
+    /** Run cull + raster; returns the number of visible clusters. */
     int update();
     /** Resolve the visibility buffer to RGBA (w*h*4 bytes). */
     bool resolve(unsigned char *outRgba, int &outW, int &outH);
-    /** @brief Resolve into a heap ByteData (RGBA) for scripting/display. */
+    /** Resolve into a heap ByteData (RGBA) for scripting/display. */
     eve::data::ByteData *resolveByteData();
     int getViewWidth() const { return width_; }
     int getViewHeight() const { return height_; }

@@ -26,7 +26,7 @@ class AiPanel;
 class ConsolePanel;
 
 /**
- * @brief Platform-level script + render debugger / dynamic slicer front-end.
+ * Platform-level script + render debugger / dynamic slicer front-end.
  *
  * When attached (typically via `eve run --debug`):
  *  - Squirrel: debug hook → CallGraph (call stack + Def/Use data-flow)
@@ -47,27 +47,27 @@ public:
     DevTool(const DevTool&)            = delete;
     DevTool& operator=(const DevTool&) = delete;
 
-    /** @brief Attach script tracer to VM and enable render tracing. */
+    /** Attach script tracer to VM and enable render tracing. */
     void attach(ssq::VM& vm, bool sampleLocals = true);
     void attach(HSQUIRRELVM vm, bool sampleLocals = true);
-    /** @brief Enable render-flow tracing without a Squirrel VM (C++ / unit tests). */
+    /** Enable render-flow tracing without a Squirrel VM (C++ / unit tests). */
     void enableRenderTrace(bool on = true);
     void detach();
 
-    /** @brief Expose `eve.dev` script API (pause/breakpoint/watch/snapshot/AI). */
+    /** Expose `eve.dev` script API (pause/breakpoint/watch/snapshot/AI). */
     void exposeScriptApi(ssq::VM& vm);
 
-    /** @brief Start DAP server; returns bound port (0 on failure). */
+    /** Start DAP server; returns bound port (0 on failure). */
     int  startDap(uint16_t port);
     void stopDap();
-    /** @brief Start MCP server for AI tooling; returns bound port (0 on failure). */
+    /** Start MCP server for AI tooling; returns bound port (0 on failure). */
     int  startMcp(uint16_t port);
     void stopMcp();
     void poll();
 
-    /** @brief Draw DevTools AI ImGui panel when visible (call from UI/frame loop). */
+    /** Draw DevTools AI ImGui panel when visible (call from UI/frame loop). */
     void drawAiPanel();
-    /** @brief Draw DevTools console ImGui panel when visible (call from UI/frame loop). */
+    /** Draw DevTools console ImGui panel when visible (call from UI/frame loop). */
     void drawConsolePanel();
 
     bool isAttached() const { return vm_ != nullptr; }
@@ -95,7 +95,7 @@ public:
     const std::string& lastReport() const { return lastReport_; }
     const std::string& lastError() const { return lastError_; }
 
-    /** @brief Per-function script profile (line-hook timing). */
+    /** Per-function script profile (line-hook timing). */
     struct ProfileEntry {
         int         calls = 0;
         int         lines = 0;
@@ -108,7 +108,7 @@ public:
     }
     std::string formatProfileReport() const;
 
-    /** @brief Record an error; includes script slice and render-pipeline slice when enabled. */
+    /** Record an error; includes script slice and render-pipeline slice when enabled. */
     std::string notifyError(const std::string& errorMessage,
                             const std::vector<std::string>& hintVars = {});
 
@@ -122,7 +122,7 @@ private:
     void markErrorUses(const SourceLoc& loc, const std::vector<std::string>& hintVars);
     void installRenderTracer();
     void uninstallRenderTracer();
-    /** @brief DAP poll + in-engine F5/F8/F10/F11 while blocked in a script pause. */
+    /** DAP poll + in-engine F5/F8/F10/F11 while blocked in a script pause. */
     void pumpWhilePaused();
     void handleDebugHotkey(const std::string& key);
     void profileLine(const std::string& func);

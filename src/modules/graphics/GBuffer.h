@@ -8,7 +8,7 @@ class Graphics;
 class Texture;
 
 /**
- * @brief Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).
+ * Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).
  *
  * Layout after a successful G-buffer pass:
  *   depth    — RGBA8 linear copy (R = linear 0..1) for Canvas / volumetric
@@ -41,11 +41,11 @@ public:
     Texture *getNormalTexture() const { return normal_; }
     Texture *getAlbedoTexture() const { return albedo_; }
 
-    /** @brief "depth" | "hwDepth" | "normal" | "albedo" */
+    /** "depth" | "hwDepth" | "normal" | "albedo" */
     bool hasBuffer(const std::string &name) const;
     Texture *getBuffer(const std::string &name) const;
 
-    /** @brief Called by Graphics after a G-buffer pass (or clear). */
+    /** Called by Graphics after a G-buffer pass (or clear). */
     void setTargets(int width, int height, Texture *depth, Texture *normal, Texture *albedo,
                     Texture *hwDepth = nullptr);
 

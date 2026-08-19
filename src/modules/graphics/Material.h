@@ -12,7 +12,7 @@ namespace eve::graphics {
 class Graphics;
 
 /**
- * @brief Packages shading method + surface parameters into one attachable asset.
+ * Packages shading method + surface parameters into one attachable asset.
  *
  * Shading models (string, engine convention — no enums):
  *   "pbr"    — default Mesh3D metallic-roughness (optional custom Shader*)
@@ -33,7 +33,7 @@ public:
     Material(const Material &) = delete;
     Material &operator=(const Material &) = delete;
 
-    /** @brief "pbr" | "unlit" | "hair" | "custom" (unknown → pbr). */
+    /** "pbr" | "unlit" | "hair" | "custom" (unknown → pbr). */
     void setShadingModel(const std::string &model);
     std::string getShadingModel() const { return shadingModel_; }
 
@@ -46,7 +46,7 @@ public:
     void setHeightTexture(Texture *texture) { height_ = texture; }
     Texture *getHeightTexture() const { return height_; }
 
-    /** @brief Optional Mesh3D / hair Shader. nullptr → built-in path for the shading model. */
+    /** Optional Mesh3D / hair Shader. nullptr → built-in path for the shading model. */
     void setShader(Shader *shader) { shader_ = shader; }
     Shader *getShader() const { return shader_; }
 
@@ -87,21 +87,21 @@ public:
     void setHair(bool hair);
     bool getHair() const { return isHair_; }
 
-    /** @brief Optional named float knobs (style / custom shader params). */
+    /** Optional named float knobs (style / custom shader params). */
     bool hasParam(const std::string &name) const;
     void setFloat(const std::string &name, float value);
     float getFloat(const std::string &name) const;
 
     /**
-     * @brief Push this material onto Graphics mesh3d state for the next draw.
+     * Push this material onto Graphics mesh3d state for the next draw.
      * Does not issue the draw itself.
      */
     void bind(Graphics &gfx) const;
 
-    /** @brief Effective shader for Mesh3D draws (may be null → default PBR pipeline). */
+    /** Effective shader for Mesh3D draws (may be null → default PBR pipeline). */
     Shader *effectiveShader() const;
 
-    /** @brief True when this material should go through the hair transparent pass. */
+    /** True when this material should go through the hair transparent pass. */
     bool isTransparentHair() const;
 
 private:
@@ -128,7 +128,7 @@ private:
 };
 
 /**
- * @brief One mesh + material slot on a multi-part model (Assimp mesh / body region).
+ * One mesh + material slot on a multi-part model (Assimp mesh / body region).
  * When Material* is null, the owning Renderable3D MeshRenderer fields are used.
  */
 struct ModelPart {

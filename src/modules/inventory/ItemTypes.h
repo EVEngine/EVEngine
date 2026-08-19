@@ -9,7 +9,7 @@
 
 namespace eve::inventory {
 
-/** @brief 物品模板（进程级注册表中的定义，不含运行时数量）。 */
+/** 物品模板（进程级注册表中的定义，不含运行时数量）。 */
 struct ItemDefinition {
     std::string id;
     std::string displayName;
@@ -18,7 +18,7 @@ struct ItemDefinition {
     float volume = 0.f;
     std::vector<std::string> tags;
     std::string category;
-    /** @brief 非空表示建议装备槽名；是否可装备由 EquipmentSet 槽位配置最终决定。 */
+    /** 非空表示建议装备槽名；是否可装备由 EquipmentSet 槽位配置最终决定。 */
     std::string equipSlot;
     std::unordered_map<std::string, std::string> extra;
 
@@ -26,7 +26,7 @@ struct ItemDefinition {
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
-/** @brief 容器中的一格堆叠（空槽：itemId 为空或 quantity <= 0）。 */
+/** 容器中的一格堆叠（空槽：itemId 为空或 quantity <= 0）。 */
 struct ItemStack {
     int instanceId = 0;
     std::string itemId;
@@ -42,7 +42,7 @@ struct ItemStack {
     void setProp(const std::string &key, const std::string &value);
 };
 
-/** @brief 一次成功库存变更的事件（供脚本 poll / C++ hook）。 */
+/** 一次成功库存变更的事件（供脚本 poll / C++ hook）。 */
 struct InventoryChangeEvent {
     std::string action;  ///< add/remove/move/swap/split/merge/transfer/equip/unequip
     std::string bagId;

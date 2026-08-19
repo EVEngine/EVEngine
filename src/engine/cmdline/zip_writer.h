@@ -1,10 +1,8 @@
 ﻿#pragma once
 
-/**
- * @brief Minimal streaming ZIP writer used by `eve zip` / `eve package` to produce a
- * PhysFS-mountable game archive (.eve). Entries are DEFLATE-compressed (method 8)
- * using zlib's raw deflate. The output is a standard ZIP readable by PhysFS.
- */
+// Minimal streaming ZIP writer used by `eve zip` / `eve package` to produce a
+// PhysFS-mountable game archive (.eve). Entries are DEFLATE-compressed (method 8)
+// using zlib's raw deflate. The output is a standard ZIP readable by PhysFS.
 
 #include <cstdint>
 #include <cstdio>
@@ -18,12 +16,12 @@
 
 namespace eve::cmdline {
 
-/** @brief 0 = STORED（不压缩），8 = DEFLATE。 */
+// 0 = STORED (no compression), 8 = DEFLATE.
 #define EVE_ZIP_METHOD 8
 
 namespace detail {
 
-/** @brief Raw deflate（无 zlib/gzip 包装），ZIP method 8 条目需要。 */
+// Raw deflate (no zlib/gzip wrapper) 鈥?required for ZIP method 8 entries.
 inline bool rawDeflate(const char* in, size_t inLen, std::vector<char>& out) {
     z_stream stream = {};
     stream.next_in  = reinterpret_cast<Bytef*>(const_cast<char*>(in));
@@ -46,7 +44,6 @@ inline bool rawDeflate(const char* in, size_t inLen, std::vector<char>& out) {
     return true;
 }
 
-/** @brief 以小端序写入 uint16 / uint32。 */
 inline void put16(std::vector<char>& b, uint16_t v) {
     b.push_back(static_cast<char>(v & 0xFF));
     b.push_back(static_cast<char>((v >> 8) & 0xFF));
@@ -60,16 +57,15 @@ inline void put32(std::vector<char>& b, uint32_t v) {
 
 }  // namespace detail
 
-/** @brief 流式 ZIP 写入器：open → addFile×N → finish。 */
 class ZipWriter {
 public:
-    /** @brief 打开目标归档；必须在任何 addFile() 之前调用。 */
+    // Open the destination archive. Must be called before any addFile().
     bool open(const std::string& outPath) {
         outFile_.open(outPath, std::ios::binary | std::ios::trunc);
         return outFile_.is_open();
     }
 
-    /** @brief 添加一个普通文件；relPath 使用 '/' 分隔、相对归档根。 */
+    // Add a regular file. relPath uses '/' separators, relative to the archive root.
     bool addFile(const std::string& relPath, const char* data, size_t size) {
         const uint32_t localOffset = static_cast<uint32_t>(offset_);
         uint32_t crc = static_cast<uint32_t>(crc32(0, reinterpret_cast<const Bytef*>(data),
@@ -111,7 +107,7 @@ public:
         return true;
     }
 
-    /** @brief 写入中央目录 + EOCD 并关闭归档。 */
+    // Write the central directory + end-of-central-directory and close.
     bool finish() {
         if (!outFile_.is_open()) return false;
         const uint32_t cdStart = static_cast<uint32_t>(offset_);

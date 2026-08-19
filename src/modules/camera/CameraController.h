@@ -14,7 +14,7 @@ class Camera3D;
 namespace eve::camera {
 
 /**
- * @brief 3D 摄像机控制器（eve.Camera / eve.CameraController）。
+ * 3D 摄像机控制器（eve.Camera / eve.CameraController）。
  *
  * 驱动一个 graphics::Camera3D，内置多种方便玩家使用的视角行为：
  *   - follow      自动追踪目标（第三人称跟随，镜头挂在 target + offset）
@@ -40,9 +40,9 @@ public:
     float getTargetX() const;
     float getTargetY() const;
     float getTargetZ() const;
-    /** @brief follow：摄像机相对 target 的偏移（默认 (0, 2, 6)）。 */
+    /** follow：摄像机相对 target 的偏移（默认 (0, 2, 6)）。 */
     void setOffset(float x, float y, float z);
-    /** @brief follow：额外的视线前移点（可让镜头看向玩家前方）。 */
+    /** follow：额外的视线前移点（可让镜头看向玩家前方）。 */
     void setLookAhead(float x, float y, float z);
 
     // --- 视角模式 ---
@@ -121,7 +121,7 @@ private:
 };
 
 /**
- * @brief 摄像机模块命名空间（eve.Camera）。主要职责是把 CameraController 绑定进脚本。
+ * 摄像机模块命名空间（eve.Camera）。主要职责是把 CameraController 绑定进脚本。
  */
 class Camera : public Module {
 public:

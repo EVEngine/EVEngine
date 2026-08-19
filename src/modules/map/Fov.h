@@ -15,7 +15,7 @@ class Texture;
 namespace eve::map {
 
 /**
- * @brief Dynamic field-of-view / fog-of-war facade.
+ * Dynamic field-of-view / fog-of-war facade.
  * Phase A: 2D shadowcast + multi-revealer + explored memory.
  * Phase B: raycast/permissive, heightmap, volume, dirty-skip, CPU masks.
  * Phase C: hex topology FOV, rectangle-based FOV, perception/stealth
@@ -41,19 +41,19 @@ public:
     int getHeight() const;
     int getDepth() const;
 
-    /** @brief "grid2d" (default) | "heightmap" | "volume" */
+    /** "grid2d" (default) | "heightmap" | "volume" */
     void setMode(const std::string &name);
     std::string getMode() const;
 
-    /** @brief "shadowcast" | "raycast" | "permissive" | "rectangle" */
+    /** "shadowcast" | "raycast" | "permissive" | "rectangle" */
     void setAlgorithm(const std::string &name);
     std::string getAlgorithm() const;
 
-    /** @brief "euclidean" | "chebyshev" | "manhattan" — ignored when topology is hex (cube distance). */
+    /** "euclidean" | "chebyshev" | "manhattan" — ignored when topology is hex (cube distance). */
     void setRadiusMetric(const std::string &name);
     std::string getRadiusMetric() const;
 
-    /** @brief "ortho" (default) | "hex" | "auto" (hex if bound layer is hex/staggered). */
+    /** "ortho" (default) | "hex" | "auto" (hex if bound layer is hex/staggered). */
     void setTopology(const std::string &name);
     std::string getTopology() const;
 
@@ -94,7 +94,7 @@ public:
     int getRevealerCount() const;
 
     /**
-     * @brief Soft RPG hooks (no hard dependency on rpg module).
+     * Soft RPG hooks (no hard dependency on rpg module).
      * effectiveRadius = radius + floor(perception * perceptionRadiusScale)
      * canDetect: cell visible AND perception + detectionMargin >= targetStealth
      */
@@ -128,7 +128,7 @@ public:
     bool fillMaskR8Slice(std::vector<uint8_t> &out, int sliceZ) const;
 
     /**
-     * @brief Upload current 2D / slice mask as RGBA8 Texture (R=G=B=A=mask byte).
+     * Upload current 2D / slice mask as RGBA8 Texture (R=G=B=A=mask byte).
      * Caller owns the returned Texture*. Null gfx / empty grid → nullptr.
      */
     graphics::Texture *buildMaskTexture(graphics::Graphics *gfx) const;

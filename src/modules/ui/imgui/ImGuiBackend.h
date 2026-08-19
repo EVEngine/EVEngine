@@ -6,7 +6,7 @@
 
 namespace eve::ui {
 
-/** @brief Dear ImGui + SDL input + Vulkan present overlay. */
+/** Dear ImGui + SDL input + Vulkan present overlay. */
 class ImGuiBackend final : public UIBackend {
 public:
     ImGuiBackend() = default;
@@ -33,13 +33,13 @@ private:
     static void presentOverlayThunk(void *userdata, void *commandBuffer);
     static void windowDestroyedThunk(void *userdata);
     void applyScale(float scale);
-    /** @brief Logical (point-space) UI scale; 1.0 on desktop where ImGui handles DPI. */
+    /** Logical (point-space) UI scale; 1.0 on desktop where ImGui handles DPI. */
     float computeInitialScale() const;
-    /** @brief Display/framebuffer DPI ratio used to bake the font atlas at native res. */
+    /** Display/framebuffer DPI ratio used to bake the font atlas at native res. */
     float computeDpiScale() const;
-    /** @brief Clear the font atlas and re-add fonts at the current physical-pixel size. */
+    /** Clear the font atlas and re-add fonts at the current physical-pixel size. */
     void loadFonts();
-    /** @brief Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
+    /** Re-rasterize the font atlas and re-upload its GPU texture (used on scale change). */
     void rebuildFonts();
 
     bool initialized_ = false;

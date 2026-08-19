@@ -32,7 +32,7 @@ class SpineSkeleton;
 class SpineAnim;
 
 /**
- * @brief Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal
+ * Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal
  * playback (player / state machine / motion matching) + control-theory
  * procedural drivers + motion trails + per-frame pump.
  * Script: `anim <- eve.Animation();`
@@ -55,27 +55,27 @@ public:
     Animation() = default;
     ~Animation() override;
 
-    /** @brief Create a tween (duration in seconds). Returned pointer is owned by script GC. */
+    /** Create a tween (duration in seconds). Returned pointer is owned by script GC. */
     Tween *newTween(float duration = 1.f);
 
-    /** @brief 2D sprite-sheet animation factories (script GC owns returned objects). */
+    /** 2D sprite-sheet animation factories (script GC owns returned objects). */
     SpriteSheet *newSpriteSheet();
     SpriteClip  *newSpriteClip(const std::string &name = "");
     SpriteAnim  *newSpriteAnim();
 
-    /** @brief Spine (region attachment subset) factories. */
+    /** Spine (region attachment subset) factories. */
     SpineAtlas        *newSpineAtlas();
     SpineSkeletonData *newSpineSkeletonData();
     SpineSkeleton     *newSpineSkeleton(SpineSkeletonData *data);
     SpineAnim         *newSpineAnim(SpineSkeleton *skeleton);
 
-    /** @brief Load helpers (allocate + parse; false → empty object still returned? prefer nullable). */
+    /** Load helpers (allocate + parse; false → empty object still returned? prefer nullable). */
     SpineAtlas        *newSpineAtlasFromFile(const std::string &path);
     SpineAtlas        *newSpineAtlasFromText(const std::string &text);
     SpineSkeletonData *newSpineSkeletonDataFromFile(const std::string &path);
     SpineSkeletonData *newSpineSkeletonDataFromJson(const std::string &json);
 
-    /** @brief 3D skeletal animation factories (script GC owns returned objects). */
+    /** 3D skeletal animation factories (script GC owns returned objects). */
     AnimSkeleton     *newSkeleton();
     AnimClip         *newClip(const std::string &name = "");
     AnimPose         *newPose(int boneCount = 0);
@@ -85,7 +85,7 @@ public:
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
 
     /**
-     * @brief Control-theory procedural animation (second-order / spring / PD).
+     * Control-theory procedural animation (second-order / spring / PD).
      * frequencyHz: natural frequency f (Hz); dampingZeta: ζ; response: r.
      */
     ControlAnim *newControlAnim(float frequencyHz = 3.f, float dampingZeta = 1.f,
@@ -93,7 +93,7 @@ public:
     ControlPose *newControlPose(AnimSkeleton *skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact `.eva`
+     * Import skeleton/clip from Assimp-backed ModelData, or from compact `.eva`
      * fixtures (see AnimImporter).
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
@@ -103,19 +103,19 @@ public:
     AnimClip     *newClipFromEvaFile(const std::string &path);
 
     /**
-     * @brief CPU linear-blend skin binding for a skinned mesh on ModelData.
+     * CPU linear-blend skin binding for a skinned mesh on ModelData.
      * meshIndex selects the Assimp mesh; bone names must match the skeleton.
      */
     AnimSkin *newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
                                AnimSkeleton *skeleton);
 
     /**
-     * @brief Motion trail / afterimage (script GC owns returned object).
+     * Motion trail / afterimage (script GC owns returned object).
      * capacity: max retained samples (>= 2).
      */
     AnimTrail *newTrail(int capacity = 64);
 
-    /** @brief Advance all registered tweens, sprite anims, and spine anims. */
+    /** Advance all registered tweens, sprite anims, and spine anims. */
     void update(float dt);
 
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
@@ -123,9 +123,9 @@ public:
     int getSpineAnimCount() const { return static_cast<int>(spineAnims_.size()); }
     int getActiveCount() const;
 
-    /** @brief Drop finished/stopped entries from the registry (does not delete Tween objects). */
+    /** Drop finished/stopped entries from the registry (does not delete Tween objects). */
     void clearFinished();
-    /** @brief Detach all tweens from the registry (does not delete Tween objects). */
+    /** Detach all tweens from the registry (does not delete Tween objects). */
     void clearAll();
 
 private:

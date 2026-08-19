@@ -15,7 +15,7 @@
 namespace eve::rpg {
 
 /**
- * @brief 单条修改器。附加在某个属性上，参与最终值计算。
+ * 单条修改器。附加在某个属性上，参与最终值计算。
  *
  * op 内置语义：
  *   "add"       — 所有 add 修改器直接求和后加到 base 上
@@ -35,7 +35,7 @@ struct AttributeModifier {
     int priority = 0;  ///< 计算顺序，数值小的先应用；同优先级按插入顺序
 };
 
-/** @brief 单个属性的完整状态：基础值 + 修改器列表 + 计算结果缓存。 */
+/** 单个属性的完整状态：基础值 + 修改器列表 + 计算结果缓存。 */
 struct AttributeValue {
     double base = 0.0;
     std::vector<AttributeModifier> modifiers;
@@ -44,7 +44,7 @@ struct AttributeValue {
 };
 
 /**
- * @brief 纯函数：根据 base + modifiers 计算最终值。不依赖任何 ECS / 全局状态，
+ * 纯函数：根据 base + modifiers 计算最终值。不依赖任何 ECS / 全局状态，
  * 自定义 op 通过 customOps 传入（AttributeSystem 内部会传入全局注册表）。
  */
 double computeAttributeValue(const AttributeValue &attr,

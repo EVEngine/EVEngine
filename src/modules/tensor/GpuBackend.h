@@ -9,7 +9,7 @@ class Graph;
 struct OptimizedGraph;
 
 /**
- * @brief GPU execution of a compiled tensor Graph via generated compute shaders.
+ * GPU execution of a compiled tensor Graph via generated compute shaders.
  *
  * Built once per CompiledFunction (shapes are static at compile time):
  *  - every fused group is lowered by KernelGen into a fully specialized GLSL
@@ -29,7 +29,7 @@ public:
 
     static GpuProgram *tryBuild(const Graph &graph, const OptimizedGraph &opt, int outputNode);
 
-    /** @brief feeds[slot] must point to `placeholderSize(slot)` floats. Returns the output buffer. */
+    /** feeds[slot] must point to `placeholderSize(slot)` floats. Returns the output buffer. */
     std::vector<float> run(const std::vector<const float *> &feeds) const;
 
 private:
@@ -42,7 +42,7 @@ private:
 };
 
 /**
- * @brief GPU-accelerated reduction for large eager tensors.
+ * GPU-accelerated reduction for large eager tensors.
  * op: 0 = sum, 1 = min, 2 = max. Returns false (caller should fall back to CPU)
  * when Vulkan/gpgpu isn't available.
  */

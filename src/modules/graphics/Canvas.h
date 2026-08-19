@@ -23,7 +23,7 @@ public:
     virtual int getWidth() const = 0;
     virtual int getHeight() const = 0;
 
-    /** @brief Sampleable color buffer; screen Canvas returns nullptr. */
+    /** Sampleable color buffer; screen Canvas returns nullptr. */
     virtual Texture *getTexture() = 0;
 
     virtual void clear(std::optional<Color> color, std::optional<int> stencil,

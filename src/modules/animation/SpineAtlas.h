@@ -7,7 +7,7 @@
 namespace eve::animation {
 
 /**
- * @brief Esoteric Spine `.atlas` text parser (region rectangles + page metadata).
+ * Esoteric Spine `.atlas` text parser (region rectangles + page metadata).
  * Does not load image pixels — bind GPU textures by page name/index in SpineAnim.
  * Script type: `SpineAtlas`.
  */
@@ -43,7 +43,7 @@ public:
     int         getRegionOffsetY(int index) const;
     bool        getRegionRotate(int index) const;
 
-    /** @brief Normalized UVs for a texture of texW×texH (usually page size). */
+    /** Normalized UVs for a texture of texW×texH (usually page size). */
     void getRegionUV(int index, int texW, int texH, float &u0, float &v0, float &u1,
                      float &v1) const;
 

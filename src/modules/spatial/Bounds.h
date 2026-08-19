@@ -95,7 +95,7 @@ inline AABB3 makeAABB3(float minX, float minY, float minZ, float maxX, float max
     return AABB3{minX, minY, minZ, maxX, maxY, maxZ};
 }
 
-/** @brief Integer cell key for spatial hashing (stable across platforms for reasonable ranges). */
+/** Integer cell key for spatial hashing (stable across platforms for reasonable ranges). */
 inline uint64_t cellKey2(int cx, int cy) {
     return (uint64_t(uint32_t(cx)) << 32) | uint64_t(uint32_t(cy));
 }

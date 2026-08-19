@@ -10,7 +10,6 @@
 
 namespace eve::joystick::sdl {
 
-/** @brief SDL 摇杆/手柄模块后端实现（设备枚举与映射）。 */
 class Joystick : public eve::joystick::Joystick {
 public:
     Joystick();

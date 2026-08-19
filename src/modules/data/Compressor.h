@@ -8,14 +8,14 @@ namespace data
 {
 
 /**
- * @brief Base class for backends for different compression formats.
+ * Base class for backends for different compression formats.
  **/
 class Compressor
 {
 public:
 
 	/**
-	 * @brief Gets a Compressor that can compress and decompress a specific format.
+	 * Gets a Compressor that can compress and decompress a specific format.
 	 * Returns null if there are no supported compressors for the given format.
 	 * Available formats are:
 	 * - "lz4"
@@ -28,7 +28,7 @@ public:
 	virtual ~Compressor() {}
 
 	/**
-	 * @brief Compresses input data, and returns the compressed result.
+	 * Compresses input data, and returns the compressed result.
 	 *
 	 * @param[in] format The format to compress to.
 	 * @param[in] data The input (uncompressed) data.
@@ -43,7 +43,7 @@ public:
 	virtual char *compress(std::string format, const char *data, size_t dataSize, int level, size_t &compressedSize) = 0;
 
 	/**
-	 * @brief Decompresses compressed data, and returns the decompressed result.
+	 * Decompresses compressed data, and returns the decompressed result.
 	 *
 	 * @param[in] format The format the compressed data is in.
 	 * @param[in] data The input (compressed) data.
@@ -57,7 +57,7 @@ public:
 	virtual char *decompress(std::string format, const char *data, size_t dataSize, size_t &decompressedSize) = 0;
 
 	/**
-	 * @brief Gets whether a specific format is supported by this backend.
+	 * Gets whether a specific format is supported by this backend.
 	 **/
 	virtual bool isSupported(std::string format) const = 0;
 

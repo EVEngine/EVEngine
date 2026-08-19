@@ -8,10 +8,10 @@
 
 namespace eve::gpgpu {
 
-/** @brief Resolve live Vulkan Graphics (throws if missing / not initialized). */
+/** Resolve live Vulkan Graphics (throws if missing / not initialized). */
 graphics::vulkan::Graphics *requireVulkanGraphics();
 
-/** @brief True if Vulkan Graphics device is ready. */
+/** True if Vulkan Graphics device is ready. */
 bool vulkanGraphicsReady();
 
 vk::Queue computeQueue(graphics::vulkan::Graphics *vkg);

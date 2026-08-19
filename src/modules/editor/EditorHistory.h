@@ -8,7 +8,7 @@
 namespace eve::editor {
 
 /**
- * @brief Undo/redo stack: opaque string actions + optional tile change groups
+ * Undo/redo stack: opaque string actions + optional tile change groups
  * that can apply directly to a TileBuffer.
  */
 class EditorHistory {
@@ -30,7 +30,7 @@ public:
     bool undo();
     bool redo();
 
-    /** @brief Apply last undone/redone tile group to buffer (no-op for opaque actions). */
+    /** Apply last undone/redone tile group to buffer (no-op for opaque actions). */
     bool applyLastToBuffer(TileBuffer *buffer);
 
     std::string getLastActionName() const;

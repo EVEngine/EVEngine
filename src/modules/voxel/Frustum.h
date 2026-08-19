@@ -4,12 +4,12 @@
 
 namespace eve::voxel {
 
-/** @brief Six frustum planes in ax+by+cz+d >= 0 form (normals point inward). */
+/** Six frustum planes in ax+by+cz+d >= 0 form (normals point inward). */
 struct Frustum {
     float planes[6][4]{};
 
     /**
-     * @brief Extract from a column-major 4x4 view-projection matrix (RH + Vulkan ZO).
+     * Extract from a column-major 4x4 view-projection matrix (RH + Vulkan ZO).
      * Layout matches glm::mat4 memory order.
      */
     static Frustum fromViewProjColumnMajor(const float *m16) {

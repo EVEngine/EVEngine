@@ -23,7 +23,6 @@
 #include "filesystem/Filesystem.h"
 #include "medialoader/image/pixelformat.h"
 
-#include "common/Assert.h"
 #include "common/Exception.h"
 
 #include <algorithm>  // min/max
@@ -174,8 +173,6 @@ void ImageData::decode(Data *data) {
 
 eve::filesystem::FileData *ImageData::encode(FormatHandler::EncodedFormat encodedFormat, const char *filename,
                                              bool writefile) const {
-    EV_PARAM_CHECK(filename != nullptr, "output filename must not be null");
-
     FormatHandler              *encoder = nullptr;
     FormatHandler::EncodedImage encodedimage;
     FormatHandler::DecodedImage rawimage;
@@ -1026,8 +1023,6 @@ static void pasteRGBA32FtoRGBA16F(Row src, Row dst, int w) {
 }
 
 void ImageData::paste(ImageData *src, int dx, int dy, int sx, int sy, int sw, int sh) {
-    EV_PARAM_CHECK(src != nullptr, "source ImageData must not be null");
-
     std::string dstformat = getFormat();
     std::string srcformat = src->getFormat();
 

@@ -45,7 +45,7 @@ struct EVENGINE_API RenderSliceResult {
 };
 
 /**
- * @brief Render-pipeline flow tracer with a Weiser-style backward slice.
+ * Render-pipeline flow tracer with a Weiser-style backward slice.
  *
  * Models pass nesting + bind→draw resource data-flow so a Graphics exception
  * can be attributed to the active pass and the resources that fed the draw.
@@ -63,7 +63,7 @@ public:
     size_t maxEvents() const { return maxEvents_; }
     size_t eventCount() const { return count_; }
 
-    /** @brief Chronological view over the live ring window (oldest → newest). */
+    /** Chronological view over the live ring window (oldest → newest). */
     class EVENGINE_API EventsView {
     public:
         class EVENGINE_API const_iterator {

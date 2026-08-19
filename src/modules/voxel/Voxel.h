@@ -14,7 +14,7 @@ class Texture;
 namespace eve::voxel {
 
 /**
- * @brief High-performance voxel rendering module.
+ * High-performance voxel rendering module.
  *
  * - 32³ chunks, greedy-meshed into face rectangles
  * - Each rect packed into one uint32 (xyz + wh + tex)
@@ -34,10 +34,10 @@ public:
 
     int getChunkSize() const { return kChunkSize; }
 
-    /** @brief 返回一个新的方块类型注册表（由调用者持有 / 脚本持有）。 */
+    /** 返回一个新的方块类型注册表（由调用者持有 / 脚本持有）。 */
     CubeTypeRegistry *newCubeTypes();
 
-    /** @brief 创建世界；内部拷贝注册表（传 nullptr 表示空注册表，类型 id 即纹理 id）。 */
+    /** 创建世界；内部拷贝注册表（传 nullptr 表示空注册表，类型 id 即纹理 id）。 */
     VoxelWorld *newWorld(const CubeTypeRegistry *types = nullptr);
 };
 

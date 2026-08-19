@@ -13,7 +13,7 @@ class Shader;
 class Texture;
 
 /**
- * @brief Screen-space reflections (SSR) as a fullscreen post pass.
+ * Screen-space reflections (SSR) as a fullscreen post pass.
  *
  * Reads the lit scene color, hardware depth (D32) and world normal, and for
  * each pixel ray-marches the reflected ray in screen space. Where the ray hits
@@ -31,13 +31,13 @@ public:
     ScreenSpaceReflection(const ScreenSpaceReflection &) = delete;
     ScreenSpaceReflection &operator=(const ScreenSpaceReflection &) = delete;
 
-    /** @brief Camera for depth reconstruction (RH + ZO). Builds inv(viewProj) + near/far. */
+    /** Camera for depth reconstruction (RH + ZO). Builds inv(viewProj) + near/far. */
     void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
                    float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ,
                    float farZ);
     void setInvViewProj(const glm::mat4 &invViewProj);
 
-    /** @brief Enable/disable the pass. When disabled it emits transparent (0 hit). */
+    /** Enable/disable the pass. When disabled it emits transparent (0 hit). */
     void setEnabled(bool enabled);
     bool getEnabled() const { return enabled_; }
 
@@ -52,16 +52,16 @@ public:
     void setFloat(const std::string &name, float value);
     float getFloat(const std::string &name) const;
 
-    /** @brief Write the SSR result into the currently bound canvas / dest. */
+    /** Write the SSR result into the currently bound canvas / dest. */
     void applyFromSceneTo(Graphics *gfx, Texture *sceneColor, Texture *hwDepth,
                           Texture *worldNormal, Canvas *dest);
-    /** @brief Write SSR into the currently bound canvas / screen. */
+    /** Write SSR into the currently bound canvas / screen. */
     void applyFromScene(Graphics *gfx, Texture *sceneColor, Texture *hwDepth,
                         Texture *worldNormal);
 
-    /** @brief Owned reflection canvas (created on first use at the current target size). */
+    /** Owned reflection canvas (created on first use at the current target size). */
     Canvas *getReflectionCanvas();
-    /** @brief The reflection texture from the owned canvas, or nullptr before first apply. */
+    /** The reflection texture from the owned canvas, or nullptr before first apply. */
     Texture *getReflectionTexture();
 
     Shader *getShader() const { return ssr_; }

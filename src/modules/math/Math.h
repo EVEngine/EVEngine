@@ -13,7 +13,7 @@ class Vec3;
 class Mat4;
 
 /**
- * @brief Math module — glm-backed vectors/matrices, noise, bezier, random.
+ * Math module — glm-backed vectors/matrices, noise, bezier, random.
  * Script: `math <- eve.Math();`
  *
  * No overloads: distinct names (length2/length3, noise1/noise2/…).
@@ -44,14 +44,14 @@ public:
     float wrap(float x, float lo, float hi) const;
     float pingPong(float t, float length) const;
 
-    /** @brief Inverse of lerp: t such that lerp(a,b,t) ≈ x. */
+    /** Inverse of lerp: t such that lerp(a,b,t) ≈ x. */
     float inverseLerp(float a, float b, float x) const;
     float smootherstep(float edge0, float edge1, float x) const;
-    /** @brief Schlick bias/gain — shape [0,1] distributions (procgen falloff). */
+    /** Schlick bias/gain — shape [0,1] distributions (procgen falloff). */
     float bias(float t, float b) const;
     float gain(float t, float g) const;
     /**
-     * @brief Easing on [0,1]. kind:
+     * Easing on [0,1]. kind:
      * "linear"|"inQuad"|"outQuad"|"inOutQuad"|"inCubic"|"outCubic"|"inOutCubic"|
      * "inSine"|"outSine"|"inOutSine"|"inExpo"|"outExpo"|"inOutExpo"
      */
@@ -77,7 +77,7 @@ public:
     float normalize3Y(float x, float y, float z) const;
     float normalize3Z(float x, float y, float z) const;
 
-    /** @brief Rotate (x,y) by radians around origin. */
+    /** Rotate (x,y) by radians around origin. */
     float rotate2X(float x, float y, float radians) const;
     float rotate2Y(float x, float y, float radians) const;
     float polarX(float radius, float radians) const;
@@ -93,16 +93,16 @@ public:
                       float h2) const;
     bool circleRectOverlap(float cx, float cy, float radius, float rx, float ry, float rw,
                            float rh) const;
-    /** @brief True if segments AB and CD intersect (including endpoints). */
+    /** True if segments AB and CD intersect (including endpoints). */
     bool segmentsIntersect(float ax, float ay, float bx, float by, float cx, float cy, float dx,
                            float dy) const;
     /**
-     * @brief Ray vs circle. Hit point = (ox,oy) + t*(dx,dy). Returns t >= 0 on hit, else -1.
+     * Ray vs circle. Hit point = (ox,oy) + t*(dx,dy). Returns t >= 0 on hit, else -1.
      * Direction need not be unit; for a segment use dir = B-A and accept t in [0,1].
      */
     float raycastCircle2(float ox, float oy, float dx, float dy, float cx, float cy,
                          float radius) const;
-    /** @brief Ray vs axis-aligned rect (x,y,w,h). Returns parametric t >= 0, else -1. */
+    /** Ray vs axis-aligned rect (x,y,w,h). Returns parametric t >= 0, else -1. */
     float raycastRect2(float ox, float oy, float dx, float dy, float rx, float ry, float rw,
                        float rh) const;
     float closestPointOnSegment2X(float px, float py, float ax, float ay, float bx, float by) const;
@@ -111,7 +111,7 @@ public:
     // --- 3D hit / overlap / ray ---
     bool pointInSphere(float px, float py, float pz, float cx, float cy, float cz,
                        float radius) const;
-    /** @brief Inclusive AABB test against [min,max] on each axis. */
+    /** Inclusive AABB test against [min,max] on each axis. */
     bool pointInBox(float px, float py, float pz, float minX, float minY, float minZ, float maxX,
                     float maxY, float maxZ) const;
     bool spheresOverlap(float x1, float y1, float z1, float r1, float x2, float y2, float z2,
@@ -124,7 +124,7 @@ public:
     float raycastBox(float ox, float oy, float oz, float dx, float dy, float dz, float minX,
                      float minY, float minZ, float maxX, float maxY, float maxZ) const;
     /**
-     * @brief Ray vs infinite plane through (px,py,pz) with normal (nx,ny,nz).
+     * Ray vs infinite plane through (px,py,pz) with normal (nx,ny,nz).
      * Returns parametric t, or -1 if parallel / behind ray origin.
      */
     float raycastPlane(float ox, float oy, float oz, float dx, float dy, float dz, float px,
@@ -136,7 +136,7 @@ public:
     float closestPointOnSegment3Z(float px, float py, float pz, float ax, float ay, float az,
                                   float bx, float by, float bz) const;
 
-    /** @brief Bilinear sample of 4 corners (v00,v10,v01,v11) with u,v in [0,1]. */
+    /** Bilinear sample of 4 corners (v00,v10,v01,v11) with u,v in [0,1]. */
     float bilinear(float v00, float v10, float v01, float v11, float u, float v) const;
 
     // --- random ---
@@ -146,7 +146,7 @@ public:
     float    random();
     float    randomRange(float min, float max);
     int      randomInt(int min, int maxInclusive);
-    /** @brief Box-Muller Gaussian (mean, stddev). */
+    /** Box-Muller Gaussian (mean, stddev). */
     float    randomGaussian(float mean, float stddev);
 
     // --- deterministic hash [0,1] (grid / WFC / tile seeds) ---
@@ -162,7 +162,7 @@ public:
     float perlin3(float x, float y, float z) const;
 
     /**
-     * @brief Fractal Brownian Motion / ridged / turbulence.
+     * Fractal Brownian Motion / ridged / turbulence.
      * octaves >= 1; lacunarity ~2; gain/persistence ~0.5.
      */
     float fbm2(float x, float y, int octaves = 4, float lacunarity = 2.f,
@@ -177,14 +177,14 @@ public:
                       float gain = 0.5f) const;
 
     /**
-     * @brief Worley / Voronoi F1 distance in [0, ~1.5] (cell size 1).
+     * Worley / Voronoi F1 distance in [0, ~1.5] (cell size 1).
      * voronoiEdge2 = F2 - F1 (cell borders).
      */
     float voronoi2(float x, float y) const;
     float voronoiEdge2(float x, float y) const;
 
     /**
-     * @brief Domain warp: sample noise at (x,y) + warpAmp * (noise-0.5).
+     * Domain warp: sample noise at (x,y) + warpAmp * (noise-0.5).
      * Useful for organic terrain / caves.
      */
     float warpNoise2(float x, float y, float warpAmp = 1.f) const;

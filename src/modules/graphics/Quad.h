@@ -3,7 +3,7 @@
 namespace eve::graphics {
 
 /**
- * @brief Pixel-space sub-rectangle of a Texture (atlas cell / sprite frame).
+ * Pixel-space sub-rectangle of a Texture (atlas cell / sprite frame).
  * UV conversion uses the texture's logical width/height.
  */
 class Quad {
@@ -18,7 +18,7 @@ public:
     int getWidth() const { return w; }
     int getHeight() const { return h; }
 
-    /** @brief Convert pixel rect to normalized UVs for a texture of size texW×texH. */
+    /** Convert pixel rect to normalized UVs for a texture of size texW×texH. */
     void getUV(int texW, int texH, float &u0, float &v0, float &u1, float &v1) const;
 
     int x = 0;

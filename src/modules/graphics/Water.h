@@ -15,7 +15,7 @@ class Mesh;
 class Texture;
 
 /**
- * @brief Dynamic water surface with sky reflection and animated ripples.
+ * Dynamic water surface with sky reflection and animated ripples.
  *
  * A custom Mesh3D fragment shader renders a flat plane as water:
  *   - Reflects the sky via the environment cubemap (binding 3), Fresnel-weighted
@@ -38,10 +38,10 @@ public:
     Water(const Water &) = delete;
     Water &operator=(const Water &) = delete;
 
-    /** @brief Build a flat XZ plane (Y-up) sized sizeX × sizeZ with UVs in [0,1]². */
+    /** Build a flat XZ plane (Y-up) sized sizeX × sizeZ with UVs in [0,1]². */
     void createPlane(float sizeX, float sizeZ, int segX, int segZ);
 
-    /** @brief Advance the animation clock by dt seconds. */
+    /** Advance the animation clock by dt seconds. */
     void update(float dt);
     void setTime(float seconds);
     float getTime() const { return time_; }
@@ -50,23 +50,23 @@ public:
     void setWaveSpeed(float speed);
     float getWaveSpeed() const { return waveSpeed_; }
 
-    /** @brief Amplitude of the shore-edge waves. */
+    /** Amplitude of the shore-edge waves. */
     void setWaveAmplitude(float amp);
     float getWaveAmplitude() const { return waveAmplitude_; }
 
-    /** @brief Amplitude of the occasional middle drop ripples. */
+    /** Amplitude of the occasional middle drop ripples. */
     void setRippleAmplitude(float amp);
     float getRippleAmplitude() const { return rippleAmplitude_; }
 
-    /** @brief Width (in UV, 0..1) of the edge wave band. */
+    /** Width (in UV, 0..1) of the edge wave band. */
     void setEdgeFalloff(float edge);
     float getEdgeFalloff() const { return edgeFalloff_; }
 
-    /** @brief How many expanding drop ripples exist. */
+    /** How many expanding drop ripples exist. */
     void setRippleCount(int count);
     int getRippleCount() const { return rippleCount_; }
 
-    /** @brief Seconds between drop ripples. */
+    /** Seconds between drop ripples. */
     void setRippleInterval(float seconds);
     float getRippleInterval() const { return rippleInterval_; }
 
@@ -82,7 +82,7 @@ public:
     float getSunIntensity() const { return sunIntensity_; }
 
     /**
-     * @brief Optional screen-space reflection overlay. When enabled, the shader
+     * Optional screen-space reflection overlay. When enabled, the shader
      * samples the SSR pass result (bound via the renderable's height-texture
      * slot, binding 6) at the fragment's screen UV and blends it over the env
      * cubemap reflection. Call setViewport before drawing so screen UVs map.
@@ -91,21 +91,21 @@ public:
     bool getScreenSpaceReflection() const { return ssrEnabled_; }
     float getScreenSpaceReflectionStrength() const { return ssrStrength_; }
 
-    /** @brief Window / target size in pixels, used to compute screen-space UVs. */
+    /** Window / target size in pixels, used to compute screen-space UVs. */
     void setViewport(float width, float height);
     float getViewportWidth() const { return viewportW_; }
     float getViewportHeight() const { return viewportH_; }
 
-    /** @brief Upload current params to the shader push constants. */
+    /** Upload current params to the shader push constants. */
     void bindParams();
 
-    /** @brief Draw the water plane (uses default mesh3d camera / lighting state). */
+    /** Draw the water plane (uses default mesh3d camera / lighting state). */
     void draw();
 
     Shader *getShader() const { return shader_; }
     Mesh *getMesh() const { return mesh_; }
 
-    /** @brief Names of the push-constant parameters (for UI / inspection). */
+    /** Names of the push-constant parameters (for UI / inspection). */
     static int paramCount();
     static std::string paramName(int index);
 
@@ -132,7 +132,7 @@ private:
     float viewportH_ = 0.f;
 };
 
-/** @brief Create the embedded water fragment shader (owned by Graphics). */
+/** Create the embedded water fragment shader (owned by Graphics). */
 Shader *newWaterShader(Graphics *gfx);
 
 }  // namespace eve::graphics

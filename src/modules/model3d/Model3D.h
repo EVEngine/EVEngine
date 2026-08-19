@@ -17,7 +17,7 @@ namespace model3d {
 class ModelData;
 
 /**
- * @brief Toggles for the Assimp post-processing steps applied by medialoader on
+ * Toggles for the Assimp post-processing steps applied by medialoader on
  * decode. All default to on (matches the historical behavior); disabling a
  * step changes vertex/triangle layout (e.g. joinIdenticalVertices=false keeps
  * per-face vertices for hard-edged flat shading). Normals are generated with
@@ -35,7 +35,7 @@ struct ModelLoadOptions {
 };
 
 /**
- * @brief Resource module for decoding 3D models via medialoader (Assimp).
+ * Resource module for decoding 3D models via medialoader (Assimp).
  * Produces ModelData; GPU upload is graphics' responsibility.
  */
 class Model3D : public Module {
@@ -46,23 +46,23 @@ public:
     ~Model3D() override;
 
     /**
-     * @brief Decode model from in-memory bytes.
+     * Decode model from in-memory bytes.
      * @param data Encoded model bytes (e.g. FileData / ByteData).
      * @param hintExt Extension hint for Assimp (e.g. ".obj"). If empty and
      *        data is FileData, uses FileData::getExtension().
      */
     ModelData *newModelData(Data *data, std::string hintExt = "");
 
-    /** @brief newModelData with explicit decode options. */
+    /** newModelData with explicit decode options. */
     ModelData *newModelData(Data *data, std::string hintExt, const ModelLoadOptions &options);
 
     /**
-     * @brief Decode model from a VFS path (physfs). Uses EveFileSystem so sidecar
+     * Decode model from a VFS path (physfs). Uses EveFileSystem so sidecar
      * files (.mtl, textures) resolve through the same filesystem.
      */
     ModelData *newModelDataFromFile(std::string path);
 
-    /** @brief newModelDataFromFile with explicit decode options. */
+    /** newModelDataFromFile with explicit decode options. */
     ModelData *newModelDataFromFile(std::string path, const ModelLoadOptions &options);
 
     /**

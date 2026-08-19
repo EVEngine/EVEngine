@@ -1,10 +1,8 @@
 #pragma once
 
-/**
- * @brief 放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。
- * 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。
- * 坐标换算统一走 eve::grid（支持 rectangle / iso / staggered / hex 与 XY/XZ 平面轴）。
- */
+// 放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。
+// 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。
+// 坐标换算统一走 eve::grid（支持 rectangle / iso / staggered / hex 与 XY/XZ 平面轴）。
 
 #include "building/BuildingTypes.h"
 #include "grid/GridConfig.h"
@@ -21,24 +19,19 @@ namespace eve::building {
 
 class Ghost;
 
-/** @brief 格子型建筑放置世界（脚本可直接操作）。 */
 class PlacementWorld {
 public:
-    /** @brief 创建 width×height 的格子世界，cellSize 为像素/格。 */
     PlacementWorld(int width, int height, float cellSize = 32.f);
     ~PlacementWorld() = default;
 
     PlacementWorld(const PlacementWorld &) = delete;
     PlacementWorld &operator=(const PlacementWorld &) = delete;
 
-    /** @brief 释放资源并使其失效。 */
     void destroy();
 
-    /** @brief 世界 id（用于变更事件定位）。 */
     std::string getId() const { return id_; }
     void setId(const std::string &id) { id_ = id; }
 
-    /** @brief 尺寸 / 格子大小 / 原点。 */
     int getWidth() const { return width_; }
     int getHeight() const { return height_; }
     float getCellSize() const { return grid_.cellW; }
@@ -48,13 +41,11 @@ public:
     float getOriginY() const { return grid_.originY; }
     void setOrigin(float x, float y);
 
-    /** @brief 放置策略：吸附模式 / 校验规则。 */
     std::string getSnapMode() const { return snapMode_; }
     void setSnapMode(const std::string &mode) { snapMode_ = mode; }
     std::string getValidateRule() const { return validateRule_; }
     void setValidateRule(const std::string &rule) { validateRule_ = rule; }
 
-    /** @brief 世界级额外属性（键值）。 */
     void setExtra(const std::string &key, const std::string &value);
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 
@@ -73,7 +64,6 @@ public:
     bool hasGridFromLayer() const { return tileLayer_ != nullptr; }
 
     // ---- 坐标换算 ----
-    /** @brief 世界像素 ↔ 格子坐标。 */
     /** worldX 恒为平面 X 轴。 */
     int worldToCellX(float worldX) const;
     /** worldY 为平面第二轴（XY 平面 = 世界 Y；XZ 平面 = 世界 Z）。 */
@@ -93,7 +83,7 @@ public:
     int worldToCell3DX(float worldX, float worldY, float worldZ) const;
     int worldToCell3DY(float worldX, float worldY, float worldZ) const;
 
-    /** @brief 地形语义（占用检查用）。 */
+    // ---- 地形 ----
     void fillTerrain(int semantic);
     void setTerrain(int cellX, int cellY, int semantic);
     /** 手动 setTerrain 优先；绑定 tilemap 后未覆盖的格由 GID 映射懒解析。 */
@@ -109,14 +99,12 @@ public:
     void clearTerrainGidMap();
 
     // ---- 占用查询 ----
-    /** @brief 占用查询：格子上建筑实例 / 是否为空。 */
     /** 默认通道（""）占用。 */
     int getOccupant(int cellX, int cellY) const;
     int getOccupantInChannel(const std::string &channel, int cellX, int cellY) const;
     /** 跨通道第一个占用实例（邻接等跨层查询用）。 */
     int getAnyOccupant(int cellX, int cellY) const;
     bool isCellEmpty(int cellX, int cellY) const;
-    /** @brief 已放置建筑实例查询。 */
     bool isCellEmptyInChannel(const std::string &channel, int cellX, int cellY) const;
     int getBuildingCount() const;
     bool hasBuilding(int instanceId) const;
@@ -135,10 +123,9 @@ public:
                                 const std::string &fallback = {}) const;
     void setBuildingProp(int instanceId, const std::string &key, const std::string &value);
     bool buildingHasTag(int instanceId, const std::string &tag) const;
-    /** @brief 按插入顺序取实例 id。 */
     int getBuildingInstanceAt(int index) const;
 
-    /** @brief 便捷操作（转发 PlacementSystem）：放置 / 移除 / 移动。 */
+    // ---- 便捷操作（转发 PlacementSystem）----
     bool canPlace(const std::string &buildingId, int cellX, int cellY, float rotationDeg = 0.f);
     std::string canPlaceReason(const std::string &buildingId, int cellX, int cellY,
                                float rotationDeg = 0.f);

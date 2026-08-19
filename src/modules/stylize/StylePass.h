@@ -12,7 +12,7 @@ class Texture;
 namespace eve::stylize {
 
 /**
- * @brief One stylized post-process pass bound to a style id (built-in or custom label).
+ * One stylized post-process pass bound to a style id (built-in or custom label).
  * Draws a full-quad of the source texture through a style fragment shader.
  *
  * Parameters use string names (engine convention — no enums).
@@ -34,19 +34,19 @@ public:
     void setFloat(const std::string &name, float value);
     float getFloat(const std::string &name) const;
 
-    /** @brief Advance time-driven knobs (watercolor warp / ink jitter). */
+    /** Advance time-driven knobs (watercolor warp / ink jitter). */
     void setTime(float seconds);
     float getTime() const;
 
     /**
-     * @brief Apply style into the currently bound canvas / screen.
+     * Apply style into the currently bound canvas / screen.
      * Automatically uploads texel size + screen size uniforms.
      */
     void apply(graphics::Graphics *gfx, graphics::Texture *source);
     void applyCanvas(graphics::Graphics *gfx, graphics::Canvas *source);
 
     /**
-     * @brief Apply into an explicit destination canvas (restores previous canvas bind).
+     * Apply into an explicit destination canvas (restores previous canvas bind).
      * Preferred hook for chains / tooling that manage ping-pong targets.
      */
     void applyTo(graphics::Graphics *gfx, graphics::Texture *source, graphics::Canvas *dest);

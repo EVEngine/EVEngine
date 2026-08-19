@@ -7,7 +7,6 @@
 
 namespace eve::mouse::sdl {
 
-/** @brief SDL 鼠标后端实现。 */
 class Mouse : public eve::mouse::Mouse {
 public:
     Mouse();
