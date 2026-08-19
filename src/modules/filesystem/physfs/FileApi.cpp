@@ -137,8 +137,10 @@ SQInteger sq_file(HSQUIRRELVM vm) {
 
     std::string content;
     if (!writing) {
-        readFileContent(path, content);
-        if (content.empty() && !PHYSFS_isInit()) return sq_throwerror(vm, "cannot open file");
+        // A missing file must fail here, otherwise `file_exists()` (which tries
+        // file(path, "r")) returns an empty handle and reports true.
+        if (!readFileContent(path, content))
+            return sq_throwerror(vm, "cannot open file");
     }
 
     sq_newtable(vm);                       // the handle table (becomes 'this')

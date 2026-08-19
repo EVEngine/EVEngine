@@ -2,6 +2,7 @@
 #include "Source.h"
 
 #include "common/Exception.h"
+#include "common/StartupTiming.h"
 #include "sound/Sound.h"
 
 #include <AL/al.h>
@@ -16,6 +17,7 @@ namespace audio {
 Module_IMPL(Audio, new Audio());
 
 Audio::Audio() {
+    StartupStage stage("audio: OpenAL device/context + worker thread");
     device = alcOpenDevice(nullptr);
     if (!device)
         throw eve::Exception("Could not open OpenAL device");

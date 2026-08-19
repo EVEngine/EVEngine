@@ -13,6 +13,9 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <CLI11.hpp>
 #include <cstdint>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
 #include <string>
 #include <vector>
 #include <filesystem>
@@ -110,6 +113,8 @@ CMD_REG(RunArgs);
 // create a new project
 int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, int mcpPort,
                  std::string devServer) {
+    std::fprintf(stderr, "[startup] Run() begins at process clock %.1f ms\n",
+                 (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
     try {
         // Resolve the game directory. A packaged game ships a game.eve archive next to
         // the executable; we mount it into memory and run without extracting to disk.
@@ -225,6 +230,8 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             // MCP tools auto-install it on demand.
             eve.set("sceneDirectorScript", std::string(scene_director_content ? scene_director_content : ""));
             eve.set("devServerArg", devServer);
+            const char* bench = std::getenv("EVE_BOOT_BENCH");
+            eve.set("bootBench", bench && bench[0] != '\0' && bench[0] != '0');
 #if defined(EVENGINE_WEBGPU)
             // The browser has no blocking loop; load.nut defines eve_frame and
             // returns, and emscripten_set_main_loop drives it below.
@@ -244,6 +251,8 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         // Route file/dofile/loadfile through PhysFS so a packaged game (mounted in
         // memory) can load its scripts without extracting to disk.
         eve::filesystem::physfs::installScriptFileApi(runtime.vm());
+        std::fprintf(stderr, "[startup] load.nut begins at process clock %.1f ms\n",
+                     (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
         runtime.runSource(root, "load.nut");
 #if defined(EVENGINE_WEBGPU)
         // Instead of a blocking while(running) Squirrel loop (which the browser
