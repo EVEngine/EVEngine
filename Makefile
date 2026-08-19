@@ -494,26 +494,20 @@ download-skinned-character:
 	bash scripts/download_skinned_character.sh
 
 # ---- API documentation (Doxygen) ----
-#   make docs                 # generate docs/api/html from src/ + Doxyfile
+#   make docs                 # generate docs/api/html from docs/Doxyfile.in
 #   make docs CLEAN_DOCS=1    # remove the previous output first
 # Output is git-ignored (docs/api/); open docs/api/html/index.html afterwards.
+# Configures a docs-only CMake tree (build/docs) so this does not need a full engine build.
 CLEAN_DOCS ?= 0
+DOCS_BUILD_DIR ?= build/docs
 
-docs: docs/api/html/index.html
-	@echo "API docs generated -> docs/api/html/index.html"
-
-docs/api/html/index.html: Doxyfile
-	@if command -v doxygen >/dev/null 2>&1; then \
-		if [ "$(CLEAN_DOCS)" = "1" ]; then rm -rf docs/api; fi; \
-		mkdir -p docs/api; \
-		doxygen Doxyfile; \
-	else \
-		echo "doxygen is not installed; install it first:"; \
-		echo "  Ubuntu/Debian/WSL: sudo apt install doxygen"; \
-		echo "  macOS:             brew install doxygen"; \
-		echo "  Windows:           choco install doxygen"; \
-		exit 1; \
+docs:
+	@if [ "$(CLEAN_DOCS)" = "1" ]; then rm -rf docs/api; fi
+	@if [ ! -f $(DOCS_BUILD_DIR)/CMakeCache.txt ]; then \
+		cmake -S docs -B $(DOCS_BUILD_DIR); \
 	fi
+	cmake --build $(DOCS_BUILD_DIR) --target docs
+	@echo "API docs generated -> docs/api/html/index.html"
 
 # Optional name-prefix filter for platform targets: make test FILTER=graphics.print
 # (per-case run; use FILTER=bundle/<file> for a single-file bundle, e.g.

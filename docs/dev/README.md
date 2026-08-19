@@ -4,6 +4,7 @@
 
 ## 架构与工程约定
 
+- [发布流程](发布流程.md)（`main` / `dev` / `vX.X.X`，Pre-release 发版）
 - [整体架构](整体架构.md)
 - [模块设计与实现进度](模块设计.md)
 - [模块编排与裁剪架构](模块编排与裁剪架构.md)（实测依赖分层、协作接缝、按需裁剪；用户侧用法见[按需裁剪模块](../usr/TRIMMING.md)）
@@ -46,7 +47,7 @@
 - 生成 C++ API 文档（Doxygen）：`make docs`（或 `cmake --build <build-dir> --target docs`），
   产物位于 `docs/api/html/`（已加入 `.gitignore`）。需要先安装 doxygen：
   Ubuntu/WSL `sudo apt install doxygen`、macOS `brew install doxygen`、Windows `choco install doxygen`。
-  文档配置见根目录 [`Doxyfile`](../../Doxyfile)，入口 `src/` 与 `Readme.md`。
+  文档配置见 [`docs/Doxyfile.in`](../Doxyfile.in) 与 [`docs/CMakeLists.txt`](../CMakeLists.txt)，入口 `src/`、`Readme.md` 与 `docs/usr/`。
 
 - 运行时断言：引擎统一通过 zeroerr 的 `ASSERT` 系列宏做函数参数校验与内部不变量检查，
   入口见 [`src/engine/common/Assert.h`](../../src/engine/common/Assert.h)（`EV_PARAM_CHECK` / `EV_ASSERT`）。
