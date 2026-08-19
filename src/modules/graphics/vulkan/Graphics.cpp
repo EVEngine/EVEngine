@@ -28,6 +28,7 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
+#include "thread/Thread.h"
 
 #include <memory>
 
@@ -527,6 +528,11 @@ void Graphics::destroySwapchainResources() {
     // Descriptor sets cached against the released UBO handles must be dropped;
     // they live in the shared descriptor pool, so only the cache is cleared.
     lit2dSets.clear();
+    // Per-frame-slot secondary command buffers for parallel pass recording.
+    for (auto &slot : frameSecondaryCbs) {
+        if (slot.pool) device->destroyCommandPool(slot.pool);
+    }
+    frameSecondaryCbs.clear();
 }
 
 uint32_t Graphics::frameSlotCount() const {
@@ -547,6 +553,30 @@ vk::CommandBuffer &Graphics::currentPresentCb() {
     if (swapchainPass)
         return swapchainPass.commandBuffer();
     return presentRecording.commandBuffer();
+}
+
+vk::CommandBuffer &Graphics::currentDrawCb() {
+    if (sceneSecondaryActive && !frameSecondaryCbs.empty())
+        return currentFrameSecondaryCbs().buffers[kForwardSecondary];
+    return currentPresentCb();
+}
+
+Graphics::FrameSecondaryCbs &Graphics::currentFrameSecondaryCbs() {
+    auto &slot = currentSlot(frameSecondaryCbs, frameSlotCount(), currentFrameSlot());
+    if (!slot.created) {
+        vk::CommandPoolCreateInfo poolInfo{};
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient |
+                         vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+        slot.pool = device->createCommandPool(poolInfo);
+        vk::CommandBufferAllocateInfo allocInfo{};
+        allocInfo.commandPool = slot.pool;
+        allocInfo.level = vk::CommandBufferLevel::eSecondary;
+        allocInfo.commandBufferCount = uint32_t(slot.buffers.size());
+        auto bufs = device->allocateCommandBuffers(allocInfo);
+        for (size_t i = 0; i < slot.buffers.size(); ++i) slot.buffers[i] = bufs[i];
+        slot.created = true;
+    }
+    return slot;
 }
 
 vkb::FrameSlot Graphics::frameToken() const {
@@ -643,71 +673,61 @@ void Graphics::dropPendingOffscreenPasses() {
     gbufferPassDraws.clear();
 }
 
-void Graphics::recordPendingShadowPasses() {
-    if (shadowPendingMask == 0 || !shadowPipeline || shadowMaps.empty()) {
-        shadowPendingMask = 0;
-        for (auto &d : shadowCascadeDraws) d.clear();
-        return;
-    }
+void Graphics::recordShadowCascadeSecondary(vk::CommandBuffer secondary, int cascade) {
     auto &slot = currentShadowMap();
-    auto &cb = currentPresentCb();
-    slot.image.beginDepthAttachment();
     const uint32_t size = uint32_t(ShadowConfig::kMapSize);
+
+    vk::CommandBufferBeginInfo beginInfo{};
+    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+    secondary.begin(beginInfo);
+
     vk::ClearValue clear{};
     clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-        if ((shadowPendingMask & (1u << c)) == 0) continue;
-        vk::RenderPassBeginInfo rpBegin{};
-        rpBegin.renderPass = shadowRenderPass;
-        rpBegin.framebuffer = slot.framebuffers[c];
-        rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
-        rpBegin.clearValueCount = 1;
-        rpBegin.pClearValues = &clear;
-        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-        setViewportAndScissor(cb, size, size);
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
-        bool alphaBound = false;
-        for (const auto &d : shadowCascadeDraws[c]) {
-            if (!d.mesh || !d.mesh->gpuHandle) continue;
-            const bool wantAlpha = d.alphaTest && shadowAlphaPipeline;
-            if (wantAlpha != alphaBound) {
-                cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                wantAlpha ? shadowAlphaPipeline : shadowPipeline);
-                alphaBound = wantAlpha;
-            }
-            auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-            if (wantAlpha) {
-                Texture *alb = d.albedo ? d.albedo : whiteTexture;
-                if (alb && alb->gpuHandle && texSetLayout) {
-                    auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-                    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                          shadowAlphaPipelineLayout, 0, 1,
-                                          gpuTex->descriptorSet.ptr(), 0, nullptr);
-                }
-            }
-            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
-                             vk::ShaderStageFlagBits::eVertex, 0,
-                             sizeof(glm::mat4), &d.mvp);
-            drawIndexedMesh(cb, *gpuMesh);
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = shadowRenderPass;
+    rpBegin.framebuffer = slot.framebuffers[cascade];
+    rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
+    rpBegin.clearValueCount = 1;
+    rpBegin.pClearValues = &clear;
+    secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(secondary, size, size);
+    secondary.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
+    bool alphaBound = false;
+    for (const auto &d : shadowCascadeDraws[cascade]) {
+        if (!d.mesh || !d.mesh->gpuHandle) continue;
+        const bool wantAlpha = d.alphaTest && shadowAlphaPipeline;
+        if (wantAlpha != alphaBound) {
+            secondary.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                   wantAlpha ? shadowAlphaPipeline : shadowPipeline);
+            alphaBound = wantAlpha;
         }
-        cb.endRenderPass();
-        shadowCascadeDraws[c].clear();
+        auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
+        if (wantAlpha) {
+            Texture *alb = d.albedo ? d.albedo : whiteTexture;
+            if (alb && alb->gpuHandle && texSetLayout) {
+                auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
+                secondary.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                             shadowAlphaPipelineLayout, 0, 1,
+                                             gpuTex->descriptorSet.ptr(), 0, nullptr);
+            }
+        }
+        secondary.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
+                                vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &d.mvp);
+        drawIndexedMesh(secondary, *gpuMesh);
     }
-    slot.image.endSampledLayout();
-    shadowPendingMask = 0;
+    secondary.endRenderPass();
+    secondary.end();
 }
 
-void Graphics::recordPendingGBufferPass() {
-    if (!gbufferPending) return;
-    gbufferPending = false;
+void Graphics::recordGBufferSecondary(vk::CommandBuffer secondary) {
     auto *slot = currentGBufferSlot();
-    if (!slot || !gbufferPipeline || !gbufferRenderPass || !slot->framebuffer) {
-        gbufferPassDraws.clear();
-        return;
-    }
-    auto &cb = currentPresentCb();
     const uint32_t w = uint32_t(gbufferWidth);
     const uint32_t h = uint32_t(gbufferHeight);
+
+    vk::CommandBufferBeginInfo beginInfo{};
+    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+    secondary.begin(beginInfo);
+
     std::array<vk::ClearValue, 4> clears{};
     clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
     clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
@@ -719,41 +739,103 @@ void Graphics::recordPendingGBufferPass() {
     rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
     rpBegin.clearValueCount = uint32_t(clears.size());
     rpBegin.pClearValues = clears.data();
-    slot->normal.beginColorAttachment();
-    slot->depthColor.beginColorAttachment();
-    slot->albedo.beginColorAttachment();
-    slot->depth.beginDepthAttachment();
-    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-    setViewportAndScissor(cb, w, h);
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
+    secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(secondary, w, h);
+    secondary.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
     bool alphaBound = false;
     for (const auto &d : gbufferPassDraws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         const bool wantAlpha = d.alphaTest && gbufferAlphaPipeline;
         if (wantAlpha != alphaBound) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                            wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
+            secondary.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                   wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
             alphaBound = wantAlpha;
         }
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         Texture *alb = d.albedo ? d.albedo : whiteTexture;
         if (alb && alb->gpuHandle && texSetLayout) {
             auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
-                                  gpuTex->descriptorSet.ptr(), 0, nullptr);
+            secondary.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout,
+                                         0, 1, gpuTex->descriptorSet.ptr(), 0, nullptr);
         }
-        cb.pushConstants(gbufferPipelineLayout,
-                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
-                         sizeof(GBufferPush), &d.push);
-        drawIndexedMesh(cb, *gpuMesh);
+        secondary.pushConstants(gbufferPipelineLayout,
+                                vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                                0, sizeof(GBufferPush), &d.push);
+        drawIndexedMesh(secondary, *gpuMesh);
     }
-    cb.endRenderPass();
-    gbufferPassDraws.clear();
-    if (slot) {
+    secondary.endRenderPass();
+    secondary.end();
+}
+
+void Graphics::recordDeferredPassesParallel() {
+    const bool hasShadow = shadowPendingMask != 0 && shadowPipeline && !shadowMaps.empty();
+    const bool hasGBuffer =
+        gbufferPending && gbufferPipeline && gbufferRenderPass && currentGBufferSlot() &&
+        currentGBufferSlot()->framebuffer;
+    if (!hasShadow && !hasGBuffer) {
+        if (shadowPendingMask) {
+            shadowPendingMask = 0;
+            for (auto &d : shadowCascadeDraws) d.clear();
+        }
+        if (gbufferPending) {
+            gbufferPending = false;
+            gbufferPassDraws.clear();
+        }
+        return;
+    }
+
+    auto &cbs = currentFrameSecondaryCbs();
+    auto &cb = currentPresentCb();
+
+    // Record each deferred pass into its own secondary command buffer on the
+    // JobSystem workers; the primary only chains them with vkCmdExecuteCommands.
+    // The record jobs come from the per-frame arena, so recording allocates no
+    // job control blocks per frame.
+    auto *jobs = thread::Thread::create()->getJobSystem();
+    jobs->beginFrame();
+    thread::TaskGroup *group = jobs->createFrameTaskGroup();
+    if (hasShadow) {
+        for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+            if ((shadowPendingMask & (1u << c)) == 0) continue;
+            const uint32_t idx = kShadowSecondaryBase + uint32_t(c);
+            group->fork([this, &cbs, idx, c] {
+                recordShadowCascadeSecondary(cbs.buffers[idx], c);
+            });
+        }
+    }
+    if (hasGBuffer) {
+        group->fork([this, &cbs] { recordGBufferSecondary(cbs.buffers[kGBufferSecondary]); });
+    }
+    group->wait();
+    jobs->endFrame();  // arena-owned group; do not delete
+
+    // Layout transitions stay on the render thread (image layout tracking is
+    // not thread-safe); the secondaries only contain the render-pass instances.
+    if (hasShadow) {
+        auto &slot = currentShadowMap();
+        slot.image.beginDepthAttachment();
+        for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+            if ((shadowPendingMask & (1u << c)) == 0) continue;
+            const uint32_t idx = kShadowSecondaryBase + uint32_t(c);
+            cb.executeCommands(1, &cbs.buffers[idx]);
+        }
+        slot.image.endSampledLayout();
+        shadowPendingMask = 0;
+        for (auto &d : shadowCascadeDraws) d.clear();
+    }
+    if (hasGBuffer) {
+        auto *slot = currentGBufferSlot();
+        slot->normal.beginColorAttachment();
+        slot->depthColor.beginColorAttachment();
+        slot->albedo.beginColorAttachment();
+        slot->depth.beginDepthAttachment();
+        cb.executeCommands(1, &cbs.buffers[kGBufferSecondary]);
         slot->normal.endSampledLayout();
         slot->depthColor.endSampledLayout();
         slot->albedo.endSampledLayout();
         slot->depth.endSampledLayout();
+        gbufferPending = false;
+        gbufferPassDraws.clear();
     }
 }
 
@@ -762,8 +844,7 @@ bool Graphics::beginSwapchainRenderPass() {
         dropPendingOffscreenPasses();
         return false;
     }
-    recordPendingShadowPasses();
-    recordPendingGBufferPass();
+    recordDeferredPassesParallel();
     beginSwapchainColorPass();
     return true;
 }
@@ -1644,7 +1725,10 @@ void Graphics::createSceneColorResources(int width, int height) {
 bool Graphics::beginSceneColorRenderPass() {
     auto *slot = currentSceneColorSlot();
     if (!slot || !sceneColorRenderPass || !slot->framebuffer) return false;
-    auto &cb = currentPresentCb();
+    auto &secondary = currentFrameSecondaryCbs().buffers[kForwardSecondary];
+    vk::CommandBufferBeginInfo beginInfo{};
+    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+    secondary.begin(beginInfo);
     const bool msaa = sceneColorSamples != vk::SampleCountFlagBits::e1;
     // A=1 marks sky / far plane so SSGI skips uncleared pixels.
     if (msaa) {
@@ -1664,7 +1748,7 @@ bool Graphics::beginSceneColorRenderPass() {
         slot->msaaColor.beginColorAttachment();
         slot->color.beginColorAttachment();
         slot->depth.beginDepthAttachment();
-        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+        secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     } else {
         std::array<vk::ClearValue, 2> clears{};
         clears[0].color = vk::ClearColorValue(
@@ -1679,19 +1763,26 @@ bool Graphics::beginSceneColorRenderPass() {
         rpBegin.pClearValues = clears.data();
         slot->color.beginColorAttachment();
         slot->depth.beginDepthAttachment();
-        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+        secondary.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
     }
+    setViewportAndScissor(secondary, uint32_t(sceneColorWidth), uint32_t(sceneColorHeight));
     sceneColorPassOpen = true;
+    sceneSecondaryActive = true;
     return true;
 }
 
 void Graphics::endSceneColorRenderPass() {
     if (!sceneColorPassOpen) return;
-    auto &cb = currentPresentCb();
-    cb.endRenderPass();
+    auto &secondary = currentFrameSecondaryCbs().buffers[kForwardSecondary];
+    secondary.endRenderPass();
     sceneColorPassOpen = false;
     if (auto *slot = currentSceneColorSlot())
         slot->color.endSampledLayout();
+    secondary.end();
+    // Execute the forward-pass secondary from the single present command
+    // buffer before the scene resolve / swapchain passes are recorded.
+    currentPresentCb().executeCommands(1, &secondary);
+    sceneSecondaryActive = false;
 }
 
 int Graphics::clampMsaaSamples(int requested) const {
@@ -3529,6 +3620,7 @@ void Graphics::abortOpen3DFrame() {
         if (hadScene) endSceneColorRenderPass();
     } catch (...) {
         sceneColorPassOpen = false;
+        sceneSecondaryActive = false;
     }
     try {
         if (had3D) {
@@ -3546,6 +3638,7 @@ void Graphics::abortOpen3DFrame() {
     }
     swapchainPassOpen = false;
     sceneColorPassOpen = false;
+    sceneSecondaryActive = false;
     frameHad3D = false;
     hasPendingClear = false;
     flushingSwapchain_ = false;
@@ -3583,8 +3676,7 @@ void Graphics::flushToSwapchain() {
             completed = true;
             return;
         }
-        recordPendingShadowPasses();
-        recordPendingGBufferPass();
+        recordDeferredPassesParallel();
     }
 
     // Render the UI overlay (ImGui) into its own MSAA pass, resolved and
@@ -3803,8 +3895,7 @@ void Graphics::begin3DFrame() {
     // settling after orientation change; throwing would abort the whole script.
     if (!beginPresentCommandBuffer())
         return;
-    recordPendingShadowPasses();
-    recordPendingGBufferPass();
+    recordDeferredPassesParallel();
 
     // 3D pass clears with backgroundColor (setBackgroundColor), not a stale 2D clear.
     clearColor = backgroundColor;
@@ -4182,7 +4273,7 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     pc.atlasInfo = glm::vec4(float(std::max(1, tilesPerRow)), 0.f, 0.f, 0.f);
     pc.tint = mesh3dFrameUbo.tint;
 
-    auto &cb = currentPresentCb();
+    auto &cb = currentDrawCb();
     vk::DescriptorSet set = voxelRectSetFor(gpuTex);
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, voxelRectPipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, voxelRectPipelineLayout, 0, 1, &set, 0,
@@ -4501,9 +4592,12 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     basePos.reserve(mesh.mNumVertices * 3);
     baseNrm.reserve(mesh.mNumVertices * 3);
     baseUv.reserve(mesh.mNumVertices * 2);
+    float boundsRadius = 0.f;
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
         MeshVertex v{};
         v.pos = {mesh.mVertices[i].x, mesh.mVertices[i].y, mesh.mVertices[i].z};
+        const float lenSq = v.pos.x * v.pos.x + v.pos.y * v.pos.y + v.pos.z * v.pos.z;
+        if (lenSq > boundsRadius * boundsRadius) boundsRadius = std::sqrt(lenSq);
         if (mesh.HasNormals())
             v.normal = {mesh.mNormals[i].x, mesh.mNormals[i].y, mesh.mNormals[i].z};
         else
@@ -4563,6 +4657,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
         handle->addMorphTargetAbsolute(name, absPos.data());
     }
     handle->markMorphClean();
+    handle->boundsRadius = boundsRadius;
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
@@ -4651,9 +4746,12 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     if (indexCount % 3 != 0) throw Exception("newMeshFromArrays: indexCount must be multiple of 3");
 
     std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
+    float boundsRadius = 0.f;
     for (int i = 0; i < vertexCount; ++i) {
         MeshVertex &v = verts[static_cast<size_t>(i)];
         v.pos = {posXYZ[size_t(i) * 3u], posXYZ[size_t(i) * 3u + 1u], posXYZ[size_t(i) * 3u + 2u]};
+        const float lenSq = v.pos.x * v.pos.x + v.pos.y * v.pos.y + v.pos.z * v.pos.z;
+        if (lenSq > boundsRadius * boundsRadius) boundsRadius = std::sqrt(lenSq);
         if (nrmXYZ)
             v.normal = {nrmXYZ[size_t(i) * 3u], nrmXYZ[size_t(i) * 3u + 1u],
                         nrmXYZ[size_t(i) * 3u + 2u]};
@@ -4672,6 +4770,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
 
     auto gpu = uploadGpuMesh(device, frameToken(), verts, idx);
     auto handle = makeMeshHandle(*gpu);
+    handle->boundsRadius = boundsRadius;
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
@@ -4829,6 +4928,7 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
 
     auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     auto handle = makeMeshHandle(*gpu);
+    handle->boundsRadius = 1.f;  // unit sphere
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
@@ -4937,6 +5037,8 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
 
     auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     auto handle = makeMeshHandle(*gpu);
+    // radius 1 side wall + height 2 → farthest corner at sqrt(2) from origin.
+    handle->boundsRadius = std::sqrt(2.f);
     Mesh *raw = handle.get();
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
@@ -4990,7 +5092,7 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     const float envIntensity = (mesh3dEnvTexture && mesh3dEnvIntensity > 0.f) ? mesh3dEnvIntensity : 0.f;
 
     const bool useClustered = mesh3dClusteredActive && !shader && mesh3dClusteredPipeline;
-    auto &cb = currentPresentCb();
+    auto &cb = currentDrawCb();
 
     auto makeShadowUbo = [&]() {
         ShadowUBO s = mesh3dShadows.ubo;

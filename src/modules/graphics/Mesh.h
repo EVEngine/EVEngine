@@ -20,6 +20,13 @@ public:
     int indexCount = 0;
     void *gpuHandle = nullptr;  // vulkan::GpuMesh*
 
+    /**
+     * @brief Conservative world-space bounding radius around the mesh origin
+     * (max distance of any vertex from (0,0,0)), computed at upload time.
+     * 0 means "unknown" — frame-prep culling then never culls this mesh.
+     */
+    float boundsRadius = 0.f;
+
     void draw(Graphics * /*gfx*/, const glm::mat4 & /*matrix*/) const override {}
     /**
      * @brief Screen-space black proxy for volumetric occlusion.

@@ -162,7 +162,7 @@ eve_declare_module(NAME font LAYER 2 SCRIPT Font SLOT font
 # graphics/Font.cpp is the only user of the font module and is excluded from the
 # browser build, so font is an optional integration rather than a hard dep.
 eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
-                   DEPS data filesystem image
+                   DEPS data filesystem image thread
                    OPTIONAL_DEPS font
                    THIRDPARTY sdl2 assimp)
 

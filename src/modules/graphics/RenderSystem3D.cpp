@@ -8,6 +8,8 @@
 #include "graphics/RenderControl.h"
 #include "graphics/Material.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/FrameDrawList.h"
+#include "thread/Thread.h"
 
 #include <algorithm>
 #include <cmath>
@@ -50,6 +52,33 @@ struct PackedLight3D {
     Light3D::Data *data = nullptr;
     bool isPoint = true;
 };
+
+/** @brief Cheap entity snapshot handed to the parallel prep jobs. */
+struct EntityRef3D {
+    Renderable3D::Transform3D *xf = nullptr;
+    Renderable3D::MeshRenderer *mr = nullptr;
+};
+
+/**
+ * @brief Per-frame prep result (double-buffered): what the render thread
+ * consumes. The prep jobs write here; the render loop only reads it.
+ */
+struct FrameState3D {
+    FrameDrawList3D drawList;
+    std::vector<PackedLight3D> packed;
+    Lighting3DPack lighting;
+    std::vector<ClusteredLightGpu> clusteredPoints;
+    std::vector<ClusteredLightGpu> clusteredDirs;
+    ShadowUpload shadowUpload;
+    Light3D::Data *shadowCaster = nullptr;
+    bool haveExtraShadowCasters = false;
+    bool useClustered = false;
+    bool hadRenderables = false;
+    float aspect = 1.f;
+};
+
+FrameState3D g_frameStates[2];
+size_t g_frameIndex = 0;
 
 void collectLights3D(std::vector<PackedLight3D> &out, size_t maxCount) {
     out.clear();
@@ -435,6 +464,221 @@ void prioritizeShadowCaster(std::vector<PackedLight3D> &packed, Light3D::Data *c
     }
 }
 
+/**
+ * @brief Conservative sphere-vs-frustum test (Gribb-Hartmann plane extraction
+ * from a column-major clip matrix).
+ * @return false when the sphere is fully outside at least one plane.
+ */
+bool sphereInFrustum(const glm::mat4 &viewProj, const glm::vec3 &center, float radius) {
+    const glm::vec4 c0 = viewProj[0];
+    const glm::vec4 c1 = viewProj[1];
+    const glm::vec4 c2 = viewProj[2];
+    const glm::vec4 c3 = viewProj[3];
+    const glm::vec4 planes[6] = {
+        c3 + c0, c3 - c0,  // left, right
+        c3 + c1, c3 - c1,  // bottom, top
+        c3 + c2, c3 - c2,  // near, far
+    };
+    for (const glm::vec4 &p : planes) {
+        const float dist = p.x * center.x + p.y * center.y + p.z * center.z + p.w;
+        if (dist < -radius) return false;
+    }
+    return true;
+}
+
+/**
+ * @brief Job-ified frame data prep: ECS traversal, model matrices, LOD
+ * selection, (optional) frustum culling, light packing and sorting run on the
+ * JobSystem workers and land in `frame.drawList`; the render loop only
+ * consumes the prebuilt list afterwards.
+ */
+void prepareFrame3D(FrameState3D &frame, RenderControl *rc, Camera3D *defaultCam, bool doShadow,
+                    bool frustumCull) {
+    frame.drawList.reset();
+    frame.packed.clear();
+    frame.clusteredPoints.clear();
+    frame.clusteredDirs.clear();
+    frame.shadowUpload = ShadowUpload{};
+    frame.shadowUpload.active = false;
+    frame.shadowCaster = nullptr;
+    frame.useClustered = false;
+    frame.hadRenderables = ecs::current()->getManager<Renderable3D>() != nullptr;
+
+    if (!frame.hadRenderables) return;
+
+    const bool haveExtraShadowCasters = doShadow && !g_shadowDrawers.empty();
+    frame.haveExtraShadowCasters = haveExtraShadowCasters;
+
+    // ---- light + CSM prep job (independent of the entity prep) ----
+    auto *jobs = thread::Thread::create()->getJobSystem();
+    jobs->beginFrame();
+    thread::Job *lightJob = jobs->submitFrame([&] {
+        collectLights3D(frame.packed, size_t(ClusteredLightConfig::kMaxLights));
+        promoteDirectional(frame.packed);
+        frame.shadowCaster = doShadow ? findShadowCasterDir(frame.packed) : nullptr;
+        prioritizeShadowCaster(frame.packed, frame.shadowCaster);
+        frame.useClustered =
+            rc->isEnabled("clustered") && frame.packed.size() > size_t(Lighting3DPack::kMaxLights);
+
+        const Camera3D::Data *ambientCam = defaultCam ? defaultCam->data().operator->() : nullptr;
+        frame.lighting = packLights3D(frame.packed, ambientCam);
+        splitLights(frame.packed, frame.clusteredPoints, frame.clusteredDirs);
+        if (frame.clusteredDirs.empty()) {
+            ClusteredLightGpu d{};
+            d.posRadius = glm::vec4(gLightDir, 0.f);
+            d.color = glm::vec4(gLightColor, 1.f);
+            frame.clusteredDirs.push_back(d);
+        }
+        if (frame.shadowCaster && !frame.clusteredDirs.empty()) {
+            glm::vec3 dir(frame.shadowCaster->dx, frame.shadowCaster->dy, frame.shadowCaster->dz);
+            if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
+            else dir = glm::normalize(dir);
+            for (size_t i = 0; i < frame.clusteredDirs.size(); ++i) {
+                if (glm::length(glm::vec3(frame.clusteredDirs[i].posRadius) - dir) < 1e-3f) {
+                    if (i != 0) std::swap(frame.clusteredDirs[0], frame.clusteredDirs[i]);
+                    break;
+                }
+            }
+        }
+
+        ShadowUpload su{};
+        su.active = false;
+        if ((frame.shadowCaster || haveExtraShadowCasters) && defaultCam) {
+            auto cd = defaultCam->data();
+            glm::vec3 dir = frame.shadowCaster
+                                ? glm::vec3(frame.shadowCaster->dx, frame.shadowCaster->dy,
+                                            frame.shadowCaster->dz)
+                                : gLightDir;
+            if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
+            else dir = glm::normalize(dir);
+            const float shadowBias = frame.shadowCaster ? frame.shadowCaster->shadowBias : 0.003f;
+            const float shadowStrength =
+                frame.shadowCaster ? frame.shadowCaster->shadowStrength : 1.f;
+            const float fovRad = cd->fovYDeg * 0.017453292519943295f;
+            su = buildDirectionalCSM(dir, glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ),
+                                     glm::vec3(cd->targetX, cd->targetY, cd->targetZ),
+                                     glm::vec3(cd->upX, cd->upY, cd->upZ), fovRad, frame.aspect,
+                                     cd->nearZ, cd->farZ, shadowBias, shadowStrength);
+        }
+        frame.shadowUpload = su;
+    });
+
+    // ---- entity snapshot (single pass; matrix / LOD / cull math is parallel) ----
+    std::vector<EntityRef3D> entities;
+    {
+        auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [xf, mr] = *it;
+            if (!mr->visible) continue;
+            entities.push_back(EntityRef3D{xf, mr});
+        }
+    }
+    if (entities.empty()) {
+        lightJob->wait();
+        jobs->endFrame();
+        return;
+    }
+
+    const glm::mat4 mainViewProj = [&]() {
+        if (!defaultCam) return glm::mat4(1.f);
+        auto cd = defaultCam->data();
+        const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+        const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
+        const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
+        const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
+        const float fovRad = cd->fovYDeg * 0.017453292519943295f;
+        const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, frame.aspect, cd->nearZ, cd->farZ);
+        return projM * viewM;
+    }();
+
+    const int count = int(entities.size());
+    constexpr int kChunk = 64;
+    std::vector<std::vector<RenderItem3D>> chunks(size_t((count + kChunk - 1) / kChunk));
+    thread::Job *entityJob = jobs->parallelForFrame(
+        0, count,
+        [&](int first, int last) {
+            const int chunkIndex = first / kChunk;
+            std::vector<RenderItem3D> &out = chunks[size_t(chunkIndex)];
+            for (int i = first; i < last; ++i) {
+                const EntityRef3D &e = entities[size_t(i)];
+                Renderable3D::Transform3D *xf = e.xf;
+                Renderable3D::MeshRenderer *mr = e.mr;
+
+                Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
+                const glm::mat4 model = modelFromTransform(*xf);
+
+                auto distTo = [](const Renderable3D::Transform3D &t, const Camera3D::Data *cd) {
+                    const float dx = t.x - cd->eyeX;
+                    const float dy = t.y - cd->eyeY;
+                    const float dz = t.z - cd->eyeZ;
+                    return dx * dx + dy * dy + dz * dz;
+                };
+                float distSq = 0.f;
+                if (camEnt) distSq = distTo(*xf, camEnt->data().operator->());
+                float distSqMain = 0.f;
+                if (defaultCam) distSqMain = distTo(*xf, defaultCam->data().operator->());
+                const float dist = std::sqrt(distSq);
+                const float distMain = std::sqrt(distSqMain);
+
+                auto pushItem = [&](Mesh *mesh, Mesh *meshShadow, Material *mat, int partIndex,
+                                    bool asHair) {
+                    if (!mesh) return;
+                    RenderItem3D item;
+                    item.mr = mr;
+                    item.meshForward = mesh;
+                    item.meshShadow = meshShadow;
+                    item.material = mat;
+                    item.model = model;
+                    item.distSq = distSq;
+                    item.distSqMain = distSqMain;
+                    item.camera = camEnt;
+                    item.partIndex = partIndex;
+                    item.hair = asHair;
+                    item.shadowCastable = mr->effectiveCastShadow();
+                    if (frustumCull && camEnt && mesh->boundsRadius > 0.f) {
+                        const float maxScale =
+                            std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
+                        item.culled = !sphereInFrustum(mainViewProj,
+                                                       glm::vec3(xf->x, xf->y, xf->z),
+                                                       maxScale * mesh->boundsRadius);
+                    }
+                    out.push_back(std::move(item));
+                };
+
+                if (mr->usesParts()) {
+                    for (int p = 0; p < mr->partCount; ++p) {
+                        Material *mat =
+                            mr->parts[p].material ? mr->parts[p].material : mr->material;
+                        const bool asHair = mat ? mat->isTransparentHair() : mr->isHair;
+                        pushItem(mr->parts[p].mesh, mr->parts[p].mesh, mat, p, asHair);
+                    }
+                } else {
+                    Mesh *drawMesh = mr->meshForDistance(dist);
+                    Mesh *drawMeshShadow = mr->meshForDistance(distMain);
+                    pushItem(drawMesh, drawMeshShadow, mr->material, -1, mr->effectiveHair());
+                }
+            }
+        },
+        kChunk);
+    entityJob->wait();
+    lightJob->wait();
+    jobs->endFrame();  // frame jobs are arena-allocated; endFrame recycles them
+
+    for (auto &chunk : chunks) {
+        for (auto &item : chunk) {
+            if (item.hair)
+                frame.drawList.hair.push_back(std::move(item));
+            else
+                frame.drawList.opaque.push_back(std::move(item));
+        }
+    }
+    std::stable_sort(frame.drawList.hair.begin(), frame.drawList.hair.end(),
+                     [](const RenderItem3D &a, const RenderItem3D &b) {
+                         return a.distSq > b.distSq;
+                     });
+    frame.drawList.hasAny = !frame.drawList.opaque.empty() || !frame.drawList.hair.empty();
+}
+
 }  // namespace
 
 void RenderSystem3D::render(Graphics &gfx) {
@@ -447,92 +691,56 @@ void RenderSystem3D::render(Graphics &gfx) {
     const bool doGBuffer = rc->hasPass("gbuffer");
     const bool doForward = rc->hasPass("forward");
     const bool doHair = rc->hasPass("hair");
-    const bool allowClustered = rc->isEnabled("clustered");
-
-    std::vector<PackedLight3D> packed;
-    collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
-    promoteDirectional(packed);
-    Light3D::Data *shadowCaster = doShadow ? findShadowCasterDir(packed) : nullptr;
-    prioritizeShadowCaster(packed, shadowCaster);
-    const bool haveExtraShadowCasters = doShadow && !g_shadowDrawers.empty();
+    const bool frustumCull = rc->isEnabled("frustumCull");
 
     const float aspect =
         (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
 
-    ShadowUpload shadowUpload{};
-    shadowUpload.active = false;
-    if ((shadowCaster || haveExtraShadowCasters) && defaultCam) {
-        auto cd = defaultCam->data();
-        glm::vec3 dir = shadowCaster ? glm::vec3(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz)
-                                     : gLightDir;
-        if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
-        else dir = glm::normalize(dir);
-        const float shadowBias = shadowCaster ? shadowCaster->shadowBias : 0.003f;
-        const float shadowStrength = shadowCaster ? shadowCaster->shadowStrength : 1.f;
-        const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-        shadowUpload =
-            buildDirectionalCSM(dir, glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ),
-                                glm::vec3(cd->targetX, cd->targetY, cd->targetZ),
-                                glm::vec3(cd->upX, cd->upY, cd->upZ), fovRad, aspect, cd->nearZ,
-                                cd->farZ, shadowBias, shadowStrength);
+    // Job-ified frame data prep: ECS traversal, model matrices, LOD selection,
+    // optional frustum culling, light packing and hair sorting run on the
+    // JobSystem workers and land in the double-buffered draw list. The rest of
+    // this function only consumes the prebuilt result.
+    FrameState3D &frame = g_frameStates[g_frameIndex & 1];
+    ++g_frameIndex;
+    frame.aspect = aspect;
+    prepareFrame3D(frame, rc, defaultCam, doShadow, frustumCull);
 
-        if (ecs::current()->getManager<Renderable3D>() != nullptr || haveExtraShadowCasters) {
-            auto casterView =
-                ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-            for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-                eve::debug::rtPassBegin("ShadowPass");
-                gfx.beginShadowPass(c);
-                for (auto it = casterView.begin(); it != casterView.end(); ++it) {
-                    auto [xf, mr] = *it;
-                    if (!mr->visible || !mr->effectiveCastShadow()) continue;
-                    const glm::mat4 model = modelFromTransform(*xf);
-                    auto drawShadowMesh = [&](Mesh *drawMesh) {
-                        if (!drawMesh) return;
-                        eve::debug::rtBind("mesh", "shadowCaster");
-                        eve::debug::rtDraw("drawMeshShadow", "cascade");
-                        gfx.drawMeshShadow(drawMesh, shadowUpload.ubo.lightVP[c] * model);
-                    };
-                    if (mr->usesParts()) {
-                        for (int p = 0; p < mr->partCount; ++p) {
-                            Material *mat = mr->parts[p].material ? mr->parts[p].material : mr->material;
-                            if (mat && !mat->getCastShadow()) continue;
-                            drawShadowMesh(mr->parts[p].mesh);
-                        }
-                } else {
-                    Mesh *drawMesh = mr->mesh;
-                    if (defaultCam) {
-                            auto cdd = defaultCam->data();
-                            const float dx = xf->x - cdd->eyeX;
-                            const float dy = xf->y - cdd->eyeY;
-                            const float dz = xf->z - cdd->eyeZ;
-                            drawMesh = mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz));
-                        }
-                        drawShadowMesh(drawMesh);
-                    }
-                }
-                // Extra shadow casters (billboard/card geometry not in the ECS).
-                for (const auto &drawer : g_shadowDrawers)
-                    drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
-                gfx.endShadowPass();
-                eve::debug::rtPassEnd("ShadowPass");
-            }
+    // ---- shadow pass (consumes the prebuilt caster list) ----
+    if ((frame.shadowCaster || frame.haveExtraShadowCasters) && defaultCam &&
+        (frame.hadRenderables || frame.haveExtraShadowCasters)) {
+        auto cd = defaultCam->data();
+        for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+            eve::debug::rtPassBegin("ShadowPass");
+            gfx.beginShadowPass(c);
+            auto drawShadowItem = [&](const RenderItem3D &item) {
+                if (!item.shadowCastable) return;
+                if (item.material && !item.material->getCastShadow()) return;
+                if (!item.meshShadow) return;
+                eve::debug::rtBind("mesh", "shadowCaster");
+                eve::debug::rtDraw("drawMeshShadow", "cascade");
+                gfx.drawMeshShadow(item.meshShadow, frame.shadowUpload.ubo.lightVP[c] * item.model);
+            };
+            for (const auto &item : frame.drawList.opaque) drawShadowItem(item);
+            for (const auto &item : frame.drawList.hair) drawShadowItem(item);
+            // Extra shadow casters (billboard/card geometry not in the ECS).
+            for (const auto &drawer : g_shadowDrawers)
+                drawer(gfx, frame.shadowUpload.ubo.lightVP[c], *cd);
+            gfx.endShadowPass();
+            eve::debug::rtPassEnd("ShadowPass");
         }
     }
-    gfx.setMesh3DShadows(shadowUpload);
+    gfx.setMesh3DShadows(frame.shadowUpload);
 
-    const bool useClustered =
-        allowClustered && packed.size() > size_t(Lighting3DPack::kMaxLights);
-    if (!useClustered) {
+    if (!frame.useClustered) {
         ClusteredLightingUpload off{};
         off.active = false;
         gfx.setMesh3DClusteredLighting(off);
-        const Camera3D::Data *ambientCam = defaultCam ? defaultCam->data().operator->() : nullptr;
-        gfx.setMesh3DLighting(packLights3D(packed, ambientCam));
+        gfx.setMesh3DLighting(frame.lighting);
     }
 
     // G-buffer fill (sampleable depth/normal) — before the forward swapchain pass.
     if (doGBuffer && defaultCam &&
-        (ecs::current()->getManager<Renderable3D>() != nullptr || !g_gbufferDrawers.empty())) {
+        (frame.hadRenderables || !g_gbufferDrawers.empty())) {
         eve::debug::rtPassBegin("GBufferPass");
         auto cd = defaultCam->data();
         const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
@@ -545,46 +753,24 @@ void RenderSystem3D::render(Graphics &gfx) {
         const int gw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
         const int gh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
         gfx.beginGBufferPass(gw, gh);
-        auto gbView =
-            ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-        for (auto it = gbView.begin(); it != gbView.end(); ++it) {
-            auto [xf, mr] = *it;
-            if (!mr->visible) continue;
+        auto drawGBufferItem = [&](const RenderItem3D &item) {
+            if (item.culled) return;
             // X-ray targets are skipped so their pixels record the occluder depth
             // behind them; the X-ray shader samples that to detect occlusion.
-            if (mr->xrayHighlight) continue;
-            const glm::mat4 model = modelFromTransform(*xf);
-            const glm::mat4 mvp = viewProj * model;
-            auto emit = [&](Mesh *drawMesh, Material *mat, Texture *albedo, float tr, float tg,
-                            float tb) {
-                if (!drawMesh) return;
-                if (mat && mat->isTransparentHair()) return;
-                if (!mat && mr->isHair) return;
-                eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
-                gfx.drawMeshGBuffer(drawMesh, mvp, model, cd->nearZ, cd->farZ, albedo, tr, tg, tb);
-            };
-            if (mr->usesParts()) {
-                for (int p = 0; p < mr->partCount; ++p) {
-                    Material *mat = mr->parts[p].material ? mr->parts[p].material : mr->material;
-                    Texture *alb = mat ? mat->getAlbedoTexture() : mr->texture;
-                    float tr = mat ? mat->getTintR() : mr->r;
-                    float tg = mat ? mat->getTintG() : mr->g;
-                    float tb = mat ? mat->getTintB() : mr->b;
-                    emit(mr->parts[p].mesh, mat, alb, tr, tg, tb);
-                }
-            } else {
-                if (mr->effectiveHair()) continue;
-                const float dx = xf->x - eye.x;
-                const float dy = xf->y - eye.y;
-                const float dz = xf->z - eye.z;
-                Texture *alb = mr->material ? mr->material->getAlbedoTexture() : mr->texture;
-                float tr = mr->material ? mr->material->getTintR() : mr->r;
-                float tg = mr->material ? mr->material->getTintG() : mr->g;
-                float tb = mr->material ? mr->material->getTintB() : mr->b;
-                emit(mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz)), mr->material, alb, tr,
-                     tg, tb);
-            }
-        }
+            if (item.mr->xrayHighlight) return;
+            if (item.hair) return;
+            if (!item.meshShadow) return;
+            Material *mat = item.material;
+            Texture *alb = mat ? mat->getAlbedoTexture() : item.mr->texture;
+            float tr = mat ? mat->getTintR() : item.mr->r;
+            float tg = mat ? mat->getTintG() : item.mr->g;
+            float tb = mat ? mat->getTintB() : item.mr->b;
+            eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
+            gfx.drawMeshGBuffer(item.meshShadow, viewProj * item.model, item.model, cd->nearZ,
+                                cd->farZ, alb, tr, tg, tb);
+        };
+        for (const auto &item : frame.drawList.opaque) drawGBufferItem(item);
+        for (const auto &item : frame.drawList.hair) drawGBufferItem(item);
         // Extra G-buffer contributors (billboard/card geometry not in the ECS).
         for (const auto &drawer : g_gbufferDrawers) drawer(gfx, *cd, viewProj, aspect);
         gfx.endGBufferPass();
@@ -598,58 +784,6 @@ void RenderSystem3D::render(Graphics &gfx) {
     gfx.begin3DFrame();
     if (!gfx.had3DThisFrame())
         return;
-
-    if (ecs::current()->getManager<Renderable3D>() == nullptr) return;
-
-    struct DrawItem {
-        Renderable3D::Transform3D *xf;
-        Renderable3D::MeshRenderer *mr;
-        Mesh *mesh;
-        Material *material;
-        float distSq;
-    };
-    std::vector<DrawItem> opaque;
-    std::vector<DrawItem> hair;
-    opaque.reserve(64);
-    hair.reserve(16);
-
-    auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [xf, mr] = *it;
-        if (!mr->visible) continue;
-        Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
-        if (!camEnt) continue;
-        auto cd = camEnt->data();
-        const float dx = xf->x - cd->eyeX;
-        const float dy = xf->y - cd->eyeY;
-        const float dz = xf->z - cd->eyeZ;
-        const float distSq = dx * dx + dy * dy + dz * dz;
-        const float dist = std::sqrt(distSq);
-
-        auto pushItem = [&](Mesh *mesh, Material *mat, bool asHair) {
-            if (!mesh) return;
-            DrawItem item{xf, mr, mesh, mat, distSq};
-            if (asHair)
-                hair.push_back(item);
-            else
-                opaque.push_back(item);
-        };
-
-        if (mr->usesParts()) {
-            for (int p = 0; p < mr->partCount; ++p) {
-                Material *mat = mr->parts[p].material ? mr->parts[p].material : mr->material;
-                const bool asHair = mat ? mat->isTransparentHair() : mr->isHair;
-                pushItem(mr->parts[p].mesh, mat, asHair);
-            }
-        } else {
-            Mesh *drawMesh = mr->meshForDistance(dist);
-            Material *mat = mr->material;
-            pushItem(drawMesh, mat, mr->effectiveHair());
-        }
-    }
-
-    std::stable_sort(hair.begin(), hair.end(),
-                     [](const DrawItem &a, const DrawItem &b) { return a.distSq > b.distSq; });
 
     auto bindLegacyMaterial = [&](Renderable3D::MeshRenderer *mr) {
         gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
@@ -672,43 +806,27 @@ void RenderSystem3D::render(Graphics &gfx) {
             none.count = 0;
             none.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
             gfx.setMesh3DLighting(none);
-        } else if (useClustered && !shader) {
-            std::vector<ClusteredLightGpu> points, dirs;
-            splitLights(packed, points, dirs);
-            if (dirs.empty()) {
-                ClusteredLightGpu d{};
-                d.posRadius = glm::vec4(gLightDir, 0.f);
-                d.color = glm::vec4(gLightColor, 1.f);
-                dirs.push_back(d);
-            }
-            if (shadowCaster && !dirs.empty()) {
-                glm::vec3 dir(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
-                if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
-                else dir = glm::normalize(dir);
-                for (size_t i = 0; i < dirs.size(); ++i) {
-                    if (glm::length(glm::vec3(dirs[i].posRadius) - dir) < 1e-3f) {
-                        if (i != 0) std::swap(dirs[0], dirs[i]);
-                        break;
-                    }
-                }
-            }
+        } else if (frame.useClustered && !shader) {
             glm::vec4 ambient(cd->ambientR, cd->ambientG, cd->ambientB, 0.f);
-            auto upload = buildClusteredLighting(points, dirs, viewM, cd->nearZ, cd->farZ,
-                                                 gfx.getWidth(), gfx.getHeight(), fovRad, ambient);
+            auto upload = buildClusteredLighting(frame.clusteredPoints, frame.clusteredDirs, viewM,
+                                                 cd->nearZ, cd->farZ, gfx.getWidth(),
+                                                 gfx.getHeight(), fovRad, ambient);
             gfx.setMesh3DClusteredLighting(upload);
-            gfx.setMesh3DLighting(packLights3D(packed, cd));
+            gfx.setMesh3DLighting(packLights3D(frame.packed, cd));
         } else {
             ClusteredLightingUpload off{};
             off.active = false;
             gfx.setMesh3DClusteredLighting(off);
-            gfx.setMesh3DLighting(packLights3D(packed, cd));
+            gfx.setMesh3DLighting(packLights3D(frame.packed, cd));
         }
     };
 
-    auto drawMeshWithMaterial = [&](Renderable3D::Transform3D *xf, Renderable3D::MeshRenderer *mr,
-                                    Mesh *drawMesh, Material *mat) {
+    auto drawMeshWithMaterial = [&](const RenderItem3D &item) {
+        Mesh *drawMesh = item.meshForward;
+        Material *mat = item.material;
         if (!drawMesh) return;
-        Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
+        Renderable3D::MeshRenderer *mr = item.mr;
+        Camera3D *camEnt = item.camera;
         if (!camEnt) return;
         auto cd = camEnt->data();
 
@@ -740,7 +858,7 @@ void RenderSystem3D::render(Graphics &gfx) {
             applyLighting(mr, nullptr, cd.operator->(), viewM, fovRad);
         }
 
-        const glm::mat4 model = modelFromTransform(*xf);
+        const glm::mat4 model = item.model;
         if (albedo) eve::debug::rtBind("texture", "albedo");
         if (shader)
             eve::debug::rtBind("shader", (mat && mat->isTransparentHair()) || mr->isHair ? "hair"
@@ -770,10 +888,16 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
 
     if (doForward) {
-        for (const auto &item : opaque) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
+        for (const auto &item : frame.drawList.opaque) {
+            if (item.culled || !item.camera) continue;
+            drawMeshWithMaterial(item);
+        }
     }
     if (doHair) {
-        for (const auto &item : hair) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
+        for (const auto &item : frame.drawList.hair) {
+            if (item.culled || !item.camera) continue;
+            drawMeshWithMaterial(item);
+        }
     }
 
     const bool doAO = rc->isEnabled("ao");
