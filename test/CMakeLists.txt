@@ -234,7 +234,7 @@ if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     ${SystemLibraries})
 else()
   if(WIN32)
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2
+    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2md
       PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
       ${SystemLibraries})
   elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
