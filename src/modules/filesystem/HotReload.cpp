@@ -3,6 +3,7 @@
 #include "common/AssetReloader.h"
 #include "common/Capability.h"
 #include "common/Module.h"
+#include "common/StartupTiming.h"
 #include "filesystem/Filesystem.h"
 
 #ifndef EVENGINE_WEBGPU
@@ -152,6 +153,7 @@ bool HotReload::tryReload(std::string path) {
 }
 
 int HotReload::watchTree(std::string root) {
+    StartupStage stage("hotreload: watchTree (recursive walk + register watches)");
     auto *fs = Filesystem::create();
     if (!fs) return 0;
     root = normalizePath(std::move(root));

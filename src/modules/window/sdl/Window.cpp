@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "common/Exception.h"
+#include "common/StartupTiming.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
 #include "image/ImageData.h"
@@ -145,7 +146,10 @@ bool Window::setWindowSettings(WindowSettings f) {
 
     close();
 
-    if (!createWindowAndContext(x, y, f.width, f.height, sdlflags, f.msaa, f.stencil, f.depth)) return false;
+    {
+        StartupStage stage("window: SDL_CreateWindow");
+        if (!createWindowAndContext(x, y, f.width, f.height, sdlflags, f.msaa, f.stencil, f.depth)) return false;
+    }
 
     // Make sure the window keeps any previously set icon.
     if (icon) setIcon(icon);
@@ -192,7 +196,10 @@ bool Window::setWindowSettings(WindowSettings f) {
         }
         pixelWidth  = pw;
         pixelHeight = ph;
-        graphics->initWithWindow(window);
+        {
+            StartupStage stage("window: graphics initWithWindow");
+            graphics->initWithWindow(window);
+        }
         graphics->setViewportSize(f.width, f.height, pw, ph);
     }
     open = true;

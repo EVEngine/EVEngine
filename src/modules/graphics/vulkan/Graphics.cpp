@@ -22,6 +22,7 @@
 #endif
 
 #include "common/Exception.h"
+#include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "image/Image.h"
@@ -355,6 +356,7 @@ Graphics::~Graphics() {
 }
 
 void Graphics::initWithWindow(void *nativeWindow) {
+    StartupStage initStage("graphics: initWithWindow (total)");
     if (initialized) {
         // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
         // The Vulkan surface is tied to the native window. SDL can hand back the
@@ -410,32 +412,38 @@ void Graphics::initWithWindow(void *nativeWindow) {
         builder.add_flags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR);
     }
 #endif
-    inst = builder.build();
-
-    VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
-    if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
-        throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
-    surface = rawSurface;
-
-    auto selector = inst.selectPhysicalDevice();
-    selector.set_surface(surface).set_minimum_version(1, 0);
-#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
-    selector.add_required_extension("VK_KHR_portability_subset");
-#endif
-    auto phys = selector.select();
     {
-        const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
-        if (supported.samplerAnisotropy) {
-            phys.features.samplerAnisotropy = VK_TRUE;
-            maxSamplerAnisotropy = phys.properties.limits.maxSamplerAnisotropy;
-            if (maxSamplerAnisotropy < 1.f) maxSamplerAnisotropy = 1.f;
-        } else {
-            maxSamplerAnisotropy = 1.f;
-        }
+        StartupStage stage("  vulkan: instance + surface");
+        inst = builder.build();
+
+        VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
+        if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
+            throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
+        surface = rawSurface;
     }
-    vkb::DeviceBuilder deviceBuilder = phys.createDevice();
-    device = deviceBuilder.build();
-    maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
+
+    {
+        StartupStage stage("  vulkan: physical device + device");
+        auto selector = inst.selectPhysicalDevice();
+        selector.set_surface(surface).set_minimum_version(1, 0);
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+        selector.add_required_extension("VK_KHR_portability_subset");
+#endif
+        auto phys = selector.select();
+        {
+            const vk::PhysicalDeviceFeatures supported = phys->getFeatures();
+            if (supported.samplerAnisotropy) {
+                phys.features.samplerAnisotropy = VK_TRUE;
+                maxSamplerAnisotropy = phys.properties.limits.maxSamplerAnisotropy;
+                if (maxSamplerAnisotropy < 1.f) maxSamplerAnisotropy = 1.f;
+            } else {
+                maxSamplerAnisotropy = 1.f;
+            }
+        }
+        vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+        device = deviceBuilder.build();
+        maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
+    }
 
     uploadPool = device.createCommandPool();
 
@@ -445,18 +453,39 @@ void Graphics::initWithWindow(void *nativeWindow) {
     SDL_GetWindowSize(window, &lw, &lh);
     setViewportSize(lw, lh, pw, ph);
 
-    createSwapchainAndPipeline();
-    createTexturedPipeline();
-    createMesh3DPipeline();
-    createMesh3DClusteredPipeline();
-    createVoxelRectPipeline();
+    {
+        StartupStage stage("  vulkan: swapchain + solid pipelines");
+        createSwapchainAndPipeline();
+    }
+    {
+        StartupStage stage("  vulkan: textured/lit2d pipelines");
+        createTexturedPipeline();
+    }
+    {
+        StartupStage stage("  vulkan: mesh3d pipeline");
+        createMesh3DPipeline();
+    }
+    {
+        StartupStage stage("  vulkan: clustered pipeline");
+        createMesh3DClusteredPipeline();
+    }
+    {
+        StartupStage stage("  vulkan: voxel pipeline");
+        createVoxelRectPipeline();
+    }
     // Must be set before createShadowResources(): it clears the shadow cascade
     // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
     // asserts `initialized` is already true.
     initialized = true;
-    createShadowResources();
-    const uint8_t whitePixel[4] = {255, 255, 255, 255};
-    whiteTexture = newTexture(1, 1, whitePixel);
+    {
+        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        createShadowResources();
+    }
+    {
+        StartupStage stage("  vulkan: white texture");
+        const uint8_t whitePixel[4] = {255, 255, 255, 255};
+        whiteTexture = newTexture(1, 1, whitePixel);
+    }
 }
 
 void Graphics::onNativeWindowDestroyed() {

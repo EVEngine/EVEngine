@@ -65,17 +65,33 @@ if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
     config.devServer <- eve.devServerArg;
 
 // ---------------------------------------------------------------------------
+// Startup timing (temporary diagnostics; remove once startup is fast).
+// ---------------------------------------------------------------------------
+_startup_t0 <- clock();
+print("[startup] load.nut begins at process clock " + (clock() * 1000.0) + " ms\n");
+
+function _startup_ms(label) {
+    local ms = (clock() - _startup_t0) * 1000.0;
+    print("[startup] " + label + ": " + ms + " ms\n");
+}
+
+// ---------------------------------------------------------------------------
 // Bind the modules this build actually contains.
 // ---------------------------------------------------------------------------
 
 foreach (m in eve.moduleList) {
     if (!(m.cls in eve)) continue;
+    local _m0 = clock();
     try {
         getroottable()[m.slot] <- eve[m.cls]();
     } catch (e) {
         print("module " + m.cls + " failed to initialize: " + e + "\n");
     }
+    local _mdt = (clock() - _m0) * 1000.0;
+    if (_mdt >= 50.0)
+        print("[startup] module " + m.cls + " took " + _mdt + " ms\n");
 }
+_startup_ms("all modules instantiated");
 
 if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
@@ -95,6 +111,7 @@ if (!win.setWindowSettings(s)) {
 // Keep script layout in sync with the real window (mobile may ignore 800x600).
 config.width = win.getWidth();
 config.height = win.getHeight();
+_startup_ms("window created + vulkan initialized");
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -114,6 +131,7 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
         print("async.nut failed to load: " + e + "\n");
     }
 }
+_startup_ms("async runtime loaded");
 
 eve_init <- function() {};
 eve_update <- function(dt) {
@@ -253,6 +271,7 @@ if (file_exists("main.nut")) {
         print("Embedded demo failed to load: " + e + "\n");
     }
 }
+_startup_ms("game script loaded");
 
 if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
@@ -268,13 +287,16 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
         print("hot-reload watchTree failed: " + e + "\n");
     }
 }
+_startup_ms("hot reload watch registered");
 
+_startup_ms("eve_init start");
 try {
     eve_init();
 } catch (e) {
     if ("dev" in eve) eve.dev.reportError("" + e);
     print("eve_init failed: " + e + "\n");
 }
+_startup_ms("eve_init done");
 
 // ---------------------------------------------------------------------------
 // DevTools helpers (only present when `eve run --debug`).
@@ -380,6 +402,10 @@ startup_frames <- 45;
 // The desktop loop below calls this; the browser build returns to C++, which
 // drives it from emscripten_set_main_loop (requestAnimationFrame).
 eve_frame <- function() {
+    if (!("_startup_first_frame" in getroottable())) {
+        getroottable()._startup_first_frame <- true;
+        _startup_ms("first frame begins");
+    }
     local running = true;
     event.pump();
     while (true) {
@@ -437,6 +463,12 @@ eve_frame <- function() {
     } catch (e) {
         print("present error: " + e + "\n");
     }
+    if (!("_startup_first_present" in getroottable())) {
+        getroottable()._startup_first_present <- true;
+        _startup_ms("first present - window shows content");
+    }
+    if ("bootBench" in eve && eve.bootBench)
+        return false;
     return running;
 };
 

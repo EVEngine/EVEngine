@@ -2,6 +2,7 @@
 #include "ui/Theme.h"
 
 #include "common/Exception.h"
+#include "common/StartupTiming.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
 
@@ -106,6 +107,7 @@ ImGuiBackend::~ImGuiBackend() { shutdown(); }
 bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
     if (initialized_) return true;
     if (!window || !gfx) return false;
+    StartupStage initStage("ui: ImGui backend init (first frame)");
 
     gfx_ = gfx;
     window_ = window;
@@ -180,14 +182,17 @@ bool ImGuiBackend::init(SDL_Window *window, eve::graphics::Graphics *gfx) {
 
     ImGui_ImplVulkan_Init(&initInfo, static_cast<VkRenderPass>(vkg->getUiMsaaRenderPass()));
 
-    loadFonts();
+    {
+        StartupStage fontStage("  ui: font load + atlas upload");
+        loadFonts();
 
-    vkb::executeImmediately(device.instance, vkg->getUploadPool(),
-                            device.getQueue(vkb::QueueType::graphics), [&](vk::CommandBuffer cb) {
-                                ImGui_ImplVulkan_CreateFontsTexture(static_cast<VkCommandBuffer>(cb));
-                            });
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
-    fontsUploaded_ = true;
+        vkb::executeImmediately(device.instance, vkg->getUploadPool(),
+                                device.getQueue(vkb::QueueType::graphics), [&](vk::CommandBuffer cb) {
+                                    ImGui_ImplVulkan_CreateFontsTexture(static_cast<VkCommandBuffer>(cb));
+                                });
+        ImGui_ImplVulkan_DestroyFontUploadObjects();
+        fontsUploaded_ = true;
+    }
 #endif
 
     gfx_->setPresentOverlay(&ImGuiBackend::presentOverlayThunk, this);
