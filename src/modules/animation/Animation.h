@@ -22,6 +22,7 @@ class MotionMatcher;
 class ControlAnim;
 class ControlPose;
 class AnimSkin;
+class AnimLattice;
 class AnimTrail;
 class SpriteSheet;
 class SpriteClip;
@@ -108,6 +109,18 @@ public:
      */
     AnimSkin *newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
                                AnimSkeleton *skeleton);
+
+    /**
+     * @brief 3D lattice scale-deformer (晶格缩放变形). divX/divY/divZ are the
+     * control-point divisions (each >= 2). Control points are driven with
+     * setPointScale / setPointOffset; bound vertices deform via trilinear
+     * interpolation (see AnimLattice).
+     */
+    AnimLattice *newLattice(int divX = 2, int divY = 2, int divZ = 2);
+
+    /** @brief newLattice bound to meshIndex of model (Assimp vertices). */
+    AnimLattice *newLatticeFromModel(eve::model3d::ModelData *model, int meshIndex,
+                                     int divX = 2, int divY = 2, int divZ = 2);
 
     /**
      * @brief Motion trail / afterimage (script GC owns returned object).
