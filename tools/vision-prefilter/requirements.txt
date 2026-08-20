@@ -4,6 +4,6 @@
 # Python 3.10+ recommended.
 
 fastapi>=0.110
-uvicorn[standard]>=0.29
+uvicorn[standard]>=0.52.3
 pydantic>=2.6
 requests>=2.31
