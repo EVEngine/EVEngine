@@ -127,13 +127,13 @@ fi
 echo "OK: SDK version marker -> $VERSION_FILE"
 
 # --- 2. Host runtime runs ------------------------------------------------------
-VER="$("$SDK/bin/$RUNTIME" -v 2>&1)"
+VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || true
 echo "  eve -v -> ${VER:-<empty>}"
 if [ -n "$EXPECTED" ]; then
   echo "$VER" | grep -qF "$EXPECTED" || \
-    fail "eve -v did not contain expected version '$EXPECTED'"
+    fail "eve -v did not contain expected version '$EXPECTED' (output: $VER)"
 else
-  echo "$VER" | grep -qE '[0-9]+(\.[0-9]+)+' || fail "eve -v did not print a version"
+  echo "$VER" | grep -qE '[0-9]+(\.[0-9]+)+' || fail "eve -v did not print a version (output: $VER)"
 fi
 echo "OK: host runtime executes"
 

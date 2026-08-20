@@ -46,6 +46,21 @@ else()
     )
 endif()
 
+# macOS: eve links the dynamic Vulkan loader. Bundle it into the SDK and give
+# eve an @loader_path rpath so the installed binary runs without the build's
+# Vulkan SDK environment. SDL2 and MoltenVK are linked statically.
+if(BUILD_PLATFORM STREQUAL "macosx")
+    install(FILES
+        "$ENV{VULKAN_SDK}/lib/libvulkan.dylib"
+        "$ENV{VULKAN_SDK}/lib/libvulkan.1.dylib"
+        DESTINATION lib
+        OPTIONAL
+    )
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        INSTALL_RPATH "@loader_path/../lib"
+    )
+endif()
+
 # ---- Public headers (engine common + module façades) ----
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     DESTINATION include/eve/common
