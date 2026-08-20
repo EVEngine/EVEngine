@@ -3,8 +3,10 @@
 #include "thread/JobSystem.h"
 #include "vkbuilder/framegraph.hpp"
 
+#include <chrono>
 #include <cstdint>
 #include <functional>
+#include <thread>
 #include <vector>
 
 namespace eve::graphics::vulkan {
@@ -30,7 +32,17 @@ inline vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *job
         auto *group = jobs->createFrameTaskGroup();
         for (uint32_t order : layerPasses)
             group->fork([recordOne, order] { recordOne(order); });
-        group->wait();  // arena-owned group; never deleted
+        // Join without help-execution: TaskGroup::wait() help-executes on the
+        // waiting thread, and that path races with the arena lifecycle in
+        // beginFrame/endFrame (a help-run job's completion can observe
+        // outstandingFrame == 0 and reset the per-frame arena while workers
+        // are still finishing other jobs). Polling the group's pending count
+        // keeps workers as the sole executors; every forked job still drains.
+        // (Follow-up: fix the JobSystem help-execution race upstream so this
+        // can return to a blocking join.)
+        while (group->getPendingCount() > 0)
+            std::this_thread::sleep_for(std::chrono::microseconds(50));
+        // Arena-owned group; never deleted.
     };
 }
 

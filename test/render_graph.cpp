@@ -160,7 +160,7 @@ TEST_CASE("render_graph.engineTopology") {
 }
 
 TEST_CASE("render_graph.jobSystemExecutorParallel") {
-    auto *jobs = eve::thread::createJobSystem(4);
+    auto *jobs = eve::thread::createJobSystem(0);  // hardware concurrency, like the engine
     REQUIRE(jobs != nullptr);
     jobs->beginFrame();
 
@@ -216,4 +216,66 @@ TEST_CASE("render_graph.jobSystemExecutorSerialFallback") {
     CHECK_EQ(recorded.size(), size_t(4));
     for (size_t i = 0; i < recorded.size(); ++i)
         CHECK_EQ(recorded[i], int(i));
+}
+
+TEST_CASE("render_graph.jobSystemGroupStress") {
+    // Replicates the engine's per-frame pattern (beginFrame -> 4-way fork/join
+    // -> endFrame) which exposed a scheduler race that loses a forked job and
+    // hangs the join.
+    auto *jobs = eve::thread::createJobSystem(4);
+    REQUIRE(jobs != nullptr);
+    std::atomic<int> ran{0};
+    int failedIter = -1;
+    for (int iter = 0; iter < 4000; ++iter) {
+        jobs->beginFrame();
+        auto *group = jobs->createFrameTaskGroup();
+        ran.store(0);
+        for (int i = 0; i < 4; ++i)
+            group->fork([&] { ran.fetch_add(1); });
+        group->wait();
+        jobs->endFrame();
+        if (ran.load() != 4) {
+            failedIter = iter;
+            break;
+        }
+    }
+    jobs->stop();
+    delete jobs;
+    CHECK_EQ(failedIter, -1);
+}
+
+TEST_CASE("render_graph.jobSystemEngineFramePattern") {
+    // Mirrors the engine frame: prepareFrame3D's light job + parallel_for
+    // bracket, then recordDeferredFrameGraph's 4-way fork/join bracket, 4000x.
+    auto *jobs = eve::thread::createJobSystem(0);  // hardware concurrency, like the engine
+    REQUIRE(jobs != nullptr);
+    std::atomic<int> ran{0};
+    std::atomic<int> sum{0};
+    int failedIter = -1;
+    for (int iter = 0; iter < 4000; ++iter) {
+        jobs->beginFrame();
+        auto *light = jobs->submitFrame([&] { sum.fetch_add(1); });
+        auto *loop = jobs->parallelForFrame(0, 64, [&](int first, int last) {
+            for (int i = first; i < last; ++i) sum.fetch_add(1);
+        }, 16);
+        loop->wait();
+        light->wait();
+        jobs->endFrame();
+
+        jobs->beginFrame();
+        auto *group = jobs->createFrameTaskGroup();
+        ran.store(0);
+        for (int i = 0; i < 4; ++i)
+            group->fork([&] { ran.fetch_add(1); });
+        group->wait();
+        jobs->endFrame();
+        if (ran.load() != 4) {
+            failedIter = iter;
+            break;
+        }
+    }
+    jobs->stop();
+    delete jobs;
+    CHECK_EQ(failedIter, -1);
+    CHECK_EQ(sum.load(), 4000 * 65);
 }

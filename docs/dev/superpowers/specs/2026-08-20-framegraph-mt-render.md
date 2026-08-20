@@ -157,10 +157,36 @@ eve_render()                          │
 ### Stage D（shadow/forward/present 全部进图 + 上游补丁）
 
 - VKBuilder 增加 `TextureDesc::baseArrayLayer`（或 shadow 改 3 张 2D），CSM 3
-  pass 进图（与 gbuffer 同层并行）。
+  pass 进图（与 gbuffer 同层并行）——**shadow 部分已在本分支落地**（见下）。
 - forward（场景色 + AO/outline + 2D/UI）与 present 作为图内 pass；
   `recordPending*Passes` 与手写 layout 跟踪全部删除。
 - 评估 VKBuilder 无 swapchain 帧槽推进补丁，供引擎自管 present 的过渡期使用。
+
+### 已落地的 Stage D（shadow 进图）
+
+- 每个 present 槽位的 deferred FrameGraph 现在包含 **3 个 CSM cascade pass +
+  G-buffer pass**（4 个声明式 pass，依赖无关、同一 layer）。
+  CSM 是 2D array 深度图，每个 cascade 用 `layerView(c)` 作为附件视图导入，
+  `arrayLayers=3` 让 barrier 覆盖整个数组；所有 cascade 结束于
+  `DepthStencilReadOnlyOptimal`，forward pass（引擎侧）照常采样数组视图。
+- `recordPendingShadowPasses` / `recordPendingGBufferPass` 删除，合并为
+  `recordDeferredFrameGraph()`：图 record + `submit()`，在 swapchain pass 之前
+  单独提交。
+- **每槽每帧只录一次守卫**：`render3D` 可被脚本一帧调多次（测试里 3 次），
+  同帧内不重复录制图 CB（否则 reset 在途 CB 会挂起驱动）。
+- 录制默认**串行**：并行 executor（`jobSystemPassExecutor`）已就绪并通过 CPU
+  压力测试，但 JobSystem 的 help-execution 与 frame arena 生命周期之间还有
+  一个残余竞态（见下），修复前引擎路径用 `graph->record()`。
+
+### JobSystem 竞态修复（PR #134 的调度器 bug）
+
+- `State::completeJob` 原来在 completion callback / dependent release **之前**
+  递减 `outstandingFrame`；`beginFrame/endFrame` 看到归零立即 `arena.reset()`，
+  而 worker 还在用该 job（`fireCompletion`/`releaseDependents`）→ use-after-free，
+  表现为 fork 出的 job 丢失（join 挂起）或崩溃。修复：递减移到完成回调之后。
+- 修复后仍有一个残余、时序敏感的竞态（worker 卡在 pass 回调中），尚未根因；
+  新增 `render_graph.jobSystemGroupStress` /
+  `render_graph.jobSystemEngineFramePattern` 两个压力测试作为回归覆盖。
 
 ## 5. 本分支验证
 
