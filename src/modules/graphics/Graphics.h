@@ -25,6 +25,7 @@
 #include "graphics/Material.h"
 #include "graphics/GBuffer.h"
 #include "graphics/RenderControl.h"
+#include "graphics/GpuDrivenTypes.h"
 #include <vector>
 #include <optional>
 #include <cstdint>
@@ -86,6 +87,40 @@ public:
      * built-in AO/GI use SPIR-V), so RenderSystem3D skips them there.
      */
     virtual bool supportsGBufferPost() const { return true; }
+
+    // ---- GPU-driven rendering (stage 1): capability-gated seam ----
+    // Backends without the GPU-driven path (WebGPU, software) return false and
+    // RenderSystem3D falls back to the legacy per-draw path.
+
+    /** @brief True when the backend can run GPU-driven opaque draws. */
+    virtual bool supportsGpuDriven3D() const { return false; }
+
+    /** @brief Whether the GPU-driven opaque path is currently enabled. */
+    virtual bool gpuDrivenEnabled() const { return false; }
+
+    /** @brief Enable/disable the GPU-driven opaque path (no-op when unsupported). */
+    virtual void gpuDrivenSetEnabled(bool enabled) { (void)enabled; }
+
+    /** @brief GPU mesh-table slot for a mesh (kInvalidGpuDrivenSlot when not uploaded). */
+    virtual uint32_t gpuDrivenMeshRecord(Mesh *mesh) { (void)mesh; return kInvalidGpuDrivenSlot; }
+
+    /** @brief GPU material-table slot for a material (lazily created). */
+    virtual uint32_t gpuDrivenMaterialRecord(Material *material) {
+        (void)material;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /**
+     * @brief Upload + record GPU-driven opaque draws (call inside the open 3D frame).
+     * The backend sorts instances by (material, mesh), merges buckets and emits
+     * indirect draws itself; the caller only supplies the raw instance list.
+     * @return false when the backend cannot service the request (caller falls back).
+     */
+    virtual bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
+        (void)instances;
+        (void)instanceCount;
+        return false;
+    }
 
     /**
      * @brief Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.

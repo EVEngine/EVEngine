@@ -23,6 +23,8 @@ SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 SHADERS = [
     ("mesh3d.vert", "vert"),
     ("mesh3d.frag", "frag"),
+    ("mesh3d_gpudriven.vert", "vert"),
+    ("mesh3d_gpudriven.frag", "frag"),
     ("mesh3d_clustered.vert", "vert"),
     ("mesh3d_clustered.frag", "frag"),
     ("mesh3d_hair.vert", "vert"),
@@ -74,6 +76,10 @@ def compile_one(src: Path, stage: str) -> Path:
             "-o",
             str(out),
         ]
+        # The GPU-driven path uses descriptor indexing (nonuniform() sampling),
+        # which requires a 1.2 target environment for glslc's SPIR-V emission.
+        if "gpudriven" in src.name:
+            cmd.append("--target-env=vulkan1.2")
     else:
         validator = shutil.which("glslangValidator")
         if not validator:

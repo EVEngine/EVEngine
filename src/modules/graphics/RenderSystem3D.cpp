@@ -769,7 +769,65 @@ void RenderSystem3D::render(Graphics &gfx) {
         if (Texture *depth = rc->getGBuffer()->getHwDepthTexture()) gfx.setMesh3DSceneDepth(depth);
     }
 
-    if (doForward) {
+    // GPU-driven opaque path (stage 1): CPU collects instances, the Vulkan
+    // backend sorts/merges buckets and emits indirect draws. Eligible only for
+    // default-camera, Material-driven opaque items without a custom shader and
+    // without clustered lighting; any ineligible item falls the whole opaque
+    // list back to the legacy per-draw path.
+    bool gpuDrivenUsed = false;
+    const bool gpuDrivenWanted =
+        rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
+    gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
+    if (doForward && gpuDrivenWanted && !useClustered && defaultCam && !opaque.empty()) {
+        bool eligible = true;
+        for (const auto &item : opaque) {
+            if (!item.material || item.mr->camera != nullptr ||
+                item.material->effectiveShader() != nullptr) {
+                eligible = false;
+                break;
+            }
+        }
+        if (eligible) {
+            auto cd = defaultCam->data();
+            const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+            const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
+            const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
+            const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
+            const float fovRad = cd->fovYDeg * 0.017453292519943295f;
+            const glm::mat4 projM =
+                perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
+            gfx.setMesh3DViewProj(projM * viewM);
+            gfx.setMesh3DView(viewM);
+            gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+            gfx.setMesh3DCameraPos(eye);
+            gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+            ClusteredLightingUpload off{};
+            off.active = false;
+            gfx.setMesh3DClusteredLighting(off);
+            gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+
+            std::vector<eve::graphics::GpuInstance> instances;
+            instances.reserve(opaque.size());
+            bool recordsOk = true;
+            for (const auto &item : opaque) {
+                eve::graphics::GpuInstance inst{};
+                inst.model = modelFromTransform(*item.xf);
+                inst.meshId = gfx.gpuDrivenMeshRecord(item.mesh);
+                inst.materialId = gfx.gpuDrivenMaterialRecord(item.material);
+                if (inst.meshId == eve::graphics::kInvalidGpuDrivenSlot ||
+                    inst.materialId == eve::graphics::kInvalidGpuDrivenSlot) {
+                    recordsOk = false;
+                    break;
+                }
+                instances.push_back(inst);
+            }
+            if (recordsOk &&
+                gfx.gpuDrivenSubmitOpaque(instances.data(), uint32_t(instances.size()))) {
+                gpuDrivenUsed = true;
+            }
+        }
+    }
+    if (doForward && !gpuDrivenUsed) {
         for (const auto &item : opaque) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
     }
     if (doHair) {

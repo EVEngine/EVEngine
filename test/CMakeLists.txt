@@ -79,6 +79,7 @@ file(GLOB all_test_cpp
   virtualgeometry_gpu.cpp
   gpgpu.cpp
   gpu_driven.cpp
+  indirect_builder.cpp
   box2d.cpp
   box3d.cpp
   softbody.cpp

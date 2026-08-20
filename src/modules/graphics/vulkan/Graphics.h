@@ -103,6 +103,9 @@ struct Mesh3DUBO {
     // z=time, w=unused; cloudWind.xy=wind velocity (world/s), z=coverage, w=detail.
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};
+    // GPU-driven only: x = bindless env cubemap slot, y = envIntensity.
+    // Appended after the legacy prefix so legacy shaders are unaffected.
+    glm::vec4 bindlessEnv{0.f, 0.f, 0.f, 0.f};
 };
 
 struct Mesh3DClusteredUBO {
@@ -210,6 +213,18 @@ public:
     uint32_t bindlessSlotCube(const GpuTexture *tex) const {
         return tex ? tex->bindlessIndexCube : kInvalidBindlessSlot;
     }
+    bool supportsGpuDriven3D() const override {
+        return gpuDrivenCaps_.gpuDrivenAvailable();
+    }
+    bool gpuDrivenEnabled() const override {
+        return gpuDrivenEnabled_ && gpuDrivenCaps_.gpuDrivenAvailable();
+    }
+    void gpuDrivenSetEnabled(bool enabled) override { gpuDrivenEnabled_ = enabled; }
+    uint32_t gpuDrivenMeshRecord(Mesh *mesh) override;
+    uint32_t gpuDrivenMaterialRecord(Material *material) override {
+        return materialTableGetOrCreate(material);
+    }
+    bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
     /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
     uint32_t debugBindlessIndex(Texture *tex) const;
     uint32_t debugMeshRecordIndex(Mesh *mesh) const;
@@ -647,6 +662,12 @@ private:
     void syncMeshTable();
     GpuMaterialRecord buildMaterialRecord(Material *material);
     void createBindlessSet();
+
+    // ---- GPU-driven (stage 1): opaque forward path ----
+    bool gpuDrivenEnabled_ = false;
+    vk::PipelineLayout mesh3dGpuDrivenPipelineLayout = nullptr;
+    vk::Pipeline mesh3dGpuDrivenPipeline = nullptr;
+    void createMesh3DGpuDrivenPipeline();
 
     // CSM shadow map (3 cascade layers), one array per in-flight slot.
     struct ShadowMapSlot {

@@ -3,6 +3,7 @@
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/IndirectBuilder.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -37,6 +38,8 @@
 #include "graphics/shaders/textured_frag_spv.inc"
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
@@ -476,19 +479,16 @@ void Graphics::initWithWindow(void *nativeWindow) {
 
             gpuDrivenCaps_.api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
             gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
+            gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
+                supported.shaderSampledImageArrayDynamicIndexing == VK_TRUE;
             gpuDrivenCaps_.drawIndirectCount = vk12.drawIndirectCount == VK_TRUE;
             gpuDrivenCaps_.descriptorIndexing = vk12.descriptorIndexing == VK_TRUE;
-            gpuDrivenCaps_.runtimeDescriptorArray = vk12.runtimeDescriptorArray == VK_TRUE;
-            gpuDrivenCaps_.shaderSampledImageArrayNonUniformIndexing =
-                vk12.shaderSampledImageArrayNonUniformIndexing == VK_TRUE;
-            gpuDrivenCaps_.shaderStorageBufferArrayNonUniformIndexing =
-                vk12.shaderStorageBufferArrayNonUniformIndexing == VK_TRUE;
-            gpuDrivenCaps_.descriptorBindingPartiallyBound =
-                vk12.descriptorBindingPartiallyBound == VK_TRUE;
             gpuDrivenCaps_.descriptorBindingSampledImageUpdateAfterBind =
                 vk12.descriptorBindingSampledImageUpdateAfterBind == VK_TRUE;
             gpuDrivenCaps_.descriptorBindingStorageBufferUpdateAfterBind =
                 vk12.descriptorBindingStorageBufferUpdateAfterBind == VK_TRUE;
+            gpuDrivenCaps_.samplerArrayCapacity =
+                phys.properties.limits.maxPerStageDescriptorSamplers >= kMaxBindlessTextures;
         }
         // Feature structures must outlive DeviceBuilder::build() (add_pNext only
         // stores pointers).
@@ -501,16 +501,13 @@ void Graphics::initWithWindow(void *nativeWindow) {
             vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
             vk12Enable.drawIndirectCount = VK_TRUE;
             vk12Enable.descriptorIndexing = VK_TRUE;
-            vk12Enable.runtimeDescriptorArray = VK_TRUE;
-            vk12Enable.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
-            vk12Enable.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE;
-            vk12Enable.descriptorBindingPartiallyBound = VK_TRUE;
             vk12Enable.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
             vk12Enable.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
             features2Enable.sType = vk::StructureType::ePhysicalDeviceFeatures2;
             features2Enable.pNext = &vk12Enable;
             features2Enable.features = phys.features;
             features2Enable.features.multiDrawIndirect = VK_TRUE;
+            features2Enable.features.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
             deviceBuilder.add_pNext(&features2Enable);
         }
         device = deviceBuilder.build();
@@ -536,6 +533,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
     {
         StartupStage stage("  vulkan: mesh3d pipeline");
         createMesh3DPipeline();
+        createMesh3DGpuDrivenPipeline();
     }
     {
         StartupStage stage("  vulkan: clustered pipeline");
@@ -656,7 +654,7 @@ void Graphics::createBindlessSet() {
     auto *white = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
     auto *whiteCube = static_cast<GpuTexture *>(defaultBindlessCube->gpuHandle);
 
-    std::array<vk::DescriptorSetLayoutBinding, 3> bindings{};
+    std::array<vk::DescriptorSetLayoutBinding, 6> bindings{};
     bindings[0].binding = 0;
     bindings[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
     bindings[0].descriptorCount = kMaxBindlessTextures;
@@ -668,16 +666,23 @@ void Graphics::createBindlessSet() {
     bindings[1].descriptorCount = kMaxBindlessCubemaps;
     bindings[2].binding = 2;
     bindings[2].descriptorType = vk::DescriptorType::eStorageBuffer;
-    bindings[2].descriptorCount = kMaxBindlessSsbo;
+    bindings[2].descriptorCount = 1;
     bindings[2].stageFlags = bindings[0].stageFlags;
+    bindings[3] = bindings[2];
+    bindings[3].binding = 3;
+    bindings[4] = bindings[2];
+    bindings[4].binding = 4;
+    bindings[5] = bindings[2];
+    bindings[5].binding = 5;
 
-    std::array<vk::DescriptorBindingFlags, 3> bindingFlags{
-        vk::DescriptorBindingFlagBits::ePartiallyBound |
-            vk::DescriptorBindingFlagBits::eUpdateAfterBind,
-        vk::DescriptorBindingFlagBits::ePartiallyBound |
-            vk::DescriptorBindingFlagBits::eUpdateAfterBind,
-        vk::DescriptorBindingFlagBits::ePartiallyBound |
-            vk::DescriptorBindingFlagBits::eUpdateAfterBind,
+    // All array slots are filled with placeholders at init, so PARTIALLY_BOUND
+    // is not required; UPDATE_AFTER_BIND lets textures created mid-frame be
+    // registered without rebinding the set.
+    const vk::DescriptorBindingFlagBits kUpdateAfterBind =
+        vk::DescriptorBindingFlagBits::eUpdateAfterBind;
+    std::array<vk::DescriptorBindingFlags, 6> bindingFlags{
+        kUpdateAfterBind, kUpdateAfterBind, kUpdateAfterBind,
+        kUpdateAfterBind, kUpdateAfterBind, kUpdateAfterBind,
     };
     vk::DescriptorSetLayoutBindingFlagsCreateInfo flagsInfo{};
     flagsInfo.bindingCount = uint32_t(bindingFlags.size());
@@ -694,7 +699,7 @@ void Graphics::createBindlessSet() {
     std::array<vk::DescriptorPoolSize, 2> poolSizes{
         vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
                                kMaxBindlessTextures + kMaxBindlessCubemaps},
-        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, kMaxBindlessSsbo},
+        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 4},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
     poolInfo.flags = vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind;
@@ -898,6 +903,122 @@ void Graphics::syncMaterialTable() {
     materialTableBuffer_.updateLocal(vkb::FrameSlot::gpuIdle(), materialTableRecords_.data(),
                                      materialTableRecords_.size() *
                                          sizeof(GpuMaterialRecord));
+}
+
+uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
+    if (!mesh || !mesh->gpuHandle) return kInvalidBindlessSlot;
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    if (gpu->gpuRecordIndex == kInvalidBindlessSlot) registerMeshRecord(gpu);
+    return gpu->gpuRecordIndex;
+}
+
+bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
+    if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable()) return false;
+    if (!mesh3dGpuDrivenPipeline || !bindlessSet_ || !meshTableBuffer_.buffer) return false;
+    if (!instances || instanceCount == 0) return false;
+
+    // Sort by (material, mesh) and merge buckets using the GPU mesh table.
+    eve::graphics::IndirectBuilder builder;
+    for (uint32_t i = 0; i < instanceCount; ++i) {
+        builder.add(i, instances[i].meshId, instances[i].materialId, 0);
+    }
+    const uint32_t drawCount = builder.build(meshTableRecords_);
+    if (drawCount == 0) return false;
+    const auto &cmds = builder.commands();
+    const auto &order = builder.sortedInstanceOrder();
+
+    // Upload instances in the sorted order so each bucket is a contiguous range.
+    std::vector<GpuInstance> sorted(instanceCount);
+    for (uint32_t i = 0; i < instanceCount; ++i) sorted[i] = instances[order[i]];
+
+    auto &arena = currentFrameArena();
+    FrameArena::Alloc instAlloc = arena.alloc(instanceCount * sizeof(GpuInstance), 16);
+    FrameArena::Alloc cmdAlloc = arena.alloc(drawCount * sizeof(GpuIndirectCommand), 16);
+    if (!instAlloc.mapped || !cmdAlloc.mapped) return false;  // arena overflow: caller falls back
+    std::memcpy(instAlloc.mapped, sorted.data(), instanceCount * sizeof(GpuInstance));
+    std::memcpy(cmdAlloc.mapped, cmds.data(), drawCount * sizeof(GpuIndirectCommand));
+
+    // Bind the arena instance buffer as bindless binding 4 (update before bind,
+    // so UPDATE_AFTER_BIND is not strictly required for this path).
+    vk::DescriptorBufferInfo instInfo{arena.buffer(), instAlloc.offset, instAlloc.size};
+    vk::WriteDescriptorSet instWrite{};
+    instWrite.dstSet = bindlessSet_;
+    instWrite.dstBinding = 4;
+    instWrite.descriptorCount = 1;
+    instWrite.descriptorType = vk::DescriptorType::eStorageBuffer;
+    instWrite.pBufferInfo = &instInfo;
+    device->updateDescriptorSets(1, &instWrite, 0, nullptr);
+
+    // Per-frame UBO through the legacy per-draw set machinery (one slot per frame).
+    ensureFlatNormalTexture3D();
+    ensureFlatHeightTexture3D();
+    ensureDefaultEnvCubemap();
+    Texture *tex = whiteTexture;
+    auto *gpuTex = static_cast<GpuTexture *>(tex->gpuHandle);
+    auto *gpuNormal = static_cast<GpuTexture *>(mesh3dNormalTexture ? mesh3dNormalTexture->gpuHandle
+                                                                     : flatNormalTexture3D->gpuHandle);
+    auto *gpuHeight = static_cast<GpuTexture *>(mesh3dHeightTexture ? mesh3dHeightTexture->gpuHandle
+                                                                     : flatHeightTexture3D->gpuHandle);
+    Texture *envTex = mesh3dEnvTexture ? mesh3dEnvTexture : defaultEnvCubemap;
+    auto *gpuEnv = static_cast<GpuTexture *>(envTex->gpuHandle);
+    auto *gpuDepth = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+
+    Mesh3DUBO ubo = mesh3dFrameUbo;
+    ubo.model = glm::mat4(1.f);
+    ubo.tint = glm::vec4(1.f);
+    const int lightCount = std::max(0, std::min(mesh3dLighting.count, Lighting3DPack::kMaxLights));
+    ubo.lightDir.w = float(lightCount);
+    ubo.cameraPos.w = mesh3dRoughness;
+    ubo.lightColor.w = mesh3dEnvIntensity;
+    ubo.ambient.w = mesh3dMetallic;
+    for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
+    int dirI = -1;
+    for (int i = 0; i < lightCount; ++i) {
+        if (mesh3dLighting.lights[i].posRadius.w <= 0.f) {
+            dirI = i;
+            break;
+        }
+    }
+    if (dirI >= 0) {
+        glm::vec3 d(mesh3dLighting.lights[dirI].posRadius);
+        if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+        else d = glm::normalize(d);
+        ubo.lightDir = glm::vec4(d, float(lightCount));
+        ubo.lightColor = glm::vec4(glm::vec3(mesh3dLighting.lights[dirI].color), mesh3dEnvIntensity);
+    } else {
+        ubo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(lightCount));
+        ubo.lightColor = glm::vec4(0.f, 0.f, 0.f, mesh3dEnvIntensity);
+    }
+
+    auto &fslots = currentMesh3dFrameSlots();
+    const size_t slot = fslots.drawIndex++;
+    vk::DescriptorSet set =
+        mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots, slot);
+    fslots.slots[slot].ubo.updateLocal(frameToken(), ubo);
+    ShadowUBO shadowUbo = mesh3dShadows.ubo;
+    if (!mesh3dShadows.active) {
+        shadowUbo.bias.y = 0.f;
+        shadowUbo.splits.w = 0.f;
+    }
+    shadowUbo.bias.z = mesh3dShadowReceive ? 1.f : 0.f;
+    fslots.slots[slot].shadowUbo.updateLocal(frameToken(), shadowUbo);
+
+    auto &cb = currentPresentCb();
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0, 1,
+                          &set, 0, nullptr);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1,
+                          &bindlessSet_, 0, nullptr);
+    const vk::DeviceSize stride = sizeof(GpuIndirectCommand);
+    std::array<uint32_t, 4> push{0, 0, 0, 0};
+    for (uint32_t i = 0; i < drawCount; ++i) {
+        push[0] = cmds[i].firstInstance;
+        cb.pushConstants(mesh3dGpuDrivenPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0,
+                         uint32_t(push.size() * sizeof(uint32_t)), push.data());
+        cb.drawIndexedIndirect(arena.buffer(), cmdAlloc.offset + vk::DeviceSize(i) * stride, 1,
+                               stride);
+    }
+    return true;
 }
 
 uint32_t Graphics::debugBindlessIndex(Texture *tex) const {
@@ -1480,6 +1601,20 @@ void Graphics::createMesh3DPipeline() {
     auto frag = embeddedSpirv(mesh3d_frag_spv);
     mesh3dPipeline =
         createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass,
+                                  vk::SampleCountFlagBits::e1);
+}
+
+void Graphics::createMesh3DGpuDrivenPipeline() {
+    if (mesh3dGpuDrivenPipeline) return;
+    if (!mesh3dSetLayout || !gpuDrivenCaps_.gpuDrivenAvailable()) return;
+
+    // One 16-byte push constant block (firstInstance) per indirect draw.
+    const auto pcr = pushConstantRange(vk::ShaderStageFlagBits::eVertex, 16);
+    mesh3dGpuDrivenPipelineLayout = createPipelineLayout(device, mesh3dSetLayout, &pcr);
+    mesh3dGpuDrivenPipeline =
+        createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
+                                  embeddedSpirv(mesh3d_gpudriven_frag_spv),
+                                  mesh3dGpuDrivenPipelineLayout, renderpass,
                                   vk::SampleCountFlagBits::e1);
 }
 
@@ -2072,11 +2207,16 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
 
     destroyPipeline(device, mesh3dPipeline);
     destroyPipeline(device, mesh3dClusteredPipeline);
+    destroyPipeline(device, mesh3dGpuDrivenPipeline);
     destroyPipeline(device, voxelRectPipeline);
 
     mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
                                                embeddedSpirv(mesh3d_frag_spv),
                                                mesh3dPipelineLayout, target, samples);
+    mesh3dGpuDrivenPipeline =
+        createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
+                                  embeddedSpirv(mesh3d_gpudriven_frag_spv),
+                                  mesh3dGpuDrivenPipelineLayout, target, samples);
     mesh3dClusteredPipeline =
         createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
                                   embeddedSpirv(mesh3d_clustered_frag_spv),
@@ -4570,6 +4710,13 @@ void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
     mesh3dEnvTexture = cube;
     mesh3dEnvIntensity = intensity < 0.f ? 0.f : intensity;
     if (!cube) mesh3dEnvIntensity = 0.f;
+    mesh3dFrameUbo.bindlessEnv.x = 0.f;  // placeholder cube slot
+    if (cube && cube->gpuHandle) {
+        auto *gpuCube = static_cast<GpuTexture *>(cube->gpuHandle);
+        registerBindlessTextureCube(gpuCube);
+        mesh3dFrameUbo.bindlessEnv.x = float(gpuCube->bindlessIndexCube);
+    }
+    mesh3dFrameUbo.bindlessEnv.y = mesh3dEnvIntensity;
 }
 
 void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }
