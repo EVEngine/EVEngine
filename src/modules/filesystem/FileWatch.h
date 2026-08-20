@@ -61,6 +61,9 @@ private:
     void onModified(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onMovedFrom(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
     void onMovedTo(const void *sender, const Poco::DirectoryWatcher::DirectoryEvent &event);
+
+    /** @brief Unsubscribe a watcher's Poco delegates; must be called without holding mu_. */
+    void unsubscribeDelegates(DirWatch *dw);
 #endif
 
     void handlePocoEvent(const std::string &kind, const std::string &itemPath);
