@@ -182,28 +182,29 @@ endif()
 if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
 endif()
-if(EXISTS "${_eve_tp_inc}/include")
-    foreach(_eve_hdr_dir IN ITEMS simplesquirrel squirrel SQLiteCpp)
-        if(EXISTS "${_eve_tp_inc}/include/${_eve_hdr_dir}")
-            install(DIRECTORY "${_eve_tp_inc}/include/${_eve_hdr_dir}"
-                DESTINATION include
-            )
-        endif()
-    endforeach()
-    # Flat squirrel headers sometimes live at include/*.h
-    file(GLOB _eve_sq_headers
-        "${_eve_tp_inc}/include/squirrel.h"
-        "${_eve_tp_inc}/include/sqstdio.h"
-        "${_eve_tp_inc}/include/sqstdblob.h"
-        "${_eve_tp_inc}/include/sqstdmath.h"
-        "${_eve_tp_inc}/include/sqstdsystem.h"
-        "${_eve_tp_inc}/include/sqstdstring.h"
-        "${_eve_tp_inc}/include/sqconfig.h"
-    )
-    if(_eve_sq_headers)
-        install(FILES ${_eve_sq_headers} DESTINATION include)
+get_filename_component(_eve_tp_inc "${_eve_tp_inc}" ABSOLUTE)
+# The third-party tree is built by the deps target *after* configure, so the
+# existence check must run at install time, not configure time (a configure-time
+# guard silently drops these headers on fresh CI builds).
+install(CODE "
+    set(_eve_tp_inc \"${_eve_tp_inc}\")
+    if(EXISTS \"\${_eve_tp_inc}/include\")
+        file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/include\")
+        foreach(_eve_hdr_dir IN ITEMS simplesquirrel squirrel SQLiteCpp)
+            if(EXISTS \"\${_eve_tp_inc}/include/\${_eve_hdr_dir}\")
+                file(COPY \"\${_eve_tp_inc}/include/\${_eve_hdr_dir}\"
+                     DESTINATION \"\${CMAKE_INSTALL_PREFIX}/include\")
+            endif()
+        endforeach()
+        # Flat squirrel headers sometimes live at include/*.h
+        foreach(_eve_sq_hdr IN ITEMS squirrel.h sqstdio.h sqstdblob.h sqstdmath.h sqstdsystem.h sqstdstring.h sqconfig.h)
+            if(EXISTS \"\${_eve_tp_inc}/include/\${_eve_sq_hdr}\")
+                file(COPY \"\${_eve_tp_inc}/include/\${_eve_sq_hdr}\"
+                     DESTINATION \"\${CMAKE_INSTALL_PREFIX}/include\")
+            endif()
+        endforeach()
     endif()
-endif()
+")
 
 # ---- Marker files ----
 install(CODE "
