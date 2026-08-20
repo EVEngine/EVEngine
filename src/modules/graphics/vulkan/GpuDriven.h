@@ -29,8 +29,6 @@ struct GpuDrivenCaps {
     bool multiDrawIndirect = false;
     bool descriptorIndexing = false;
     bool shaderSampledImageArrayDynamicIndexing = false;
-    bool descriptorBindingSampledImageUpdateAfterBind = false;
-    bool descriptorBindingStorageBufferUpdateAfterBind = false;
     bool samplerArrayCapacity = false;  // maxPerStageDescriptorSamplers >= array size
 
     bool gpuDrivenAvailable() const {
@@ -40,10 +38,11 @@ struct GpuDrivenCaps {
         // glslc build lacks GL_EXT_nonuniform_qualifier, so the bindless path
         // uses fixed-size descriptor arrays + dynamic indexing (legal because
         // material/texture indices are uniform within each indirect draw).
-        return api12 && drawIndirectCount && multiDrawIndirect && descriptorIndexing &&
-               shaderSampledImageArrayDynamicIndexing && samplerArrayCapacity &&
-               descriptorBindingSampledImageUpdateAfterBind &&
-               descriptorBindingStorageBufferUpdateAfterBind;
+        // UPDATE_AFTER_BIND and the 1.2 feature chain are intentionally NOT
+        // required: the AMD driver in this environment hangs on large
+        // update-after-bind descriptor writes, and texture registrations are
+        // applied outside the render pass instead.
+        return shaderSampledImageArrayDynamicIndexing && samplerArrayCapacity;
     }
 };
 

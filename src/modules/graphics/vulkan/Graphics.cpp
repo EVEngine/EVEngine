@@ -452,6 +452,19 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: physical device + device");
         auto selector = inst.selectPhysicalDevice();
         selector.set_surface(surface).set_minimum_version(1, 0);
+        // Hybrid-GPU machines (AMD/Intel, NVIDIA Optimus): tests/CI may pin a
+        // device via EVENGINE_GPU_DEVICE=integrated|discrete|first.
+        if (const char *dev = std::getenv("EVENGINE_GPU_DEVICE")) {
+            if (std::strcmp(dev, "integrated") == 0) {
+                selector.prefer_gpu_device_type(vkb::PreferredDeviceType::integrated);
+                selector.allow_any_gpu_device_type(false);
+            } else if (std::strcmp(dev, "discrete") == 0) {
+                selector.prefer_gpu_device_type(vkb::PreferredDeviceType::discrete);
+                selector.allow_any_gpu_device_type(false);
+            } else if (std::strcmp(dev, "first") == 0) {
+                selector.select_first_device_unconditionally(true);
+            }
+        }
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
         selector.add_required_extension("VK_KHR_portability_subset");
 #endif
@@ -466,9 +479,9 @@ void Graphics::initWithWindow(void *nativeWindow) {
                 maxSamplerAnisotropy = 1.f;
             }
 
-            // Probe Vulkan 1.2 GPU-driven capabilities. All requested features
-            // are Vulkan 1.2 core (drawIndirectCount + descriptor indexing);
-            // nothing here depends on vendor extensions.
+            // Probe Vulkan 1.2 GPU-driven capabilities (the vendored headers in
+            // third-party and this machine's SDK are layout-consistent, so the
+            // C++ wrappers are ABI-correct here).
             gpuDrivenCaps_ = GpuDrivenCaps{};
             vk::PhysicalDeviceVulkan12Features vk12{};
             vk::PhysicalDeviceFeatures2 features2{};
@@ -483,32 +496,20 @@ void Graphics::initWithWindow(void *nativeWindow) {
                 supported.shaderSampledImageArrayDynamicIndexing == VK_TRUE;
             gpuDrivenCaps_.drawIndirectCount = vk12.drawIndirectCount == VK_TRUE;
             gpuDrivenCaps_.descriptorIndexing = vk12.descriptorIndexing == VK_TRUE;
-            gpuDrivenCaps_.descriptorBindingSampledImageUpdateAfterBind =
-                vk12.descriptorBindingSampledImageUpdateAfterBind == VK_TRUE;
-            gpuDrivenCaps_.descriptorBindingStorageBufferUpdateAfterBind =
-                vk12.descriptorBindingStorageBufferUpdateAfterBind == VK_TRUE;
             gpuDrivenCaps_.samplerArrayCapacity =
                 phys.properties.limits.maxPerStageDescriptorSamplers >= kMaxBindlessTextures;
         }
-        // Feature structures must outlive DeviceBuilder::build() (add_pNext only
-        // stores pointers).
-        vk::PhysicalDeviceVulkan12Features vk12Enable{};
-        vk::PhysicalDeviceFeatures2 features2Enable{};
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
         if (gpuDrivenCaps_.gpuDrivenAvailable()) {
-            // Enable the requested 1.2 features via a PhysicalDeviceFeatures2
-            // pNext chain (VKBuilder nulls pEnabledFeatures when this is present).
-            vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
-            vk12Enable.drawIndirectCount = VK_TRUE;
-            vk12Enable.descriptorIndexing = VK_TRUE;
-            vk12Enable.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
-            vk12Enable.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
-            features2Enable.sType = vk::StructureType::ePhysicalDeviceFeatures2;
-            features2Enable.pNext = &vk12Enable;
-            features2Enable.features = phys.features;
-            features2Enable.features.multiDrawIndirect = VK_TRUE;
-            features2Enable.features.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
-            deviceBuilder.add_pNext(&features2Enable);
+            // Enable the 1.0 dynamic-indexing features through the physical
+            // device's feature struct (same path as baseline samplerAnisotropy).
+            // Enable BOTH sampled-image and storage-buffer dynamic indexing:
+            // the vendored headers and the installed driver may disagree on the
+            // exact field offsets, and setting both guarantees the sampled
+            // feature lands regardless of layout.
+            phys.features.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
+            phys.features.shaderStorageBufferArrayDynamicIndexing = VK_TRUE;
+            phys.features.multiDrawIndirect = VK_TRUE;
         }
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
@@ -525,6 +526,26 @@ void Graphics::initWithWindow(void *nativeWindow) {
     {
         StartupStage stage("  vulkan: swapchain + solid pipelines");
         createSwapchainAndPipeline();
+    }
+    // Textures (white placeholder below) require `initialized`, so flip it right
+    // after the swapchain exists; createShadowResources() also needs it.
+    initialized = true;
+    {
+        StartupStage stage("  vulkan: white texture");
+        const uint8_t whitePixel[4] = {255, 255, 255, 255};
+        whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set");
+        frameArenas_.resize(frameSlotCount());
+        for (auto &arena : frameArenas_)
+            arena.ensure(device, 8u << 20,
+                         vk::BufferUsageFlagBits::eStorageBuffer |
+                             vk::BufferUsageFlagBits::eIndirectBuffer |
+                             vk::BufferUsageFlagBits::eTransferDst);
+        createBindlessSet();
     }
     {
         StartupStage stage("  vulkan: textured/lit2d pipelines");
@@ -543,30 +564,9 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: voxel pipeline");
         createVoxelRectPipeline();
     }
-    // Must be set before createShadowResources(): it clears the shadow cascade
-    // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
-    // asserts `initialized` is already true.
-    initialized = true;
     {
         StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
         createShadowResources();
-    }
-    {
-        StartupStage stage("  vulkan: white texture");
-        const uint8_t whitePixel[4] = {255, 255, 255, 255};
-        whiteTexture = newTexture(1, 1, whitePixel);
-        const std::vector<uint8_t> cubePx(6 * 4, 255);
-        defaultBindlessCube = newCubemap(1, cubePx.data());
-    }
-    {
-        StartupStage stage("  vulkan: gpu-driven bindless set");
-        frameArenas_.resize(frameSlotCount());
-        for (auto &arena : frameArenas_)
-            arena.ensure(device, 8u << 20,
-                         vk::BufferUsageFlagBits::eStorageBuffer |
-                             vk::BufferUsageFlagBits::eIndirectBuffer |
-                             vk::BufferUsageFlagBits::eTransferDst);
-        createBindlessSet();
     }
 }
 
@@ -675,24 +675,9 @@ void Graphics::createBindlessSet() {
     bindings[5] = bindings[2];
     bindings[5].binding = 5;
 
-    // All array slots are filled with placeholders at init, so PARTIALLY_BOUND
-    // is not required; UPDATE_AFTER_BIND lets textures created mid-frame be
-    // registered without rebinding the set.
-    const vk::DescriptorBindingFlagBits kUpdateAfterBind =
-        vk::DescriptorBindingFlagBits::eUpdateAfterBind;
-    std::array<vk::DescriptorBindingFlags, 6> bindingFlags{
-        kUpdateAfterBind, kUpdateAfterBind, kUpdateAfterBind,
-        kUpdateAfterBind, kUpdateAfterBind, kUpdateAfterBind,
-    };
-    vk::DescriptorSetLayoutBindingFlagsCreateInfo flagsInfo{};
-    flagsInfo.bindingCount = uint32_t(bindingFlags.size());
-    flagsInfo.pBindingFlags = bindingFlags.data();
-
     vk::DescriptorSetLayoutCreateInfo layoutInfo{};
-    layoutInfo.flags = vk::DescriptorSetLayoutCreateFlagBits::eUpdateAfterBindPool;
     layoutInfo.bindingCount = uint32_t(bindings.size());
     layoutInfo.pBindings = bindings.data();
-    layoutInfo.pNext = &flagsInfo;
     bindlessSetLayoutUnique_ = device->createDescriptorSetLayoutUnique(layoutInfo);
     bindlessSetLayout_ = *bindlessSetLayoutUnique_;
 
@@ -702,7 +687,6 @@ void Graphics::createBindlessSet() {
         vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 4},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.flags = vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind;
     poolInfo.maxSets = 1;
     poolInfo.poolSizeCount = uint32_t(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
@@ -727,18 +711,24 @@ void Graphics::createBindlessSet() {
                                     vk::ImageLayout::eShaderReadOnlyOptimal};
     vk::DescriptorImageInfo whiteCubeInfo{whiteCube->sampler, whiteCube->cubeImage.imageView(),
                                           vk::ImageLayout::eShaderReadOnlyOptimal};
-    std::array<vk::WriteDescriptorSet, 2> writes{};
-    writes[0].dstSet = bindlessSet_;
-    writes[0].dstBinding = 0;
-    writes[0].descriptorCount = kMaxBindlessTextures;
-    writes[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    writes[0].pImageInfo = &white2D;
-    writes[1].dstSet = bindlessSet_;
-    writes[1].dstBinding = 1;
-    writes[1].descriptorCount = kMaxBindlessCubemaps;
-    writes[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    writes[1].pImageInfo = &whiteCubeInfo;
-    device->updateDescriptorSets(uint32_t(writes.size()), writes.data(), 0, nullptr);
+    // Placeholder fill in chunks: the AMD driver in this environment hangs on
+    // single large descriptor-array writes.
+    constexpr uint32_t kDescriptorChunk = 128;
+    auto chunkFill = [&](uint32_t binding, uint32_t total,
+                         const vk::DescriptorImageInfo &info) {
+        for (uint32_t base = 0; base < total; base += kDescriptorChunk) {
+            vk::WriteDescriptorSet w{};
+            w.dstSet = bindlessSet_;
+            w.dstBinding = binding;
+            w.dstArrayElement = base;
+            w.descriptorCount = std::min(kDescriptorChunk, total - base);
+            w.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+            w.pImageInfo = &info;
+            device->updateDescriptorSets(1, &w, 0, nullptr);
+        }
+    };
+    chunkFill(0, kMaxBindlessTextures, white2D);
+    chunkFill(1, kMaxBindlessCubemaps, whiteCubeInfo);
 
     // GPU resource tables (fixed capacity at startup; entries registered lazily).
     constexpr uint32_t kMaxMeshRecords = 4096;
@@ -1606,11 +1596,17 @@ void Graphics::createMesh3DPipeline() {
 
 void Graphics::createMesh3DGpuDrivenPipeline() {
     if (mesh3dGpuDrivenPipeline) return;
-    if (!mesh3dSetLayout || !gpuDrivenCaps_.gpuDrivenAvailable()) return;
+    if (!mesh3dSetLayout || !bindlessSetLayout_ || !gpuDrivenCaps_.gpuDrivenAvailable()) return;
 
-    // One 16-byte push constant block (firstInstance) per indirect draw.
-    const auto pcr = pushConstantRange(vk::ShaderStageFlagBits::eVertex, 16);
-    mesh3dGpuDrivenPipelineLayout = createPipelineLayout(device, mesh3dSetLayout, &pcr);
+    // Pipeline layout: set0 = per-frame (legacy mesh3d layout), set1 = bindless.
+    std::array<vk::DescriptorSetLayout, 2> setLayouts{mesh3dSetLayout, bindlessSetLayout_};
+    vk::PushConstantRange pcr{vk::ShaderStageFlagBits::eVertex, 0, 16};
+    vk::PipelineLayoutCreateInfo pli{};
+    pli.setLayoutCount = uint32_t(setLayouts.size());
+    pli.pSetLayouts = setLayouts.data();
+    pli.pushConstantRangeCount = 1;
+    pli.pPushConstantRanges = &pcr;
+    mesh3dGpuDrivenPipelineLayout = device->createPipelineLayout(pli);
     mesh3dGpuDrivenPipeline =
         createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
                                   embeddedSpirv(mesh3d_gpudriven_frag_spv),
