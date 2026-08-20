@@ -8,7 +8,10 @@
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
 #include "vkbuilder.hpp"
+#include "graphics/vulkan/GpuDriven.h"
+#include "graphics/vulkan/FrameArena.h"
 #include <atomic>
+#include <array>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -128,6 +131,9 @@ struct GpuTexture {
     int height = 0;
     uint32_t mipLevels = 1;
     TextureSampler samplerState{};
+    /** @brief Bindless texture-array slot (stage 0 GPU-driven path). */
+    uint32_t bindlessIndex2D = kInvalidBindlessSlot;
+    uint32_t bindlessIndexCube = kInvalidBindlessSlot;
 
     vk::ImageView imageView() const {
         if (viewOverride) return viewOverride;
@@ -140,6 +146,10 @@ struct GpuMesh {
     vkb::GenericBuffer indices;
     uint32_t indexCount = 0;
     vk::IndexType indexType = vk::IndexType::eUint32;
+    /** @brief Index into the GPU mesh table (GpuMeshRecord). */
+    uint32_t gpuRecordIndex = kInvalidBindlessSlot;
+    /** @brief CPU-side record for this mesh (bounds/ranges); uploaded by registerMeshRecord. */
+    GpuMeshRecord record;
 };
 
 struct GpuShader {
@@ -179,6 +189,31 @@ public:
     }
     int getMsaaSamples() const override { return msaaSamples; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
+
+    // ---- GPU-driven rendering (stage 0: bindless + resource tables) ----
+
+    /** @brief Capabilities probed at device creation; empty when unavailable. */
+    const GpuDrivenCaps &gpuDrivenCaps() const { return gpuDrivenCaps_; }
+
+    /** @brief Per-frame arena for the current swapchain frame slot. */
+    FrameArena &currentFrameArena();
+
+    /** @brief Get (or lazily create) the GPU material-table slot for a material. */
+    uint32_t materialTableGetOrCreate(eve::graphics::Material *material);
+
+    /** @brief Upload all registered material records to the GPU table. */
+    void syncMaterialTable();
+
+    uint32_t bindlessSlot2D(const GpuTexture *tex) const {
+        return tex ? tex->bindlessIndex2D : kInvalidBindlessSlot;
+    }
+    uint32_t bindlessSlotCube(const GpuTexture *tex) const {
+        return tex ? tex->bindlessIndexCube : kInvalidBindlessSlot;
+    }
+    /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
+    uint32_t debugBindlessIndex(Texture *tex) const;
+    uint32_t debugMeshRecordIndex(Mesh *mesh) const;
+
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
@@ -527,6 +562,8 @@ private:
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture *whiteTexture = nullptr;
+    /** @brief 1x1 white cubemap used as the bindless cubemap-array placeholder. */
+    Texture *defaultBindlessCube = nullptr;
     Texture *flatNormalTexture3D = nullptr;
     Texture *flatHeightTexture3D = nullptr;
     Texture *defaultEnvCubemap = nullptr;
@@ -579,6 +616,37 @@ private:
 
     // Ping-pong copies so frame N+1 can write while frame N still samples.
     static constexpr uint32_t kAsyncResourceCopies = 2;
+
+    // ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
+    GpuDrivenCaps gpuDrivenCaps_{};
+    std::vector<FrameArena> frameArenas_;
+
+    vk::UniqueDescriptorSetLayout bindlessSetLayoutUnique_{};
+    vk::DescriptorSetLayout bindlessSetLayout_ = nullptr;
+    vk::DescriptorPool bindlessPool_ = nullptr;
+    vk::DescriptorSet bindlessSet_ = nullptr;
+    std::vector<GpuTexture *> bindlessTextures2D_;
+    std::vector<uint32_t> bindlessFree2D_;
+    std::vector<GpuTexture *> bindlessCubemaps_;
+    std::vector<uint32_t> bindlessFreeCube_;
+
+    vkb::GenericBuffer meshTableBuffer_;
+    std::vector<GpuMeshRecord> meshTableRecords_;
+    uint32_t meshTableCapacity_ = 0;
+
+    vkb::GenericBuffer materialTableBuffer_;
+    std::vector<GpuMaterialRecord> materialTableRecords_;
+    std::vector<uint32_t> materialTableFree_;
+    std::unordered_map<const Material *, uint32_t> materialTableIndex_;
+    uint32_t materialTableCapacity_ = 0;
+
+    uint32_t registerBindlessTexture2D(GpuTexture *tex);
+    uint32_t registerBindlessTextureCube(GpuTexture *tex);
+    void unregisterBindlessTexture(GpuTexture *tex);
+    uint32_t registerMeshRecord(GpuMesh *gpu);
+    void syncMeshTable();
+    GpuMaterialRecord buildMaterialRecord(Material *material);
+    void createBindlessSet();
 
     // CSM shadow map (3 cascade layers), one array per in-flight slot.
     struct ShadowMapSlot {

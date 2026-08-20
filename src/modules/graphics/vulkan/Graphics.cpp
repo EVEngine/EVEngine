@@ -139,6 +139,27 @@ void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh) {
     cb.drawIndexed(mesh.indexCount, 1, 0, 0, 0);
 }
 
+GpuMeshRecord makeGpuMeshRecord(const std::vector<MeshVertex> &vertices, uint32_t indexCount,
+                                uint32_t indexType) {
+    GpuMeshRecord rec{};
+    rec.vertexCount = uint32_t(vertices.size());
+    rec.indexCount = indexCount;
+    rec.indexType = indexType;
+    if (!vertices.empty()) {
+        glm::vec3 minv(1e30f), maxv(-1e30f);
+        for (const auto &v : vertices) {
+            minv = glm::min(minv, v.pos);
+            maxv = glm::max(maxv, v.pos);
+        }
+        const glm::vec3 center = (minv + maxv) * 0.5f;
+        float radius = 0.f;
+        for (const auto &v : vertices)
+            radius = std::max(radius, glm::length(v.pos - center));
+        rec.boundsCenterRadius = glm::vec4(center, radius);
+    }
+    return rec;
+}
+
 std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame,
                                        const std::vector<MeshVertex> &vertices,
                                        const std::vector<uint32_t> &indices) {
@@ -148,6 +169,7 @@ std::unique_ptr<GpuMesh> uploadGpuMesh(vkb::Device &device, vkb::FrameSlot frame
                           indices.size() * sizeof(uint32_t), kHostVisibleCoherent);
     gpu->indices.updateLocal(frame, indices.data(), indices.size() * sizeof(uint32_t));
     gpu->indexCount = uint32_t(indices.size());
+    gpu->record = makeGpuMeshRecord(vertices, uint32_t(indices.size()), 1);
     return gpu;
 }
 
@@ -162,6 +184,7 @@ std::unique_ptr<GpuMesh> uploadGpuMesh16(vkb::Device &device, vkb::FrameSlot fra
     gpu->indices.updateLocal(frame, indices.data(), indices.size() * sizeof(uint16_t));
     gpu->indexCount = uint32_t(indices.size());
     gpu->indexType = vk::IndexType::eUint16;
+    gpu->record = makeGpuMeshRecord(vertices, uint32_t(indices.size()), 0);
     return gpu;
 }
 
@@ -439,8 +462,57 @@ void Graphics::initWithWindow(void *nativeWindow) {
             } else {
                 maxSamplerAnisotropy = 1.f;
             }
+
+            // Probe Vulkan 1.2 GPU-driven capabilities. All requested features
+            // are Vulkan 1.2 core (drawIndirectCount + descriptor indexing);
+            // nothing here depends on vendor extensions.
+            gpuDrivenCaps_ = GpuDrivenCaps{};
+            vk::PhysicalDeviceVulkan12Features vk12{};
+            vk::PhysicalDeviceFeatures2 features2{};
+            vk12.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+            features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2.pNext = &vk12;
+            phys->getFeatures2(&features2);
+
+            gpuDrivenCaps_.api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
+            gpuDrivenCaps_.drawIndirectCount = vk12.drawIndirectCount == VK_TRUE;
+            gpuDrivenCaps_.descriptorIndexing = vk12.descriptorIndexing == VK_TRUE;
+            gpuDrivenCaps_.runtimeDescriptorArray = vk12.runtimeDescriptorArray == VK_TRUE;
+            gpuDrivenCaps_.shaderSampledImageArrayNonUniformIndexing =
+                vk12.shaderSampledImageArrayNonUniformIndexing == VK_TRUE;
+            gpuDrivenCaps_.shaderStorageBufferArrayNonUniformIndexing =
+                vk12.shaderStorageBufferArrayNonUniformIndexing == VK_TRUE;
+            gpuDrivenCaps_.descriptorBindingPartiallyBound =
+                vk12.descriptorBindingPartiallyBound == VK_TRUE;
+            gpuDrivenCaps_.descriptorBindingSampledImageUpdateAfterBind =
+                vk12.descriptorBindingSampledImageUpdateAfterBind == VK_TRUE;
+            gpuDrivenCaps_.descriptorBindingStorageBufferUpdateAfterBind =
+                vk12.descriptorBindingStorageBufferUpdateAfterBind == VK_TRUE;
         }
+        // Feature structures must outlive DeviceBuilder::build() (add_pNext only
+        // stores pointers).
+        vk::PhysicalDeviceVulkan12Features vk12Enable{};
+        vk::PhysicalDeviceFeatures2 features2Enable{};
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+        if (gpuDrivenCaps_.gpuDrivenAvailable()) {
+            // Enable the requested 1.2 features via a PhysicalDeviceFeatures2
+            // pNext chain (VKBuilder nulls pEnabledFeatures when this is present).
+            vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+            vk12Enable.drawIndirectCount = VK_TRUE;
+            vk12Enable.descriptorIndexing = VK_TRUE;
+            vk12Enable.runtimeDescriptorArray = VK_TRUE;
+            vk12Enable.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+            vk12Enable.shaderStorageBufferArrayNonUniformIndexing = VK_TRUE;
+            vk12Enable.descriptorBindingPartiallyBound = VK_TRUE;
+            vk12Enable.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+            vk12Enable.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+            features2Enable.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2Enable.pNext = &vk12Enable;
+            features2Enable.features = phys.features;
+            features2Enable.features.multiDrawIndirect = VK_TRUE;
+            deviceBuilder.add_pNext(&features2Enable);
+        }
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
     }
@@ -485,6 +557,18 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: white texture");
         const uint8_t whitePixel[4] = {255, 255, 255, 255};
         whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set");
+        frameArenas_.resize(frameSlotCount());
+        for (auto &arena : frameArenas_)
+            arena.ensure(device, 8u << 20,
+                         vk::BufferUsageFlagBits::eStorageBuffer |
+                             vk::BufferUsageFlagBits::eIndirectBuffer |
+                             vk::BufferUsageFlagBits::eTransferDst);
+        createBindlessSet();
     }
 }
 
@@ -553,6 +637,277 @@ vkb::FrameSlot Graphics::frameToken() const {
     if (offscreen3DPassOpen) return vkb::FrameSlot{0};
     if (presentRecording) return presentRecording.slot();
     return vkb::FrameSlot::gpuIdle();
+}
+
+// ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
+
+FrameArena &Graphics::currentFrameArena() {
+    if (frameArenas_.empty()) {
+        static FrameArena fallback;  // never used for recording; guards odd call order
+        return fallback;
+    }
+    return frameArenas_[currentFrameSlot() % frameArenas_.size()];
+}
+
+void Graphics::createBindlessSet() {
+    if (!gpuDrivenCaps_.gpuDrivenAvailable()) return;
+    if (!whiteTexture || !whiteTexture->gpuHandle) return;
+    if (!defaultBindlessCube || !defaultBindlessCube->gpuHandle) return;
+    auto *white = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+    auto *whiteCube = static_cast<GpuTexture *>(defaultBindlessCube->gpuHandle);
+
+    std::array<vk::DescriptorSetLayoutBinding, 3> bindings{};
+    bindings[0].binding = 0;
+    bindings[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    bindings[0].descriptorCount = kMaxBindlessTextures;
+    bindings[0].stageFlags = vk::ShaderStageFlagBits::eVertex |
+                             vk::ShaderStageFlagBits::eFragment |
+                             vk::ShaderStageFlagBits::eCompute;
+    bindings[1] = bindings[0];
+    bindings[1].binding = 1;
+    bindings[1].descriptorCount = kMaxBindlessCubemaps;
+    bindings[2].binding = 2;
+    bindings[2].descriptorType = vk::DescriptorType::eStorageBuffer;
+    bindings[2].descriptorCount = kMaxBindlessSsbo;
+    bindings[2].stageFlags = bindings[0].stageFlags;
+
+    std::array<vk::DescriptorBindingFlags, 3> bindingFlags{
+        vk::DescriptorBindingFlagBits::ePartiallyBound |
+            vk::DescriptorBindingFlagBits::eUpdateAfterBind,
+        vk::DescriptorBindingFlagBits::ePartiallyBound |
+            vk::DescriptorBindingFlagBits::eUpdateAfterBind,
+        vk::DescriptorBindingFlagBits::ePartiallyBound |
+            vk::DescriptorBindingFlagBits::eUpdateAfterBind,
+    };
+    vk::DescriptorSetLayoutBindingFlagsCreateInfo flagsInfo{};
+    flagsInfo.bindingCount = uint32_t(bindingFlags.size());
+    flagsInfo.pBindingFlags = bindingFlags.data();
+
+    vk::DescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.flags = vk::DescriptorSetLayoutCreateFlagBits::eUpdateAfterBindPool;
+    layoutInfo.bindingCount = uint32_t(bindings.size());
+    layoutInfo.pBindings = bindings.data();
+    layoutInfo.pNext = &flagsInfo;
+    bindlessSetLayoutUnique_ = device->createDescriptorSetLayoutUnique(layoutInfo);
+    bindlessSetLayout_ = *bindlessSetLayoutUnique_;
+
+    std::array<vk::DescriptorPoolSize, 2> poolSizes{
+        vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
+                               kMaxBindlessTextures + kMaxBindlessCubemaps},
+        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, kMaxBindlessSsbo},
+    };
+    vk::DescriptorPoolCreateInfo poolInfo{};
+    poolInfo.flags = vk::DescriptorPoolCreateFlagBits::eUpdateAfterBind;
+    poolInfo.maxSets = 1;
+    poolInfo.poolSizeCount = uint32_t(poolSizes.size());
+    poolInfo.pPoolSizes = poolSizes.data();
+    bindlessPool_ = device->createDescriptorPool(poolInfo);
+
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = bindlessPool_;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &bindlessSetLayout_;
+    bindlessSet_ = device->allocateDescriptorSets(alloc).front();
+
+    bindlessTextures2D_.assign(kMaxBindlessTextures, white);
+    bindlessCubemaps_.assign(kMaxBindlessCubemaps, whiteCube);
+    bindlessFree2D_.clear();
+    bindlessFreeCube_.clear();
+    bindlessFree2D_.reserve(kMaxBindlessTextures);
+    bindlessFreeCube_.reserve(kMaxBindlessCubemaps);
+    for (uint32_t i = 0; i < kMaxBindlessTextures; ++i) bindlessFree2D_.push_back(i);
+    for (uint32_t i = 0; i < kMaxBindlessCubemaps; ++i) bindlessFreeCube_.push_back(i);
+
+    vk::DescriptorImageInfo white2D{white->sampler, white->imageView(),
+                                    vk::ImageLayout::eShaderReadOnlyOptimal};
+    vk::DescriptorImageInfo whiteCubeInfo{whiteCube->sampler, whiteCube->cubeImage.imageView(),
+                                          vk::ImageLayout::eShaderReadOnlyOptimal};
+    std::array<vk::WriteDescriptorSet, 2> writes{};
+    writes[0].dstSet = bindlessSet_;
+    writes[0].dstBinding = 0;
+    writes[0].descriptorCount = kMaxBindlessTextures;
+    writes[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    writes[0].pImageInfo = &white2D;
+    writes[1].dstSet = bindlessSet_;
+    writes[1].dstBinding = 1;
+    writes[1].descriptorCount = kMaxBindlessCubemaps;
+    writes[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    writes[1].pImageInfo = &whiteCubeInfo;
+    device->updateDescriptorSets(uint32_t(writes.size()), writes.data(), 0, nullptr);
+
+    // GPU resource tables (fixed capacity at startup; entries registered lazily).
+    constexpr uint32_t kMaxMeshRecords = 4096;
+    constexpr uint32_t kMaxMaterialRecords = 1024;
+    meshTableBuffer_ = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                                          kMaxMeshRecords * sizeof(GpuMeshRecord),
+                                          kHostVisibleCoherent);
+    meshTableCapacity_ = kMaxMeshRecords;
+    meshTableRecords_.reserve(kMaxMeshRecords);
+    materialTableBuffer_ = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                                              kMaxMaterialRecords * sizeof(GpuMaterialRecord),
+                                              kHostVisibleCoherent);
+    materialTableCapacity_ = kMaxMaterialRecords;
+    materialTableRecords_.reserve(kMaxMaterialRecords);
+}
+
+uint32_t Graphics::registerBindlessTexture2D(GpuTexture *tex) {
+    if (!tex || !bindlessSet_) return kInvalidBindlessSlot;
+    if (tex->bindlessIndex2D != kInvalidBindlessSlot) return tex->bindlessIndex2D;
+    if (bindlessFree2D_.empty()) return kInvalidBindlessSlot;
+    const uint32_t slot = bindlessFree2D_.back();
+    bindlessFree2D_.pop_back();
+    bindlessTextures2D_[slot] = tex;
+    tex->bindlessIndex2D = slot;
+    vk::DescriptorImageInfo img{tex->sampler, tex->imageView(),
+                                vk::ImageLayout::eShaderReadOnlyOptimal};
+    vk::WriteDescriptorSet write{};
+    write.dstSet = bindlessSet_;
+    write.dstBinding = 0;
+    write.dstArrayElement = slot;
+    write.descriptorCount = 1;
+    write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    write.pImageInfo = &img;
+    device->updateDescriptorSets(1, &write, 0, nullptr);
+    return slot;
+}
+
+uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
+    if (!tex || !bindlessSet_) return kInvalidBindlessSlot;
+    if (tex->bindlessIndexCube != kInvalidBindlessSlot) return tex->bindlessIndexCube;
+    if (bindlessFreeCube_.empty()) return kInvalidBindlessSlot;
+    const uint32_t slot = bindlessFreeCube_.back();
+    bindlessFreeCube_.pop_back();
+    bindlessCubemaps_[slot] = tex;
+    tex->bindlessIndexCube = slot;
+    vk::DescriptorImageInfo img{tex->sampler, tex->cubeImage.imageView(),
+                                vk::ImageLayout::eShaderReadOnlyOptimal};
+    vk::WriteDescriptorSet write{};
+    write.dstSet = bindlessSet_;
+    write.dstBinding = 1;
+    write.dstArrayElement = slot;
+    write.descriptorCount = 1;
+    write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+    write.pImageInfo = &img;
+    device->updateDescriptorSets(1, &write, 0, nullptr);
+    return slot;
+}
+
+void Graphics::unregisterBindlessTexture(GpuTexture *tex) {
+    if (!tex || !bindlessSet_) return;
+    auto *white = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+    GpuTexture *whiteCube = white;
+    if (defaultBindlessCube && defaultBindlessCube->gpuHandle)
+        whiteCube = static_cast<GpuTexture *>(defaultBindlessCube->gpuHandle);
+
+    auto restore = [&](uint32_t binding, uint32_t slot, GpuTexture *placeholder,
+                       bool cube) {
+        vk::DescriptorImageInfo img{
+            placeholder->sampler,
+            cube ? placeholder->cubeImage.imageView() : placeholder->imageView(),
+            vk::ImageLayout::eShaderReadOnlyOptimal};
+        vk::WriteDescriptorSet write{};
+        write.dstSet = bindlessSet_;
+        write.dstBinding = binding;
+        write.dstArrayElement = slot;
+        write.descriptorCount = 1;
+        write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        write.pImageInfo = &img;
+        device->updateDescriptorSets(1, &write, 0, nullptr);
+    };
+
+    if (tex->bindlessIndex2D != kInvalidBindlessSlot) {
+        const uint32_t slot = tex->bindlessIndex2D;
+        bindlessTextures2D_[slot] = white;
+        bindlessFree2D_.push_back(slot);
+        restore(0, slot, white, false);
+        tex->bindlessIndex2D = kInvalidBindlessSlot;
+    }
+    if (tex->bindlessIndexCube != kInvalidBindlessSlot) {
+        const uint32_t slot = tex->bindlessIndexCube;
+        bindlessCubemaps_[slot] = whiteCube;
+        bindlessFreeCube_.push_back(slot);
+        restore(1, slot, whiteCube, true);
+        tex->bindlessIndexCube = kInvalidBindlessSlot;
+    }
+}
+
+uint32_t Graphics::registerMeshRecord(GpuMesh *gpu) {
+    if (!gpu) return kInvalidBindlessSlot;
+    if (gpu->gpuRecordIndex != kInvalidBindlessSlot) return gpu->gpuRecordIndex;
+    if (meshTableRecords_.size() >= meshTableCapacity_) return kInvalidBindlessSlot;
+    const uint32_t idx = uint32_t(meshTableRecords_.size());
+    meshTableRecords_.push_back(gpu->record);
+    gpu->gpuRecordIndex = idx;
+    syncMeshTable();
+    return idx;
+}
+
+void Graphics::syncMeshTable() {
+    if (!meshTableBuffer_.buffer || meshTableRecords_.empty()) return;
+    meshTableBuffer_.updateLocal(vkb::FrameSlot::gpuIdle(), meshTableRecords_.data(),
+                                 meshTableRecords_.size() * sizeof(GpuMeshRecord));
+}
+
+GpuMaterialRecord Graphics::buildMaterialRecord(Material *material) {
+    GpuMaterialRecord rec{};
+    if (!material) return rec;
+    rec.tint = glm::vec4(material->getTintR(), material->getTintG(), material->getTintB(),
+                         material->getTintA());
+    rec.pbr = glm::vec4(material->getMetallic(), material->getRoughness(),
+                        material->getReceiveShadow() ? 1.f : 0.f,
+                        material->getReceiveLight() ? 1.f : 0.f);
+    rec.texBomb = glm::vec4(material->getTexCellBombScale(), material->getTexCellBombStrength(),
+                            material->getTexCellBombRotation(), 0.f);
+    rec.parallax = glm::vec4(material->getParallaxScale(), material->getParallaxMinLayers(),
+                             material->getParallaxMaxLayers(), 0.f);
+    auto slotOf = [](Texture *t) {
+        if (!t || !t->gpuHandle) return kInvalidBindlessSlot;
+        return static_cast<GpuTexture *>(t->gpuHandle)->bindlessIndex2D;
+    };
+    rec.textureSlots[0] = slotOf(material->getAlbedoTexture());
+    rec.textureSlots[1] = slotOf(material->getNormalTexture());
+    rec.textureSlots[2] = slotOf(material->getHeightTexture());
+    rec.textureSlots[3] = kInvalidBindlessSlot;  // env is camera state, not material state
+    const std::string model = material->getShadingModel();
+    rec.shadingModel = (model == "unlit") ? 1u : (model == "hair") ? 2u
+                        : (model == "custom")                     ? 3u
+                                                                  : 0u;
+    if (material->getCastShadow()) rec.flags |= 1u;
+    if (material->getCastOcclusion()) rec.flags |= 2u;
+    return rec;
+}
+
+uint32_t Graphics::materialTableGetOrCreate(Material *material) {
+    if (!material) return kInvalidBindlessSlot;
+    auto it = materialTableIndex_.find(material);
+    if (it != materialTableIndex_.end()) {
+        materialTableRecords_[it->second] = buildMaterialRecord(material);
+        syncMaterialTable();
+        return it->second;
+    }
+    if (materialTableRecords_.size() >= materialTableCapacity_) return kInvalidBindlessSlot;
+    const uint32_t idx = uint32_t(materialTableRecords_.size());
+    materialTableIndex_.emplace(material, idx);
+    materialTableRecords_.push_back(buildMaterialRecord(material));
+    syncMaterialTable();
+    return idx;
+}
+
+void Graphics::syncMaterialTable() {
+    if (!materialTableBuffer_.buffer || materialTableRecords_.empty()) return;
+    materialTableBuffer_.updateLocal(vkb::FrameSlot::gpuIdle(), materialTableRecords_.data(),
+                                     materialTableRecords_.size() *
+                                         sizeof(GpuMaterialRecord));
+}
+
+uint32_t Graphics::debugBindlessIndex(Texture *tex) const {
+    if (!tex || !tex->gpuHandle) return kInvalidBindlessSlot;
+    return static_cast<GpuTexture *>(tex->gpuHandle)->bindlessIndex2D;
+}
+
+uint32_t Graphics::debugMeshRecordIndex(Mesh *mesh) const {
+    if (!mesh || !mesh->gpuHandle) return kInvalidBindlessSlot;
+    return static_cast<GpuMesh *>(mesh->gpuHandle)->gpuRecordIndex;
 }
 
 void Graphics::waitForSharedGpuResources() {
@@ -2712,6 +3067,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
     gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
+    registerBindlessTexture2D(gpu.get());
 
     auto tex = std::make_unique<Texture>();
     tex->width = w;
@@ -2765,6 +3121,7 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
     // Cubemap sampled via mesh3d descriptor sets — no 2D texSetLayout binding required here.
+    registerBindlessTextureCube(gpu.get());
 
     auto tex = std::make_unique<Texture>();
     tex->width = faceSize;
@@ -2861,13 +3218,17 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     auto sets = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
     gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
+    registerBindlessTexture2D(gpu.get());
 
     void *oldHandle = tex->gpuHandle;
+    auto *oldGpu = static_cast<GpuTexture *>(oldHandle);
     for (auto &owned : ownedGpuTextures) {
         if (owned.get() != oldHandle) continue;
         // Destroying the old image/sampler while an in-flight frame still
         // samples it is a typical TDR. Drain first, then drop cached sets.
         waitForSharedGpuResources();
+        unregisterBindlessTexture(oldGpu);
+        registerBindlessTexture2D(gpu.get());
         if (owned->sampler) device->destroySampler(owned->sampler);
         owned = std::move(gpu);
         tex->gpuHandle = owned.get();
@@ -2882,6 +3243,7 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
     }
 
     // Texture not in owned list — attach as new ownership.
+    registerBindlessTexture2D(gpu.get());
     tex->gpuHandle = gpu.get();
     tex->width = w;
     tex->height = h;
@@ -3803,6 +4165,7 @@ void Graphics::begin3DFrame() {
     // settling after orientation change; throwing would abort the whole script.
     if (!beginPresentCommandBuffer())
         return;
+    currentFrameArena().reset();
     recordPendingShadowPasses();
     recordPendingGBufferPass();
 
@@ -4564,6 +4927,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     }
     handle->markMorphClean();
     Mesh *raw = handle.get();
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -4673,6 +5037,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     auto gpu = uploadGpuMesh(device, frameToken(), verts, idx);
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -4708,6 +5073,7 @@ bool Graphics::bakeMeshMorph(Mesh *mesh) {
     // in-flight draw still reads the previous morph is a GPU page-fault / TDR.
     waitForSharedGpuResources();
     gpu->vertices.updateLocal(vkb::FrameSlot::gpuIdle(), verts);
+    gpu->record = makeGpuMeshRecord(verts, gpu->indexCount, gpu->record.indexType);
     mesh->markMorphClean();
     return true;
 }
@@ -4749,6 +5115,7 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
         gpu->indexCount = uint32_t(indexCount);
         mesh->indexCount = indexCount;
     }
+    gpu->record = makeGpuMeshRecord(verts, gpu->indexCount, gpu->record.indexType);
     return true;
 }
 
@@ -4830,6 +5197,7 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -4938,6 +5306,7 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
     auto gpu = uploadGpuMesh(device, frameToken(), verts, indices);
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
