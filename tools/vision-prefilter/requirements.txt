@@ -5,5 +5,5 @@
 
 fastapi>=0.110
 uvicorn[standard]>=0.29
-pydantic>=2.6
+pydantic>=2.13.4
 requests>=2.31
