@@ -169,16 +169,6 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getBoneWeightValue", &ModelData::getBoneWeightValue);
     md.addFunc("getAnimationCount", &ModelData::getAnimationCount);
     md.addFunc("getAnimationName", &ModelData::getAnimationName);
-
-    // Minimal ImageData surface so getEmbeddedTextureImageData results are
-    // usable from scripts (same pattern as the Font module).
-    auto img = table.addClass<image::ImageData>(
-        "ImageData", std::function<image::ImageData *()>([]() -> image::ImageData * { return nullptr; }),
-        true);
-    img.addFunc("getWidth", &image::ImageData::getWidth);
-    img.addFunc("getHeight", &image::ImageData::getHeight);
-    img.addFunc("getFormat", &image::ImageData::getFormat);
-    img.addFunc("getSize", &image::ImageData::getSize);
 }
 
 void Model3D::expose(ssq::Class &cls) {

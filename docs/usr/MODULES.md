@@ -17,7 +17,7 @@
 - [键盘](modules/keyboard.md)：查询按键状态、键盘重复和文本输入。
 - [鼠标](modules/mouse.md)：查询鼠标位置、按键和指针可见状态；当前脚本绑定不含相对模式设置。
 - [触摸](modules/touch.md)：按索引读取当前触点数量和归一化/屏幕坐标。
-- [手柄](modules/joystick.md)：查询手柄数量并管理 SDL GameController 映射；当前绑定不含轴和按钮读取。
+- [手柄](modules/joystick.md)：查询手柄数量、读取轴/按钮/方向帽、管理 SDL GameController 映射，并支持振动。
 
 ## 资源与 I/O
 
