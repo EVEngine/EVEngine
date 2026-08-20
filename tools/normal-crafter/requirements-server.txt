@@ -7,7 +7,7 @@ xformers>=0.0.20
 transformers==4.41.2
 safetensors
 einops
-numpy==1.26.4
+numpy==2.5.2
 opencv-python
 pillow
 huggingface-hub>=0.30.1
