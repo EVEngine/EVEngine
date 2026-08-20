@@ -5,6 +5,9 @@ build/test/run commands live in [`Readme.en.md`](Readme.en.md) and the root
 [`Makefile`](Makefile) — use those; the notes below cover the non-obvious platform
 caveats. The Cursor Cloud VM is Linux; on a Windows host use the Windows section.
 
+> CI 问题调试：本地复现 / WSL2 / SSH 到 Mac mini 的完整手册见本机
+> `.local-debug/CI-DEBUG-PLAYBOOK.md`（含私有机器信息，**勿提交到 GitHub**）。
+
 ## Cursor Cloud specific instructions
 
 On this Linux VM the host target is `build/linux-debug`.
