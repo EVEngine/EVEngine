@@ -66,7 +66,7 @@ if(BUILD_PLATFORM STREQUAL "macosx")
         endforeach()
     ")
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
-        INSTALL_RPATH "@loader_path/../lib"
+        INSTALL_RPATH "@loader_path/../lib;@loader_path"
     )
 endif()
 
