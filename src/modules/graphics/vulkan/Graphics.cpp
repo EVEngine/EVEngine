@@ -1,8 +1,10 @@
 #define VKB_IMPL
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/FrameGraphJobs.h"
 #include "graphics/Light.h"
 #include "graphics/AntiAliasing.h"
+#include "thread/Thread.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -620,6 +622,11 @@ Graphics::GBufferSlot *Graphics::currentGBufferSlot() {
     return &gbufferSlots[currentFrameSlot() % gbufferSlots.size()];
 }
 
+vkb::FrameGraph *Graphics::currentGBufferFrameGraph() {
+    if (gbufferFrameGraphs_[0] == nullptr) return nullptr;
+    return gbufferFrameGraphs_[currentFrameSlot() % gbufferFrameGraphs_.size()].get();
+}
+
 Graphics::SceneColorSlot *Graphics::currentSceneColorSlot() {
     if (sceneColorSlots.empty()) return nullptr;
     return &sceneColorSlots[currentFrameSlot() % sceneColorSlots.size()];
@@ -697,33 +704,15 @@ void Graphics::recordPendingShadowPasses() {
     shadowPendingMask = 0;
 }
 
-void Graphics::recordPendingGBufferPass() {
-    if (!gbufferPending) return;
-    gbufferPending = false;
-    auto *slot = currentGBufferSlot();
-    if (!slot || !gbufferPipeline || !gbufferRenderPass || !slot->framebuffer) {
-        gbufferPassDraws.clear();
-        return;
-    }
-    auto &cb = currentPresentCb();
-    const uint32_t w = uint32_t(gbufferWidth);
-    const uint32_t h = uint32_t(gbufferHeight);
-    std::array<vk::ClearValue, 4> clears{};
-    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    vk::RenderPassBeginInfo rpBegin{};
-    rpBegin.renderPass = gbufferRenderPass;
-    rpBegin.framebuffer = slot->framebuffer;
-    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
-    rpBegin.clearValueCount = uint32_t(clears.size());
-    rpBegin.pClearValues = clears.data();
-    slot->normal.beginColorAttachment();
-    slot->depthColor.beginColorAttachment();
-    slot->albedo.beginColorAttachment();
-    slot->depth.beginDepthAttachment();
-    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
+    // Runs inside the FrameGraph's "gbuffer" render-pass instance (already
+    // begun with the planned clear values); only draw commands go here. The
+    // pass may be recorded on a JobSystem worker, so everything below must be
+    // read-only: gbufferPassDraws was captured on the main thread.
+    auto &cb = ctx.commandBuffer();
+    const vk::Extent2D extent = ctx.extent();
+    const uint32_t w = extent.width ? extent.width : uint32_t(gbufferWidth);
+    const uint32_t h = extent.height ? extent.height : uint32_t(gbufferHeight);
     setViewportAndScissor(cb, w, h);
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
     bool alphaBound = false;
@@ -747,14 +736,29 @@ void Graphics::recordPendingGBufferPass() {
                          sizeof(GBufferPush), &d.push);
         drawIndexedMesh(cb, *gpuMesh);
     }
-    cb.endRenderPass();
-    gbufferPassDraws.clear();
-    if (slot) {
-        slot->normal.endSampledLayout();
-        slot->depthColor.endSampledLayout();
-        slot->albedo.endSampledLayout();
-        slot->depth.endSampledLayout();
+}
+
+void Graphics::recordPendingGBufferPass() {
+    if (!gbufferPending) return;
+    gbufferPending = false;
+    auto *slot = currentGBufferSlot();
+    auto *graph = currentGBufferFrameGraph();
+    if (!slot || !graph || !gbufferPipeline || !gbufferRenderPass) {
+        gbufferPassDraws.clear();
+        return;
     }
+    // Record the declarative G-buffer pass with the JobSystem executor (image
+    // layout transitions and the render-pass instance are planned by the
+    // FrameGraph), then submit it on the graphics queue before the swapchain
+    // pass begins. Same-queue submission order plus the present slot fence
+    // (waited in Present::begin) keep this slot's graph command buffer safe to
+    // reuse two frames later.
+    auto *jobs = thread::Thread::create()->getJobSystem();
+    jobs->beginFrame();  // idempotent wait; recycles the per-frame arena
+    recordFrameGraphWithJobSystem(*graph, jobs);
+    graph->submit();
+    jobs->endFrame();
+    gbufferPassDraws.clear();
 }
 
 bool Graphics::beginSwapchainRenderPass() {
@@ -1191,6 +1195,9 @@ void Graphics::destroyGBufferResources() {
     gbufferPassActive = false;
     gbufferPending = false;
     gbufferPassDraws.clear();
+    // The graphs' render passes / framebuffers / command buffers reference the
+    // slot image views below, so destroy them before the slot targets.
+    for (auto &g : gbufferFrameGraphs_) g.reset();
     for (auto &slot : gbufferSlots) {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
@@ -1534,6 +1541,58 @@ void Graphics::createGBufferResources(int width, int height) {
         makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColor.imageView());
         makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedo.imageView());
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
+    }
+    // One FrameGraph per in-flight slot imports the engine-owned targets and
+    // owns the G-buffer pass: declarative attachments, automatic layout
+    // transitions/barriers, and the JobSystem parallel-record executor (see
+    // recordPendingGBufferPass). The engine keeps image ownership so
+    // renderEntityIdMask / readGBufferToImageData and the postFX wrappers are
+    // unaffected. Each graph is only used on its slot's frames, so its command
+    // buffer is reused two frames later — by then the present slot fence
+    // guarantees the previous graph submit completed (same queue, submitted
+    // before the present command buffer).
+    for (size_t i = 0; i < gbufferSlots.size(); ++i) {
+        auto &slot = gbufferSlots[i];
+        auto graph = std::make_unique<vkb::FrameGraph>(&device, 1);
+
+        vkb::TextureDesc colorDesc;
+        colorDesc.format = colorFmt;
+        colorDesc.extent = vk::Extent3D{w, h, 1};
+        colorDesc.usage = vk::ImageUsageFlagBits::eSampled |
+                          vk::ImageUsageFlagBits::eColorAttachment |
+                          vk::ImageUsageFlagBits::eTransferSrc;
+        colorDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+        auto normalH = graph->importTexture("gbNormal", slot.normal.image(), slot.normal.imageView(),
+                                            colorDesc);
+        auto depthColorH =
+            graph->importTexture("gbDepthColor", slot.depthColor.image(), slot.depthColor.imageView(),
+                                 colorDesc);
+        auto albedoH =
+            graph->importTexture("gbAlbedo", slot.albedo.image(), slot.albedo.imageView(), colorDesc);
+
+        vkb::TextureDesc depthDesc;
+        depthDesc.format = depthFmt;
+        depthDesc.extent = vk::Extent3D{w, h, 1};
+        depthDesc.aspect = vk::ImageAspectFlagBits::eDepth;
+        depthDesc.usage = vk::ImageUsageFlagBits::eSampled |
+                          vk::ImageUsageFlagBits::eDepthStencilAttachment;
+        depthDesc.afterLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
+        auto depthH =
+            graph->importTexture("gbHwDepth", slot.depth.image(), slot.depth.imageView(), depthDesc);
+
+        std::array<vk::ClearValue, 4> clears{};
+        clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+        clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
+        clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+        clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+        graph->addPass("gbuffer")
+            .colorAttachment(normalH, vkb::AttachmentOp::clear(clears[0]))
+            .colorAttachment(depthColorH, vkb::AttachmentOp::clear(clears[1]))
+            .colorAttachment(albedoH, vkb::AttachmentOp::clear(clears[2]))
+            .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[3]))
+            .record([this](vkb::FrameGraphPassContext &ctx) { recordGBufferPassDraws(ctx); });
+        graph->compile();
+        gbufferFrameGraphs_[i] = std::move(graph);
     }
 }
 

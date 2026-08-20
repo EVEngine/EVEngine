@@ -8,7 +8,9 @@
 #include "graphics/ClusteredLight.h"
 #include "graphics/Shadow.h"
 #include "vkbuilder.hpp"
+#include "vkbuilder/framegraph.hpp"
 #include <atomic>
+#include <array>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -651,6 +653,16 @@ private:
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
     GBufferSlot *currentGBufferSlot();
+    // One FrameGraph per in-flight slot, so each slot's G-buffer command buffer
+    // is only reused two frames later — by then the present slot fence (waited
+    // in Present::begin) guarantees the previous graph submit has completed
+    // (same queue, submitted before the present command buffer). The graphs
+    // import the engine-owned ColorTarget images; the engine keeps ownership so
+    // readback / entity-ID rendering / postFX wrappers keep working unchanged.
+    std::array<std::unique_ptr<vkb::FrameGraph>, kAsyncResourceCopies> gbufferFrameGraphs_;
+    vkb::FrameGraph *currentGBufferFrameGraph();
+    /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */
+    void recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx);
 
     struct SceneColorSlot {
         vkb::ColorTarget msaaColor;

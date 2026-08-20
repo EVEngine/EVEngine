@@ -1,6 +1,7 @@
 # FrameGraph 多线程渲染迁移（基于 PR #134）
 
-> 日期：2026-08-20 · 分支：`codex/framegraph-mt-render`（PR #134 的续作）
+> 日期：2026-08-20 · 分支：`codex/framegraph-mt-render`（PR #134 的续作，
+> 已含 Stage A + Stage B）
 > 目标：把渲染管线切到 vkbuilder 的 FrameGraph 上，用 JobSystem 做帧数据准备与
 > 并行命令录制，最终让主线程跑游戏脚本时不再同步占用渲染资源。
 
@@ -101,7 +102,7 @@ eve_render()                          │
 
 ## 4. 分阶段实施计划
 
-### Stage A（本分支，已落地）
+### Stage A（已落地）
 
 - 从 PR #134 分支拉 `codex/framegraph-mt-render`，删除不合规的二级 CB 录制，
   恢复合法录制路径。
@@ -117,16 +118,28 @@ eve_render()                          │
   - JobSystem executor 并行性与"每个 pass 恰好录一次"的断言；
   - 空 JobSystem 串行回退断言。
 
-### Stage B（下一 PR，需 GPU/CI 验证）
+### Stage B（已落地，GPU 渲染已在本机验证）
 
-- 把 G-buffer 迁进 FrameGraph：图内 `createTexture`（framesInFlight=2）持有
-  normal/depthColor/albedo/hwDepth；GBuffer 的 `Texture*` 包装用
-  `GpuTexture::viewOverride` 指向图解析出的 view（`makeSampleTex` 模式已有）；
-  `recordPendingGBufferPass` 删除，改 pass 回调。
-- 用 `jobSystemPassExecutor` 录制；shadow/forward/present 暂留原路径，图在
-  swapchain pass 之前 `record+submit`（同队列，队列序保证正确性）。
-- 解决 Stage B 的 barrier 正确性：图内的 RP initial/final layout 接管 GBuffer
-  转换，删除 `beginColorAttachment/endSampledLayout` 手写转换。
+- 把 G-buffer 迁进 FrameGraph（本分支已实现）：
+  - **每个 in-flight slot 一个 `vkb::FrameGraph`**（`framesInFlight=1`），以
+    `importTexture` 导入引擎自有的 normal/depthColor/albedo/hwDepth 图像——
+    引擎保留所有权，`renderEntityIdMask` / `readGBufferToImageData` 等直连
+    ColorTarget 的 readback/离屏路径完全不动。
+  - `addPass("gbuffer")` 声明 3 个 colorAttachment + 1 个 depthAttachment，
+    图自动规划 barrier 与 RP initial/final layout（清屏 +
+    `ShaderReadOnlyOptimal`/`DepthStencilReadOnlyOptimal` 收尾）；手写的
+    `beginColorAttachment/endSampledLayout` 从正常帧路径删除。
+  - `recordPendingGBufferPass` 改为：`jobSystemPassExecutor` 录制 +
+    `graph->submit()`，在 swapchain pass 之前单独提交（同队列，队列序保证
+    forward 采样在 GBuffer 之后）。
+  - **CB 复用安全**：framegraph v1 无 swapchain 时不推进帧槽，单图每帧复用
+    同一个 CB 会与还在执行的上一帧竞争。按 present 槽位交替两个图后，每个
+    CB 相隔两帧才复用，而 `Present::begin()` 会等当前槽位 fence（两帧前的
+    提交，同队列上晚于 graph 提交）→ 无竞争。上游 VKBuilder 若补上
+    swapchain-less 帧槽推进/自管 fence，可再塌缩回单图。
+  - 管线兼容：gbuffer pipeline 仍基于引擎自建的 `gbufferRenderPass` 创建；
+    图的 RP 与它在 format/samples/subpass attachment layout 上完全一致，
+    Vulkan RP 兼容规则允许跨 RP 使用。
 
 ### Stage C（渲染线程解耦，核心收益）
 
