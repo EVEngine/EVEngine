@@ -17,6 +17,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 #include <cstring>
 #include <functional>
 #include <stdexcept>
@@ -54,99 +55,158 @@
 namespace eve::graphics::vulkan {
 
 void Graphics::ensurePresentCaptureHook() {
-    // Only install the hook when readback is requested. drawFrame() treats a
-    // non-empty hook as "wait for this frame's fence" even when
-    // synchronous_frames is false, which would serialize every frame and erase
-    // the multi-frame overlap we rely on for async rendering.
-    if (screenReadbackEnabled) {
-        presentModel.after_render_before_present = [this](uint32_t imageIndex) {
-            captureSwapchainImage(imageIndex);
-        };
-    } else {
-        presentModel.after_render_before_present = nullptr;
-    }
+    // Screen readback is recorded inline into the present command buffer (see
+    // flushToSwapchain / abortOpen3DFrame), so the present model must never
+    // get a post-submit hook: drawFrame() waits for this frame's fence
+    // whenever the hook is set, which serializes every frame and erases the
+    // multi-frame overlap we rely on for async rendering.
+    presentModel.after_render_before_present = nullptr;
 }
 
-void Graphics::captureSwapchainImage(uint32_t imageIndex) {
+void Graphics::ensureReadbackSlots() {
     if (pixelWidth <= 0 || pixelHeight <= 0) return;
+    const size_t bytes = size_t(pixelWidth) * size_t(pixelHeight) * 4;
+    const size_t want = std::max<size_t>(2, frameSlotCount());
+    if (!screenReadbackSlots.empty() && screenReadbackSlots.size() >= want &&
+        screenReadbackBytes == bytes)
+        return;
+    // Recreating the staging ring must never race in-flight copies. Callers
+    // run on the render thread, and a size change implies the swapchain was
+    // rebuilt under waitIdle (rebuildSwapchainIfNeeded / recreate path).
+    for (auto &slot : screenReadbackSlots) {
+        if (slot.mapped) {
+            device->unmapMemory(slot.staging.memory);
+            slot.mapped = nullptr;
+        }
+        slot.staging.release();
+    }
+    screenReadbackSlots.clear();
+    screenReadbackSlots.resize(want);
+    for (auto &slot : screenReadbackSlots) {
+        slot.staging = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eTransferDst,
+                                          vk::DeviceSize(bytes),
+                                          vk::MemoryPropertyFlagBits::eHostVisible |
+                                              vk::MemoryPropertyFlagBits::eHostCoherent);
+    }
+    screenReadbackBytes = bytes;
+    readbackReady = false;
+    readbackCpuSynced = false;
+    readbackWriteSlot = 0;
+}
 
+bool Graphics::recordSwapchainReadback(vk::CommandBuffer cb) {
+    if (!screenReadbackEnabled || pixelWidth <= 0 || pixelHeight <= 0) return false;
+    if (!presentModel.has_acquired_image) return false;
     const vk::Format fmt = swapchain.image_format;
     const bool bgra = (fmt == vk::Format::eB8G8R8A8Unorm || fmt == vk::Format::eB8G8R8A8Srgb);
     const bool rgba = (fmt == vk::Format::eR8G8B8A8Unorm || fmt == vk::Format::eR8G8B8A8Srgb);
-    if (!bgra && !rgba)
-        throw Exception("Graphics::captureSwapchainImage: unsupported swapchain format");
+    if (!bgra && !rgba) return false;
+    readbackBgra = bgra;
 
+    const uint32_t imageIndex = presentModel.acquired_image_index;
     auto &images = swapchain.get_images();
-    if (imageIndex >= images.size())
-        throw Exception("Graphics::captureSwapchainImage: invalid image index");
+    if (imageIndex >= images.size()) return false;
 
-    const vk::DeviceSize byteSize =
-        vk::DeviceSize(pixelWidth) * vk::DeviceSize(pixelHeight) * 4;
-    vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
-                               vk::MemoryPropertyFlagBits::eHostVisible |
-                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+    ensureReadbackSlots();
+    if (screenReadbackSlots.empty()) return false;
 
+    const size_t slot = size_t(presentRecording.slot().index) % screenReadbackSlots.size();
+    readbackWriteSlot = slot;
     const vk::Image image = images[imageIndex];
-    // Called after submit waitIdle, before present — image still acquired, layout PresentSrcKHR.
-    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
-                            [&](vk::CommandBuffer cb) {
-                                vk::ImageMemoryBarrier toTransfer{};
-                                toTransfer.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                toTransfer.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                toTransfer.oldLayout = vk::ImageLayout::ePresentSrcKHR;
-                                toTransfer.newLayout = vk::ImageLayout::eTransferSrcOptimal;
-                                toTransfer.image = image;
-                                toTransfer.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
-                                toTransfer.srcAccessMask = vk::AccessFlagBits::eMemoryRead;
-                                toTransfer.dstAccessMask = vk::AccessFlagBits::eTransferRead;
-                                cb.pipelineBarrier(vk::PipelineStageFlagBits::eBottomOfPipe,
-                                                   vk::PipelineStageFlagBits::eTransfer, {}, 0, nullptr, 0,
-                                                   nullptr, 1, &toTransfer);
+    // Recorded at the end of the present command buffer: the swapchain render
+    // pass has already transitioned the image back to PresentSrcKHR, and the
+    // copy runs in the same submit+present — no extra queue submit, no
+    // waitIdle, no per-frame buffer allocation.
+    vk::ImageMemoryBarrier toTransfer{};
+    toTransfer.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    toTransfer.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    toTransfer.oldLayout = vk::ImageLayout::ePresentSrcKHR;
+    toTransfer.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+    toTransfer.image = image;
+    toTransfer.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    // The render pass has already transitioned the image to PresentSrcKHR, but
+    // there is no fence between it and this copy — the barrier must order the
+    // render-pass color writes against the transfer explicitly.
+    toTransfer.srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
+    toTransfer.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                       vk::PipelineStageFlagBits::eTransfer, {}, 0, nullptr, 0, nullptr, 1,
+                       &toTransfer);
 
-                                vk::BufferImageCopy region{};
-                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
-                                region.imageExtent =
-                                    vk::Extent3D{uint32_t(pixelWidth), uint32_t(pixelHeight), 1};
-                                cb.copyImageToBuffer(image, vk::ImageLayout::eTransferSrcOptimal,
-                                                     staging.buffer, region);
+    vk::BufferImageCopy region{};
+    region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+    region.imageExtent = vk::Extent3D{uint32_t(pixelWidth), uint32_t(pixelHeight), 1};
+    cb.copyImageToBuffer(image, vk::ImageLayout::eTransferSrcOptimal,
+                         screenReadbackSlots[slot].staging.buffer, region);
 
-                                vk::ImageMemoryBarrier toPresent = toTransfer;
-                                toPresent.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
-                                toPresent.newLayout = vk::ImageLayout::ePresentSrcKHR;
-                                toPresent.srcAccessMask = vk::AccessFlagBits::eTransferRead;
-                                toPresent.dstAccessMask = vk::AccessFlagBits::eMemoryRead;
-                                cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                                                   vk::PipelineStageFlagBits::eBottomOfPipe, {}, 0, nullptr, 0,
-                                                   nullptr, 1, &toPresent);
-                            });
+    vk::ImageMemoryBarrier toPresent = toTransfer;
+    toPresent.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+    toPresent.newLayout = vk::ImageLayout::ePresentSrcKHR;
+    toPresent.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+    toPresent.dstAccessMask = vk::AccessFlagBits::eMemoryRead;
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                       vk::PipelineStageFlagBits::eBottomOfPipe, {}, 0, nullptr, 0, nullptr, 1,
+                       &toPresent);
+    return true;
+}
 
-    lastFrameRgba.resize(size_t(byteSize));
-    void *mapped = device->mapMemory(staging.memory, 0, byteSize);
-    const size_t rowBytes = size_t(pixelWidth) * 4;
-    auto *src = static_cast<const uint8_t *>(mapped);
-    // FB row 0 is logical top (Batcher maps y=0 → Vulkan NDC -1). No Y flip.
-    for (int y = 0; y < pixelHeight; ++y) {
-        const uint8_t *srcRow = src + size_t(y) * rowBytes;
-        uint8_t *dstRow = lastFrameRgba.data() + size_t(y) * rowBytes;
-        if (bgra) {
-            for (int x = 0; x < pixelWidth; ++x) {
-                const uint8_t *s = srcRow + size_t(x) * 4;
-                uint8_t *d = dstRow + size_t(x) * 4;
-                d[0] = s[2];
-                d[1] = s[1];
-                d[2] = s[0];
-                d[3] = s[3];
-            }
-        } else {
-            std::memcpy(dstRow, srcRow, rowBytes);
+void Graphics::syncReadbackCpu() {
+    if (!readbackReady || screenReadbackSlots.empty()) return;
+    if (readbackCpuSynced && !lastFrameRgba.empty()) return;
+    if (readbackWriteSlot >= screenReadbackSlots.size()) return;
+
+    const size_t bytes = screenReadbackBytes;
+    if (bytes == 0) return;
+
+    // The newest copy lives in the present submission of this frame slot; wait
+    // only that slot's fence instead of a device-wide waitIdle.
+    presentModel.waitForFrameSlot(readbackWriteSlot);
+
+    auto &slot = screenReadbackSlots[readbackWriteSlot];
+    if (!slot.mapped)
+        slot.mapped = device->mapMemory(slot.staging.memory, 0, vk::DeviceSize(bytes));
+
+    lastFrameRgba.resize(bytes);
+    if (readbackBgra) {
+        // BGRA -> RGBA byte swap, two pixels per 64-bit word (masked swap).
+        const size_t words = bytes / 8;
+        const uint64_t *src64 = static_cast<const uint64_t *>(slot.mapped);
+        uint64_t *dst64 = reinterpret_cast<uint64_t *>(lastFrameRgba.data());
+        for (size_t i = 0; i < words; ++i) {
+            const uint64_t v = src64[i];
+            dst64[i] = (v & 0xFF00FF00FF00FF00ull) |
+                       ((v & 0x000000FF000000FFull) << 16) |
+                       ((v >> 16) & 0x000000FF000000FFull);
         }
+        for (size_t i = words * 8; i < bytes; i += 4) {
+            const uint32_t v = *reinterpret_cast<const uint32_t *>(
+                static_cast<const uint8_t *>(slot.mapped) + i);
+            const uint32_t out = (v & 0xFF00FF00u) | ((v & 0xFFu) << 16) | ((v >> 16) & 0xFFu);
+            std::memcpy(lastFrameRgba.data() + i, &out, 4);
+        }
+    } else {
+        std::memcpy(lastFrameRgba.data(), slot.mapped, bytes);
     }
-    device->unmapMemory(staging.memory);
-    staging.release();
-    hasPresentedFrame = true;
+    readbackCpuSynced = true;
+}
+
+void Graphics::destroyReadbackResources() {
+    for (auto &slot : screenReadbackSlots) {
+        if (slot.mapped) {
+            device->unmapMemory(slot.staging.memory);
+            slot.mapped = nullptr;
+        }
+        slot.staging.release();
+    }
+    screenReadbackSlots.clear();
+    screenReadbackBytes = 0;
+    readbackReady = false;
+    readbackCpuSynced = false;
+    hasPresentedFrame = false;
 }
 
 image::ImageData *Graphics::newImageData() {
+    syncReadbackCpu();
     if (!hasPresentedFrame || lastFrameRgba.empty())
         throw Exception("Graphics::newImageData: no presented frame");
     auto *img = new image::ImageData(pixelWidth, pixelHeight, "RGBA8");
@@ -155,6 +215,7 @@ image::ImageData *Graphics::newImageData() {
 }
 
 Color Graphics::getPixel(int x, int y) {
+    syncReadbackCpu();
     if (!hasPresentedFrame || lastFrameRgba.empty())
         throw Exception("Graphics::getPixel: no presented frame");
     if (x < 0 || y < 0 || x >= width || y >= height)
@@ -1347,8 +1408,16 @@ void Graphics::abortOpen3DFrame() {
             if (hadScene) beginSwapchainColorPass();
             presentRecording = swapchainPass.endRenderPass();
             swapchainPass = {};
+            const bool captured = screenReadbackEnabled
+                                      ? recordSwapchainReadback(presentRecording.commandBuffer())
+                                      : false;
             presentRecording.end().submitAndPresent();
             presentRecording = {};
+            if (captured) {
+                hasPresentedFrame = true;
+                readbackReady = true;
+                readbackCpuSynced = false;
+            }
         }
     } catch (...) {
         swapchainPass = {};
@@ -1588,9 +1657,15 @@ void Graphics::flushToSwapchain() {
 
     presentRecording = swapchainPass.endRenderPass();
     swapchainPass = {};
+    const bool captured =
+        screenReadbackEnabled ? recordSwapchainReadback(presentRecording.commandBuffer()) : false;
     presentRecording.end().submitAndPresent();
     presentRecording = {};
-    // hasPresentedFrame set by capture hook during drawFrame
+    if (captured) {
+        hasPresentedFrame = true;
+        readbackReady = true;
+        readbackCpuSynced = false;
+    }
     hasPendingClear = false;
     swapchainPassOpen = false;
     frameHad3D = false;
