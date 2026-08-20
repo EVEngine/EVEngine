@@ -184,9 +184,23 @@ eve_render()                          │
   递减 `outstandingFrame`；`beginFrame/endFrame` 看到归零立即 `arena.reset()`，
   而 worker 还在用该 job（`fireCompletion`/`releaseDependents`）→ use-after-free，
   表现为 fork 出的 job 丢失（join 挂起）或崩溃。修复：递减移到完成回调之后。
-- 修复后仍有一个残余、时序敏感的竞态（worker 卡在 pass 回调中），尚未根因；
-  新增 `render_graph.jobSystemGroupStress` /
+- 新增 `render_graph.jobSystemGroupStress` /
   `render_graph.jobSystemEngineFramePattern` 两个压力测试作为回归覆盖。
+
+### 并行录制的最终结论（WSL/TSan + Windows 驱动对照）
+
+- **CPU 侧无数据竞争**：用 WSL + `-fsanitize=thread` 对完整帧模式
+  （beginFrame → light/parallelFor → endFrame + 4 路 fork/join）、真实
+  executor（`jobSystemPassExecutor`）与真实 framegraph 规划（header-only，
+  直接包含）跑 3 万轮 × (硬件并发/4 worker)，零报告、零丢 job。
+- **崩溃在驱动层**：Windows 上并行录制时，两个 worker 的 AV 位于
+  `amdvlk64.dll` 内部，调用栈顶是 `vkb::FrameGraph::record` 的 recordOne；
+  `device->waitIdle()` 后照崩（排除在途 CB 复用），且 Vulkan 规范允许并发
+  录制不同 CB——结论是 AMDVLK 驱动的并发录制缺陷（NVIDIA/Intel 可能正常，
+  需在 CI lavapipe 上验证）。
+- 因此引擎默认**串行录制**（`graph->record()`）；并行 executor 保留并
+  TSan 验证，启用条件：驱动兼容性确认或 VKBuilder 侧把 `cb.reset()` 提到
+  主线程、worker 只做 `vkBeginCommandBuffer + 录制 + end`。
 
 ## 5. 本分支验证
 
