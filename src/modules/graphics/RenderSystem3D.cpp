@@ -53,6 +53,44 @@ struct PackedLight3D {
     bool isPoint = true;
 };
 
+/**
+ * @brief Six normalized view-frustum planes (Gribb–Hartmann) for sphere culling.
+ * Plane convention: point is inside when dot(plane.xyz, p) + plane.w >= 0.
+ */
+struct FrustumPlanes {
+    glm::vec4 p[6]{};
+
+    bool sphereVisible(const glm::vec3 &center, float radius) const {
+        for (const auto &pl : p) {
+            const float d = pl.x * center.x + pl.y * center.y + pl.z * center.z + pl.w;
+            if (d < -radius) return false;
+        }
+        return true;
+    }
+};
+
+FrustumPlanes extractFrustum(const glm::mat4 &m) {
+    FrustumPlanes f;
+    const glm::vec4 r0(m[0][0], m[1][0], m[2][0], m[3][0]);
+    const glm::vec4 r1(m[0][1], m[1][1], m[2][1], m[3][1]);
+    const glm::vec4 r2(m[0][2], m[1][2], m[2][2], m[3][2]);
+    const glm::vec4 r3(m[0][3], m[1][3], m[2][3], m[3][3]);
+    auto norm = [](glm::vec4 &v) {
+        const float l = glm::length(glm::vec3(v));
+        if (l > 1e-8f) v /= l;
+    };
+    f.p[0] = r3 + r0;  // left
+    f.p[1] = r3 - r0;  // right
+    f.p[2] = r3 + r1;  // bottom
+    f.p[3] = r3 - r1;  // top
+    // Vulkan clip space uses zero-to-one depth: near plane is z_clip = 0
+    // (plane r2), not the z = -w plane used by OpenGL-style [-1,1] depth.
+    f.p[4] = r2;       // near
+    f.p[5] = r3 - r2;  // far
+    for (auto &pl : f.p) norm(pl);
+    return f;
+}
+
 /** @brief Cheap entity snapshot handed to the parallel prep jobs. */
 struct EntityRef3D {
     Renderable3D::Transform3D *xf = nullptr;
@@ -70,6 +108,9 @@ struct FrameState3D {
     std::vector<ClusteredLightGpu> clusteredPoints;
     std::vector<ClusteredLightGpu> clusteredDirs;
     ShadowUpload shadowUpload;
+    /** @brief Per-cascade light frustums for caster culling (computed by the
+     *  light job from the CSM lightVP matrices). */
+    FrustumPlanes cascadeFrustums[ShadowConfig::kCascades]{};
     Light3D::Data *shadowCaster = nullptr;
     bool haveExtraShadowCasters = false;
     bool useClustered = false;
@@ -561,7 +602,35 @@ void prepareFrame3D(FrameState3D &frame, RenderControl *rc, Camera3D *defaultCam
                                      cd->nearZ, cd->farZ, shadowBias, shadowStrength);
         }
         frame.shadowUpload = su;
+        if (su.active) {
+            for (int c = 0; c < ShadowConfig::kCascades; ++c)
+                frame.cascadeFrustums[c] = extractFrustum(su.ubo.lightVP[c]);
+        }
     });
+
+    // Camera snapshot: deduplicated camera data pointers plus their view-proj
+    // matrices, computed on the main thread before the parallel job forks so
+    // the workers only read immutable data. Slot 0 is the default camera so
+    // the G-buffer pass reuses its view.
+    std::vector<Camera3D::Data *> camData;
+    std::vector<glm::mat4> camViewProj;
+    auto camIndexFor = [&](Camera3D *camEnt) -> int {
+        if (!camEnt) return -1;
+        Camera3D::Data *d = camEnt->data().operator->();
+        for (size_t i = 0; i < camData.size(); ++i) {
+            if (camData[i] == d) return int(i);
+        }
+        const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
+        const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
+        const glm::vec3 up(d->upX, d->upY, d->upZ);
+        const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
+        const float fovRad = d->fovYDeg * 0.017453292519943295f;
+        const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, frame.aspect, d->nearZ, d->farZ);
+        camData.push_back(d);
+        camViewProj.push_back(projM * viewM);
+        return int(camData.size()) - 1;
+    };
+    const int defaultCamIdx = defaultCam ? camIndexFor(defaultCam) : -1;
 
     // ---- entity snapshot (single pass; matrix / LOD / cull math is parallel) ----
     std::vector<EntityRef3D> entities;
@@ -570,6 +639,9 @@ void prepareFrame3D(FrameState3D &frame, RenderControl *rc, Camera3D *defaultCam
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [xf, mr] = *it;
             if (!mr->visible) continue;
+            // Register every referenced camera on the main thread so the
+            // parallel workers below only do const lookups into camViewProj.
+            (void)camIndexFor(mr->camera ? mr->camera : defaultCam);
             entities.push_back(EntityRef3D{xf, mr});
         }
     }
@@ -578,22 +650,26 @@ void prepareFrame3D(FrameState3D &frame, RenderControl *rc, Camera3D *defaultCam
         jobs->endFrame();
         return;
     }
+    // The entity job below consumes the light job's outputs (CSM cascade
+    // frustums and shadow-active flag) for per-cascade caster culling, so the
+    // light job must finish first. It is a handful of lights + CSM matrix
+    // math, so the wait costs microseconds while the expensive parallel_for
+    // still runs on all workers.
+    lightJob->wait();
 
-    const glm::mat4 mainViewProj = [&]() {
-        if (!defaultCam) return glm::mat4(1.f);
-        auto cd = defaultCam->data();
-        const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
-        const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
-        const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
-        const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-        const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-        const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, frame.aspect, cd->nearZ, cd->farZ);
-        return projM * viewM;
-    }();
+    auto camViewProjOf = [&](Camera3D *camEnt) -> const glm::mat4 * {
+        if (!camEnt) return nullptr;
+        Camera3D::Data *d = camEnt->data().operator->();
+        for (size_t i = 0; i < camData.size(); ++i) {
+            if (camData[i] == d) return &camViewProj[i];
+        }
+        return nullptr;
+    };
 
     const int count = int(entities.size());
     constexpr int kChunk = 64;
     std::vector<std::vector<RenderItem3D>> chunks(size_t((count + kChunk - 1) / kChunk));
+    const bool shadowActive = doShadow && frame.shadowUpload.active;
     thread::Job *entityJob = jobs->parallelForFrame(
         0, count,
         [&](int first, int last) {
@@ -635,12 +711,31 @@ void prepareFrame3D(FrameState3D &frame, RenderControl *rc, Camera3D *defaultCam
                     item.partIndex = partIndex;
                     item.hair = asHair;
                     item.shadowCastable = mr->effectiveCastShadow();
-                    if (frustumCull && camEnt && mesh->boundsRadius > 0.f) {
-                        const float maxScale =
-                            std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
-                        item.culled = !sphereInFrustum(mainViewProj,
-                                                       glm::vec3(xf->x, xf->y, xf->z),
-                                                       maxScale * mesh->boundsRadius);
+                    const bool shadowOk = item.shadowCastable && !(mat && !mat->getCastShadow());
+                    const float maxScale =
+                        std::max(std::abs(xf->sx), std::max(std::abs(xf->sy), std::abs(xf->sz)));
+                    const glm::vec3 worldC(xf->x, xf->y, xf->z);
+                    const float worldR = mesh->boundsRadius > 0.f ? maxScale * mesh->boundsRadius
+                                                                  : 0.f;
+                    if (frustumCull && worldR > 0.f) {
+                        if (const glm::mat4 *vp = camViewProjOf(camEnt)) {
+                            item.culled = !sphereInFrustum(*vp, worldC, worldR);
+                        }
+                    }
+                    if (frustumCull && defaultCamIdx >= 0 && worldR > 0.f) {
+                        item.culledMain =
+                            !sphereInFrustum(camViewProj[size_t(defaultCamIdx)], worldC, worldR);
+                    }
+                    if (shadowActive && shadowOk) {
+                        if (worldR > 0.f) {
+                            for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+                                if (frame.cascadeFrustums[c].sphereVisible(worldC, worldR))
+                                    item.cascadeMask |= (1u << c);
+                            }
+                        } else {
+                            // No bounds (e.g. legacy/imported mesh): never cull.
+                            item.cascadeMask = (1u << ShadowConfig::kCascades) - 1u;
+                        }
                     }
                     out.push_back(std::move(item));
                 };
@@ -661,7 +756,6 @@ void prepareFrame3D(FrameState3D &frame, RenderControl *rc, Camera3D *defaultCam
         },
         kChunk);
     entityJob->wait();
-    lightJob->wait();
     jobs->endFrame();  // frame jobs are arena-allocated; endFrame recycles them
 
     for (auto &chunk : chunks) {
@@ -716,6 +810,7 @@ void RenderSystem3D::render(Graphics &gfx) {
                 if (!item.shadowCastable) return;
                 if (item.material && !item.material->getCastShadow()) return;
                 if (!item.meshShadow) return;
+                if ((item.cascadeMask & (1u << c)) == 0) return;
                 eve::debug::rtBind("mesh", "shadowCaster");
                 eve::debug::rtDraw("drawMeshShadow", "cascade");
                 gfx.drawMeshShadow(item.meshShadow, frame.shadowUpload.ubo.lightVP[c] * item.model);
@@ -754,7 +849,7 @@ void RenderSystem3D::render(Graphics &gfx) {
         const int gh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
         gfx.beginGBufferPass(gw, gh);
         auto drawGBufferItem = [&](const RenderItem3D &item) {
-            if (item.culled) return;
+            if (item.culledMain) return;
             // X-ray targets are skipped so their pixels record the occluder depth
             // behind them; the X-ray shader samples that to detect occlusion.
             if (item.mr->xrayHighlight) return;

@@ -32,8 +32,13 @@ struct RenderItem3D {
     int partIndex = -1;  // -1 = whole-entity item
     bool hair = false;
     bool shadowCastable = false;
-    /** @brief Set by the prep when "frustumCull" is enabled and the item is outside the view. */
+    /** @brief Set by the prep when "frustumCull" is enabled and the item is
+     *  outside the view of its own camera (used by the forward pass). */
     bool culled = false;
+    /** @brief Same test against the default camera's frustum (G-buffer pass). */
+    bool culledMain = false;
+    /** @brief Bit c set when the caster may contribute to cascade c. */
+    uint32_t cascadeMask = 0;
 };
 
 /**

@@ -12,7 +12,6 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
-#include <array>
 #include <vector>
 #include <cstdint>
 #include <glm/glm.hpp>
@@ -653,29 +652,6 @@ private:
     std::vector<GBufferDraw> gbufferPassDraws;
     GBufferSlot *currentGBufferSlot();
 
-    // ---- parallel pass recording (secondary command buffers) ----
-    //
-    // Shadow (per cascade), G-buffer and the forward scene pass are recorded
-    // into per-frame-slot secondary command buffers (by JobSystem workers for
-    // the deferred passes), then executed from the single present command
-    // buffer with vkCmdExecuteCommands — one submit per frame. The draw lists
-    // above are grow-only: capacity is retained across frames, so steady-state
-    // frames do not allocate per-frame vector storage.
-    static constexpr uint32_t kShadowSecondaryBase = 0;
-    static constexpr uint32_t kGBufferSecondary = ShadowConfig::kCascades;
-    static constexpr uint32_t kForwardSecondary = ShadowConfig::kCascades + 1;
-    struct FrameSecondaryCbs {
-        vk::CommandPool pool = nullptr;
-        std::array<vk::CommandBuffer, ShadowConfig::kCascades + 2> buffers{};
-        bool created = false;
-    };
-    std::vector<FrameSecondaryCbs> frameSecondaryCbs;  // per swapchain frame slot
-    bool sceneSecondaryActive = false;
-    FrameSecondaryCbs &currentFrameSecondaryCbs();
-    void recordDeferredPassesParallel();
-    void recordShadowCascadeSecondary(vk::CommandBuffer secondary, int cascade);
-    void recordGBufferSecondary(vk::CommandBuffer secondary);
-
     struct SceneColorSlot {
         vkb::ColorTarget msaaColor;
         vkb::ColorTarget color;
@@ -849,13 +825,6 @@ private:
     uint32_t frameSlotCount() const;
     size_t currentFrameSlot() const;
     vk::CommandBuffer &currentPresentCb();
-
-    /**
-     * @brief Command buffer the 3D scene-pass draws record into: the active
-     * forward-pass secondary command buffer when one is open, otherwise the
-     * present command buffer (2D / fallback / offscreen paths).
-     */
-    vk::CommandBuffer &currentDrawCb();
     vkb::FrameSlot frameToken() const;
     /** @brief Drain in-flight frames before mutating a GPU object sampled/read by them. */
     void waitForSharedGpuResources();
