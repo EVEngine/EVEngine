@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Export.h"
+#include "common/ScriptError.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -36,15 +37,41 @@ class EVENGINE_API ScriptException : public std::runtime_error {
 public:
     ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
                     const std::string& message);
+    /**
+     * @brief Constructs from a captured script error context.
+     * @param stage   Lifecycle stage that failed.
+     * @param source  Source name of the failing script.
+     * @param scriptId Id of the failing script (0 when unknown).
+     * @param context Structured error payload (message, site, stack).
+     */
+    ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
+                    const script::ScriptErrorContext& context);
 
     ScriptStage stage() const noexcept { return stage_; }
     const std::string& source() const noexcept { return source_; }
     uint64_t scriptId() const noexcept { return script_id_; }
+    /** @brief True when the exception carries a script source line. */
+    bool hasLocation() const noexcept { return line_ > 0; }
+    /** @brief 1-based throw/compile site line; -1 when unknown. */
+    int line() const noexcept { return line_; }
+    /** @brief 1-based compile column; -1 when unknown. */
+    int column() const noexcept { return column_; }
+    /** @brief Function name at the throw site; empty when unknown. */
+    const std::string& function() const noexcept { return function_; }
+    /** @brief Multi-line call stack captured at the throw site. */
+    const std::string& stackTrace() const noexcept { return stack_trace_; }
+    /** @brief True when a reporter (e.g. DevTool hook) already handled it. */
+    bool reported() const noexcept { return reported_; }
 
 private:
     ScriptStage stage_;
     std::string source_;
     uint64_t script_id_;
+    int line_ = -1;
+    int column_ = -1;
+    std::string function_;
+    std::string stack_trace_;
+    bool reported_ = false;
 };
 
 struct EVENGINE_API ReflectedAttribute {
@@ -212,6 +239,9 @@ public:
 private:
     struct ScriptRecord;
 
+    /** @brief Installs the runtime error hook so failures capture the live stack. */
+    void installErrorHandler();
+
     std::unique_ptr<ssq::VM> vm_;
     std::unordered_map<ScriptId, std::unique_ptr<ScriptRecord>> scripts_;
     std::unordered_map<std::string, ReflectedClass> classes_;
@@ -224,8 +254,12 @@ private:
     LifecycleHandler lifecycle_handler_;
 
     void notifyLifecycle(const ScriptInfo& info) noexcept;
+    script::ScriptErrorContext compileErrorContext(const std::string& what,
+                                                   const std::string& sourceText);
     [[noreturn]] void fail(ScriptStage stage, const std::string& source, ScriptId id,
                            const std::exception& error);
+    [[noreturn]] void fail(ScriptStage stage, const std::string& source, ScriptId id,
+                           script::ScriptErrorContext context);
     void discoverClasses(ScriptRecord& record,
                          const std::unordered_map<std::string, SQUserPointer>& before);
     std::unordered_map<std::string, SQUserPointer> rootClasses() const;
