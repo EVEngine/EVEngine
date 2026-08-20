@@ -4,10 +4,14 @@
 #include "gpgpu/vulkan/VulkanUtil.h"
 
 #include "common/Exception.h"
+#include "graphics/vulkan/Graphics.h"
 
 #include <algorithm>
 
 namespace eve::gpgpu {
+
+bool VulkanSequence::ready() const { return vkg && static_cast<VkDevice>(vkg->getDevice().instance); }
+
 namespace {
 
 using buf = vk::BufferUsageFlagBits;

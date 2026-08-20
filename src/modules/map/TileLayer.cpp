@@ -2,6 +2,9 @@
 #include "map/TileConfig.h"
 #include "map/TileProjection.h"
 
+#include "graphics/Canvas.h"
+#include "graphics/Texture.h"
+
 #include <algorithm>
 
 namespace eve::map {

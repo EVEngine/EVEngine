@@ -132,6 +132,7 @@ public:
     float getMaxAnisotropy() const override;
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
+    bool releaseTexture(Texture *texture) override;
 
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h,
                           const Color &color) override;
@@ -165,6 +166,7 @@ public:
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    bool releaseShader(Shader *shader) override;
 
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
@@ -175,6 +177,7 @@ public:
                             int vertexCount, const uint32_t *indices, int indexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
+    bool releaseMesh(Mesh *mesh) override;
 
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;
@@ -191,14 +194,15 @@ public:
                                 int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
-    void setMesh3DSceneDepth(Texture *depth) override;
-    void setMesh3DMaterial(float metallic, float roughness) override;
-    void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
-    void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
-    void setMesh3DLighting(const Lighting3DPack &pack) override;
-    void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
-                         float windAngle, float coverage, float detail) override;
+    void     setMesh3DSceneDepth(Texture *depth) override;
+    void     setMesh3DMaterial(float metallic, float roughness) override;
+    void     setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
+    void     setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
+    void     setMesh3DLighting(const Lighting3DPack &pack) override;
+    void setCloudShadows(float strength, float worldCell, float time, float windSpeed, float windAngle, float coverage,
+                         float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
+    void setMesh3DClusteredActive(bool active) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
@@ -206,8 +210,7 @@ public:
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
     void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
-    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
-                             Texture *albedo = nullptr) override;
+    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;

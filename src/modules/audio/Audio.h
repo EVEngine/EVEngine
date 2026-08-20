@@ -3,9 +3,6 @@
 #include "common/Module.h"
 #include "common/Data.h"
 
-#include "sound/SoundData.h"
-#include "sound/Decoder.h"
-
 #include <AL/alc.h>
 
 #include <atomic>
@@ -15,6 +12,10 @@
 #include <vector>
 
 namespace eve {
+namespace sound {
+class SoundData;
+class Decoder;
+}  // namespace sound
 namespace audio {
 
 class Source;

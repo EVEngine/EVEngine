@@ -1,8 +1,7 @@
 #pragma once
 
 #include "common/ECS.h"
-#include "graphics/Canvas.h"
-#include "graphics/Texture.h"
+#include "graphics/Color.h"
 #include "map/TileOrientation.h"
 
 #include <cstdint>
@@ -13,9 +12,14 @@ namespace eve::graphics {
 class Graphics;
 class Camera2D;
 class Canvas;
+class Texture;
 }  // namespace eve::graphics
 
 namespace eve::map {
+
+// Color lives in eve::graphics (see graphics/Canvas.h); re-expose it here so
+// tile code keeps the unqualified form.
+using eve::graphics::Color;
 
 /**
  * @brief ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem

@@ -1,5 +1,8 @@
 #include "graphics/Material.h"
+
+#include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
+#include "graphics/Light.h"
 
 namespace eve::graphics {
 
@@ -75,9 +78,9 @@ void Material::bind(Graphics &gfx) const {
     gfx.setMesh3DShadowReceive(receiveShadow_);
 
     if (!receiveLight_ || shadingModel_ == "unlit") {
-        ClusteredLightingUpload off{};
-        off.active = false;
-        gfx.setMesh3DClusteredLighting(off);
+        // Cheap toggle only: never clobber the clustered light table that the
+        // frame uploaded once (see Graphics::setMesh3DClusteredActive).
+        gfx.setMesh3DClusteredActive(false);
         Lighting3DPack none{};
         none.count = 0;
         none.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);

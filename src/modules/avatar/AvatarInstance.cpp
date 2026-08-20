@@ -1,9 +1,15 @@
 #include "avatar/AvatarInstance.h"
-#include "avatar/Avatar.h"
 #include "animation/Tween.h"
+#include "avatar/Avatar.h"
 #include "common/ECS.h"
 #include "common/Module.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
+#include "image/ImageData.h"
 #include "model3d/ModelData.h"
 
 #include <algorithm>

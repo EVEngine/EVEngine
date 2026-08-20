@@ -1,20 +1,21 @@
 #pragma once
-#include "graphics/Graphics.h"
-#include "graphics/Batcher.h"
-#include "graphics/Texture.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
-#include "graphics/Light.h"
-#include "graphics/ClusteredLight.h"
-#include "graphics/Shadow.h"
-#include "vkbuilder.hpp"
+#include <array>
 #include <atomic>
+#include <cstdint>
+#include <glm/glm.hpp>
 #include <memory>
 #include <optional>
 #include <unordered_map>
 #include <vector>
-#include <cstdint>
-#include <glm/glm.hpp>
+#include "graphics/Batcher.h"
+#include "graphics/ClusteredLight.h"
+#include "graphics/Graphics.h"
+#include "graphics/Light.h"
+#include "graphics/Mesh.h"
+#include "graphics/Shader.h"
+#include "graphics/Shadow.h"
+#include "graphics/Texture.h"
+#include "vkbuilder.hpp"
 
 namespace eve::graphics::vulkan {
 
@@ -136,16 +137,29 @@ struct GpuTexture {
 };
 
 struct GpuMesh {
-    vkb::HostVertexBuffer vertices;
-    vkb::GenericBuffer indices;
-    uint32_t indexCount = 0;
-    vk::IndexType indexType = vk::IndexType::eUint32;
+    /** @brief Ring copies for per-frame updated meshes (skin/morph/sprite
+     *  stack). Writing the next copy never races with in-flight frames, so
+     *  dynamic updates need no device-wide wait. Only allocated once a mesh
+     *  is actually updated (static meshes keep a single copy). */
+    static constexpr size_t                                 kDynamicVertexCopies = 3;
+    vkb::HostVertexBuffer                                   vertices;
+    vkb::GenericBuffer                                      indices;
+    std::array<vkb::HostVertexBuffer, kDynamicVertexCopies> dynVertices;
+    std::array<vkb::GenericBuffer, kDynamicVertexCopies>    dynIndices;
+    /** @brief CPU index copy for dynamic meshes (also normalizes 16-bit
+     *  static indices to 32-bit ring buffers). */
+    std::vector<uint32_t> cpuIndices;
+    /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
+    uint64_t      dynamicWriteCount = 0;
+    bool          dynamic           = false;
+    uint32_t      indexCount        = 0;
+    vk::IndexType indexType         = vk::IndexType::eUint32;
 };
 
 struct GpuShader {
-    vk::Pipeline swapchainPipeline;
-    vk::Pipeline offscreenPipeline;
-    vk::Pipeline mesh3dPipeline;
+    vk::Pipeline       swapchainPipeline;
+    vk::Pipeline       offscreenPipeline;
+    vk::Pipeline       mesh3dPipeline;
     vk::Pipeline mesh3dXrayPipeline;
     vk::PipelineLayout pipelineLayout;
     bool isMesh3D = false;
@@ -184,6 +198,8 @@ public:
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
                               const Color &color,
                               BlendMode blend = BlendMode::Alpha) override;
+    void pushValidationScope() override {}
+    void popValidationScope() override {}
     Texture *newTexture(int width, int height, const uint8_t *rgba, bool repeatU = false,
                         bool repeatV = false) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba,
@@ -197,6 +213,7 @@ public:
     float getMaxAnisotropy() const override;
     Texture *newTextureFromFile(const std::string &filename) override;
     bool reloadTextureFromFile(const std::string &filename) override;
+    bool releaseTexture(Texture *texture) override;
     bool replaceTexturePixels(Texture *tex, image::ImageData *data);
     void drawTexturedRect(Texture *texture, float x, float y, float w, float h, const Color &color) override;
     void drawTexturedRectShader(Texture *texture, Shader *shader, float x, float y, float w, float h,
@@ -228,6 +245,7 @@ public:
     Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
+    bool releaseShader(Shader *shader) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
@@ -237,6 +255,7 @@ public:
                             int vertexCount, const uint32_t *indices, int indexCount) override;
     Mesh *newMeshSphere(int slices = 32, int stacks = 16) override;
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
+    bool releaseMesh(Mesh *mesh) override;
     void begin3DFrame() override;
     void begin3DFrameToCanvas(Canvas *canvas) override;
     void end3DFrameToCanvas() override;
@@ -256,14 +275,15 @@ public:
                                   int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
     void setMesh3DHeightTexture(Texture *height) override;
-    void setMesh3DSceneDepth(Texture *depth) override;
-    void setMesh3DMaterial(float metallic, float roughness) override;
-    void setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
-    void setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
-    void setMesh3DLighting(const Lighting3DPack &pack) override;
-    void setCloudShadows(float strength, float worldCell, float time, float windSpeed,
-                         float windAngle, float coverage, float detail) override;
+    void              setMesh3DSceneDepth(Texture *depth) override;
+    void              setMesh3DMaterial(float metallic, float roughness) override;
+    void              setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
+    void              setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
+    void              setMesh3DLighting(const Lighting3DPack &pack) override;
+    void setCloudShadows(float strength, float worldCell, float time, float windSpeed, float windAngle, float coverage,
+                         float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
+    void setMesh3DClusteredActive(bool active) override;
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
@@ -271,8 +291,7 @@ public:
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
     void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
-    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
-                             Texture *albedo = nullptr) override;
+    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;
@@ -357,29 +376,27 @@ private:
     /** @brief acquire + record deferred shadow/gbuffer + begin swapchain RP. */
     bool beginSwapchainRenderPass();
     /** @brief Begin the swapchain color+depth RP on an already-acquired present CB. */
-    void beginSwapchainColorPass();
-    bool beginSceneColorRenderPass();
-    void endSceneColorRenderPass();
-    void ensureOffscreen3DResources();
-    void destroyOffscreen3DResources();
-    void queueSceneColorResolve();
-    void ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
-    void uploadClusteredLighting(const ClusteredLightingUpload &upload);
-    vkb::BoundSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex,
-                                       GpuTexture *envTex, GpuTexture *heightTex,
-                                       Mesh3dClusteredFrameSlots &fslots, size_t uboSlot);
-    void ensureOffscreenPipelines();
-    void ensureShaderOffscreenPipeline(Shader *shader);
-    vk::Pipeline createTexturedStylePipeline(const std::vector<uint32_t> &vert,
-                                             const std::vector<uint32_t> &frag,
-                                             const vkb::BuiltRenderPass &rp,
-                                             vk::PipelineLayout layout,
-                                             BlendMode mode = BlendMode::Alpha);
-    vk::Pipeline createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
-                                           const std::vector<uint32_t> &frag,
-                                           vk::PipelineLayout layout,
-                                           const vkb::BuiltRenderPass &rp,
-                                           vk::SampleCountFlagBits samples);
+    void          beginSwapchainColorPass();
+    bool          beginSceneColorRenderPass();
+    void          endSceneColorRenderPass();
+    void          ensureOffscreen3DResources();
+    void          destroyOffscreen3DResources();
+    void          queueSceneColorResolve();
+    void          ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes);
+    void          uploadClusteredLighting(const ClusteredLightingUpload &upload);
+    void          ensureMesh3dStrides();
+    void          ensureMesh3dRing(Mesh3dFrameSlots &fslots);
+    void          ensureMesh3dClusteredRing(Mesh3dClusteredFrameSlots &fslots);
+    vkb::BoundSet mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
+                                        GpuTexture *heightTex, Mesh3dClusteredFrameSlots &fslots);
+    void          ensureOffscreenPipelines();
+    void          ensureShaderOffscreenPipeline(Shader *shader);
+    vk::Pipeline  createTexturedStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
+                                              const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout,
+                                              BlendMode mode = BlendMode::Alpha);
+    vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
+                                            vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
+                                            vk::SampleCountFlagBits samples);
     /** @brief X-ray overlay variant: depth test/write off + alpha blend (occluded silhouettes). */
     vk::Pipeline createMesh3DXrayPipeline(const std::vector<uint32_t> &vert,
                                           const std::vector<uint32_t> &frag,
@@ -413,22 +430,21 @@ private:
     void noteTexturedOverlay(Texture *tex);
     void noteLitOverlay();
     void clear2DBatches();
-    void drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
-                        std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
-                        size_t &texBufIndex, bool offscreen);
+    void          drawLitBatches(vk::CommandBuffer cb, int viewW, int viewH, vk::Pipeline pipeline,
+                                 std::vector<LitBatch> &batches, std::vector<vkb::HostVertexBuffer> &texBufs,
+                                 size_t &texBufIndex, bool offscreen);
     vkb::BoundSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
     vkb::BoundSet post2SetFor(GpuTexture *color, GpuTexture *depth);
-    void ensureFlatNormalTexture();
-    void captureSwapchainImage(uint32_t imageIndex);
-    void ensurePresentCaptureHook();
-    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                              GpuTexture *heightTex, GpuTexture *depthTex,
-                              Mesh3dFrameSlots &fslots, size_t uboSlot);
-    void ensureDefaultEnvCubemap();
-    void ensureFlatNormalTexture3D();
-    void ensureFlatHeightTexture3D();
-    vk::Sampler createVkSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
-    void writeCombinedImageDescriptor(GpuTexture *gpu);
+    void          ensureFlatNormalTexture();
+    void          captureSwapchainImage(uint32_t imageIndex);
+    void          ensurePresentCaptureHook();
+    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex, GpuTexture *heightTex,
+                               GpuTexture *depthTex, Mesh3dFrameSlots &fslots);
+    void          ensureDefaultEnvCubemap();
+    void          ensureFlatNormalTexture3D();
+    void          ensureFlatHeightTexture3D();
+    vk::Sampler   createVkSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
+    void          writeCombinedImageDescriptor(GpuTexture *gpu);
     /** @brief Rebuild surface/swapchain when dirty. Returns false if surface not ready. */
     bool rebuildSwapchainIfNeeded();
     /** @brief acquire + begin command buffer; recreates swapchain and retries on failure. */
@@ -507,31 +523,32 @@ private:
     };
     struct Mesh3dSetKeyHash {
         size_t operator()(const Mesh3dSetKey &k) const {
-            return std::hash<GpuTexture *>()(k.albedo) ^
-                   (std::hash<GpuTexture *>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture *>()(k.env) << 2) ^
-                   (std::hash<GpuTexture *>()(k.height) << 3) ^
+            return std::hash<GpuTexture *>()(k.albedo) ^ (std::hash<GpuTexture *>()(k.normal) << 1) ^
+                   (std::hash<GpuTexture *>()(k.env) << 2) ^ (std::hash<GpuTexture *>()(k.height) << 3) ^
                    (std::hash<GpuTexture *>()(k.depth) << 4);
         }
     };
-    struct Mesh3dUboSlot {
-        vkb::GenericBuffer ubo;
-        vkb::GenericBuffer shadowUbo;
+    // Per-frame-slot UBO rings, keyed by Present::frames_in_flight so a frame
+    // never overwrites a UBO that an in-flight frame is still reading.
+    // Per-draw data is written at dynamic offsets into the ring and the same
+    // descriptor set (cached per texture combination) is re-bound with a new
+    // offset, so descriptor-pool usage is bounded by texture count instead of
+    // growing with draw count.
+    struct Mesh3dFrameSlots {
+        vkb::GenericBuffer uboRing;            // capacity * mesh3dUboStride bytes
+        vkb::GenericBuffer shadowRing;         // capacity * shadowUboStride bytes
+        size_t             capacity      = 0;  // per-draw slot count the rings hold
+        size_t             drawIndex     = 0;
+        size_t             lastDrawCount = 0;
         std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
     };
-    // Per-frame-slot UBO arenas, keyed by Present::frames_in_flight so a frame
-    // never overwrites a UBO that an in-flight frame is still reading.
-    struct Mesh3dFrameSlots {
-        std::vector<Mesh3dUboSlot> slots;
-        size_t drawIndex = 0;
-    };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
-    Texture *whiteTexture = nullptr;
-    Texture *flatNormalTexture3D = nullptr;
-    Texture *flatHeightTexture3D = nullptr;
-    Texture *defaultEnvCubemap = nullptr;
-    Texture *mesh3dNormalTexture = nullptr;
-    Texture *mesh3dHeightTexture = nullptr;
+    Texture                      *whiteTexture            = nullptr;
+    Texture                      *flatNormalTexture3D     = nullptr;
+    Texture                      *flatHeightTexture3D     = nullptr;
+    Texture                      *defaultEnvCubemap       = nullptr;
+    Texture                      *mesh3dNormalTexture     = nullptr;
+    Texture                      *mesh3dHeightTexture     = nullptr;
     Texture *mesh3dEnvTexture = nullptr;
     Texture *mesh3dSceneDepthTexture = nullptr;
     float mesh3dEnvIntensity = 0.f;
@@ -561,21 +578,28 @@ private:
         vkb::GenericBuffer lightsBuf;
         vkb::GenericBuffer tableBuf;
         vkb::GenericBuffer indicesBuf;
-        size_t lightsCap = 0;
-        size_t tableCap = 0;
-        size_t indicesCap = 0;
+        size_t             lightsCap  = 0;
+        size_t             tableCap   = 0;
+        size_t             indicesCap = 0;
     };
     std::vector<ClusteredStorage> clusteredStorages;  // per swapchain frame slot
-    struct Mesh3dClusteredUboSlot {
-        vkb::GenericBuffer ubo;
-        vkb::GenericBuffer shadowUbo;
+    struct Mesh3dClusteredFrameSlots {
+        vkb::GenericBuffer uboRing;     // capacity * mesh3dClusteredUboStride bytes
+        vkb::GenericBuffer shadowRing;  // capacity * shadowUboStride bytes
+        size_t             capacity      = 0;
+        size_t             drawIndex     = 0;
+        size_t             lastDrawCount = 0;
         std::unordered_map<Mesh3dSetKey, vkb::BoundSet, Mesh3dSetKeyHash> sets;
     };
-    struct Mesh3dClusteredFrameSlots {
-        std::vector<Mesh3dClusteredUboSlot> slots;
-        size_t drawIndex = 0;
-    };
     std::vector<Mesh3dClusteredFrameSlots> mesh3dClusteredFrameSlots;
+
+    /** @brief Dynamic-offset strides aligned to minUniformBufferOffsetAlignment. */
+    uint32_t mesh3dUboStride          = 0;
+    uint32_t shadowUboStride          = 0;
+    uint32_t mesh3dClusteredUboStride = 0;
+    /** @brief Last pipeline bound in drawMeshShader, so identical binds are skipped. */
+    vk::Pipeline lastMesh3dPipeline          = nullptr;
+    vk::Pipeline lastMesh3dClusteredPipeline = nullptr;
 
     // Ping-pong copies so frame N+1 can write while frame N still samples.
     static constexpr uint32_t kAsyncResourceCopies = 2;
@@ -583,7 +607,7 @@ private:
     // CSM shadow map (3 cascade layers), one array per in-flight slot.
     struct ShadowMapSlot {
         vkb::DepthArrayImage image;
-        vk::Framebuffer framebuffers[ShadowConfig::kCascades]{};
+        vk::Framebuffer      framebuffers[ShadowConfig::kCascades]{};
     };
     std::vector<ShadowMapSlot> shadowMaps;
     vkb::DepthSampler shadowSampler{};

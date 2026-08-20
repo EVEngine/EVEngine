@@ -170,6 +170,20 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     }
 #endif  // EVENGINE_WINDOWS
 
+#ifdef EVENGINE_MACOSX
+    // 2b. macOS: bundle the runtime dylibs (Vulkan loader, zlib, ...) that the
+    // executable links from the SDK's lib/ directory, so the packaged game is
+    // self-contained next to the eve binary.
+    path sdkLib = path(sdkRoot) / "lib";
+    if (exists(sdkLib)) {
+        for (const auto& entry : directory_iterator(sdkLib, ec)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".dylib")
+                copyFileIf(entry.path(), outDir / entry.path().filename());
+        }
+        ec.clear();
+    }
+#endif  // EVENGINE_MACOSX
+
     // 3. Platform packaging template (win32/linux README etc).
     if (exists(sdkPlat)) {
         for (const auto& entry : directory_iterator(sdkPlat, ec)) {

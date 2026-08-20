@@ -1,5 +1,7 @@
 #include "graphics/Graphics.h"
+#include "common/Capability.h"
 #include "common/config.h"
+#include "graphics/GraphicsCapabilities.h"
 #include "graphics/Grass.h"
 #include "graphics/HairShader.h"
 
@@ -20,8 +22,11 @@
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 
 #ifndef EVENGINE_WEBGPU
 #include "font/FontData.h"
@@ -42,6 +47,20 @@
 #include <memory>
 
 namespace eve::graphics {
+
+Graphics::Graphics() {
+    // The window module owns the native window; we own the render surface.
+    // Register as its surface host so window never has to include graphics.
+    // The query happens after native window creation, so this pointer is valid
+    // by the time it is used; see common/WindowSurfaceHost.h.
+    eve::cap::provide<IWindowSurfaceHost>(this);
+    registerGraphicsCapabilities();
+}
+
+Graphics::~Graphics() {
+    // Out-of-line so unique_ptr members of effect classes (Outline, AO, GI, …)
+    // are destroyed where the complete types are visible.
+}
 
 #ifdef EVENGINE_WEBGPU
 Module_IMPL(Graphics, new eve::graphics::webgpu::Graphics());

@@ -13,12 +13,15 @@ if(NOT _has_font)
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
-# Each of graphics / physics / audio has a SceneLinks.cpp registering the link
-# kinds it owns (scene/SceneLink.h). They all share the basename, so dropping
-# scene drops all three in one rule.
+# graphics/SceneLinks.cpp registers the link kinds graphics owns and
+# graphics/ScenePicking.cpp implements the scene picking entry points that
+# need a complete Camera3D; both include scene headers, so dropping scene
+# drops both files. physics / audio each have their own SceneLinks.cpp with
+# the same basename, so one rule covers all three.
 eve_module_enabled(scene _has_scene)
 if(NOT _has_scene)
-  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp"
+  set(EVENGINE_EXCLUDED_MODULE_FILES
+      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp;ScenePicking.cpp"
       CACHE INTERNAL "Exact basenames excluded from module source scan")
 endif()
 
@@ -196,6 +199,8 @@ if(_has_ui)
     else()
       target_link_libraries(eve_imgui INTERFACE imgui)
     endif()
+    # INTERFACE library: only propagate the shared include set to consumers.
+    target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
   else()
     # Compiled from third-party sources (also installed by the ExternalProject).
     set(_eve_imgui_sources
@@ -223,6 +228,10 @@ if(_has_ui)
       )
     endif()
     target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
+    # STATIC library: PUBLIC so eve_imgui's own TUs (imgui_impl_vulkan.cpp /
+    # imgui_impl_sdl.cpp) compile against the shared include set (Vulkan SDK,
+    # SDL2, engine headers) and consumers inherit it transitively.
+    target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
   endif()
 
   target_link_libraries(EVUI PUBLIC eve_imgui)

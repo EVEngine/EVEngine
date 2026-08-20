@@ -1,10 +1,8 @@
 #pragma once
 
 #include "common/ECS.h"
-#include "graphics/Canvas.h"
 #include "graphics/BlendMode.h"
-#include "graphics/Texture.h"
-#include "gpgpu/GpuBuffer.h"
+#include "graphics/Color.h"
 #include "particles/ParticleCurve.h"
 
 #include <cstdint>
@@ -19,6 +17,7 @@ class Camera2D;
 class Canvas;
 class Light2D;
 class Shader;
+class Texture;
 }
 
 namespace eve::animation {
@@ -33,7 +32,15 @@ class Skeleton2D;
 class Skeleton3D;
 }
 
+namespace eve::gpgpu {
+class GpuBuffer;
+}
+
 namespace eve::particles {
+
+// Color lives in eve::graphics (see graphics/Canvas.h); re-expose it here so
+// particle code keeps the unqualified form.
+using eve::graphics::Color;
 
 /** @brief Single live particle (CPU simulation). */
 struct Particle {

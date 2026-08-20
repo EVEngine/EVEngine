@@ -7,9 +7,11 @@ namespace graphics {
 class Graphics;
 class Mesh;
 }
+#ifdef EVENGINE_HAS_PROCGEN
 namespace procgen {
 class Heightmap;
 }
+#endif
 }  // namespace eve
 
 namespace eve::editor {
@@ -47,6 +49,7 @@ public:
     EditorDock      *newDock();
     EditorHistory   *newHistory();
 
+#ifdef EVENGINE_HAS_PROCGEN
     /**
      * Build a flat-shaded terrain mesh from a heightmap (grid of cells,
      * X/Z in world units = index * cellSize, Y = height * heightScale).
@@ -57,6 +60,7 @@ public:
     /** In-place vertex update after heightmap edits (reuses GPU buffers). */
     bool updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
                              procgen::Heightmap *hm, float cellSize, float heightScale);
+#endif
 };
 
 }  // namespace eve::editor

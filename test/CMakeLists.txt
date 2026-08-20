@@ -4,6 +4,7 @@ file(GLOB all_test_cpp
   ECS.cpp
   capability.cpp
   data.cpp
+  resource.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
@@ -60,6 +61,7 @@ file(GLOB all_test_cpp
   inventory.cpp
   building.cpp
   buildingfx.cpp
+  card.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -84,6 +86,7 @@ file(GLOB all_test_cpp
   hotreload.cpp
   remotesync.cpp
   shader.cpp
+  hair.cpp
   grass.cpp
   spritestack.cpp
   daynight.cpp
@@ -101,6 +104,7 @@ file(GLOB all_test_cpp
   image.cpp
   event.cpp
   rx.cpp
+  runtime.cpp
   timer.cpp
   timer_cpp.cpp
   system.cpp
@@ -118,6 +122,7 @@ file(GLOB all_test_cpp
   tensor_quant.cpp
   callgraph.cpp
   renderflow.cpp
+  resource_lifetime.cpp
   debugger.cpp
   debugger_audit.cpp
   dap.cpp
@@ -165,13 +170,28 @@ if(EVENGINE_ANDROID_TEST_APP)
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
+  target_link_libraries(main eve_engine_includes)
 else()
   add_executable(
     unit_test
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
+  target_link_libraries(unit_test eve_engine_includes)
 endif()
+
+# zeroerr's REQUIRE/CHECK/ASSERT are compiled out under ZEROERR_NO_ASSERT
+# (the root CMakeLists strips them from non-Debug builds). That silently
+# deletes test setup calls written as REQUIRE(initSideEffect()), which made
+# every graphics test fail in Release with "graphics not initialized". Keep
+# test assertions live in the test binary so Release CI actually asserts.
+foreach(_eve_test_tgt IN ITEMS unit_test main)
+  if(TARGET ${_eve_test_tgt})
+    target_compile_options(${_eve_test_tgt} PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  endif()
+endforeach()
 
 # Several tests include Poco headers (data, mcp, dap, remotesync). MSVC would
 # otherwise #pragma-comment PocoFoundationd.lib, which the third-party prefix
@@ -185,53 +205,9 @@ if(WIN32)
 endif()
 
 
-if(WIN32)
-  set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
-elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  find_library(ANDROID_LOG_LIB log)
-  find_library(ANDROID_LIB android)
-  find_library(ANDROID_OPENSLES_LIB OpenSLES)
-  set(SystemLibraries ${SystemLibraries}
-    ${ANDROID_LOG_LIB}
-    ${ANDROID_LIB}
-    ${ANDROID_OPENSLES_LIB}
-    dl
-    m
-    c++_shared
-  )
-elseif(APPLE)
-  set(SystemLibraries ${SystemLibraries}
-    dl pthread iconv
-    "-framework Cocoa"
-    "-framework IOKit"
-    "-framework ForceFeedback"
-    "-framework Carbon"
-    "-framework CoreVideo"
-    "-framework Metal"
-    "-framework QuartzCore"
-    "-framework AudioToolbox"
-    "-framework CoreAudio"
-    "-framework GameController"
-    "-framework CoreHaptics"
-    "-framework AVFoundation"
-    "-framework CoreMedia"
-    "-framework CoreFoundation"
-    "-framework Foundation"
-    "-framework OpenGL"
-  )
-elseif(UNIX)
-  set(SystemLibraries ${SystemLibraries}
-    dl pthread m rt bz2 png
-    X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
-    wayland-client wayland-cursor wayland-egl xkbcommon
-    asound
-  )
-  # OpenAL Soft may compile the sndio backend when libsndio-dev is present.
-  find_library(EVENGINE_SNDIO_LIBRARY sndio)
-  if(EVENGINE_SNDIO_LIBRARY)
-    list(APPEND SystemLibraries sndio)
-  endif()
-endif()
+# Platform system libraries, shared with the host binary
+# (see cmake/system_libraries.cmake).
+eve_append_system_libraries(SystemLibraries)
 
 # Windows lib names must match local + CI third-party install (md/mdd postfixes).
 # FreeType uses its own Debug postfix "d" (freetyped) and Release "md" (freetypemd).
@@ -240,7 +216,7 @@ if(WIN32)
     set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd Box2Dmdd box3dd
       vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd freetyped)
   else()
-    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic lz4md Box2Dmd box3dmd
+    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstaticmd lz4md Box2Dmd box3dmd
       vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md freetypemd)
   endif()
 else()
@@ -259,7 +235,7 @@ if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     ${SystemLibraries})
 else()
   if(WIN32)
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2
+    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2md
       PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
       ${SystemLibraries})
   elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
@@ -321,6 +297,7 @@ set(EVELIBS
   EVInventory
   EVBuilding
   EVBuildingFx
+  EVCard
   EVAvatar
   EVDialogue
   EVProcgen

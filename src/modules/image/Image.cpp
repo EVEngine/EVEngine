@@ -19,6 +19,8 @@
  **/
 
 #include "Image.h"
+#include "common/Exception.h"
+#include "common/Resource.h"
 #include "common/config.h"
 
 #include "medialoader/image/PNGHandler.h"
@@ -72,6 +74,17 @@ Image::~Image()
 ImageData *Image::newImageData(Data *data)
 {
 	return new ImageData(data);
+}
+
+ImageData *Image::newImageDataFromFile(std::string path)
+{
+	if (path.empty())
+		throw eve::Exception("Image::newImageDataFromFile: empty path");
+
+	eve::Resource *resource = eve::ResourceManager::getInstance().get(path);
+	if (!resource)
+		throw eve::Exception("Could not load image file: %s", path.c_str());
+	return static_cast<ImageData *>(resource);
 }
 
 ImageData *Image::newImageData(int width, int height, std::string format)
@@ -218,6 +231,7 @@ void Image::expose(ssq::Table &table) {
 
 void Image::expose(ssq::Class &cls) {
 	cls.addFunc("getName", &Image::getName);
+	cls.addFunc("newImageDataFromFile", &Image::newImageDataFromFile);
 }
 
 } // image

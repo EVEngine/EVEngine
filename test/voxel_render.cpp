@@ -1,6 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "procgen/heightmap/TerrainSampler.h"
+
 #include <SDL2/SDL.h>
 
 #include <algorithm>
@@ -12,10 +14,30 @@
 #include <vector>
 
 #include "RenderImageAudit.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/ImageData.h"
 #include "voxel/Chunk.h"
 #include "voxel/CubeTypeRegistry.h"
@@ -31,6 +53,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 
 using namespace eve::graphics;
 using namespace eve::voxel;
@@ -57,7 +81,6 @@ static void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 320
     gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = w;
     s.height = h;

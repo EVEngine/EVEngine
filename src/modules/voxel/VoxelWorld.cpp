@@ -1,7 +1,9 @@
 #include "voxel/VoxelWorld.h"
 
+#include "procgen/heightmap/TerrainSampler.h"
+
 #include "data/ByteData.h"
-#include "graphics/Graphics.h"
+#include "graphics/IGraphics3D.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,6 +12,30 @@
 #include <thread>
 
 namespace eve::voxel {
+
+VoxelWorld::~VoxelWorld() = default;
+
+void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight,
+                                  float amplitude, float scale) {
+    if (!terrainSampler_) terrainSampler_ = std::make_unique<procgen::TerrainSampler>();
+    terrainSampler_->setSeed(seed);
+    terrainSampler_->setBase(0.f);
+    terrainSampler_->setAmplitude(1.f);
+    terrainSampler_->setClamp(true, 0.f, 1.f);
+    terrainSampler_->setFrequency(scale > 0.f ? scale : 1.f / 32.f);
+    terrainTop_       = top;
+    terrainSub_       = sub;
+    terrainStone_     = stone;
+    terrainBase_      = baseHeight;
+    terrainAmplitude_ = amplitude < 0.f ? 0.f : amplitude;
+    terrainEnabled_   = true;
+}
+
+int VoxelWorld::terrainHeightAt(int wx, int wz) const {
+    if (!terrainSampler_) return int(terrainBase_);
+    const float e = terrainSampler_->sample(float(wx), float(wz));
+    return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
+}
 
 namespace {
 // Cap remesh worker count: enough to parallelize chunk meshing without
@@ -335,7 +361,7 @@ int VoxelWorld::getVisibleRectCount() const {
     return n;
 }
 
-void VoxelWorld::drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow) {
+void VoxelWorld::drawVisible(graphics::IGraphics3D *gfx, graphics::Texture *atlas, int tilesPerRow) {
     if (!gfx) return;
     for (const auto &b : visible_) {
         if (!b.chunk || !b.packed || b.count <= 0) continue;

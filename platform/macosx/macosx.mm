@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "image/ImageData.h"
 
 namespace eve {
 namespace macosx {
@@ -73,13 +72,13 @@ void requestAttention(bool continuous) {
     }
 }
 
-void setIcon(image::ImageData *image) {
-    if (image == nullptr)
+void setIconRGBA(const uint8_t *rgba, int width, int height) {
+    if (rgba == nullptr)
         return;
 
     @autoreleasepool {
-        const int w = image->getWidth();
-        const int h = image->getHeight();
+        const int w = width;
+        const int h = height;
         if (w <= 0 || h <= 0)
             return;
 
@@ -97,7 +96,7 @@ void setIcon(image::ImageData *image) {
         if (rep == nil)
             return;
 
-        memcpy([rep bitmapData], image->getData(), static_cast<size_t>(w) * h * 4);
+        memcpy([rep bitmapData], rgba, static_cast<size_t>(w) * h * 4);
 
         NSImage *nsimage = [[NSImage alloc] initWithSize:NSMakeSize(w, h)];
         [nsimage addRepresentation:rep];

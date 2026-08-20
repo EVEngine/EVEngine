@@ -1,11 +1,14 @@
 #pragma once
 
 #include "procgen/Grid2D.h"
-#include "map/TileLayer.h"
 
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+
+namespace eve::map {
+class TileLayer;
+}
 
 namespace eve::procgen {
 

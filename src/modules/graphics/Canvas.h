@@ -1,11 +1,9 @@
 #pragma once
 
+#include "graphics/Color.h"
 #include "graphics/Drawable.h"
 
-#include <glm/vec4.hpp>
 #include <optional>
-
-typedef glm::vec4 Color;
 
 namespace eve::image {
 class ImageData;

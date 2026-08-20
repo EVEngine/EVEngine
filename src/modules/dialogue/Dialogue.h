@@ -1,6 +1,5 @@
 #pragma once
 
-#include "avatar/AvatarInstance.h"
 #include "common/Module.h"
 
 #include <squirrel.h>
@@ -8,6 +7,10 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+
+namespace eve::avatar {
+class AvatarInstance;
+}
 #include <utility>
 #include <vector>
 

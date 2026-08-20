@@ -114,6 +114,7 @@ GAME ?=
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
+	check/test-manifest check/module-layers \
 	docs
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
@@ -132,6 +133,14 @@ show-targets:
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
 
+# Verify every test/*.cpp on disk is registered in test/CMakeLists.txt.
+check/test-manifest:
+	python3 scripts/check_test_manifest.py
+
+# Verify module includes never climb above the declared manifest LAYER.
+check/module-layers:
+	python3 scripts/module_depgraph.py --check-layers
+
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
 	@mkdir -p build
@@ -149,7 +158,7 @@ wsl/linux-debug:
 wsl/linux:
 	wsl --cd "$(CURDIR)" -- make build/linux
 
-# win32: Ninja/MSVC helpers（debug 用 Ninja+cl；Release VS 生成器也可借 vcvars）
+# win32: Ninja/MSVC helpers（debug/release 都用 Ninja+cl，经 vcvars 定位任意 VS）
 WITH_MSVC = cmake\with-msvc.cmd
 # Override in CI, e.g. VS_GENERATOR="Visual Studio 17 2022"
 VS_GENERATOR ?= Visual Studio 18 2026
@@ -159,12 +168,12 @@ JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
 
-build/win32: build/win32/EVEngine.sln
-	cmake.exe --build $@ --config Release --target deps -j $(JOBS)
-	cmake.exe --build $@ --config Release -j $(JOBS)
+build/win32: build/win32/build.ninja
+	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
+	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
-build/win32/EVEngine.sln:
-	cmake.exe -G "$(VS_GENERATOR)" -DCMAKE_BUILD_TYPE=Release -A x64 $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
+build/win32/build.ninja:
+	$(WITH_MSVC) cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
 
 build/linux: build/linux/Makefile
 	cmake --build $@ --target deps -j $(JOBS)
@@ -513,7 +522,7 @@ docs:
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 
 # Default: run tests per case (process-isolated; this is the fast path on CI —
-# main runs 1551 cases in ~2-11 min).  "bundle/<file>" entries stay registered
+# main runs 1526 cases in ~2-11 min).  "bundle/<file>" entries stay registered
 # by cmake/ZeroErrDiscoverTestsImpl.cmake as an opt-in: GPU/window tests were
 # ~70x slower when several shared one process on CI, so bundles are excluded
 # unless requested (FILTER=bundle/<file> or ctest -L bundle).
@@ -576,8 +585,8 @@ run/macosx-debug:
 	else build/macosx-debug/src/engine/eve; fi
 
 run/win32:
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/Release/eve.exe" run; \
-	else build/win32/src/engine/Release/eve.exe; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run; \
+	else build/win32/src/engine/eve.exe; fi
 
 run/linux:
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run; \
