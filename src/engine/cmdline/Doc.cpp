@@ -58,8 +58,15 @@ static inline int openWebPage(string url) {
 
 // create a new project
 int Cmdline::Doc(std::string name) {
-    string version = EVENGINE_VERSION;
-    return openWebPage("https://eve-devs.github.io/docs/" + version + name);
+    // The user/API manual lives on the organization GitHub Pages site.
+    // Doxygen has no stable per-symbol URL, so open the manual root and echo
+    // the requested symbol (useful for headless/agent invocations).
+    string url = "https://evengine.github.io/EVEngine/";
+    if (!name.empty())
+        cout << "EVEngine docs for '" << name << "': " << url << "\n";
+    else
+        cout << "EVEngine docs: " << url << "\n";
+    return openWebPage(url);
 }
 
 }  // namespace eve::cmd

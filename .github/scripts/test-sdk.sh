@@ -114,6 +114,8 @@ esac
 [ -d "$SDK/platform" ] || fail "missing platform/"
 [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
 [ -f "$SDK/share/eve/VERSION" ] || fail "missing share/eve/VERSION"
+[ -f "$SDK/share/eve/examples/basic/config.nut" ] || fail "missing share/eve/examples/basic/config.nut"
+[ -f "$SDK/share/eve/examples/basic/main.nut" ] || fail "missing share/eve/examples/basic/main.nut"
 TP="$(cat "$SDK/share/eve/TARGET_PLATFORM")"
 [ "$TP" = "$PLAT" ] || fail "TARGET_PLATFORM '$TP' != expected '$PLAT'"
 echo "OK: SDK layout + markers"
