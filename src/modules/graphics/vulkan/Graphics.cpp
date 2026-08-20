@@ -296,6 +296,7 @@ void Graphics::destroySwapchainResources() {
     presentModel.destroy();
     presentModel = vkb::Present{};
     depthImage = vkb::DepthStencilImage{};
+    destroyReadbackResources();
     // Release reused per-frame vertex buffers. Callers hold a device-wide
     // waitIdle before this runs.
     for (auto &fb : frame2dBuffers) releaseFrame2dBuffers(fb);
