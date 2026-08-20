@@ -1,5 +1,5 @@
 # GPU inference server dependencies (installed in the server image / pod).
-torch>=2.0.1
+torch>=2.13.0
 torchvision
 diffusers==0.29.1
 accelerate==0.30.1
