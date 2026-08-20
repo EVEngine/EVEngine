@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import pathlib
 import zipfile
 
@@ -32,12 +33,14 @@ def main() -> None:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     out = args.out_dir / f"eve-sdk-{args.platform}-{args.tag}.zip"
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
-        for path in root.rglob("*"):
-            if not path.is_file():
-                continue
-            if path.name == ".DS_Store":
-                continue
-            zf.write(path, path.relative_to(args.dist_root).as_posix())
+        # os.walk tolerates unreadable directories (e.g. Windows permission
+        # quirks inside vendored license trees) instead of raising like rglob.
+        for dirpath, _dirnames, filenames in os.walk(root):
+            for name in filenames:
+                if name == ".DS_Store":
+                    continue
+                path = pathlib.Path(dirpath) / name
+                zf.write(path, path.relative_to(args.dist_root).as_posix())
     print(f"wrote {out} ({out.stat().st_size} bytes)")
 
 

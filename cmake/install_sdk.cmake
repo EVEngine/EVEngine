@@ -46,16 +46,25 @@ else()
     )
 endif()
 
-# macOS: eve links the dynamic Vulkan loader. Bundle it into the SDK and give
-# eve an @loader_path rpath so the installed binary runs without the build's
-# Vulkan SDK environment. SDL2 and MoltenVK are linked statically.
+# macOS: eve links several dynamic libraries (Vulkan loader from the SDK,
+# zlib/PNG/... from the third-party tree). Bundle every *.dylib into the SDK
+# and give eve an @loader_path rpath so the installed binary runs without the
+# build environment. SDL2 and MoltenVK are linked statically.
 if(BUILD_PLATFORM STREQUAL "macosx")
-    install(FILES
-        "$ENV{VULKAN_SDK}/lib/libvulkan.dylib"
-        "$ENV{VULKAN_SDK}/lib/libvulkan.1.dylib"
-        DESTINATION lib
-        OPTIONAL
-    )
+    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+        set(_eve_mac_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib")
+    else()
+        set(_eve_mac_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/macosx/lib")
+    endif()
+    install(CODE "
+        file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/lib\")
+        foreach(_eve_dylib_dir IN ITEMS \"\$ENV{VULKAN_SDK}/lib\" \"${_eve_mac_tp_lib}\")
+            file(GLOB _eve_dylibs \"\${_eve_dylib_dir}/*.dylib\")
+            foreach(_eve_dylib IN LISTS _eve_dylibs)
+                file(COPY \"\${_eve_dylib}\" DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
+            endforeach()
+        endforeach()
+    ")
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
         INSTALL_RPATH "@loader_path/../lib"
     )
