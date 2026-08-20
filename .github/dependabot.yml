@@ -1,9 +1,13 @@
 # Dependabot keeps third-party GitHub Actions and tooling manifests up to date.
 # GitHub Actions updates also cover SHA-pinned actions (commit-level updates).
+# Updates open against `dev` (the development branch) so they can be reviewed
+# and merged through the normal dev -> main release flow; main only changes
+# via the promote/release pipeline.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: dev
     schedule:
       interval: "weekly"
     groups:
@@ -12,35 +16,63 @@ updates:
 
   - package-ecosystem: "npm"
     directory: "/tools/eve-mcp"
+    target-branch: dev
     schedule:
       interval: "weekly"
+    groups:
+      eve-mcp:
+        patterns: ["*"]
 
   - package-ecosystem: "npm"
     directory: "/tools/vscode-eve-debug"
+    target-branch: dev
     schedule:
       interval: "weekly"
+    groups:
+      vscode-eve-debug:
+        patterns: ["*"]
 
   - package-ecosystem: "pip"
     directory: "/modelconverter/python"
+    target-branch: dev
     schedule:
       interval: "weekly"
+    groups:
+      modelconverter-python:
+        patterns: ["*"]
 
   - package-ecosystem: "pip"
     directory: "/tools/creative-brain"
+    target-branch: dev
     schedule:
       interval: "weekly"
+    groups:
+      creative-brain:
+        patterns: ["*"]
 
   - package-ecosystem: "pip"
     directory: "/tools/normal-crafter"
+    target-branch: dev
     schedule:
       interval: "weekly"
+    groups:
+      normal-crafter:
+        patterns: ["*"]
 
   - package-ecosystem: "pip"
     directory: "/tools/story-scene-agent"
+    target-branch: dev
     schedule:
       interval: "weekly"
+    groups:
+      story-scene-agent:
+        patterns: ["*"]
 
   - package-ecosystem: "pip"
     directory: "/tools/vision-prefilter"
+    target-branch: dev
     schedule:
       interval: "weekly"
+    groups:
+      vision-prefilter:
+        patterns: ["*"]
