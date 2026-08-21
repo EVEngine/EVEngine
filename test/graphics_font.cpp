@@ -5,8 +5,27 @@
 #include "data/ByteData.h"
 #include "font/Font.h"
 #include "font/FontData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
 
@@ -28,6 +47,8 @@ constexpr int         kIconCodepoint = 0xF000;
 constexpr const char *kIconUtf8      = "\xEF\x80\x80";  // UTF-8 for U+F000
 
 #include "PathBesideSource.h"
+// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
+using eve::graphics::Color;
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 std::vector<char> readBinaryFile(const std::string &path) {
@@ -52,7 +73,6 @@ struct GraphicsFixture {
     GraphicsFixture(int w = 320, int h = 240) {
         win = eve::window::Window::create();
         gfx = Graphics::create();
-        win->setGraphics(gfx);
         eve::window::WindowSettings s;
         s.width    = static_cast<uint16_t>(w);
         s.height   = static_cast<uint16_t>(h);

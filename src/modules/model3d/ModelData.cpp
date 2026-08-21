@@ -13,6 +13,7 @@
 
 #include <cstdlib>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace eve {
@@ -53,6 +54,11 @@ ModelData::ModelData(medialoader::ModelScene scene, std::string uri)
     : Resource(std::move(uri)), scene(std::move(scene)) {}
 
 ModelData::~ModelData() = default;
+
+void ModelData::adopt(eve::Resource &replacement) {
+    auto &other = static_cast<ModelData &>(replacement);
+    std::swap(scene, other.scene);
+}
 
 bool ModelData::empty() const { return scene.empty(); }
 

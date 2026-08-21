@@ -46,6 +46,31 @@ else()
     )
 endif()
 
+# macOS: eve links several dynamic libraries (zlib/PNG/... from the
+# third-party tree) plus the Vulkan loader from the LunarG SDK. Bundle every
+# third-party *.dylib into the SDK and give eve an @loader_path rpath so the
+# installed binary runs without the build environment. The Vulkan loader +
+# MoltenVK are bundled by cmake/macosx_bundle_vulkan.cmake, so players do not
+# need to install the Vulkan SDK. SDL2 is linked statically.
+if(BUILD_PLATFORM STREQUAL "macosx")
+    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+        set(_eve_mac_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib")
+    else()
+        set(_eve_mac_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/macosx/lib")
+    endif()
+    install(CODE "
+        file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/lib\")
+        file(GLOB _eve_tp_dylibs \"${_eve_mac_tp_lib}/*.dylib\")
+        foreach(_eve_dylib IN LISTS _eve_tp_dylibs)
+            file(COPY \"\${_eve_dylib}\" DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
+        endforeach()
+    ")
+    install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/macosx_bundle_vulkan.cmake")
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        INSTALL_RPATH "@loader_path/../lib;@loader_path"
+    )
+endif()
+
 # ---- Public headers (engine common + module façades) ----
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     DESTINATION include/eve/common
@@ -57,28 +82,71 @@ install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
 )
 
-set(_eve_module_dirs
-    animation audio data event filesystem graphics image ik joystick keyboard mouse
-    model3d network particles plugins sound spatial timer touch ui window
+# Public module headers: export exactly the modules this build enabled, so the
+# SDK's API surface always matches the target runtime. Single source of truth is
+# cmake/module_manifest.cmake (EVE_ENABLED_MODULES); CORE modules (common /
+# cmdline / devtools) live under src/engine and have no src/modules/<name> dir.
+if(NOT DEFINED EVE_ENABLED_MODULES)
+    # Defensive fallback when included outside the engine configure: every dir.
+    file(GLOB _eve_all_module_dirs RELATIVE "${CMAKE_SOURCE_DIR}/src/modules"
+        "${CMAKE_SOURCE_DIR}/src/modules/*")
+    set(EVE_ENABLED_MODULES ${_eve_all_module_dirs})
+endif()
+foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")
+        continue()
+    endif()
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}/"
+        DESTINATION include/eve/${_eve_mod}
+        FILES_MATCHING
+            PATTERN "*.h"
+            PATTERN "*.hpp"
+            PATTERN "sdl" EXCLUDE
+            PATTERN "vulkan" EXCLUDE
+            PATTERN "webgpu" EXCLUDE
+            PATTERN "physfs" EXCLUDE
+            PATTERN "openal" EXCLUDE
+            PATTERN "imgui" EXCLUDE
+            PATTERN "cppfs" EXCLUDE
+            PATTERN "include_shim" EXCLUDE
+    )
+endforeach()
+
+# ---- Licenses -----------------------------------------------------------
+# Distribution must carry attribution for the engine AND every third-party
+# component. Root licenses are required; vendored-source licenses under
+# external/* and third-party/ are best-effort (both may be absent on machines
+# that use a prebuilt third-party tree).
+install(FILES
+    "${CMAKE_SOURCE_DIR}/LICENSE"
+    "${CMAKE_SOURCE_DIR}/LICENSE-COMMERCIAL"
+    "${CMAKE_SOURCE_DIR}/LICENSE-OPENSOURCE"
+    DESTINATION share/eve/licenses
 )
-foreach(_eve_mod IN LISTS _eve_module_dirs)
-    if(EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")
-        install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}/"
-            DESTINATION include/eve/${_eve_mod}
+foreach(_eve_lic_src IN ITEMS
+    "${CMAKE_SOURCE_DIR}/external"
+    "${CMAKE_SOURCE_DIR}/third-party"
+)
+    if(EXISTS "${_eve_lic_src}")
+        install(DIRECTORY "${_eve_lic_src}/"
+            DESTINATION share/eve/licenses
             FILES_MATCHING
-                PATTERN "*.h"
-                PATTERN "*.hpp"
-                PATTERN "sdl" EXCLUDE
-                PATTERN "vulkan" EXCLUDE
-                PATTERN "webgpu" EXCLUDE
-                PATTERN "physfs" EXCLUDE
-                PATTERN "openal" EXCLUDE
-                PATTERN "imgui" EXCLUDE
-                PATTERN "cppfs" EXCLUDE
-                PATTERN "include_shim" EXCLUDE
+                PATTERN "LICENSE*"
+                PATTERN "LICENCE*"
+                PATTERN "COPYING*"
+                PATTERN "NOTICE*"
+                PATTERN ".git" EXCLUDE
         )
     endif()
 endforeach()
+
+# ---- Reference example ----------------------------------------------------
+# Ship a runnable reference game so SDK consumers can see the layout without
+# cloning the repository. `eve run` in a folder with no main.nut still falls
+# back to the embedded demo.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
+    DESTINATION share/eve/examples
+)
 
 # ---- Target-platform packaging template only ----
 set(_eve_plat_src "${CMAKE_SOURCE_DIR}/platform/${BUILD_PLATFORM}")
@@ -147,28 +215,29 @@ endif()
 if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
 endif()
-if(EXISTS "${_eve_tp_inc}/include")
-    foreach(_eve_hdr_dir IN ITEMS simplesquirrel squirrel SQLiteCpp)
-        if(EXISTS "${_eve_tp_inc}/include/${_eve_hdr_dir}")
-            install(DIRECTORY "${_eve_tp_inc}/include/${_eve_hdr_dir}"
-                DESTINATION include
-            )
-        endif()
-    endforeach()
-    # Flat squirrel headers sometimes live at include/*.h
-    file(GLOB _eve_sq_headers
-        "${_eve_tp_inc}/include/squirrel.h"
-        "${_eve_tp_inc}/include/sqstdio.h"
-        "${_eve_tp_inc}/include/sqstdblob.h"
-        "${_eve_tp_inc}/include/sqstdmath.h"
-        "${_eve_tp_inc}/include/sqstdsystem.h"
-        "${_eve_tp_inc}/include/sqstdstring.h"
-        "${_eve_tp_inc}/include/sqconfig.h"
-    )
-    if(_eve_sq_headers)
-        install(FILES ${_eve_sq_headers} DESTINATION include)
+get_filename_component(_eve_tp_inc "${_eve_tp_inc}" ABSOLUTE)
+# The third-party tree is built by the deps target *after* configure, so the
+# existence check must run at install time, not configure time (a configure-time
+# guard silently drops these headers on fresh CI builds).
+install(CODE "
+    set(_eve_tp_inc \"${_eve_tp_inc}\")
+    if(EXISTS \"\${_eve_tp_inc}/include\")
+        file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/include\")
+        foreach(_eve_hdr_dir IN ITEMS simplesquirrel squirrel SQLiteCpp)
+            if(EXISTS \"\${_eve_tp_inc}/include/\${_eve_hdr_dir}\")
+                file(COPY \"\${_eve_tp_inc}/include/\${_eve_hdr_dir}\"
+                     DESTINATION \"\${CMAKE_INSTALL_PREFIX}/include\")
+            endif()
+        endforeach()
+        # Flat squirrel headers sometimes live at include/*.h
+        foreach(_eve_sq_hdr IN ITEMS squirrel.h sqstdio.h sqstdblob.h sqstdmath.h sqstdsystem.h sqstdstring.h sqconfig.h)
+            if(EXISTS \"\${_eve_tp_inc}/include/\${_eve_sq_hdr}\")
+                file(COPY \"\${_eve_tp_inc}/include/\${_eve_sq_hdr}\"
+                     DESTINATION \"\${CMAKE_INSTALL_PREFIX}/include\")
+            endif()
+        endforeach()
     endif()
-endif()
+")
 
 # ---- Marker files ----
 install(CODE "

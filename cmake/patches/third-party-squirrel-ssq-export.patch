@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a9711f3..3094332 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -203,6 +203,19 @@ set(SQUIRREL_LIBRARIES squirrel_static CACHE STRING "" FORCE)
+ set(SQSTDLIB_LIBRARIESRARIES sqstdlib_static CACHE STRING "" FORCE)
+ add_subdirectory(simplesquirrel)
+ 
++# Windows plugin host: eve.exe must export the Squirrel C API and ssq symbols
++# so native plugins (which link eve.lib only) can resolve them. Mark them
++# dllexport at the library build — /GL (LTCG) defeats WINDOWS_EXPORT_ALL_SYMBOLS,
++# so an explicit export attribute is required. Plugin consumers include the
++# unmodified headers (plain extern), which resolves against eve.lib.
++if(WIN32 AND MSVC)
++    target_compile_definitions(squirrel_static PRIVATE
++        "SQUIRREL_API=__declspec(dllexport)")
++    target_compile_definitions(sqstdlib_static PRIVATE
++        "SQUIRREL_API=__declspec(dllexport)")
++    target_compile_definitions(simplesquirrel_static PRIVATE SSQ_DLL SSQ_EXPORTS)
++endif()
++
+ # for poco
+ set(POCO_STATIC ON CACHE BOOL "" FORCE)
+ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)

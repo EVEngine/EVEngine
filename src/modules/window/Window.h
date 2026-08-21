@@ -1,19 +1,12 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include "common/Module.h"
 
 namespace eve {
-
-namespace graphics {
-class Graphics;
-}
-
-namespace image {
-class ImageData;
-}
 
 namespace window {
 
@@ -72,9 +65,6 @@ public:
     };
 
     virtual ~Window() {}
-
-    /** @brief Attaches the graphics backend that will own the window's Vulkan surface. */
-    virtual void setGraphics(graphics::Graphics* graphics) = 0;
 
     /** @brief Requests a new logical window size. */
     virtual void setSize(int width, int height) = 0;
@@ -161,10 +151,8 @@ public:
     /** @brief Requests OS attention (flashing taskbar); continuous repeats until focused. */
     virtual void requestAttention(bool continuous) = 0;
 
-    /** @brief Sets the window icon from raw pixel data. */
-    virtual bool              setIcon(image::ImageData *image_data) = 0;
-    /** @brief Currently set window icon, or nullptr. */
-    virtual image::ImageData *getIcon() const                       = 0;
+    /** @brief Sets the window icon from tightly packed RGBA8 pixels (w*h*4 bytes). */
+    virtual bool setIconRGBA(const uint8_t* rgba, int width, int height) = 0;
 
     // --- not yet implemented (kept as drafts) ---
 

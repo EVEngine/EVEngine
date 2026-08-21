@@ -1,4 +1,5 @@
 #include "graphics/webgpu/Canvas.h"
+#include "graphics/TextureSampler.h"
 #include "graphics/webgpu/Graphics.h"
 
 #include "common/Exception.h"

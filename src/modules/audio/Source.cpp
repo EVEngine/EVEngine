@@ -2,6 +2,8 @@
 #include "Audio.h"
 
 #include "common/Exception.h"
+#include "sound/Decoder.h"
+#include "sound/SoundData.h"
 
 #include <algorithm>
 #include <cstring>

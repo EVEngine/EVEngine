@@ -1,82 +1,54 @@
 # EVEngine 用户指南
 
-EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速制作 2D、第三人称 3D，以及 2D/3D 混合的游戏原型。本指南面向“使用引擎制作游戏”的用户；如果你要修改引擎实现，请阅读[开发者文档](../dev/README.md)。
+EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速制作 2D、第三人称 3D，以及 2D/3D 混合的游戏原型。本指南面向“使用引擎制作游戏”的用户；如果你要修改引擎实现，请阅读[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)。
 
-> 当前版本为早期开发版本。最可靠的学习方式是运行并修改仓库中的 `examples/`。
+> 在线版文档（API + 用户手册）持续构建于 GitHub Pages：
+> <https://evengine.github.io/EVEngine/>。
 
-本目录不仅包含入门说明，还提供覆盖所有脚本模块的[模块使用手册](MODULES.md)，并按“完成某项游戏开发任务”的方式给出具体步骤。如果你已经能够运行示例，可以直接从模块目录按功能查阅。
+> 当前版本为早期开发版本，API 仍在演进。最可靠的学习方式是运行并修改示例：下载的 SDK 自带 `share/eve/examples/basic/`，仓库中还有更多 `examples/` 可参考。
 
-引擎默认包含全部模块。只用到其中一部分时，可以按 [按需裁剪模块](TRIMMING.md) 在构建时把其余的裁掉。
+本指南从“下载引擎”讲到“打包发布”；覆盖全部脚本模块的[模块使用手册](MODULES.md)按功能逐章说明 API 与示例。先跑通一个示例，再按需查阅对应模块即可。
 
-## 1. 开始之前
+## 1. 获取引擎：从官网下载，无需编译
 
-桌面平台需要：
+<b>做游戏不需要编译引擎。</b> 到[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载目标平台的 SDK 压缩包即可：
 
-- Git；
-- CMake 3.21 或更高版本；
-- 支持 C++20 的编译器；
-- Vulkan SDK 1.2 或更高版本（macOS 还需要 SDK 中的 MoltenVK）；
-- `make`（Linux、macOS、WSL 或 Git Bash）。
+| 目标平台 | 下载文件 | 说明 |
+|----------|----------|------|
+| Windows | `eve-sdk-win32-<版本>.zip` | Windows 10/11 x64 |
+| Linux | `eve-sdk-linux-<版本>.zip` | Ubuntu 20.04+ 等（需 Vulkan 驱动） |
+| macOS | `eve-sdk-macosx-<版本>.zip` | macOS 12+（Apple Silicon / Intel，内置 MoltenVK） |
+| Android | `eve-sdk-android-<版本>.zip` | 在开发机上组装 arm64 APK |
+| iOS | `eve-sdk-ios-<版本>.zip` | 在 macOS 开发机上组装 arm64 .app |
 
-首次构建会准备第三方依赖，因此耗时会比后续增量构建长。Linux 用户还需安装 X11、音频和 Vulkan 等开发包；完整的平台依赖和移动端工具链请参阅仓库根目录的 [`Readme.md`](../../Readme.md#环境要求)。
+解压后即为一个独立的 SDK 目录，<b>无需安装</b>。它包含：
 
-获取源码：
+- `bin/eve(.exe)`：引擎运行时（桌面平台）；
+- `share/eve/examples/basic/`：可直接运行的参考游戏；
+- `platform/`：目标平台打包模板（Android APK 工程等）；
+- `share/eve/licenses/`：引擎与第三方许可文本；
+- `include/`、`lib/`、`cmake/`：原生插件开发文件（做纯脚本游戏用不到）。
 
-```sh
-git clone --recurse-submodules https://github.com/EVEngine/EVEngine
-cd EVEngine
-```
+<b>要求只有一条：桌面运行时需要 Vulkan 驱动</b>（显卡驱动通常已自带；macOS 由 SDK 内置 MoltenVK 承担；Linux 需安装 `mesa-vulkan-drivers` 或厂商驱动）。不需要安装 Git、CMake、C++ 编译器或 LunarG Vulkan SDK。
 
-默认克隆的是 `main`（最新正式版，可直接编译）。要改引擎请：
-
-```sh
-git checkout dev
-git pull
-```
-
-如果克隆时没有拉取子模块：
+验证安装：
 
 ```sh
-git submodule update --init --recursive
+# Windows
+bin\eve.exe run share\eve\examples\basic
+
+# macOS / Linux
+bin/eve run share/eve/examples/basic
 ```
 
-## 2. 构建并运行第一个示例
+能正常打开窗口并看到示例画面，说明引擎可用。下面命令中的 `eve` 均指你解压目录里的 `bin/eve`（Windows 为 `bin\eve.exe`）。
 
-在仓库根目录执行：
+## 2. 创建并运行你的第一个游戏
 
 ```sh
-# 构建当前宿主平台的 Debug 版本
-make debug
-
-# 运行内置演示
-make run
-
-# 运行最适合作为起点的脚本示例
-make basic
+eve create mygame     # 在当前目录生成 mygame/
+eve run mygame        # 运行它
 ```
-
-也可以明确指定桌面平台和游戏目录：
-
-```sh
-make run/linux-debug GAME=examples/basic
-make run/macosx-debug GAME=examples/basic
-make run/win32-debug GAME=examples/basic
-```
-
-常用快捷入口：
-
-| 命令 | 内容 |
-|---|---|
-| `make basic` | Tilemap、Box2D、粒子与基础绘制 |
-| `make ecs` | 脚本 ECS 与移动系统 |
-| `make rpg` | 属性、状态、技能和战斗结算 |
-| `make run/$(平台)-debug GAME=examples/procgen` | 程序化地图与纹理 |
-| `make run/$(平台)-debug GAME=examples/roguelike-generator` | Roguelike 风格地牢：房间/走廊、地板图案、墙方向、装饰（2D/2.5D） |
-| `make test` | 当前平台 Debug 测试 |
-
-`$(平台)` 可替换为 `linux`、`macosx` 或 `win32`。Windows 的 Release 构建默认使用 Visual Studio 生成器，Debug 构建使用项目 Makefile 中配置的工具链。
-
-## 3. 游戏目录是什么样的
 
 一个最小游戏只需要两个文件：
 
@@ -121,18 +93,7 @@ eve_render <- function() {
 };
 ```
 
-运行它：
-
-```sh
-make run/linux-debug GAME=/绝对路径/my-game
-# macOS 或 Windows 请替换目标名
-```
-
-也可以直接使用已经构建好的宿主程序。`run` 会切换到指定目录并从该目录读取 `config.nut`、`main.nut` 和资源：
-
-```sh
-build/linux-debug/src/engine/eve run /绝对路径/my-game
-```
+运行后修改 `main.nut` 并保存，即可看到热重载效果。也可以直接复制 `share/eve/examples/basic/`，逐步替换脚本和资源。
 
 ### 推荐的目录布局
 
@@ -149,9 +110,9 @@ my-game/
 └── models/
 ```
 
-资源路径以游戏工作目录为基准。可以直接复制 `examples/basic`，逐步替换脚本和资源。
+资源路径以游戏工作目录为基准。
 
-## 4. 生命周期与热重载
+## 3. 生命周期与热重载
 
 引擎识别以下回调：
 
@@ -177,27 +138,29 @@ function eve_init() {
 }
 ```
 
-把一次性初始化放进 `eve_init`，把可重复执行的声明保留在顶层，并参考 `examples/basic/main.nut` 中的完整写法。
+把一次性初始化放进 `eve_init`，把可重复执行的声明保留在顶层，并参考 `share/eve/examples/basic/main.nut` 中的完整写法。
 
-## 5. 常用模块
+## 4. 你能用引擎做哪些事
 
-模块通常由 `eve` 表中的构造器创建；基础运行环境也会提供 `gfx`、`keyboard`、`map`、`particles`、`physics`、`ui` 等常用实例。请以示例实际使用的接口为准。
+引擎默认包含全部模块，脚本侧统一放在全局 `eve` 表中；常用模块也会直接提供 `gfx`、`keyboard`、`map`、`particles`、`physics`、`ui` 等全局实例。模块通常由 `eve` 表中的构造器创建，请以示例实际使用的接口为准。
 
 | 需求 | 入口或模块 | 示例 |
 |---|---|---|
-| 2D/3D 绘制、纹理、字体 | `gfx` / `eve.Graphics` | `examples/basic`、渲染测试 |
-| 键盘、鼠标、触摸、手柄 | `keyboard`、`mouse`、`touch`、`joystick` | `examples/procgen`、`test/*_cpp.cpp` |
-| 物理 | `physics` / `eve.Physics` | `examples/basic` |
-| Tilemap | `map` / `eve.Map` | `examples/basic/maps` |
-| 粒子 | `particles` / `eve.Particles` | `examples/basic/particles` |
-| 声明式 UI | `ui` / `eve.UI` | `examples/basic/ui_demo.nut`、`ui_component.nut` |
-| ECS | `eve.Component`、`eve.Entity`、`eve.System` | `examples/ecs` |
-| RPG | `eve.RPG` | `examples/rpg` |
-| 程序化生成 | `procgen` / `eve.Procgen` | `examples/procgen` |
-| 文件、数据、事件 | `eve.Filesystem`、`eve.DataModule`、`eve.Event` | `test/filesystem.nut` 等 |
-| 音频、动画、IK | `eve.Audio`、`eve.Animation`、`eve.IK` | 对应 `test/` 示例 |
-| GPU 计算、张量 | `eve.Gpgpu`、`eve.TF` | `examples/basic/compute`、对应测试 |
-| 原生扩展 | `eve.Plugins` | `examples/native-plugin` |
+| 2D/3D 绘制、纹理、字体 | `gfx` / `eve.Graphics` | `share/eve/examples/basic`、渲染测试 |
+| 键盘、鼠标、触摸、手柄 | `keyboard`、`mouse`、`touch`、`joystick` | 仓库 `examples/procgen`、`test/*_cpp.cpp` |
+| 物理 | `physics` / `eve.Physics` | `share/eve/examples/basic` |
+| Tilemap | `map` / `eve.Map` | `share/eve/examples/basic/maps` |
+| 粒子 | `particles` / `eve.Particles` | `share/eve/examples/basic/particles` |
+| 声明式 UI | `ui` / `eve.UI` | `share/eve/examples/basic/ui_demo.nut`、`ui_component.nut` |
+| ECS | `eve.Component`、`eve.Entity`、`eve.System` | 仓库 `examples/ecs` |
+| RPG | `eve.RPG` | 仓库 `examples/rpg` |
+| 程序化生成 | `procgen` / `eve.Procgen` | 仓库 `examples/procgen` |
+| 文件、数据、事件 | `eve.Filesystem`、`eve.DataModule`、`eve.Event` | 仓库 `test/filesystem.nut` 等 |
+| 音频、动画、IK | `eve.Audio`、`eve.Animation`、`eve.IK` | 仓库对应 `test/` 示例 |
+| GPU 计算、张量 | `eve.Gpgpu`、`eve.TF` | 仓库 `examples/basic/compute`、对应测试 |
+| 原生扩展 | `eve.Plugins` | 仓库 `examples/native-plugin` |
+
+每个模块的详细 API、最小示例与目标导向任务见[模块使用手册](MODULES.md)。
 
 ### UI 最小示例
 
@@ -227,16 +190,34 @@ eve_render <- function() {
 
 ### ECS 最小思路
 
-通过继承 `eve.Component` 声明数据，继承 `eve.Entity` 组合组件，再用 `eve.System` 查询并更新实体。可直接从 `examples/ecs/main.nut` 复制完整的可运行模板。
+通过继承 `eve.Component` 声明数据，继承 `eve.Entity` 组合组件，再用 `eve.System` 查询并更新实体。可直接从仓库 `examples/ecs/main.nut` 复制完整的可运行模板。
 
-## 6. 调试
+### 命令行速查
 
-命令行调试模式支持暂停、断点、监视、快照，以及面向 AI Agent 的 MCP：
+SDK 中的 `eve` 可执行文件本身就是命令行工具：
+
+| 命令 | 作用 |
+|---|---|
+| `eve create <名字>` | 从模板创建新游戏 |
+| `eve run [目录]` | 运行游戏（不带参数运行当前目录；无游戏时进入内置演示） |
+| `eve run --debug` | 调试模式：暂停、断点、监视、快照 |
+| `eve run --dap-port=4711` | 启动 VS Code 调试适配器服务 |
+| `eve run --mcp-port=7529` | 启动 MCP 服务，供 AI 代理接入 |
+| `eve dev [--port 8765]` | 启动热重载开发服务器（移动端真机热更新用） |
+| `eve zip <目录>` | 把游戏压缩为 `.eve` 归档 |
+| `eve package <目录> -o <输出> --sdk <SDK目录>` | 打包为含运行时的可分发游戏目录 |
+| `eve test` | 运行游戏目录中的测试配置 |
+| `eve doc <名字>` | 查询在线文档 |
+| `eve build` | 从源码构建（需要源码与工具链，见[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)） |
+
+## 5. 调试
+
+调试模式支持暂停、断点、监视、快照，以及面向 AI Agent 的 MCP：
 
 ```sh
-build/linux-debug/src/engine/eve run --debug /绝对路径/my-game
-build/linux-debug/src/engine/eve run --debug --dap-port=4711 /绝对路径/my-game
-build/linux-debug/src/engine/eve run --debug --mcp-port=7529 /绝对路径/my-game
+eve run --debug /绝对路径/my-game
+eve run --debug --dap-port=4711 /绝对路径/my-game
+eve run --debug --mcp-port=7529 /绝对路径/my-game
 ```
 
 脚本中可在调试模式下使用：
@@ -251,46 +232,77 @@ eve.dev.loadSnapshot("boss.json");
 eve.dev.ai.note("boss phase");  // DevTools AI 会话日志；F9 切换面板
 ```
 
-VS Code 调试适配器位于 `tools/vscode-eve-debug/`；Cursor 等 Agent 可通过 `tools/eve-mcp/` 连接 `--mcp-port`（见[开发者文档：AI 与 MCP](../dev/AI与MCP支持.md)）。如果只需快速定位问题，先确认：
+VS Code 调试适配器位于仓库 `tools/vscode-eve-debug/`；Cursor 等 Agent 可通过 `tools/eve-mcp/` 连接 `--mcp-port`（见[开发者文档：AI 与 MCP](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/AI与MCP支持.md)）。如果只需快速定位问题，先确认：
 
 1. `config.nut` 和 `main.nut` 位于传给 `run` 的同一游戏目录；
 2. 每帧绘制前调用了 `gfx.clear()`；
 3. 创建物理、地图或粒子模块后，在 `eve_update` 中调用相应的 `update(dt)`；
-4. 资源路径相对于游戏目录，而不是引擎仓库根目录；
-5. Vulkan SDK、驱动和运行时环境变量有效。
+4. 资源路径相对于游戏目录，而不是 SDK 根目录；
+5. Vulkan 驱动和运行时环境有效。
 
-## 7. 发布与原生插件
+## 6. 打包发布
 
-构建目标平台 SDK：
-
-```sh
-make sdk/linux-debug
-make sdk/macosx-debug
-make sdk/win32-debug
-```
-
-SDK 输出到 `dist/eve-sdk/<平台>/`。原生插件无需包含完整引擎源码，可使用 CMake 的 `find_package(EVEngine)` 和 `add_eve_plugin(...)`；完整模板见 `examples/native-plugin/`。插件必须与宿主平台及构建配置匹配。
-
-移动端提供仓库级打包入口：
+### 桌面平台
 
 ```sh
-# Android arm64 Debug APK
-make build/android-debug ANDROID_GAME=/绝对路径/my-game
+# 1. 压缩游戏为 .eve 归档（可选，便于分发单个文件）
+eve zip mygame
 
-# iOS/iPadOS Debug app（需要 macOS、Xcode 和签名配置）
-make build/ios-debug IOS_GAME=/绝对路径/my-game
+# 2. 生成包含运行时 + 游戏的可分发目录
+eve package mygame -o mygame-package --sdk <SDK目录>
+# Windows 产物含 eve.exe 与运行时 DLL；macOS / Linux 为 eve 与相关动态库
 ```
 
-移动端的 SDK、NDK、签名和真机要求较严格，请在打包前阅读根目录 [`Readme.md`](../../Readme.md#androidarm64-v8a-debug-apk) 中的对应章节。
+`eve package` 需要指定与你当前 SDK 同版本、同平台的 SDK 目录（不传时自动从 `bin/eve` 所在位置推断）。把生成的目录整体发给玩家即可运行，玩家无需安装引擎。
 
-## 8. 下一步
+### 移动端真机热更新（`eve dev`）
+
+应用包内资源只读，无法直接改设备文件。在<b>开发机</b>上编辑，由设备拉取：
+
+```sh
+# 1. 开发机上启动开发服务器（服务当前游戏目录）
+eve dev --port 8765
+
+# 2. 设备端 config.nut 配置开发机地址（或命令行注入）
+config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
+```
+
+设备端会按清单轮询 `eve dev`，把变更文件下载到可写覆盖目录并复用本地热更新管线（脚本 `dofile`、资源 `tryReload`），无需重装应用。命令行也可用 `eve run --dev-server http://192.168.1.5:8765`。
+
+### Android / iOS
+
+下载对应平台的 SDK，用其自带模板在开发机上组装安装包：
+
+```sh
+# Android：把游戏脚本放进 SDK 的 platform/apk/app/src/main/assets/game/，
+# 然后执行 SDK 内的 Gradle 工程生成 APK（需要 Android SDK/NDK）
+# iOS：用 SDK 的 platform/ios 模板在 Xcode 中生成 .app（需要 macOS、Xcode 与签名）
+```
+
+移动端的 SDK、NDK、签名和真机要求较严格，请在打包前阅读根目录 [Readme.md 的 Android 章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#androidarm64-v8a-debug-apk)。
+
+## 7. 需要注意的事项
+
+1. <b>无需编译，但需要 Vulkan 驱动</b>：运行时基于 Vulkan。Windows 显卡驱动通常自带 Vulkan 运行时；macOS 由 SDK 内置 MoltenVK；Linux 需要安装 Vulkan 驱动（`mesa-vulkan-drivers` 或厂商驱动）。如果游戏启动后窗口黑屏或报 Vulkan 初始化失败，优先检查驱动。
+2. <b>SDK 按平台独立、版本必须匹配</b>：每个 SDK 只面向一个目标平台；`eve package`、原生插件必须与 SDK 的平台、版本一致，不同平台的 SDK 不能混用。
+3. <b>脚本 API 以“模块手册 + 示例”为准</b>：C++ 头文件中的 public 方法不一定是脚本 API；调用约定见[API 使用约定](../dev/API-CONVENTIONS.md)。
+4. <b>热重载会重新执行脚本</b>：用 `if (!("x" in getroottable()))` 保护需要跨重载保留的全局引用（见第 3 节）。
+5. <b>模块可以裁剪，但默认全开</b>：脚本里用 `has_module("slot")` 判断模块是否存在；构建时裁剪只对“从源码构建”的用户有效，下载的 SDK 默认包含全部模块（见[按需裁剪模块](TRIMMING.md)）。
+6. <b>许可</b>：EVEngine 采用双许可，商用营收超过免费门槛后需商业授权，详见根目录 [许可证](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#许可证)。
+7. <b>版本与分支</b>：Release 与 `main` 分支对应正式版；早期开发版 API 可能变化，升级 SDK 后请先运行内置示例回归。
+
+## 8. 从源码构建 / 修改引擎（可选）
+
+只有需要修改引擎源码、参与开发或自行打包时才需要从源码构建：环境要求、编译步骤见根目录 [Readme.md 的“从源码构建”章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#从源码构建引擎开发者--贡献者)；架构与设计文档见[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)。
+
+## 9. 下一步
 
 建议按以下顺序学习：
 
-1. 运行 `examples/basic`，修改背景色、重力和粒子配置；
-2. 运行 `examples/ecs`，添加一个组件和系统；
-3. 根据类型选择 `examples/rpg` 或 `examples/procgen`；
-4. 查阅 `test/` 中按模块命名的脚本与 C++ 用例，了解尚未进入教程的 API；
-5. 需要原生能力时再使用目标平台 SDK 和 `examples/native-plugin`。
+1. 运行 `share/eve/examples/basic/`，修改背景色、重力和粒子配置；
+2. 用 `eve create` 建新游戏，熟悉 `eve_init` / `eve_update` / `eve_render` 与热重载；
+3. 按需求查阅[模块使用手册](MODULES.md)（UI、ECS、RPG、程序化生成等）；
+4. 需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 `examples/native-plugin`）；
+5. 发布前阅读第 6 节打包步骤与许可条款。
 
-本指南讲解稳定的使用流程，内部架构、设计取舍和实现进度统一维护在 [`docs/dev/`](../dev/README.md)，避免把尚未实现的设计稿误当作用户 API。
+本指南讲解稳定的使用流程，内部架构、设计取舍和实现进度统一维护在 [`docs/dev/`](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)，避免把尚未实现的设计稿误当作用户 API。

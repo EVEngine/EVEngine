@@ -1,13 +1,20 @@
 #pragma once
 
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
-
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+namespace eve::graphics {
+struct DrawItem2D;
+class Mesh;
+class Renderable2D;
+class Renderable3D;
+class Texture;
+}  // namespace eve::graphics
+
+namespace eve::image {
+class ImageData;
+}
 
 namespace eve::model3d {
 class ModelData;

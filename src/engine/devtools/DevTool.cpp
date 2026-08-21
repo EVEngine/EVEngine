@@ -8,6 +8,7 @@
 
 #include "common/Module.h"
 #include "common/RenderTrace.h"
+#include "common/ScriptError.h"
 #include "event/Event.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -86,31 +87,17 @@ void nativeDebugHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQ
 /** Runtime error handler: uncaught script errors are routed to DevTool. */
 SQInteger runtimeErrorHook(HSQUIRRELVM v) {
     if (!g_active) return 0;
-    std::string msg = "script error";
-    if (sq_gettop(v) >= 2) {
-        switch (sq_gettype(v, 2)) {
-            case OT_STRING: {
-                const SQChar* s = nullptr;
-                if (SQ_SUCCEEDED(sq_getstring(v, 2, &s)) && s) msg = s;
-                break;
-            }
-            case OT_INTEGER: {
-                SQInteger i = 0;
-                if (SQ_SUCCEEDED(sq_getinteger(v, 2, &i)))
-                    msg = "script error " + std::to_string(static_cast<long long>(i));
-                break;
-            }
-            case OT_BOOL: {
-                SQBool b = SQFalse;
-                if (SQ_SUCCEEDED(sq_getbool(v, 2, &b)))
-                    msg = b ? "script error: true" : "script error: false";
-                break;
-            }
-            default:
-                break;
-        }
+    // Capture the full context (message + live call stack) so Runtime::execute
+    // can enrich the ScriptException it throws once the call unwinds.
+    eve::script::ScriptErrorContext ctx = eve::script::captureScriptError(v);
+    const std::string msg = ctx.empty() ? std::string("script error")
+                                        : eve::script::formatScriptError(ctx);
+    try {
+        g_active->notifyError(msg);
+    } catch (...) {
     }
-    g_active->notifyError(msg);
+    ctx.reported = true;
+    eve::script::setLastScriptError(v, std::move(ctx));
     return 0;
 }
 

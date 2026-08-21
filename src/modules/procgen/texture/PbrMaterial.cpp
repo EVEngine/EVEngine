@@ -2,6 +2,8 @@
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 
+#include "image/ImageData.h"
+
 #include <algorithm>
 #include <cmath>
 

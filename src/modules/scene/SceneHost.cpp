@@ -2,9 +2,6 @@
 
 #include "scene/NodeDesc.h"
 
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-
 #include <vector>
 
 namespace eve::scene {

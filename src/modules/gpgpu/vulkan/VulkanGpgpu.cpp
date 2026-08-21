@@ -4,6 +4,7 @@
 #include "gpgpu/vulkan/VulkanUtil.h"
 
 #include "common/Exception.h"
+#include "graphics/vulkan/Graphics.h"
 
 namespace eve::gpgpu {
 

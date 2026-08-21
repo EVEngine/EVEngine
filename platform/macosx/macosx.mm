@@ -5,13 +5,13 @@
 
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
+#include <unistd.h>
 
 #include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
 
-#include "image/ImageData.h"
 
 namespace eve {
 namespace macosx {
@@ -61,6 +61,41 @@ std::string getExecutablePath() {
     return std::string(buffer.data());
 }
 
+std::string bootstrapBundledVulkan() {
+    const std::string exe = getExecutablePath();
+    if (exe.empty())
+        return {};
+
+    const auto slash = exe.find_last_of('/');
+    if (slash == std::string::npos)
+        return {};
+    const std::string exeDir = exe.substr(0, slash);
+
+    // Packaged EVEngine distributions ship the loader + MoltenVK next to the
+    // executable: ../lib in the flat SDK layout (dist/eve-sdk/macosx), or
+    // ../Frameworks inside an .app bundle.
+    const std::string dir = [&]() -> std::string {
+        for (const char *rel : {"../lib", "../Frameworks"}) {
+            const std::string candidate = exeDir + "/" + rel;
+            if (::access((candidate + "/libvulkan.1.dylib").c_str(), R_OK) == 0)
+                return candidate;
+        }
+        return {};
+    }();
+    if (dir.empty())
+        return {};
+
+    // Make the bundled loader discover the bundled MoltenVK. The manifest's
+    // library_path is relative to the manifest directory, so pointing
+    // VK_ICD_FILENAMES at <dir>/MoltenVK_icd.json is enough. Respect an
+    // explicit user override.
+    const std::string icd = dir + "/MoltenVK_icd.json";
+    if (::access(icd.c_str(), R_OK) == 0 && ::getenv("VK_ICD_FILENAMES") == nullptr)
+        ::setenv("VK_ICD_FILENAMES", icd.c_str(), 1);
+
+    return dir;
+}
+
 void requestAttention(bool continuous) {
     @autoreleasepool {
         NSApplication *app = [NSApplication sharedApplication];
@@ -73,13 +108,13 @@ void requestAttention(bool continuous) {
     }
 }
 
-void setIcon(image::ImageData *image) {
-    if (image == nullptr)
+void setIconRGBA(const uint8_t *rgba, int width, int height) {
+    if (rgba == nullptr)
         return;
 
     @autoreleasepool {
-        const int w = image->getWidth();
-        const int h = image->getHeight();
+        const int w = width;
+        const int h = height;
         if (w <= 0 || h <= 0)
             return;
 
@@ -97,7 +132,7 @@ void setIcon(image::ImageData *image) {
         if (rep == nil)
             return;
 
-        memcpy([rep bitmapData], image->getData(), static_cast<size_t>(w) * h * 4);
+        memcpy([rep bitmapData], rgba, static_cast<size_t>(w) * h * 4);
 
         NSImage *nsimage = [[NSImage alloc] initWithSize:NSMakeSize(w, h)];
         [nsimage addRepresentation:rep];

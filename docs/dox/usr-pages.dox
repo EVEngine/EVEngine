@@ -1,0 +1,78 @@
+/**
+ * @page usr_env 运行环境与输入
+ *
+ * 窗口、事件、计时器、系统信息与各类输入设备模块。
+ *
+ * @subpage mod_window
+ * @subpage mod_event
+ * @subpage mod_rx
+ * @subpage mod_timer
+ * @subpage mod_system
+ * @subpage mod_keyboard
+ * @subpage mod_mouse
+ * @subpage mod_touch
+ * @subpage mod_joystick
+ */
+
+/**
+ * @page usr_assets 资源与 I/O
+ *
+ * 文件系统、数据、图像、字体、本地化、音频与网络等资源模块。
+ *
+ * @subpage mod_filesystem
+ * @subpage mod_data
+ * @subpage mod_image
+ * @subpage mod_font
+ * @subpage mod_i18n
+ * @subpage mod_sound
+ * @subpage mod_audio
+ * @subpage mod_model3d
+ * @subpage mod_network
+ */
+
+/**
+ * @page usr_gameplay 游戏玩法
+ *
+ * 面向具体玩法的模块：ECS、物理、地图、粒子、动画、RPG、背包、卡牌、建造与程序化生成。
+ *
+ * @subpage mod_entity
+ * @subpage mod_physics
+ * @subpage mod_map
+ * @subpage mod_particles
+ * @subpage mod_animation
+ * @subpage mod_rpg
+ * @subpage mod_inventory
+ * @subpage mod_cardgame
+ * @subpage mod_building
+ * @subpage mod_procgen
+ */
+
+/**
+ * @page usr_scene 表现与场景
+ *
+ * 渲染与场景表现模块：图形、体素、Sprite-Stacking、昼夜、天气、UI 与场景树。
+ *
+ * @subpage mod_graphics
+ * @subpage mod_voxel
+ * @subpage mod_spritestack
+ * @subpage mod_daynight
+ * @subpage mod_weather
+ * @subpage mod_ui
+ * @subpage mod_scene
+ */
+
+/**
+ * @page usr_advanced 高级能力
+ *
+ * 数学、空间索引、编辑器构件、IK、GPU 计算、张量、线程、原生插件与内置演示。
+ *
+ * @subpage mod_math
+ * @subpage mod_spatial
+ * @subpage mod_editor
+ * @subpage mod_ik
+ * @subpage mod_gpgpu
+ * @subpage mod_tensor
+ * @subpage mod_thread
+ * @subpage mod_plugins
+ * @subpage mod_demo
+ */

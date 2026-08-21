@@ -1,7 +1,10 @@
 #include "voxel/VoxelWorld.h"
 
+#include "procgen/heightmap/TerrainSampler.h"
+
 #include "data/ByteData.h"
-#include "graphics/Graphics.h"
+#include "graphics/IGraphics3D.h"
+#include "thread/Thread.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,6 +13,30 @@
 #include <thread>
 
 namespace eve::voxel {
+
+VoxelWorld::~VoxelWorld() = default;
+
+void VoxelWorld::setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight,
+                                  float amplitude, float scale) {
+    if (!terrainSampler_) terrainSampler_ = std::make_unique<procgen::TerrainSampler>();
+    terrainSampler_->setSeed(seed);
+    terrainSampler_->setBase(0.f);
+    terrainSampler_->setAmplitude(1.f);
+    terrainSampler_->setClamp(true, 0.f, 1.f);
+    terrainSampler_->setFrequency(scale > 0.f ? scale : 1.f / 32.f);
+    terrainTop_       = top;
+    terrainSub_       = sub;
+    terrainStone_     = stone;
+    terrainBase_      = baseHeight;
+    terrainAmplitude_ = amplitude < 0.f ? 0.f : amplitude;
+    terrainEnabled_   = true;
+}
+
+int VoxelWorld::terrainHeightAt(int wx, int wz) const {
+    if (!terrainSampler_) return int(terrainBase_);
+    const float e = terrainSampler_->sample(float(wx), float(wz));
+    return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
+}
 
 namespace {
 // Cap remesh worker count: enough to parallelize chunk meshing without
@@ -228,38 +255,26 @@ int VoxelWorld::remeshDirty(int maxThreads) {
         return count;
     }
 
-    // Parallel remesh: each worker remeshes its own slice of distinct chunks.
-    // The sampler only reads the chunk map (no concurrent mutation), and each
-    // chunk is touched by exactly one thread, so this is safe. The main thread
-    // takes the remainder slice, then joins.
-    std::vector<std::thread> threads;
-    int next = 0;
-    const int perWorker = (count + workers - 1) / workers;
+    // Parallel remesh through the engine JobSystem: each child task remeshes
+    // its own slice of distinct chunks. The sampler only reads the chunk map
+    // (no concurrent mutation), and each chunk is touched by exactly one task,
+    // so this is safe. wait() on the loop joins every slice.
+    auto *jobs = thread::Thread::create()->getJobSystem();
+    thread::Job *loop = nullptr;
     try {
-        threads.reserve(size_t(workers - 1));
-        for (int i = 0; i < workers - 1 && next < count; ++i) {
-            const int begin = next;
-            const int end = std::min(count, begin + perWorker);
-            next = end;
-            threads.emplace_back([this, &dirty, &remeshOne, begin, end] {
-                for (int k = begin; k < end; ++k) remeshOne(dirty[size_t(k)]);
-            });
-        }
+        loop = jobs->parallelFor(0, count,
+            [this, &dirty, &remeshOne](int first, int last) {
+                for (int k = first; k < last; ++k) remeshOne(dirty[size_t(k)]);
+            },
+            (count + workers - 1) / workers);
     } catch (...) {
-        // Thread creation failed (resource limits): join what we have and
-        // finish everything serially. Remesh is idempotent, so any chunks the
-        // created workers already handled are simply done twice.
-        for (auto &w : threads) {
-            if (w.joinable()) w.join();
-        }
-        threads.clear();
+        // Job allocation failed (resource limits): finish everything serially.
+        // Remesh is idempotent, so any chunks already handled are done twice.
         for (Chunk *c : dirty) remeshOne(c);
         return count;
     }
-    for (int k = next; k < count; ++k) remeshOne(dirty[size_t(k)]);
-    for (auto &w : threads) {
-        if (w.joinable()) w.join();
-    }
+    loop->wait();
+    delete loop;
     return count;
 }
 
@@ -335,7 +350,7 @@ int VoxelWorld::getVisibleRectCount() const {
     return n;
 }
 
-void VoxelWorld::drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow) {
+void VoxelWorld::drawVisible(graphics::IGraphics3D *gfx, graphics::Texture *atlas, int tilesPerRow) {
     if (!gfx) return;
     for (const auto &b : visible_) {
         if (!b.chunk || !b.packed || b.count <= 0) continue;

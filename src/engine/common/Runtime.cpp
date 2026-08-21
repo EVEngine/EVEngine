@@ -58,6 +58,21 @@ SQUserPointer objectIdentity(const HSQOBJECT& object) {
     return reinterpret_cast<SQUserPointer>(object._unVal.pRefCounted);
 }
 
+std::unique_ptr<ssq::VM> createVm(size_t stackSize, ssq::Libs::Flag libraries) {
+    // Validate before constructing the VM: with assertions compiled out the
+    // check must not be the only thing standing between a bad stack size and a
+    // half-constructed runtime.
+    EV_PARAM_CHECK(stackSize > 0, "Runtime stack size must be positive");
+    return std::make_unique<ssq::VM>(stackSize, libraries);
+}
+
+/** Runtime error hook: captures message + full stack before it unwinds. */
+SQInteger scriptErrorHook(HSQUIRRELVM vm) {
+    script::ScriptErrorContext ctx = script::captureScriptError(vm);
+    script::setLastScriptError(vm, std::move(ctx));
+    return 0;
+}
+
 }  // namespace
 
 struct Runtime::ScriptRecord {
@@ -79,6 +94,27 @@ ScriptException::ScriptException(ScriptStage stage, std::string source, uint64_t
           return out.str();
       }()),
       stage_(stage), source_(std::move(source)), script_id_(scriptId) {}
+
+ScriptException::ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
+                                 const script::ScriptErrorContext& context)
+    : std::runtime_error([&] {
+          std::ostringstream out;
+          out << "Script " << stageName(stage);
+          if (!source.empty()) out << " failed in '" << source << "'";
+          if (scriptId != 0) out << " [id=" << scriptId << "]";
+          out << ": " << script::formatScriptError(context);
+          return out.str();
+      }()),
+      stage_(stage),
+      source_(std::move(source)),
+      script_id_(scriptId),
+      line_(context.line),
+      column_(context.column),
+      function_(context.function),
+      stack_trace_(script::formatStackTrace(context.stack)),
+      reported_(context.reported) {
+    if (!stack_trace_.empty() && stack_trace_.back() == '\n') stack_trace_.pop_back();
+}
 
 Runtime::StackGuard::StackGuard(Runtime& runtime) noexcept
     : vm_(runtime.handle()), top_(vm_ ? sq_gettop(vm_) : 0) {}
@@ -110,8 +146,8 @@ Runtime::Scope::Scope(Scope&& other) noexcept
     : runtime_(std::exchange(other.runtime_, nullptr)) {}
 
 Runtime::Runtime(size_t stackSize, ssq::Libs::Flag libraries)
-    : vm_(std::make_unique<ssq::VM>(stackSize, libraries)) {
-    EV_PARAM_CHECK(stackSize > 0, "Runtime stack size must be positive");
+    : vm_(createVm(stackSize, libraries)) {
+    installErrorHandler();
 }
 
 Runtime::~Runtime() { shutdown(); }
@@ -129,11 +165,19 @@ void Runtime::initialize() {
     }
 }
 
+void Runtime::installErrorHandler() {
+    if (!vm_) return;
+    HSQUIRRELVM vm = handle();
+    sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
+    sq_seterrorhandler(vm);  // pops the closure
+}
+
 void Runtime::shutdown() noexcept {
     if (shutting_down_ || stopped_) return;
     shutting_down_ = true;
     unloadAll();
     ModuleManager::detach(this);
+    script::clearLastScriptError(handle());
     while (true) {
         auto it = std::find(runtime_stack.begin(), runtime_stack.end(), this);
         if (it == runtime_stack.end()) break;
@@ -181,7 +225,8 @@ Runtime::ScriptId Runtime::compileSource(std::string source, std::string sourceN
         notifyLifecycle(it->second->info);
         return id;
     } catch (const std::exception& error) {
-        fail(ScriptStage::Compile, sourceName, id, error);
+        script::ScriptErrorContext ctx = compileErrorContext(error.what(), record->source_text);
+        fail(ScriptStage::Compile, sourceName, id, std::move(ctx));
     }
 }
 
@@ -204,7 +249,8 @@ Runtime::ScriptId Runtime::compileFile(const std::string& path) {
         notifyLifecycle(it->second->info);
         return id;
     } catch (const std::exception& error) {
-        fail(ScriptStage::Compile, path, id, error);
+        script::ScriptErrorContext ctx = compileErrorContext(error.what(), {});
+        fail(ScriptStage::Compile, path, id, std::move(ctx));
     }
 }
 
@@ -223,7 +269,27 @@ const ScriptInfo& Runtime::execute(ScriptId id) {
     record.info.error.clear();
     notifyLifecycle(record.info);
     try {
-        vm_->run(*record.compiled);
+        // Drive the Squirrel call directly instead of ssq::VM::run(): when a
+        // DevTool hook replaces the VM's error handler, ssq never populates its
+        // stored RuntimeException and would dereference a null unique_ptr on
+        // failure. The raw call reports through the installed handler (which
+        // captures the live stack) and lets us throw an enriched ScriptException.
+        HSQUIRRELVM vm = handle();
+        sq_pushobject(vm, record.compiled->getRaw());
+        sq_pushroottable(vm);
+        const SQRESULT result = sq_call(vm, 1, SQFalse, SQTrue);
+        if (SQ_FAILED(result)) {
+            script::ScriptErrorContext ctx = script::takeLastScriptError(vm);
+            if (ctx.empty()) ctx.message = "script error";
+            try {
+                discoverClasses(record, before);
+            } catch (...) {
+            }
+            record.info.state = ScriptState::Failed;
+            record.info.error = script::formatScriptError(ctx);
+            notifyLifecycle(record.info);
+            fail(ScriptStage::Execute, record.info.source, id, std::move(ctx));
+        }
         discoverClasses(record, before);
         record.info.state = ScriptState::Loaded;
         notifyLifecycle(record.info);
@@ -376,9 +442,28 @@ void Runtime::notifyLifecycle(const ScriptInfo& info) noexcept {
     }
 }
 
+script::ScriptErrorContext Runtime::compileErrorContext(const std::string& what,
+                                                        const std::string& sourceText) {
+    script::ScriptErrorContext ctx;
+    ctx.message = what;
+    if (!script::parseCompileError(what, &ctx.source, &ctx.line, &ctx.column, &ctx.message))
+        return ctx;
+    const std::string lineText = script::sourceLineText(sourceText, ctx.line);
+    if (lineText.empty()) return ctx;
+    std::string hint = std::to_string(ctx.line) + " | " + lineText;
+    if (ctx.column > 0) {
+        hint += "\n";
+        const size_t caret = static_cast<size_t>(ctx.column > 1 ? ctx.column - 1 : 0);
+        hint.append(caret, ' ');
+        hint += '^';
+    }
+    ctx.hint = std::move(hint);
+    return ctx;
+}
+
 [[noreturn]] void Runtime::fail(ScriptStage stage, const std::string& source, ScriptId id,
-                                const std::exception& error) {
-    ScriptException wrapped(stage, source, id, error.what());
+                                script::ScriptErrorContext context) {
+    ScriptException wrapped(stage, source, id, context);
     if (error_handler_) {
         try {
             error_handler_(wrapped);
@@ -386,6 +471,13 @@ void Runtime::notifyLifecycle(const ScriptInfo& info) noexcept {
         }
     }
     throw wrapped;
+}
+
+[[noreturn]] void Runtime::fail(ScriptStage stage, const std::string& source, ScriptId id,
+                                const std::exception& error) {
+    script::ScriptErrorContext ctx = script::takeLastScriptError(handle());
+    if (ctx.empty()) ctx.message = error.what();
+    fail(stage, source, id, std::move(ctx));
 }
 
 std::unordered_map<std::string, SQUserPointer> Runtime::rootClasses() const {

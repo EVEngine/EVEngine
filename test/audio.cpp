@@ -3,10 +3,12 @@
 
 #include "audio/Audio.h"
 #include "audio/Source.h"
-#include "sound/Sound.h"
+#include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
-#include "common/Exception.h"
+#include "sound/Decoder.h"
+#include "sound/Sound.h"
+#include "sound/SoundData.h"
 
 #include <algorithm>
 #include <chrono>

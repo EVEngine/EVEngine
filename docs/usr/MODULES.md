@@ -2,10 +2,12 @@
 
 本目录按模块说明 EVEngine 面向 Squirrel 游戏脚本公开的能力。每篇包含入口、最小示例、至少两个目标导向任务、当前绑定的 API 快查和生命周期注意事项。
 
-模块可以按需裁剪：见 [按需裁剪模块](TRIMMING.md)。脚本里用 `has_module("slot")` 判断某个模块在当前构建中是否存在。
+> 使用前提：从[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载并解压对应平台的 SDK（无需编译引擎），然后用 `eve run <游戏目录>` 运行；本手册适用于 SDK 中的全部模块。
 
-首次查阅前请阅读 [API 使用约定](API-CONVENTIONS.md)，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。
-本轮逐章核对的实现、测试证据与结论记录在 [用户模块文档 Review](REVIEW.md)。
+模块可以按需裁剪：见 [按需裁剪模块](TRIMMING.md)。脚本里用 `has_module("slot")` 判断某个模块在当前构建中是否存在（下载的 SDK 默认包含全部模块）。
+
+首次查阅前请阅读 [API 使用约定](../dev/API-CONVENTIONS.md)，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。
+本轮逐章核对的实现、测试证据与结论记录在 [用户模块文档 Review](https://github.com/EVEngine/EVEngine/blob/main/docs/usr/REVIEW.md)。
 
 ## 运行环境与输入
 
@@ -17,7 +19,7 @@
 - [键盘](modules/keyboard.md)：查询按键状态、键盘重复和文本输入。
 - [鼠标](modules/mouse.md)：查询鼠标位置、按键和指针可见状态；当前脚本绑定不含相对模式设置。
 - [触摸](modules/touch.md)：按索引读取当前触点数量和归一化/屏幕坐标。
-- [手柄](modules/joystick.md)：查询手柄数量并管理 SDL GameController 映射；当前绑定不含轴和按钮读取。
+- [手柄](modules/joystick.md)：查询手柄数量、读取轴/按钮/方向帽、管理 SDL GameController 映射，并支持振动。
 
 ## 资源与 I/O
 

@@ -270,10 +270,15 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
     } catch (const std::exception& e) {
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
-            const std::string report =
-                eve::dev::DevTool::instance().notifyError(e.what());
+            auto& dt = eve::dev::DevTool::instance();
+            // The runtime error hook already reported uncaught script errors
+            // (including the break-on-error pause); do not slice/report twice.
+            const auto* scriptError = dynamic_cast<const eve::ScriptException*>(&e);
+            std::string report = dt.lastReport();
+            if (!(scriptError && scriptError->reported()) || report.empty())
+                report = dt.notifyError(e.what());
             cerr << report << endl;
-            eve::dev::DevTool::instance().detach();
+            dt.detach();
         } else {
             cerr << "Run failed: " << e.what() << endl;
         }

@@ -1,6 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Runtime.h"
+
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
@@ -1087,4 +1089,36 @@ TEST_CASE("devtools.dap.frameScopesAndVariableTree") {
     CHECK(scriptDone.load());
     CHECK(!dbg.isPaused());
     dap.stop();
+}
+
+TEST_CASE("devtools.dap.runtimeExecuteReportsThroughDevToolOnce") {
+    auto& dt = DevTool::instance();
+    dt.detach();
+    Debugger::instance().setBreakOnError(false);
+
+    // DevTool replaces the Runtime error hook; the failing script must still
+    // surface as an enriched ScriptException (no ssq null-runtimeException
+    // crash) and must be flagged as already reported so Run() does not
+    // slice/report the same error twice.
+    eve::Runtime runtime(1024, ssq::Libs::ALL);
+    dt.attach(runtime.vm(), /*sampleLocals=*/false);
+
+    bool caught = false;
+    try {
+        runtime.runSource("function inner() { throw \"kaboom\" }\ninner();\n", "dt-boom.nut");
+    } catch (const eve::ScriptException& error) {
+        caught = true;
+        CHECK(error.reported());
+        CHECK(error.hasLocation());
+        CHECK(error.line() > 0);
+        const std::string message = error.what();
+        CHECK(message.find("dt-boom.nut") != std::string::npos);
+        CHECK(message.find("kaboom") != std::string::npos);
+        CHECK(message.find("Stack:") != std::string::npos);
+        CHECK(!error.stackTrace().empty());
+        CHECK(error.stackTrace().find("inner") != std::string::npos);
+    }
+    CHECK(caught);
+    CHECK(!dt.lastReport().empty());
+    dt.detach();
 }

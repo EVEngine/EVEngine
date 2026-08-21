@@ -1,8 +1,7 @@
 #include "devtools/RenderVision.hpp"
+#include "devtools/Immortal.hpp"
 
-#include "filesystem/FileData.h"
-#include "graphics/Graphics.h"
-#include "image/ImageData.h"
+#include "common/RenderCapture.h"
 
 #include <Poco/Base64Encoder.h>
 #include <Poco/Exception.h>
@@ -77,9 +76,8 @@ std::string base64Encode(const void* data, size_t size) {
 }  // namespace
 
 RenderVision& RenderVision::instance() {
-    // Leaked like other DevTools singletons to avoid teardown-order issues.
-    static RenderVision* inst = new RenderVision();
-    return *inst;
+    // Process-immortal singleton; see devtools/Immortal.hpp.
+    return Immortal<RenderVision>::get();
 }
 
 void RenderVision::ensureEnvLocked() {
@@ -169,19 +167,19 @@ std::string RenderVision::pendingReason() const {
     return pendingReason_;
 }
 
-std::string RenderVision::describe(graphics::Graphics* gfx, const std::string& renderDataJson,
-                                  bool fresh, const std::string& reason) {
+std::string RenderVision::describe(eve::IRenderCapture* cap, const std::string& renderDataJson, bool fresh,
+                                   const std::string& reason) {
     {
         std::lock_guard<std::mutex> lock(mu_);
         ensureEnvLocked();
         if (!fresh && !latest_.empty()) return latest_;
     }
-    if (!gfx) return "error: Graphics module not available for vision describe";
-    return doDescribe(gfx, renderDataJson, reason);
+    if (!cap) return "error: Graphics module not available for vision describe";
+    return doDescribe(cap, renderDataJson, reason);
 }
 
-void RenderVision::pollPending(graphics::Graphics* gfx, const std::string& renderDataJson) {
-    if (!pending_.load() || !gfx) return;
+void RenderVision::pollPending(eve::IRenderCapture* cap, const std::string& renderDataJson) {
+    if (!pending_.load() || !cap) return;
     std::string reason;
     {
         std::lock_guard<std::mutex> lock(mu_);
@@ -189,10 +187,10 @@ void RenderVision::pollPending(graphics::Graphics* gfx, const std::string& rende
     }
     // clear first so a failed dump does not loop; doDescribe caches result/error.
     pending_.store(false);
-    doDescribe(gfx, renderDataJson, reason);
+    doDescribe(cap, renderDataJson, reason);
 }
 
-std::string RenderVision::doDescribe(graphics::Graphics* gfx, const std::string& renderDataJson,
+std::string RenderVision::doDescribe(eve::IRenderCapture* cap, const std::string& renderDataJson,
                                      const std::string& reason) {
     std::string baseUrl, apiKey, model, path;
     int         timeoutMs = timeoutMs_;
@@ -212,29 +210,13 @@ std::string RenderVision::doDescribe(graphics::Graphics* gfx, const std::string&
         return err;
     }
 
-    // --- Capture frame to PNG bytes in memory ---
-    std::string pngB64;
-    {
-        gfx->setScreenReadbackEnabled(true);
-        eve::image::ImageData* img = gfx->newImageData();
-        if (!img) {
-            const std::string err = "error: frame readback returned no image";
-            std::lock_guard<std::mutex> lock(mu_);
-            lastError_ = err;
-            return err;
-        }
-        eve::filesystem::FileData* fd =
-            img->encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, "vision.png", false);
-        delete img;
-        if (!fd || fd->getSize() == 0) {
-            if (fd) delete fd;
-            const std::string err = "error: failed to encode frame as PNG";
-            std::lock_guard<std::mutex> lock(mu_);
-            lastError_ = err;
-            return err;
-        }
-        pngB64 = base64Encode(fd->getData(), fd->getSize());
-        delete fd;
+    // --- Capture frame to PNG bytes in memory (via the render-capture interface) ---
+    const std::string dataUrl = cap->capturePngDataUrl();
+    if (dataUrl.empty()) {
+        const std::string           err = "error: frame readback returned no image";
+        std::lock_guard<std::mutex> lock(mu_);
+        lastError_ = err;
+        return err;
     }
 
     // --- Build OpenAI-compatible chat/completions body ---
@@ -262,7 +244,7 @@ std::string RenderVision::doDescribe(graphics::Graphics* gfx, const std::string&
     Poco::JSON::Object::Ptr imgPart = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     imgPart->set("type", "image_url");
     Poco::JSON::Object::Ptr iu = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    iu->set("url", std::string("data:image/png;base64,") + pngB64);
+    iu->set("url", dataUrl);
     imgPart->set("image_url", iu);
     uc->add(imgPart);
 

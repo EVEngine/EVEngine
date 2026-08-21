@@ -1,12 +1,13 @@
 #include "particles/Particles.h"
-#include "particles/ParticleSystem.h"
-#include "particles/ParticleConfig.h"
-#include "graphics/Graphics.h"
+#include "common/Module.h"
 #include "data/DataModule.h"
 #include "data/JsonDocument.h"
-#include "filesystem/Filesystem.h"
 #include "filesystem/FileData.h"
-#include "common/Module.h"
+#include "filesystem/Filesystem.h"
+#include "graphics/Graphics.h"
+#include "particles/ParticleConfig.h"
+#include "particles/ParticleSystem.h"
+#include "particles/ParticlesCapabilities.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Object.h>
@@ -15,6 +16,9 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::particles {
+
+Particles::Particles() { registerParticlesCapabilities(); }
+
 namespace {
 
 int bufferFromJson(const std::string &json, int fallback) {

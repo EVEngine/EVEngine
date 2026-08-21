@@ -2,7 +2,9 @@
 
 #include <SDL2/SDL.h>
 
+#include <cstdint>
 #include <string>
+#include <vector>
 
 #include "window/Window.h"
 
@@ -14,8 +16,6 @@ class Window final : public eve::window::Window {
 public:
     Window();
     ~Window();
-
-    void setGraphics(graphics::Graphics *graphics) override;
 
     void setSize(int width, int height) override;
     int  getWidth() const override;
@@ -72,15 +72,13 @@ public:
     int  showMessageBoxData(const MessageBoxData& data) override;
     void requestAttention(bool continuous) override;
 
-    bool              setIcon(image::ImageData *image_data) override;
-    image::ImageData *getIcon() const override;
+    bool setIconRGBA(const uint8_t* rgba, int width, int height) override;
 
     /** @brief Used by event backend on resize to refresh drawable size / viewport. */
     void updateSettings(const WindowSettings &newsettings, bool updateGraphicsViewport);
 
 private:
     bool setFullscreenInternal(bool fullscreen, bool desktop_mode);
-    graphics::Graphics *graphics = nullptr;
 
     int width = 800, height = 600;
 
@@ -88,7 +86,9 @@ private:
 
     std::string title;
 
-    image::ImageData *icon = nullptr;
+    std::vector<uint8_t> iconRgba;
+    int                  iconWidth  = 0;
+    int                  iconHeight = 0;
 
     int windowWidth  = 800;
     int windowHeight = 600;

@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "data/ByteData.h"
+#include "procgen/heightmap/TerrainSampler.h"
 #include "voxel/Chunk.h"
 #include "voxel/CubeTypeRegistry.h"
 #include "voxel/FaceDir.h"

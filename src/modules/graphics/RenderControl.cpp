@@ -5,7 +5,7 @@ namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
                                 "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
-                                "outline",   "gpuDriven", "visResolve"};
+                                "outline",   "gpuDriven", "visResolve", "frustumCull"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -31,6 +31,7 @@ RenderControl::RenderControl() {
     features_["outline"] = false;
     features_["gpuDriven"] = false;  // stage 1 opt-in; off until runtime-verified
     features_["visResolve"] = false; // stage 3 opt-in; visibility-buffer resolve
+    features_["frustumCull"] = false;  // opt-in: conservative sphere culling in frame prep
     dirty_ = true;
     compiled_ = false;
 }

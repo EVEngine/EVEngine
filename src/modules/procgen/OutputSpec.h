@@ -1,8 +1,10 @@
 #pragma once
 
-#include "map/TileLayer.h"
-
 #include <string>
+
+namespace eve::map {
+class TileLayer;
+}
 
 namespace eve::procgen {
 

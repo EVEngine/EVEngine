@@ -1,5 +1,7 @@
 #include "procgen/Palette.h"
 
+#include "map/TileLayer.h"
+
 #include "procgen/Semantic.h"
 
 namespace eve::procgen {

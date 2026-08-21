@@ -9,12 +9,13 @@
 #include "medialoader/image/Color.h"
 #include "medialoader/image/FormatHandler.h"
 
-#include "filesystem/FileData.h"
-
 #include <cstdint>
 
 namespace eve
 {
+namespace filesystem {
+class FileData;
+}
 namespace image
 {
 
@@ -115,6 +116,12 @@ public:
 	void *getData() const;
 	size_t getSize() const;
 	bool isSRGB() const;
+
+	/**
+	 * @brief Replace this instance's pixels with `replacement`'s (cache reload).
+	 * The replacement is drained; its destructor releases the old pixels.
+	 */
+	void adopt(eve::Resource &replacement) override;
 
 	int getWidth() const;
 	int getHeight() const;

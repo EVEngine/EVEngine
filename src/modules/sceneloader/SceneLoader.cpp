@@ -18,6 +18,7 @@
 #include "animation/AnimImporter.h"
 #include "thread/ThreadPool.h"
 #include "common/ECS.h"
+#include "common/Resource.h"
 
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
@@ -52,8 +53,9 @@ namespace sceneloader {
 Module_IMPL(SceneLoader, new SceneLoader());
 
 SceneLoader::~SceneLoader() {
-    for (auto &kv : prewarmed_) delete kv.second.md;
-    for (auto &d : pending_) delete d.md;
+    // Decoded ModelData instances are owned by the unified resource cache
+    // (Model3D::newModelDataFromFile returns cache-shared resources), so no
+    // cleanup is needed here.
     clearTextures();
 }
 
@@ -815,6 +817,11 @@ void SceneLoader::linkMeshNodes(scene::SceneHost *host, const MeshSlotMap &slots
 }
 
 bool SceneLoader::decode(const std::string &path, const LoadOptions &options, DecodedScene *out) {
+    // The unified resource cache may hold a decode from an earlier load; a
+    // reload/diff must see the file as it is now, so refresh the cached entry
+    // before asking for it (no-op when nothing is cached yet).
+    eve::ResourceManager::getInstance().reload(path);
+
     auto *mod3d = ModuleManager::getInstance<model3d::Model3D>("Model3D");
     if (!mod3d) mod3d = model3d::Model3D::create();
     model3d::ModelData *md = nullptr;
@@ -877,11 +884,9 @@ scene::SceneHost *SceneLoader::load(const std::string &path, bool linkRenderable
         host->setTree(std::move(d.root));
         scene::TransformSystem::updateHost(host);
         scenes_[d.path] = Loaded{d.path, host, nullptr, options, {}, {}, nullptr, {}};
-        delete d.md;
         return host;
     }
     scene::SceneHost *host = mount(d);
-    delete d.md;
     return host;
 }
 
@@ -910,12 +915,12 @@ bool SceneLoader::reload(const std::string &path, SceneDiff *out, const LoadOpti
         linkMeshNodes(ld.host, d.slots, ld.gfx, options, textures_, shared, &d.cpuImages);
         scene::TransformSystem::updateHost(ld.host);
     }
-    delete d.md;
     return !diff.empty();
 }
 
 SceneDiff SceneLoader::diff(const std::string &path) {
     const std::string key = normPath(path);
+    eve::ResourceManager::getInstance().reload(path);  // fresh decode for diffing
     auto *mod3d = ModuleManager::getInstance<model3d::Model3D>("Model3D");
     if (!mod3d) mod3d = model3d::Model3D::create();
     model3d::ModelData *md = nullptr;
@@ -941,7 +946,6 @@ SceneDiff SceneLoader::diff(const std::string &path) {
             };
         walk(newRoot, "");
     }
-    delete md;
     return d;
 }
 
@@ -1014,7 +1018,6 @@ int SceneLoader::pollAsync() {
             continue;
         }
         scene::SceneHost *h = mount(d);
-        delete d.md;
         if (d.done) d.done(h);
     }
     return static_cast<int>(ready.size());
@@ -1048,7 +1051,6 @@ bool SceneLoader::prewarmed(const std::string &path) const {
 void SceneLoader::clearPrewarm(const std::string &path) {
     auto it = prewarmed_.find(normPath(path));
     if (it == prewarmed_.end()) return;
-    delete it->second.md;
     prewarmed_.erase(it);
 }
 

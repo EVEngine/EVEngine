@@ -3,6 +3,7 @@
 #include "voxel/FaceDir.h"
 
 #include "data/ByteData.h"
+#include "procgen/heightmap/TerrainSampler.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 

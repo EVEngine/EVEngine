@@ -80,11 +80,15 @@ bool FileWatch::add(const std::string &realDir, const std::string &filterName,
         return false;
     }
 
-    // Destroy a replaced DirectoryWatcher (whose dtor joins its inotify/OS
-    // thread) only after mu_ is released: the watcher thread may be blocked in
-    // handlePocoEvent() waiting on that same lock (e.g. right after a file
-    // write), so destroying it while holding mu_ would deadlock.
+    // Poco's Delegate::notify() invokes our callback while holding the
+    // delegate's own mutex, and `-=` (DefaultStrategy::remove ->
+    // Delegate::disable()) blocks on that same mutex. So both unsubscribing
+    // the delegates AND destroying the replaced DirectoryWatcher (whose dtor
+    // joins its inotify/OS thread) must happen outside mu_: otherwise the
+    // watcher thread blocked in handlePocoEvent() on mu_ while holding the
+    // delegate mutex deadlocks against us (ABBA) right after a file write.
     std::unique_ptr<DirWatch> doomed;
+    bool                      ok = false;
     {
         std::lock_guard<std::mutex> lock(mu_);
 
@@ -102,13 +106,6 @@ bool FileWatch::add(const std::string &realDir, const std::string &filterName,
                     }
                 }
                 if (dw->refs <= 0) {
-                    if (dw->watcher) {
-                        dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
-                        dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
-                        dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
-                        dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
-                        dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
-                    }
                     doomed = std::move(it->second);
                     byDir_.erase(it);
                 }
@@ -125,24 +122,30 @@ bool FileWatch::add(const std::string &realDir, const std::string &filterName,
                 owned->watcher = std::make_unique<Poco::DirectoryWatcher>(
                     dir, Poco::DirectoryWatcher::DW_FILTER_ENABLE_ALL, scanInterval);
             } catch (...) {
-                return false;
+                ok = false;
             }
-            owned->watcher->itemAdded += Poco::delegate(this, &FileWatch::onAdded);
-            owned->watcher->itemRemoved += Poco::delegate(this, &FileWatch::onRemoved);
-            owned->watcher->itemModified += Poco::delegate(this, &FileWatch::onModified);
-            owned->watcher->itemMovedFrom += Poco::delegate(this, &FileWatch::onMovedFrom);
-            owned->watcher->itemMovedTo += Poco::delegate(this, &FileWatch::onMovedTo);
-            dw = owned.get();
-            byDir_[dir] = std::move(owned);
+            if (owned->watcher) {
+                dw          = owned.get();
+                byDir_[dir] = std::move(owned);
+            }
         } else {
             dw = it->second.get();
         }
 
-        dw->filters[filterName] = reportPath;
-        ++dw->refs;
-        reportToDir_[reportPath] = dir;
+        if (dw) {
+            dw->watcher->itemAdded += Poco::delegate(this, &FileWatch::onAdded);
+            dw->watcher->itemRemoved += Poco::delegate(this, &FileWatch::onRemoved);
+            dw->watcher->itemModified += Poco::delegate(this, &FileWatch::onModified);
+            dw->watcher->itemMovedFrom += Poco::delegate(this, &FileWatch::onMovedFrom);
+            dw->watcher->itemMovedTo += Poco::delegate(this, &FileWatch::onMovedTo);
+            dw->filters[filterName] = reportPath;
+            ++dw->refs;
+            reportToDir_[reportPath] = dir;
+            ok                       = true;
+        }
     }
-    return true;
+    if (doomed) unsubscribeDelegates(doomed.get());
+    return ok;
 #endif
 }
 
@@ -151,8 +154,9 @@ bool FileWatch::remove(const std::string &reportPath) {
     (void)reportPath;
     return false;
 #else
-    // Same as add(): destroy the DirectoryWatcher (joins its thread) after
-    // mu_ is released to avoid a deadlock with the watcher callback.
+    // Same as add(): unsubscribe the delegates AND destroy the
+    // DirectoryWatcher (joins its thread) after mu_ is released, so a watcher
+    // thread blocked in handlePocoEvent() on mu_ cannot deadlock against us.
     std::unique_ptr<DirWatch> doomed;
     {
         std::lock_guard<std::mutex> lock(mu_);
@@ -173,17 +177,11 @@ bool FileWatch::remove(const std::string &reportPath) {
             }
         }
         if (dw->refs <= 0) {
-            if (dw->watcher) {
-                dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
-                dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
-                dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
-                dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
-                dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
-            }
             doomed = std::move(it->second);
             byDir_.erase(it);
         }
     }
+    if (doomed) unsubscribeDelegates(doomed.get());
     return true;
 #endif
 }
@@ -194,27 +192,19 @@ void FileWatch::clear() {
     queue_.clear();
     return;
 #else
-    // Destroy all DirectoryWatchers (each joins its inotify/OS thread) after
-    // mu_ is released, so a watcher thread blocked in handlePocoEvent() on the
-    // same lock cannot deadlock against clear().
+    // Unsubscribe all delegates and destroy the DirectoryWatchers (each joins
+    // its inotify/OS thread) after mu_ is released, so a watcher thread
+    // blocked in handlePocoEvent() on the same lock cannot deadlock against
+    // clear().
     std::vector<std::unique_ptr<DirWatch>> doomed;
     {
         std::lock_guard<std::mutex> lock(mu_);
-        for (auto &kv : byDir_) {
-            DirWatch *dw = kv.second.get();
-            if (dw && dw->watcher) {
-                dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
-                dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
-                dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
-                dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
-                dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
-            }
-        }
         for (auto &kv : byDir_) doomed.push_back(std::move(kv.second));
         byDir_.clear();
         reportToDir_.clear();
         queue_.clear();
     }
+    for (const auto &dw : doomed) unsubscribeDelegates(dw.get());
 #endif
 }
 
@@ -236,6 +226,15 @@ bool FileWatch::poll(Event &out) {
 }
 
 #ifndef EVENGINE_WEBGPU
+void FileWatch::unsubscribeDelegates(DirWatch *dw) {
+    if (!dw || !dw->watcher) return;
+    dw->watcher->itemAdded -= Poco::delegate(this, &FileWatch::onAdded);
+    dw->watcher->itemRemoved -= Poco::delegate(this, &FileWatch::onRemoved);
+    dw->watcher->itemModified -= Poco::delegate(this, &FileWatch::onModified);
+    dw->watcher->itemMovedFrom -= Poco::delegate(this, &FileWatch::onMovedFrom);
+    dw->watcher->itemMovedTo -= Poco::delegate(this, &FileWatch::onMovedTo);
+}
+
 void FileWatch::handlePocoEvent(const std::string &kind, const std::string &itemPath) {
     const std::string name = basenameOf(itemPath);
     Poco::Path parent(itemPath);

@@ -48,7 +48,7 @@ class SceneObject;
 class Scene : public Module {
 public:
     Module_REG(Scene);
-    Scene() = default;
+    Scene();
     ~Scene() override = default;
 
     /** @brief Creates/replaces a named host from a NodeDesc tree and selects it. */

@@ -7,6 +7,7 @@
  * 数据模型与渲染/交互逻辑见 CardTypes.h。
  */
 
+#include "common/ECS.h"
 #include "common/Module.h"
 #include "card/CardTypes.h"
 
@@ -45,7 +46,7 @@ public:
     float getCardDefinitionTintG(const std::string &id);
     float getCardDefinitionTintB(const std::string &id);
 
-    /** @brief 工厂：对象由模块持有，脚本持有的是非拥有句柄。 */
+    /** @brief 工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。 */
     LayoutConfig *newConfig();
     CardData *newCard(const std::string &defId);
     Deck *newDeck();
@@ -86,11 +87,11 @@ private:
 
     std::unordered_map<std::string, CardDefinition> defs_;
     std::vector<std::unique_ptr<LayoutConfig>> configs_;
-    std::vector<std::unique_ptr<CardData>> cards_;
-    std::vector<std::unique_ptr<Deck>> decks_;
-    std::vector<std::unique_ptr<Zone>> zones_;
-    std::vector<std::unique_ptr<Hand>> hands_;
     std::vector<CardEvent> events_;
+    std::vector<ecs::EntityHandle> cards_;
+    std::vector<ecs::EntityHandle> decks_;
+    std::vector<ecs::EntityHandle> zones_;
+    std::vector<ecs::EntityHandle> hands_;
 
     LayoutConfig *activeConfig_ = nullptr;
     Deck *activeDeck_ = nullptr;

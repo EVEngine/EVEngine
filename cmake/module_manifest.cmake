@@ -41,14 +41,14 @@ set(EVE_TP_ORDER
 eve_declare_module(NAME common CORE REQUIRED LIB EVCommon LAYER -1
                    THIRDPARTY squirrel)
 eve_declare_module(NAME cmdline CORE REQUIRED LIB EVCmdLine LAYER -1
-                   DEPS filesystem ui
+                   DEPS filesystem
                    THIRDPARTY squirrel poco)
-# DevTools reaches into scene / physics / procgen / particles / audio / ui
-# directly (McpServer, SceneInspect). Until those calls go through capability
-# interfaces it has to be switched off before any of them can be trimmed --
-# the resolver says so by name when that happens.
+# DevTools consumes business modules only through the capability interfaces in
+# common/ (ISceneQuery / IRenderCapture / IPhysicsQuery / IProcgenQuery /
+# IParticlesQuery / IAudioQuery / IEditorHost), so it no longer blocks
+# trimming scene / physics / procgen / particles / audio / ui / graphics.
 eve_declare_module(NAME devtools CORE LIB EVDevTools LAYER -1
-                   DEPS graphics scene physics procgen particles audio ui image event filesystem
+                   DEPS event
                    THIRDPARTY poco
                    GROUP 3d)
 
@@ -80,8 +80,9 @@ eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
                    GROUP 2d 3d web)
 eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
-eve_declare_module(NAME editor LAYER 0 SCRIPT Editor SLOT editor
-                   GROUP 3d web)
+eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
+                   GROUP 3d web
+                   OPTIONAL_DEPS procgen)
 eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
                    GROUP 3d)
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
@@ -92,7 +93,7 @@ eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
 # THIRDPARTY poco is required so MSVC compiles those TUs with
 # POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of
 # PocoFoundationd.lib instead of the *mdd archive the third-party build emits.
-eve_declare_module(NAME building LAYER 0 SCRIPT Building
+eve_declare_module(NAME building LAYER 4 SCRIPT Building
                    DEPS grid data
                    THIRDPARTY poco)
 
@@ -101,7 +102,7 @@ eve_declare_module(NAME building LAYER 0 SCRIPT Building
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME window REQUIRED LAYER 1 SCRIPT Window SLOT win
-                   DEPS event graphics image
+                   DEPS event
                    THIRDPARTY sdl2)
 eve_declare_module(NAME image LAYER 1 SCRIPT Image
                    DEPS filesystem
@@ -117,7 +118,7 @@ eve_declare_module(NAME joystick LAYER 1 SCRIPT Joystick
                    DEPS event
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
-eve_declare_module(NAME model3d LIB EVModel3D LAYER 1 SCRIPT Model3D SLOT model3d
+eve_declare_module(NAME model3d LIB EVModel3D LAYER 4 SCRIPT Model3D SLOT model3d
                    DEPS filesystem
                    THIRDPARTY medialoader_model assimp
                    GROUP 3d)
@@ -162,7 +163,7 @@ eve_declare_module(NAME font LAYER 2 SCRIPT Font SLOT font
 # graphics/Font.cpp is the only user of the font module and is excluded from the
 # browser build, so font is an optional integration rather than a hard dep.
 eve_declare_module(NAME graphics REQUIRED LAYER 3 SCRIPT Graphics SLOT gfx
-                   DEPS data filesystem image
+                   DEPS data filesystem image thread
                    OPTIONAL_DEPS font
                    THIRDPARTY sdl2 assimp)
 
@@ -204,8 +205,8 @@ eve_declare_module(NAME weather LAYER 4 SCRIPT Weather SLOT weather
 eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
                    GROUP 3d)
-eve_declare_module(NAME voxel LAYER 4 SCRIPT Voxel
-                   DEPS graphics
+eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
+                   DEPS graphics procgen thread
                    GROUP 3d)
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
@@ -222,10 +223,11 @@ eve_declare_module(NAME demo LAYER 4 SCRIPT Demo
 # ---------------------------------------------------------------------------
 
 # Renderables, bodies and audio sources attach through registered link kinds
-# (scene/SceneLink.h), so scene no longer depends on those modules; graphics
-# remains only because pickScreenAt / collectFrustumIdsAt take a Camera3D.
+# (scene/SceneLink.h), so scene no longer depends on those modules. The two
+# picking entry points that take a Camera3D are implemented in the graphics
+# module (graphics/ScenePicking.cpp, excluded when scene is off).
 eve_declare_module(NAME scene LAYER 1 SCRIPT Scene SLOT scene
-                   DEPS graphics spatial
+                   DEPS spatial
                    THIRDPARTY poco
                    GROUP 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles

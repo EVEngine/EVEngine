@@ -1,12 +1,12 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "sound/Sound.h"
-#include "sound/Decoder.h"
-#include "sound/SoundData.h"
+#include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
-#include "common/Exception.h"
+#include "sound/Decoder.h"
+#include "sound/Sound.h"
+#include "sound/SoundData.h"
 
 #include <cstdlib>
 #include <cstring>
