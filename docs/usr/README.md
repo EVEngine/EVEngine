@@ -76,6 +76,8 @@ make run/win32-debug GAME=examples/basic
 
 `$(平台)` 可替换为 `linux`、`macosx` 或 `win32`。Windows 的 Release 构建默认使用 Visual Studio 生成器，Debug 构建使用项目 Makefile 中配置的工具链。
 
+想先直观感受引擎的渲染效果？可以浏览[示例渲染画廊](../images/examples/README.md)——其中每张截图都由引擎把交换链上实际呈现的一帧原样输出。
+
 ## 3. 游戏目录是什么样的
 
 一个最小游戏只需要两个文件：
