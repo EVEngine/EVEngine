@@ -118,6 +118,7 @@ file(GLOB all_test_cpp
   animation.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
+  animation_lattice.cpp
   animation_sprite_spine.cpp
   tensor.cpp
   tensor_llm.cpp
