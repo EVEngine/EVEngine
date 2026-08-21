@@ -246,6 +246,20 @@ public:
     virtual void initWithWindow(void *nativeWindow) = 0;
 
     /**
+     * @brief Initialize the renderer without a window or swapchain (headless mode).
+     * Creates a GPU device and offscreen render targets; present() becomes a no-op.
+     * Rendering goes through Canvas + readback (newImageData / readPixels).
+     * @param width Logical viewport width in pixels (must be > 0).
+     * @param height Logical viewport height in pixels (must be > 0).
+     * @throws eve::Exception when the backend does not support headless init,
+     *         or when graphics is already initialized.
+     */
+    virtual void initHeadless(int width, int height);
+
+    /** @brief True when the renderer was initialized via initHeadless(). */
+    virtual bool isHeadless() const { return false; }
+
+    /**
      * @brief Sets the current graphics display viewport dimensions.
      **/
     virtual void setViewportSize(int width, int height, int pixelwidth, int pixelheight) = 0;

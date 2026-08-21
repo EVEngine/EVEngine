@@ -188,6 +188,8 @@ public:
     std::string getBackendName() const override;
 
     void initWithWindow(void *nativeWindow) override;
+    void initHeadless(int width, int height) override;
+    bool isHeadless() const override { return headless_; }
     void present() override;
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
     void onNativeWindowDestroyed() override;
@@ -535,12 +537,21 @@ private:
     void          ensureFlatHeightTexture3D();
     vk::Sampler   createVkSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
     void          writeCombinedImageDescriptor(GpuTexture *gpu);
+    /**
+     * @brief Create instance + physical device + logical device.
+     * When nativeWindow is non-null, also creates the SDL Vulkan surface and
+     * stores it in *surfaceOut (surface member). Headless init passes null and
+     * skips all surface/WSI work.
+     */
+    void createInstanceAndDevice(const std::vector<const char *> &instanceExtensions,
+                                 void *nativeWindow, vk::SurfaceKHR *surfaceOut);
     /** @brief Rebuild surface/swapchain when dirty. Returns false if surface not ready. */
     bool rebuildSwapchainIfNeeded();
     /** @brief acquire + begin command buffer; recreates swapchain and retries on failure. */
     bool beginPresentCommandBuffer();
 
     bool initialized = false;
+    bool headless_ = false;
     bool hasPresentedFrame = false;
     float maxSamplerAnisotropy = 1.f;
     std::vector<uint8_t> lastFrameRgba;

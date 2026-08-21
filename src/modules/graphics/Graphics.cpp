@@ -742,6 +742,12 @@ void Graphics::reset() {
     currentFont   = nullptr;
 }
 
+void Graphics::initHeadless(int width, int height) {
+    (void)width;
+    (void)height;
+    throw Exception("Graphics::initHeadless: not supported on this backend");
+}
+
 void Graphics::setShader(Shader* shader) { currentShader = shader; }
 
 void Graphics::setShader() { currentShader = nullptr; }

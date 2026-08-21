@@ -11,6 +11,7 @@ file(GLOB all_test_cpp
   filesystem_cpp.cpp
   graphic.cpp
   graphics_font.cpp
+  graphics_headless.cpp
   medialoader_model_link.cpp
   model.cpp
   mouse.cpp
