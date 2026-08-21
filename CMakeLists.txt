@@ -148,6 +148,22 @@ function(main)
             # internal copy, so a helper unused in one TU is structural, not a
             # defect. Unused variables and unused-but-set stay enabled.
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-unused-function>
+            # Third-party template headers (simplesquirrel) emit these during
+            # instantiation in engine TUs. The third-party install root stays a
+            # plain -I (marking it -isystem would demote it below the Vulkan SDK
+            # -I and flip which <vulkan/vulkan.hpp> wins, breaking VKBuilder),
+            # so the leaks cannot be silenced per-directory on GCC and are
+            # downgraded from errors to warnings here. Engine-side instances of
+            # these warnings are still reported.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-variable>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-but-set-parameter>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=sign-compare>
+            # Poco::Data Date/Time implicit-copy deprecations and
+            # -Wdelete-non-virtual-dtor (the ECS.hpp base Entity has virtuals
+            # but no virtual dtor) fire from third-party headers during template
+            # instantiation in engine TUs; same treatment as above.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=deprecated-copy>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=delete-non-virtual-dtor>
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-missing-field-initializers>)
         target_compile_definitions(eve_engine_includes INTERFACE
             $<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS>
@@ -155,9 +171,10 @@ function(main)
             # the secure-CRT warnings above; the ISO C++ name is used where
             # practical.
             $<$<CXX_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_WARNINGS>)
-        # Per-module PUBLIC includes that point into the vendored third-party
-        # source trees (third-party/Box2D, third-party/imgui, ...) are also
-        # external for warning purposes.
+        # Vendored third-party source roots (third-party/Box2D, imgui, ...) are
+        # external for warning purposes. Safe on GCC: the third-party install
+        # tree stays a plain -I and is searched first, so the vendored
+        # vulkan.hpp still beats the SDK's.
         eve_external_include(${CMAKE_SOURCE_DIR}/third-party)
     endif()
 
@@ -383,16 +400,23 @@ endmacro()
 
 # Mark a third-party include root as "external" for strict builds, so the
 # warning-as-error flags stay scoped to EVEngine's own code:
-#   MSVC: /external:I + /external:W0
-#   GCC/Clang: -isystem (a directory listed in both -I and -isystem is treated
-#              as a system directory, so third-party header warnings from
-#              template instantiations are suppressed).
+#   MSVC: /external:I + /external:W0 (does not change search order)
+#   GCC/Clang: -isystem (suppresses header warnings from template
+#              instantiations), except the third-party install tree: on GCC a
+#              directory listed in both -I and -isystem has its -I entry
+#              ignored and is searched after every -I, which would flip which
+#              <vulkan/vulkan.hpp> wins (the vendored 261 must beat the SDK's).
 function(eve_external_include dir)
     if(EVENGINE_ENABLE_STRICT_WARNINGS)
         if(MSVC)
             target_compile_options(eve_engine_includes INTERFACE "/external:I${dir}")
         else()
-            target_compile_options(eve_engine_includes INTERFACE "-isystem${dir}")
+            # The third-party install tree stays a plain -I on GCC (see the
+            # function comment); everything else (external/*, header-only
+            # vendored roots) can be marked system without reordering.
+            if(NOT dir MATCHES "third-party-binary")
+                target_compile_options(eve_engine_includes INTERFACE "-isystem${dir}")
+            endif()
         endif()
     endif()
 endfunction()
@@ -473,29 +497,6 @@ function(set_include)
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
-    if(EVENGINE_ENABLE_STRICT_WARNINGS AND NOT MSVC AND Vulkan_INCLUDE_DIRS)
-        # GCC -isystem demotes a directory below every -I, which would flip
-        # which <vulkan/vulkan.hpp> wins: the vendored third-party tree
-        # (VK_HEADER_VERSION 261, vk::DispatchLoaderDynamic) must keep priority
-        # over the SDK's newer vulkan-hpp (vk::detail::DispatchLoaderDynamic)
-        # or VKBuilder stops compiling. Marking the SDK include as a system dir
-        # AFTER the third-party entries preserves the original search order
-        # while keeping both warning-free. Distro installs resolve Vulkan to
-        # /usr/include, which must NOT be re-marked (it already is system).
-        set(_eve_vk_is_standard_inc FALSE)
-        foreach(_eve_vk_inc IN LISTS Vulkan_INCLUDE_DIRS)
-            if(_eve_vk_inc STREQUAL "/usr/include" OR
-               _eve_vk_inc STREQUAL "/usr/local/include")
-                set(_eve_vk_is_standard_inc TRUE)
-            endif()
-        endforeach()
-        if(NOT _eve_vk_is_standard_inc)
-            target_compile_options(eve_engine_includes INTERFACE
-                "-isystem${Vulkan_INCLUDE_DIRS}")
-        endif()
-        unset(_eve_vk_is_standard_inc)
-        unset(_eve_vk_inc)
-    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         find_library(ANDROID_VULKAN_LIB vulkan)
         if(NOT ANDROID_VULKAN_LIB)
