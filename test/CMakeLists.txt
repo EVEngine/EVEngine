@@ -90,6 +90,8 @@ file(GLOB all_test_cpp
   virtualgeometry_builder.cpp
   virtualgeometry_gpu.cpp
   gpgpu.cpp
+  gpu_driven.cpp
+  indirect_builder.cpp
   box2d.cpp
   box3d.cpp
   softbody.cpp
@@ -137,12 +139,20 @@ file(GLOB all_test_cpp
   resource_lifetime.cpp
   debugger.cpp
   debugger_audit.cpp
+  ReflectScript.cpp
   reload_script.cpp
   dap.cpp
   mcp.cpp
   console.cpp
   main.cpp
 )
+
+# Auto-discover newly added test files (CONFIGURE_DEPENDS re-globs at build
+# time), so a new test/*.cpp is picked up without editing this list. demo.cpp
+# stays gated on EVENGINE_BUILD_DEMO below.
+file(GLOB _eve_extra_test_cpp CONFIGURE_DEPENDS *.cpp)
+list(REMOVE_ITEM _eve_extra_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
+list(APPEND all_test_cpp ${_eve_extra_test_cpp})
 
 if(EVENGINE_BUILD_DEMO)
   list(APPEND all_test_cpp demo.cpp)
@@ -381,6 +391,11 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  if(WIN32)
+    # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
+    # symbolized stack trace on unhandled exceptions (see test/main.cpp).
+    target_link_libraries(unit_test EVBacktrace)
+  endif()
   target_compile_definitions(unit_test PRIVATE
     EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
     EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")

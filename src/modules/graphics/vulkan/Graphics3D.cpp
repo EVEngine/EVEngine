@@ -73,21 +73,31 @@ void Graphics::begin3DFrame() {
     if (!beginPresentCommandBuffer())
         return;
     recordDeferredFrameGraph();
+    vgAnyThisFrame_ = false;
+    currentFrameArena().reset();
+    ensureGpuDrivenCullResources(gbufferWidth > 0 ? gbufferWidth : int(swapchain.extent.width),
+                                 gbufferHeight > 0 ? gbufferHeight : int(swapchain.extent.height));
 
     // 3D pass clears with backgroundColor (setBackgroundColor), not a stale 2D clear.
     clearColor = backgroundColor;
     createSceneColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
-    if (beginSceneColorRenderPass()) {
-        // Rebuild scene-pass pipelines to match the active scene pass (MSAA).
-        // Must happen AFTER the pass opens: if the MSAA scene pass is unavailable
-        // we fall back to the swapchain (e1) render pass below, and rasterizing
-        // with an Nx pipeline into an e1 pass is UB that can hang the GPU (TDR).
-        ensureScenePassPipelines(activeScenePass(), activeSceneSamples());
-    } else {
-        // Scene pass unavailable — draw 3D straight into the swapchain. Scene-pass
-        // pipelines must be 1x / swapchain-compatible to avoid the samples mismatch.
-        ensureScenePassPipelines(renderpass, vk::SampleCountFlagBits::e1);
-        beginSwapchainColorPass();
+    // GPU-driven cull defers the scene color pass so the compute section
+    // (HZB build + cull + emit + VG cull) can run before the opaque draws;
+    // gpuDrivenOpenScenePass() opens it when the renderer reaches the forward
+    // section.
+    gpuDrivenScenePassPending_ = gpuDrivenEnabled_ && gpuDrivenCullReady_;
+    if (!gpuDrivenScenePassPending_) {
+        if (beginSceneColorRenderPass()) {
+            // Rebuild scene-pass pipelines to match the active scene pass (MSAA).
+            // Must happen AFTER the pass opens: if the MSAA scene pass is unavailable
+            // we fall back to the swapchain (e1) render pass below, and rasterizing
+            // with an Nx pipeline into an e1 pass is UB that can hang the GPU (TDR).
+            ensureScenePassPipelines(activeScenePass(), activeSceneSamples());
+        } else {
+            // Scene pass unavailable — draw 3D straight into the swapchain.
+            ensureScenePassPipelines(renderpass, vk::SampleCountFlagBits::e1);
+            beginSwapchainColorPass();
+        }
     }
 
     auto &cb = currentPresentCb();
@@ -106,7 +116,7 @@ void Graphics::begin3DFrame() {
     lastMesh3dPipeline = nullptr;
     lastMesh3dClusteredPipeline = nullptr;
     currentVoxelInstanceFrame().drawIndex = 0;
-    swapchainPassOpen = true;
+    swapchainPassOpen = !gpuDrivenScenePassPending_;
     frameHad3D = true;
     hasPendingClear = false;
 }

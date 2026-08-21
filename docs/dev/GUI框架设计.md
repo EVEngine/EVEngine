@@ -408,6 +408,10 @@ sequenceDiagram
       Scene）+ 面板开关（`editorSelectPanel`）
 - [x] 示例 `examples/inspector-demo` + 测试（`Inspector.cpp` / `DatabasePanel.cpp` /
       `EditorShell.cpp` / `ScenePanel.cpp`）
+- [x] 脚本侧反射 API：`Runtime::initialize()` 后在 `eve.reflect.*` 暴露同一套
+      反射层（`classes` / `classInfo` / `createInstance` / `classNameOf` /
+      `inspect` / `read` / `write` / `readObject` / `array*` / `table*` /
+      `scan` / `scripts`），脚本工具和编辑器可直接读写实例属性
 - [ ] 事件/对话编辑器（规划）：`dialogue` 数据已有，可视化编辑 UI 待做
 - 原始 ImGui 逃生舱仅限 C++ DevTools
 

@@ -17,6 +17,9 @@
 #include "graphics/Texture.h"
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
+#include "graphics/vulkan/GpuDriven.h"
+#include "graphics/vulkan/FrameArena.h"
+#include "graphics/vulkan/ComputePass.h"
 
 namespace eve::graphics::vulkan {
 
@@ -102,6 +105,9 @@ struct Mesh3DUBO {
     // z=time, w=unused; cloudWind.xy=wind velocity (world/s), z=coverage, w=detail.
     glm::vec4 cloud{0.f, 1.5f, 0.f, 0.f};
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};
+    // GPU-driven only: x = bindless env cubemap slot, y = envIntensity.
+    // Appended after the legacy prefix so legacy shaders are unaffected.
+    glm::vec4 bindlessEnv{0.f, 0.f, 0.f, 0.f};
 };
 
 struct Mesh3DClusteredUBO {
@@ -130,6 +136,9 @@ struct GpuTexture {
     int height = 0;
     uint32_t mipLevels = 1;
     TextureSampler samplerState{};
+    /** @brief Bindless texture-array slot (stage 0 GPU-driven path). */
+    uint32_t bindlessIndex2D = kInvalidBindlessSlot;
+    uint32_t bindlessIndexCube = kInvalidBindlessSlot;
 
     vk::ImageView imageView() const {
         if (viewOverride) return viewOverride;
@@ -155,6 +164,10 @@ struct GpuMesh {
     bool          dynamic           = false;
     uint32_t      indexCount        = 0;
     vk::IndexType indexType         = vk::IndexType::eUint32;
+    /** @brief Index into the GPU mesh table (GpuMeshRecord). */
+    uint32_t gpuRecordIndex = kInvalidBindlessSlot;
+    /** @brief CPU-side record for this mesh (bounds/ranges); uploaded by registerMeshRecord. */
+    GpuMeshRecord record;
 };
 
 struct GpuShader {
@@ -194,6 +207,75 @@ public:
     }
     int getMsaaSamples() const override { return msaaSamples; }
     void setViewportSize(int width, int height, int pixelwidth, int pixelheight) override;
+
+    // ---- GPU-driven rendering (stage 0: bindless + resource tables) ----
+
+    /** @brief Capabilities probed at device creation; empty when unavailable. */
+    const GpuDrivenCaps &gpuDrivenCaps() const { return gpuDrivenCaps_; }
+
+    /** @brief Per-frame arena for the current swapchain frame slot. */
+    FrameArena &currentFrameArena();
+
+    /** @brief Get (or lazily create) the GPU material-table slot for a material. */
+    uint32_t materialTableGetOrCreate(eve::graphics::Material *material);
+
+    /** @brief Upload all registered material records to the GPU table. */
+    void syncMaterialTable();
+
+    uint32_t bindlessSlot2D(const GpuTexture *tex) const {
+        return tex ? tex->bindlessIndex2D : kInvalidBindlessSlot;
+    }
+    uint32_t bindlessSlotCube(const GpuTexture *tex) const {
+        return tex ? tex->bindlessIndexCube : kInvalidBindlessSlot;
+    }
+    bool supportsGpuDriven3D() const override {
+        return gpuDrivenCaps_.gpuDrivenAvailable();
+    }
+    bool gpuDrivenEnabled() const override {
+        return gpuDrivenEnabled_ && gpuDrivenCaps_.gpuDrivenAvailable();
+    }
+    void gpuDrivenSetEnabled(bool enabled) override { gpuDrivenEnabled_ = enabled; }
+    uint32_t gpuDrivenMeshRecord(Mesh *mesh) override;
+    uint32_t gpuDrivenMaterialRecord(Material *material) override {
+        return materialTableGetOrCreate(material);
+    }
+    bool gpuDrivenMaterialUsable(Material *material) override;
+    bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
+    /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
+    uint32_t debugBindlessIndex(Texture *tex) const;
+    uint32_t debugMeshRecordIndex(Mesh *mesh) const;
+    /** @brief Indirect draws emitted by the last successful GPU-driven submit. */
+    uint32_t debugLastGpuDrivenDrawCount() const { return lastGpuDrivenDrawCount_; }
+    /** @brief Block until all in-flight GPU work (all frames) has completed. */
+    void waitForSharedGpuResources();
+    /** @brief Stage 2 cull is live for this frame (GPU-written commands). */
+    bool gpuDrivenCullEnabled() const {
+        return gpuDrivenEnabled_ && gpuDrivenCaps_.gpuDrivenCullAvailable();
+    }
+    /** @brief Scene color pass is deferred until after the compute cull section. */
+    bool gpuDrivenScenePassPending() const { return gpuDrivenScenePassPending_; }
+    bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount);
+    void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                           float nearZ, float farZ);
+    void gpuDrivenOpenScenePass();
+    void gpuDrivenDrawOpaque();
+    /** @brief Stage 3: vis+resolve live for this frame (opt-in, 1x scene pass). */
+    bool gpuDrivenResolveWanted() const override;
+    void gpuDrivenRecordVisPass() override;
+    void gpuDrivenResolve() override;
+    uint32_t gpuDrivenVgUpload(const GpuVgAssetUpload &asset) override;
+    uint32_t gpuDrivenVgAssetId(Mesh *mesh) const override;
+    bool gpuDrivenVgAttachToMesh(Mesh *mesh, uint32_t vgAssetId) override;
+    bool gpuDrivenVgSetInstance(uint32_t vgAssetId, const glm::mat4 &model,
+                                uint32_t materialId) override;
+    void gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                   float fovYDeg, float nearZ, float farZ) override;
+    /** @brief Debug readback: visible VG clusters from the last cull. */
+    uint32_t debugGpuDrivenVgVisibleCount() const;
+    /** @brief Debug readback: visible instances / non-empty buckets from the last cull. */
+    uint32_t debugGpuDrivenVisibleCount() const;
+    uint32_t debugGpuDrivenCulledDrawCount() const;
+
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
     void drawSolidRectRotated(float cx, float cy, float w, float h, float degrees,
@@ -566,6 +648,8 @@ private:
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture                      *whiteTexture            = nullptr;
+    /** @brief 1x1 white cubemap used as the bindless cubemap-array placeholder. */
+    Texture                      *defaultBindlessCube     = nullptr;
     Texture                      *flatNormalTexture3D     = nullptr;
     Texture                      *flatHeightTexture3D     = nullptr;
     Texture                      *defaultEnvCubemap       = nullptr;
@@ -626,6 +710,158 @@ private:
     // Ping-pong copies so frame N+1 can write while frame N still samples.
     static constexpr uint32_t kAsyncResourceCopies = 2;
 
+    // ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
+    GpuDrivenCaps gpuDrivenCaps_{};
+    std::vector<FrameArena> frameArenas_;
+
+    vk::UniqueDescriptorSetLayout bindlessSetLayoutUnique_{};
+    vk::DescriptorSetLayout bindlessSetLayout_ = nullptr;
+    vk::DescriptorPool bindlessPool_ = nullptr;
+    // One bindless set per frame-in-flight slot. A frame rewrites only the set
+    // belonging to its own slot, and only AFTER acquireForFrame() has waited
+    // that slot's fence; pending command buffers therefore never observe a
+    // descriptor set being rewritten (VUID-vkUpdateDescriptorSets-None-03047).
+    // The texture arrays (bindings 0/1) are mirrored into every set at
+    // registration time so any slot can sample any registered texture.
+    std::vector<vk::DescriptorSet> bindlessSets_;
+    std::vector<GpuTexture *> bindlessTextures2D_;
+    std::vector<uint32_t> bindlessFree2D_;
+    std::vector<GpuTexture *> bindlessCubemaps_;
+    std::vector<uint32_t> bindlessFreeCube_;
+
+    vkb::GenericBuffer meshTableBuffer_;
+    std::vector<GpuMeshRecord> meshTableRecords_;
+    /** @brief Parallel to meshTableRecords_: the GpuMesh owning each record (for binding). */
+    std::vector<GpuMesh *> meshRecordOwners_;
+    uint32_t meshTableCapacity_ = 0;
+
+    vkb::GenericBuffer materialTableBuffer_;
+    std::vector<GpuMaterialRecord> materialTableRecords_;
+    std::vector<uint32_t> materialTableFree_;
+    std::unordered_map<const Material *, uint32_t> materialTableIndex_;
+    uint32_t materialTableCapacity_ = 0;
+
+    uint32_t registerBindlessTexture2D(GpuTexture *tex);
+    uint32_t registerBindlessTextureCube(GpuTexture *tex);
+    void unregisterBindlessTexture(GpuTexture *tex);
+    uint32_t registerMeshRecord(GpuMesh *gpu);
+    void syncMeshTable();
+    GpuMaterialRecord buildMaterialRecord(Material *material);
+    void createBindlessSet();
+    /** @brief Bindless set owned by the current frame slot (safe to rewrite this frame). */
+    vk::DescriptorSet bindlessSetForFrame() const;
+
+    // ---- GPU-driven (stage 3): pooled vertices + visibility buffer ----
+    /** @brief Interleaved pools (SoA) for the resolve to fetch attributes by index. */
+    struct GpuVertexPool {
+        vkb::GenericBuffer positions;  // vec4 per vertex (16B; w unused)
+        vkb::GenericBuffer normals;    // vec4 per vertex
+        vkb::GenericBuffer uvs;        // vec2 per vertex (8B)
+        vkb::GenericBuffer indices;    // uint32 (u16 meshes converted)
+        uint32_t vertexCount = 0;
+        uint32_t indexCount = 0;
+    };
+    GpuVertexPool gpuVertexPool_;
+    void ensureGpuVertexPool();
+    void growGpuVertexPool(uint32_t needVertices, uint32_t needIndices);
+    /** @brief Rewrite bindless bindings 18-21 (pool buffers) in every slot set. */
+    void bindGpuVertexPoolBindless();
+    void appendGpuMeshToPool(GpuMesh &gpu);
+
+    // ---- GPU-driven (stage 3): virtual geometry ----
+    static constexpr uint32_t kMaxVgAssets = 64;
+    static constexpr uint32_t kMaxVgClusters = 65536;
+    struct VgGpuBuffers {
+        vkb::GenericBuffer positions;      // float xyz stream (growable)
+        vkb::GenericBuffer triangles;      // u32 global triangle stream
+        vkb::GenericBuffer clusters;       // GpuVgCluster (4 x uvec4)
+        vkb::GenericBuffer clusterAssets;  // u32 per cluster -> asset id
+        vkb::GenericBuffer visible;        // kAsyncResourceCopies x (counter + ids)
+        vkb::GenericBuffer indirect;       // kAsyncResourceCopies x VkDrawIndirectCommand
+        vkb::GenericBuffer assetMaterials; // kAsyncResourceCopies x u32 per asset
+        vkb::GenericBuffer assetModels;    // kAsyncResourceCopies x mat4 per asset
+    };
+    VgGpuBuffers vgGpu_;
+    uint32_t vgClusterCount_ = 0;   // total clusters across uploaded assets
+    uint32_t vgAssetCount_ = 0;
+    uint32_t vgVertexCount_ = 0;    // global position-stream vertices
+    uint32_t vgTriangleCount_ = 0;  // global triangle-stream indices
+    uint32_t vgLastVisible_ = 0;
+    bool vgAnyThisFrame_ = false;
+    ComputePass vgCullPass_;
+    vk::Pipeline gbufferVgVisPipeline = nullptr;
+    void ensureVgBuffers();
+    void growVgBuffers(uint32_t needClusters, uint32_t needVertices, uint32_t needTriangles);
+    /** @brief Rewrite bindless 22-25/28 (static pool ranges) in every slot set. */
+    void bindVgPoolBindless();
+    /** @brief Point bindings 26-29 at the current slot's per-frame ranges. */
+    void bindVgFrameBindless(vk::DescriptorSet bindless, size_t slot);
+    /** @brief Record the VG cluster cull dispatch + barriers (compute section). */
+    void recordVgCull();
+    /** @brief Record VG cluster draws (vis pass) via drawIndirectCount. */
+    void drawVgClusters(vk::CommandBuffer cb);
+
+    // ---- GPU-driven (stage 1): opaque forward path ----
+    bool gpuDrivenEnabled_ = false;
+    uint32_t lastGpuDrivenDrawCount_ = 0;
+    vk::PipelineLayout mesh3dGpuDrivenPipelineLayout = nullptr;
+    vk::Pipeline mesh3dGpuDrivenPipeline = nullptr;
+    vk::Pipeline resolveVisPipeline = nullptr;
+    void createMesh3DGpuDrivenPipeline();
+    /** @brief Per-frame set0 (dynamic Frame UBO + shadow ring offsets). */
+    struct GpuDrivenFrameSet0 {
+        vk::DescriptorSet set;
+        uint32_t uboOffset = 0;
+        uint32_t shadowOffset = 0;
+    };
+    GpuDrivenFrameSet0 gpuDrivenFrameSet0();
+    void createResolveVisPipeline(const vkb::BuiltRenderPass &rp,
+                                  vk::SampleCountFlagBits samples);
+    /** @brief Create bindless set + frame arenas + GPU-driven mesh pipeline. */
+    void initGpuDrivenResources();
+    /** @brief GBuffer vis render pass + vis pipelines (called by createGBufferResources). */
+    void createGpuDrivenVisResources(int width, int height);
+
+    // ---- GPU-driven (stage 2): HZB + GPU cull ----
+    struct GpuDrivenCullSlot {
+        vkb::GenericBuffer visibleFlags;    // uint32 per instance (GPU-written)
+        vkb::GenericBuffer compacted;       // GpuInstance per instance (GPU-written)
+        vkb::GenericBuffer indirect;        // GpuIndirectCommand per bucket (GPU-written)
+        vkb::GenericBuffer indirectNI;      // VkDrawIndirectCommand per bucket (non-indexed)
+        vkb::GenericBuffer bucketCounters;  // uint32 per bucket (GPU atomic, CPU-reset)
+        vkb::GenericBuffer hzb;             // header + R32F mip chain (GPU-written)
+        vkb::GenericBuffer cullParams;      // GpuCullParams UBO (CPU-written)
+    };
+    std::vector<GpuDrivenCullSlot> gpuDrivenCullSlots_;
+    vkb::GenericBuffer gpuDrivenCullParamsPlaceholder_;  // valid UBO target at set creation
+    int gpuDrivenCullWidth = 0;
+    int gpuDrivenCullHeight = 0;
+    uint32_t gpuDrivenCullMaxMip = 0;
+    vk::PipelineLayout gpuDrivenComputeLayout = nullptr;
+    vk::DescriptorSetLayout gpuDrivenComputeEmptyLayout_ = nullptr;
+    ComputePass hzbBuildPass_;
+    ComputePass cullPass_;
+    ComputePass emitPass_;
+    bool gpuDrivenCullReady_ = false;
+    bool gpuDrivenScenePassPending_ = false;
+    // Per-frame CPU metadata for the cull chain (uploaded to the frame arena).
+    std::vector<uint32_t> gpuDrivenBucketIds_;
+    std::vector<uint32_t> gpuDrivenBucketOffsets_;
+    std::vector<uint32_t> gpuDrivenBucketMeshIds_;
+    uint32_t gpuDrivenBucketCount_ = 0;
+    uint32_t gpuDrivenCullInstanceCount_ = 0;
+    uint32_t gpuDrivenLastCullSlot_ = 0;
+    FrameArena::Alloc gpuDrivenInstAlloc_{};
+    FrameArena::Alloc gpuDrivenBucketIdAlloc_{};
+    FrameArena::Alloc gpuDrivenBucketOffAlloc_{};
+    void ensureGpuDrivenCullResources(int width, int height);
+    void recordGpuDrivenHzbBuild();
+    void gpuDrivenRecordComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                       float fovYDeg, float nearZ, float farZ);
+    void destroyGpuDrivenCullResources();
+    GpuDrivenCullSlot &currentGpuDrivenCullSlot();
+    GpuDrivenCullSlot &gpuDrivenCullSlot(uint32_t frameSlot);
+
     // CSM shadow map (3 cascade layers), one array per in-flight slot.
     struct ShadowMapSlot {
         vkb::DepthArrayImage image;
@@ -670,24 +906,33 @@ private:
         vkb::ColorTarget normal;
         vkb::ColorTarget depthColor;
         vkb::ColorTarget albedo;
+        vkb::ColorTarget visID;    // R32G32UI: x = instance, y = pooled index offset
+        vkb::ColorTarget visBary;  // R16G16F: barycentric (u, v)
         vkb::DepthTarget depth;
         vk::Framebuffer framebuffer{};
+        vk::Framebuffer visFramebuffer{};
         GpuTexture normalGpu{};
         GpuTexture depthColorGpu{};
         GpuTexture albedoGpu{};
+        GpuTexture visIDGpu{};
+        GpuTexture visBaryGpu{};
         GpuTexture depthGpu{};
         Texture normalTex{};
         Texture depthColorTex{};
         Texture albedoTex{};
+        Texture visIDTex{};
+        Texture visBaryTex{};
         Texture depthTex{};
     };
     int gbufferWidth = 0;
     int gbufferHeight = 0;
     std::vector<GBufferSlot> gbufferSlots;
     vkb::BuiltRenderPass gbufferRenderPass{};
+    vkb::BuiltRenderPass gbufferVisRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
     vk::Pipeline gbufferAlphaPipeline{};
+    vk::Pipeline gbufferVisPipeline = nullptr;
     bool gbufferPassActive = false;
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
@@ -887,8 +1132,6 @@ private:
     size_t currentFrameSlot() const;
     vk::CommandBuffer &currentPresentCb();
     vkb::FrameSlot frameToken() const;
-    /** @brief Drain in-flight frames before mutating a GPU object sampled/read by them. */
-    void waitForSharedGpuResources();
     void invalidateTextureBindings();
 };
 

@@ -43,6 +43,8 @@ bin/eve run share/eve/examples/basic
 
 能正常打开窗口并看到示例画面，说明引擎可用。下面命令中的 `eve` 均指你解压目录里的 `bin/eve`（Windows 为 `bin\eve.exe`）。
 
+想先直观感受引擎的渲染效果？可以浏览[示例渲染画廊](../images/examples/README.md)——其中每张截图都由引擎把交换链上实际呈现的一帧原样输出。
+
 ## 2. 创建并运行你的第一个游戏
 
 ```sh

@@ -17,6 +17,7 @@
 #include "graphics/IGraphics3D.h"
 #include "graphics/IPostFX.h"
 #include "graphics/IResourceFactory.h"
+#include "graphics/GpuDrivenTypes.h"
 
 struct aiMesh;
 
@@ -102,6 +103,141 @@ public:
      * built-in AO/GI use SPIR-V), so RenderSystem3D skips them there.
      */
     virtual bool supportsGBufferPost() const { return true; }
+
+    // ---- GPU-driven rendering (stage 1): capability-gated seam ----
+    // Backends without the GPU-driven path (WebGPU, software) return false and
+    // RenderSystem3D falls back to the legacy per-draw path.
+
+    /** @brief True when the backend can run GPU-driven opaque draws. */
+    virtual bool supportsGpuDriven3D() const { return false; }
+
+    /** @brief Whether the GPU-driven opaque path is currently enabled. */
+    virtual bool gpuDrivenEnabled() const { return false; }
+
+    /** @brief Enable/disable the GPU-driven opaque path (no-op when unsupported). */
+    virtual void gpuDrivenSetEnabled(bool enabled) { (void)enabled; }
+
+    /** @brief GPU mesh-table slot for a mesh (kInvalidGpuDrivenSlot when not uploaded). */
+    virtual uint32_t gpuDrivenMeshRecord(Mesh *mesh) { (void)mesh; return kInvalidGpuDrivenSlot; }
+
+    /** @brief GPU material-table slot for a material (lazily created). */
+    virtual uint32_t gpuDrivenMaterialRecord(Material *material) {
+        (void)material;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /**
+     * @brief Whether a material can be shaded by the GPU-driven opaque path.
+     * Backends/drivers with descriptor-indexing limitations return false for
+     * materials that would hit the limitation; RenderSystem3D then falls back.
+     */
+    virtual bool gpuDrivenMaterialUsable(Material *material) {
+        (void)material;
+        return false;
+    }
+
+    /**
+     * @brief Upload + record GPU-driven opaque draws (call inside the open 3D frame).
+     * The backend sorts instances by (material, mesh), merges buckets and emits
+     * indirect draws itself; the caller only supplies the raw instance list.
+     * @return false when the backend cannot service the request (caller falls back).
+     */
+    virtual bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
+        (void)instances;
+        (void)instanceCount;
+        return false;
+    }
+
+    // ---- GPU-driven rendering (stage 2): GPU cull seam ----
+    // Backends without the compute cull chain return false / no-op; the
+    // renderer then falls back to gpuDrivenSubmitOpaque (stage 1) or legacy.
+
+    /** @brief True when the stage-2 GPU cull chain will run this frame. */
+    virtual bool gpuDrivenCullEnabled() const { return false; }
+
+    /** @brief Scene pass opening deferred until after the compute cull section. */
+    virtual bool gpuDrivenScenePassPending() const { return false; }
+
+    /** @brief Upload sorted instances + bucket metadata for the cull chain. */
+    virtual bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) {
+        (void)instances;
+        (void)instanceCount;
+        return false;
+    }
+
+    /** @brief Record the cull + emit compute dispatches for the current frame. */
+    virtual void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                                   float nearZ, float farZ) {
+        (void)viewProj;
+        (void)eye;
+        (void)fovYDeg;
+        (void)nearZ;
+        (void)farZ;
+    }
+
+    /** @brief Open the scene color pass that begin3DFrame deferred (cull path). */
+    virtual void gpuDrivenOpenScenePass() {}
+
+    /** @brief Draw the opaque geometry with GPU-written indirect commands. */
+    virtual void gpuDrivenDrawOpaque() {}
+
+    // ---- GPU-driven rendering (stage 3): visibility buffer + resolve seam ----
+    // Backends without the resolve path return false / no-op; the renderer
+    // keeps using gpuDrivenDrawOpaque (forward shading).
+
+    /** @brief True when the stage-3 vis+resolve path should run this frame. */
+    virtual bool gpuDrivenResolveWanted() const { return false; }
+
+    /** @brief Record the GBuffer vis pass (opaque indirect draws write visID/visBary). */
+    virtual void gpuDrivenRecordVisPass() {}
+
+    /** @brief Record the fullscreen vis resolve inside the open scene color pass. */
+    virtual void gpuDrivenResolve() {}
+
+    // ---- GPU-driven rendering (stage 3): virtual-geometry seam ----
+    // Backends without VG support return kInvalidGpuDrivenSlot / false; the
+    // renderer then draws the mesh through the normal GPU-driven path.
+
+    /** @brief Upload a virtual-geometry asset into the shared cluster pool. */
+    virtual std::uint32_t gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
+        (void)asset;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /** @brief VG asset id attached to a mesh (kInvalidGpuDrivenSlot when none). */
+    virtual std::uint32_t gpuDrivenVgAssetId(Mesh *mesh) const {
+        (void)mesh;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /** @brief Attach an uploaded VG asset to a mesh (routes it to the VG path). */
+    virtual bool gpuDrivenVgAttachToMesh(Mesh *mesh, std::uint32_t vgAssetId) {
+        (void)mesh;
+        (void)vgAssetId;
+        return false;
+    }
+
+    /**
+     * @brief Register one instance of a VG asset this frame (model + material).
+     * The first instance per asset wins; returns false for unknown assets.
+     */
+    virtual bool gpuDrivenVgSetInstance(std::uint32_t vgAssetId, const glm::mat4 &model,
+                                        std::uint32_t materialId) {
+        (void)vgAssetId;
+        (void)model;
+        (void)materialId;
+        return false;
+    }
+
+    /** @brief Record the HZB build + cull-params section (VG-only frames). */
+    virtual void gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                           float fovYDeg, float nearZ, float farZ) {
+        (void)viewProj;
+        (void)eye;
+        (void)fovYDeg;
+        (void)nearZ;
+        (void)farZ;
+    }
 
     /**
      * @brief Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.

@@ -122,6 +122,9 @@ GAME ?=
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers \
+	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
+	ensure-built/macosx ensure-built/macosx-debug \
+	init/submodules \
 	docs
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
@@ -147,6 +150,12 @@ check/test-manifest:
 # Verify module includes never climb above the declared manifest LAYER.
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
+
+# Worktree/agent setup: initialize the pinned git submodules (external/*).
+# third-party/ itself is fetched by the first cmake configure at the pinned
+# commit (EVENGINE_THIRD_PARTY_PIN in CMakeLists.txt).
+init/submodules:
+	git submodule update --init --recursive
 
 # clangd: build/compile_commands.json -> host platform debug CDB
 link-compile-commands:
@@ -175,26 +184,87 @@ JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
 
+# Reusable configure command lines: used both by the first-configure rules and
+# by the on-change reconfigure inside the build recipes below.
+WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
+WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
+LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
+MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
+MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
+
+# $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>)
+# Re-runs cmake when the recorded CMAKE_EXTRA_ARGS stamp differs from the
+# current make-level value. build/<plat> targets are phony, so this check runs
+# on every invocation but costs only one cat when nothing changed.
+define reconfigure-if-args-changed
+	@if [ ! -f $(1)/.eve-config-args ]; then \
+	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
+	elif [ "$$(cat $(1)/.eve-config-args)" != "$(CMAKE_EXTRA_ARGS)" ]; then \
+	  echo "CMAKE_EXTRA_ARGS changed; reconfiguring $(1)"; \
+	  $(2); \
+	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
+	fi
+endef
+
 build/win32: build/win32/build.ninja
+	$(call reconfigure-if-args-changed,build/win32,$(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS))
 	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32/build.ninja:
-	$(WITH_MSVC) cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
+	$(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS)
+
+# Fast up-to-date check for repeated run/test loops: ninja's dry run costs
+# ~100ms and lists every pending edge, so vcvars + cmake only run when
+# something is actually stale. check_sources_* rescan targets run on every
+# build by design, so their lines are filtered out of the dry-run output.
+ensure-built/win32:
+	@stale=0; \
+	for f in build/win32/src/modules/*_src.txt build/win32/src/engine/*_src.txt; do \
+	  [ -f "$$f" ] || continue; \
+	  folder=$${f##*/}; folder=$${folder%_src.txt}; \
+	  for src in src/modules/$$folder src/engine/$$folder; do \
+	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
+	  done; \
+	done; \
+	if [ "$$stale" = 0 ] && [ -d test ] && [ -f build/win32/test/unit_test.exe ] \
+	   && [ test -nt build/win32/test/unit_test.exe ]; then stale=1; fi; \
+	if [ -f build/win32/build.ninja ] \
+	   && [ "$$(cat build/win32/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
+	   && [ "$$stale" = 0 ] \
+	   && ! ninja -C build/win32 -n 2>&1 \
+	        | grep -v 'Entering directory' \
+	        | grep -v 'no work to do' \
+	        | grep -v 'rescan_source.cmake' \
+	        | grep -q .; then \
+	  echo "build/win32: up to date"; \
+	else \
+	  $(MAKE) build/win32; \
+	fi
 
 build/linux: build/linux/Makefile
+	$(call reconfigure-if-args-changed,build/linux,cmake $(LINUX_CMAKE_ARGS))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
 build/linux/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
+	cmake $(LINUX_CMAKE_ARGS)
+
+# Unix Makefiles cannot be dry-run reliably (cmake_check_build_system and the
+# ALL custom targets always report work), so linux/macosx just build; make's
+# own incremental check keeps the no-op case cheap.
+ensure-built/linux: build/linux
 
 build/macosx: build/macosx/Makefile
+	$(call reconfigure-if-args-changed,build/macosx,cmake $(MACOSX_CMAKE_ARGS))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
 build/macosx/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
+	cmake $(MACOSX_CMAKE_ARGS)
+
+ensure-built/macosx: build/macosx
 
 build/android: build/android/build.ninja
 	cmake --build $@ --target deps -j $(ANDROID_JOBS)
@@ -216,25 +286,56 @@ build/android/build.ninja:
 		-B build/android -S .
 
 build/win32-debug: build/win32-debug/build.ninja
+	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS))
 	$(WITH_MSVC) cmake.exe --build $@ --target deps -j $(JOBS)
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32-debug/build.ninja:
-	$(WITH_MSVC) cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+	$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS)
+
+ensure-built/win32-debug:
+	@stale=0; \
+	for f in build/win32-debug/src/modules/*_src.txt build/win32-debug/src/engine/*_src.txt; do \
+	  [ -f "$$f" ] || continue; \
+	  folder=$${f##*/}; folder=$${folder%_src.txt}; \
+	  for src in src/modules/$$folder src/engine/$$folder; do \
+	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
+	  done; \
+	done; \
+	if [ "$$stale" = 0 ] && [ -d test ] && [ -f build/win32-debug/test/unit_test.exe ] \
+	   && [ test -nt build/win32-debug/test/unit_test.exe ]; then stale=1; fi; \
+	if [ -f build/win32-debug/build.ninja ] \
+	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
+	   && [ "$$stale" = 0 ] \
+	   && ! ninja -C build/win32-debug -n 2>&1 \
+	        | grep -v 'Entering directory' \
+	        | grep -v 'no work to do' \
+	        | grep -v 'rescan_source.cmake' \
+	        | grep -q .; then \
+	  echo "build/win32-debug: up to date"; \
+	else \
+	  $(MAKE) build/win32-debug; \
+	fi
 
 build/linux-debug: build/linux-debug/Makefile
+	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
 build/linux-debug/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
+	cmake $(LINUX_DEBUG_CMAKE_ARGS)
+
+ensure-built/linux-debug: build/linux-debug
 
 build/macosx-debug: build/macosx-debug/Makefile
+	$(call reconfigure-if-args-changed,build/macosx-debug,cmake $(MACOSX_DEBUG_CMAKE_ARGS))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
 build/macosx-debug/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
+	cmake $(MACOSX_DEBUG_CMAKE_ARGS)
+
+ensure-built/macosx-debug: build/macosx-debug
 
 build/android-debug: build/android-debug/build.ninja
 	cmake --build $@ --target deps -j $(ANDROID_JOBS)
@@ -397,33 +498,43 @@ reinstall/third-party: reinstall/third-party/$(PLATFORM)-debug
 
 reinstall/third-party/win32:
 	cmake.exe --build build/third-party/win32 --target install --config Release -j 32
+	cmake.exe -DPREFIX=build/third-party-binary/win32 -DTP_DIR=third-party -DPLATFORM=win32 -DBUILD_TYPE=Release -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/win32-debug:
 	$(WITH_MSVC) cmake.exe --build build/third-party/win32-debug --target install -j 32
+	$(WITH_MSVC) cmake.exe -DPREFIX=build/third-party-binary/win32-debug -DTP_DIR=third-party -DPLATFORM=win32 -DBUILD_TYPE=Debug -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/linux:
 	cmake --build build/third-party/linux --target install -j 32
+	cmake -DPREFIX=build/third-party-binary/linux -DTP_DIR=third-party -DPLATFORM=linux -DBUILD_TYPE=Release -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/linux-debug:
 	cmake --build build/third-party/linux-debug --target install -j 32
+	cmake -DPREFIX=build/third-party-binary/linux-debug -DTP_DIR=third-party -DPLATFORM=linux -DBUILD_TYPE=Debug -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/macosx:
 	cmake --build build/third-party/macosx --target install -j 32
+	cmake -DPREFIX=build/third-party-binary/macosx -DTP_DIR=third-party -DPLATFORM=macosx -DBUILD_TYPE=Release -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/macosx-debug:
 	cmake --build build/third-party/macosx-debug --target install -j 32
+	cmake -DPREFIX=build/third-party-binary/macosx-debug -DTP_DIR=third-party -DPLATFORM=macosx -DBUILD_TYPE=Debug -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/android:
 	cmake --build build/third-party/android --target install -j 8
+	cmake -DPREFIX=build/third-party-binary/android -DTP_DIR=third-party -DPLATFORM=android -DBUILD_TYPE=Release -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/android-debug:
 	cmake --build build/third-party/android-debug --target install -j 8
+	cmake -DPREFIX=build/third-party-binary/android-debug -DTP_DIR=third-party -DPLATFORM=android -DBUILD_TYPE=Debug -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/ios:
 	cmake --build build/third-party/ios --target install -j 8
+	cmake -DPREFIX=build/third-party-binary/ios -DTP_DIR=third-party -DPLATFORM=ios -DBUILD_TYPE=Release -P cmake/write_third_party_version.cmake
 
 reinstall/third-party/ios-debug:
 	cmake --build build/third-party/ios-debug --target install -j 8
+	cmake -DPREFIX=build/third-party-binary/ios-debug -DTP_DIR=third-party -DPLATFORM=ios -DBUILD_TYPE=Debug -P cmake/write_third_party_version.cmake
 
 # Copy native shared libraries into the Gradle jniLibs tree.
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
@@ -716,27 +827,27 @@ PERF_FRAMES ?= 30
 CTEST_ENV = EVENGINE_VIEW_SECONDS=$(VIEW_SECONDS) EVENGINE_PERF_FRAMES=$(PERF_FRAMES)
 
 # Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
-test/win32:
+test/win32: ensure-built/win32
 	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
-test/win32-debug:
+test/win32-debug: ensure-built/win32-debug
 	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
-test/linux:
+test/linux: ensure-built/linux
 	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
-test/linux-debug:
+test/linux-debug: ensure-built/linux-debug
 	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
-test/macosx:
+test/macosx: ensure-built/macosx
 	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
-test/macosx-debug:
+test/macosx-debug: ensure-built/macosx-debug
 	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).
-test/%:
+test/%: ensure-built/$(PLATFORM)-debug
 	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)'
 
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).
@@ -752,27 +863,27 @@ run: run/$(PLATFORM)-debug
 #   make run/linux-debug GAME=example
 #   make run/macosx-debug GAME=examples/rpg
 #   make run              # current host platform, debug, embedded demo
-run/win32-debug:
+run/win32-debug: ensure-built/win32-debug
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run; \
 	else build/win32-debug/src/engine/eve.exe; fi
 
-run/linux-debug:
+run/linux-debug: ensure-built/linux-debug
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run; \
 	else build/linux-debug/src/engine/eve; fi
 
-run/macosx-debug:
+run/macosx-debug: ensure-built/macosx-debug
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run; \
 	else build/macosx-debug/src/engine/eve; fi
 
-run/win32:
+run/win32: ensure-built/win32
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run; \
 	else build/win32/src/engine/eve.exe; fi
 
-run/linux:
+run/linux: ensure-built/linux
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run; \
 	else build/linux/src/engine/eve; fi
 
-run/macosx:
+run/macosx: ensure-built/macosx
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run; \
 	else build/macosx/src/engine/eve; fi
 
