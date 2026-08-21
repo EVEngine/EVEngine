@@ -33,3 +33,21 @@ The filter is passed as a launch argument (`-evengine.test.filter math.*`,
 mirroring Android's `evengine.test.filter` intent extra) or falls back to
 `--testcase=<pattern>` on the process argument list. Without a filter the full
 suite runs and results appear in `make log/ios-test`.
+
+### Simulator runs (no signing / no device needed)
+
+```sh
+make build/ios-sim-debug-test        # separate ios-simulator-debug deps + app
+make run/ios-sim-test-debug [FILTER=math.*]
+make log/ios-sim-test
+```
+
+The simulator build ad-hoc signs the app and the embedded MoltenVK framework
+(no Apple Development identity or unlocked keychain required), and keeps its
+own third-party tree so the device deps are not clobbered.
+`run/ios-sim-test-debug` boots the first available simulator, installs the app
+and launches it with the filter (if any). Test output is written to unified
+logging (os_log) and stderr, so it shows up both in `log stream`/`log show`
+and in `simctl launch --console-pty`; the app stays resident after the suite
+finishes (normal iOS lifecycle), so Ctrl-C the log command when the summary
+appears.
