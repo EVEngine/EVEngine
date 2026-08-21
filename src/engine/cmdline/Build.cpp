@@ -4,9 +4,8 @@
 #include <CLI11.hpp>
 #include <rang.hpp>
 
-#include <algorithm>
-#include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 
 using std::string;
@@ -18,44 +17,42 @@ namespace eve::cmd {
 
 namespace {
 
-#if defined(_WIN32)
-// Locate Git for Windows' bash.exe (the Android Makefile recipes use POSIX
-// shell syntax, so `make build/android` needs a sh SHELL instead of cmd.exe).
-std::string findGitBash() {
-    for (const char* pf : {std::getenv("ProgramFiles"), std::getenv("ProgramFiles(x86)")}) {
-        if (!pf) continue;
-        const auto p = std::filesystem::path(pf) / "Git" / "bin" / "bash.exe";
-        std::error_code ec;
-        if (std::filesystem::is_regular_file(p, ec)) return p.string();
-    }
-    return "";
-}
-
-std::string toShPath(const std::string& p) {
-    std::string s = p;
-    std::replace(s.begin(), s.end(), '\\', '/');
-    return s;
-}
-#endif
-
 // Reads the positional arguments of the build subcommand: the first positional
 // is treated as the platform name when it matches a known platform and no
-// -p/--platform was given; otherwise it is the game path (legacy behavior).
+// -p/--platform was given; otherwise it is the game path.
 bool splitBuildArgs(const std::vector<std::string>& remaining, std::string& platform,
                     std::string& game) {
     game = ".";
-    if (remaining.empty()) {
-        if (platform.empty()) platform = sdk::hostPlatformName();
-        return true;
-    }
+    if (remaining.empty()) return true;
     if (platform.empty() && sdk::parsePlatform(remaining[0]) != sdk::Platform::Unknown) {
         platform = remaining[0];
         if (remaining.size() > 1) game = remaining[1];
         return remaining.size() <= 2;
     }
     game = remaining[0];
-    if (platform.empty()) platform = sdk::hostPlatformName();
     return remaining.size() == 1;
+}
+
+std::string gradleLauncher(const std::string& gradleHome) {
+#if defined(_WIN32)
+    return (std::filesystem::path(gradleHome) / "bin" / "gradle.bat").string();
+#else
+    return (std::filesystem::path(gradleHome) / "bin" / "gradle").string();
+#endif
+}
+
+// 组装命令：切到 <apk>/ 目录后调用 gradle 的 assembleRelease/assembleDebug。
+std::string gradleCommand(const std::string& apkDir, const std::string& gradleHome,
+                          bool debug) {
+    const std::string launcher = gradleLauncher(gradleHome);
+#if defined(_WIN32)
+    // `call` 前缀避免 cmd /c 剥掉以引号开头的命令的首尾引号。
+    return "cd /d \"" + apkDir + "\" && call \"" + launcher + "\" assemble" +
+           std::string(debug ? "Debug" : "Release");
+#else
+    return "cd '" + apkDir + "' && '" + launcher + "' assemble" +
+           std::string(debug ? "Debug" : "Release");
+#endif
 }
 
 }  // namespace
@@ -66,21 +63,22 @@ struct BuildArgs : Handler {
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         auto subcmd = app.add_subcommand(
-            "build", "Build the game for a platform (win32, linux, macosx, android, ios)");
+            "build", "Build the game for a platform (android) using the packaged SDK");
         subcmd->allow_extras()->formatter(formatter);
-        subcmd->add_option("-p,--platform", platform, "Build platform (win32, linux, macosx, android, ios)");
+        subcmd->add_option("-p,--platform", platform, "Build platform (android)");
         subcmd->add_flag("-r,--release", release, "release build (default)");
         subcmd->add_flag("-d,--debug", debug, "debug build");
         subcmd->add_option("-l,--log", log_path, "log messages into a file");
-        subcmd->add_option("-o,--output", output_path, "output folder path");
-        subcmd->add_option("--sdk", sdk_path, "EVEngine checkout root (default: auto-detect from cwd or $EVENGINE_SDK)");
+        subcmd->add_option("-o,--output", output_path, "output folder for the assembled APK project");
+        subcmd->add_option("--sdk", sdk_path, "EVEngine SDK root (default: $EVENGINE_SDK or next to the eve binary)");
     }
 
     int parse(CLI::App& app, Cmdline& cmd) override {
         auto subcmd = app.get_subcommand("build");
         if (subcmd->parsed()) {
             if (debug && release) {
-                cerr << rang::fg::red << "Build type can not be both debug and release" << rang::fg::reset << endl;
+                cerr << rang::fg::red << "Build type can not be both debug and release"
+                     << rang::fg::reset << endl;
                 return 1;
             }
 
@@ -103,95 +101,137 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
     namespace fs = std::filesystem;
 
     const Platform p = parsePlatform(platform);
+    if (platform.empty()) {
+        cerr << rang::fg::red << "eve build: missing platform. Pass a platform name, "
+             << "e.g. `eve build android`." << rang::fg::reset << endl;
+        return 2;
+    }
     if (p == Platform::Unknown) {
         cerr << rang::fg::red << "eve build: unknown platform '" << platform
-             << "' (supported: win32, linux, macosx, android, ios)" << rang::fg::reset << endl;
+             << "' (supported: android)" << rang::fg::reset << endl;
+        return 2;
+    }
+    if (p != Platform::Android) {
+        cerr << rang::fg::red << "eve build: SDK mode currently supports 'android' only; "
+             << "desktop targets are packaged with `eve package`."
+             << rang::fg::reset << endl;
         return 2;
     }
 
-    std::string root = sdkRoot.empty() ? getEnv("EVENGINE_SDK") : sdkRoot;
-    if (root.empty()) root = findEngineRoot();
+    // 1. 定位 EVEngine SDK（无需源码/Makefile/cmake）。
+    std::string root = findSdkRoot(sdkRoot);
     if (root.empty()) {
-        cerr << "eve build: cannot locate the EVEngine checkout. Run eve build from the "
-                "repository, set $EVENGINE_SDK, or pass --sdk <dir>."
+        cerr << "eve build: cannot locate the EVEngine SDK. Pass --sdk <dir>, set "
+                "$EVENGINE_SDK, or run eve from <sdk>/bin."
              << endl;
         return 2;
     }
-    std::error_code ec;
-    if (!fs::is_regular_file(fs::path(root) / "Makefile", ec) ||
-        !fs::is_regular_file(fs::path(root) / "CMakeLists.txt", ec)) {
-        cerr << rang::fg::red << "eve build: " << root
-             << " is not an EVEngine checkout (missing Makefile/CMakeLists.txt)"
+    const std::string sdkPlat = sdkTargetPlatform(root);
+    if (sdkPlat != "android") {
+        cerr << rang::fg::red << "eve build: this SDK targets '" << sdkPlat
+             << "', not android. Get the android SDK." << rang::fg::reset << endl;
+        return 2;
+    }
+
+    // 2. Android SDK 工具链（`eve get android` 安装）。
+    const std::string asdk = androidSdkRoot();
+    std::error_code  ec;
+    if (!fs::is_directory(asdk, ec)) {
+        cerr << rang::fg::red << "Android SDK not found at " << asdk << ". Run `eve get android` "
+             << "first, or set ANDROID_HOME / EVENGINE_ANDROID_SDK."
              << rang::fg::reset << endl;
         return 2;
     }
-
-#if defined(_WIN32)
-    if (p == Platform::Macosx || p == Platform::Ios) {
-        cerr << rang::fg::red << "eve build: " << platformName(p)
-             << " builds require a macOS host." << rang::fg::reset << endl;
+    applyEnvFile((fs::path(asdk) / "eve-android.env").string());
+    const std::string javaHome = getEnv("JAVA_HOME");
+    const std::string gradleHome = getEnv("GRADLE_HOME");
+    if (javaHome.empty() || gradleHome.empty() ||
+        !fs::is_regular_file(gradleLauncher(gradleHome), ec)) {
+        cerr << rang::fg::red << "Missing JDK/Gradle for Android builds. Run `eve get android` "
+             << "to install them (JAVA_HOME / GRADLE_HOME)." << rang::fg::reset << endl;
         return 2;
     }
-#else
-    if (p == Platform::Win32) {
-        cerr << rang::fg::red << "eve build: win32 builds require a Windows host."
+    setEnv("ANDROID_HOME", asdk);
+    setEnv("ANDROID_SDK_ROOT", asdk);
+
+    // 3. 游戏目录：默认当前目录；位于 SDK 根时用自带的 demo 壳。
+    std::string game = path;
+    if (game.empty() || game == ".") game = fs::absolute(".").string();
+    else game = fs::absolute(game, ec).string();
+    if (ec || !fs::is_directory(game, ec)) {
+        cerr << rang::fg::red << "eve build: bad game path '" << path << "'"
              << rang::fg::reset << endl;
         return 2;
     }
-#endif
-
-    std::string target = "build/" + platformName(p) + (debug ? "-debug" : "");
-#if defined(_WIN32)
-    // Linux builds on a Windows host go through the Makefile's WSL2 targets.
-    if (p == Platform::Linux) target = "wsl/" + std::string(debug ? "linux-debug" : "linux");
-#endif
-
-    std::string cmd = "make -C \"" + root + "\" " + target;
-    if (p == Platform::Android) {
-        const std::string sdk = androidSdkRoot();
-        if (!fs::is_directory(sdk, ec)) {
-            cerr << rang::fg::red << "Android SDK not found at " << sdk << ". Run `eve get android` "
-                 << "first, or set ANDROID_HOME / EVENGINE_ANDROID_SDK."
-                 << rang::fg::reset << endl;
-            return 2;
-        }
-        setEnv("ANDROID_HOME", sdk);
-        setEnv("ANDROID_SDK_ROOT", sdk);
-        applyEnvFile((fs::path(sdk) / "eve-android.env").string());
-
-        std::string game = path;
-        if (game.empty() || game == ".") {
-            // Running from the engine checkout root falls back to the built-in
-            // demo shell; anywhere else the current directory is the game.
-            const std::string cwd   = fs::absolute(".").string();
-            const std::string engine = findEngineRoot();
-            game = (!engine.empty() && engine == cwd) ? std::string("demo") : cwd;
-        } else {
-            game = fs::absolute(game, ec).string();
-            if (ec) {
-                cerr << rang::fg::red << "eve build: bad game path '" << path << "'"
-                     << rang::fg::reset << endl;
-                return 2;
-            }
-        }
-#if defined(_WIN32)
-        // cmd.exe's make SHELL cannot run the POSIX-style android recipes
-        // (gradlew env prefixes, cp -R, [ -d ... ]), so prefer Git Bash when
-        // it is installed; fall back to the plain make command otherwise.
-        const std::string bash = findGitBash();
-        if (!bash.empty()) {
-            cmd = "call \"" + bash + "\" -lc \"cd '" + toShPath(root) + "' && make " +
-                  target + " ANDROID_GAME='" + toShPath(game) + "'\"";
-        } else {
-            cmd += " ANDROID_GAME=\"" + game + "\"";
-        }
-#else
-        cmd += " ANDROID_GAME=\"" + game + "\"";
-#endif
+    if (fs::equivalent(game, root, ec) || fs::path(game) == fs::path(root)) {
+        const auto demo = fs::path(root) / "platform" / "game-shell";
+        if (fs::is_directory(demo, ec)) game = demo.string();
     }
 
-    cout << "eve build: running " << cmd << endl;
-    return runShell(cmd);
+    // 4. 组装 APK 工程到输出目录（模板 + 游戏资源 + 预编译 .so，不动 SDK）。
+    const std::string outDir = output.empty()
+                                   ? (fs::current_path() / "build" / "eve-android").string()
+                                   : fs::absolute(output, ec).string();
+    fs::remove_all(outDir, ec);
+    fs::create_directories(outDir, ec);
+    const std::string apkDir = (fs::path(outDir) / "apk").string();
+    if (!copyTree((fs::path(root) / "platform" / "apk").string(), apkDir,
+                  {"build", ".gradle", "local.properties"})) {
+        cerr << rang::fg::red << "SDK is missing the android APK template (platform/apk)."
+             << rang::fg::reset << endl;
+        return 3;
+    }
+    const std::string assetsGame = (fs::path(apkDir) / "app" / "src" / "main" / "assets" / "game").string();
+    if (!copyTreeContents(game, assetsGame)) {
+        cerr << rang::fg::red << "Failed to copy game assets." << rang::fg::reset << endl;
+        return 3;
+    }
+    const std::string jniDir = (fs::path(apkDir) / "app" / "src" / "main" / "jniLibs" / "arm64-v8a").string();
+    fs::create_directories(jniDir, ec);
+    int libs = 0;
+    for (const auto& entry : fs::directory_iterator(fs::path(root) / "lib", ec)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".so") {
+            fs::copy_file(entry.path(), fs::path(jniDir) / entry.path().filename(),
+                          fs::copy_options::overwrite_existing, ec);
+            ++libs;
+        }
+    }
+    if (libs == 0) {
+        cerr << rang::fg::yellow
+             << "note: no prebuilt .so found in the SDK lib/ dir; the APK will be "
+                "missing native code."
+             << rang::fg::reset << endl;
+    }
+    {
+        // 用正斜杠避免 Java properties 的转义问题。
+        std::string sdkProp = asdk;
+        for (char& c : sdkProp)
+            if (c == '\\') c = '/';
+        std::ofstream f(fs::path(apkDir) / "local.properties", std::ios::binary | std::ios::trunc);
+        f << "sdk.dir=" << sdkProp << "\n";
+    }
+
+    // 5. Gradle 组装 APK。
+    const std::string cmd = gradleCommand(apkDir, gradleHome, debug);
+    cout << "eve build: " << cmd << endl;
+    const int rc = runShell(cmd);
+    if (rc != 0) {
+        cerr << rang::fg::red << "eve build: gradle failed (exit " << rc << ")."
+             << rang::fg::reset << endl;
+        return 4;
+    }
+
+    // 6. 输出 APK 路径。
+    const std::string variant = debug ? "debug" : "release";
+    const fs::path apk = fs::path(apkDir) / "app" / "build" / "outputs" / "apk" / variant /
+                         ("app-" + variant + ".apk");
+    if (!fs::is_regular_file(apk, ec)) {
+        cerr << rang::fg::yellow << "note: gradle finished but no APK found at " << apk.string()
+             << rang::fg::reset << endl;
+        return 0;
+    }
+    cout << rang::fg::green << "Built APK -> " << rang::fg::reset << apk.string() << endl;
+    return 0;
 }
 
 }  // namespace eve::cmd

@@ -162,28 +162,45 @@ private:
     bool        had_ = false;
 };
 
-// A fake EVEngine checkout whose Makefile echoes each requested target into
-// built.txt. Lets the build dispatch be tested end-to-end (real `make`
-// subprocess) without any SDK or toolchain.
-std::filesystem::path fakeEngineRoot(const char* tag) {
-    const auto root = tempDir(tag);
-    static const char* targets[] = {
-        "build/android",         "build/android-debug", "build/win32", "build/win32-debug",
-        "build/linux",           "build/linux-debug",   "build/macosx", "build/macosx-debug",
-        "wsl/linux",             "wsl/linux-debug",
-    };
-    std::ofstream mk(root / "Makefile", std::ios::binary | std::ios::trunc);
-    for (const char* t : targets) mk << t << ":\n\t@echo " << t << " > built.txt\n";
-    std::ofstream cm(root / "CMakeLists.txt", std::ios::binary | std::ios::trunc);
-    cm << "# fake checkout\n";
-    return root;
+// A fake EVEngine SDK install: TARGET_PLATFORM marker, prebuilt lib/, and the
+// android APK template (platform/apk) exactly like `make sdk/android` ships.
+std::filesystem::path fakeSdkRoot(const char* tag, const char* platform) {
+    const auto sdk = tempDir(tag);
+    writeFile(sdk / "share" / "eve" / "TARGET_PLATFORM", std::string(platform) + "\n");
+    writeFile(sdk / "lib" / "libmain.so", "fake so");
+    writeFile(sdk / "lib" / "libSDL2.so", "fake so");
+    writeFile(sdk / "platform" / "apk" / "template.txt", "apk template");
+    writeFile(sdk / "platform" / "game-shell" / "config.nut", "width=800\n");
+    return sdk;
 }
 
-std::string builtTarget(const std::filesystem::path& root) {
-    std::ifstream in(root / "built.txt");
-    std::string  s;
-    std::getline(in, s);
-    return s;
+// A fake gradle distribution whose launcher records the invocation and writes
+// the APK output that `eve build android` checks for.
+void writeFakeGradle(const std::filesystem::path& gradleHome) {
+    const auto bin = gradleHome / "bin";
+    std::error_code ec;
+    std::filesystem::create_directories(bin, ec);
+#if defined(_WIN32)
+    writeFile(bin / "gradle.bat",
+              "@echo off\r\n"
+              "echo FAKE_GRADLE %* > gradle-invoked.txt\r\n"
+              "mkdir app\\build\\outputs\\apk\\release 2>nul\r\n"
+              "mkdir app\\build\\outputs\\apk\\debug 2>nul\r\n"
+              "echo ok > app\\build\\outputs\\apk\\release\\app-release.apk\r\n"
+              "echo ok > app\\build\\outputs\\apk\\debug\\app-debug.apk\r\n");
+#else
+    writeFile(bin / "gradle",
+              "#!/bin/sh\n"
+              "echo \"FAKE_GRADLE $*\" > gradle-invoked.txt\n"
+              "mkdir -p app/build/outputs/apk/release app/build/outputs/apk/debug\n"
+              "echo ok > app/build/outputs/apk/release/app-release.apk\n"
+              "echo ok > app/build/outputs/apk/debug/app-debug.apk\n");
+    std::filesystem::permissions(bin / "gradle",
+                                 std::filesystem::perms::owner_all |
+                                     std::filesystem::perms::group_read |
+                                     std::filesystem::perms::others_read,
+                                 ec);
+#endif
 }
 
 }  // namespace
@@ -310,63 +327,104 @@ TEST_CASE("cmdline.zipProducesValidArchiveWithoutItself") {
     std::filesystem::remove_all(dir, ec);
 }
 
-TEST_CASE("cmdline.buildDispatchesToPlatformTarget") {
-    const auto root = fakeEngineRoot("eve_ut_cmdline_build");
-    const auto sdk  = tempDir("eve_ut_cmdline_android_sdk");
-    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", sdk.string());
+TEST_CASE("cmdline.buildAndroidAssemblesApkFromSdk") {
+    const auto sdk   = fakeSdkRoot("eve_ut_cmdline_sdk_android", "android");
+    const auto tools = tempDir("eve_ut_cmdline_android_tools");
+    writeFakeGradle(tools / "gradle-8.5");
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", tools.string());
+    ScopedEnv javaEnv("JAVA_HOME", tools.string());
+    ScopedEnv gradleEnv("GRADLE_HOME", (tools / "gradle-8.5").string());
 
-    {
-        CaptureStreams cap;
-        const int rc = runCli({"eve", "build", "android", "--sdk", root.string()});
-        CHECK(rc == 0);
-    }
-    CHECK(builtTarget(root).find("build/android") != std::string::npos);
+    const auto game = tempDir("eve_ut_cmdline_game");
+    writeFile(game / "main.nut", "eve_init = function() {}\n");
+    writeFile(game / "scripts" / "a.nut", "a <- 1\n");
+    const auto out = tempDir("eve_ut_cmdline_apk_out");
 
-    {
-        CaptureStreams cap;
-        const int rc = runCli({"eve", "build", "-d", "android", "--sdk", root.string()});
-        CHECK(rc == 0);
-    }
-    CHECK(builtTarget(root).find("build/android-debug") != std::string::npos);
+    CaptureStreams cap;
+    const int      rc = runCli(
+        {"eve", "build", "android", game.string(), "--sdk", sdk.string(), "-o", out.string()});
+    CHECK(rc == 0);
 
+    // Game assets + prebuilt libs + sdk.dir landed in the assembled project.
     std::error_code ec;
-    std::filesystem::remove_all(root, ec);
+    CHECK(std::filesystem::is_regular_file(
+        out / "apk" / "app" / "src" / "main" / "assets" / "game" / "main.nut", ec));
+    CHECK(std::filesystem::is_regular_file(
+        out / "apk" / "app" / "src" / "main" / "assets" / "game" / "scripts" / "a.nut", ec));
+    CHECK(std::filesystem::is_regular_file(
+        out / "apk" / "app" / "src" / "main" / "jniLibs" / "arm64-v8a" / "libmain.so", ec));
+    CHECK(std::filesystem::is_regular_file(
+        out / "apk" / "app" / "src" / "main" / "jniLibs" / "arm64-v8a" / "libSDL2.so", ec));
+    REQUIRE(std::filesystem::is_regular_file(out / "apk" / "local.properties", ec));
+    {
+        std::ifstream in(out / "apk" / "local.properties");
+        std::string   s((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        std::string   expected = tools.string();
+        for (char& c : expected)
+            if (c == '\\') c = '/';
+        CHECK(s.find("sdk.dir=" + expected) != std::string::npos);
+    }
+    // Fake gradle ran with the release task and the APK path was reported.
+    REQUIRE(std::filesystem::is_regular_file(out / "apk" / "gradle-invoked.txt", ec));
+    {
+        std::ifstream in(out / "apk" / "gradle-invoked.txt");
+        std::string   s;
+        std::getline(in, s);
+        CHECK(s.find("assembleRelease") != std::string::npos);
+    }
+    CHECK(cap.out().find("app-release.apk") != std::string::npos);
+
+    // Debug variant picks the assembleDebug task.
+    CaptureStreams cap2;
+    const int      rc2 = runCli({"eve", "build", "-d", "android", game.string(),
+                            "--sdk", sdk.string(), "-o", out.string()});
+    CHECK(rc2 == 0);
+    {
+        std::ifstream in(out / "apk" / "gradle-invoked.txt");
+        std::string   s;
+        std::getline(in, s);
+        CHECK(s.find("assembleDebug") != std::string::npos);
+    }
+    CHECK(cap2.out().find("app-debug.apk") != std::string::npos);
+
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(tools, ec);
+    std::filesystem::remove_all(game, ec);
+    std::filesystem::remove_all(out, ec);
+}
+
+TEST_CASE("cmdline.buildWrongSdkPlatformFails") {
+    const auto sdk = fakeSdkRoot("eve_ut_cmdline_sdk_win32", "win32");
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "build", "android", "--sdk", sdk.string()});
+    CHECK(rc == 2);
+    CHECK(cap.all().find("not android") != std::string::npos);
+    std::error_code ec;
     std::filesystem::remove_all(sdk, ec);
 }
 
-TEST_CASE("cmdline.buildDefaultsToHostPlatform") {
-    const auto root = fakeEngineRoot("eve_ut_cmdline_build_host");
-    {
-        CaptureStreams cap;
-        const int      rc = runCli({"eve", "build", "--sdk", root.string()});
-        CHECK(rc == 0);
-    }
-    CHECK(builtTarget(root).find("build/" + eve::cmd::sdk::hostPlatformName()) !=
-          std::string::npos);
-    std::error_code ec;
-    std::filesystem::remove_all(root, ec);
+TEST_CASE("cmdline.buildMissingPlatformFails") {
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "build"});
+    CHECK(rc == 2);
+    CHECK(cap.all().find("missing platform") != std::string::npos);
 }
 
 TEST_CASE("cmdline.buildUnknownPlatformFails") {
-    const auto root = fakeEngineRoot("eve_ut_cmdline_build_unknown");
     CaptureStreams cap;
-    const int      rc = runCli({"eve", "build", "-p", "nonsense", "--sdk", root.string()});
+    const int      rc = runCli({"eve", "build", "-p", "nonsense"});
     CHECK(rc == 2);
     CHECK(cap.all().find("unknown platform") != std::string::npos);
-    std::error_code ec;
-    std::filesystem::remove_all(root, ec);
 }
 
 TEST_CASE("cmdline.buildMissingAndroidSdkFails") {
-    const auto root = fakeEngineRoot("eve_ut_cmdline_build_no_sdk");
-    const auto sdk  = tempDir("eve_ut_cmdline_no_sdk");
-    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", (sdk / "missing").string());
+    const auto sdk = fakeSdkRoot("eve_ut_cmdline_sdk_missing_tools", "android");
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", (sdk / "no-tools").string());
     CaptureStreams cap;
-    const int      rc = runCli({"eve", "build", "android", "--sdk", root.string()});
+    const int      rc = runCli({"eve", "build", "android", "--sdk", sdk.string()});
     CHECK(rc == 2);
     CHECK(cap.all().find("eve get android") != std::string::npos);
     std::error_code ec;
-    std::filesystem::remove_all(root, ec);
     std::filesystem::remove_all(sdk, ec);
 }
 
@@ -386,6 +444,7 @@ TEST_CASE("cmdline.getAndroidAlreadyInstalled") {
                                      std::filesystem::perms::others_read,
                                  ec);
 #endif
+    writeFakeGradle(sdk / "gradle-8.5");
 
     ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", sdk.string());
     ScopedEnv javaEnv("JAVA_HOME", sdk.string());  // non-empty -> skip JDK download
@@ -393,7 +452,13 @@ TEST_CASE("cmdline.getAndroidAlreadyInstalled") {
     const int      rc = runCli({"eve", "get", "android"});
     CHECK(rc == 0);
     CHECK(cap.out().find("already installed") != std::string::npos);
-    CHECK(std::filesystem::is_regular_file(sdk / "eve-android.env", ec));
+    REQUIRE(std::filesystem::is_regular_file(sdk / "eve-android.env", ec));
+    {
+        std::ifstream in(sdk / "eve-android.env");
+        std::string   s((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        CHECK(s.find("GRADLE_HOME=") != std::string::npos);
+        CHECK(s.find("ANDROID_HOME=") != std::string::npos);
+    }
     std::filesystem::remove_all(sdk, ec);
 }
 

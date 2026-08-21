@@ -5,6 +5,12 @@
 #include <fstream>
 #include <iostream>
 
+#if defined(_WIN32)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #if !defined(_WIN32)
 #include <sys/wait.h>
 #endif
@@ -42,16 +48,6 @@ std::string platformName(Platform p) {
     }
 }
 
-std::string hostPlatformName() {
-#if defined(_WIN32)
-    return "win32";
-#elif defined(__APPLE__)
-    return "macosx";
-#else
-    return "linux";
-#endif
-}
-
 std::string getEnv(const std::string& name, const std::string& def) {
     const char* v = std::getenv(name.c_str());
     return v ? std::string(v) : def;
@@ -65,18 +61,54 @@ void setEnv(const std::string& name, const std::string& value) {
 #endif
 }
 
-std::string findEngineRoot() {
+namespace {
+
+bool isSdkRoot(const std::filesystem::path& dir) {
     std::error_code ec;
-    auto dir = std::filesystem::current_path(ec);
-    if (ec) return "";
-    for (;;) {
-        if (std::filesystem::is_regular_file(dir / "Makefile", ec) &&
-            std::filesystem::is_regular_file(dir / "CMakeLists.txt", ec))
-            return dir.string();
-        const auto parent = dir.parent_path();
-        if (parent == dir) return "";
-        dir = parent;
+    return std::filesystem::is_regular_file(
+               std::filesystem::path(dir) / "share" / "eve" / "TARGET_PLATFORM", ec) ||
+           std::filesystem::is_regular_file(std::filesystem::path(dir) / "platform", ec);
+}
+
+}  // namespace
+
+std::string findSdkRoot(const std::string& sdkArg) {
+    std::error_code ec;
+    if (!sdkArg.empty()) {
+        const auto p = std::filesystem::absolute(sdkArg, ec);
+        if (!ec && std::filesystem::is_directory(p, ec)) return p.string();
+        return "";
     }
+    const std::string env = getEnv("EVENGINE_SDK");
+    if (!env.empty() && std::filesystem::is_directory(env, ec))
+        return std::filesystem::absolute(env, ec).string();
+
+    // Running from <sdk>/bin/<runtime> -> root is two directories up.
+#if defined(_WIN32)
+    wchar_t buf[MAX_PATH + 1] = {0};
+    if (GetModuleFileNameW(nullptr, buf, MAX_PATH) != 0) {
+        const auto exeDir = std::filesystem::path(buf).parent_path();
+        if (isSdkRoot(exeDir.parent_path())) return exeDir.parent_path().string();
+    }
+#else
+    char buf[4096] = {0};
+    const ssize_t n = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+    if (n > 0) {
+        const auto exeDir = std::filesystem::path(std::string(buf, static_cast<size_t>(n))).parent_path();
+        if (isSdkRoot(exeDir.parent_path())) return exeDir.parent_path().string();
+    }
+#endif
+
+    const auto cwd = std::filesystem::current_path(ec);
+    if (!ec && isSdkRoot(cwd)) return cwd.string();
+    return "";
+}
+
+std::string sdkTargetPlatform(const std::string& sdkRoot) {
+    std::ifstream in(std::filesystem::path(sdkRoot) / "share" / "eve" / "TARGET_PLATFORM");
+    std::string  s;
+    std::getline(in, s);
+    return s;
 }
 
 std::string androidSdkRoot() {
@@ -180,10 +212,17 @@ std::string temurinJdk17Url() {
            "/jdk/hotspot/normal/eclipse";
 }
 
-// 与仓库 Makefile / APK 工程匹配的 Android SDK 组件版本。
+// 与仓库 APK 工程匹配的 Android SDK 组件版本（.so 由 SDK 预编译，无需 NDK）。
 const char* kAndroidPlatform = "platforms;android-34";
 const char* kAndroidBuildTools = "build-tools;34.0.0";
-const char* kAndroidNdk = "ndk;26.1.10909125";
+
+// APK 模板的 gradle-wrapper.properties 指定的 Gradle 版本。
+const char* kGradleVersion = "8.5";
+
+std::string gradleUrl() {
+    return std::string("https://services.gradle.org/distributions/gradle-") + kGradleVersion +
+           "-bin.zip";
+}
 
 bool jdkHomeExists(const std::string& home) {
     std::error_code ec;
@@ -245,6 +284,30 @@ int installJdk(const std::string& root) {
     }
     std::filesystem::remove_all(tmp, ec);
     return 0;
+}
+
+int installGradle(const std::string& root) {
+    const std::string url = getEnv("EVE_GRADLE_URL", gradleUrl());
+    std::cout << "eve get: downloading Gradle " << kGradleVersion << "...\n";
+    const std::string tmp = root + "/.gradle-extract";
+    if (downloadAndExtract(url, root + "/gradle.zip", tmp) != 0) return 3;
+    std::error_code ec;
+    const auto gradleDir = std::filesystem::path(root) / ("gradle-" + std::string(kGradleVersion));
+    if (!moveOrCopy(std::filesystem::path(tmp) / ("gradle-" + std::string(kGradleVersion)),
+                    gradleDir)) {
+        std::cerr << "eve get: unexpected Gradle archive layout in " << tmp << std::endl;
+        return 3;
+    }
+    std::filesystem::remove_all(tmp, ec);
+    return 0;
+}
+
+bool gradleInstalled(const std::string& gradleHome) {
+    std::error_code ec;
+    return std::filesystem::is_regular_file(
+               std::filesystem::path(gradleHome) / "bin" / "gradle", ec) ||
+           std::filesystem::is_regular_file(
+               std::filesystem::path(gradleHome) / "bin" / "gradle.bat", ec);
 }
 
 }  // namespace
@@ -321,15 +384,18 @@ int installAndroidSdk() {
         return 3;
     }
     std::cout << "eve get: installing SDK packages (platform-tools, android-34, "
-                 "build-tools, NDK)...\n";
+                 "build-tools)...\n";
     const std::string packages = "\"platform-tools\" \"" + std::string(kAndroidPlatform) +
-                                 "\" \"" + std::string(kAndroidBuildTools) + "\" \"" +
-                                 std::string(kAndroidNdk) + "\"";
+                                 "\" \"" + std::string(kAndroidBuildTools) + "\"";
     if (runShell(sdkCmd + " " + packages) != 0) {
         std::cerr << "eve get: failed to install Android SDK packages" << std::endl;
         return 3;
     }
     std::filesystem::remove(lic, ec);
+
+    // Gradle：APK 模板没有 gradlew.bat，直接用发行版启动器，无需额外工具。
+    std::string gradleHome = (std::filesystem::path(root) / ("gradle-" + std::string(kGradleVersion))).string();
+    if (!gradleInstalled(gradleHome) && installGradle(root) != 0) return 3;
 
     // 记录环境，供 `eve build android` 在环境变量未设置时使用。
     {
@@ -337,14 +403,71 @@ int installAndroidSdk() {
                         std::ios::binary | std::ios::trunc);
         f << "ANDROID_HOME=" << root << "\n"
           << "ANDROID_SDK_ROOT=" << root << "\n"
-          << "ANDROID_NDK_ROOT=" << root << "/" << kAndroidNdk << "\n"
-          << "JAVA_HOME=" << javaHome << "\n";
+          << "JAVA_HOME=" << javaHome << "\n"
+          << "GRADLE_HOME=" << gradleHome << "\n";
     }
 
     std::cout << "eve get: Android SDK ready at " << root << "\n"
               << "eve get: run `eve build android` to build an APK "
                  "(or `eve build -d android` for a debug APK).\n";
     return 0;
+}
+
+namespace {
+
+void copyOne(const std::filesystem::path& from, const std::filesystem::path& to,
+             const std::vector<std::string>& skipDirs, bool contentsOnly) {
+    std::error_code ec;
+    if (!contentsOnly) std::filesystem::create_directories(to, ec);
+    std::filesystem::recursive_directory_iterator it(
+        from, std::filesystem::directory_options::skip_permission_denied, ec);
+    std::filesystem::recursive_directory_iterator end;
+    for (; it != end; it.increment(ec)) {
+        if (ec) {
+            ec.clear();
+            continue;
+        }
+        const auto rel = std::filesystem::relative(it->path(), from, ec).lexically_normal();
+        if (ec) continue;
+        const std::string relStr = rel.generic_string();
+        bool              skip   = false;
+        for (const auto& d : skipDirs) {
+            if (relStr == d || relStr.rfind(d + "/", 0) == 0) {
+                skip = true;
+                break;
+            }
+        }
+        if (skip) {
+            it.disable_recursion_pending();
+            continue;
+        }
+        const auto dst = (contentsOnly ? to : to / rel);
+        if (it->is_directory()) {
+            std::filesystem::create_directories(dst, ec);
+        } else if (it->is_regular_file()) {
+            std::filesystem::create_directories(dst.parent_path(), ec);
+            std::filesystem::copy_file(it->path(), dst,
+                                       std::filesystem::copy_options::overwrite_existing, ec);
+        }
+    }
+}
+
+}  // namespace
+
+bool copyTree(const std::string& from, const std::string& to,
+              const std::vector<std::string>& skipDirs) {
+    std::error_code ec;
+    if (!std::filesystem::is_directory(from, ec)) return false;
+    copyOne(from, to, skipDirs, /*contentsOnly=*/false);
+    return true;
+}
+
+bool copyTreeContents(const std::string& from, const std::string& to) {
+    std::error_code ec;
+    if (!std::filesystem::is_directory(from, ec)) return false;
+    std::filesystem::create_directories(to, ec);
+    copyOne(from, to, {}, /*contentsOnly=*/true);
+    return true;
 }
 
 }  // namespace eve::cmd::sdk

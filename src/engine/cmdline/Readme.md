@@ -48,16 +48,20 @@ Cmdline
 
 构建（build）：
 `eve build <platform> [game-path]` 把当前游戏（或指定目录）构建到对应平台。
-平台名：win32 / linux / macosx / android / ios；默认 release，加 `-d` 为 debug。
-例如 `eve build android` 会调用仓库 Makefile 的 `build/android` 目标（cmake +
-NDK + gradlew）产出 APK。构建根目录自动从 cwd 向上查找（含 Makefile +
-CMakeLists.txt），也可以 `--sdk <dir>` 或 `$EVENGINE_SDK` 指定。
-Windows 宿主上 linux 走 WSL2 目标；macosx/ios 需要 macOS 宿主；android 需要
-先安装 Android SDK（见下）。
+平台名：android（其它平台待支持，桌面目标可用 `eve package`）；默认 release，
+加 `-d` 为 debug。完全基于打包好的 SDK，不依赖源码、Makefile、cmake 或 NDK：
+SDK 自带 android 的 APK 工程模板（`platform/apk`）、预编译 native 库
+（`lib/*.so`）和演示游戏壳（`platform/game-shell`）。
+流程：复制模板到输出目录（`-o`，默认 `<游戏目录>/build/eve-android`）→ 注入
+游戏资源 → 拷入 .so → 写 `local.properties`（sdk.dir）→ 调用 Gradle
+assembleRelease/assembleDebug 产出 APK。SDK 根目录按 `--sdk <dir>`、
+`$EVENGINE_SDK`、`<sdk>/bin` 下的 eve 可执行文件位置依次查找。
 
 获取 SDK（get）：
 `eve get android` 自动下载并安装 Android SDK 工具链：command-line tools、
-platform-tools、platforms;android-34、build-tools;34.0.0、NDK 26.1 以及
+platform-tools、platforms;android-34、build-tools;34.0.0、Gradle 8.5 以及
 JDK 17（Temurin），默认安装到 `%LOCALAPPDATA%/Android/Sdk`（可用
 `EVENGINE_ANDROID_SDK` 或 `ANDROID_HOME` 覆盖）。完成后 `eve build android`
-即可直接构建 APK。环境变量持久化文件为 `<sdk>/eve-android.env`。
+即可直接构建 APK，不需要安装 Android Studio / NDK / 任何系统工具。
+环境变量持久化文件为 `<sdk>/eve-android.env`（含 ANDROID_HOME / JAVA_HOME /
+GRADLE_HOME）。
