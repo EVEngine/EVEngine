@@ -61,7 +61,7 @@ public:
     int Clean(std::string path);
 
     /** @brief 显示模块/函数/类型的文档。 */
-    int Doc(std::string name);
+    int Doc(std::string name, bool noOpen = false);
 
     /** @brief 创建新项目。 */
     int Create(std::string path, std::string name);

@@ -15,16 +15,20 @@ using namespace std;
 namespace eve::cmd {
 
 struct DocArgs : Handler {
+    bool no_open = false;
+
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
-        auto create = app.add_subcommand("doc", "Query the online documentation for a class/function");
-        create->allow_extras();
+        auto doc = app.add_subcommand("doc", "Query the online documentation for a class/function");
+        doc->allow_extras();
+        doc->add_flag("--no-open", no_open,
+                      "Print the documentation URL without opening a browser (headless/CI)");
     }
 
     int parse(CLI::App& app, Cmdline& cmd) override {
-        auto create = app.get_subcommand("create");
-        if (create->parsed()) {
-            string name = cmd.get_remaining(create, "");
-            int    res  = cmd.Doc(name);
+        auto doc = app.get_subcommand("doc");
+        if (doc->parsed()) {
+            string name = cmd.get_remaining(doc, "");
+            int    res  = cmd.Doc(name, no_open);
             return res;
         }
         return -1;  // not handle
@@ -56,8 +60,7 @@ static inline int openWebPage(string url) {
 #endif
 }
 
-// create a new project
-int Cmdline::Doc(std::string name) {
+int Cmdline::Doc(std::string name, bool noOpen) {
     // The user/API manual lives on the organization GitHub Pages site.
     // Doxygen has no stable per-symbol URL, so open the manual root and echo
     // the requested symbol (useful for headless/agent invocations).
@@ -66,6 +69,7 @@ int Cmdline::Doc(std::string name) {
         cout << "EVEngine docs for '" << name << "': " << url << "\n";
     else
         cout << "EVEngine docs: " << url << "\n";
+    if (noOpen) return 0;
     return openWebPage(url);
 }
 
