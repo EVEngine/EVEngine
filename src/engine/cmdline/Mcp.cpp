@@ -124,11 +124,21 @@ int Cmdline::McpHost(std::string path, int port) {
         dt.attach(runtime.vm(), /*sampleLocals=*/false);
         dt.exposeScriptApi(runtime.vm());
 
+        // The headless host never runs load.nut, so registered modules are not
+        // instantiated automatically and their capability providers
+        // (IEditorHost, IRenderCapture, ISceneQuery, ...) are absent. Mirror
+        // load.nut's binding loop so the host exposes the full tool surface.
+        eve::ModuleManager::requireAll();
+
         // Editor host: JSON Views <-> Squirrel ViewModel binding + window/render.
         auto* host = eve::cap::query<eve::IEditorHost>();
         if (host) {
             host->start(runtime.vm(), gameDir, /*allowWindow=*/true);
             host->exposeScriptApi(runtime.vm());
+        } else {
+            std::cerr << "eve mcp: editor host unavailable (ui module missing)"
+                      << std::endl;
+            return 3;
         }
 
         auto& mcp = dt.mcp();

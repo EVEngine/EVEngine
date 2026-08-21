@@ -41,10 +41,7 @@ if (!("BASE_X" in getroottable())) BASE_X <- 40.0;
 if (!("BASE_Y" in getroottable())) BASE_Y <- 40.0;
 
 function pressed(name) {
-    local down = keyboard.isDown(name);
-    local old = ("k_" + name) in prevKeys ? prevKeys["k_" + name] : false;
-    prevKeys["k_" + name] <- down;
-    return down && !old;
+    return key_just_pressed(name);
 }
 
 function colors() {

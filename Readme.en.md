@@ -15,15 +15,19 @@ Many game engines are slow to iterate, hard to debug, and awkward for rapid prot
 
 Design goals:
 
-1. A Love2D-style interpretive engine that loads scripts and data directly
-2. Many high-performance C++ modules; you can compile other C++ libraries as shared libs and interact with them directly
-3. A full development stack: your logic can be edited with GUI tools; the editor runtime is the game runtime—only the shipping runtime strips DevTools (or you can keep them for player modding)
-4. Built-in asset management and hot reload—no separate pipeline required
-5. Class scanning with auto-generated editing GUIs
-6. GUIs that create and sync live from scripts
-7. Pause the game loop for debugging
-8. Independent state-machine models for partial hot updates
-9. Mixed 3D and 2D rendering
+> Status legend: ✅ shipped · 🟡 partially shipped · 🛠 roadmap (not implemented yet)
+
+1. ✅ A Love2D-style interpretive engine that loads scripts and data directly
+2. ✅ Many high-performance C++ modules; you can compile other C++ libraries as shared libs and interact with them directly (see `examples/native-plugin`)
+3. 🟡 A full development stack: the dev system is the game runtime—only the shipping runtime strips DevTools (or keep them for player modding); scripts can build editing GUIs at runtime (`editor` / `ui` building blocks, see `examples/terrain-editor`)
+4. ✅ Built-in asset management and hot reload—no separate pipeline required
+5. 🛠 Class scanning with auto-generated editing GUIs (property reflection not landed yet; `editor.Inspector` currently registers fields manually—see roadmap)
+6. 🟡 GUIs that create and sync live from scripts (declarative `ui` module + hot reload; reflective two-way binding is on the roadmap)
+7. ✅ Pause the game loop for debugging (`eve run --debug`, F-keys / DAP / snapshots, see `examples/devlab`)
+8. 🟡 Independent state-machine models (e.g. animation) exist; systematic "edit code → affected state machines hot-update" support is on the roadmap
+9. ✅ Mixed 3D and 2D rendering
+
+> Fastest way to feel goals 3 / 4 / 7: `make devlab` (a developer-experience example that walks you through F4 / F6 / F7 / F9 and hot reload).
 
 
 Built-in systems:

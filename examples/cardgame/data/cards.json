@@ -1,0 +1,11 @@
+[
+  {"id": "flame.element", "name": "烈焰元素", "kind": "creature", "cost": 2, "attack": 3, "health": 2, "tint": [0.85, 0.35, 0.20]},
+  {"id": "frost.guard", "name": "寒霜守卫", "kind": "creature", "cost": 3, "attack": 2, "health": 5, "tint": [0.35, 0.65, 0.85]},
+  {"id": "stone.golem", "name": "石甲傀儡", "kind": "creature", "cost": 4, "attack": 3, "health": 6, "tint": [0.60, 0.55, 0.45]},
+  {"id": "jungle.drake", "name": "丛林幼龙", "kind": "creature", "cost": 3, "attack": 4, "health": 3, "tint": [0.40, 0.75, 0.35]},
+  {"id": "shadow.assassin", "name": "暗影刺客", "kind": "creature", "cost": 2, "attack": 4, "health": 1, "tint": [0.45, 0.30, 0.60]},
+  {"id": "iron.knight", "name": "钢铁骑士", "kind": "creature", "cost": 5, "attack": 4, "health": 5, "tint": [0.55, 0.62, 0.70]},
+  {"id": "fireball", "name": "火球术", "kind": "spell", "cost": 3, "tint": [0.95, 0.55, 0.25]},
+  {"id": "healing.light", "name": "治愈之光", "kind": "spell", "cost": 2, "tint": [0.95, 0.85, 0.55]},
+  {"id": "time.warp", "name": "时间扭曲", "kind": "spell", "cost": 5, "tint": [0.60, 0.45, 0.85]}
+]

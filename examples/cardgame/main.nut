@@ -19,10 +19,10 @@ if (!("enemyCfg" in getroottable())) enemyCfg <- null;
 if (!("mana" in getroottable())) mana <- 10;
 if (!("played" in getroottable())) played <- 0;
 if (!("discarded" in getroottable())) discarded <- 0;
+if (!("deckRemaining" in getroottable())) deckRemaining <- 0;
 if (!("selected" in getroottable())) selected <- null;
 if (!("logLines" in getroottable())) logLines <- [];
 if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
 
 local defIds = ["flame.element", "frost.guard", "stone.golem", "jungle.drake",
                 "shadow.assassin", "iron.knight", "fireball", "healing.light", "time.warp"];
@@ -34,26 +34,25 @@ function pushLog(text) {
 }
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
-// 注册卡牌类型定义（JSON）
+function readTextFile(path) {
+    local handle = file(path, "r");
+    if (handle == null) return null;
+    local content = handle.read();
+    handle.close();
+    return content;
+}
+
+// 注册卡牌类型定义（JSON，从 data/cards.json 读取）
 function registerCards() {
-    card.registerCardsFromJson(@"[
-      {""id"":""flame.element"",""name"":""烈焰元素"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2,""tint"":[0.85,0.35,0.20]},
-      {""id"":""frost.guard"",""name"":""寒霜守卫"",""kind"":""creature"",""cost"":3,""attack"":2,""health"":5,""tint"":[0.35,0.65,0.85]},
-      {""id"":""stone.golem"",""name"":""石甲傀儡"",""kind"":""creature"",""cost"":4,""attack"":3,""health"":6,""tint"":[0.60,0.55,0.45]},
-      {""id"":""jungle.drake"",""name"":""丛林幼龙"",""kind"":""creature"",""cost"":3,""attack"":4,""health"":3,""tint"":[0.40,0.75,0.35]},
-      {""id"":""shadow.assassin"",""name"":""暗影刺客"",""kind"":""creature"",""cost"":2,""attack"":4,""health"":1,""tint"":[0.45,0.30,0.60]},
-      {""id"":""iron.knight"",""name"":""钢铁骑士"",""kind"":""creature"",""cost"":5,""attack"":4,""health"":5,""tint"":[0.55,0.62,0.70]},
-      {""id"":""fireball"",""name"":""火球术"",""kind"":""spell"",""cost"":3,""tint"":[0.95,0.55,0.25]},
-      {""id"":""healing.light"",""name"":""治愈之光"",""kind"":""spell"",""cost"":2,""tint"":[0.95,0.85,0.55]},
-      {""id"":""time.warp"",""name"":""时间扭曲"",""kind"":""spell"",""cost"":5,""tint"":[0.60,0.45,0.85]}
-    ]");
+    local json = readTextFile("data/cards.json");
+    if (json == null) {
+        print("cardgame: missing data/cards.json\n");
+        return;
+    }
+    card.registerCardsFromJson(json);
 }
 
 // 用定义填充牌库（24 张，混合生物与法术）
@@ -79,8 +78,10 @@ function resetRun() {
     discarded = 0;
     selected = null;
     fillDeck();
+    deckRemaining = 24;
     for (local i = 0; i < 4; i += 1) card.drawCard("player");
     for (local i = 0; i < 5; i += 1) card.drawCard("enemy");
+    deckRemaining -= 9;
     pushLog("重置：洗牌并发牌。拖拽手牌到出牌区 / 弃牌区，或点按查看。");
 }
 
@@ -120,7 +121,9 @@ function buildPanel() {
 function syncHud() {
     if (!uiBuilt) return;
     ui.select("panel");
-    local info = "法力 " + mana + "   牌库 " + card.getDeck().count() +
+    local deck = card.getDeck();
+    local deckCount = (deck != null && ("count" in deck)) ? deck.count() : deckRemaining;
+    local info = "法力 " + mana + "   牌库 " + deckCount +
         "   已出 " + played + "   弃掉 " + discarded;
     if (selected != null)
         info += "\n选中: " + selected.describe();
@@ -185,9 +188,12 @@ eve_reload <- function() {
 eve_update = function(dt) {
     // 费用不足的牌自动置灰
     local ph = card.findHand("player");
-    for (local i = 0; i < ph.count(); i += 1) {
-        local c = ph.getCard(i);
-        c.setDisabled(c.getCost() > mana);
+    if (ph != null && ("count" in ph)) {
+        for (local i = 0; i < ph.count(); i += 1) {
+            local c = ph.getCard(i);
+            if (c != null && ("setDisabled" in c))
+                c.setDisabled(c.getCost() > mana);
+        }
     }
 
     // 面板按钮
@@ -195,7 +201,10 @@ eve_update = function(dt) {
         local c = ui.consumeClick();
         if (c == "") break;
         if (c == "panel/draw") {
-            if (card.drawCard("player") != null) pushLog("抽一张牌。");
+            if (card.drawCard("player") != null) {
+                deckRemaining -= 1;
+                pushLog("抽一张牌。");
+            }
             else pushLog("牌库空了。");
         } else if (c == "panel/reset") {
             resetRun();
@@ -242,7 +251,10 @@ eve_update = function(dt) {
 
     // 键盘快捷键
     if (keyPressed("1")) {
-        if (card.drawCard("player") != null) pushLog("抽一张牌。");
+        if (card.drawCard("player") != null) {
+            deckRemaining -= 1;
+            pushLog("抽一张牌。");
+        }
         else pushLog("牌库空了。");
     }
     if (keyPressed("2")) {

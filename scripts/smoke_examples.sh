@@ -31,6 +31,9 @@ fi
 
 RUN_SECONDS_PER="${RUN_SECONDS:-6}"
 
+# Extra args appended to every `eve run` invocation (e.g. EVE_RUN_ARGS="--debug").
+RUN_ARGS="${EVE_RUN_ARGS:-}"
+
 is_windows() {
   case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*) return 0 ;;
@@ -70,6 +73,12 @@ for name in "${EXAMPLES[@]}"; do
   dir="$EXAMPLES_DIR/$name"
   [[ -f "$dir/main.nut" ]] || { echo "SKIP  $name (no main.nut)"; continue; }
 
+  # devlab's whole point is DevTools: always smoke it with --debug.
+  extra="$RUN_ARGS"
+  if [[ "$name" == "devlab" ]]; then
+    extra="$extra --debug"
+  fi
+
   log="$(mktemp)"
   if is_windows; then
     # GNU timeout on MSYS cannot reliably terminate the native Windows GUI
@@ -77,18 +86,18 @@ for name in "${EXAMPLES[@]}"; do
     # image name with taskkill.
     (
       cd "$dir" || exit 1
-      "$EVE_BIN" run >"$log" 2>&1 &
+      "$EVE_BIN" run $extra >"$log" 2>&1 &
       pid=$!
       sleep "$RUN_SECONDS_PER"
       taskkill //F //IM "$(basename "$EVE_BIN")" >/dev/null 2>&1 || true
       kill "$pid" 2>/dev/null || true
       wait "$pid" 2>/dev/null || true
     )
-  else
-    if command -v timeout >/dev/null 2>&1; then
-      ( cd "$dir" && timeout "$RUN_SECONDS_PER" "$EVE_BIN" run >"$log" 2>&1 )
     else
-      ( cd "$dir" && "$EVE_BIN" run >"$log" 2>&1 ) &
+    if command -v timeout >/dev/null 2>&1; then
+      ( cd "$dir" && timeout -k 3 "$RUN_SECONDS_PER" "$EVE_BIN" run $extra >"$log" 2>&1 )
+    else
+      ( cd "$dir" && "$EVE_BIN" run $extra >"$log" 2>&1 ) &
       pid=$!
       sleep "$RUN_SECONDS_PER"
       kill "$pid" 2>/dev/null || true
@@ -106,7 +115,7 @@ for name in "${EXAMPLES[@]}"; do
 
   if [[ -n "$hit" ]]; then
     echo "FAIL  $name  (marker: $hit)"
-    grep -nF "$hit" "$log" | head -3 | sed 's/^/       /'
+    grep -nF "$hit" "$log" 2>/dev/null | head -3 | sed 's/^/       /'
     FAILED=$((FAILED + 1))
     FAILED_NAMES+=("$name")
   else

@@ -132,13 +132,13 @@ eve_update = function(dt) {
     }
 
     // Hotkeys.
-    if (keyboard.wasPressed("space")) daynight.setPaused(!daynight.isPaused());
-    if (keyboard.wasPressed("l")) daynight.setNightLight("moonlight", !daynight.isNightLight("moonlight"));
-    if (keyboard.wasPressed("f")) daynight.setNightLight("fireflies", !daynight.isNightLight("fireflies"));
-    if (keyboard.wasPressed("m")) daynight.setNightLight("fire", !daynight.isNightLight("fire"));
+    if (key_just_pressed("space")) daynight.setPaused(!daynight.isPaused());
+    if (key_just_pressed("l")) daynight.setNightLight("moonlight", !daynight.isNightLight("moonlight"));
+    if (key_just_pressed("f")) daynight.setNightLight("fireflies", !daynight.isNightLight("fireflies"));
+    if (key_just_pressed("m")) daynight.setNightLight("fire", !daynight.isNightLight("fire"));
     if (keyboard.isDown("up")) daynight.setSpeed(daynight.getSpeed() + dt * 2.0);
     if (keyboard.isDown("down")) daynight.setSpeed(math.max(0.0, daynight.getSpeed() - dt * 2.0));
-    if (keyboard.wasPressed("left")) daynight.setTimeOfDay(12.0);
+    if (key_just_pressed("left")) daynight.setTimeOfDay(12.0);
 
     daynight.update(dt, gfx);
 

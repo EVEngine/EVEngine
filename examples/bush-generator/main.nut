@@ -12,13 +12,8 @@ if (!("bushObject" in getroottable())) bushObject <- null;
 if (!("bushTexture" in getroottable())) bushTexture <- null;
 if (!("bushCamera" in getroottable())) bushCamera <- null;
 if (!("bushYaw" in getroottable())) bushYaw <- 0.0;
-if (!("prevBushKeys" in getroottable())) prevBushKeys <- {};
-
 function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevBushKeys ? prevBushKeys[k] : false;
-    prevBushKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function loadBushTexture() {

@@ -70,6 +70,7 @@ make run/win32-debug GAME=examples/basic
 
 | 命令 | 内容 |
 |---|---|
+| `make devlab` | 开发者体验：--debug + 控制台 / 快照 / 暂停 / AI 面板 / 热重载（见 `examples/devlab`） |
 | `make basic` | Tilemap、Box2D、粒子与基础绘制 |
 | `make ecs` | 脚本 ECS 与移动系统 |
 | `make rpg` | 属性、状态、技能和战斗结算 |

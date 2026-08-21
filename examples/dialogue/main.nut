@@ -19,6 +19,7 @@ if (!("bobAv" in getroottable())) bobAv <- null;
 if (!("vnGen" in getroottable())) vnGen <- null;
 if (!("vnDone" in getroottable())) vnDone <- false;
 if (!("waitingResume" in getroottable())) waitingResume <- false;
+// mouse / touch 边沿检测仍用 prevKeys（edgePressed）。
 if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("uiReady" in getroottable())) uiReady <- false;
 if (!("curSceneName" in getroottable())) curSceneName <- "town";
@@ -31,7 +32,7 @@ function edgePressed(key, down) {
 }
 
 function keyPressed(name) {
-    return edgePressed("k_" + name, keyboard.isDown(name));
+    return key_just_pressed(name);
 }
 
 function mouseClicked() {

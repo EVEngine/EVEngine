@@ -602,6 +602,20 @@ jobs:
         run: |
           xvfb-run -a make test/linux-debug
 
+      - name: Smoke all examples (headless)
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          xvfb-run -a bash scripts/smoke_examples.sh
+
+      - name: DevLab developer-experience test (hot reload + DevTools)
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          xvfb-run -a bash scripts/test_devlab.sh "$PWD/build/linux-debug/src/engine/eve"
+
   linux-release:
     name: Linux (Release)
     if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}

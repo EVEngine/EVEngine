@@ -7,7 +7,6 @@ if (!("layer" in getroottable())) layer <- null;
 if (!("seed" in getroottable())) seed <- 42;
 if (!("algo" in getroottable())) algo <- "dungeon.bsp";
 if (!("status" in getroottable())) status <- "";
-if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("texRecipe" in getroottable())) texRecipe <- "tex.soil";
 if (!("texSeed" in getroottable())) texSeed <- 1;
 if (!("tex" in getroottable())) tex <- null;
@@ -21,10 +20,7 @@ TILE <- 12.0;
 gfx.setBackgroundColor(0.08, 0.09, 0.12, 1.0);
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local was = ("k_" + name) in prevKeys ? prevKeys["k_" + name] : false;
-    prevKeys["k_" + name] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
 function ensureLayer(w, h) {

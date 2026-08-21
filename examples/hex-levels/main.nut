@@ -41,7 +41,6 @@ if (!("spawnTy" in getroottable())) spawnTy <- 0;
 if (!("moveCd" in getroottable())) moveCd <- 0.0;
 if (!("status" in getroottable())) status <- "";
 if (!("logLines" in getroottable())) logLines <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("loot" in getroottable())) loot <- [];
 if (!("uiBuilt" in getroottable())) uiBuilt <- false;
 if (!("pathLen" in getroottable())) pathLen <- 0;
@@ -121,10 +120,8 @@ function pushLog(text) {
 
 function readTextFile(path) {
     local handle = file(path, "r");
-    local content = "";
-    local n = handle.len();
-    for (local i = 0; i < n; i++)
-        content += handle.readn('b').tochar();
+    if (handle == null) return null;
+    local content = handle.read();
     handle.close();
     return content;
 }
@@ -239,11 +236,7 @@ function applyProcgenParams(p) {
 }
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
 function keyDown(name) {

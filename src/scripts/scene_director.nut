@@ -111,7 +111,7 @@ function sd_bounds() {
 if (scene_director == null) {
     scene_director <- {
         props = [],          // [{id, kind, x, y, z, sx, sy, sz, yaw_deg, tint, seed, ent}]
-        camera = null,
+        cameraObj = null,    // live Camera3D instance; `camera` stays the kit function
         sprites = {},
         _installed = false,
     };
@@ -124,9 +124,9 @@ scene_director.install <- function() {
 
 scene_director.reset <- function() {
     scene_director.props.clear();
-    if (scene_director.camera != null) {
-        try { scene_director.camera.setActive(false); } catch (e) {}
-        scene_director.camera = null;
+    if (scene_director.cameraObj != null) {
+        try { scene_director.cameraObj.setActive(false); } catch (e) {}
+        scene_director.cameraObj = null;
     }
     if ("gfx" in getroottable()) {
         gfx.setBackgroundColor(0.10, 0.13, 0.19, 1.0);
@@ -245,8 +245,8 @@ scene_director.set_lighting <- function(params) {
         gfx.setDirectionalLight(-0.5, -1.0, -0.4,
                                 intensity, intensity * 0.95, intensity * 0.85);
     }
-    if (scene_director.camera != null) {
-        scene_director.camera.setAmbient(0.16 * intensity, 0.18 * intensity, 0.22 * intensity);
+    if (scene_director.cameraObj != null) {
+        scene_director.cameraObj.setAmbient(0.16 * intensity, 0.18 * intensity, 0.22 * intensity);
     }
     return { ok = true, timeOfDay = tod };
 };
@@ -255,13 +255,13 @@ scene_director.camera <- function(params) {
     local eye = ("eye" in params) ? sd_arr3(params.eye, [0.0, 6.0, 12.0]) : [0.0, 6.0, 12.0];
     local tgt = ("target" in params) ? sd_arr3(params.target, [0.0, 1.0, 0.0]) : [0.0, 1.0, 0.0];
     local fov = ("fov" in params) ? params.fov : 55.0;
-    if (scene_director.camera == null) scene_director.camera = eve.Camera3D();
-    scene_director.camera.setEye(eye[0], eye[1], eye[2]);
-    scene_director.camera.setTarget(tgt[0], tgt[1], tgt[2]);
-    scene_director.camera.setUp(0.0, 1.0, 0.0);
-    scene_director.camera.setFov(fov);
-    scene_director.camera.setAmbient(0.20, 0.22, 0.26);
-    scene_director.camera.setActive(true);
+    if (scene_director.cameraObj == null) scene_director.cameraObj = eve.Camera3D();
+    scene_director.cameraObj.setEye(eye[0], eye[1], eye[2]);
+    scene_director.cameraObj.setTarget(tgt[0], tgt[1], tgt[2]);
+    scene_director.cameraObj.setUp(0.0, 1.0, 0.0);
+    scene_director.cameraObj.setFov(fov);
+    scene_director.cameraObj.setAmbient(0.20, 0.22, 0.26);
+    scene_director.cameraObj.setActive(true);
     return { ok = true, eye = eye, target = tgt, fov = fov };
 };
 
@@ -313,7 +313,7 @@ scene_director.status <- function() {
     return {
         installed = true,
         propCount = scene_director.props.len(),
-        hasCamera = (scene_director.camera != null),
+        hasCamera = (scene_director.cameraObj != null),
     };
 };
 

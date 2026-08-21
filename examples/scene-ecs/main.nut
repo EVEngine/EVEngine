@@ -3,6 +3,24 @@
 // scene.update(dt) 驱动 update + 变换、reconcile 后绑定保留。
 // 运行：make run/win32-debug GAME=examples/scene-ecs
 
+// 部分构建的 SceneNodeRef 绑定不含 getPosition/getRotation（ECS 反射差异），
+// 用 getPositionX/Y/Z 兜底；都没有时返回原点，保证示例可运行。
+function nodePos3(node) {
+    if (node == null) return [0.0, 0.0, 0.0];
+    if ("getPosition" in node) return node.getPosition();
+    if ("getPositionX" in node)
+        return [node.getPositionX(), node.getPositionY(), node.getPositionZ()];
+    return [0.0, 0.0, 0.0];
+}
+
+function nodeRot3(node) {
+    if (node == null) return [0.0, 0.0, 0.0];
+    if ("getRotation" in node) return node.getRotation();
+    if ("getRotationX" in node)
+        return [node.getRotationX(), node.getRotationY(), node.getRotationZ()];
+    return [0.0, 0.0, 0.0];
+}
+
 class MoveComp extends eve.Component {
     speed = 60.0
 }
@@ -13,12 +31,12 @@ class Bounce extends eve.SceneEntity {
 
     function onAttach() {
         // 挂载时给节点一个初始位置
-        local p = node().getPosition()
+        local p = nodePos3(node())
         if (p[1] <= 0.0) node().setPosition(p[0], 60.0, p[2])
     }
 
     function update(dt) {
-        local p = node().getPosition()
+        local p = nodePos3(node())
         local y = p[1] + move.speed * dir * dt
         if (y > 360.0) dir = -1.0
         if (y < 60.0) dir = 1.0
@@ -29,14 +47,14 @@ class Bounce extends eve.SceneEntity {
 class Spinner extends eve.SceneEntity {
     speed = 90.0
     function update(dt) {
-        local r = node().getRotation()
+        local r = nodeRot3(node())
         node().setRotation(r[0], r[1], r[2] + speed * dt)
     }
 }
 
 function buildBattlefield() {
     scene.beginBuild()
-    scene.beginNode("root")
+    scene.beginNode("root", "Root")
     scene.addNode("player")
     scene.setBuildPosition(120.0, 60.0, 0.0)
     scene.addNode("enemy")
@@ -73,10 +91,10 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear()
 
-    local p = playerRef.getPosition()
-    local e = enemyRef.getPosition()
+    local p = nodePos3(playerRef)
+    local e = nodePos3(enemyRef)
     local pr = scene.getNodeRef("prop")
-    local s = pr.getPosition()
+    local s = nodePos3(pr)
 
     gfx.drawSolidRect(p[0] - 14.0, p[1] - 14.0, 28.0, 28.0, 0.35, 0.85, 0.95, 1.0)
     gfx.drawSolidRect(e[0] - 14.0, e[1] - 14.0, 28.0, 28.0, 0.95, 0.45, 0.35, 1.0)
