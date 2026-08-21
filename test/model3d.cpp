@@ -1,5 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+#include "Fixtures.h"
 
 #include "common/Exception.h"
 #include "data/ByteData.h"
@@ -153,17 +154,6 @@ std::string makeUvOrientationGltf(const std::string &pngBase64) {
 
 float luma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
 
-void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 640, int h = 480) {
-    win = eve::window::Window::create();
-    gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-}
 
 void resetScene3D() {
     if (ecs::current()->getManager<Renderable3D>() != nullptr) {
