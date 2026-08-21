@@ -182,6 +182,8 @@ public:
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                              const std::vector<uint32_t> &fragSpv) override;
     Shader *newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) override;
+    Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                              const std::string &fragWgsl) override;
     Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;

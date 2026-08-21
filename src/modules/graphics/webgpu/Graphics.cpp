@@ -4298,6 +4298,53 @@ Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &
                     "backend. Ship pre-compiled WGSL shaders.");
 }
 
+Shader *Graphics::newShaderFromWgsl(const std::string &vertWgsl,
+                                    const std::string &fragWgsl) {
+    if (!device) throw Exception("newShaderFromWgsl: device not initialized");
+    if (fragWgsl.empty()) throw Exception("newShaderFromWgsl: empty fragment WGSL");
+    if (!tex2DPipelineLayout) throw Exception("newShaderFromWgsl: 2D pipeline layout missing");
+
+    std::string vert = vertWgsl.empty() ? kTexturedVertWgsl : vertWgsl;
+
+    auto gpu = std::make_unique<GpuShader>();
+    gpu->isMesh3D = false;
+    gpu->wgslVert = vert;
+    gpu->wgslFrag = fragWgsl;
+    // 2D custom shader: alpha blend, no depth; one pipeline per target format
+    // (swapchain surface vs RGBA8Unorm offscreen canvas).
+    gpu->swapchainPipeline = createPipelineForShader(gpu.get(), wgpu::TextureFormat(surfaceFormat),
+                                                     /*depth*/ false, /*mesh3d*/ false,
+                                                     /*hair*/ false, /*shadow*/ false,
+                                                     /*gbuffer*/ false, tex2DPipelineLayout);
+    gpu->offscreenPipeline =
+        createPipelineForShader(gpu.get(), wgpu::TextureFormat::RGBA8Unorm,
+                                /*depth*/ false, /*mesh3d*/ false,
+                                /*hair*/ false, /*shadow*/ false,
+                                /*gbuffer*/ false, tex2DPipelineLayout);
+
+    auto sh = std::make_unique<Shader>();
+    sh->setKind(Shader::Kind::eSprite2D);
+    sh->gpuHandle = gpu.get();
+
+    Shader *raw = sh.get();
+    ownedShaders.push_back(std::move(sh));
+    ownedGpuShaders.push_back(std::move(gpu));
+    return raw;
+}
+
+wgpu::RenderPipeline Graphics::createPipelineForShader(GpuShader *gs, wgpu::TextureFormat format,
+                                                       bool depth, bool mesh3d, bool hair,
+                                                       bool shadow, bool gbuffer,
+                                                       wgpu::PipelineLayout layout) {
+    if (!gs || gs->wgslFrag.empty()) return {};
+    // Custom 2D/mesh shaders blend only when the caller asks (x-ray / 2D UI);
+    // opaque meshes and shadow/gbuffer variants keep write-through targets.
+    const bool blend = !depth;
+    return buildPipelineFromWgsl(device, layout, WGPUTextureFormat(format), gs->wgslVert,
+                                 gs->wgslFrag, depth, blend, mesh3d, hair, shadow, gbuffer,
+                                 sceneColorSamples);
+}
+
 Shader *Graphics::newHairShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                        const std::vector<uint32_t> &fragSpv) {
     (void)vertSpv;

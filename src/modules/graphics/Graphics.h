@@ -741,6 +741,16 @@ public:
     Shader *newShader(const std::string &fragGlsl) { return newShader(std::string(), fragGlsl); }
 
     /**
+     * @brief Create a 2D custom shader from WGSL source (WebGPU backend).
+     * Empty vert → default textured vertex shader. The fragment WGSL declares
+     * the shared 2D bindings (color texture 0, depth texture 1, sampler 2,
+     * depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points.
+     * Vulkan throws (uses SPIR-V via newShaderFromSpv).
+     */
+    virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                                      const std::string &fragWgsl) = 0;
+
+    /**
      * @brief Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo).
      * Empty vert → default mesh3d.vert. Owned by Graphics.
      */
