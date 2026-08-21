@@ -60,6 +60,7 @@ std::string testRoot() {
 
 #include <unistd.h>
 #include <cerrno>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <streambuf>
@@ -163,10 +164,21 @@ int main(int argc, char **argv) {
     eve::ios_test::logLine("unit_test ios starting");
 
     // Inject --testcase=<filter> from the launch arguments / UserDefaults
-    // (mirrors the evengine.test.filter intent extra on Android).
-    const std::string  filter = eve::ios_test::launchFilter();
+    // (mirrors the evengine.test.filter intent extra on Android). A file
+    // filter (-evengine.test.file <basename>) takes precedence so the suite
+    // can be run one test file per process (see run/ios-test-all-debug).
+    const std::string fileFilter = eve::ios_test::launchFileFilter();
+    const std::string filter     = eve::ios_test::launchFilter();
     static std::string filterArg;
-    if (!filter.empty()) {
+    if (!fileFilter.empty()) {
+        // TestCase.file stores the compiled __FILE__ path; regex_match needs a
+        // full match, so anchor the basename at the end of any path.
+        filterArg = "--file=.*" + fileFilter;
+        static std::vector<char *> injected;
+        injected = {argc > 0 ? argv[0] : const_cast<char *>("eve"), filterArg.data()};
+        argc     = static_cast<int>(injected.size());
+        argv     = injected.data();
+    } else if (!filter.empty()) {
         filterArg = "--testcase=" + filter;
         static std::vector<char *> injected;
         injected = {argc > 0 ? argv[0] : const_cast<char *>("eve"), filterArg.data()};
@@ -175,5 +187,14 @@ int main(int argc, char **argv) {
     }
 #endif  // EVENGINE_ANDROID / EVENGINE_IOS_TEST_APP
 
-    return zeroerr::UnitTest().parseArgs(argc, const_cast<const char **>(argv)).run();
+    const int result = zeroerr::UnitTest().parseArgs(argc, const_cast<const char **>(argv)).run();
+#if defined(EVENGINE_IOS_TEST_APP)
+    // SDL's UIKit main keeps the app resident after SDL_main returns; a test
+    // runner should terminate once the suite is done so per-file launches
+    // (--console) return and a driver can move on to the next file.
+    eve::ios_test::logLine("unit_test ios done");
+    std::exit(result);
+#else
+    return result;
+#endif
 }

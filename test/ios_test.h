@@ -49,5 +49,17 @@ void keepAwake();
  */
 std::string launchFilter();
 
+/**
+ * @brief Resolves the zeroerr file filter (`--file=<regex>`) for this launch.
+ *
+ * Reads `-evengine.test.file <basename>` (NSArgumentDomain, e.g. passed by
+ * `devicectl device process launch`) or a `--file=<pattern>` process
+ * argument. The returned value is matched against the end of each test's
+ * compiled __FILE__ path, so plain basenames like "RenderSystem.cpp" work.
+ *
+ * @return the file pattern, or an empty string to run all files.
+ */
+std::string launchFileFilter();
+
 }  // namespace ios_test
 }  // namespace eve

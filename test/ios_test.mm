@@ -100,5 +100,23 @@ std::string launchFilter() {
     }
 }
 
+std::string launchFileFilter() {
+    @autoreleasepool {
+        NSString *file = [[NSUserDefaults standardUserDefaults] stringForKey:@"evengine.test.file"];
+        if ([file length] == 0) {
+            NSArray<NSString *> *args = [[NSProcessInfo processInfo] arguments];
+            for (NSString *arg in args) {
+                if ([arg hasPrefix:@"--file="]) {
+                    file = [arg substringFromIndex:7];
+                    break;
+                }
+            }
+        }
+        if ([file length] == 0) return {};
+        const char *utf8 = file.UTF8String;
+        return utf8 ? std::string(utf8) : std::string();
+    }
+}
+
 }  // namespace ios_test
 }  // namespace eve

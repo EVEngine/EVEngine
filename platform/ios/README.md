@@ -29,9 +29,20 @@ make log/ios-test                    # stream zeroerr results (Ctrl-C to stop)
 
 `run/ios-test-debug` launches the app with `devicectl --console`, so zeroerr
 results stream straight into the terminal (device logs are not forwarded to the
-host unified log on all setups). The app stays resident after the suite
-finishes (normal iOS lifecycle) — Ctrl-C when the PASSED/FAILED summary
-appears, or open `log/ios-test` in another terminal to follow along.
+host unified log on all setups). The test runner exits after the suite
+finishes, so the terminal returns once the PASSED/FAILED summary appears.
+
+For the full suite, run one test file per app launch instead of everything in
+a single process — rapid window create/destroy across hundreds of tests trips
+the iOS watchdog and kills the app (SIGKILL), which is why CI also isolates
+each case into its own process:
+
+```sh
+make run/ios-test-all-debug          # loops test/*.cpp, logs to build/ios-test-results/
+```
+
+The runner now supports `-evengine.test.file <basename>.cpp` (per-file filter)
+and exits after the suite completes, so the loop above is fully scriptable.
 
 The test app installs side-by-side with the game shell under a separate bundle
 identifier (`com.evengine.example.test`, override with `IOS_TEST_BUNDLE_ID`).

@@ -603,6 +603,27 @@ run/ios-test-debug: install/ios-test-debug
 	  echo "Need xcrun devicectl (Xcode 15+) or ios-deploy"; exit 1; \
 	fi
 
+# Run the full suite on a device, one test file per app launch. Per-file
+# process isolation mirrors CI's per-case CTest isolation: rapid window
+# create/destroy across hundreds of tests trips the iOS watchdog (SIGKILL), so
+# a crash in one file only loses that file's results.
+IOS_TEST_RESULTS ?= build/ios-test-results
+run/ios-test-all-debug: install/ios-test-debug
+	@mkdir -p "$(IOS_TEST_RESULTS)"; \
+	DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
+	test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
+	ran=0; \
+	for f in test/*.cpp; do \
+	  b=$$(basename "$$f"); \
+	  [ "$$b" = "main.cpp" ] && continue; \
+	  ran=$$((ran+1)); \
+	  echo "== $$b =="; \
+	  xcrun devicectl --timeout 300 device process launch --terminate-existing --console --device "$$DEV" $(IOS_TEST_BUNDLE_ID) -- -evengine.test.file "$$b" > "$(IOS_TEST_RESULTS)/$${b%.cpp}.log" 2>&1 || true; \
+	done; \
+	echo "Ran $$ran test files; logs in $(IOS_TEST_RESULTS)/"; \
+	echo "Files with failed cases (grep ❌):"; \
+	grep -l "❌" "$(IOS_TEST_RESULTS)"/*.log 2>/dev/null || echo "  none"
+
 log/ios-test:
 	@echo "Streaming iOS test logs (Ctrl-C to stop)..."
 	log stream --predicate 'subsystem == "$(IOS_TEST_BUNDLE_ID)"' --style compact
