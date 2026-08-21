@@ -3,7 +3,10 @@
 EVEngine 默认把全部模块编进引擎。如果你的游戏只用到其中一部分，可以在构建时把其余的裁掉，
 减少编译时间、二进制体积和第三方依赖。
 
-引擎架构与这套机制的设计依据见[模块编排与裁剪架构](../dev/模块编排与裁剪架构.md)。
+> <b>下载的预编译 SDK 默认包含全部模块</b>，无需也不支持在安装后裁剪；本节只对“从源码构建”的用户有效
+> （构建方法见根目录 [Readme.md 的“从源码构建”章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#从源码构建引擎开发者--贡献者)）。
+
+引擎架构与这套机制的设计依据见[模块编排与裁剪架构](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/模块编排与裁剪架构.md)。
 
 ## 预设档位
 
@@ -18,7 +21,7 @@ cmake -B build -DCMAKE_BUILD_TYPE=Debug -DEVENGINE_PROFILE=2d
 | `minimal` | 窗口、事件、输入、图形、数学、文件系统、UI | 自己搭一切的引擎壳 |
 | `2d` | `minimal` + 图片、字体、地图、粒子、动画、物理、音频、空间索引、i18n | LÖVE 级 2D 游戏 |
 | `3d` | `2d` + 3D 模型、场景树、场景载入、GPGPU、风格化、昼夜、天气、体素、程序化生成、编辑器构件、DevTools | 3D 游戏 |
-| `full` | 全部（**默认**） | 不确定时用这个 |
+| `full` | 全部（<b>默认</b>） | 不确定时用这个 |
 | `web` | 浏览器 WASM 可用的集合 | Emscripten 构建自动选中 |
 
 档位只是起点，可以在其上继续微调（见下）。
@@ -50,7 +53,7 @@ cmake -B build -DEVENGINE_PROFILE=2d -DEVENGINE_MODULE_DIALOGUE=ON
 打开一个模块，它需要的模块会自动跟着打开 —— 开 `particles` 就会带上
 `gpgpu`、`animation`、`ik`，不用自己列。
 
-反过来，关掉别人还需要的模块是**配置期错误**，而不是等到链接期才冒出一堆
+反过来，关掉别人还需要的模块是<b>配置期错误</b>，而不是等到链接期才冒出一堆
 undefined reference：
 
 ```
@@ -79,9 +82,9 @@ if (has_module("particles")) {
 
 另外两处目前限制了裁剪范围，配置时会点名提示：
 
-- **DevTools** 直接引用了 `scene` / `physics` / `procgen` / `particles` / `audio` / `ui`，
+- <b>DevTools</b> 直接引用了 `scene` / `physics` / `procgen` / `particles` / `audio` / `ui`，
   要裁这几个得先 `-DEVENGINE_MODULE_DEVTOOLS=OFF`。
-- **`ui`** 被命令行的 `eve mcp` 子命令引用，目前不可裁，所以 `minimal` 档也带着 ImGui。
+- <b><code>ui</code></b> 被命令行的 `eve mcp` 子命令引用，目前不可裁，所以 `minimal` 档也带着 ImGui。
 
 ## 能省多少
 
