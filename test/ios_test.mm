@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <os/log.h>
 
+#include <cstdio>
 #include <cstdlib>
 #include <string>
 
@@ -22,12 +23,17 @@ bool copyTree(NSString *src, NSString *dst, NSError **error) {
 }  // namespace
 
 void logLine(const char *line) {
+    // stderr reaches `simctl launch --console-pty` and device syslog even when
+    // the unified-log store drops or delays os_log entries (simulator).
+    std::fprintf(stderr, "EVEngineTest: %s\n", line ? line : "");
+    std::fflush(stderr);
     static os_log_t log = nil;
     if (log == nil) {
         NSString *subsystem = [[NSBundle mainBundle] bundleIdentifier];
         log                 = os_log_create(subsystem.UTF8String, "EVEngineTest");
     }
     os_log_info(log, "%{public}s", line ? line : "");
+    NSLog(@"EVEngineTest: %s", line ? line : "");
 }
 
 std::string stagedTestRoot() {
