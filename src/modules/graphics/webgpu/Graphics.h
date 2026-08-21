@@ -206,6 +206,7 @@ public:
                          float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DClusteredActive(bool active) override;
+    void setMesh3DSSAO(float intensity) override { (void)intensity; }
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
@@ -458,6 +459,20 @@ private:
     wgpu::BindGroupLayout shadowSetLayout;
     wgpu::BindGroupLayout gbufferSetLayout;
     wgpu::BindGroupLayout voxelSetLayout;
+
+    // SSAO (screen-space ambient occlusion) resources. The AO pass runs after
+    // the G-buffer fill and writes aoTex[aoWriteIndex]; the forward mesh pass
+    // samples the other slot (one frame of latency).
+    wgpu::PipelineLayout aoPipelineLayout;
+    wgpu::RenderPipeline aoPipeline;
+    wgpu::BindGroupLayout aoSetLayout;
+    wgpu::Texture aoTex[2];
+    wgpu::TextureView aoView[2];
+    uint32_t aoWriteIndex = 0;
+    bool aoReady = false;
+    wgpu::Buffer aoUbo;
+    void ensureAOResources(int width, int height);
+    wgpu::BindGroup makeAOBindGroup(wgpu::TextureView depthView);
     // Shared filtering sampler for bindings declared as `sampler` in WGSL
     // (e.g. mesh3d's @binding(7) mainSamp).
     wgpu::Sampler mainSampler;
@@ -626,7 +641,7 @@ private:
     // serves every draw that uses the same texture set (per-draw creation was
     // a hot path: makeMeshBindGroup ran once per mesh draw per frame).
     using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                                        uintptr_t, uintptr_t, uintptr_t>;
+                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
     std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
     static constexpr size_t kMaxMeshBindGroupCache = 128;
     void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }

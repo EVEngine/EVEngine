@@ -234,6 +234,7 @@ struct FSIn {
     @location(3) vWorldPos: vec3f,
     @location(4) vCameraPos: vec3f,
     @location(5) vViewPos: vec3f,
+    @builtin(position) fragCoord: vec4f,
 };
 @group(0) @binding(0) var<uniform> ubo: Frame;
 @group(0) @binding(1) var albedoSampler: texture_2d<f32>;
@@ -244,6 +245,8 @@ struct FSIn {
 @group(0) @binding(6) var heightSampler: texture_2d<f32>;
 @group(0) @binding(7) var mainSamp: sampler;
 @group(0) @binding(8) var shadowSamp: sampler_comparison;
+@group(0) @binding(10) var aoTex: texture_2d<f32>;
+@group(0) @binding(11) var aoSamp: sampler;
 
 const PI: f32 = 3.14159265359;
 
@@ -421,6 +424,12 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
         color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
     }
+    // Screen-space ambient occlusion (G-buffer SSAO pass output; strength in
+    // texBomb.w is 0 when AO is disabled via RenderControl, which also keeps
+    // the binding white in that case).
+    let aoUV = in.fragCoord.xy / vec2f(textureDimensions(aoTex));
+    let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
+    color *= mix(1.0, ao, clamp(ubo.texBomb.w, 0.0, 1.0));
     // Match the Vulkan tonemap.glsl: keep values below `white` linear so dim
     // scenes stay readable, compress only the HDR remainder into (white, 1].
     let white = 0.85;
@@ -516,6 +525,67 @@ fn fs_main(in: FSIn) -> GBufOut {
     out.depthColor = vec4f(linear, linear, linear, 1.0);
     out.albedo = textureSample(albedoSampler, mainSamp, in.vUV);
     return out;
+}
+)wgsl";
+
+// ---- SSAO (G-buffer depth based, cheap screen-space) -----------------------
+inline const char *kSSAOFragWgsl = R"wgsl(
+struct VSOut {
+    @builtin(position) pos: vec4f,
+    @location(1) uv: vec2f,
+};
+struct AOUniforms {
+    params: vec4f,    // x = radius (UV offset scale), y = power, z = nearZ (hw), w = farZ (hw)
+    intensity: f32,   // 0 = off
+    _pad: vec2f,
+};
+@group(0) @binding(0) var<uniform> ubo: AOUniforms;
+@group(0) @binding(1) var depthTex: texture_depth_2d;
+@group(0) @binding(2) var samp: sampler;
+
+fn hash12(p: vec2f) -> f32 {
+    return fract(sin(dot(p, vec2f(127.1, 311.7))) * 43758.5453);
+}
+
+fn linearizeDepth(z: f32) -> f32 {
+    let nearZ = ubo.params.z;
+    let farZ = ubo.params.w;
+    return nearZ * farZ / max(farZ - z * (farZ - nearZ), 1e-6);
+}
+
+@fragment
+fn fs_main(in: VSOut) -> @location(0) vec4f {
+    let dims = vec2f(textureDimensions(depthTex));
+    let uv = (in.pos.xy + vec2f(0.5)) / dims;
+    // Hardware depth (Depth32Float, NDC z in [0,1], 0 = near, 1 = far) —
+    // linearized to world units so the occlusion delta is not crushed by
+    // perspective (hw depth deltas near the far plane are ~1e-4).
+    let rawZ = textureLoad(depthTex, vec2<i32>(uv * dims), 0);
+    let centerDepth = linearizeDepth(rawZ);
+    let nearZ = ubo.params.z;
+    let farZ = ubo.params.w;
+    if (centerDepth >= farZ * 0.99 || centerDepth <= nearZ * 1.02) {
+        return vec4f(1.0, 1.0, 1.0, 1.0);
+    }
+    // Screen radius scales with the compressed depth: near surfaces span more
+    // pixels for the same world-space radius.
+    let rad = ubo.params.x / (rawZ + 0.05);
+    var occ = 0.0;
+    for (var i = 0; i < 12; i = i + 1) {
+        let f = (f32(i) + 0.5) / 12.0;
+        let ang = 6.2831853 * f + hash12(uv * 311.7 + vec2f(f32(i), 0.0)) * 1.7;
+        let r = rad * (0.25 + 0.75 * f);
+        let sampleUV = clamp(uv + vec2f(cos(ang), sin(ang)) * r, vec2f(0.001), vec2f(0.999));
+        let sampleDepth = linearizeDepth(textureLoad(depthTex, vec2<i32>(sampleUV * dims), 0));
+        if (sampleDepth >= farZ * 0.99) { continue; }
+        // The sample is occluded when it is closer than the center surface
+        // (positive diff in world units); weight by how much closer.
+        let diff = centerDepth - sampleDepth;
+        let delta = diff / max(centerDepth, 1e-4);
+        occ += clamp(delta * 80.0, 0.0, 1.0);
+    }
+    let ao = pow(clamp(1.0 - occ / 12.0, 0.0, 1.0), ubo.params.y);
+    return vec4f(vec3f(mix(1.0, ao, ubo.intensity)), 1.0);
 }
 )wgsl";
 

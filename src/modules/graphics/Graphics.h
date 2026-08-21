@@ -524,6 +524,12 @@ public:
      */
     virtual void setMesh3DClusteredActive(bool active) = 0;
 
+    /**
+     * @brief Sets the screen-space ambient-occlusion strength applied in the
+     * forward mesh pass. 0 disables SSAO (default).
+     */
+    virtual void setMesh3DSSAO(float intensity) = 0;
+
     /** @brief Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
 

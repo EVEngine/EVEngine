@@ -260,6 +260,13 @@ void Graphics::setVSync(bool enabled) {
 }
 
 void Graphics::setViewportSize(int width, int height, int pixelwidth, int pixelheight) {
+    // Mirror the Vulkan backend: keep the base-class viewport members in sync
+    // so getWidth()/getPixelWidth() (used by RenderSystem3D for the GBuffer
+    // size) return the real dimensions instead of 0.
+    this->width = width;
+    this->height = height;
+    this->pixelWidth = pixelwidth;
+    this->pixelHeight = pixelheight;
     logicalW = width;
     logicalH = height;
     pixelW = pixelwidth;
@@ -446,7 +453,7 @@ wgpu::BindGroupLayout Graphics::make2DBindGroupLayout() {
 }
 
 wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
-    WGPUBindGroupLayoutEntry entries[10]{};
+    WGPUBindGroupLayoutEntry entries[12]{};
     // 0: Frame UBO (dynamic)
     entries[0].binding = 0;
     entries[0].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
@@ -498,10 +505,19 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
     entries[9].visibility = WGPUShaderStage_Fragment;
     entries[9].texture.sampleType = WGPUTextureSampleType_Depth;
     entries[9].texture.viewDimension = WGPUTextureViewDimension_2D;
+    // 10: SSAO occlusion texture (white when AO is disabled)
+    entries[10].binding = 10;
+    entries[10].visibility = WGPUShaderStage_Fragment;
+    entries[10].texture.sampleType = WGPUTextureSampleType_Float;
+    entries[10].texture.viewDimension = WGPUTextureViewDimension_2D;
+    // 11: shared AO sampler
+    entries[11].binding = 11;
+    entries[11].visibility = WGPUShaderStage_Fragment;
+    entries[11].sampler.type = WGPUSamplerBindingType_Filtering;
 
     WGPUBindGroupLayoutDescriptor desc{};
     desc.label = sv("eve_mesh3d");
-    desc.entryCount = 10;
+    desc.entryCount = 12;
     desc.entries = entries;
     return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
 }
@@ -1139,6 +1155,147 @@ void Graphics::createVoxelPipelines() {
 }
 
 // ---------------------------------------------------------------------------
+// SSAO (screen-space ambient occlusion)
+// ---------------------------------------------------------------------------
+
+void Graphics::ensureAOResources(int width, int height) {
+    if (!device || width <= 0 || height <= 0) return;
+    if (!aoSetLayout) {
+        WGPUBindGroupLayoutEntry entries[3]{};
+        entries[0].binding = 0;
+        entries[0].visibility = WGPUShaderStage_Fragment;
+        entries[0].buffer.type = WGPUBufferBindingType_Uniform;
+        entries[0].buffer.minBindingSize = 32;
+        entries[1].binding = 1;
+        entries[1].visibility = WGPUShaderStage_Fragment;
+        entries[1].texture.sampleType = WGPUTextureSampleType_Depth;
+        entries[1].texture.viewDimension = WGPUTextureViewDimension_2D;
+        entries[2].binding = 2;
+        entries[2].visibility = WGPUShaderStage_Fragment;
+        entries[2].sampler.type = WGPUSamplerBindingType_Filtering;
+        WGPUBindGroupLayoutDescriptor ld{};
+        ld.label = sv("eve_ao");
+        ld.entryCount = 3;
+        ld.entries = entries;
+        aoSetLayout =
+            device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&ld));
+        WGPUBindGroupLayout layouts[1] = {aoSetLayout.Get()};
+        WGPUPipelineLayoutDescriptor pl{};
+        pl.label = sv("eve_ao_layout");
+        pl.bindGroupLayoutCount = 1;
+        pl.bindGroupLayouts = layouts;
+        aoPipelineLayout =
+            device.CreatePipelineLayout(reinterpret_cast<const wgpu::PipelineLayoutDescriptor*>(&pl));
+
+        WGPUVertexAttribute attrs[3]{};
+        attrs[0].format = WGPUVertexFormat_Float32x2;
+        attrs[0].offset = 0;
+        attrs[0].shaderLocation = 0;
+        attrs[1].format = WGPUVertexFormat_Float32x4;
+        attrs[1].offset = 8;
+        attrs[1].shaderLocation = 1;
+        attrs[2].format = WGPUVertexFormat_Float32x2;
+        attrs[2].offset = 24;
+        attrs[2].shaderLocation = 2;
+        WGPUVertexBufferLayout vb{};
+        fillVertexLayout(vb, 32, attrs, 3);
+
+        WGPUColorTargetState target{};
+        target.format = WGPUTextureFormat_RGBA8Unorm;
+        target.blend = nullptr;
+        target.writeMask = WGPUColorWriteMask_All;
+
+        WGPURenderPipelineDescriptor pd{};
+        pd.label = sv("eve_ssao");
+        pd.layout = aoPipelineLayout.Get();
+        wgpu::ShaderModule vertModule = makeWgslModule(device, kTexturedVertWgsl);
+        wgpu::ShaderModule fragModule = makeWgslModule(device, kSSAOFragWgsl);
+        pd.vertex.module = vertModule.Get();
+        pd.vertex.entryPoint = sv("vs_main");
+        pd.vertex.bufferCount = 1;
+        pd.vertex.buffers = &vb;
+        WGPUFragmentState fs{};
+        fs.module = fragModule.Get();
+        fs.entryPoint = sv("fs_main");
+        fs.targetCount = 1;
+        fs.targets = &target;
+        pd.fragment = &fs;
+        pd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
+        pd.primitive.frontFace = WGPUFrontFace_CCW;
+        pd.primitive.cullMode = WGPUCullMode_None;
+        pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
+        pd.multisample.count = 1;
+        pd.multisample.mask = 0xFFFFFFFFu;
+        aoPipeline =
+            device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    }
+    if (!aoUbo) {
+        WGPUBufferDescriptor bd{};
+        bd.label = sv("eve_ao_ubo");
+        bd.size = 64;
+        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform;
+        bd.mappedAtCreation = false;
+        aoUbo = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
+    }
+    if (!aoTex[0]) {
+        for (int i = 0; i < 2; ++i) {
+            WGPUTextureDescriptor td{};
+            td.label = sv("eve_ao");
+            td.dimension = WGPUTextureDimension_2D;
+            td.size = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
+            td.sampleCount = 1;
+            td.format = WGPUTextureFormat_RGBA8Unorm;
+            td.mipLevelCount = 1;
+            td.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
+            aoTex[i] = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+            aoView[i] = aoTex[i].CreateView();
+        }
+        aoReady = true;
+        // New AO binding — rebuild cached mesh bind groups.
+        clearMeshBindGroupCache();
+    }
+    if (!fullscreenQuadReady) {
+        float verts[32] = {
+            -1.f, -1.f, 1.f, 1.f, 1.f, 1.f, 0.f, 0.f,
+             1.f, -1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 0.f,
+             1.f,  1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f,
+            -1.f,  1.f, 1.f, 1.f, 1.f, 1.f, 0.f, 1.f,
+        };
+        uint32_t indices[6] = {0, 1, 2, 2, 3, 0};
+        WGPUBufferDescriptor vbd{};
+        vbd.label = sv("eve_fullscreen_vb");
+        vbd.size = sizeof(verts);
+        vbd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+        fullscreenQuadVb = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&vbd));
+        queue.WriteBuffer(fullscreenQuadVb, 0, verts, sizeof(verts));
+        WGPUBufferDescriptor ibd{};
+        ibd.label = sv("eve_fullscreen_ib");
+        ibd.size = sizeof(indices);
+        ibd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+        fullscreenQuadIb = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&ibd));
+        queue.WriteBuffer(fullscreenQuadIb, 0, indices, sizeof(indices));
+        fullscreenQuadReady = true;
+    }
+}
+
+wgpu::BindGroup Graphics::makeAOBindGroup(wgpu::TextureView depthView) {
+    WGPUBindGroupEntry entries[3]{};
+    entries[0].binding = 0;
+    entries[0].buffer = aoUbo.Get();
+    entries[0].size = 32;
+    entries[1].binding = 1;
+    entries[1].textureView = depthView.Get();
+    entries[2].binding = 2;
+    entries[2].sampler = mainSampler.Get();
+    WGPUBindGroupDescriptor desc{};
+    desc.label = sv("eve_ao_group");
+    desc.layout = aoSetLayout.Get();
+    desc.entryCount = 3;
+    desc.entries = entries;
+    return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
+}
+
+// ---------------------------------------------------------------------------
 // Arena helpers
 // ---------------------------------------------------------------------------
 
@@ -1531,6 +1688,8 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     GpuTexture *h = height ? height : flatHeightTexture3D;
     GpuTexture *d = depth ? depth : flatDepthTexture3D;
     GpuTexture *shadow = shadowDepthArray ? shadowDepthArray : defaultShadowTex;
+    wgpu::TextureView aoView_ =
+        aoReady ? aoView[(aoWriteIndex + 1) % 2] : (whiteTexture ? whiteTexture->view : wgpu::TextureView());
 
     MeshBindGroupKey key{reinterpret_cast<uintptr_t>(a->view.Get()),
                          reinterpret_cast<uintptr_t>(n->view.Get()),
@@ -1538,12 +1697,13 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
                          reinterpret_cast<uintptr_t>(h->view.Get()),
                          reinterpret_cast<uintptr_t>(d->view.Get()),
                          reinterpret_cast<uintptr_t>(shadow->view.Get()),
-                         reinterpret_cast<uintptr_t>(shadow->sampler.Get())};
+                         reinterpret_cast<uintptr_t>(shadow->sampler.Get()),
+                         reinterpret_cast<uintptr_t>(aoView_.Get())};
     auto cached = meshBindGroupCache_.find(key);
     if (cached != meshBindGroupCache_.end()) return cached->second;
     if (meshBindGroupCache_.size() >= kMaxMeshBindGroupCache) meshBindGroupCache_.clear();
 
-    WGPUBindGroupEntry entries[10]{};
+    WGPUBindGroupEntry entries[12]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DUBO);
@@ -1566,6 +1726,10 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[8].sampler = shadow->sampler.Get();
     entries[9].binding = 9;
     entries[9].textureView = d->view.Get();
+    entries[10].binding = 10;
+    entries[10].textureView = aoView_.Get();
+    entries[11].binding = 11;
+    entries[11].sampler = mainSampler.Get();
 
     (void)frameUboOffset;
     (void)shadowUboOffset;
@@ -1573,7 +1737,7 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh_group");
     desc.layout = mesh3dSetLayout.Get();
-    desc.entryCount = 10;
+    desc.entryCount = 12;
     desc.entries = entries;
     wgpu::BindGroup bg =
         device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
@@ -2753,6 +2917,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         for (int i = 0; i < Lighting3DPack::kMaxLights; ++i)
             ubo.lights[i] = mesh3dLighting.lights[i];
         ubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+        // SSAO strength rides in texBomb.w (the WGSL mix() factor).
+        ubo.texBomb.w =
+            (renderControl_ && renderControl_->isEnabled("ao")) ? 1.f : 0.f;
         ubo.parallax = glm::vec4(mesh3dParallaxScale, mesh3dParallaxMin, mesh3dParallaxMax, 0.f);
         ubo.view = mesh3dView;
         ubo.clipInfo = glm::vec4(mesh3dNear, mesh3dFar, 0.f, 0.f);
@@ -3012,6 +3179,7 @@ void Graphics::present() {
     pumpReadback();
     rebuildSwapchainIfNeeded();
     if (!swapchainConfigured) return;
+    const bool aoActive = renderControl_ && renderControl_->isEnabled("ao");
 
     wgpu::TextureView surfaceView;
     wgpu::Texture surfaceTex;
@@ -3171,6 +3339,48 @@ void Graphics::present() {
         wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
         flushGbufferPass(pass);
         pass.End();
+
+        // 3b. SSAO pass: derive a screen-space occlusion texture from the
+        // G-buffer linear depth; the forward mesh pass samples the previous
+        // slot (one frame of latency).
+        if (aoActive) {
+            ensureAOResources(sceneColorWidth, sceneColorHeight);
+            if (aoPipeline && aoTex[0]) {
+                pushValidationScope();
+                GbufferSlot &gslot = gbufferSlots[currentFrameSlot()];
+                struct AOUbo {
+                    glm::vec4 params;  // radius, power, nearZ, farZ
+                    float intensity;
+                    float pad[2];
+                } aou;
+                // Near/far are passed so the shader can linearize the
+                // hardware depth into world units for the occlusion delta.
+                aou.params = glm::vec4(0.09f, 1.1f, mesh3dNear, mesh3dFar);
+                aou.intensity = 1.0f;
+                queue.WriteBuffer(aoUbo, 0, &aou, sizeof(aou));
+                wgpu::BindGroup aoBg = makeAOBindGroup(gslot.depthView);
+
+                WGPURenderPassColorAttachment colorAtt{};
+                colorAtt.view = aoView[aoWriteIndex].Get();
+                colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+                colorAtt.loadOp = WGPULoadOp_Clear;
+                colorAtt.storeOp = WGPUStoreOp_Store;
+                colorAtt.clearValue = {1.f, 1.f, 1.f, 1.f};
+                WGPURenderPassDescriptor rp{};
+                rp.colorAttachmentCount = 1;
+                rp.colorAttachments = &colorAtt;
+                wgpu::RenderPassEncoder apass =
+                    encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
+                apass.SetPipeline(aoPipeline);
+                apass.SetBindGroup(0, aoBg, 0, nullptr);
+                apass.SetVertexBuffer(0, fullscreenQuadVb, 0, 4 * 32);
+                apass.SetIndexBuffer(fullscreenQuadIb, wgpu::IndexFormat::Uint32, 0, 24);
+                apass.DrawIndexed(6, 1, 0, 0, 0);
+                apass.End();
+                popValidationScope();
+                aoWriteIndex ^= 1;
+            }
+        }
     }
 
     // 4. Active canvas: flush 2D batches into the offscreen target instead.
