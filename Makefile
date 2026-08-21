@@ -609,7 +609,7 @@ run/ios-test-debug: install/ios-test-debug
 # a crash in one file only loses that file's results.
 IOS_TEST_RESULTS ?= build/ios-test-results
 run/ios-test-all-debug: install/ios-test-debug
-	@mkdir -p "$(IOS_TEST_RESULTS)"; \
+	@mkdir -p "$(IOS_TEST_RESULTS)"; rm -f "$(IOS_TEST_RESULTS)"/*.log; \
 	DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
 	test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
 	ran=0; \
@@ -621,8 +621,22 @@ run/ios-test-all-debug: install/ios-test-debug
 	  xcrun devicectl --timeout 300 device process launch --terminate-existing --console --device "$$DEV" $(IOS_TEST_BUNDLE_ID) -- -evengine.test.file "$$b" > "$(IOS_TEST_RESULTS)/$${b%.cpp}.log" 2>&1 || true; \
 	done; \
 	echo "Ran $$ran test files; logs in $(IOS_TEST_RESULTS)/"; \
-	echo "Files with failed cases (grep ❌):"; \
-	grep -l "❌" "$(IOS_TEST_RESULTS)"/*.log 2>/dev/null || echo "  none"
+	echo "--- per-file results ---"; \
+	passed=0; crashed=0; failed=0; \
+	for l in "$(IOS_TEST_RESULTS)"/*.log; do \
+	  b=$$(basename "$$l" .log); \
+	  if grep -aq "signal" "$$l"; then \
+	    echo "CRASH $$b ($$(grep -aoE 'signal [0-9]+' "$$l" | head -1))"; \
+	    crashed=$$((crashed+1)); \
+	  elif grep -aq "❌" "$$l"; then \
+	    echo "FAIL  $$b"; \
+	    failed=$$((failed+1)); \
+	  else \
+	    echo "PASS  $$b"; \
+	    passed=$$((passed+1)); \
+	  fi; \
+	done; \
+	echo "--- summary: PASS=$$passed FAIL=$$failed CRASH=$$crashed ---"
 
 log/ios-test:
 	@echo "Streaming iOS test logs (Ctrl-C to stop)..."

@@ -21,6 +21,21 @@ bool copyTree(NSString *src, NSString *dst, NSError **error) {
     return [fm copyItemAtPath:src toPath:dst error:error] == YES;
 }
 
+// Marker written after a successful staging pass; bundles a fingerprint of the
+// bundled test/ + examples/ trees so later launches in the per-file driver
+// (run/ios-test-all-debug) skip the ~26 MB copy and start tests immediately.
+NSString *StageMarkerPath(NSString *root) {
+    return [root stringByAppendingPathComponent:@".staged"];
+}
+
+NSString *TreeFingerprint(NSString *path) {
+    NSFileManager *fm     = [NSFileManager defaultManager];
+    NSDictionary *attrs   = [fm attributesOfItemAtPath:path error:nil];
+    NSDate       *mtime   = attrs[NSFileModificationDate];
+    if (mtime == nil) return @"missing";
+    return [NSString stringWithFormat:@"%lld", (long long)(mtime.timeIntervalSince1970 * 1000.0)];
+}
+
 }  // namespace
 
 void logLine(const char *line) {
@@ -53,20 +68,38 @@ std::string stagedTestRoot() {
             NSString *bundle = [[NSBundle mainBundle] resourcePath];
             if (bundle == nil) return {};
 
-            // Wipe first so assets removed from the bundle do not linger across
-            // reinstalls/upgrades (same contract as EVTestActivity).
             NSFileManager *fm = [NSFileManager defaultManager];
-            [fm removeItemAtPath:root error:nil];
-
-            NSError  *error       = nil;
             NSString *testSrc     = [bundle stringByAppendingPathComponent:@"test"];
             NSString *examplesSrc = [bundle stringByAppendingPathComponent:@"examples"];
             NSString *examplesDst = [root stringByAppendingPathComponent:@"examples"];
-            if (!copyTree(testSrc, root, &error) || !copyTree(examplesSrc, examplesDst, &error)) {
-                NSString *msg = error != nil ? [NSString stringWithFormat:@"staging test assets failed: %@", error]
-                                             : @"staging test assets failed: bundled test/ or examples/ missing";
-                logLine(msg.UTF8String);
-                return {};
+
+            // Skip the copy when the previous staging pass matches the current
+            // bundle (fast relaunch path for per-file runs).
+            NSString *expected =
+                [NSString stringWithFormat:@"%@|%@", TreeFingerprint(testSrc), TreeFingerprint(examplesSrc)];
+            NSString *marker = StageMarkerPath(root);
+            NSString *prev   = [NSString stringWithContentsOfFile:marker
+                                                         encoding:NSUTF8StringEncoding
+                                                            error:nil];
+            if (prev != nil && [prev isEqualToString:expected]) {
+                logLine("test assets already staged (marker hit)");
+            } else {
+                // Wipe first so assets removed from the bundle do not linger
+                // across reinstalls/upgrades (same contract as EVTestActivity).
+                [fm removeItemAtPath:root error:nil];
+                NSError *error = nil;
+                if (!copyTree(testSrc, root, &error) ||
+                    !copyTree(examplesSrc, examplesDst, &error)) {
+                    NSString *msg = error != nil
+                        ? [NSString stringWithFormat:@"staging test assets failed: %@", error]
+                        : @"staging test assets failed: bundled test/ or examples/ missing";
+                    logLine(msg.UTF8String);
+                    return {};
+                }
+                [expected writeToFile:marker
+                           atomically:YES
+                             encoding:NSUTF8StringEncoding
+                                error:nil];
             }
 
             const char *utf8 = root.UTF8String;

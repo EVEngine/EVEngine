@@ -43,6 +43,12 @@ make run/ios-test-all-debug          # loops test/*.cpp, logs to build/ios-test-
 
 The runner now supports `-evengine.test.file <basename>.cpp` (per-file filter)
 and exits after the suite completes, so the loop above is fully scriptable.
+The first launch stages the bundled `test/` + `examples/` trees; a marker file
+makes later launches skip that ~26 MB copy, and the target prints a
+PASS/FAIL/CRASH summary per test file at the end. Note: on real devices the
+watchdog kills apps that create/destroy many windows in one process (SIGKILL),
+and asset-dependent files such as ClassicScenes can segfault without the
+downloaded scenes — per-file isolation contains those to the affected file.
 
 The test app installs side-by-side with the game shell under a separate bundle
 identifier (`com.evengine.example.test`, override with `IOS_TEST_BUNDLE_ID`).
