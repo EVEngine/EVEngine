@@ -48,6 +48,27 @@ struct Mesh3DUBO {
 static_assert(sizeof(Mesh3DUBO) == 608, "Mesh3DUBO layout must match the WGSL Frame block");
 
 /**
+ * @brief Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and
+ * the WGSL clustered Frame block).
+ */
+struct Mesh3DClusteredUBO {
+    glm::mat4 mvp{1.f};
+    glm::mat4 model{1.f};
+    glm::mat4 view{1.f};
+    glm::vec4 lightDir{0.4f, 1.f, 0.3f, 0.f};   // xyz = primary dir; w = 1 if valid
+    glm::vec4 lightColor{1.f, 1.f, 1.f, 0.f};    // rgb = primary; w = envIntensity
+    glm::vec4 tint{1.f, 1.f, 1.f, 1.f};
+    glm::vec4 cameraPos{0.f, 0.f, 3.f, 0.45f};   // xyz = eye; w = roughness
+    glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f}; // rgb = ambient; w = metallic
+    glm::vec4 gridInfo{16.f, 9.f, 24.f, 0.f};    // tilesX, tilesY, slices, pointCount
+    glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};   // near, far, screenW, screenH
+    glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f};       // x=cellScale, y=strength, z=rotAmount, w=AO
+    glm::vec4 parallax{0.f, 8.f, 32.f, 0.f};     // x=scale, y=minLayers, z=maxLayers
+};
+static_assert(sizeof(Mesh3DClusteredUBO) == 336,
+              "Mesh3DClusteredUBO layout must match the WGSL clustered Frame block");
+
+/**
  * @brief Texture resources backed by a wgpu texture + view + sampler + bind groups.
  */
 struct GpuTexture {
@@ -290,6 +311,7 @@ private:
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
         uint32_t shadowUboOffset = 0;
+        uint32_t clusteredUboOffset = 0;
     };
     struct ShadowDraw {
         Mesh *mesh = nullptr;
@@ -326,6 +348,7 @@ private:
     void createPipelineResources();
     void create2DPipelines();
     void createMesh3DPipelines();
+    void createMesh3DClusteredPipeline();
     void createShadowPipelines();
     void createGbufferPipelines();
     void createVoxelPipelines();
@@ -342,11 +365,13 @@ private:
                                                  wgpu::PipelineLayout layout);
     wgpu::BindGroupLayout make2DBindGroupLayout();
     wgpu::BindGroupLayout makeMesh3DBindGroupLayout();
+    wgpu::BindGroupLayout makeMesh3DClusteredBindGroupLayout();
     wgpu::BindGroupLayout makeShadowBindGroupLayout();
     wgpu::BindGroupLayout makeGbufferBindGroupLayout();
     wgpu::BindGroupLayout makeVoxelBindGroupLayout();
     wgpu::PipelineLayout make2DPipelineLayout();
     wgpu::PipelineLayout makeMesh3DPipelineLayout();
+    wgpu::PipelineLayout makeMesh3DClusteredPipelineLayout();
     wgpu::PipelineLayout makeShadowPipelineLayout();
     wgpu::PipelineLayout makeGbufferPipelineLayout();
     wgpu::PipelineLayout makeVoxelPipelineLayout();
@@ -358,6 +383,11 @@ private:
                                       GpuTexture *height, GpuTexture *depth,
                                       uint32_t frameUboOffset, uint32_t shadowUboOffset,
                                       uint32_t pushUboOffset);
+    wgpu::BindGroup makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTexture *normal,
+                                                 GpuTexture *env, GpuTexture *height,
+                                                 GpuTexture *depth, wgpu::TextureView aoView,
+                                                 uint32_t frameUboOffset, uint32_t shadowUboOffset);
+    void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     void ensureMeshBindGroupsForDraw(Mesh3dDraw &d);
     wgpu::Sampler makeSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
 
@@ -457,6 +487,19 @@ private:
     wgpu::PipelineLayout tex2DPipelineLayout;
     wgpu::PipelineLayout mesh3dPipelineLayout;
     wgpu::RenderPipeline mesh3dCanvasPipeline;
+    wgpu::BindGroupLayout mesh3dClusteredSetLayout;
+    wgpu::PipelineLayout mesh3dClusteredPipelineLayout;
+    wgpu::RenderPipeline mesh3dClusteredPipeline;
+    // Double-buffered storage ring for the clustered-forward SSBOs (lights /
+    // cluster table / light indices), one slot per frame in flight.
+    struct ClusteredStorage {
+        wgpu::Buffer lights;
+        wgpu::Buffer table;
+        wgpu::Buffer indices;
+        uint64_t lightsCap = 0;
+        uint64_t tableCap = 0;
+        uint64_t indicesCap = 0;
+    } clusteredStorage[kFramesInFlight];
     wgpu::PipelineLayout shadowPipelineLayout;
     wgpu::PipelineLayout gbufferPipelineLayout;
     wgpu::PipelineLayout voxelPipelineLayout;

@@ -442,6 +442,269 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 }
 )wgsl";
 
+// ---- Mesh3D clustered forward (matches Mesh3DClusteredUBO) -----------------
+inline const char *kMesh3DClusteredVertWgsl = R"wgsl(
+struct VSIn {
+    @location(0) pos: vec3f,
+    @location(1) normal: vec3f,
+    @location(2) uv: vec2f,
+};
+struct Frame {
+    mvp: mat4x4f,
+    model: mat4x4f,
+    view: mat4x4f,
+    lightDir: vec4f,
+    lightColor: vec4f,
+    tint: vec4f,
+    cameraPos: vec4f,
+    ambient: vec4f,
+    gridInfo: vec4f,
+    clipInfo: vec4f,
+    texBomb: vec4f,
+    parallax: vec4f,
+};
+struct VSOut {
+    @builtin(position) pos: vec4f,
+    @location(0) vNormal: vec3f,
+    @location(1) vUV: vec2f,
+    @location(2) vTint: vec4f,
+    @location(3) vWorldPos: vec3f,
+    @location(4) vCameraPos: vec3f,
+    @location(5) vViewPos: vec3f,
+};
+@group(0) @binding(0) var<uniform> ubo: Frame;
+fn inverse3x3(m: mat3x3f) -> mat3x3f {
+    let a = m[0].x; let b = m[1].x; let c = m[2].x;
+    let d = m[0].y; let e = m[1].y; let f = m[2].y;
+    let g = m[0].z; let h = m[1].z; let i = m[2].z;
+    let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+    return mat3x3f(
+        vec3f((e * i - f * h) / det, (f * g - d * i) / det, (d * h - e * g) / det),
+        vec3f((c * h - b * i) / det, (a * i - c * g) / det, (b * g - a * h) / det),
+        vec3f((b * f - c * e) / det, (c * d - a * f) / det, (a * e - b * d) / det),
+    );
+}
+@vertex
+fn vs_main(in: VSIn) -> VSOut {
+    var out: VSOut;
+    out.pos = ubo.mvp * vec4f(in.pos, 1.0);
+    let world = ubo.model * vec4f(in.pos, 1.0);
+    out.vWorldPos = world.xyz;
+    out.vViewPos = (ubo.view * world).xyz;
+    let nrm = transpose(inverse3x3(mat3x3f(ubo.model[0].xyz, ubo.model[1].xyz, ubo.model[2].xyz))) * in.normal;
+    out.vNormal = normalize(nrm);
+    out.vUV = in.uv;
+    out.vTint = ubo.tint;
+    out.vCameraPos = ubo.cameraPos.xyz;
+    return out;
+}
+)wgsl";
+
+inline const char *kMesh3DClusteredFragWgsl = R"wgsl(
+struct Light3D {
+    posRadius: vec4f,
+    color: vec4f,
+};
+struct Frame {
+    mvp: mat4x4f,
+    model: mat4x4f,
+    view: mat4x4f,
+    lightDir: vec4f,
+    lightColor: vec4f,
+    tint: vec4f,
+    cameraPos: vec4f,
+    ambient: vec4f,
+    gridInfo: vec4f,
+    clipInfo: vec4f,
+    texBomb: vec4f,
+    parallax: vec4f,
+};
+struct ShadowFrame {
+    lightVP: array<mat4x4f, 3>,
+    splits: vec4f,
+    bias: vec4f,
+    cascadeBias: vec4f,
+    cascadeTexel: vec4f,
+};
+struct FSIn {
+    @location(0) vNormal: vec3f,
+    @location(1) vUV: vec2f,
+    @location(2) vTint: vec4f,
+    @location(3) vWorldPos: vec3f,
+    @location(4) vCameraPos: vec3f,
+    @location(5) vViewPos: vec3f,
+    @builtin(position) fragCoord: vec4f,
+};
+@group(0) @binding(0) var<uniform> ubo: Frame;
+@group(0) @binding(1) var albedoSampler: texture_2d<f32>;
+@group(0) @binding(2) var normalSampler: texture_2d<f32>;
+@group(0) @binding(3) var envSampler: texture_cube<f32>;
+@group(0) @binding(4) var<uniform> shadow: ShadowFrame;
+@group(0) @binding(5) var shadowMap: texture_depth_2d_array;
+@group(0) @binding(6) var heightSampler: texture_2d<f32>;
+@group(0) @binding(7) var mainSamp: sampler;
+@group(0) @binding(8) var shadowSamp: sampler_comparison;
+@group(0) @binding(9) var sceneDepth: texture_depth_2d;
+@group(0) @binding(10) var<storage, read> lights: array<Light3D>;
+@group(0) @binding(11) var<storage, read> clusterTable: array<vec2u>;
+@group(0) @binding(12) var<storage, read> lightIndices: array<u32>;
+@group(0) @binding(13) var aoTex: texture_2d<f32>;
+@group(0) @binding(14) var aoSamp: sampler;
+
+const PI: f32 = 3.14159265359;
+
+fn distGGX(n: vec3f, h: vec3f, rough: f32) -> f32 {
+    let a = max(rough * rough, 0.002);
+    let a2 = a * a;
+    let ndh = max(dot(n, h), 0.0);
+    let denom = (ndh * ndh * (a2 - 1.0) + 1.0);
+    return a2 / max(PI * denom * denom, 1e-4);
+}
+fn geomSchlick(ndv: f32, rough: f32) -> f32 {
+    let r = rough + 1.0;
+    let k = (r * r) / 8.0;
+    return ndv / max(ndv * (1.0 - k) + k, 1e-4);
+}
+fn geomSmith(n: vec3f, v: vec3f, l: vec3f, rough: f32) -> f32 {
+    return geomSchlick(max(dot(n, v), 0.0), rough) * geomSchlick(max(dot(n, l), 0.0), rough);
+}
+fn fresnelSchlick(cosT: f32, f0: vec3f) -> vec3f {
+    return f0 + (1.0 - f0) * pow(clamp(1.0 - cosT, 0.0, 1.0), 5.0);
+}
+fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: vec3f, rad: vec3f) -> vec3f {
+    let ndl = max(dot(n, l), 0.0);
+    let diffuse = mix(ndl, ndl * 0.5 + 0.5, 0.25);
+    let h = normalize(v + l);
+    let f0 = mix(vec3f(0.04), albedo, metallic);
+    let ndf = distGGX(n, h, rough);
+    let g = geomSmith(n, v, l, rough);
+    let f = fresnelSchlick(max(dot(h, v), 0.0), f0);
+    let spec = (ndf * g * f) / max(4.0 * max(dot(n, v), 0.0) * max(ndl, 0.001), 1e-3);
+    let kd = (vec3f(1.0) - f) * (1.0 - metallic);
+    return (kd * albedo * diffuse + spec * ndl) * rad;
+}
+fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
+    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
+    let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
+    let uv = ndc.xy * 0.5 + 0.5;
+    let depth = ndc.z;
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
+        return 1.0;
+    }
+    let texel = 1.0 / vec2f(textureDimensions(shadowMap));
+    var sum: f32 = 0.0;
+    let zref = depth - bias;
+    for (var i = 0; i < 9; i = i + 1) {
+        var s: vec2f;
+        if (i == 0) { s = uv + vec2f(-0.5, -0.5) * texel; }
+        else if (i == 1) { s = uv + vec2f(0.0, -0.6) * texel; }
+        else if (i == 2) { s = uv + vec2f(0.5, -0.5) * texel; }
+        else if (i == 3) { s = uv + vec2f(-0.6, 0.0) * texel; }
+        else if (i == 4) { s = uv; }
+        else if (i == 5) { s = uv + vec2f(0.6, 0.0) * texel; }
+        else if (i == 6) { s = uv + vec2f(-0.5, 0.5) * texel; }
+        else if (i == 7) { s = uv + vec2f(0.0, 0.6) * texel; }
+        else { s = uv + vec2f(0.5, 0.5) * texel; }
+        if (s.x >= 0.0 && s.x <= 1.0 && s.y >= 0.0 && s.y <= 1.0) {
+            sum += textureSampleCompareLevel(shadowMap, shadowSamp, s, cascade, zref);
+        }
+    }
+    return sum / 9.0;
+}
+fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, ndl: f32) -> f32 {
+    if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4) {
+        return 1.0;
+    }
+    var cascade: i32 = 2;
+    if (viewDepth < shadow.splits.x) { cascade = 0; }
+    else if (viewDepth < shadow.splits.y) { cascade = 1; }
+    var tw: f32;
+    if (cascade == 0) { tw = shadow.cascadeTexel.x; }
+    else if (cascade == 1) { tw = shadow.cascadeTexel.y; }
+    else { tw = shadow.cascadeTexel.z; }
+    var cb: f32;
+    if (cascade == 0) { cb = shadow.cascadeBias.x; }
+    else if (cascade == 1) { cb = shadow.cascadeBias.y; }
+    else { cb = shadow.cascadeBias.z; }
+    if (cb < 1e-8) { cb = shadow.bias.x; }
+    let bias = cb * mix(0.75, 1.0, clamp(ndl, 0.0, 1.0));
+    let p = worldPos + n * ((2.0 * max(tw, 1e-6)) / max(ndl, 0.2));
+    let vis = sampleShadowCascade(p, cascade, bias);
+    return mix(0.04, 1.0, vis);
+}
+fn clusterIndex(frag: vec2f, viewDepth: f32) -> u32 {
+    let tilesX = i32(ubo.gridInfo.x + 0.5);
+    let tilesY = i32(ubo.gridInfo.y + 0.5);
+    let slices = i32(ubo.gridInfo.z + 0.5);
+    let nearZ = max(ubo.clipInfo.x, 1e-3);
+    let farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
+    let screenW = max(ubo.clipInfo.z, 1.0);
+    let screenH = max(ubo.clipInfo.w, 1.0);
+    let tx = clamp(i32(floor(frag.x / screenW * f32(tilesX))), 0, tilesX - 1);
+    let ty = clamp(i32(floor(frag.y / screenH * f32(tilesY))), 0, tilesY - 1);
+    let depth = max(viewDepth, nearZ);
+    let sz = clamp(i32(floor((depth - nearZ) / (farZ - nearZ) * f32(slices))), 0, slices - 1);
+    return u32((sz * tilesY + ty) * tilesX + tx);
+}
+@fragment
+fn fs_main(in: FSIn) -> @location(0) vec4f {
+    var nGeom = normalize(in.vNormal);
+    let v = normalize(in.vCameraPos - in.vWorldPos);
+    if (dot(nGeom, v) < 0.0) { nGeom = -nGeom; }
+    let base = textureSample(albedoSampler, mainSamp, in.vUV) * in.vTint;
+    if (base.a < 0.5) { discard; }
+    let albedo = base.rgb;
+    let metallic = clamp(ubo.ambient.w, 0.0, 1.0);
+    let rough = clamp(ubo.cameraPos.w, 0.04, 1.0);
+    let nSmp = textureSample(normalSampler, mainSamp, in.vUV).xyz;
+    var n = nGeom;
+    if (length(nSmp - vec3f(0.5, 0.5, 1.0)) > 0.04) {
+        n = normalize(nSmp * 2.0 - 1.0);
+    }
+    var lo = vec3f(0.0);
+    let viewDepth = max(-in.vViewPos.z, 0.0);
+    let primaryL = normalize(ubo.lightDir.xyz);
+    let shadowVis = sampleShadowPCF(in.vWorldPos, n, viewDepth, max(dot(n, primaryL), 0.0));
+    if (ubo.lightDir.w > 0.5 && length(ubo.lightColor.rgb) > 1e-6) {
+        lo += shadeLight(n, v, albedo, metallic, rough, primaryL, ubo.lightColor.rgb) * shadowVis;
+    }
+    let cid = clusterIndex(in.fragCoord.xy, viewDepth);
+    let entry = clusterTable[cid];
+    let count = min(entry.y, 32u);
+    for (var i = 0u; i < count; i = i + 1u) {
+        let li = lightIndices[entry.x + i];
+        let lgt = lights[li];
+        let toL = lgt.posRadius.xyz - in.vWorldPos;
+        let dist = length(toL);
+        let l = toL / max(dist, 1e-4);
+        let atten = clamp(1.0 - dist / max(lgt.posRadius.w, 1e-3), 0.0, 1.0);
+        lo += shadeLight(n, v, albedo, metallic, rough, l, lgt.color.rgb * atten * atten);
+    }
+    let hemi = clamp(n.y * 0.5 + 0.5, 0.0, 1.0);
+    let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
+    let gndIrr = ubo.ambient.rgb * vec3f(0.72, 0.62, 0.52);
+    let irr = mix(gndIrr, skyIrr, hemi);
+    var color = albedo * irr * (1.0 - metallic) + lo;
+    let envIntensity = ubo.lightColor.w;
+    if (envIntensity > 1e-4) {
+        let r = reflect(-v, n);
+        let envSpec = textureSampleLevel(envSampler, mainSamp, r, rough * 5.0).rgb * envIntensity;
+        let f0 = mix(vec3f(0.04), albedo, metallic);
+        let f = fresnelSchlick(max(dot(n, v), 0.0), f0);
+        color += envSpec * f;
+        let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
+        color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
+    }
+    let aoUV = in.fragCoord.xy / vec2f(textureDimensions(aoTex));
+    let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
+    color *= mix(1.0, ao, clamp(ubo.texBomb.w, 0.0, 1.0));
+    let white = 0.85;
+    let over = max(color - vec3f(white), vec3f(0.0));
+    color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
+    return vec4f(color, 1.0);
+}
+)wgsl";
+
 // ---- Mesh3D depth-only shadow --------------------------------------------------
 inline const char *kMesh3DShadowVertWgsl = R"wgsl(
 struct VSIn {

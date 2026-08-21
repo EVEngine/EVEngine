@@ -406,6 +406,7 @@ void Graphics::createDefaultTextures() {
 void Graphics::createPipelineResources() {
     create2DPipelines();
     createMesh3DPipelines();
+    createMesh3DClusteredPipeline();
     createShadowPipelines();
     createGbufferPipelines();
     createVoxelPipelines();
@@ -600,6 +601,96 @@ wgpu::PipelineLayout Graphics::makeMesh3DPipelineLayout() {
     WGPUBindGroupLayout bgl = mesh3dSetLayout.Get();
     WGPUPipelineLayoutDescriptor d{};
     d.label = sv("eve_mesh3d_layout");
+    d.bindGroupLayoutCount = 1;
+    d.bindGroupLayouts = &bgl;
+    return device.CreatePipelineLayout(reinterpret_cast<const wgpu::PipelineLayoutDescriptor*>(&d));
+}
+
+wgpu::BindGroupLayout Graphics::makeMesh3DClusteredBindGroupLayout() {
+    WGPUBindGroupLayoutEntry entries[15]{};
+    // 0: Frame UBO (dynamic; clustered layout)
+    entries[0].binding = 0;
+    entries[0].visibility = WGPUShaderStage_Vertex | WGPUShaderStage_Fragment;
+    entries[0].buffer.type = WGPUBufferBindingType_Uniform;
+    entries[0].buffer.hasDynamicOffset = true;
+    entries[0].buffer.minBindingSize = sizeof(Mesh3DClusteredUBO);
+    // 1: albedo
+    entries[1].binding = 1;
+    entries[1].visibility = WGPUShaderStage_Fragment;
+    entries[1].texture.sampleType = WGPUTextureSampleType_Float;
+    entries[1].texture.viewDimension = WGPUTextureViewDimension_2D;
+    // 2: normal map
+    entries[2].binding = 2;
+    entries[2].visibility = WGPUShaderStage_Fragment;
+    entries[2].texture.sampleType = WGPUTextureSampleType_Float;
+    entries[2].texture.viewDimension = WGPUTextureViewDimension_2D;
+    // 3: env cubemap
+    entries[3].binding = 3;
+    entries[3].visibility = WGPUShaderStage_Fragment;
+    entries[3].texture.sampleType = WGPUTextureSampleType_Float;
+    entries[3].texture.viewDimension = WGPUTextureViewDimension_Cube;
+    // 4: shadow UBO (dynamic)
+    entries[4].binding = 4;
+    entries[4].visibility = WGPUShaderStage_Fragment;
+    entries[4].buffer.type = WGPUBufferBindingType_Uniform;
+    entries[4].buffer.hasDynamicOffset = true;
+    entries[4].buffer.minBindingSize = sizeof(ShadowUBO);
+    // 5: shadow depth array
+    entries[5].binding = 5;
+    entries[5].visibility = WGPUShaderStage_Fragment;
+    entries[5].texture.sampleType = WGPUTextureSampleType_Depth;
+    entries[5].texture.viewDimension = WGPUTextureViewDimension_2DArray;
+    // 6: height/parallax (unused fallback)
+    entries[6].binding = 6;
+    entries[6].visibility = WGPUShaderStage_Fragment;
+    entries[6].texture.sampleType = WGPUTextureSampleType_Float;
+    entries[6].texture.viewDimension = WGPUTextureViewDimension_2D;
+    // 7: shared filtering sampler
+    entries[7].binding = 7;
+    entries[7].visibility = WGPUShaderStage_Fragment;
+    entries[7].sampler.type = WGPUSamplerBindingType_Filtering;
+    // 8: shadow comparison sampler
+    entries[8].binding = 8;
+    entries[8].visibility = WGPUShaderStage_Fragment;
+    entries[8].sampler.type = WGPUSamplerBindingType_Comparison;
+    // 9: scene depth (G-buffer hwDepth; sampled by X-ray variants)
+    entries[9].binding = 9;
+    entries[9].visibility = WGPUShaderStage_Fragment;
+    entries[9].texture.sampleType = WGPUTextureSampleType_Depth;
+    entries[9].texture.viewDimension = WGPUTextureViewDimension_2D;
+    // 10..12: clustered-forward SSBOs
+    entries[10].binding = 10;
+    entries[10].visibility = WGPUShaderStage_Fragment;
+    entries[10].buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
+    entries[10].buffer.minBindingSize = sizeof(ClusteredLightGpu);
+    entries[11].binding = 11;
+    entries[11].visibility = WGPUShaderStage_Fragment;
+    entries[11].buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
+    entries[11].buffer.minBindingSize = sizeof(ClusterTableEntry);
+    entries[12].binding = 12;
+    entries[12].visibility = WGPUShaderStage_Fragment;
+    entries[12].buffer.type = WGPUBufferBindingType_ReadOnlyStorage;
+    entries[12].buffer.minBindingSize = sizeof(uint32_t);
+    // 13/14: SSAO occlusion texture + sampler
+    entries[13].binding = 13;
+    entries[13].visibility = WGPUShaderStage_Fragment;
+    entries[13].texture.sampleType = WGPUTextureSampleType_Float;
+    entries[13].texture.viewDimension = WGPUTextureViewDimension_2D;
+    entries[14].binding = 14;
+    entries[14].visibility = WGPUShaderStage_Fragment;
+    entries[14].sampler.type = WGPUSamplerBindingType_Filtering;
+
+    WGPUBindGroupLayoutDescriptor desc{};
+    desc.label = sv("eve_mesh3d_clustered");
+    desc.entryCount = 15;
+    desc.entries = entries;
+    return device.CreateBindGroupLayout(reinterpret_cast<const wgpu::BindGroupLayoutDescriptor*>(&desc));
+}
+
+wgpu::PipelineLayout Graphics::makeMesh3DClusteredPipelineLayout() {
+    WGPUBindGroupLayout bgl = mesh3dClusteredSetLayout.Get();
+    WGPUPipelineLayoutDescriptor d{};
+    d.label = sv("eve_mesh3d_clustered_layout");
     d.bindGroupLayoutCount = 1;
     d.bindGroupLayouts = &bgl;
     return device.CreatePipelineLayout(reinterpret_cast<const wgpu::PipelineLayoutDescriptor*>(&d));
@@ -970,6 +1061,61 @@ void Graphics::createMesh3DPipelines() {
     pd.label = sv("eve_mesh3d_canvas");
     pd.multisample.count = 1;
     mesh3dCanvasPipeline =
+        device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+}
+
+void Graphics::createMesh3DClusteredPipeline() {
+    mesh3dClusteredSetLayout = makeMesh3DClusteredBindGroupLayout();
+    mesh3dClusteredPipelineLayout = makeMesh3DClusteredPipelineLayout();
+
+    WGPUVertexAttribute attrs[3] = {};
+    attrs[0].format = WGPUVertexFormat_Float32x3;  // pos
+    attrs[0].offset = 0;
+    attrs[0].shaderLocation = 0;
+    attrs[1].format = WGPUVertexFormat_Float32x3;  // normal
+    attrs[1].offset = 12;
+    attrs[1].shaderLocation = 1;
+    attrs[2].format = WGPUVertexFormat_Float32x2;  // uv
+    attrs[2].offset = 24;
+    attrs[2].shaderLocation = 2;
+    WGPUVertexBufferLayout vb{};
+    fillVertexLayout(vb, 32, attrs, 3);
+
+    WGPUDepthStencilState ds{};
+    ds.format = WGPUTextureFormat_Depth32Float;
+    ds.depthWriteEnabled = WGPUOptionalBool_True;
+    ds.depthCompare = WGPUCompareFunction_Less;
+    ds.stencilReadMask = 0;
+    ds.stencilWriteMask = 0;
+
+    WGPUColorTargetState target{};
+    target.format = sceneColorFormat;
+    target.blend = nullptr;
+    target.writeMask = WGPUColorWriteMask_All;
+
+    WGPURenderPipelineDescriptor pd{};
+    pd.label = sv("eve_mesh3d_clustered");
+    pd.layout = mesh3dClusteredPipelineLayout.Get();
+    wgpu::ShaderModule vertModule = makeWgslModule(device, kMesh3DClusteredVertWgsl);
+    wgpu::ShaderModule fragModule = makeWgslModule(device, kMesh3DClusteredFragWgsl);
+    pd.vertex.module = vertModule.Get();
+    pd.vertex.entryPoint = sv("vs_main");
+    pd.vertex.bufferCount = 1;
+    pd.vertex.buffers = &vb;
+    WGPUFragmentState fs{};
+    fs.module = fragModule.Get();
+    fs.entryPoint = sv("fs_main");
+    fs.targetCount = 1;
+    fs.targets = &target;
+    pd.fragment = &fs;
+    pd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
+    pd.primitive.frontFace = WGPUFrontFace_CCW;
+    pd.primitive.cullMode = WGPUCullMode_None;
+    pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
+    pd.depthStencil = &ds;
+    pd.multisample.count = sceneColorSamples;
+    pd.multisample.mask = 0xFFFFFFFFu;
+    mesh3dClusteredPipeline =
         device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
@@ -1761,6 +1907,66 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     return bg;
 }
 
+wgpu::BindGroup Graphics::makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTexture *normal,
+                                                       GpuTexture *env, GpuTexture *height,
+                                                       GpuTexture *depth, wgpu::TextureView aoView,
+                                                       uint32_t frameUboOffset,
+                                                       uint32_t shadowUboOffset) {
+    GpuTexture *a = albedo ? albedo : whiteTexture;
+    GpuTexture *n = normal ? normal : flatNormalTexture3D;
+    GpuTexture *e = env ? env : defaultEnvCubemap;
+    GpuTexture *h = height ? height : flatHeightTexture3D;
+    GpuTexture *d = depth ? depth : flatDepthTexture3D;
+    GpuTexture *shadow = shadowDepthArray ? shadowDepthArray : defaultShadowTex;
+    ClusteredStorage &st = clusteredStorage[currentFrameSlot()];
+
+    WGPUBindGroupEntry entries[15]{};
+    entries[0].binding = 0;
+    entries[0].buffer = currentUboArena().buffer.Get();
+    entries[0].size = sizeof(Mesh3DClusteredUBO);
+    entries[1].binding = 1;
+    entries[1].textureView = a->view.Get();
+    entries[2].binding = 2;
+    entries[2].textureView = n->view.Get();
+    entries[3].binding = 3;
+    entries[3].textureView = e->view.Get();
+    entries[4].binding = 4;
+    entries[4].buffer = currentUboArena().buffer.Get();
+    entries[4].size = sizeof(ShadowUBO);
+    entries[5].binding = 5;
+    entries[5].textureView = shadow->view.Get();
+    entries[6].binding = 6;
+    entries[6].textureView = h->view.Get();
+    entries[7].binding = 7;
+    entries[7].sampler = mainSampler.Get();
+    entries[8].binding = 8;
+    entries[8].sampler = shadow->sampler.Get();
+    entries[9].binding = 9;
+    entries[9].textureView = d->view.Get();
+    entries[10].binding = 10;
+    entries[10].buffer = st.lights.Get();
+    entries[10].size = st.lightsCap;
+    entries[11].binding = 11;
+    entries[11].buffer = st.table.Get();
+    entries[11].size = st.tableCap;
+    entries[12].binding = 12;
+    entries[12].buffer = st.indices.Get();
+    entries[12].size = st.indicesCap;
+    entries[13].binding = 13;
+    entries[13].textureView = aoView.Get();
+    entries[14].binding = 14;
+    entries[14].sampler = mainSampler.Get();
+
+    (void)frameUboOffset;
+    (void)shadowUboOffset;
+    WGPUBindGroupDescriptor desc{};
+    desc.label = sv("eve_mesh3d_clustered_group");
+    desc.layout = mesh3dClusteredSetLayout.Get();
+    desc.entryCount = 15;
+    desc.entries = entries;
+    return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
+}
+
 // ---------------------------------------------------------------------------
 // Mesh creation
 // ---------------------------------------------------------------------------
@@ -2534,8 +2740,44 @@ void Graphics::setCloudShadows(float strength, float worldCell, float time, floa
 void Graphics::setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) {
     mesh3dClustered       = upload;
     mesh3dClusteredActive = upload.active;
+    if (upload.active) uploadClusteredLighting(upload);
 }
 void Graphics::setMesh3DClusteredActive(bool active) { mesh3dClusteredActive = active; }
+
+void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {
+    if (!device) return;
+    ClusteredStorage &st = clusteredStorage[currentFrameSlot()];
+    auto ensure = [&](wgpu::Buffer &buf, uint64_t &cap, uint64_t need) {
+        if (need == 0) need = 4;
+        if (buf && cap >= need) return;
+        WGPUBufferDescriptor bd{};
+        bd.label = sv("eve_clustered_ssbo");
+        bd.size = std::max(need, cap ? cap * 2 : need);
+        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Storage;
+        bd.mappedAtCreation = false;
+        buf = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
+        cap = bd.size;
+    };
+    const uint64_t lightsBytes =
+        std::max<uint64_t>(1, upload.lights.size()) * sizeof(ClusteredLightGpu);
+    const uint64_t tableBytes =
+        std::max<uint64_t>(1, upload.clusterTable.size()) * sizeof(ClusterTableEntry);
+    const uint64_t indicesBytes =
+        std::max<uint64_t>(1, upload.lightIndices.size()) * sizeof(uint32_t);
+    ensure(st.lights, st.lightsCap, lightsBytes);
+    ensure(st.table, st.tableCap, tableBytes);
+    ensure(st.indices, st.indicesCap, indicesBytes);
+
+    ClusteredLightGpu zero{};
+    if (!upload.lights.empty())
+        queue.WriteBuffer(st.lights, 0, upload.lights.data(), lightsBytes);
+    else
+        queue.WriteBuffer(st.lights, 0, &zero, sizeof(zero));
+    if (!upload.clusterTable.empty())
+        queue.WriteBuffer(st.table, 0, upload.clusterTable.data(), tableBytes);
+    if (!upload.lightIndices.empty())
+        queue.WriteBuffer(st.indices, 0, upload.lightIndices.data(), indicesBytes);
+}
 void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
     mesh3dLighting.lights[0].posRadius = glm::vec4(dir, 0.f);
     mesh3dLighting.lights[0].color     = glm::vec4(color, 1.f);
@@ -2929,6 +3171,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
     for (auto &d : mesh3dDraws) {
         d.frameUboOffset = uboArena.alloc(sizeof(Mesh3DUBO), 256);
         d.shadowUboOffset = uboArena.alloc(sizeof(ShadowUBO), 256);
+        d.clusteredUboOffset = 0;
+        if (mesh3dClusteredActive && !canvasTarget)
+            d.clusteredUboOffset = uboArena.alloc(sizeof(Mesh3DClusteredUBO), 256);
         d.pushUboOffset = 0;
         if (d.shader && d.shader->pushConstantSize() > 0)
             d.pushUboOffset = uboArena.alloc(Shader::kPushConstantBytes, 256);
@@ -2936,6 +3181,27 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 
     // Upload the per-draw frame UBO + shared shadow UBO.
     for (auto &d : mesh3dDraws) {
+        if (mesh3dClusteredActive && !canvasTarget && mesh3dClusteredPipeline && d.clusteredUboOffset) {
+            Mesh3DClusteredUBO cubo;
+            cubo.mvp = mesh3dViewProj * d.model;
+            cubo.model = d.model;
+            cubo.view = mesh3dView;
+            cubo.lightDir = glm::vec4(glm::vec3(mesh3dClustered.primaryDir),
+                                      mesh3dClustered.primaryDir.w);
+            cubo.lightColor = glm::vec4(glm::vec3(mesh3dClustered.primaryColor), mesh3dEnvIntensity);
+            cubo.tint = d.tint;
+            cubo.cameraPos = glm::vec4(mesh3dCameraPos, mesh3dRoughness);
+            cubo.ambient = glm::vec4(glm::vec3(mesh3dClustered.ambient), mesh3dMetallic);
+            cubo.gridInfo = mesh3dClustered.gridInfo;
+            cubo.clipInfo = mesh3dClustered.clipInfo;
+            cubo.texBomb = glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+            // SSAO strength rides in texBomb.w (the WGSL mix() factor).
+            cubo.texBomb.w =
+                (renderControl_ && renderControl_->isEnabled("ao")) ? 1.f : 0.f;
+            cubo.parallax = glm::vec4(mesh3dParallaxScale, mesh3dParallaxMin, mesh3dParallaxMax, 0.f);
+            queue.WriteBuffer(uboArena.buffer, d.clusteredUboOffset, &cubo, sizeof(cubo));
+            continue;
+        }
         Mesh3DUBO ubo;
         ubo.mvp = mesh3dViewProj * d.model;
         ubo.model = d.model;
@@ -2982,6 +3248,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         // active MSAA count, so use the dedicated 1x variant there. Custom
         // WGSL mesh shaders fall back to the same 1x default pipeline.
         wgpu::RenderPipeline pipe = canvasTarget ? mesh3dCanvasPipeline : mesh3dPipeline;
+        const bool customShader = d.shader && d.shader->gpuHandle;
         if (d.shader && d.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(d.shader->gpuHandle);
             if (gs->isMesh3D && gs->mesh3dPipeline) {
@@ -2991,6 +3258,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
                     pipe = gs->mesh3dPipeline;
             }
         }
+        const bool useClustered = !canvasTarget && !customShader && mesh3dClusteredActive &&
+                                  mesh3dClusteredPipeline && d.clusteredUboOffset;
+        if (useClustered) pipe = mesh3dClusteredPipeline;
         if (!pipe) continue;
         pass.SetPipeline(pipe);
 
@@ -3000,10 +3270,22 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         GpuTexture *height = gpuForTexture(mesh3dHeightTexture);
         GpuTexture *depth = mesh3dSceneDepthTexture ? gpuForTexture(mesh3dSceneDepthTexture)
                                                     : flatDepthTexture3D;
-        wgpu::BindGroup bg = makeMeshBindGroup(albedo, normal, env, height, depth,
-                                               d.frameUboOffset, d.shadowUboOffset,
-                                               d.pushUboOffset);
-        uint32_t offsets[2] = {d.frameUboOffset, d.shadowUboOffset};
+        wgpu::BindGroup bg;
+        uint32_t offsets[2];
+        if (useClustered) {
+            wgpu::TextureView aoView_ =
+                aoReady ? aoView[(aoWriteIndex + 1) % 2]
+                        : (whiteTexture ? whiteTexture->view : wgpu::TextureView());
+            bg = makeMesh3DClusteredBindGroup(albedo, normal, env, height, depth, aoView_,
+                                              d.clusteredUboOffset, d.shadowUboOffset);
+            offsets[0] = d.clusteredUboOffset;
+            offsets[1] = d.shadowUboOffset;
+        } else {
+            bg = makeMeshBindGroup(albedo, normal, env, height, depth,
+                                   d.frameUboOffset, d.shadowUboOffset, d.pushUboOffset);
+            offsets[0] = d.frameUboOffset;
+            offsets[1] = d.shadowUboOffset;
+        }
         pass.SetBindGroup(0, bg, 2, offsets);
 
         if (gpuMesh->indexBuffer) {
