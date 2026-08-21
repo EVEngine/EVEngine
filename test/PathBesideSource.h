@@ -87,6 +87,28 @@ inline std::string pathBesideSourceImpl(const char *file, const char *relative) 
 #endif
 }
 
+/**
+ * @brief Resolve an asset path relative to the repo's test/ directory.
+ *
+ * Several test files build paths as `dirname(__FILE__) + "/" + relative`.
+ * On the iOS test app the compiled __FILE__ points at the build host, so the
+ * host test/ dir must be replaced with the on-device staged root (where the
+ * bundled test/ contents live flat and examples/ sits alongside); leading
+ * "../" segments that would leave test/ are collapsed accordingly.
+ */
+inline std::string pathBesideTestDir(const char *file, const std::string &relative) {
+#if defined(EVENGINE_IOS_TEST_APP)
+    std::string rel = relative;
+    while (rel.rfind("../", 0) == 0) rel = rel.substr(3);
+    return iosTestRoot() + "/" + rel;
+#else
+    std::string here = file ? file : "";
+    auto slash = here.find_last_of("/\\");
+    std::string dir = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
+    return dir + "/" + relative;
+#endif
+}
+
 }  // namespace eve_test_path
 
 #define EVE_DEFINE_PATH_BESIDE_SOURCE()                                            \

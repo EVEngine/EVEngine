@@ -104,6 +104,17 @@ private:
 // resolve on-device, exactly like the Android test app.
 std::string testRoot() { return eve::ios_test::stagedTestRoot(); }
 
+// Escape regex metacharacters in a test-file basename so --file matching is
+// exact (e.g. "data.cpp" must not also match "hex_level_data.cpp").
+std::string escapeRegex(const std::string &s) {
+    std::string out;
+    for (char c : s) {
+        if (std::string(".^$|()[]{}*+?\\").find(c) != std::string::npos) out += '\\';
+        out += c;
+    }
+    return out;
+}
+
 }  // namespace
 #endif  // EVENGINE_ANDROID / EVENGINE_IOS_TEST_APP
 
@@ -172,8 +183,9 @@ int main(int argc, char **argv) {
     static std::string filterArg;
     if (!fileFilter.empty()) {
         // TestCase.file stores the compiled __FILE__ path; regex_match needs a
-        // full match, so anchor the basename at the end of any path.
-        filterArg = "--file=.*" + fileFilter;
+        // full match, so anchor the escaped basename after a path separator at
+        // the end of the path.
+        filterArg = "--file=.*/" + escapeRegex(fileFilter);
         static std::vector<char *> injected;
         injected = {argc > 0 ? argv[0] : const_cast<char *>("eve"), filterArg.data()};
         argc     = static_cast<int>(injected.size());
