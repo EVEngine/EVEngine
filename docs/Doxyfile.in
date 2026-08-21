@@ -361,7 +361,7 @@ MARKDOWN_SUPPORT       = YES
 # Minimum value: 0, maximum value: 99, default value: 5.
 # This tag requires that the tag MARKDOWN_SUPPORT is set to YES.
 
-TOC_INCLUDE_HEADINGS   = 5
+TOC_INCLUDE_HEADINGS   = 0
 
 # When enabled doxygen tries to link words that correspond to documented
 # classes, or namespaces to their corresponding documentation. Such a link can
@@ -996,7 +996,10 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                =
+EXCLUDE                = src/engine/Readme.md \
+                         src/engine/cmdline/Readme.md \
+                         src/engine/devtools/Readme.md \
+                         src/modules/Readme.md
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1260,7 +1263,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = @DOC_TOP_DIR@/theme/header.html
+HTML_HEADER            = @DOC_HEADER@
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard
@@ -1270,7 +1273,7 @@ HTML_HEADER            = @DOC_TOP_DIR@/theme/header.html
 # that doxygen normally uses.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_FOOTER            =
+HTML_FOOTER            = @DOC_FOOTER@
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading style
 # sheet that is used by each HTML page. It can be used to fine-tune the look of
@@ -1296,8 +1299,7 @@ HTML_STYLESHEET        =
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 HTML_EXTRA_STYLESHEET  = @DOC_TOP_DIR@/theme/doxygen-awesome.css \
-                         @DOC_TOP_DIR@/theme/doxygen-awesome-sidebar-only.css \
-                         @DOC_TOP_DIR@/theme/doxygen-awesome-sidebar-only-darkmode-toggle.css
+                         @DOC_TOP_DIR@/theme/evengine-docs.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1309,9 +1311,7 @@ HTML_EXTRA_STYLESHEET  = @DOC_TOP_DIR@/theme/doxygen-awesome.css \
 
 HTML_EXTRA_FILES       = @DOC_TOP_DIR@/theme/doxygen-awesome-darkmode-toggle.js \
                          @DOC_TOP_DIR@/theme/doxygen-awesome-fragment-copy-button.js \
-                         @DOC_TOP_DIR@/theme/doxygen-awesome-interactive-toc.js \
-                         @DOC_TOP_DIR@/theme/doxygen-awesome-paragraph-link.js \
-                         @DOC_TOP_DIR@/theme/doxygen-awesome-tabs.js
+                         @DOC_TOP_DIR@/theme/doxygen-awesome-paragraph-link.js
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
@@ -1594,7 +1594,7 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-DISABLE_INDEX          = NO
+DISABLE_INDEX          = YES
 
 # The GENERATE_TREEVIEW tag is used to specify whether a tree-like index
 # structure should be generated to display hierarchical information. If the tag
@@ -1611,7 +1611,7 @@ DISABLE_INDEX          = NO
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-GENERATE_TREEVIEW      = YES
+GENERATE_TREEVIEW      = NO
 
 # When both GENERATE_TREEVIEW and DISABLE_INDEX are set to YES, then the
 # FULL_SIDEBAR option determines if the side bar is limited to only the treeview

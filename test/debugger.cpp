@@ -1,6 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Capability.h"
+#include "common/IStateProvider.h"
+#include "common/StateValue.h"
 #include "devtools/Debugger.hpp"
 #include "devtools/Snapshot.hpp"
 
@@ -359,6 +362,150 @@ TEST_CASE("devtools.snapshot.markRootAndSkipEngine") {
     CHECK_EQ(roots[0], std::string("custom"));
     snap.unmarkRoot("custom");
     CHECK(snap.roots().empty());
+}
+
+namespace {
+
+/** Fake provider: reports a fixed value and remembers what it restored. */
+class MockStateProvider : public eve::caps::IStateProvider {
+public:
+    const char* stateKind() const override { return "mock"; }
+
+    bool captureState(eve::StateValue& out) override {
+        out = eve::StateValue::object();
+        out.set("value", eve::StateValue::integer(7));
+        return true;
+    }
+
+    bool restoreState(const eve::StateValue& in, std::string* /*err*/) override {
+        lastRestored = in;
+        return true;
+    }
+
+    bool resetToDefaults() override { return true; }
+
+    eve::StateValue lastRestored;
+};
+
+}  // namespace
+
+TEST_CASE("devtools.snapshot.v2NativeSection") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+
+    {
+        const SQInteger top = sq_gettop(v);
+        sq_pushroottable(v);
+        sq_pushstring(v, "gameState", -1);
+        sq_newtable(v);
+        sq_pushstring(v, "level", -1);
+        sq_pushinteger(v, 3);
+        sq_newslot(v, -3, SQFalse);
+        sq_newslot(v, -3, SQFalse);
+        sq_settop(v, top);
+    }
+
+    MockStateProvider provider;
+    eve::cap::addListener<eve::caps::IStateProvider>(&provider);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    std::string       err;
+    const std::string json = snap.capture(v, &err);
+    CHECK(err.empty());
+    CHECK(json.find("version") != std::string::npos);
+    CHECK(json.find("native") != std::string::npos);
+    CHECK(json.find("mock") != std::string::npos);
+    CHECK(json.find("gameState") != std::string::npos);
+
+    // Mutate script state, then restore; both the script root and the native
+    // provider state come back.
+    {
+        const SQInteger top = sq_gettop(v);
+        sq_pushroottable(v);
+        sq_pushstring(v, "gameState", -1);
+        sq_newtable(v);
+        sq_pushstring(v, "level", -1);
+        sq_pushinteger(v, 99);
+        sq_newslot(v, -3, SQFalse);
+        sq_newslot(v, -3, SQFalse);
+        sq_settop(v, top);
+    }
+    err.clear();
+    CHECK(snap.restore(v, json, &err));
+    CHECK(err.empty());
+
+    CHECK(provider.lastRestored.isObject());
+    const eve::StateValue* value = provider.lastRestored.find("value");
+    REQUIRE(value != nullptr);
+    CHECK_EQ(value->asInt(), int64_t(7));
+
+    {
+        const SQInteger top = sq_gettop(v);
+        sq_pushroottable(v);
+        sq_pushstring(v, "gameState", -1);
+        REQUIRE(SQ_SUCCEEDED(sq_get(v, -2)));
+        sq_pushstring(v, "level", -1);
+        REQUIRE(SQ_SUCCEEDED(sq_get(v, -2)));
+        SQInteger level = 0;
+        sq_getinteger(v, -1, &level);
+        CHECK_EQ(static_cast<int>(level), 3);
+        sq_settop(v, top);
+    }
+
+    eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
+}
+
+TEST_CASE("devtools.snapshot.v1Compat") {
+    ssq::VM           vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM       v  = vm.getHandle();
+    const std::string v1 = R"({"version":1,"roots":{"gameState":{"level":3}}})";
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    std::string err;
+    CHECK(snap.restore(v, v1, &err));
+    CHECK(err.empty());
+
+    const SQInteger top = sq_gettop(v);
+    sq_pushroottable(v);
+    sq_pushstring(v, "gameState", -1);
+    REQUIRE(SQ_SUCCEEDED(sq_get(v, -2)));
+    sq_pushstring(v, "level", -1);
+    REQUIRE(SQ_SUCCEEDED(sq_get(v, -2)));
+    SQInteger level = 0;
+    sq_getinteger(v, -1, &level);
+    CHECK_EQ(static_cast<int>(level), 3);
+    sq_settop(v, top);
+}
+
+TEST_CASE("devtools.snapshot.rejectsFunctionInRoot") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    ssq::Script s = vm.compileSource("gameState <- { level = 3 }; gameState.tick <- function() { return 1; };");
+    vm.run(s);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    eve::StateValue out;
+    std::string     err;
+    CHECK(!snap.captureState(v, out, &err));
+    CHECK(err.find("non-serializable") != std::string::npos);
+    CHECK(err.find("gameState") != std::string::npos);
+}
+
+TEST_CASE("devtools.snapshot.rejectsInstanceRoot") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    ssq::Script s = vm.compileSource("class Hero { level = 1; } gameState <- Hero();");
+    vm.run(s);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    eve::StateValue out;
+    std::string     err;
+    CHECK(!snap.captureState(v, out, &err));
+    CHECK(err.find("class instance") != std::string::npos);
 }
 
 TEST_CASE("devtools.debugger.normalizeSource") {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animation/AnimPose.h"
+#include "common/StateValue.h"
 
 #include <string>
 #include <unordered_map>
@@ -18,7 +19,7 @@ class AnimSkeleton;
 class AnimStateMachine {
 public:
     explicit AnimStateMachine(AnimSkeleton *skeleton);
-    ~AnimStateMachine() = default;
+    ~AnimStateMachine();
 
     AnimStateMachine(const AnimStateMachine &)            = delete;
     AnimStateMachine &operator=(const AnimStateMachine &) = delete;
@@ -52,12 +53,30 @@ public:
     bool getBool(const std::string &name) const;
     void setTrigger(const std::string &name);
     void resetTrigger(const std::string &name);
+    /** @brief Query a trigger's current state. */
+    bool getTrigger(const std::string& name) const {
+        auto it = triggers_.find(name);
+        return it != triggers_.end() && it->second;
+    }
 
     AnimPose *getPose();
     float getStateTime() const { return stateTime_; }
     bool isBlending() const { return blending_; }
 
     void update(float dt);
+
+    /** @brief Serialize runtime state (params, current/next state, blend). */
+    bool captureState(StateValue& out) const;
+
+    /**
+     * @brief Restore runtime state captured by captureState().
+     * @return false when the captured current state is not defined here; the
+     *         reload session then falls back to resetToDefaults().
+     */
+    bool restoreState(const StateValue& in, std::string* err = nullptr);
+
+    /** @brief Clear params and re-seat the entry state (restore fallback). */
+    bool resetToDefaults();
 
 private:
     enum class CondKind { Float, Bool, Trigger };

@@ -1462,8 +1462,7 @@ void Graphics::flushToSwapchain() {
             completed = true;
             return;
         }
-        recordPendingShadowPasses();
-        recordPendingGBufferPass();
+        recordDeferredFrameGraph();
     }
 
     // Render the UI overlay (ImGui) into its own MSAA pass, resolved and

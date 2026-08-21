@@ -16,6 +16,7 @@
 #include "graphics/Shadow.h"
 #include "graphics/Texture.h"
 #include "vkbuilder.hpp"
+#include "vkbuilder/framegraph.hpp"
 
 namespace eve::graphics::vulkan {
 
@@ -370,8 +371,8 @@ private:
     void queueUiResolve();
     /** @brief Render the present overlay (ImGui) into the UI MSAA pass and queue resolve. */
     bool renderUiOverlayPass();
-    void recordPendingShadowPasses();
-    void recordPendingGBufferPass();
+    /** @brief Record + submit this frame slot's deferred FrameGraph (shadow + G-buffer). */
+    void recordDeferredFrameGraph();
     void dropPendingOffscreenPasses();
     /** @brief acquire + record deferred shadow/gbuffer + begin swapchain RP. */
     bool beginSwapchainRenderPass();
@@ -691,6 +692,26 @@ private:
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
     GBufferSlot *currentGBufferSlot();
+    // One FrameGraph per in-flight slot for the deferred passes: the 3 CSM
+    // shadow cascades + the G-buffer fill are declarative passes in one layer,
+    // recorded concurrently on JobSystem workers. Each graph's command buffer
+    // is only reused two frames later — by then the present slot fence (waited
+    // in Present::begin) guarantees the previous graph submit has completed
+    // (same queue, submitted before the present command buffer). The graphs
+    // import the engine-owned shadow array + ColorTarget images; the engine
+    // keeps ownership so readback / entity-ID rendering / postFX wrappers keep
+    // working unchanged.
+    std::array<std::unique_ptr<vkb::FrameGraph>, kAsyncResourceCopies> deferredFrameGraphs_;
+    vkb::FrameGraph *currentDeferredFrameGraph();
+    /** @brief True once this frame slot's deferred graph was recorded+submitted. */
+    bool deferredGraphRecorded_ = false;
+    size_t deferredGraphRecordedSlot_ = 0;
+    /** @brief (Re)build one deferred FrameGraph per slot from current targets. */
+    void buildDeferredFrameGraphs();
+    /** @brief Draws one CSM cascade's pending casters into a FrameGraph pass CB. */
+    void recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade);
+    /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */
+    void recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx);
 
     struct SceneColorSlot {
         vkb::ColorTarget msaaColor;
