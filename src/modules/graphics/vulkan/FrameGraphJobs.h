@@ -1,6 +1,7 @@
 #pragma once
 
 #include "thread/JobSystem.h"
+#include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
 
 #include <chrono>

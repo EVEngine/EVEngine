@@ -92,6 +92,10 @@ automatically; on Windows it is a manual step):
 ```powershell
 git submodule update --init --recursive
 ```
+(equivalently `make init/submodules`). `third-party/` itself is not a
+submodule: the first cmake configure clones it at the pinned commit
+(`EVENGINE_THIRD_PARTY_PIN` in `CMakeLists.txt`) and verifies any existing
+checkout is on that commit.
 
 ### Building
 - Debug (Ninja + MSVC `cl`, fastest local iteration):
