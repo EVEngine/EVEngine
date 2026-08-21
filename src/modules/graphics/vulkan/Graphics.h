@@ -10,6 +10,7 @@
 #include "vkbuilder.hpp"
 #include "graphics/vulkan/GpuDriven.h"
 #include "graphics/vulkan/FrameArena.h"
+#include "graphics/vulkan/ComputePass.h"
 #include <atomic>
 #include <array>
 #include <memory>
@@ -231,6 +232,22 @@ public:
     uint32_t debugMeshRecordIndex(Mesh *mesh) const;
     /** @brief Indirect draws emitted by the last successful GPU-driven submit. */
     uint32_t debugLastGpuDrivenDrawCount() const { return lastGpuDrivenDrawCount_; }
+    /** @brief Block until all in-flight GPU work (all frames) has completed. */
+    void waitForSharedGpuResources();
+    /** @brief Stage 2 cull is live for this frame (GPU-written commands). */
+    bool gpuDrivenCullEnabled() const {
+        return gpuDrivenEnabled_ && gpuDrivenCaps_.gpuDrivenCullAvailable();
+    }
+    /** @brief Scene color pass is deferred until after the compute cull section. */
+    bool gpuDrivenScenePassPending() const { return gpuDrivenScenePassPending_; }
+    bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount);
+    void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                           float nearZ, float farZ);
+    void gpuDrivenOpenScenePass();
+    void gpuDrivenDrawOpaque();
+    /** @brief Debug readback: visible instances / non-empty buckets from the last cull. */
+    uint32_t debugGpuDrivenVisibleCount() const;
+    uint32_t debugGpuDrivenCulledDrawCount() const;
 
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
@@ -675,6 +692,43 @@ private:
     vk::Pipeline mesh3dGpuDrivenPipeline = nullptr;
     void createMesh3DGpuDrivenPipeline();
 
+    // ---- GPU-driven (stage 2): HZB + GPU cull ----
+    struct GpuDrivenCullSlot {
+        vkb::GenericBuffer visibleFlags;    // uint32 per instance (GPU-written)
+        vkb::GenericBuffer compacted;       // GpuInstance per instance (GPU-written)
+        vkb::GenericBuffer indirect;        // GpuIndirectCommand per bucket (GPU-written)
+        vkb::GenericBuffer bucketCounters;  // uint32 per bucket (GPU atomic, CPU-reset)
+        vkb::GenericBuffer hzb;             // header + R32F mip chain (GPU-written)
+        vkb::GenericBuffer cullParams;      // GpuCullParams UBO (CPU-written)
+    };
+    std::vector<GpuDrivenCullSlot> gpuDrivenCullSlots_;
+    vkb::GenericBuffer gpuDrivenCullParamsPlaceholder_;  // valid UBO target at set creation
+    int gpuDrivenCullWidth = 0;
+    int gpuDrivenCullHeight = 0;
+    uint32_t gpuDrivenCullMaxMip = 0;
+    vk::PipelineLayout gpuDrivenComputeLayout = nullptr;
+    vk::DescriptorSetLayout gpuDrivenComputeEmptyLayout_ = nullptr;
+    ComputePass hzbBuildPass_;
+    ComputePass cullPass_;
+    ComputePass emitPass_;
+    bool gpuDrivenCullReady_ = false;
+    bool gpuDrivenScenePassPending_ = false;
+    // Per-frame CPU metadata for the cull chain (uploaded to the frame arena).
+    std::vector<uint32_t> gpuDrivenBucketIds_;
+    std::vector<uint32_t> gpuDrivenBucketOffsets_;
+    std::vector<uint32_t> gpuDrivenBucketMeshIds_;
+    uint32_t gpuDrivenBucketCount_ = 0;
+    uint32_t gpuDrivenCullInstanceCount_ = 0;
+    uint32_t gpuDrivenLastCullSlot_ = 0;
+    FrameArena::Alloc gpuDrivenInstAlloc_{};
+    FrameArena::Alloc gpuDrivenBucketIdAlloc_{};
+    FrameArena::Alloc gpuDrivenBucketOffAlloc_{};
+    void ensureGpuDrivenCullResources(int width, int height);
+    void recordGpuDrivenHzbBuild();
+    void destroyGpuDrivenCullResources();
+    GpuDrivenCullSlot &currentGpuDrivenCullSlot();
+    GpuDrivenCullSlot &gpuDrivenCullSlot(uint32_t frameSlot);
+
     // CSM shadow map (3 cascade layers), one array per in-flight slot.
     struct ShadowMapSlot {
         vkb::DepthArrayImage image;
@@ -916,8 +970,6 @@ private:
     size_t currentFrameSlot() const;
     vk::CommandBuffer &currentPresentCb();
     vkb::FrameSlot frameToken() const;
-    /** @brief Drain in-flight frames before mutating a GPU object sampled/read by them. */
-    void waitForSharedGpuResources();
     void invalidateTextureBindings();
 };
 

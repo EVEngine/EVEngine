@@ -132,6 +132,39 @@ public:
         return false;
     }
 
+    // ---- GPU-driven rendering (stage 2): GPU cull seam ----
+    // Backends without the compute cull chain return false / no-op; the
+    // renderer then falls back to gpuDrivenSubmitOpaque (stage 1) or legacy.
+
+    /** @brief True when the stage-2 GPU cull chain will run this frame. */
+    virtual bool gpuDrivenCullEnabled() const { return false; }
+
+    /** @brief Scene pass opening deferred until after the compute cull section. */
+    virtual bool gpuDrivenScenePassPending() const { return false; }
+
+    /** @brief Upload sorted instances + bucket metadata for the cull chain. */
+    virtual bool gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) {
+        (void)instances;
+        (void)instanceCount;
+        return false;
+    }
+
+    /** @brief Record the cull + emit compute dispatches for the current frame. */
+    virtual void gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                                   float nearZ, float farZ) {
+        (void)viewProj;
+        (void)eye;
+        (void)fovYDeg;
+        (void)nearZ;
+        (void)farZ;
+    }
+
+    /** @brief Open the scene color pass that begin3DFrame deferred (cull path). */
+    virtual void gpuDrivenOpenScenePass() {}
+
+    /** @brief Draw the opaque geometry with GPU-written indirect commands. */
+    virtual void gpuDrivenDrawOpaque() {}
+
     /**
      * @brief Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
      * Must be called after the window exists (SDL_WINDOW_VULKAN).

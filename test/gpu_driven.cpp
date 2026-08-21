@@ -264,3 +264,79 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
     CHECK(maxDelta < 0.03f);
     win->close();
 }
+
+/**
+ * @brief Stage 2 cull parity: instances outside the frustum (behind the camera
+ * or far outside the sides) must be culled by the GPU chain while the final
+ * image stays pixel-identical to the legacy path (GPU-clipped geometry never
+ * contributed pixels anyway).
+ */
+TEST_CASE("GpuDriven.opaqueForwardCullParity") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
+        win->close();
+        return;
+    }
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 3.5f, 5.5f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setAmbient(0.08f, 0.08f, 0.10f);
+
+    auto makeBall = [&](Mesh *mesh, Texture *albedo, float x, float z) {
+        Material *mat = gfx->newMaterial();
+        mat->setAlbedoTexture(albedo);
+        mat->setNormalTexture(nullptr);
+        mat->setRoughness(0.5f);
+        mat->setMetallic(0.1f);
+        auto *obj = Renderable3D::create();
+        obj->setMesh(mesh);
+        obj->setMaterial(mat);
+        obj->setPosition(x, 0.35f, z);
+        obj->setScale(0.55f, 0.55f, 0.55f);
+        return obj;
+    };
+    Mesh *shared = gfx->newMeshSphere(24, 16);
+    Texture *albedo = gdSolid(gfx, 120, 140, 160);
+    makeBall(shared, albedo, -1.2f, 0.f);  // visible
+    makeBall(shared, albedo, 0.f, 0.f);    // visible
+    makeBall(shared, albedo, 1.2f, 0.f);   // visible
+    makeBall(shared, albedo, 0.f, 9.f);    // behind the camera -> culled
+    makeBall(shared, albedo, -40.f, 0.f);  // outside the left frustum -> culled
+
+    auto *sun = Light3D::createLight("dir");
+    sun->setDirection(0.55f, 1.f, 0.35f);
+    sun->setColor(1.f, 1.f, 1.f, 2.5f);
+    sun->setCastShadow(false);
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderControl *rc = gfx->getRenderControl();
+    rc->disable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto legacy = gdCaptureLuma(gfx);
+
+    rc->enable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto gpuDriven = gdCaptureLuma(gfx);
+    vg->waitForSharedGpuResources();
+    CHECK(vg->debugGpuDrivenVisibleCount() == 3);   // 2 of 5 instances culled
+    CHECK(vg->debugGpuDrivenCulledDrawCount() == 3);
+
+    float maxDelta = 0.f;
+    const int w = gfx->getWidth();
+    const int h = gfx->getHeight();
+    for (int y = 0; y < h; y += 4) {
+        for (int x = 0; x < w; x += 4) {
+            const size_t i = size_t(y * w + x);
+            const float d = std::fabs(legacy[i] - gpuDriven[i]);
+            maxDelta = std::max(maxDelta, d);
+        }
+    }
+    rc->disable("gpuDriven");
+    CHECK(maxDelta < 0.03f);
+    win->close();
+}

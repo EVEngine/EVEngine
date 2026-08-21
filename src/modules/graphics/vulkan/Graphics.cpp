@@ -41,6 +41,9 @@
 #include "graphics/shaders/mesh3d_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
 #include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
+#include "graphics/shaders/hzb_build_comp_spv.inc"
+#include "graphics/shaders/gpu_cull_comp_spv.inc"
+#include "graphics/shaders/gpu_emit_comp_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
@@ -304,6 +307,7 @@ std::string Graphics::getBackendName() const { return "vulkan"; }
 Graphics::~Graphics() {
     if (!initialized) return;
     device->waitIdle();
+    destroyGpuDrivenCullResources();
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
     // first so their destructors do not see freed shader pointers.
     pipelineAA_.reset();
@@ -492,6 +496,11 @@ void Graphics::initWithWindow(void *nativeWindow) {
             phys->getFeatures2(&features2);
 
             gpuDrivenCaps_.api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            // The vendored headers omit `computeShader` from
+            // VkPhysicalDeviceFeatures (same as `drawIndirect`); compute
+            // shaders are core Vulkan 1.0 and universally supported on
+            // desktop, so treat the feature as present.
+            gpuDrivenCaps_.computeShader = true;
             gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
             gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
                 supported.shaderSampledImageArrayDynamicIndexing == VK_TRUE;
@@ -602,6 +611,7 @@ void Graphics::destroySwapchainResources() {
     swapchainPass = {};
     presentModel.destroy();
     presentModel = vkb::Present{};
+    destroyGpuDrivenCullResources();
     depthImage = vkb::DepthStencilImage{};
     // Release reused per-frame vertex buffers. Callers hold a device-wide
     // waitIdle before this runs.
@@ -660,26 +670,52 @@ void Graphics::createBindlessSet() {
     auto *white = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
     auto *whiteCube = static_cast<GpuTexture *>(defaultBindlessCube->gpuHandle);
 
-    std::array<vk::DescriptorSetLayoutBinding, 6> bindings{};
-    bindings[0].binding = 0;
-    bindings[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    bindings[0].descriptorCount = kMaxBindlessTextures;
-    bindings[0].stageFlags = vk::ShaderStageFlagBits::eVertex |
-                             vk::ShaderStageFlagBits::eFragment |
-                             vk::ShaderStageFlagBits::eCompute;
-    bindings[1] = bindings[0];
-    bindings[1].binding = 1;
-    bindings[1].descriptorCount = kMaxBindlessCubemaps;
-    bindings[2].binding = 2;
-    bindings[2].descriptorType = vk::DescriptorType::eStorageBuffer;
-    bindings[2].descriptorCount = 1;
-    bindings[2].stageFlags = bindings[0].stageFlags;
-    bindings[3] = bindings[2];
-    bindings[3].binding = 3;
-    bindings[4] = bindings[2];
-    bindings[4].binding = 4;
-    bindings[5] = bindings[2];
-    bindings[5].binding = 5;
+    auto samplerBinding = [](uint32_t binding, uint32_t count, vk::ShaderStageFlags stages) {
+        vk::DescriptorSetLayoutBinding b{};
+        b.binding = binding;
+        b.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        b.descriptorCount = count;
+        b.stageFlags = stages;
+        return b;
+    };
+    auto storageBinding = [](uint32_t binding, vk::ShaderStageFlags stages) {
+        vk::DescriptorSetLayoutBinding b{};
+        b.binding = binding;
+        b.descriptorType = vk::DescriptorType::eStorageBuffer;
+        b.descriptorCount = 1;
+        b.stageFlags = stages;
+        return b;
+    };
+    auto uniformBinding = [](uint32_t binding, vk::ShaderStageFlags stages) {
+        vk::DescriptorSetLayoutBinding b{};
+        b.binding = binding;
+        b.descriptorType = vk::DescriptorType::eUniformBuffer;
+        b.descriptorCount = 1;
+        b.stageFlags = stages;
+        return b;
+    };
+    const vk::ShaderStageFlags allStages = vk::ShaderStageFlagBits::eVertex |
+                                           vk::ShaderStageFlagBits::eFragment |
+                                           vk::ShaderStageFlagBits::eCompute;
+    const vk::ShaderStageFlags computeOnly = vk::ShaderStageFlagBits::eCompute;
+    std::vector<vk::DescriptorSetLayoutBinding> bindings{
+        samplerBinding(0, kMaxBindlessTextures, allStages),
+        samplerBinding(1, kMaxBindlessCubemaps, allStages),
+        storageBinding(2, allStages),
+        storageBinding(3, allStages),
+        storageBinding(4, allStages),
+        storageBinding(5, allStages),  // unused by shaders; kept valid
+        uniformBinding(6, computeOnly),
+        storageBinding(7, computeOnly),
+        storageBinding(8, computeOnly),
+        storageBinding(9, computeOnly),
+        storageBinding(10, computeOnly),
+        samplerBinding(11, 1, computeOnly),
+        storageBinding(12, computeOnly),
+        storageBinding(13, computeOnly),
+        storageBinding(14, computeOnly),
+        storageBinding(17, computeOnly),
+    };
 
     vk::DescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.bindingCount = uint32_t(bindings.size());
@@ -687,10 +723,11 @@ void Graphics::createBindlessSet() {
     bindlessSetLayoutUnique_ = device->createDescriptorSetLayoutUnique(layoutInfo);
     bindlessSetLayout_ = *bindlessSetLayoutUnique_;
 
-    std::array<vk::DescriptorPoolSize, 2> poolSizes{
+    std::array<vk::DescriptorPoolSize, 3> poolSizes{
         vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
-                               kMaxBindlessTextures + kMaxBindlessCubemaps},
-        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 4},
+                               kMaxBindlessTextures + kMaxBindlessCubemaps + 1},
+        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 12},
+        vk::DescriptorPoolSize{vk::DescriptorType::eUniformBuffer, 1},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
     poolInfo.maxSets = 1;
@@ -769,6 +806,32 @@ void Graphics::createBindlessSet() {
     tableWrite(3, materialTableBuffer_.buffer);
     tableWrite(4, meshTableBuffer_.buffer);  // placeholder; rewritten per frame
     tableWrite(5, meshTableBuffer_.buffer);  // unused by shaders
+    // Stage 2 placeholders: every binding must be valid before the set binds.
+    gpuDrivenCullParamsPlaceholder_ =
+        vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eUniformBuffer, 256,
+                           kHostVisibleCoherent);
+    {
+        vk::DescriptorBufferInfo ubo{gpuDrivenCullParamsPlaceholder_.buffer, 0, 256};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = bindlessSet_;
+        w.dstBinding = 6;
+        w.descriptorCount = 1;
+        w.descriptorType = vk::DescriptorType::eUniformBuffer;
+        w.pBufferInfo = &ubo;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    }
+    for (uint32_t b : {7u, 8u, 9u, 10u, 12u, 13u, 14u, 17u}) tableWrite(b, meshTableBuffer_.buffer);
+    {
+        vk::DescriptorImageInfo depthInfo{white->sampler, white->imageView(),
+                                          vk::ImageLayout::eShaderReadOnlyOptimal};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = bindlessSet_;
+        w.dstBinding = 11;
+        w.descriptorCount = 1;
+        w.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        w.pImageInfo = &depthInfo;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    }
 }
 
 uint32_t Graphics::registerBindlessTexture2D(GpuTexture *tex) {
@@ -1056,6 +1119,552 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
                                stride);
     }
     return true;
+}
+
+// --- Stage 2: HZB + GPU cull ------------------------------------------------
+
+namespace {
+
+/** @brief Gribb-Hartmann frustum planes from a projection*view matrix. */
+void gpuDrivenFrustumPlanes(const glm::mat4 &m, glm::vec4 planes[6]) {
+    // glm is column-major: row i is (m[0][i], m[1][i], m[2][i], m[3][i]).
+    const glm::vec4 row0(m[0][0], m[1][0], m[2][0], m[3][0]);
+    const glm::vec4 row1(m[0][1], m[1][1], m[2][1], m[3][1]);
+    const glm::vec4 row2(m[0][2], m[1][2], m[2][2], m[3][2]);
+    const glm::vec4 row3(m[0][3], m[1][3], m[2][3], m[3][3]);
+    planes[0] = row3 + row0;  // left
+    planes[1] = row3 - row0;  // right
+    planes[2] = row3 + row1;  // bottom
+    planes[3] = row3 - row1;  // top
+    planes[4] = row3 + row2;  // near
+    planes[5] = row3 - row2;  // far
+    for (int i = 0; i < 6; ++i) {
+        const float len = glm::length(glm::vec3(planes[i]));
+        if (len > 1e-8f) planes[i] /= len;
+    }
+}
+
+}  // namespace
+
+Graphics::GpuDrivenCullSlot &Graphics::gpuDrivenCullSlot(uint32_t frameSlot) {
+    // Callers guard with gpuDrivenCullReady_; this is a debug-only invariant.
+    EV_ASSERT(!gpuDrivenCullSlots_.empty(), "gpuDriven cull slot accessed before resources");
+    return gpuDrivenCullSlots_[frameSlot % gpuDrivenCullSlots_.size()];
+}
+
+Graphics::GpuDrivenCullSlot &Graphics::currentGpuDrivenCullSlot() {
+    return gpuDrivenCullSlot(currentFrameSlot());
+}
+
+void Graphics::ensureGpuDrivenCullResources(int width, int height) {
+    if (!gpuDrivenCaps_.gpuDrivenCullAvailable() || width <= 0 || height <= 0) return;
+    if (gpuDrivenCullReady_ && gpuDrivenCullWidth == width && gpuDrivenCullHeight == height)
+        return;
+    destroyGpuDrivenCullResources();
+
+    gpuDrivenCullWidth = width;
+    gpuDrivenCullHeight = height;
+
+    // HZB word layout per slot: [16 header uints][mip0][mip1]...
+    uint32_t mipOffsets[kMaxHzbMips] = {};
+    uint32_t totalWords = kHZBHeaderWords;
+    uint32_t maxMip = 0;
+    {
+        uint32_t w = uint32_t(width);
+        uint32_t h = uint32_t(height);
+        for (uint32_t m = 0; m < kMaxHzbMips; ++m) {
+            mipOffsets[m] = totalWords;
+            const uint32_t mw = std::max(w >> m, 1u);
+            const uint32_t mh = std::max(h >> m, 1u);
+            totalWords += mw * mh;
+            maxMip = m;
+            if (mw == 1 && mh == 1) break;
+        }
+    }
+    gpuDrivenCullMaxMip = maxMip;
+
+    const vk::DeviceSize flagBytes = kMaxGpuDrivenInstances * sizeof(uint32_t);
+    const vk::DeviceSize compactBytes = kMaxGpuDrivenInstances * sizeof(GpuInstance);
+    const vk::DeviceSize indirectBytes = kMaxGpuDrivenBuckets * sizeof(GpuIndirectCommand);
+    const vk::DeviceSize counterBytes = kMaxGpuDrivenBuckets * sizeof(uint32_t);
+    const vk::DeviceSize hzbBytes = totalWords * sizeof(uint32_t);
+
+    gpuDrivenCullSlots_.resize(frameSlotCount());
+    for (auto &slot : gpuDrivenCullSlots_) {
+        slot.visibleFlags =
+            vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer, flagBytes,
+                               kHostVisibleCoherent);
+        slot.compacted = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                                            compactBytes, kHostVisibleCoherent);
+        slot.indirect = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer |
+                                                       vk::BufferUsageFlagBits::eIndirectBuffer,
+                                           indirectBytes, kHostVisibleCoherent);
+        slot.bucketCounters =
+            vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer, counterBytes,
+                               kHostVisibleCoherent);
+        slot.hzb = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer, hzbBytes,
+                                      kHostVisibleCoherent);
+        slot.cullParams =
+            vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eUniformBuffer,
+                               sizeof(GpuCullParams), kHostVisibleCoherent);
+        // Header offsets + zero depth (0 = near plane -> everything visible).
+        void *hzbMap = slot.hzb.map();
+        auto *u32 = static_cast<uint32_t *>(hzbMap);
+        for (uint32_t m = 0; m <= maxMip; ++m) u32[m] = mipOffsets[m];
+        for (uint32_t m = maxMip + 1; m < kHZBHeaderWords; ++m) u32[m] = 0;
+        std::memset(static_cast<char *>(hzbMap) + kHZBHeaderWords * sizeof(uint32_t), 0,
+                    (totalWords - kHZBHeaderWords) * sizeof(uint32_t));
+        slot.hzb.unmap();
+    }
+
+    // Compute pipeline layout: set 1 = bindless (set 0 = empty placeholder so
+    // the shaders' `layout(set = 1, ...)` bindings resolve to index 1).
+    vk::DescriptorSetLayoutCreateInfo emptyInfo{};
+    gpuDrivenComputeEmptyLayout_ = device->createDescriptorSetLayout(emptyInfo);
+    vk::PushConstantRange pcr{vk::ShaderStageFlagBits::eCompute, 0, 20};
+    vk::PipelineLayoutCreateInfo pli{};
+    std::array<vk::DescriptorSetLayout, 2> computeLayouts{gpuDrivenComputeEmptyLayout_,
+                                                          bindlessSetLayout_};
+    pli.setLayoutCount = uint32_t(computeLayouts.size());
+    pli.pSetLayouts = computeLayouts.data();
+    pli.pushConstantRangeCount = 1;
+    pli.pPushConstantRanges = &pcr;
+    gpuDrivenComputeLayout = device->createPipelineLayout(pli);
+
+    const auto spvOf = [](const uint32_t *p, size_t n) {
+        return std::vector<uint32_t>(p, p + n);
+    };
+    hzbBuildPass_.create(device, gpuDrivenComputeLayout,
+                         spvOf(hzb_build_comp_spv, hzb_build_comp_spv_count));
+    cullPass_.create(device, gpuDrivenComputeLayout,
+                     spvOf(gpu_cull_comp_spv, gpu_cull_comp_spv_count));
+    emitPass_.create(device, gpuDrivenComputeLayout,
+                     spvOf(gpu_emit_comp_spv, gpu_emit_comp_spv_count));
+    gpuDrivenCullReady_ =
+        hzbBuildPass_.pipeline() && cullPass_.pipeline() && emitPass_.pipeline();
+}
+
+void Graphics::destroyGpuDrivenCullResources() {
+    hzbBuildPass_ = ComputePass{};
+    cullPass_ = ComputePass{};
+    emitPass_ = ComputePass{};
+    if (gpuDrivenComputeLayout) {
+        device->destroyPipelineLayout(gpuDrivenComputeLayout);
+        gpuDrivenComputeLayout = nullptr;
+    }
+    if (gpuDrivenComputeEmptyLayout_) {
+        device->destroyDescriptorSetLayout(gpuDrivenComputeEmptyLayout_);
+        gpuDrivenComputeEmptyLayout_ = nullptr;
+    }
+    for (auto &slot : gpuDrivenCullSlots_) {
+        slot.visibleFlags.release();
+        slot.compacted.release();
+        slot.indirect.release();
+        slot.bucketCounters.release();
+        slot.hzb.release();
+        slot.cullParams.release();
+    }
+    gpuDrivenCullSlots_.clear();
+    gpuDrivenCullReady_ = false;
+    gpuDrivenCullWidth = 0;
+    gpuDrivenCullHeight = 0;
+}
+
+void Graphics::recordGpuDrivenHzbBuild() {
+    if (!gpuDrivenCullReady_) return;
+    auto *slot = currentGBufferSlot();
+    if (!slot || !slot->depthGpu.sampler || !slot->depthGpu.imageView()) return;
+    auto &cull = currentGpuDrivenCullSlot();
+    auto &cb = currentPresentCb();
+
+    // Depth attachment write -> compute shader read.
+    vk::ImageMemoryBarrier imb{};
+    imb.image = slot->depth.image();
+    imb.oldLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    imb.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    imb.srcAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+    imb.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+    imb.subresourceRange = {vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1};
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                           vk::PipelineStageFlagBits::eLateFragmentTests,
+                       vk::PipelineStageFlagBits::eComputeShader, {}, 0, nullptr, 0, nullptr, 1,
+                       &imb);
+
+    uint32_t mipOffsets[kMaxHzbMips] = {};
+    uint32_t totalWords = kHZBHeaderWords;
+    {
+        uint32_t w = uint32_t(gpuDrivenCullWidth);
+        uint32_t h = uint32_t(gpuDrivenCullHeight);
+        for (uint32_t m = 0; m <= gpuDrivenCullMaxMip; ++m) {
+            mipOffsets[m] = totalWords;
+            const uint32_t mw = std::max(w >> m, 1u);
+            const uint32_t mh = std::max(h >> m, 1u);
+            totalWords += mw * mh;
+        }
+    }
+    for (uint32_t m = 0; m <= gpuDrivenCullMaxMip; ++m) {
+        if (m > 0) {
+            // Previous mip write -> this mip read.
+            vk::BufferMemoryBarrier bmb{};
+            bmb.buffer = cull.hzb.buffer;
+            bmb.size = VK_WHOLE_SIZE;
+            bmb.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+            bmb.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+            cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
+                               vk::PipelineStageFlagBits::eComputeShader, {}, 0, nullptr, 1, &bmb,
+                               0, nullptr);
+        }
+        const uint32_t mw = std::max(uint32_t(gpuDrivenCullWidth) >> m, 1u);
+        const uint32_t mh = std::max(uint32_t(gpuDrivenCullHeight) >> m, 1u);
+        struct HzbPush {
+            uint32_t mip;
+            uint32_t width;
+            uint32_t height;
+            uint32_t slotBase;
+            uint32_t prevOffset;
+        } push{m, mw, mh, 0u, mipOffsets[m > 0 ? m - 1 : 0]};
+        cb.pushConstants(gpuDrivenComputeLayout, vk::ShaderStageFlagBits::eCompute, 0,
+                         sizeof(push), &push);
+        hzbBuildPass_.record(cb, (mw + 7) / 8, (mh + 7) / 8, 1);
+    }
+}
+
+bool Graphics::gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanceCount) {
+    if (!gpuDrivenCullEnabled() || !gpuDrivenCullReady_) return false;
+    if (!instances || instanceCount == 0) return false;
+    instanceCount = std::min(instanceCount, kMaxGpuDrivenInstances);
+
+    eve::graphics::IndirectBuilder builder;
+    for (uint32_t i = 0; i < instanceCount; ++i) {
+        builder.add(i, instances[i].meshId, instances[i].materialId, 0);
+    }
+    const uint32_t bucketCount = builder.build(meshTableRecords_);
+    if (bucketCount == 0 || bucketCount > kMaxGpuDrivenBuckets) return false;
+    const auto &cmds = builder.commands();
+    const auto &order = builder.sortedInstanceOrder();
+
+    std::vector<GpuInstance> sorted(instanceCount);
+    for (uint32_t i = 0; i < instanceCount; ++i) sorted[i] = instances[order[i]];
+
+    gpuDrivenBucketIds_.assign(instanceCount, 0);
+    gpuDrivenBucketOffsets_.resize(bucketCount);
+    gpuDrivenBucketMeshIds_.resize(bucketCount);
+    for (uint32_t b = 0; b < bucketCount; ++b) {
+        gpuDrivenBucketOffsets_[b] = cmds[b].firstInstance;
+        gpuDrivenBucketMeshIds_[b] = sorted[cmds[b].firstInstance].meshId;
+    }
+    {
+        uint32_t b = 0;
+        for (uint32_t j = 0; j < instanceCount; ++j) {
+            while (b + 1 < bucketCount && cmds[b + 1].firstInstance <= j) ++b;
+            gpuDrivenBucketIds_[j] = b;
+        }
+    }
+
+    auto &arena = currentFrameArena();
+    // Storage-buffer descriptor offsets must honor minStorageBufferOffsetAlignment
+    // (64 on this Intel driver); align conservatively to 64.
+    gpuDrivenInstAlloc_ = arena.alloc(instanceCount * sizeof(GpuInstance), 64);
+    gpuDrivenBucketIdAlloc_ = arena.alloc(instanceCount * sizeof(uint32_t), 64);
+    gpuDrivenBucketOffAlloc_ = arena.alloc(bucketCount * sizeof(uint32_t), 64);
+    if (!gpuDrivenInstAlloc_.mapped || !gpuDrivenBucketIdAlloc_.mapped ||
+        !gpuDrivenBucketOffAlloc_.mapped) {
+        gpuDrivenCullInstanceCount_ = 0;
+        return false;
+    }
+    std::memcpy(gpuDrivenInstAlloc_.mapped, sorted.data(),
+                instanceCount * sizeof(GpuInstance));
+    std::memcpy(gpuDrivenBucketIdAlloc_.mapped, gpuDrivenBucketIds_.data(),
+                instanceCount * sizeof(uint32_t));
+    std::memcpy(gpuDrivenBucketOffAlloc_.mapped, gpuDrivenBucketOffsets_.data(),
+                bucketCount * sizeof(uint32_t));
+
+    gpuDrivenBucketCount_ = bucketCount;
+    gpuDrivenCullInstanceCount_ = instanceCount;
+    lastGpuDrivenDrawCount_ = bucketCount;  // debug counter: bucket draws the cull path emits
+
+    // Cull source buffers: sorted instances (17), bucket ids (12), offsets (13).
+    auto bufWrite = [&](uint32_t binding, vk::Buffer buffer, vk::DeviceSize offset,
+                        vk::DeviceSize size) {
+        vk::DescriptorBufferInfo info{buffer, offset, size};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = bindlessSet_;
+        w.dstBinding = binding;
+        w.descriptorCount = 1;
+        w.descriptorType = vk::DescriptorType::eStorageBuffer;
+        w.pBufferInfo = &info;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    };
+    bufWrite(17, arena.buffer(), gpuDrivenInstAlloc_.offset, gpuDrivenInstAlloc_.size);
+    bufWrite(12, arena.buffer(), gpuDrivenBucketIdAlloc_.offset, gpuDrivenBucketIdAlloc_.size);
+    bufWrite(13, arena.buffer(), gpuDrivenBucketOffAlloc_.offset, gpuDrivenBucketOffAlloc_.size);
+    return true;
+}
+
+void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                                 float nearZ, float farZ) {
+    if (!gpuDrivenCullReady_ || gpuDrivenCullInstanceCount_ == 0) return;
+    gpuDrivenLastCullSlot_ = uint32_t(currentFrameSlot());
+    auto &slot = currentGpuDrivenCullSlot();
+    auto &cb = currentPresentCb();
+
+    // CPU reset of GPU-owned per-slot state (slot's previous frame is complete).
+    {
+        void *flagsMap = slot.visibleFlags.map();
+        std::memset(flagsMap, 0, kMaxGpuDrivenInstances * sizeof(uint32_t));
+        slot.visibleFlags.unmap();
+        void *counterMap = slot.bucketCounters.map();
+        std::memset(counterMap, 0, kMaxGpuDrivenBuckets * sizeof(uint32_t));
+        slot.bucketCounters.unmap();
+        // The emit pass only writes buckets that survived culling; clear the
+        // commands so a stale instanceCount from an earlier frame cannot make
+        // a culled bucket draw again (readbacks / validation read this too).
+        void *cmdMap = slot.indirect.map();
+        std::memset(cmdMap, 0, kMaxGpuDrivenBuckets * sizeof(GpuIndirectCommand));
+        slot.indirect.unmap();
+    }
+
+    GpuCullParams params{};
+    params.viewProj = viewProj;
+    gpuDrivenFrustumPlanes(viewProj, params.frustumPlanes);
+    params.cameraPos = glm::vec4(eye, 0.f);
+    const int w = gpuDrivenCullWidth;
+    const int h = gpuDrivenCullHeight;
+    params.screen = glm::vec4(float(w), float(h), 1.f / float(w), 1.f / float(h));
+    const float fovRad = fovYDeg * 0.017453292519943295f;
+    params.clipNearFar =
+        glm::vec4(nearZ, farZ, float(h) * 0.5f / std::tan(fovRad * 0.5f), 1.f);
+    params.hzbInfo =
+        glm::vec4(float(gpuDrivenCullMaxMip), 0.f, float(w), float(h));
+    params.counts = glm::uvec4(gpuDrivenCullInstanceCount_, gpuDrivenBucketCount_,
+                               kMaxGpuDrivenBuckets, 0u);
+    {
+        void *pMap = slot.cullParams.map();
+        std::memcpy(pMap, &params, sizeof(params));
+        slot.cullParams.unmap();
+    }
+
+    auto bufWrite = [&](uint32_t binding, vk::Buffer buffer, vk::DeviceSize offset,
+                        vk::DeviceSize size, vk::DescriptorType type) {
+        vk::DescriptorBufferInfo info{buffer, offset, size};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = bindlessSet_;
+        w.dstBinding = binding;
+        w.descriptorCount = 1;
+        w.descriptorType = type;
+        w.pBufferInfo = &info;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    };
+    bufWrite(6, slot.cullParams.buffer, 0, sizeof(GpuCullParams),
+             vk::DescriptorType::eUniformBuffer);
+    bufWrite(7, slot.visibleFlags.buffer, 0, VK_WHOLE_SIZE,
+             vk::DescriptorType::eStorageBuffer);
+    bufWrite(8, slot.compacted.buffer, 0, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);
+    bufWrite(9, slot.indirect.buffer, 0, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);
+    bufWrite(14, slot.bucketCounters.buffer, 0, VK_WHOLE_SIZE,
+             vk::DescriptorType::eStorageBuffer);
+    // The draw consumes the compacted buffer as its instance source (binding 4).
+    bufWrite(4, slot.compacted.buffer, 0, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);
+    // HZB buffer + GBuffer depth sampler for the build pass.
+    bufWrite(10, slot.hzb.buffer, 0, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);
+    {
+        auto *gbSlot = currentGBufferSlot();
+        if (gbSlot && gbSlot->depthGpu.sampler && gbSlot->depthGpu.imageView()) {
+            vk::DescriptorImageInfo depthInfo{gbSlot->depthGpu.sampler, gbSlot->depthGpu.imageView(),
+                                              vk::ImageLayout::eShaderReadOnlyOptimal};
+            vk::WriteDescriptorSet wd{};
+            wd.dstSet = bindlessSet_;
+            wd.dstBinding = 11;
+            wd.descriptorCount = 1;
+            wd.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+            wd.pImageInfo = &depthInfo;
+            device->updateDescriptorSets(1, &wd, 0, nullptr);
+        }
+    }
+
+    // All descriptor updates are done; bind the bindless set ONCE for the
+    // whole compute section (the set is not UPDATE_AFTER_BIND, so updating it
+    // while bound to a recording command buffer would invalidate the buffer).
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eCompute, gpuDrivenComputeLayout, 1, 1,
+                          &bindlessSet_, 0, nullptr);
+
+    recordGpuDrivenHzbBuild();
+
+    const uint32_t groups = (gpuDrivenCullInstanceCount_ + 63u) / 64u;
+    // HZB build writes (storage buffer) -> cull reads.
+    {
+        vk::BufferMemoryBarrier bmb{};
+        bmb.buffer = slot.hzb.buffer;
+        bmb.size = VK_WHOLE_SIZE;
+        bmb.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+        bmb.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
+                           vk::PipelineStageFlagBits::eComputeShader, {}, 0, nullptr, 1, &bmb, 0,
+                           nullptr);
+    }
+    // Arena host writes + previous-frame HZB shader writes visible to cull.
+    {
+        vk::BufferMemoryBarrier bmb{};
+        bmb.buffer = currentFrameArena().buffer();
+        bmb.size = VK_WHOLE_SIZE;
+        bmb.srcAccessMask = vk::AccessFlagBits::eHostWrite | vk::AccessFlagBits::eShaderWrite;
+        bmb.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eHost |
+                               vk::PipelineStageFlagBits::eComputeShader,
+                           vk::PipelineStageFlagBits::eComputeShader, {}, 0, nullptr, 1, &bmb, 0,
+                           nullptr);
+    }
+    cullPass_.record(cb, groups, 1, 1);
+
+    // Cull flags write -> emit read.
+    {
+        vk::BufferMemoryBarrier bmb{};
+        bmb.buffer = slot.visibleFlags.buffer;
+        bmb.size = VK_WHOLE_SIZE;
+        bmb.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+        bmb.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
+                           vk::PipelineStageFlagBits::eComputeShader, {}, 0, nullptr, 1, &bmb, 0,
+                           nullptr);
+    }
+    emitPass_.record(cb, groups, 1, 1);
+
+    // Emit writes (compacted + commands) -> vertex read + indirect read.
+    {
+        vk::BufferMemoryBarrier bmb[2]{};
+        bmb[0].buffer = slot.compacted.buffer;
+        bmb[0].size = VK_WHOLE_SIZE;
+        bmb[0].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+        bmb[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        bmb[1].buffer = slot.indirect.buffer;
+        bmb[1].size = VK_WHOLE_SIZE;
+        bmb[1].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+        bmb[1].dstAccessMask = vk::AccessFlagBits::eIndirectCommandRead;
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
+                           vk::PipelineStageFlagBits::eVertexShader |
+                               vk::PipelineStageFlagBits::eDrawIndirect,
+                           {}, 0, nullptr, 2, bmb, 0, nullptr);
+    }
+}
+
+void Graphics::gpuDrivenOpenScenePass() {
+    if (!gpuDrivenScenePassPending_) return;
+    gpuDrivenScenePassPending_ = false;
+    if (beginSceneColorRenderPass()) {
+        ensureScenePassPipelines(activeScenePass(), activeSceneSamples());
+    } else {
+        ensureScenePassPipelines(renderpass, vk::SampleCountFlagBits::e1);
+        beginSwapchainColorPass();
+    }
+    swapchainPassOpen = true;
+}
+
+void Graphics::gpuDrivenDrawOpaque() {
+    if (!gpuDrivenCullReady_ || gpuDrivenBucketCount_ == 0) return;
+    if (!swapchainPassOpen && !sceneColorPassOpen) return;
+    auto &slot = currentGpuDrivenCullSlot();
+
+    // Per-frame set0 + UBO (same shading state as the stage-1 path).
+    ensureFlatNormalTexture3D();
+    ensureFlatHeightTexture3D();
+    ensureDefaultEnvCubemap();
+    Texture *tex = whiteTexture;
+    auto *gpuTex = static_cast<GpuTexture *>(tex->gpuHandle);
+    auto *gpuNormal = static_cast<GpuTexture *>(mesh3dNormalTexture ? mesh3dNormalTexture->gpuHandle
+                                                                     : flatNormalTexture3D->gpuHandle);
+    auto *gpuHeight = static_cast<GpuTexture *>(mesh3dHeightTexture ? mesh3dHeightTexture->gpuHandle
+                                                                     : flatHeightTexture3D->gpuHandle);
+    Texture *envTex = mesh3dEnvTexture ? mesh3dEnvTexture : defaultEnvCubemap;
+    auto *gpuEnv = static_cast<GpuTexture *>(envTex->gpuHandle);
+    auto *gpuDepth = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+
+    Mesh3DUBO ubo = mesh3dFrameUbo;
+    ubo.model = glm::mat4(1.f);
+    ubo.tint = glm::vec4(1.f);
+    const int lightCount = std::max(0, std::min(mesh3dLighting.count, Lighting3DPack::kMaxLights));
+    ubo.lightDir.w = float(lightCount);
+    ubo.cameraPos.w = mesh3dRoughness;
+    ubo.lightColor.w = mesh3dEnvIntensity;
+    ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), mesh3dMetallic);
+    for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
+    int dirI = -1;
+    for (int i = 0; i < lightCount; ++i) {
+        if (mesh3dLighting.lights[i].posRadius.w <= 0.f) {
+            dirI = i;
+            break;
+        }
+    }
+    if (dirI >= 0) {
+        glm::vec3 d(mesh3dLighting.lights[dirI].posRadius);
+        if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+        else d = glm::normalize(d);
+        ubo.lightDir = glm::vec4(d, float(lightCount));
+        ubo.lightColor =
+            glm::vec4(glm::vec3(mesh3dLighting.lights[dirI].color), mesh3dEnvIntensity);
+    } else {
+        ubo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(lightCount));
+        ubo.lightColor = glm::vec4(0.f, 0.f, 0.f, mesh3dEnvIntensity);
+    }
+    auto &fslots = currentMesh3dFrameSlots();
+    const size_t setSlot = fslots.drawIndex++;
+    vk::DescriptorSet set =
+        mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, fslots, setSlot);
+    fslots.slots[setSlot].ubo.updateLocal(frameToken(), ubo);
+    ShadowUBO shadowUbo = mesh3dShadows.ubo;
+    if (!mesh3dShadows.active) {
+        shadowUbo.bias.y = 0.f;
+        shadowUbo.splits.w = 0.f;
+    }
+    shadowUbo.bias.z = mesh3dShadowReceive ? 1.f : 0.f;
+    fslots.slots[setSlot].shadowUbo.updateLocal(frameToken(), shadowUbo);
+
+    auto &cb = currentPresentCb();
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0, 1,
+                          &set, 0, nullptr);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1,
+                          &bindlessSet_, 0, nullptr);
+
+    const vk::DeviceSize stride = sizeof(GpuIndirectCommand);
+    GpuMesh *boundMesh = nullptr;
+    for (uint32_t b = 0; b < gpuDrivenBucketCount_; ++b) {
+        const uint32_t meshId = gpuDrivenBucketMeshIds_[b];
+        if (meshId >= meshRecordOwners_.size()) continue;
+        GpuMesh *mesh = meshRecordOwners_[meshId];
+        if (mesh != boundMesh) {
+            const vk::DeviceSize vbOffset = 0;
+            cb.bindVertexBuffers(0, 1, mesh->vertices, &vbOffset);
+            cb.bindIndexBuffer(mesh->indices.buffer, 0, mesh->indexType);
+            boundMesh = mesh;
+        }
+        cb.drawIndexedIndirect(slot.indirect.buffer, vk::DeviceSize(b) * stride, 1, stride);
+    }
+}
+
+uint32_t Graphics::debugGpuDrivenVisibleCount() const {
+    if (!gpuDrivenCullReady_ || gpuDrivenCullSlots_.empty()) return 0;
+    auto &slot = gpuDrivenCullSlots_[gpuDrivenLastCullSlot_ % gpuDrivenCullSlots_.size()];
+    uint32_t count = 0;
+    void *map = slot.visibleFlags.map();
+    if (!map) return 0;
+    const uint32_t n = std::min(gpuDrivenCullInstanceCount_, kMaxGpuDrivenInstances);
+    const auto *flags = static_cast<const uint32_t *>(map);
+    for (uint32_t i = 0; i < n; ++i) count += flags[i] != 0 ? 1u : 0u;
+    slot.visibleFlags.unmap();
+    return count;
+}
+
+uint32_t Graphics::debugGpuDrivenCulledDrawCount() const {
+    if (!gpuDrivenCullReady_ || gpuDrivenCullSlots_.empty()) return 0;
+    auto &slot = gpuDrivenCullSlots_[gpuDrivenLastCullSlot_ % gpuDrivenCullSlots_.size()];
+    uint32_t count = 0;
+    void *map = slot.indirect.map();
+    if (!map) return 0;
+    const auto *cmds = static_cast<const GpuIndirectCommand *>(map);
+    const uint32_t n = std::min(gpuDrivenBucketCount_, kMaxGpuDrivenBuckets);
+    for (uint32_t b = 0; b < n; ++b) count += cmds[b].instanceCount > 0 ? 1u : 0u;
+    slot.indirect.unmap();
+    return count;
 }
 
 uint32_t Graphics::debugBindlessIndex(Texture *tex) const {
@@ -4354,17 +4963,39 @@ void Graphics::begin3DFrame() {
     // 3D pass clears with backgroundColor (setBackgroundColor), not a stale 2D clear.
     clearColor = backgroundColor;
     createSceneColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
-    if (beginSceneColorRenderPass()) {
+
+    // Stage 2: with the GPU cull chain live, the compute section (HZB build +
+    // cull + emit) must be recorded BEFORE the scene color pass opens, and the
+    // cull reads the instance data RenderSystem3D uploads after begin3DFrame.
+    // Defer the pass opening; gpuDrivenOpenScenePass() is called by the
+    // renderer right before the opaque draws.
+    gpuDrivenScenePassPending_ = false;
+    const bool cullThisFrame =
+        gpuDrivenCullEnabled() && renderControl_ && renderControl_->hasPass("forward");
+    auto openScenePass = [&]() {
         // Rebuild scene-pass pipelines to match the active scene pass (MSAA).
         // Must happen AFTER the pass opens: if the MSAA scene pass is unavailable
         // we fall back to the swapchain (e1) render pass below, and rasterizing
         // with an Nx pipeline into an e1 pass is UB that can hang the GPU (TDR).
-        ensureScenePassPipelines(activeScenePass(), activeSceneSamples());
+        if (beginSceneColorRenderPass()) {
+            ensureScenePassPipelines(activeScenePass(), activeSceneSamples());
+        } else {
+            ensureScenePassPipelines(renderpass, vk::SampleCountFlagBits::e1);
+            beginSwapchainColorPass();
+        }
+    };
+    if (cullThisFrame) {
+        ensureGpuDrivenCullResources(gbufferWidth > 0 ? gbufferWidth
+                                                      : int(swapchain.extent.width),
+                                     gbufferHeight > 0 ? gbufferHeight
+                                                       : int(swapchain.extent.height));
+        // The HZB build + cull + emit dispatches are recorded by
+        // gpuDrivenCullEmit (called after RenderSystem3D uploads instances),
+        // so every descriptor update happens before the bindless set is bound.
+        gpuDrivenScenePassPending_ = gpuDrivenCullReady_;
+        if (!gpuDrivenCullReady_) openScenePass();
     } else {
-        // Scene pass unavailable — draw 3D straight into the swapchain. Scene-pass
-        // pipelines must be 1x / swapchain-compatible to avoid the samples mismatch.
-        ensureScenePassPipelines(renderpass, vk::SampleCountFlagBits::e1);
-        beginSwapchainColorPass();
+        openScenePass();
     }
 
     auto &cb = currentPresentCb();
@@ -4373,7 +5004,7 @@ void Graphics::begin3DFrame() {
     currentMesh3dFrameSlots().drawIndex = 0;
     currentMesh3dClusteredFrameSlots().drawIndex = 0;
     currentVoxelInstanceFrame().drawIndex = 0;
-    swapchainPassOpen = true;
+    if (!gpuDrivenScenePassPending_) swapchainPassOpen = true;
     frameHad3D = true;
     hasPendingClear = false;
 }

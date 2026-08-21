@@ -520,6 +520,13 @@ void RenderSystem3D::render(Graphics &gfx) {
     }
     gfx.setMesh3DShadows(shadowUpload);
 
+    // GPU-driven intent must be set BEFORE begin3DFrame: when the stage-2 cull
+    // chain is live, begin3DFrame defers opening the scene color pass so the
+    // compute section can be recorded before the opaque draws.
+    const bool gpuDrivenWanted =
+        rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
+    gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
+
     const bool useClustered =
         allowClustered && packed.size() > size_t(Lighting3DPack::kMaxLights);
     if (!useClustered) {
@@ -775,9 +782,6 @@ void RenderSystem3D::render(Graphics &gfx) {
     // without clustered lighting; any ineligible item falls the whole opaque
     // list back to the legacy per-draw path.
     bool gpuDrivenUsed = false;
-    const bool gpuDrivenWanted =
-        rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
-    gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
     if (doForward && gpuDrivenWanted && !useClustered && defaultCam && !opaque.empty()) {
         bool eligible = true;
         for (const auto &item : opaque) {
@@ -822,16 +826,33 @@ void RenderSystem3D::render(Graphics &gfx) {
                 }
                 instances.push_back(inst);
             }
-            if (recordsOk &&
-                gfx.gpuDrivenSubmitOpaque(instances.data(), uint32_t(instances.size()))) {
-                gpuDrivenUsed = true;
+            if (recordsOk) {
+                // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
+                if (gfx.gpuDrivenCullEnabled() &&
+                    gfx.gpuDrivenCullBegin(instances.data(), uint32_t(instances.size()))) {
+                    auto cd = defaultCam->data();
+                    const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+                    gfx.gpuDrivenCullEmit(projM * viewM, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
+                    gfx.gpuDrivenOpenScenePass();
+                    gfx.gpuDrivenDrawOpaque();
+                    gpuDrivenUsed = true;
+                } else {
+                    // Deferred scene pass must be open before stage-1 recording.
+                    gfx.gpuDrivenOpenScenePass();
+                    if (gfx.gpuDrivenSubmitOpaque(instances.data(),
+                                                  uint32_t(instances.size()))) {
+                        gpuDrivenUsed = true;
+                    }
+                }
             }
         }
     }
     if (doForward && !gpuDrivenUsed) {
+        if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
         for (const auto &item : opaque) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
     }
     if (doHair) {
+        if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
         for (const auto &item : hair) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
     }
 

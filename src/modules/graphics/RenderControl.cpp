@@ -50,6 +50,8 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     if (feature == "gbufferAlbedo" && enabled) features_["gbuffer"] = true;
     if (feature == "ao" && enabled) features_["gbuffer"] = true;
     if (feature == "outline" && enabled) features_["gbuffer"] = true;
+    // Stage 2 GPU cull needs the GBuffer depth as its HZB source.
+    if (feature == "gpuDriven" && enabled) features_["gbuffer"] = true;
     if (feature == "gi" && enabled) {
         features_["gbuffer"] = true;
         features_["gbufferAlbedo"] = true;
