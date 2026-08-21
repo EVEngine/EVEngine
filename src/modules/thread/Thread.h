@@ -2,6 +2,7 @@
 
 #include "common/Module.h"
 #include "thread/Channel.h"
+#include "thread/JobSystem.h"
 #include "thread/Task.h"
 #include "thread/ThreadPool.h"
 
@@ -34,6 +35,13 @@ public:
     ThreadPool *newThreadPool(int workerCount = 0);
 
     /**
+     * @brief Shared engine-wide JobSystem (created lazily with hardware
+     * concurrency workers). Use it for dependency graphs, parallel_for and
+     * frame-scoped jobs; the pool below remains for simple async work.
+     */
+    JobSystem *getJobSystem();
+
+    /**
      * @brief Named shared channel (love2d-style). Same name → same Channel instance
      * for the lifetime of the module.
      */
@@ -51,6 +59,7 @@ public:
 private:
     std::mutex mu_;
     std::unique_ptr<ThreadPool> defaultPool_;
+    std::unique_ptr<JobSystem> defaultJobSystem_;
     std::map<std::string, std::unique_ptr<Channel>> namedChannels_;
 };
 

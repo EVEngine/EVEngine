@@ -206,7 +206,7 @@ eve_declare_module(NAME stylize LAYER 4 SCRIPT Stylize SLOT stylize
                    DEPS graphics image
                    GROUP 3d)
 eve_declare_module(NAME voxel LAYER 5 SCRIPT Voxel
-                   DEPS graphics procgen
+                   DEPS graphics procgen thread
                    GROUP 3d)
 eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack SLOT spritestack
                    DEPS graphics image model3d
