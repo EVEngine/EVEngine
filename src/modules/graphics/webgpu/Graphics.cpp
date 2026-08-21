@@ -340,6 +340,42 @@ void Graphics::createDefaultTextures() {
         flatDepthTexture3D = gpu;
     }
 
+    // 1x1x3 depth-array placeholder for the mesh3d shadow bindings (5/8).
+    // sampleShadowPCF() early-outs (bias.y < 0.5) when shadows are disabled,
+    // so the texture is never actually sampled.
+    {
+        auto *gpu = new GpuTexture();
+        WGPUTextureDescriptor td{};
+        td.label = sv("eve_default_shadow_depth");
+        td.dimension = WGPUTextureDimension_2D;
+        td.size = {1, 1, 3};
+        td.sampleCount = 1;
+        td.format = WGPUTextureFormat_Depth32Float;
+        td.mipLevelCount = 1;
+        td.usage = WGPUTextureUsage_TextureBinding;
+        gpu->texture = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+        WGPUTextureViewDescriptor vd{};
+        vd.format = WGPUTextureFormat_Depth32Float;
+        vd.dimension = WGPUTextureViewDimension_2DArray;
+        vd.baseMipLevel = 0;
+        vd.mipLevelCount = 1;
+        vd.baseArrayLayer = 0;
+        vd.arrayLayerCount = 3;
+        gpu->view = gpu->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&vd));
+        WGPUSamplerDescriptor sd{};
+        sd.label = sv("eve_default_shadow_sampler");
+        sd.addressModeU = WGPUAddressMode_ClampToEdge;
+        sd.addressModeV = WGPUAddressMode_ClampToEdge;
+        sd.addressModeW = WGPUAddressMode_ClampToEdge;
+        sd.magFilter = WGPUFilterMode_Linear;
+        sd.minFilter = WGPUFilterMode_Linear;
+        sd.mipmapFilter = WGPUMipmapFilterMode_Nearest;
+        sd.compare = WGPUCompareFunction_LessEqual;
+        sd.maxAnisotropy = 1.f;
+        gpu->sampler = device.CreateSampler(reinterpret_cast<const wgpu::SamplerDescriptor*>(&sd));
+        defaultShadowTex = gpu;
+    }
+
     // 1x1 white cubemap.
     uint8_t cubeFace[4] = {255, 255, 255, 255};
     uint8_t cubeData[24];
@@ -1498,13 +1534,13 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[4].buffer = currentUboArena().buffer.Get();
     entries[4].size = sizeof(ShadowUBO);
     entries[5].binding = 5;
-    entries[5].textureView = shadowDepthArray ? shadowDepthArray->view.Get() : nullptr;
+    entries[5].textureView = (shadowDepthArray ? shadowDepthArray : defaultShadowTex)->view.Get();
     entries[6].binding = 6;
     entries[6].textureView = h->view.Get();
     entries[7].binding = 7;
     entries[7].sampler = mainSampler.Get();
     entries[8].binding = 8;
-    entries[8].sampler = shadowDepthArray ? shadowDepthArray->sampler.Get() : nullptr;
+    entries[8].sampler = (shadowDepthArray ? shadowDepthArray : defaultShadowTex)->sampler.Get();
     entries[9].binding = 9;
     entries[9].textureView = d->view.Get();
 
@@ -2451,8 +2487,10 @@ void Graphics::createSceneColorResources(int width, int height) {
     sceneColorWidth = width;
     sceneColorHeight = height;
     sceneColorSamples = 1;
+    sceneColorSlots.reserve(kFramesInFlight);
     for (int s = 0; s < int(kFramesInFlight); ++s) {
-        SceneColorSlot slot;
+        sceneColorSlots.emplace_back();
+        SceneColorSlot &slot = sceneColorSlots.back();
         slot.sampleCount = sceneColorSamples;
 
         WGPUTextureDescriptor cd{};
@@ -2490,7 +2528,6 @@ void Graphics::createSceneColorResources(int width, int height) {
         slot.colorTex.height = height;
         slot.colorTex.mipmapCount = 1;
 
-        sceneColorSlots.push_back(std::move(slot));
     }
     sceneColorTexture = &sceneColorSlots[0].colorTex;
 }
@@ -2570,8 +2607,10 @@ void Graphics::createGbufferResources(int width, int height) {
     // TextureBinding so X-ray (and AO) can sample the scene depth in a later pass.
     dd.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
 
+    gbufferSlots.reserve(kFramesInFlight);
     for (int s = 0; s < int(kFramesInFlight); ++s) {
-        GbufferSlot slot;
+        gbufferSlots.emplace_back();
+        GbufferSlot &slot = gbufferSlots.back();
         slot.normal = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
         slot.normalView = slot.normal.CreateView();
         slot.depthColor = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
@@ -2607,7 +2646,6 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.depthTex.width = width;
         slot.depthTex.height = height;
 
-        gbufferSlots.push_back(std::move(slot));
     }
 }
 
@@ -2701,8 +2739,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 
         if (gpuMesh->indexBuffer) {
             pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            const uint64_t indexBytes = gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
             pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
-                                uint64_t(gpuMesh->indexCount) * 4);
+                                uint64_t(gpuMesh->indexCount) * indexBytes);
             pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
         } else {
             pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
@@ -2740,8 +2779,9 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass) {
 
             if (gpuMesh->indexBuffer) {
                 pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+                const uint64_t indexBytes = gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
                 pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
-                                    uint64_t(gpuMesh->indexCount) * 4);
+                                    uint64_t(gpuMesh->indexCount) * indexBytes);
                 pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
             } else {
                 pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
@@ -2793,8 +2833,9 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
 
         if (gpuMesh->indexBuffer) {
             pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);
+            const uint64_t indexBytes = gpuMesh->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u;
             pass.SetIndexBuffer(gpuMesh->indexBuffer, gpuMesh->indexFormat, 0,
-                                uint64_t(gpuMesh->indexCount) * 4);
+                                uint64_t(gpuMesh->indexCount) * indexBytes);
             pass.DrawIndexed(gpuMesh->indexCount, 1, 0, 0, 0);
         } else {
             pass.SetVertexBuffer(0, gpuMesh->vertexBuffer, 0, gpuMesh->vertexCount * 32);

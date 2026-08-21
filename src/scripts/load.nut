@@ -438,10 +438,14 @@ eve_frame <- function() {
         if ("async_pump" in getroottable())
             async_pump();
         if (dev_should_update()) {
-            eve_update(dt);
-            // Flush reactions scheduled during eve_update.
-            if ("async_pump" in getroottable())
-                async_pump();
+            // Playground pause: the page sets the eve_playground_paused root
+            // flag to freeze game logic while the render keeps presenting.
+            if (!("eve_playground_paused" in getroottable()) || !eve_playground_paused) {
+                eve_update(dt);
+                // Flush reactions scheduled during eve_update.
+                if ("async_pump" in getroottable())
+                    async_pump();
+            }
             dev_notify_frame_done();
         }
         eve_render();

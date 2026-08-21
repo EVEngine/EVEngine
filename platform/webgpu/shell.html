@@ -1,97 +1,483 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>EVEngine — WebGPU</title>
+  <title>EVEngine — WebGPU Playground</title>
   <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #101014;
-      font-family: system-ui, sans-serif;
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      overflow: hidden; background: #0d0e13; color: #d5d9e2;
+      font: 13px/1.5 system-ui, "Segoe UI", sans-serif;
     }
+    #app { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+    /* Loading overlay */
     #loading {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #c8c8d0;
-      font-size: 14px;
-      letter-spacing: 0.05em;
-      z-index: 10;
+      position: absolute; inset: 0; z-index: 50;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #0d0e13; color: #c8c8d0; font-size: 14px; letter-spacing: 0.05em;
     }
     #loading .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid #2a2a34;
-      border-top-color: #5aa9ff;
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
-      margin-bottom: 12px;
+      width: 36px; height: 36px; border: 3px solid #2a2a34; border-top-color: #5aa9ff;
+      border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 12px;
     }
     #loading.failed { color: #ff6b6b; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
+
+    /* Toolbar */
+    #toolbar {
+      flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; background: #171923; border-bottom: 1px solid #262a38;
     }
+    .brand { font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
+    .brand span { color: #5aa9ff; margin-left: 6px; font-weight: 500; }
+    #toolbar select {
+      background: #10121b; color: #d5d9e2; border: 1px solid #333a4d;
+      border-radius: 6px; padding: 5px 8px;
+    }
+    .btn {
+      background: #232838; color: #d5d9e2; border: 1px solid #333a4d;
+      border-radius: 6px; padding: 5px 12px; cursor: pointer; white-space: nowrap;
+    }
+    .btn:hover { background: #2b3247; }
+    .btn.primary { background: #2f6fd0; border-color: #3d7fe4; color: #fff; }
+    .btn.primary:hover { background: #3a7ce0; }
+    .btn.danger { background: #3a2a33; border-color: #6a3a4a; color: #ffb0b8; }
+    .btn:disabled { opacity: 0.45; cursor: default; }
+    #saveState { margin-left: auto; font-size: 12px; color: #7f8798; white-space: nowrap; }
+
+    /* Main split: editor | canvas */
+    #main { flex: 1 1 auto; display: flex; min-height: 0; }
+    #editorPane {
+      flex: 0 0 42%; display: flex; flex-direction: column;
+      min-width: 220px; background: #10121a;
+    }
+    #divider { flex: 0 0 6px; cursor: col-resize; background: #262a38; }
+    #divider:hover { background: #3a4a6a; }
+    #stagePane {
+      flex: 1 1 auto; min-width: 0; position: relative;
+      display: flex; align-items: center; justify-content: center; background: #05060a;
+    }
+    #stagePane .veil {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      color: #4a5268; font-size: 13px; pointer-events: none; background: #05060a;
+    }
+    #canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+    .paneTitle {
+      flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px; font-size: 12px; color: #7f8798; letter-spacing: 0.03em;
+      background: #14161f; border-bottom: 1px solid #262a38;
+    }
+    .paneTitle b { color: #c9cfdb; font-weight: 600; }
+    .paneTitle .hint { color: #5d6474; font-weight: 400; }
+    .paneTitle .spacer { flex: 1; }
+
+    /* Code editor: transparent textarea over a highlighted <pre> */
+    #editor { position: relative; flex: 1 1 auto; min-height: 0; background: #10121a; }
+    #hl, #code {
+      position: absolute; inset: 0; margin: 0; padding: 12px 14px; border: 0; outline: 0;
+      font: 13px/1.55 "Cascadia Code", Consolas, "Courier New", monospace;
+      tab-size: 4; white-space: pre; overflow: auto;
+    }
+    #hl { color: #c8cede; pointer-events: none; z-index: 0; overflow: hidden; }
+    #code {
+      background: transparent; color: transparent; caret-color: #e8ecf4;
+      z-index: 1; resize: none;
+    }
+    #code::selection { background: rgba(90, 169, 255, 0.32); color: transparent; }
+    #code::placeholder { color: #4a5060; }
+    .tok-c { color: #5d6474; font-style: italic; }
+    .tok-s { color: #b8d38f; }
+    .tok-n { color: #e0b26b; }
+    .tok-k { color: #6ea8ff; }
+    .tok-o { color: #9aa4b5; }
+
+    /* Console + REPL */
+    #consolePane {
+      flex: 0 0 170px; display: flex; flex-direction: column;
+      background: #0b0d13; border-top: 1px solid #262a38;
+    }
+    #log {
+      flex: 1 1 auto; overflow: auto; padding: 6px 10px;
+      font: 12px/1.5 "Cascadia Code", Consolas, monospace;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    #log .out { color: #b9c2d0; }
+    #log .err { color: #ff7d8a; }
+    #log .cmd { color: #8ba5ff; }
+    #log .sys { color: #5d6474; }
+    #replRow {
+      flex: 0 0 auto; display: flex; align-items: center; gap: 6px;
+      border-top: 1px solid #20242f; padding: 5px 10px;
+    }
+    #replRow .replPrompt { color: #5aa9ff; font-weight: 600; }
+    #repl {
+      flex: 1; background: #10121b; color: #d5d9e2; border: 1px solid #333a4d;
+      border-radius: 6px; padding: 5px 8px; outline: 0;
+      font: 12px/1.4 Consolas, monospace;
+    }
+    #repl:focus { border-color: #5aa9ff; }
+
+    /* Status bar */
+    #statusbar {
+      flex: 0 0 auto; display: flex; gap: 16px; padding: 4px 12px;
+      font-size: 11px; color: #6f7789; background: #14161f;
+      border-top: 1px solid #262a38; white-space: nowrap; overflow: hidden;
+    }
+    #statusbar .ok { color: #7fd18b; }
+    #statusbar .bad { color: #ff7d8a; }
   </style>
 </head>
 <body>
   <div id="loading">
     <div class="spinner"></div>
-    <span id="status">Loading EVEngine…</span>
+    <span id="status">正在启动 EVEngine…</span>
   </div>
-  <canvas id="canvas" width="800" height="600"></canvas>
+
+  <div id="app">
+    <header id="toolbar">
+      <div class="brand">EVEngine<span>WebGPU Playground</span></div>
+      <select id="exampleSel" disabled title="选择示例脚本（载入编辑器，不自动运行）"></select>
+      <button id="btnPause" class="btn" disabled title="冻结 eve_update，渲染继续">暂停</button>
+      <button id="btnApply" class="btn primary" disabled title="写入 main.nut 并软热重载（状态保留在 __pg）">应用 Ctrl+Enter</button>
+      <button id="btnRestart" class="btn danger" disabled title="清空 __pg 状态表并重建场景">重置状态</button>
+      <span id="saveState"></span>
+    </header>
+
+    <div id="main">
+      <section id="editorPane">
+        <div class="paneTitle"><b>main.nut</b><span class="hint">编辑 Squirrel 脚本 — Ctrl+Enter 热更新，状态保留在 __pg</span></div>
+        <div id="editor">
+          <pre id="hl" aria-hidden="true"></pre>
+          <textarea id="code" wrap="off" spellcheck="false" autocomplete="off"
+                    autocapitalize="off" autocorrect="off" placeholder="引擎加载中…"></textarea>
+        </div>
+      </section>
+      <div id="divider"></div>
+      <section id="stagePane">
+        <div class="veil">WebGPU 画面</div>
+        <canvas id="canvas" width="800" height="600"></canvas>
+      </section>
+    </div>
+
+    <section id="consolePane">
+      <div class="paneTitle">
+        <b>控制台</b><span class="hint">引擎 print / 脚本错误 / REPL</span>
+        <span class="spacer"></span>
+        <button id="btnClearLog" class="btn" style="padding: 2px 8px">清空</button>
+      </div>
+      <div id="log"></div>
+      <div id="replRow">
+        <span class="replPrompt">&gt;</span>
+        <input id="repl" spellcheck="false" autocomplete="off"
+               placeholder="在运行中的引擎里执行一行 Squirrel，回车运行（如 __pg.frames）">
+      </div>
+    </section>
+
+    <footer id="statusbar">
+      <span id="stEngine">engine: 未就绪</span>
+      <span id="stIsolated">crossOriginIsolated=…</span>
+      <span id="stAdapter">webgpu=…</span>
+      <span>热更新: 开（dofile + eve_reload，__pg 状态保留）</span>
+    </footer>
+  </div>
 
   <script>
+    (function () {
+      'use strict';
+      var $ = function (id) { return document.getElementById(id); };
+      var ta = $('code'), hl = $('hl'), logEl = $('log');
+      var engineReady = false;
+      var PG_KEY = 'eve.playground.main.nut';
+      var EXAMPLES = [
+        { path: 'main.nut', label: '3D 旋转球体（默认）' },
+        { path: 'playground/demos/2d_sprites.nut', label: '2D 精灵 + 键盘' },
+        { path: 'playground/demos/3d_textured.nut', label: '3D 纹理立方体' },
+        { path: 'playground/demos/hot_state.nut', label: '热更新状态演示' }
+      ];
+
+      function timeStr() {
+        var d = new Date();
+        function p(n) { return (n < 10 ? '0' : '') + n; }
+        return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+      }
+
+      // ---- console ---------------------------------------------------------
+      function pgLog(kind, text) {
+        if (text == null) text = '';
+        var line = document.createElement('div');
+        line.className = kind;
+        line.textContent = String(text);
+        logEl.appendChild(line);
+        while (logEl.childNodes.length > 600) logEl.removeChild(logEl.firstChild);
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+      window.pgLog = pgLog; // Module.print / printErr overrides below
+      $('btnClearLog').addEventListener('click', function () { logEl.innerHTML = ''; });
+
+      // ---- Squirrel syntax highlighting ------------------------------------
+      var SQ_KEYWORDS = {};
+      ('base break case catch class clone const continue default delete do else enum ' +
+       'extends false for foreach function if in instanceof local null resume return ' +
+       'static switch this throw true try typeof while yield constructor rawcall ' +
+       'array table').split(' ').forEach(function (k) { SQ_KEYWORDS[k] = true; });
+      var TOKEN_RE =
+        /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b|0x[0-9a-fA-F]+)|([A-Za-z_]\w*)|(<-|=>|==|!=|<=|>=|\+\+|--|::|\.\.|[-+*/%<>=!&|^~?:]+)/g;
+      function esc(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function highlight(src) {
+        var out = '', last = 0, m;
+        TOKEN_RE.lastIndex = 0;
+        while ((m = TOKEN_RE.exec(src))) {
+          out += esc(src.slice(last, m.index));
+          if (m[1]) out += '<span class="tok-c">' + esc(m[1]) + '</span>';
+          else if (m[2]) out += '<span class="tok-s">' + esc(m[2]) + '</span>';
+          else if (m[3]) out += '<span class="tok-n">' + esc(m[3]) + '</span>';
+          else if (m[4]) out += SQ_KEYWORDS[m[4]] ? '<span class="tok-k">' + m[4] + '</span>' : esc(m[4]);
+          else out += '<span class="tok-o">' + esc(m[0]) + '</span>';
+          last = m.index + m[0].length;
+        }
+        return out + esc(src.slice(last));
+      }
+      function syncEditor() {
+        hl.innerHTML = highlight(ta.value) + '\n';
+        hl.scrollTop = ta.scrollTop;
+        hl.scrollLeft = ta.scrollLeft;
+      }
+      ta.addEventListener('input', syncEditor);
+      ta.addEventListener('scroll', function () {
+        hl.scrollTop = ta.scrollTop;
+        hl.scrollLeft = ta.scrollLeft;
+      });
+      ta.addEventListener('keydown', function (e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          var s = ta.selectionStart, en = ta.selectionEnd;
+          ta.value = ta.value.slice(0, s) + '    ' + ta.value.slice(en);
+          ta.selectionStart = ta.selectionEnd = s + 4;
+          syncEditor();
+        } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          applyNow();
+        }
+      });
+      syncEditor();
+
+      // ---- editor/canvas divider -------------------------------------------
+      (function () {
+        var divider = $('divider'), main = $('main'), pane = $('editorPane');
+        divider.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          function move(ev) {
+            var rect = main.getBoundingClientRect();
+            var frac = (ev.clientX - rect.left) / rect.width;
+            frac = Math.max(0.25, Math.min(0.7, frac));
+            pane.style.flex = '0 0 ' + (frac * 100) + '%';
+          }
+          function up() {
+            window.removeEventListener('mousemove', move);
+            window.removeEventListener('mouseup', up);
+          }
+          window.addEventListener('mousemove', move);
+          window.addEventListener('mouseup', up);
+        });
+      })();
+
+      // ---- JS <-> engine bridge wrappers -----------------------------------
+      function withCString(str, fn) {
+        var bytes = Module.lengthBytesUTF8(str) + 1;
+        var ptr = Module._malloc(bytes);
+        Module.stringToUTF8(str, ptr, bytes);
+        try { return fn(ptr); } finally { Module._free(ptr); }
+      }
+      function bridgesAvailable() {
+        return Module && Module._eve_playground_apply &&
+               Module._eve_playground_eval && Module._eve_playground_read;
+      }
+      function pgApply(src) {
+        if (!bridgesAvailable()) { pgLog('err', '[playground] 桥接函数缺失：eve.js 版本过旧？'); return; }
+        withCString(src, function (p) { Module._eve_playground_apply(p); });
+      }
+      function pgEval(src) {
+        if (!bridgesAvailable()) { pgLog('err', '[playground] 桥接函数缺失：eve.js 版本过旧？'); return ''; }
+        return withCString(src, function (p) {
+          return Module.UTF8ToString(Module._eve_playground_eval(p));
+        });
+      }
+      function pgRead(path) {
+        if (!bridgesAvailable()) return '';
+        return withCString(path, function (p) {
+          return Module.UTF8ToString(Module._eve_playground_read(p));
+        });
+      }
+      function pgSetPaused(on) { Module._eve_playground_set_paused(on ? 1 : 0); }
+
+      // ---- actions ---------------------------------------------------------
+      function saveLocal() {
+        try { localStorage.setItem(PG_KEY, ta.value); } catch (e) {}
+      }
+      function setSave(text) { $('saveState').textContent = text; }
+      function applyNow() {
+        if (!engineReady) return;
+        saveLocal();
+        pgApply(ta.value);
+        setSave('已应用 ' + timeStr());
+      }
+      function restartNow() {
+        if (!engineReady) return;
+        // 清空 playground 约定状态表 __pg → 重新应用脚本 → 重跑 eve_init 重建场景。
+        var r = pgEval('if ("__pg" in getroottable()) delete getroottable().__pg; "state cleared"');
+        pgLog('sys', '[playground] ' + r);
+        saveLocal();
+        pgApply(ta.value);
+        var r2 = pgEval('if ("eve_init" in getroottable()) { eve_init(); "init re-run"; } else "no eve_init"');
+        pgLog('sys', '[playground] ' + r2);
+        setSave('已重置状态并应用 ' + timeStr());
+      }
+      $('btnApply').addEventListener('click', applyNow);
+      $('btnRestart').addEventListener('click', restartNow);
+
+      var paused = false;
+      $('btnPause').addEventListener('click', function () {
+        if (!engineReady) return;
+        paused = !paused;
+        pgSetPaused(paused);
+        $('btnPause').textContent = paused ? '继续' : '暂停';
+        pgLog('sys', paused
+          ? '[playground] 已暂停（eve_update 冻结，渲染继续）'
+          : '[playground] 已继续');
+      });
+
+      // REPL
+      $('repl').addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        var v = this.value.trim();
+        if (!v || !engineReady) return;
+        pgLog('cmd', '> ' + v);
+        pgLog('out', String(pgEval(v)));
+        this.value = '';
+      });
+
+      // examples dropdown (reads files from the engine VFS)
+      function fillExamples() {
+        var sel = $('exampleSel');
+        sel.innerHTML = '';
+        EXAMPLES.forEach(function (ex) {
+          if (ex.path !== 'main.nut' && pgRead(ex.path) === '') return;
+          var opt = document.createElement('option');
+          opt.value = ex.path;
+          opt.textContent = ex.label;
+          sel.appendChild(opt);
+        });
+        sel.disabled = sel.options.length === 0;
+      }
+      $('exampleSel').addEventListener('change', function () {
+        var src = pgRead(this.value);
+        if (src === '') { pgLog('err', '[playground] 无法读取 ' + this.value); return; }
+        ta.value = src;
+        syncEditor();
+        saveLocal();
+        setSave('已载入 ' + this.value + ' — 按“应用”或 Ctrl+Enter 运行');
+      });
+
+      // ---- engine ready ----------------------------------------------------
+      function engineUp() {
+        if (engineReady) return;
+        engineReady = true;
+        var veil = document.querySelector('#stagePane .veil');
+        if (veil) veil.style.display = 'none';
+        $('stEngine').textContent = 'engine: 已就绪';
+        $('stEngine').className = 'ok';
+        $('btnApply').disabled = false;
+        $('btnRestart').disabled = false;
+        $('btnPause').disabled = false;
+
+        // 恢复上次会话：localStorage 优先，否则读 /game/main.nut
+        var saved = null;
+        try { saved = localStorage.getItem(PG_KEY); } catch (e) {}
+        if (saved == null || saved === '') saved = pgRead('main.nut');
+        if (saved !== '') {
+          ta.value = saved;
+          syncEditor();
+        }
+        fillExamples();
+        pgLog('sys', '[playground] 引擎就绪。编辑脚本后按 Ctrl+Enter 热更新（状态保留在 __pg），或点“重置状态”重建场景。');
+        // 会话恢复：如果本地保存的脚本和当前 main.nut 不同，自动应用
+        try { saved = localStorage.getItem(PG_KEY); } catch (e) { saved = null; }
+        if (saved != null && saved !== '' && saved !== pgRead('main.nut')) {
+          pgApply(saved);
+          setSave('已恢复上次会话并应用 ' + timeStr());
+        } else {
+          setSave('就绪 ' + timeStr());
+        }
+      }
+      window.eveEngineReady = engineUp; // C++ calls this after load.nut finishes
+    })();
+
+    // Module is consumed by the generated Emscripten script in the next block.
     var Module = {
-      // PROXY_TO_PTHREAD runs main() on a worker with no DOM; Emscripten
-      // transfers this canvas to the worker as an OffscreenCanvas when
-      // OFFSCREENCANVAS_SUPPORT is enabled (OFFSCREENCANVASES_TO_PTHREAD=#canvas).
       canvas: document.getElementById('canvas'),
-      locateFile: function (path) {
-        // Worker scripts (pthreads) resolve next to the module.
-        return path;
-      },
+      locateFile: function (path) { return path; },
+      print: function (text) { if (window.pgLog) window.pgLog('out', text); },
+      printErr: function (text) { if (window.pgLog) window.pgLog('err', text); },
       onRuntimeInitialized: function () {
         var st = document.getElementById('status');
-        if (st) st.textContent = 'Engine ready';
+        if (st) st.textContent = '引擎核心已加载，正在启动…';
       }
     };
-    // The engine hides the loading overlay after the first composited frame;
-    // this is the hook it calls (guarded, in case the page is reused).
     window.hideEVELoading = function () {
       var el = document.getElementById('loading');
       if (el) el.style.display = 'none';
     };
-    // Diagnostic status line: reports WebGPU + SharedArrayBuffer availability
-    // so engine init failures are visible without DevTools.
+    // 镜像引擎侧的 console.log/warn/error（如 GPU 错误）到页面控制台
+    (function () {
+      function wrap(method, kind) {
+        var orig = console[method];
+        console[method] = function () {
+          var args = Array.prototype.slice.call(arguments);
+          try { orig.apply(console, args); } catch (e) {}
+          var text = args.map(function (a) {
+            if (typeof a === 'string') return a;
+            if (a && a.message) return a.message;
+            try { return JSON.stringify(a); } catch (e2) { return String(a); }
+          }).join(' ');
+          if (window.pgLog) window.pgLog(kind, text);
+        };
+      }
+      wrap('log', 'out');
+      wrap('warn', 'out');
+      wrap('error', 'err');
+    })();
+    // 状态栏诊断：跨源隔离 + WebGPU 适配器（无需 DevTools 即可看到初始化失败原因）
     (function () {
       var st = document.getElementById('status');
-      var lines = ['crossOriginIsolated=' + (crossOriginIsolated ? 'yes' : 'no')];
+      var iso = document.getElementById('stIsolated');
+      var adp = document.getElementById('stAdapter');
+      iso.textContent = 'crossOriginIsolated=' + (crossOriginIsolated ? 'yes' : 'no');
+      if (!crossOriginIsolated) iso.className = 'bad';
       if (navigator.gpu) {
         navigator.gpu.requestAdapter().then(function (a) {
           if (a) {
             var info = (a.info && (a.info.vendor || a.info.architecture)) || 'ok';
-            lines.push('webgpuAdapter=' + JSON.stringify(info));
+            adp.textContent = 'webgpuAdapter=' + JSON.stringify(info);
+            adp.className = 'ok';
           } else {
-            lines.push('webgpuAdapter=null');
+            adp.textContent = 'webgpuAdapter=null';
+            adp.className = 'bad';
           }
-          if (st) st.textContent = lines.join(' | ');
-        }).catch(function (e) { lines.push('adapterError=' + e.message); if (st) st.textContent = lines.join(' | '); });
+          if (st) st.textContent = '引擎就绪';
+        }).catch(function (e) {
+          adp.textContent = 'adapterError=' + e.message;
+          adp.className = 'bad';
+        });
       } else {
-        lines.push('webgpu=unsupported');
-        if (st) st.textContent = lines.join(' | ');
+        adp.textContent = 'webgpu=unsupported（需要 Chrome/Edge 113+ 并启用 WebGPU）';
+        adp.className = 'bad';
       }
     })();
   </script>

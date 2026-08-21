@@ -230,6 +230,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         -sFORCE_FILESYSTEM=1
         -sASSERTIONS=1
         -sFETCH=1
+        # The playground shell calls these helpers directly on Module.
+        # Emscripten 6 no longer auto-adds _main when EXPORTED_FUNCTIONS is set.
+        -sEXPORTED_FUNCTIONS=_main,_malloc,_free
+        -sEXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8,UTF8ToString
         # C++ exceptions can be thrown through ASYNCIFY-wrapped frames (e.g. a
         # module expose() failing); keep JS-side catching enabled so the abort
         # helper is compiled instead of asserting on the first __cxa_throw.

@@ -431,6 +431,10 @@ private:
     GpuTexture *flatDepthTexture3D = nullptr;
     GpuTexture *defaultEnvCubemap = nullptr;
     GpuTexture *shadowDepthArray = nullptr;
+    // 1x1x3 depth-array + comparison sampler used for the mesh3d shadow
+    // bindings (5/8) when no shadow map exists yet — the bind group layout
+    // requires those bindings on every draw.
+    GpuTexture *defaultShadowTex = nullptr;
 
     // Pipelines / layouts.
     wgpu::PipelineLayout tex2DPipelineLayout;

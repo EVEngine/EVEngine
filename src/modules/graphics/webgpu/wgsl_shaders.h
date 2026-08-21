@@ -278,7 +278,7 @@ fn shadeLight(n: vec3f, v: vec3f, albedo: vec3f, metallic: f32, rough: f32, l: v
     return (kd * albedo * diffuse + spec * ndl) * rad;
 }
 fn cloudHash(p: vec2f) -> f32 {
-    let ip = ivec2(floor(mod(p, 64.0)));
+    let ip = vec2i(floor(p % 64.0));
     var h = (u32(ip.x) * 374761393u) ^ (u32(ip.y) * 668265263u);
     h = (h ^ (h >> 13)) * 1274126177u;
     h = h ^ (h >> 16);
