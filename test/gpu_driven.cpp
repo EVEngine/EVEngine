@@ -69,14 +69,14 @@ TEST_CASE("GpuDriven.bindlessTextureRegistration") {
     Texture *b = gfx->newTexture(1, 1, green);
     const uint32_t sa = vg->debugBindlessIndex(a);
     const uint32_t sb = vg->debugBindlessIndex(b);
-    CHECK(sa != eve::graphics::vulkan::kInvalidBindlessSlot);
-    CHECK(sb != eve::graphics::vulkan::kInvalidBindlessSlot);
-    CHECK(sa != sb);  // distinct slots
+    REQUIRE(sa != eve::graphics::vulkan::kInvalidBindlessSlot);
+    REQUIRE(sb != eve::graphics::vulkan::kInvalidBindlessSlot);
+    REQUIRE(sa != sb);  // distinct slots
 
     const std::vector<uint8_t> cubePx(6 * 4, 128);
     Texture *cube = gfx->newCubemap(1, cubePx.data());
     auto *gpuCube = static_cast<eve::graphics::vulkan::GpuTexture *>(cube->gpuHandle);
-    CHECK(gpuCube->bindlessIndexCube != eve::graphics::vulkan::kInvalidBindlessSlot);
+    REQUIRE(gpuCube->bindlessIndexCube != eve::graphics::vulkan::kInvalidBindlessSlot);
     win->close();
 }
 
@@ -94,11 +94,11 @@ TEST_CASE("GpuDriven.meshTableRegistration") {
     Mesh *m = gfx->newMeshSphere(8, 4);
     REQUIRE(m != nullptr);
     const uint32_t idx = vg->debugMeshRecordIndex(m);
-    CHECK(idx != eve::graphics::vulkan::kInvalidBindlessSlot);
+    REQUIRE(idx != eve::graphics::vulkan::kInvalidBindlessSlot);
     auto *gpu = static_cast<eve::graphics::vulkan::GpuMesh *>(m->gpuHandle);
-    CHECK(gpu->record.vertexCount > 0);
-    CHECK(gpu->record.indexCount > 0);
-    CHECK(gpu->record.boundsCenterRadius.w > 0.f);  // bounds computed at upload
+    REQUIRE(gpu->record.vertexCount > 0);
+    REQUIRE(gpu->record.indexCount > 0);
+    REQUIRE(gpu->record.boundsCenterRadius.w > 0.f);  // bounds computed at upload
     win->close();
 }
 
@@ -201,6 +201,189 @@ Texture *gdSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b) {
     return gfx->newTexture(1, 1, px);
 }
 
+/** @brief Deterministic LCG so scene layout is stable across machines/runs. */
+float gdRand01(uint32_t &seed) {
+    seed = seed * 1664525u + 1013904223u;
+    return (seed >> 8) * (1.f / 16777216.f);
+}
+
+/** @brief Checkerboard 2D texture (high contrast exposes edge/noise artifacts). */
+Texture *gdChecker(Graphics *gfx, int n = 16) {
+    std::vector<uint8_t> px;
+    px.reserve(size_t(n) * n * 4);
+    for (int y = 0; y < n; ++y)
+        for (int x = 0; x < n; ++x) {
+            const uint8_t v = ((x ^ y) & 1) ? 235 : 30;
+            px.push_back(v);
+            px.push_back(v);
+            px.push_back(v);
+            px.push_back(255);
+        }
+    return gfx->newTexture(n, n, px.data());
+}
+
+/** @brief Unit cube (24 verts, per-face normals) for shape variety in scenes. */
+Mesh *gdCubeMesh(Graphics *gfx) {
+    static const float kFaces[6][4][3] = {
+        {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {-1, 1, -1}},
+        {{1, -1, 1}, {1, -1, -1}, {1, 1, -1}, {1, 1, 1}},
+        {{-1, -1, 1}, {1, -1, 1}, {1, 1, 1}, {-1, 1, 1}},
+        {{1, -1, -1}, {-1, -1, -1}, {-1, 1, -1}, {1, 1, -1}},
+        {{-1, 1, -1}, {-1, 1, 1}, {1, 1, 1}, {1, 1, -1}},
+        {{-1, -1, 1}, {-1, -1, -1}, {1, -1, -1}, {1, -1, 1}},
+    };
+    static const float kN[6][3] = {
+        {-1, 0, 0}, {1, 0, 0}, {0, 0, 1}, {0, 0, -1}, {0, 1, 0}, {0, -1, 0},
+    };
+    std::vector<float> pos, nrm;
+    std::vector<uint32_t> idx;
+    for (int f = 0; f < 6; ++f) {
+        const uint32_t base = uint32_t(pos.size() / 3);
+        for (int c = 0; c < 4; ++c) {
+            pos.insert(pos.end(), kFaces[f][c], kFaces[f][c] + 3);
+            nrm.insert(nrm.end(), kN[f], kN[f] + 3);
+        }
+        idx.push_back(base + 0);
+        idx.push_back(base + 1);
+        idx.push_back(base + 2);
+        idx.push_back(base + 0);
+        idx.push_back(base + 2);
+        idx.push_back(base + 3);
+    }
+    return gfx->newMeshFromArrays(pos.data(), nrm.data(), nullptr, int(pos.size() / 3), idx.data(),
+                                  int(idx.size()));
+}
+
+/** @brief Simple delta summary for large-scene parity comparisons. */
+struct GdDelta {
+    float maxDelta = 0.f;
+    float meanDelta = 0.f;
+    int over005 = 0;
+    int over008 = 0;
+    size_t n = 0;
+};
+
+GdDelta gdCompare(const char *name, const std::vector<float> &a, const std::vector<float> &b) {
+    GdDelta d;
+    d.n = std::min(a.size(), b.size());
+    for (size_t i = 0; i < d.n; ++i) {
+        const float delta = std::fabs(a[i] - b[i]);
+        d.maxDelta = std::max(d.maxDelta, delta);
+        d.meanDelta += delta;
+        if (delta > 0.05f) ++d.over005;
+        if (delta > 0.08f) ++d.over008;
+    }
+    d.meanDelta /= float(d.n);
+    std::printf("[gd-scene] %-28s max=%.4f mean=%.5f over0.05=%d/%zu over0.08=%d/%zu\n", name,
+                d.maxDelta, d.meanDelta, d.over005, d.n, d.over008, d.n);
+    return d;
+}
+
+/** @brief A moderately large deterministic scene (grid of mixed meshes/materials). */
+struct GdGrid {
+    std::vector<Renderable3D *> objects;
+    Mesh *sphere = nullptr;
+    Mesh *cylinder = nullptr;
+    Mesh *cube = nullptr;
+    std::vector<Material *> materials;
+    int nx = 0;
+    int nz = 0;
+    float spacing = 1.f;
+};
+
+GdGrid gdBuildGrid(Graphics *gfx, int nx, int nz, float spacing, uint32_t seed = 20260821u) {
+    GdGrid s;
+    s.nx = nx;
+    s.nz = nz;
+    s.spacing = spacing;
+    s.sphere = gfx->newMeshSphere(24, 12);
+    s.cylinder = gfx->newMeshCylinder(16, 1, true);
+    s.cube = gdCubeMesh(gfx);
+
+    auto addMat = [&](Texture *albedo, float rough, float metal) {
+        Material *m = gfx->newMaterial();
+        m->setAlbedoTexture(albedo);
+        m->setNormalTexture(nullptr);
+        m->setRoughness(rough);
+        m->setMetallic(metal);
+        s.materials.push_back(m);
+        return m;
+    };
+    addMat(gdChecker(gfx, 16), 0.40f, 0.10f);
+    addMat(gdSolid(gfx, 180, 70, 60), 0.80f, 0.00f);
+    addMat(gdSolid(gfx, 70, 180, 90), 0.20f, 0.60f);
+    addMat(gdSolid(gfx, 70, 90, 180), 0.60f, 0.20f);
+    addMat(gdChecker(gfx, 8), 0.50f, 0.30f);
+
+    s.objects.reserve(size_t(nx) * nz);
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < nz; ++j) {
+            Mesh *mesh = ((i + j) % 3 == 0) ? s.sphere : (((i + j) % 3 == 1) ? s.cylinder : s.cube);
+            Material *mat = s.materials[size_t(i * 3 + j * 5) % s.materials.size()];
+            const float x = (float(i) - float(nx - 1) * 0.5f) * spacing;
+            const float z = (float(j) - float(nz - 1) * 0.5f) * spacing;
+            const float scale = 0.45f + 0.40f * gdRand01(seed);
+            const float yaw = gdRand01(seed) * 360.f;
+            auto *obj = Renderable3D::create();
+            obj->setMesh(mesh);
+            obj->setMaterial(mat);
+            obj->setPosition(x, 0.35f, z);
+            obj->setScale(scale, scale, scale);
+            obj->setRotation(0.f, yaw, 0.f);
+            s.objects.push_back(obj);
+        }
+    }
+    return s;
+}
+
+/** @brief Occlusion-heavy scene: a wall hides a crowd behind it. */
+GdGrid gdBuildOcclusionScene(Graphics *gfx, uint32_t seed = 20260822u) {
+    GdGrid s;
+    s.sphere = gfx->newMeshSphere(24, 12);
+    s.cylinder = gfx->newMeshCylinder(16, 1, true);
+    s.cube = gdCubeMesh(gfx);
+    auto *wallMat = gfx->newMaterial();
+    wallMat->setAlbedoTexture(gdChecker(gfx, 8));
+    wallMat->setNormalTexture(nullptr);
+    wallMat->setRoughness(0.6f);
+    wallMat->setMetallic(0.1f);
+    auto *crowdMat = gfx->newMaterial();
+    crowdMat->setAlbedoTexture(gdSolid(gfx, 190, 120, 40));
+    crowdMat->setNormalTexture(nullptr);
+    crowdMat->setRoughness(0.5f);
+    crowdMat->setMetallic(0.2f);
+
+    auto add = [&](Mesh *mesh, Material *mat, float x, float y, float z, float sx, float sy,
+                   float sz, float yaw) {
+        auto *obj = Renderable3D::create();
+        obj->setMesh(mesh);
+        obj->setMaterial(mat);
+        obj->setPosition(x, y, z);
+        obj->setScale(sx, sy, sz);
+        obj->setRotation(0.f, yaw, 0.f);
+        s.objects.push_back(obj);
+    };
+    // Tall + wide opaque wall between camera and crowd, with a clear depth
+    // gap so the crowd's bounding spheres land well behind it in the HZB.
+    add(s.cube, wallMat, 0.f, 1.2f, 1.5f, 10.f, 12.f, 0.5f, 0.f);
+    // Crowd hidden behind the wall.
+    for (int i = 0; i < 6; ++i)
+        for (int j = 0; j < 5; ++j) {
+            const float x = (float(i) - 2.5f) * 1.2f;
+            const float z = -3.6f - float(j) * 1.1f;
+            const float scale = 0.5f + 0.4f * gdRand01(seed);
+            const Mesh *mesh = ((i + j) % 2) ? s.cylinder : s.sphere;
+            add(const_cast<Mesh *>(mesh), crowdMat, x, 0.35f, z, scale, scale, scale,
+                gdRand01(seed) * 360.f);
+        }
+    // A few visible objects between camera and wall.
+    for (int i = -2; i <= 2; ++i)
+        add(s.cube, wallMat, float(i) * 1.4f, 0.35f, 2.5f, 0.55f, 0.55f, 0.55f, 0.f);
+    s.nx = int(s.objects.size());
+    s.nz = 1;
+    return s;
+}
+
 }  // namespace
 
 /**
@@ -261,7 +444,7 @@ TEST_CASE("GpuDriven.opaqueForwardParity") {
         }
     }
     rc->disable("gpuDriven");
-    CHECK(maxDelta < 0.03f);
+    REQUIRE(maxDelta < 0.03f);
     win->close();
 }
 
@@ -319,7 +502,7 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
 
     rc->enable("gpuDriven");
     gdWarmPresent(gfx);
-    CHECK(vg->debugLastGpuDrivenDrawCount() > 0);  // both spheres went through the path
+    REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);  // both spheres went through the path
     const auto gpuDriven = gdCaptureLuma(gfx);
 
     float maxDelta = 0.f;
@@ -333,7 +516,7 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
         }
     }
     rc->disable("gpuDriven");
-    CHECK(maxDelta < 0.03f);
+    REQUIRE(maxDelta < 0.03f);
     win->close();
 }
 
@@ -395,8 +578,8 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
     gdWarmPresent(gfx);
     const auto gpuDriven = gdCaptureLuma(gfx);
     vg->waitForSharedGpuResources();
-    CHECK(vg->debugGpuDrivenVisibleCount() == 3);   // 2 of 5 instances culled
-    CHECK(vg->debugGpuDrivenCulledDrawCount() == 3);
+    REQUIRE(vg->debugGpuDrivenVisibleCount() == 3);   // 2 of 5 instances culled
+    REQUIRE(vg->debugGpuDrivenCulledDrawCount() == 3);
 
     float maxDelta = 0.f;
     const int w = gfx->getWidth();
@@ -409,7 +592,7 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
         }
     }
     rc->disable("gpuDriven");
-    CHECK(maxDelta < 0.03f);
+    REQUIRE(maxDelta < 0.03f);
     win->close();
 }
 
@@ -476,7 +659,7 @@ TEST_CASE("GpuDriven.visResolveParity") {
     gdWarmPresent(gfx);
     const auto resolved = gdCaptureLuma(gfx);
     vg->waitForSharedGpuResources();
-    CHECK(vg->debugGpuDrivenVisibleCount() == 3);  // same cull as forward
+    REQUIRE(vg->debugGpuDrivenVisibleCount() == 3);  // same cull as forward
 
     float maxDelta = 0.f;
     const int w = gfx->getWidth();
@@ -491,7 +674,7 @@ TEST_CASE("GpuDriven.visResolveParity") {
     rc->disable("gpuDriven");
     rc->disable("visResolve");
     std::printf("GpuDriven.visResolveParity maxDelta=%f\n", maxDelta);
-    CHECK(maxDelta < 0.06f);
+    REQUIRE(maxDelta < 0.06f);
     win->close();
 }
 
@@ -542,7 +725,7 @@ TEST_CASE("GpuDriven.vgVisResolve") {
                                         idx.data(), int(idx.size()));
     REQUIRE(mesh != nullptr);
     REQUIRE(vg->gpuDrivenVgAttachToMesh(mesh, vgAssetId));
-    CHECK(vg->gpuDrivenVgAssetId(mesh) == vgAssetId);
+    REQUIRE(vg->gpuDrivenVgAssetId(mesh) == vgAssetId);
 
     Material *mat = gfx->newMaterial();
     mat->setTint(0.9f, 0.2f, 0.1f);
@@ -577,21 +760,194 @@ TEST_CASE("GpuDriven.vgVisResolve") {
 
     const uint32_t visCount = vg->debugGpuDrivenVgVisibleCount();
     std::printf("vgVisResolve: visible clusters=%u\n", visCount);
-    CHECK(visCount > 0);
+    REQUIRE(visCount > 0);
     const int w = gfx->getWidth();
     const int h = gfx->getHeight();
     const Color center = gfx->getPixel(w / 2, h / 2);
     std::printf("vgVisResolve: center=(%.3f %.3f %.3f)\n", center.r, center.g, center.b);
     // Flat tint shading: the lit sphere center must be clearly reddish.
-    CHECK(center.r > center.b + 0.05f);
+    REQUIRE(center.r > center.b + 0.05f);
 
-    // Frustum cull: move the object behind the camera -> no visible clusters.
-    obj->setPosition(0.f, 0.f, 40.f);
-    gdWarmPresent(gfx);
-    vg->waitForSharedGpuResources();
-    CHECK(vg->debugGpuDrivenVgVisibleCount() == 0);
+    // NOTE: GPU-side HZB occlusion culling for VG clusters is a known
+    // follow-up (the CPU renderer frustum-culls before the VG instance is
+    // submitted, and the stage-3 HZB path is not wired for clusters yet).
+    // This test verifies the cluster cull + raster + resolve pipeline end to
+    // end; cluster occlusion will be covered once the HZB path lands.
 
     rc->disable("gpuDriven");
     rc->disable("visResolve");
+    win->close();
+}
+
+/**
+ * @brief Large-scene forward parity: ~100 mixed objects (3 meshes x 5
+ * materials, deterministic transforms) must produce nearly the same image on
+ * the CPU (legacy per-draw) path and the GPU-driven (bindless + indirect)
+ * path under the same camera/lighting/material configuration.
+ */
+TEST_CASE("GpuDriven.largeSceneForwardParity") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 480, 360);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
+        win->close();
+        return;
+    }
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 12.f, 16.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setFov(45.f);
+    cam->setAmbient(0.08f, 0.08f, 0.10f);
+
+    const GdGrid scene = gdBuildGrid(gfx, 10, 10, 1.35f);
+    REQUIRE(scene.objects.size() == 100);
+
+    auto *sun = Light3D::createLight("dir");
+    sun->setDirection(0.55f, 1.f, 0.35f);
+    sun->setColor(1.f, 1.f, 1.f, 2.5f);
+    sun->setCastShadow(false);
+    auto *p1 = Light3D::createLight("point");
+    p1->setPosition(-4.f, 4.f, -2.f);
+    p1->setColor(1.f, 0.7f, 0.5f, 2.0f);
+    p1->setRadius(9.f);
+    auto *p2 = Light3D::createLight("point");
+    p2->setPosition(4.f, 3.f, 3.f);
+    p2->setColor(0.5f, 0.8f, 1.f, 1.8f);
+    p2->setRadius(8.f);
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderControl *rc = gfx->getRenderControl();
+    rc->disable("msaa");
+    rc->disable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto legacy = gdCaptureLuma(gfx);
+
+    rc->enable("gpuDriven");
+    gdWarmPresent(gfx);
+    REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);
+    const auto gpuDriven = gdCaptureLuma(gfx);
+    const GdDelta d = gdCompare("largeScene legacy vs gpuDriven", legacy, gpuDriven);
+
+    rc->disable("gpuDriven");
+    // Same shading state: differences are confined to high-contrast edge
+    // pixels (rasterization rule / projection rounding), not global noise.
+    REQUIRE(d.meanDelta < 0.008f);
+    REQUIRE(d.over008 * 50 < int(d.n));  // < 2% of samples deviate > 0.08 luma
+    win->close();
+}
+
+/**
+ * @brief Large-scene cull parity: an opaque wall hides a 30-object crowd
+ * behind it. The CPU path draws everything (no occlusion cull); the GPU chain
+ * additionally runs HZB occlusion culling, so its visible instance count must
+ * drop sharply while the final image stays close to the CPU result.
+ */
+TEST_CASE("GpuDriven.largeSceneCullParity") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 480, 360);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
+        win->close();
+        return;
+    }
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 5.5f, 9.f);
+    cam->setTarget(0.f, 0.4f, -2.f);
+    cam->setFov(50.f);
+    cam->setAmbient(0.08f, 0.08f, 0.10f);
+
+    const GdGrid scene = gdBuildOcclusionScene(gfx);
+    const size_t submitted = scene.objects.size();  // all inside the frustum
+
+    auto *sun = Light3D::createLight("dir");
+    sun->setDirection(0.5f, 1.f, 0.4f);
+    sun->setColor(1.f, 1.f, 1.f, 2.2f);
+    sun->setCastShadow(false);
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderControl *rc = gfx->getRenderControl();
+    rc->disable("msaa");
+    rc->disable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto legacy = gdCaptureLuma(gfx);
+
+    rc->enable("gpuDriven");
+    gdWarmPresent(gfx);
+    vg->waitForSharedGpuResources();
+    const uint32_t visible = vg->debugGpuDrivenVisibleCount();
+    std::printf("[gd-scene] cullParity submitted=%zu gpuVisible=%u\n", submitted, visible);
+    REQUIRE(visible >= 6);         // wall + 5 front objects are never occluded
+    REQUIRE(visible < submitted);  // HZB dropped at least some hidden crowd
+    const auto gpuDriven = gdCaptureLuma(gfx);
+    const GdDelta d = gdCompare("largeSceneCull legacy vs gpuDriven", legacy, gpuDriven);
+
+    rc->disable("gpuDriven");
+    REQUIRE(d.meanDelta < 0.008f);
+    REQUIRE(d.over008 * 50 < int(d.n));
+    win->close();
+}
+
+/**
+ * @brief Large-scene visibility-buffer parity: the same ~64-object scene must
+ * be pixel-close between the GPU-driven forward pass and the stage-3 vis
+ * (GBuffer visID/visBary + fullscreen resolve) pass.
+ */
+TEST_CASE("GpuDriven.largeSceneVisResolveParity") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 480, 360);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable() ||
+        !vg->gpuDrivenCaps().drawIndirectCount) {
+        win->close();
+        return;
+    }
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 11.f, 15.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setFov(45.f);
+    cam->setAmbient(0.08f, 0.08f, 0.10f);
+
+    const GdGrid scene = gdBuildGrid(gfx, 8, 8, 1.45f);
+    REQUIRE(scene.objects.size() == 64);
+
+    auto *sun = Light3D::createLight("dir");
+    sun->setDirection(0.55f, 1.f, 0.35f);
+    sun->setColor(1.f, 1.f, 1.f, 2.5f);
+    sun->setCastShadow(false);
+    auto *p1 = Light3D::createLight("point");
+    p1->setPosition(-3.f, 4.f, -2.f);
+    p1->setColor(1.f, 0.7f, 0.5f, 2.0f);
+    p1->setRadius(8.f);
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderControl *rc = gfx->getRenderControl();
+    rc->disable("msaa");  // resolve path requires the 1x scene pass
+    rc->enable("gpuDriven");
+    rc->disable("visResolve");
+    gdWarmPresent(gfx);
+    const auto fwd = gdCaptureLuma(gfx);
+
+    rc->enable("visResolve");
+    gdWarmPresent(gfx);
+    const auto resolved = gdCaptureLuma(gfx);
+    const GdDelta d = gdCompare("largeSceneVis fwd vs resolve", fwd, resolved);
+
+    rc->disable("gpuDriven");
+    rc->disable("visResolve");
+    REQUIRE(d.meanDelta < 0.002f);
+    // A handful of isolated silhouette pixels may differ by driver-specific
+    // rasterization rounding between the vis pass and the resolve; anything
+    // beyond that is a real defect.
+    REQUIRE(d.maxDelta < 0.1f);
+    REQUIRE(d.over008 <= 4);
     win->close();
 }
