@@ -36,8 +36,9 @@ public:
     int Run(std::string path, std::string root, bool debug = false, int dapPort = 0,
             int mcpPort = 0, std::string devServer = "");
 
-    /** @brief 构建项目（需要下载工具与源码）。 */
-    int Build(std::string path, std::string output, std::string platform);
+    /** @brief 构建项目：委托仓库 Makefile 的 build/<platform>[-debug] 目标。 */
+    int Build(std::string path, std::string output, std::string platform,
+              std::string sdkRoot = "", bool debug = false);
 
     /** @brief 把游戏打包为单个可执行文件 / APK。 */
     int Package(std::string path, std::string output, std::string sdk);

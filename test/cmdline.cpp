@@ -2,10 +2,12 @@
 #include "zeroerr/unittest.h"
 
 #include "cmdline/cmdline.h"
+#include "cmdline/sdk_tools.h"
 #include "common/Module.h"
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -118,6 +120,70 @@ std::vector<std::string> zipEntryNames(const std::filesystem::path& p) {
         pos += 46 + nameLen + extraLen + commentLen;
     }
     return names;
+}
+
+void setEnvVar(const char* name, const std::string& value) {
+#if defined(_WIN32)
+    _putenv_s(name, value.c_str());
+#else
+    setenv(name, value.c_str(), 1);
+#endif
+}
+
+void unsetEnvVar(const char* name) {
+#if defined(_WIN32)
+    _putenv_s(name, "");
+#else
+    unsetenv(name);
+#endif
+}
+
+// RAII env override; restores the previous value (or removes it) afterwards so
+// tests sharing a process cannot leak settings into each other.
+class ScopedEnv {
+public:
+    ScopedEnv(const char* name, const std::string& value) : name_(name) {
+        const char* old = std::getenv(name);
+        if (old) {
+            had_ = true;
+            old_ = old;
+        }
+        setEnvVar(name, value);
+    }
+    ~ScopedEnv() {
+        if (had_)
+            setEnvVar(name_.c_str(), old_);
+        else
+            unsetEnvVar(name_.c_str());
+    }
+
+private:
+    std::string name_, old_;
+    bool        had_ = false;
+};
+
+// A fake EVEngine checkout whose Makefile echoes each requested target into
+// built.txt. Lets the build dispatch be tested end-to-end (real `make`
+// subprocess) without any SDK or toolchain.
+std::filesystem::path fakeEngineRoot(const char* tag) {
+    const auto root = tempDir(tag);
+    static const char* targets[] = {
+        "build/android",         "build/android-debug", "build/win32", "build/win32-debug",
+        "build/linux",           "build/linux-debug",   "build/macosx", "build/macosx-debug",
+        "wsl/linux",             "wsl/linux-debug",
+    };
+    std::ofstream mk(root / "Makefile", std::ios::binary | std::ios::trunc);
+    for (const char* t : targets) mk << t << ":\n\t@echo " << t << " > built.txt\n";
+    std::ofstream cm(root / "CMakeLists.txt", std::ios::binary | std::ios::trunc);
+    cm << "# fake checkout\n";
+    return root;
+}
+
+std::string builtTarget(const std::filesystem::path& root) {
+    std::ifstream in(root / "built.txt");
+    std::string  s;
+    std::getline(in, s);
+    return s;
 }
 
 }  // namespace
@@ -242,4 +308,64 @@ TEST_CASE("cmdline.zipProducesValidArchiveWithoutItself") {
 
     std::error_code ec;
     std::filesystem::remove_all(dir, ec);
+}
+
+TEST_CASE("cmdline.buildDispatchesToPlatformTarget") {
+    const auto root = fakeEngineRoot("eve_ut_cmdline_build");
+    const auto sdk  = tempDir("eve_ut_cmdline_android_sdk");
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", sdk.string());
+
+    {
+        CaptureStreams cap;
+        const int rc = runCli({"eve", "build", "android", "--sdk", root.string()});
+        CHECK(rc == 0);
+    }
+    CHECK(builtTarget(root).find("build/android") != std::string::npos);
+
+    {
+        CaptureStreams cap;
+        const int rc = runCli({"eve", "build", "-d", "android", "--sdk", root.string()});
+        CHECK(rc == 0);
+    }
+    CHECK(builtTarget(root).find("build/android-debug") != std::string::npos);
+
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+    std::filesystem::remove_all(sdk, ec);
+}
+
+TEST_CASE("cmdline.buildDefaultsToHostPlatform") {
+    const auto root = fakeEngineRoot("eve_ut_cmdline_build_host");
+    {
+        CaptureStreams cap;
+        const int      rc = runCli({"eve", "build", "--sdk", root.string()});
+        CHECK(rc == 0);
+    }
+    CHECK(builtTarget(root).find("build/" + eve::cmd::sdk::hostPlatformName()) !=
+          std::string::npos);
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+}
+
+TEST_CASE("cmdline.buildUnknownPlatformFails") {
+    const auto root = fakeEngineRoot("eve_ut_cmdline_build_unknown");
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "build", "-p", "nonsense", "--sdk", root.string()});
+    CHECK(rc == 2);
+    CHECK(cap.all().find("unknown platform") != std::string::npos);
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+}
+
+TEST_CASE("cmdline.buildMissingAndroidSdkFails") {
+    const auto root = fakeEngineRoot("eve_ut_cmdline_build_no_sdk");
+    const auto sdk  = tempDir("eve_ut_cmdline_no_sdk");
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", (sdk / "missing").string());
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "build", "android", "--sdk", root.string()});
+    CHECK(rc == 2);
+    CHECK(cap.all().find("eve get android") != std::string::npos);
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+    std::filesystem::remove_all(sdk, ec);
 }

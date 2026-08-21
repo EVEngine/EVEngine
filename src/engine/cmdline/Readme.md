@@ -6,7 +6,7 @@ Cmdline
 2. 运行当前程序 run
 3. 运行开发服务器 dev-server
 4. 打包 zip/package
-5. 下载依赖项 get
+5. 下载安装平台 SDK get
 6. 自动测试 test
 7. 查看文档 doc
 
@@ -46,3 +46,11 @@ Cmdline
 查看文档
 根据当前版本，自动查找符号并打开在线文档
 
+构建（build）：
+`eve build <platform> [game-path]` 把当前游戏（或指定目录）构建到对应平台。
+平台名：win32 / linux / macosx / android / ios；默认 release，加 `-d` 为 debug。
+例如 `eve build android` 会调用仓库 Makefile 的 `build/android` 目标（cmake +
+NDK + gradlew）产出 APK。构建根目录自动从 cwd 向上查找（含 Makefile +
+CMakeLists.txt），也可以 `--sdk <dir>` 或 `$EVENGINE_SDK` 指定。
+Windows 宿主上 linux 走 WSL2 目标；macosx/ios 需要 macOS 宿主；android 需要
+先安装 Android SDK（见下）。
