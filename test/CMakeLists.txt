@@ -142,7 +142,8 @@ endif()
 # compiled into the Android/iOS runtimes, so their test files cannot link there.
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
-  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp console.cpp)
+  foreach(_eve_devtool_test IN ITEMS
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp dap.cpp mcp.cpp console.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
