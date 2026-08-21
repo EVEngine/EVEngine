@@ -116,8 +116,10 @@ for name in "${EXAMPLES[@]}"; do
   if [[ -n "$hit" ]]; then
     echo "FAIL  $name  (marker: $hit)"
     grep -nF "$hit" "$log" 2>/dev/null | head -3 | sed 's/^/       /'
-    echo "       --- example output (last 25 lines) ---"
-    tail -n 25 "$log" | sed 's/^/       | /'
+    echo "       --- key output (non-frame-error lines, head 30) ---"
+    grep -vF "frame error" "$log" 2>/dev/null | head -n 30 | sed 's/^/       | /'
+    echo "       --- example output (last 10 lines) ---"
+    tail -n 10 "$log" | sed 's/^/       | /'
     FAILED=$((FAILED + 1))
     FAILED_NAMES+=("$name")
   else

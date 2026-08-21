@@ -103,10 +103,10 @@ function buildPanel() {
     ui.checkbox("悬浮时转正", playerCfg.getHoverRotation(), "hoverrotation");
     ui.text("操作", "h1");
     ui.button("抽一张牌 (1)", "draw");
-    ui.sameLine();
+    ui.sameLine("sl_draw");
     ui.button("重置 (R)", "reset");
     ui.button("偷看敌方 (2)", "peek");
-    ui.sameLine();
+    ui.sameLine("sl_peek");
     ui.button("洗牌", "shuffle");
     ui.text("", "hud");
     ui.text("", "log");
