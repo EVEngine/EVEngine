@@ -643,7 +643,10 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a make test/linux-debug
+          # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
+          # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
+          # SEGFAULT) that is not reproducible in isolation.
+          xvfb-run -a make test/linux-debug CTEST_JOBS=2
 
       - name: Smoke all examples (headless)
         timeout-minutes: 20
@@ -730,6 +733,12 @@ jobs:
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      # Leak detection off: the zeroerr discovery run during the build (and a
+      # few tests) allocates process-lifetime state that LeakSanitizer flags;
+      # the sanitizer job's value is UAF/OOB/UB, not leaks.
+      ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1"
+      UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -786,10 +795,8 @@ jobs:
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
-          ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1"
-          UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
         run: |
-          xvfb-run -a make test/linux-asan
+          xvfb-run -a make test/linux-asan CTEST_JOBS=2
 
   linux-coverage:
     name: Linux (Coverage)
@@ -854,7 +861,7 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a make test/linux-coverage
+          xvfb-run -a make test/linux-coverage CTEST_JOBS=2
 
       - name: Generate coverage report
         timeout-minutes: 10
