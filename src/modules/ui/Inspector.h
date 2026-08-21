@@ -6,6 +6,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,7 @@ class UIHost;
 class EVENGINE_API Inspector {
 public:
     Inspector() = default;
+    ~Inspector();
     Inspector(const Inspector&) = delete;
     Inspector& operator=(const Inspector&) = delete;
 
@@ -62,8 +64,18 @@ public:
     const std::string& selectedClass() const { return selectedClass_; }
     /** @brief Creates another instance of the selected class and selects it. */
     bool addInstance();
+    /**
+     * @brief Registers the scene-pick source used by the Pick button.
+     * @param pickScene Returns the live script instance under the pick cursor
+     *                  (empty object when nothing was picked).
+     */
+    void setPickScene(std::function<ssq::Object()> pickScene);
     /** @brief Selects an instance by index; false when out of range. */
     bool selectInstance(int index);
+    /** @brief Navigates into a nested script instance (reference editing). */
+    void openNested(const std::string& className, const ssq::Object& object);
+    /** @brief Returns to the previously inspected instance. */
+    void back();
     /** @brief Number of live instances of the selected class. */
     int instanceCount() const { return int(instances_.size()); }
     /** @brief Index of the selected instance; -1 when none. */
@@ -86,19 +98,31 @@ private:
         std::string label;
         ssq::Object object;
     };
+    struct NestedEntry {
+        std::string className;
+        ssq::Object object;
+    };
 
     Runtime* runtime() const;
+    const ssq::Object* currentInstance() const;
     int currentClassIndex() const;
     void writeProperty(const std::string& name, ReflectedValue value);
     void rebuildHost();
     WidgetDesc propertyWidget(const std::string& ownerClass,
                               const ReflectedMember& member,
-                              const ReflectedValue& value);
+                              const ReflectedValue& value,
+                              const ssq::Object& instance);
+    WidgetDesc arrayWidget(const std::string& ownerClass, const ReflectedMember& member,
+                           const ssq::Object& instance);
+    WidgetDesc tableWidget(const std::string& ownerClass, const ReflectedMember& member,
+                           const ssq::Object& instance);
 
     std::vector<std::string> classNames_;
     std::string selectedClass_;
     std::vector<InstanceEntry> instances_;
     std::vector<ReflectedMember> cachedMembers_;
+    std::vector<NestedEntry> navStack_;
+    std::function<ssq::Object()> pickScene_;
     int selectedInstance_ = -1;
     UIHost* host_ = nullptr;
 };

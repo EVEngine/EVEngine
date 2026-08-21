@@ -79,8 +79,21 @@ std::string valueText(const ReflectedValue& value) {
 
 }  // namespace
 
+Inspector::~Inspector() {
+    // The ECS host outlives this panel; drop its tree so the stored widget
+    // callbacks (which capture `this`) are released while we are still alive.
+    if (host_) host_->setTree(window("", {}));
+}
+
 Runtime* Inspector::runtime() const {
     return ModuleManager::runtime();
+}
+
+const ssq::Object* Inspector::currentInstance() const {
+    if (selectedInstance_ < 0 ||
+        size_t(selectedInstance_) >= instances_.size())
+        return nullptr;
+    return &instances_[size_t(selectedInstance_)].object;
 }
 
 int Inspector::currentClassIndex() const {
@@ -129,6 +142,7 @@ bool Inspector::selectClass(const std::string& name) {
     if (!rt ||
         std::find(classNames_.begin(), classNames_.end(), name) == classNames_.end())
         return false;
+    navStack_.clear();
     selectedClass_ = name;
     instances_.clear();
     selectedInstance_ = -1;
@@ -155,6 +169,7 @@ bool Inspector::inspectObject(const ssq::Object& object) {
         std::find(classNames_.begin(), classNames_.end(), className) ==
             classNames_.end())
         return false;
+    navStack_.clear();
     selectedClass_ = className;
     instances_.clear();
     InstanceEntry entry;
@@ -185,12 +200,51 @@ bool Inspector::addInstance() {
     }
 }
 
+void Inspector::setPickScene(std::function<ssq::Object()> pickScene) {
+    pickScene_ = std::move(pickScene);
+}
+
 bool Inspector::selectInstance(int index) {
     if (index < 0 || index >= int(instances_.size())) return false;
     selectedInstance_ = index;
     cachedMembers_.clear();
     rebuildHost();
     return true;
+}
+
+void Inspector::openNested(const std::string& className, const ssq::Object& object) {
+    if (object.getType() != ssq::Type::INSTANCE) return;
+    if (selectedInstance_ >= 0 &&
+        size_t(selectedInstance_) < instances_.size()) {
+        NestedEntry entry;
+        entry.className = selectedClass_;
+        entry.object = instances_[size_t(selectedInstance_)].object;
+        navStack_.push_back(std::move(entry));
+    }
+    selectedClass_ = className;
+    instances_.clear();
+    InstanceEntry current;
+    current.label = className + " (nested)";
+    current.object = object;
+    instances_.push_back(std::move(current));
+    selectedInstance_ = 0;
+    cachedMembers_.clear();
+    rebuildHost();
+}
+
+void Inspector::back() {
+    if (navStack_.empty()) return;
+    NestedEntry previous = std::move(navStack_.back());
+    navStack_.pop_back();
+    selectedClass_ = previous.className;
+    instances_.clear();
+    InstanceEntry current;
+    current.label = previous.className + " #1";
+    current.object = previous.object;
+    instances_.push_back(std::move(current));
+    selectedInstance_ = 0;
+    cachedMembers_.clear();
+    rebuildHost();
 }
 
 void Inspector::writeProperty(const std::string& name, ReflectedValue value) {
@@ -212,7 +266,8 @@ void Inspector::writeProperty(const std::string& name, ReflectedValue value) {
 
 WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
                                      const ReflectedMember& member,
-                                     const ReflectedValue& value) {
+                                     const ReflectedValue& value,
+                                     const ssq::Object& instance) {
     const std::string id = "prop_" + member.name;
     const std::string label = memberLabel(ownerClass, member.name);
     switch (editorKind(member, value)) {
@@ -273,17 +328,29 @@ WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
                                  writeProperty(name, std::move(out));
                              });
         case EditorKind::ReadOnly: {
+            if (value.kind == ReflectedValueKind::Array)
+                return arrayWidget(ownerClass, member, instance);
+            if (value.kind == ReflectedValueKind::Table)
+                return tableWidget(ownerClass, member, instance);
+            if (value.kind == ReflectedValueKind::Instance) {
+                const std::string openId = "open_" + ownerClass + "_" + member.name;
+                return button("open " + member.name + "##" + openId, openId,
+                              [this, memberName = member.name]() {
+                                  Runtime* rt = runtime();
+                                  if (!rt) return;
+                                  const ssq::Object* inst = currentInstance();
+                                  if (!inst) return;
+                                  const ssq::Object nested =
+                                      rt->readObjectProperty(*inst, memberName);
+                                  if (nested.getType() != ssq::Type::INSTANCE) return;
+                                  const std::string nestedClass =
+                                      rt->classNameOf(nested);
+                                  if (nestedClass.empty()) return;
+                                  openNested(nestedClass, nested);
+                              });
+            }
             std::string shown;
             switch (value.kind) {
-                case ReflectedValueKind::Array:
-                    shown = "array";
-                    break;
-                case ReflectedValueKind::Table:
-                    shown = "table";
-                    break;
-                case ReflectedValueKind::Instance:
-                    shown = "instance";
-                    break;
                 default:
                     shown = "null";
                     break;
@@ -294,6 +361,158 @@ WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
     return text(member.name, id);
 }
 
+WidgetDesc Inspector::arrayWidget(const std::string& ownerClass,
+                                  const ReflectedMember& member,
+                                  const ssq::Object& instance) {
+    Runtime* rt = runtime();
+    if (!rt) return text(member.name + " = array", "arr_" + ownerClass + "_" + member.name);
+    const size_t size = rt->arraySize(instance, member.name);
+    const std::string base = "arr_" + ownerClass + "_" + member.name;
+    std::vector<WidgetDesc> rows;
+    for (size_t i = 0; i < size; ++i) {
+        const ReflectedValue value = rt->arrayGet(instance, member.name, i);
+        const std::string elementId = base + "_" + std::to_string(i);
+        const std::string elementLabel =
+            member.name + "[" + std::to_string(i) + "]##" + elementId;
+        WidgetDesc cell;
+        if (value.kind == ReflectedValueKind::Bool) {
+            cell = checkbox(elementLabel, value.asBool(), elementId,
+                            [this, name = member.name, i](bool v) {
+                                ReflectedValue out;
+                                out.kind = ReflectedValueKind::Bool;
+                                out.boolean = v;
+                                if (Runtime* rt = runtime()) {
+                                    if (const ssq::Object* inst = currentInstance())
+                                        rt->arraySet(*inst, name, i, out);
+                                }
+                            });
+        } else if (value.kind == ReflectedValueKind::Array ||
+                   value.kind == ReflectedValueKind::Table ||
+                   value.kind == ReflectedValueKind::Instance ||
+                   value.kind == ReflectedValueKind::None ||
+                   value.kind == ReflectedValueKind::Other) {
+            cell = text(member.name + "[" + std::to_string(i) + "] = element",
+                        elementId);
+        } else {
+            cell = inputText(elementLabel, valueText(value), elementId,
+                             [this, name = member.name, i](
+                                 const std::string& text) {
+                                 ReflectedValue out;
+                                 out.kind = ReflectedValueKind::String;
+                                 out.text = text;
+                                 if (Runtime* rt = runtime()) {
+                                     if (const ssq::Object* inst = currentInstance())
+                                         rt->arraySet(*inst, name, i, out);
+                                 }
+                             });
+        }
+        rows.push_back(row(
+            {std::move(cell),
+             button("x##" + elementId + "_del", elementId + "_del",
+                    [this, name = member.name, i]() {
+                        if (Runtime* rt = runtime()) {
+                            if (const ssq::Object* inst = currentInstance())
+                                rt->arrayRemove(*inst, name, i);
+                        }
+                        rebuildHost();
+                    })},
+            elementId + "_row"));
+    }
+    rows.push_back(
+        row({button("+##" + base + "_add", base + "_add",
+                    [this, name = member.name]() {
+                        if (Runtime* rt = runtime()) {
+                            if (const ssq::Object* inst = currentInstance()) {
+                                ReflectedValue out;
+                                out.kind = ReflectedValueKind::String;
+                                rt->arrayAppend(*inst, name, out);
+                            }
+                        }
+                        rebuildHost();
+                    })},
+            base + "_addrow"));
+    return collapsingHeader(
+        member.name + " (array[" + std::to_string(size) + "])##" + base,
+        std::move(rows), base, false);
+}
+
+WidgetDesc Inspector::tableWidget(const std::string& ownerClass,
+                                  const ReflectedMember& member,
+                                  const ssq::Object& instance) {
+    Runtime* rt = runtime();
+    if (!rt) return text(member.name + " = table", "tbl_" + ownerClass + "_" + member.name);
+    const std::string base = "tbl_" + ownerClass + "_" + member.name;
+    const std::vector<std::string> keys = rt->tableKeys(instance, member.name);
+    std::vector<WidgetDesc> rows;
+    for (const std::string& key : keys) {
+        const ReflectedValue value = rt->tableGet(instance, member.name, key);
+        const std::string elementId = base + "_" + key;
+        const std::string elementLabel = key + "##" + elementId;
+        WidgetDesc cell;
+        if (value.kind == ReflectedValueKind::Bool) {
+            cell = checkbox(elementLabel, value.asBool(), elementId,
+                            [this, name = member.name, key](bool v) {
+                                ReflectedValue out;
+                                out.kind = ReflectedValueKind::Bool;
+                                out.boolean = v;
+                                if (Runtime* rt = runtime()) {
+                                    if (const ssq::Object* inst = currentInstance())
+                                        rt->tableSet(*inst, name, key, out);
+                                }
+                            });
+        } else if (value.kind == ReflectedValueKind::Array ||
+                   value.kind == ReflectedValueKind::Table ||
+                   value.kind == ReflectedValueKind::Instance ||
+                   value.kind == ReflectedValueKind::None ||
+                   value.kind == ReflectedValueKind::Other) {
+            cell = text(key + " = element", elementId);
+        } else {
+            cell = inputText(elementLabel, valueText(value), elementId,
+                             [this, name = member.name, key](
+                                 const std::string& text) {
+                                 ReflectedValue out;
+                                 out.kind = ReflectedValueKind::String;
+                                 out.text = text;
+                                 if (Runtime* rt = runtime()) {
+                                     if (const ssq::Object* inst = currentInstance())
+                                         rt->tableSet(*inst, name, key, out);
+                                 }
+                             });
+        }
+        rows.push_back(row(
+            {std::move(cell),
+             button("x##" + elementId + "_del", elementId + "_del",
+                    [this, name = member.name, key]() {
+                        if (Runtime* rt = runtime()) {
+                            if (const ssq::Object* inst = currentInstance())
+                                rt->tableRemove(*inst, name, key);
+                        }
+                        rebuildHost();
+                    })},
+            elementId + "_row"));
+    }
+    rows.push_back(row(
+        {button("+##" + base + "_add", base + "_add",
+                [this, name = member.name, keys]() {
+                    if (Runtime* rt = runtime()) {
+                        if (const ssq::Object* inst = currentInstance()) {
+                            std::string key = "key" + std::to_string(keys.size());
+                            size_t suffix = 0;
+                            while (std::find(keys.begin(), keys.end(), key) !=
+                                   keys.end())
+                                key = "key" + std::to_string(keys.size() + (++suffix));
+                            ReflectedValue out;
+                            out.kind = ReflectedValueKind::String;
+                            rt->tableSet(*inst, name, key, out);
+                        }
+                    }
+                    rebuildHost();
+                })},
+        base + "_addrow"));
+    return collapsingHeader(member.name + " (table)##" + base, std::move(rows), base,
+                            false);
+}
+
 WidgetDesc Inspector::build() {
     std::vector<WidgetDesc> children;
     if (classNames_.empty()) {
@@ -302,16 +521,32 @@ WidgetDesc Inspector::build() {
             "then call ui.inspectRefresh().",
             "hint"));
     } else {
+        std::vector<WidgetDesc> toolbar = {
+            text("Class", "lbl_class"),
+            spacer("class_spacer"),
+            combo("##class", classNames_, currentClassIndex(), "class",
+                  [this](int index) {
+                      if (index >= 0 && index < int(classNames_.size()))
+                          selectClass(classNames_[size_t(index)]);
+                  }),
+        };
+        if (pickScene_) {
+            toolbar.push_back(
+                button("Pick##inspector_pick", "inspector_pick",
+                       [this]() {
+                           if (!pickScene_) return;
+                           const ssq::Object picked = pickScene_();
+                           if (picked.getType() == ssq::Type::INSTANCE)
+                               inspectObject(picked);
+                       }));
+        }
+        if (!navStack_.empty()) {
+            toolbar.insert(toolbar.begin(),
+                           button("<- Back##inspector_back", "inspector_back",
+                                  [this]() { back(); }));
+        }
         children.push_back(row(
-            {
-                text("Class", "lbl_class"),
-                spacer("class_spacer"),
-                combo("##class", classNames_, currentClassIndex(), "class",
-                      [this](int index) {
-                          if (index >= 0 && index < int(classNames_.size()))
-                              selectClass(classNames_[size_t(index)]);
-                      }),
-            },
+            std::move(toolbar),
             "classrow"));
 
         std::vector<std::string> labels;
@@ -349,9 +584,9 @@ WidgetDesc Inspector::build() {
                 std::vector<WidgetDesc> props;
                 for (const ReflectedMember& member : cls->members) {
                     if (member.method) continue;
-                    props.push_back(
-                        propertyWidget(className, member,
-                                       rt->readProperty(instance, member.name)));
+                    props.push_back(propertyWidget(
+                        className, member, rt->readProperty(instance, member.name),
+                        instance));
                 }
                 const bool own = className == selectedClass_;
                 const std::string headerLabel =

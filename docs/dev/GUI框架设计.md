@@ -396,7 +396,19 @@ sequenceDiagram
 - [x] Squirrel 属性元数据选择控件：`</ editor = "slider", min, max />`、
       `</ editor = "combo", options = "a,b,c" />`、checkbox/input 默认；
       继承成员按所属基类分组（“父类属性面版”）
-- [x] 示例 `examples/inspector-demo` + 测试 `test/Inspector.cpp`
+- [x] 数据库管理面板 `ui.dbOpen()` / `dbRegister(obj)`：按脚本类名动态菜单 +
+      实例网格（单元格编辑、+ 新增、删除），数据底座 `ui/ObjectRegistry`
+- [x] 嵌套引用编辑：`Runtime` 数组/表读写 API（`arraySize/Get/Set/Append/Remove`、
+      `tableKeys/Get/Set/Remove`、`readObjectProperty`）+ Inspector 数组/表展开编辑
+      与嵌套实例导航（open / back）
+- [x] 场景层级面板 `ui.sceneOpen()`：经 `ISceneQuery` 能力接口渲染节点树，
+      选中节点可编辑 transform / visible，Pick 按钮把节点 id 交给脚本回调 →
+      `ui.inspectObject()` 联动对象检查器
+- [x] 编辑器外壳 `ui.editorOpen()`：菜单栏 + 三栏 dock（Inspector / Database /
+      Scene）+ 面板开关（`editorSelectPanel`）
+- [x] 示例 `examples/inspector-demo` + 测试（`Inspector.cpp` / `DatabasePanel.cpp` /
+      `EditorShell.cpp` / `ScenePanel.cpp`）
+- [ ] 事件/对话编辑器（规划）：`dialogue` 数据已有，可视化编辑 UI 待做
 - 原始 ImGui 逃生舱仅限 C++ DevTools
 
 

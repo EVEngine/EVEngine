@@ -286,6 +286,43 @@ public:
      */
     bool writeProperty(const ssq::Object& instance, const std::string& name,
                        const ReflectedValue& value) const;
+    /**
+     * @brief Reads a live object-valued property (nested instance).
+     * @return The rooted nested instance; an empty object when the slot is
+     *         missing or not an instance.
+     */
+    ssq::Object readObjectProperty(const ssq::Object& instance,
+                                   const std::string& name) const;
+
+    // ---- array member editing ---------------------------------------------
+    /** @brief Element count of an array member (0 when missing/not an array). */
+    size_t arraySize(const ssq::Object& instance, const std::string& name) const;
+    /** @brief Element value of an array member; empty when out of range. */
+    ReflectedValue arrayGet(const ssq::Object& instance, const std::string& name,
+                            size_t index) const;
+    /** @brief Replaces one element of an array member. */
+    bool arraySet(const ssq::Object& instance, const std::string& name, size_t index,
+                  const ReflectedValue& value) const;
+    /** @brief Appends an element to an array member. */
+    bool arrayAppend(const ssq::Object& instance, const std::string& name,
+                     const ReflectedValue& value) const;
+    /** @brief Removes one element of an array member (shifts the rest). */
+    bool arrayRemove(const ssq::Object& instance, const std::string& name,
+                     size_t index) const;
+
+    // ---- table member editing ---------------------------------------------
+    /** @brief String keys of a table member. */
+    std::vector<std::string> tableKeys(const ssq::Object& instance,
+                                       const std::string& name) const;
+    /** @brief Value of a table member key; empty when missing. */
+    ReflectedValue tableGet(const ssq::Object& instance, const std::string& name,
+                            const std::string& key) const;
+    /** @brief Sets a key of a table member (creates the key when missing). */
+    bool tableSet(const ssq::Object& instance, const std::string& name,
+                  const std::string& key, const ReflectedValue& value) const;
+    /** @brief Removes a key from a table member. */
+    bool tableRemove(const ssq::Object& instance, const std::string& name,
+                     const std::string& key) const;
     /** @brief Recompiles and re-runs a script from its original source. */
     ScriptId reload(ScriptId id);
     /** @brief Unloads a script and removes its declared classes; false if unknown/unloaded. */

@@ -219,3 +219,131 @@ TEST_CASE("inspector.buildsEditablePanelAndBindsTwoWay") {
     tree2->valueHandlers[size_t(hp2->handlerValue - 1)](88.f);
     CHECK_EQ(runtime.readProperty(hero2, "hp").asFloat(), 88.0);
 }
+
+TEST_CASE("runtime.arrayTableAndNestedInstanceEditing") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.initialize();
+    runtime.runSource(R"SQ(
+class SkillData { name = "slash" }
+class NestedHolder {
+    skills = ["slash", "bash"]
+    buffs = { haste = 1.0 }
+    pet = null
+    constructor() {
+        pet = SkillData()
+        // Rebuild mutable defaults per instance (Squirrel shares class-field
+        // table/array defaults between instances).
+        skills = ["slash", "bash"]
+        buffs = { haste = 1.0 }
+    }
+}
+)SQ",
+                      "nested.nut");
+
+    ssq::Object holder = runtime.createInstance("NestedHolder");
+
+    // Array member editing.
+    CHECK_EQ(runtime.arraySize(holder, "skills"), size_t(2));
+    CHECK_EQ(runtime.arrayGet(holder, "skills", 0).asString(), std::string("slash"));
+    ReflectedValue element;
+    element.kind = ReflectedValueKind::String;
+    element.text = "kick";
+    CHECK(runtime.arraySet(holder, "skills", 0, element));
+    CHECK_EQ(runtime.arrayGet(holder, "skills", 0).asString(), std::string("kick"));
+    ReflectedValue extra;
+    extra.kind = ReflectedValueKind::String;
+    extra.text = "jump";
+    CHECK(runtime.arrayAppend(holder, "skills", extra));
+    CHECK_EQ(runtime.arraySize(holder, "skills"), size_t(3));
+    CHECK(runtime.arrayRemove(holder, "skills", 1));
+    CHECK_EQ(runtime.arraySize(holder, "skills"), size_t(2));
+    CHECK_EQ(runtime.arrayGet(holder, "skills", 1).asString(), std::string("jump"));
+
+    // Table member editing.
+    CHECK_EQ(runtime.tableKeys(holder, "buffs"),
+             std::vector<std::string>({"haste"}));
+    CHECK_EQ(runtime.tableGet(holder, "buffs", "haste").asFloat(), 1.0);
+    ReflectedValue speed;
+    speed.kind = ReflectedValueKind::Float;
+    speed.floating = 2.0;
+    CHECK(runtime.tableSet(holder, "buffs", "speed", speed));
+    CHECK_EQ(runtime.tableGet(holder, "buffs", "speed").asFloat(), 2.0);
+    CHECK(runtime.tableRemove(holder, "buffs", "haste"));
+    CHECK_EQ(runtime.tableKeys(holder, "buffs"),
+             std::vector<std::string>({"speed"}));
+
+    // Nested instance property.
+    const ssq::Object pet = runtime.readObjectProperty(holder, "pet");
+    CHECK(static_cast<int>(pet.getType()) == static_cast<int>(ssq::Type::INSTANCE));
+    CHECK_EQ(runtime.classNameOf(pet), std::string("SkillData"));
+    CHECK_EQ(runtime.readProperty(pet, "name").asString(), std::string("slash"));
+
+    // Inspector: expanded array + table + nested navigation.
+    Inspector inspector;
+    inspector.refresh();
+    CHECK(inspector.selectClass("NestedHolder"));
+    inspector.open();
+    UIHost* host = inspector.host();
+    REQUIRE(host != nullptr);
+
+    UINode* skill0 = nodeById(host, "arr_NestedHolder_skills_0");
+    REQUIRE(skill0 != nullptr);
+    auto tree = host->tree();
+    REQUIRE_GE(skill0->handlerText, 1u);
+    tree->textHandlers[size_t(skill0->handlerText - 1)]("spin");
+    const ssq::Object selected = inspector.selectedInstance();
+    CHECK_EQ(runtime.arrayGet(selected, "skills", 0).asString(), std::string("spin"));
+
+    UINode* buffHaste = nodeById(host, "tbl_NestedHolder_buffs_haste");
+    REQUIRE(buffHaste != nullptr);
+    REQUIRE_GE(buffHaste->handlerText, 1u);
+    tree->textHandlers[size_t(buffHaste->handlerText - 1)]("1.5");
+    CHECK_EQ(runtime.tableGet(selected, "buffs", "haste").asFloat(), 1.5);
+
+    // Nested navigation: open pet -> edit its property -> back.
+    UINode* openPet = nodeById(host, "open_NestedHolder_pet");
+    REQUIRE(openPet != nullptr);
+    REQUIRE_GE(openPet->handlerClick, 1u);
+    tree->clickHandlers[size_t(openPet->handlerClick - 1)]();
+    UINode* petName = nodeById(host, "prop_name");
+    REQUIRE(petName != nullptr);
+    auto tree2 = host->tree();
+    REQUIRE_GE(petName->handlerText, 1u);
+    tree2->textHandlers[size_t(petName->handlerText - 1)]("cleave");
+    CHECK_EQ(runtime.readProperty(
+                 inspector.selectedInstance(), "name").asString(),
+             std::string("cleave"));
+
+    UINode* back = nodeById(host, "inspector_back");
+    REQUIRE(back != nullptr);
+    REQUIRE_GE(back->handlerClick, 1u);
+    tree2->clickHandlers[size_t(back->handlerClick - 1)]();
+    REQUIRE(nodeById(host, "arr_NestedHolder_skills_0") != nullptr);
+    CHECK_EQ(runtime.classNameOf(inspector.selectedInstance()),
+             std::string("NestedHolder"));
+}
+
+TEST_CASE("inspector.pickSceneInspectsPickedObject") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    runtime.initialize();
+    runtime.runSource("class PickedHero { name = \"picked\" }", "pick.nut");
+    const ssq::Object picked = runtime.createInstance("PickedHero");
+
+    Inspector inspector;
+    inspector.refresh();
+    inspector.setPickScene([picked]() { return picked; });
+    inspector.open();
+    UIHost *host = inspector.host();
+    REQUIRE(host != nullptr);
+
+    UINode *pick = nodeById(host, "inspector_pick");
+    REQUIRE(pick != nullptr);
+    auto tree = host->tree();
+    REQUIRE_GE(pick->handlerClick, 1u);
+    tree->clickHandlers[size_t(pick->handlerClick - 1)]();
+
+    CHECK_EQ(inspector.selectedClass(), std::string("PickedHero"));
+    CHECK_EQ(inspector.instanceCount(), 1);
+    CHECK_EQ(runtime.readProperty(inspector.selectedInstance(), "name").asString(),
+             std::string("picked"));
+}
