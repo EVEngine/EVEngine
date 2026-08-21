@@ -896,6 +896,8 @@ void Graphics::create2DPipelines() {
 
 void Graphics::createMesh3DPipelines() {
     mesh3dSetLayout = makeMesh3DBindGroupLayout();
+    // Bind groups reference the layout; drop cached groups when it changes.
+    clearMeshBindGroupCache();
     mesh3dPipelineLayout = makeMesh3DPipelineLayout();
 
     WGPUVertexAttribute attrs[3] = {};
@@ -1523,6 +1525,18 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     GpuTexture *e = env ? env : defaultEnvCubemap;
     GpuTexture *h = height ? height : flatHeightTexture3D;
     GpuTexture *d = depth ? depth : flatDepthTexture3D;
+    GpuTexture *shadow = shadowDepthArray ? shadowDepthArray : defaultShadowTex;
+
+    MeshBindGroupKey key{reinterpret_cast<uintptr_t>(a->view.Get()),
+                         reinterpret_cast<uintptr_t>(n->view.Get()),
+                         reinterpret_cast<uintptr_t>(e->view.Get()),
+                         reinterpret_cast<uintptr_t>(h->view.Get()),
+                         reinterpret_cast<uintptr_t>(d->view.Get()),
+                         reinterpret_cast<uintptr_t>(shadow->view.Get()),
+                         reinterpret_cast<uintptr_t>(shadow->sampler.Get())};
+    auto cached = meshBindGroupCache_.find(key);
+    if (cached != meshBindGroupCache_.end()) return cached->second;
+    if (meshBindGroupCache_.size() >= kMaxMeshBindGroupCache) meshBindGroupCache_.clear();
 
     WGPUBindGroupEntry entries[10]{};
     entries[0].binding = 0;
@@ -1538,13 +1552,13 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     entries[4].buffer = currentUboArena().buffer.Get();
     entries[4].size = sizeof(ShadowUBO);
     entries[5].binding = 5;
-    entries[5].textureView = (shadowDepthArray ? shadowDepthArray : defaultShadowTex)->view.Get();
+    entries[5].textureView = shadow->view.Get();
     entries[6].binding = 6;
     entries[6].textureView = h->view.Get();
     entries[7].binding = 7;
     entries[7].sampler = mainSampler.Get();
     entries[8].binding = 8;
-    entries[8].sampler = (shadowDepthArray ? shadowDepthArray : defaultShadowTex)->sampler.Get();
+    entries[8].sampler = shadow->sampler.Get();
     entries[9].binding = 9;
     entries[9].textureView = d->view.Get();
 
@@ -1556,7 +1570,10 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *norm
     desc.layout = mesh3dSetLayout.Get();
     desc.entryCount = 10;
     desc.entries = entries;
-    return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
+    wgpu::BindGroup bg =
+        device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
+    meshBindGroupCache_.emplace(key, bg);
+    return bg;
 }
 
 // ---------------------------------------------------------------------------

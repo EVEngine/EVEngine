@@ -11,7 +11,9 @@
 #include <webgpu/webgpu_cpp.h>
 
 #include <atomic>
+#include <map>
 #include <memory>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 #include <cstdint>
@@ -605,6 +607,16 @@ private:
     // JS->Squirrel->Graphics call chains).
     struct PendingReadback;
     std::unique_ptr<PendingReadback> pendingReadback_;
+
+    // Cached mesh3d bind groups keyed by the texture views + shadow resources.
+    // Dynamic UBO offsets are passed at SetBindGroup time, so one bind group
+    // serves every draw that uses the same texture set (per-draw creation was
+    // a hot path: makeMeshBindGroup ran once per mesh draw per frame).
+    using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
+                                        uintptr_t, uintptr_t, uintptr_t>;
+    std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
+    static constexpr size_t kMaxMeshBindGroupCache = 128;
+    void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }
 
     void markSwapchainDirty() override { swapchainConfigured = false; }
     void rebuildSwapchainIfNeeded();
