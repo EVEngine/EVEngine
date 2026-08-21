@@ -27,7 +27,15 @@ if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     set(EVENGINE_NATIVE_TARGET main CACHE INTERNAL "Host target for SDK install")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     # UIKit SDL entry: MACOSX_BUNDLE .app with SDL_main.
-    add_executable(eve MACOSX_BUNDLE main.cpp)
+    if(NOT EVENGINE_IOS_TEST_APP)
+        add_executable(eve MACOSX_BUNDLE main.cpp)
+    else()
+        # iOS test app: the zeroerr runner (test/main.cpp + test sources) is
+        # attached to this target from test/CMakeLists.txt. The bundle
+        # properties below still apply so the .app ships signed and launches
+        # like the game shell.
+        add_executable(eve MACOSX_BUNDLE)
+    endif()
     set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 else()
     # Desktop + webgpu (native Dawn and Emscripten/WASM) produce `eve`.
@@ -143,6 +151,18 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     endif()
 
     set(EVENGINE_IOS_BUNDLE_ID "com.evengine.example" CACHE STRING "iOS/iPadOS bundle identifier")
+    set(EVENGINE_IOS_TEST_BUNDLE_ID "com.evengine.example.test" CACHE STRING
+        "iOS test app bundle identifier (side-by-side with the game app)")
+    if(EVENGINE_IOS_TEST_APP)
+        set(_eve_ios_bundle_id "${EVENGINE_IOS_TEST_BUNDLE_ID}")
+        set(_eve_ios_bundle_name "EVEngineTest")
+        set(_eve_ios_display_name "EVEngine Test")
+    else()
+        set(_eve_ios_bundle_id "${EVENGINE_IOS_BUNDLE_ID}")
+        set(_eve_ios_bundle_name "EVEngine")
+        set(_eve_ios_display_name "EVEngine")
+    endif()
+    set(EVENGINE_IOS_DISPLAY_NAME "${_eve_ios_display_name}")
     set(_eve_ios_team "$ENV{IOS_DEVELOPMENT_TEAM}")
     if(NOT _eve_ios_team)
         set(_eve_ios_team "")
@@ -155,12 +175,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     endif()
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_GUI_IDENTIFIER "${EVENGINE_IOS_BUNDLE_ID}"
-        MACOSX_BUNDLE_BUNDLE_NAME "EVEngine"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "${_eve_ios_bundle_id}"
+        MACOSX_BUNDLE_BUNDLE_NAME "${_eve_ios_bundle_name}"
         MACOSX_BUNDLE_BUNDLE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}"
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/platform/ios/Info.plist.in"
-        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${EVENGINE_IOS_BUNDLE_ID}"
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${_eve_ios_bundle_id}"
         XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
         XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${EVENGINE_IOS_DEPLOYMENT_TARGET}"
         XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH NO
@@ -171,29 +191,48 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
     )
 
-    # Bundle game assets under Resources/game (iOS resourcePath == .app root).
-    # Default "demo" = shell without main.nut → load.nut runs embedded eve.demoScript
-    # (meteor defense + particles). "example" copies example/ (box + fire.json).
-    set(EVENGINE_IOS_GAME "demo" CACHE STRING "iOS bundled game: demo | example | absolute path")
-    if(EVENGINE_IOS_GAME STREQUAL "example")
-        set(_eve_game_src "${CMAKE_SOURCE_DIR}/example")
-    elseif(EVENGINE_IOS_GAME STREQUAL "demo")
-        set(_eve_game_src "${CMAKE_SOURCE_DIR}/platform/ios/game-shell")
-    elseif(IS_DIRECTORY "${EVENGINE_IOS_GAME}")
-        set(_eve_game_src "${EVENGINE_IOS_GAME}")
+    if(EVENGINE_IOS_TEST_APP)
+        # Bundle the zeroerr suite's test/ + examples/ trees so the runner can
+        # stage them into a writable location on first launch (mirrors the
+        # Android test app's assets/test + assets/examples unpacking).
+        add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+            # Wipe first so assets removed from the tree do not linger in the bundle.
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/test"
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/examples"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/test"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/examples"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/test" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/test"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/examples" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/examples"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
+            COMMENT "Bundle iOS test assets (test/ + examples/) + LaunchScreen into EVEngine.app"
+        )
     else()
-        message(FATAL_ERROR "EVENGINE_IOS_GAME must be 'demo', 'example', or an existing directory (got: ${EVENGINE_IOS_GAME})")
+        # Bundle game assets under Resources/game (iOS resourcePath == .app root).
+        # Default "demo" = shell without main.nut → load.nut runs embedded eve.demoScript
+        # (meteor defense + particles). "example" copies example/ (box + fire.json).
+        set(EVENGINE_IOS_GAME "demo" CACHE STRING "iOS bundled game: demo | example | absolute path")
+        if(EVENGINE_IOS_GAME STREQUAL "example")
+            set(_eve_game_src "${CMAKE_SOURCE_DIR}/example")
+        elseif(EVENGINE_IOS_GAME STREQUAL "demo")
+            set(_eve_game_src "${CMAKE_SOURCE_DIR}/platform/ios/game-shell")
+        elseif(IS_DIRECTORY "${EVENGINE_IOS_GAME}")
+            set(_eve_game_src "${EVENGINE_IOS_GAME}")
+        else()
+            message(FATAL_ERROR "EVENGINE_IOS_GAME must be 'demo', 'example', or an existing directory (got: ${EVENGINE_IOS_GAME})")
+        endif()
+        add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+            # Wipe first so a previous example/main.nut cannot shadow demoScript.
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${_eve_game_src}" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
+            COMMENT "Bundle iOS game (${EVENGINE_IOS_GAME}) + LaunchScreen into EVEngine.app"
+        )
     endif()
-    add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
-        # Wipe first so a previous example/main.nut cannot shadow demoScript.
-        COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${_eve_game_src}" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
-        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
-        COMMENT "Bundle iOS game (${EVENGINE_IOS_GAME}) + LaunchScreen into EVEngine.app"
-    )
 
     if(EVENGINE_MOLTENVK_LINK_MODE STREQUAL "framework")
         # Embed MoltenVK.framework so dlsym(RTLD_DEFAULT) / rpath resolve at runtime.

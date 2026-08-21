@@ -36,6 +36,9 @@ endif()
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
+option(EVENGINE_IOS_TEST_APP
+    "Build the unit_test suite as an iOS test app (eve executable replaced by the zeroerr runner)"
+    OFF)
 option(EVENGINE_ENABLE_ASSERTS
     "Keep zeroerr ASSERT checks (parameter validation, invariants) in non-Debug builds.
      Debug builds always enable them; this option is for Release-style builds."
@@ -43,6 +46,7 @@ option(EVENGINE_ENABLE_ASSERTS
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
+message("Build iOS test app: " ${EVENGINE_IOS_TEST_APP})
 message("Enable asserts in non-Debug builds: " ${EVENGINE_ENABLE_ASSERTS})
 if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
@@ -98,8 +102,12 @@ function(main)
         endif()
     endif()
     if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
-        message(STATUS "iOS build: unit tests disabled")
+        if(EVENGINE_IOS_TEST_APP)
+            message(STATUS "iOS build: unit tests enabled (iOS test app)")
+        else()
+            set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+            message(STATUS "iOS build: unit tests disabled")
+        endif()
     endif()
     # WebGPU (browser WASM + native Dawn): unit tests are disabled by default —
     # most tests link Vulkan-only helpers. Native Dawn builds can opt back in
