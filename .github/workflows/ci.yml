@@ -141,11 +141,11 @@ jobs:
 
       - name: Test asset-pipeline-agent
         timeout-minutes: 5
-        run: python3 -m unittest discover -s tools/asset-pipeline-agent/tests -v
+        run: cd tools/asset-pipeline-agent && python3 -m unittest discover -s tests -v
 
       - name: Test scene-qc-agent
         timeout-minutes: 5
-        run: python3 -m unittest discover -s tools/scene-qc-agent/tests -v
+        run: cd tools/scene-qc-agent && python3 -m unittest discover -s tests -v
 
       - name: Test creative-brain
         timeout-minutes: 5
