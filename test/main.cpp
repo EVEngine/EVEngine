@@ -167,8 +167,8 @@ int main(int argc, char **argv) {
     // (mirrors the evengine.test.filter intent extra on Android). A file
     // filter (-evengine.test.file <basename>) takes precedence so the suite
     // can be run one test file per process (see run/ios-test-all-debug).
-    const std::string fileFilter = eve::ios_test::launchFileFilter();
-    const std::string filter     = eve::ios_test::launchFilter();
+    const std::string  fileFilter = eve::ios_test::launchFileFilter();
+    const std::string  filter     = eve::ios_test::launchFilter();
     static std::string filterArg;
     if (!fileFilter.empty()) {
         // TestCase.file stores the compiled __FILE__ path; regex_match needs a

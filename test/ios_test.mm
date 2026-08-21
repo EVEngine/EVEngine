@@ -1,8 +1,8 @@
 #include "ios_test.h"
 
 #import <Foundation/Foundation.h>
-#import <os/log.h>
 #import <UIKit/UIKit.h>
+#import <os/log.h>
 
 #include <cstdio>
 #include <cstdlib>
