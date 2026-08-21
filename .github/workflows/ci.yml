@@ -733,10 +733,6 @@ jobs:
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
-    # Non-blocking until the pre-existing memory bugs it surfaces on dev are
-    # fixed (JobSystemThreadPool completion UAF, AvatarInstance release UAF,
-    # ImageData negative-size allocation). Flip to required once green.
-    continue-on-error: true
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
