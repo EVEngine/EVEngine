@@ -2,6 +2,7 @@
 
 #include "common/Assert.h"
 #include "common/Module.h"
+#include "common/ReflectScript.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -413,6 +414,7 @@ void Runtime::initialize() {
     auto stack = guard();
     try {
         ModuleManager::expose(*this);
+        exposeReflection(*this, table("eve"));
         initialized_ = true;
     } catch (const std::exception& error) {
         ModuleManager::detach(this);

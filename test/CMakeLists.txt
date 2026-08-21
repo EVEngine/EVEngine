@@ -139,6 +139,7 @@ file(GLOB all_test_cpp
   resource_lifetime.cpp
   debugger.cpp
   debugger_audit.cpp
+  ReflectScript.cpp
   reload_script.cpp
   dap.cpp
   mcp.cpp
