@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <os/log.h>
+#import <UIKit/UIKit.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -73,6 +74,12 @@ std::string stagedTestRoot() {
         }
     }();
     return root;
+}
+
+void keepAwake() {
+    @autoreleasepool {
+        [UIApplication sharedApplication].idleTimerDisabled = YES;
+    }
 }
 
 std::string launchFilter() {

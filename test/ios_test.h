@@ -29,6 +29,14 @@ void logLine(const char *line);
 std::string stagedTestRoot();
 
 /**
+ * @brief Prevents the device screen from auto-locking during the test run.
+ *
+ * The suite can run for minutes; if the screen locks mid-run iOS suspends or
+ * force-kills the foreground app (SIGKILL), aborting the tests.
+ */
+void keepAwake();
+
+/**
  * @brief Resolves the zeroerr test filter for this launch.
  *
  * Priority: `-evengine.test.filter <pattern>` launch argument

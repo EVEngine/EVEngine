@@ -142,6 +142,9 @@ int main(int argc, char **argv) {
     std::clog.rdbuf(&osLogBuf);
     std::cout.setf(std::ios::unitbuf);
     std::cerr.setf(std::ios::unitbuf);
+    // The suite can run for minutes; keep the screen on so iOS does not
+    // suspend/force-kill the foreground app when the screen auto-locks.
+    eve::ios_test::keepAwake();
 
     const std::string root = testRoot();
     if (root.empty()) {
