@@ -125,7 +125,9 @@ void Graphics::render3D() {
 }
 
 void Graphics::renderScene3DToCanvas(Canvas *canvas, Camera3D *camera) {
+    pushValidationScope();
     RenderSystem3D::renderToCanvas(*this, canvas, camera);
+    popValidationScope();
 }
 
 Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {

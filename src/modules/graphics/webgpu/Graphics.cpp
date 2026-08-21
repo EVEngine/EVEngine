@@ -950,6 +950,11 @@ void Graphics::createMesh3DPipelines() {
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
     mesh3dPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    // 1x variant for the 3D-to-offscreen-canvas pass (canvases are 1-sample).
+    pd.label = sv("eve_mesh3d_canvas");
+    pd.multisample.count = 1;
+    mesh3dCanvasPipeline =
+        device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
 }
 
 void Graphics::createShadowPipelines() {
@@ -2282,8 +2287,11 @@ void Graphics::begin3DFrame() {
     rebuildSwapchainIfNeeded();
 }
 
-void Graphics::begin3DFrameToCanvas(Canvas *) {
-    throw eve::Exception("begin3DFrameToCanvas: not supported on the webgpu backend");
+void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
+    if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
+    if (!device) throw Exception("begin3DFrameToCanvas: device not initialized");
+    active3DCanvas = static_cast<OffscreenCanvas *>(canvas);
+    begin3DFrame();
 }
 void Graphics::end3DFrameToCanvas() {}
 
@@ -2715,7 +2723,8 @@ void Graphics::destroyGbufferResources() { gbufferSlots.clear(); }
 // Flush helpers
 // ---------------------------------------------------------------------------
 
-void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format) {
+void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
+                           bool canvasTarget) {
     if (mesh3dDraws.empty()) return;
 
     auto &uboArena = currentUboArena();
@@ -2772,7 +2781,10 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
-        wgpu::RenderPipeline pipe = mesh3dPipeline;
+        // Canvas targets are 1-sample; the default scene pipeline follows the
+        // active MSAA count, so use the dedicated 1x variant there. Custom
+        // WGSL mesh shaders fall back to the same 1x default pipeline.
+        wgpu::RenderPipeline pipe = canvasTarget ? mesh3dCanvasPipeline : mesh3dPipeline;
         if (d.shader && d.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(d.shader->gpuHandle);
             if (gs->isMesh3D && gs->mesh3dPipeline) {
@@ -2984,6 +2996,17 @@ void Graphics::popValidationScope() {
 #endif
 }
 
+struct Graphics::PendingReadback {
+    std::string path;
+    int width = 0;
+    int height = 0;
+    uint64_t bytesPerRow = 0;
+    wgpu::Buffer dst;
+    bool mapped = false;
+    bool done = false;
+    bool ok = false;
+};
+
 void Graphics::present() {
     if (!device || !surface || !swapchainConfigured) return;
     pumpReadback();
@@ -3047,37 +3070,77 @@ void Graphics::present() {
     // 2. Scene color pass (3D) into the offscreen target.
     wgpu::TextureView sceneView;
     wgpu::Texture sceneTex;
-    if (frameHad3DThisFrame && !sceneColorSlots.empty()) {
-        SceneColorSlot &slot = sceneColorSlots[currentFrameSlot()];
-        WGPURenderPassColorAttachment colorAtt{};
-        colorAtt.view = slot.sampleCount > 1 ? slot.msaaView.Get() : slot.colorView.Get();
-        colorAtt.resolveTarget = slot.sampleCount > 1 ? slot.colorView.Get() : nullptr;
-        colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
-        colorAtt.loadOp = WGPULoadOp_Clear;
-        // When resolving to a single-sample target, the multisampled
-        // attachment must be discarded (WebGPU spec).
-        colorAtt.storeOp =
-            slot.sampleCount > 1 ? WGPUStoreOp_Discard : WGPUStoreOp_Store;
-        colorAtt.clearValue = {clearColor.r, clearColor.g, clearColor.b, 1.f};
-        WGPURenderPassDepthStencilAttachment ds{};
-        ds.view = slot.depthView.Get();
-        ds.depthClearValue = 1.f;
-        ds.depthLoadOp = WGPULoadOp_Clear;
-        ds.depthStoreOp = WGPUStoreOp_Store;
-        ds.stencilClearValue = 0;
-        ds.stencilLoadOp = WGPULoadOp_Undefined;
-        ds.stencilStoreOp = WGPUStoreOp_Undefined;
-        WGPURenderPassDescriptor rp{};
-        rp.colorAttachmentCount = 1;
-        rp.colorAttachments = &colorAtt;
-        rp.depthStencilAttachment = &ds;
-        wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
-        flushVoxelDraws(pass, sceneColorFormat);
-        flushMesh3D(pass, sceneColorFormat);
-        pass.End();
-        lastPresentSlot = currentFrameSlot();
-        sceneView = slot.colorView;
-        sceneTex = slot.color;
+    if (frameHad3DThisFrame) {
+        if (active3DCanvas) {
+            // 3D into an offscreen canvas: render the mesh pass into the
+            // canvas color/depth (RGBA8Unorm, matches the mesh3d pipelines).
+            OffscreenCanvas *oc = active3DCanvas;
+            WGPURenderPassColorAttachment colorAtt{};
+            colorAtt.view = oc->colorView.Get();
+            colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+            colorAtt.loadOp = WGPULoadOp_Clear;
+            colorAtt.storeOp = WGPUStoreOp_Store;
+            colorAtt.clearValue = {clearColor.r, clearColor.g, clearColor.b, 1.f};
+            WGPURenderPassDepthStencilAttachment ds{};
+            ds.view = oc->depthView.Get();
+            ds.depthClearValue = 1.f;
+            ds.depthLoadOp = WGPULoadOp_Clear;
+            ds.depthStoreOp = WGPUStoreOp_Store;
+            ds.stencilClearValue = 0;
+            ds.stencilLoadOp = WGPULoadOp_Undefined;
+            ds.stencilStoreOp = WGPUStoreOp_Undefined;
+            WGPURenderPassDescriptor rp{};
+            rp.colorAttachmentCount = 1;
+            rp.colorAttachments = &colorAtt;
+            rp.depthStencilAttachment = &ds;
+            wgpu::RenderPassEncoder pass =
+                encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
+            // Voxel draws are not expected on the canvas path (voxel module is
+            // trimmed from the web build), and its pipeline follows the scene
+            // sample count which would mismatch the 1x canvas attachment.
+            flushMesh3D(pass, WGPUTextureFormat_RGBA8Unorm, /*canvasTarget*/ true);
+            pass.End();
+            // The script draws the canvas texture explicitly (2D path); it is
+            // not composited into the swapchain.
+            lastReadbackTex = oc->color;
+            lastReadbackW = oc->getWidth();
+            lastReadbackH = oc->getHeight();
+        } else if (!sceneColorSlots.empty()) {
+            SceneColorSlot &slot = sceneColorSlots[currentFrameSlot()];
+            WGPURenderPassColorAttachment colorAtt{};
+            colorAtt.view = slot.sampleCount > 1 ? slot.msaaView.Get() : slot.colorView.Get();
+            colorAtt.resolveTarget = slot.sampleCount > 1 ? slot.colorView.Get() : nullptr;
+            colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+            colorAtt.loadOp = WGPULoadOp_Clear;
+            // When resolving to a single-sample target, the multisampled
+            // attachment must be discarded (WebGPU spec).
+            colorAtt.storeOp =
+                slot.sampleCount > 1 ? WGPUStoreOp_Discard : WGPUStoreOp_Store;
+            colorAtt.clearValue = {clearColor.r, clearColor.g, clearColor.b, 1.f};
+            WGPURenderPassDepthStencilAttachment ds{};
+            ds.view = slot.depthView.Get();
+            ds.depthClearValue = 1.f;
+            ds.depthLoadOp = WGPULoadOp_Clear;
+            ds.depthStoreOp = WGPUStoreOp_Store;
+            ds.stencilClearValue = 0;
+            ds.stencilLoadOp = WGPULoadOp_Undefined;
+            ds.stencilStoreOp = WGPUStoreOp_Undefined;
+            WGPURenderPassDescriptor rp{};
+            rp.colorAttachmentCount = 1;
+            rp.colorAttachments = &colorAtt;
+            rp.depthStencilAttachment = &ds;
+            wgpu::RenderPassEncoder pass =
+                encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
+            flushVoxelDraws(pass, sceneColorFormat);
+            flushMesh3D(pass, sceneColorFormat);
+            pass.End();
+            lastPresentSlot = currentFrameSlot();
+            lastReadbackTex = slot.color;
+            lastReadbackW = sceneColorWidth;
+            lastReadbackH = sceneColorHeight;
+            sceneView = slot.colorView;
+            sceneTex = slot.color;
+        }
     }
 
     // 3. GBuffer pass.
@@ -3202,6 +3265,7 @@ void Graphics::present() {
     frameHad3DThisFrame = false;
     frameHad3D = false;
     sceneColorPassOpen = false;
+    active3DCanvas = nullptr;
     gbufferPassPending = false;
 }
 
@@ -3406,27 +3470,22 @@ bool encodeRgbaToPng(const std::string &path, int width, int height,
 
 }  // namespace
 
-struct Graphics::PendingReadback {
-    std::string path;
-    int width = 0;
-    int height = 0;
-    uint64_t bytesPerRow = 0;
-    wgpu::Buffer dst;
-    bool mapped = false;
-    bool done = false;
-    bool ok = false;
-};
-
 bool Graphics::beginFrameReadback(const std::string &path) {
     // A finished readback can be replaced; only refuse while one is in flight.
-    if ((pendingReadback_ && !pendingReadback_->done) || !device || sceneColorSlots.empty())
-        return false;
-    const uint32_t slot = lastPresentSlot;
-    if (slot >= sceneColorSlots.size()) return false;
-    wgpu::Texture src = sceneColorSlots[slot].color;
-    if (!src) return false;
-    const int w = sceneColorWidth > 0 ? sceneColorWidth : 1;
-    const int h = sceneColorHeight > 0 ? sceneColorHeight : 1;
+    if ((pendingReadback_ && !pendingReadback_->done) || !device) return false;
+    wgpu::Texture src = lastReadbackTex;
+    int w = lastReadbackW;
+    int h = lastReadbackH;
+    if (!src || w <= 0 || h <= 0) {
+        // Fall back to the scene color slot before anything was rendered.
+        if (sceneColorSlots.empty()) return false;
+        const uint32_t slot = lastPresentSlot;
+        if (slot >= sceneColorSlots.size()) return false;
+        src = sceneColorSlots[slot].color;
+        w = sceneColorWidth;
+        h = sceneColorHeight;
+        if (!src || w <= 0 || h <= 0) return false;
+    }
 
     uint64_t bytesPerRow = static_cast<uint64_t>(w * 4);
     bytesPerRow = (bytesPerRow + 255) / 256 * 256;
@@ -3440,6 +3499,9 @@ bool Graphics::beginFrameReadback(const std::string &path) {
     wgpu::Buffer dst = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
     if (!dst) return false;
 
+    // Copy the resolved scene color into the readback buffer, then map
+    // asynchronously (two-phase: the pump waits for the map callback on the
+    // browser event loop without ASYNCIFY sleeps).
     wgpu::CommandEncoder enc = device.CreateCommandEncoder();
     WGPUTexelCopyTextureInfo from{};
     from.texture = src.Get();

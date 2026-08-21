@@ -367,7 +367,8 @@ private:
                            WGPUTextureFormat format, bool offscreen);
     void drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch &lb, int viewW, int viewH,
                       WGPUTextureFormat format);
-    void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format);
+    void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
+                     bool canvasTarget = false);
     void flushShadowPass(wgpu::RenderPassEncoder pass);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushVoxelDraws(wgpu::RenderPassEncoder pass, WGPUTextureFormat format);
@@ -448,6 +449,7 @@ private:
     // Pipelines / layouts.
     wgpu::PipelineLayout tex2DPipelineLayout;
     wgpu::PipelineLayout mesh3dPipelineLayout;
+    wgpu::RenderPipeline mesh3dCanvasPipeline;
     wgpu::PipelineLayout shadowPipelineLayout;
     wgpu::PipelineLayout gbufferPipelineLayout;
     wgpu::PipelineLayout voxelPipelineLayout;
@@ -504,6 +506,14 @@ private:
     // 3D frame state.
     bool frame3DStarted = false;
     bool sceneColorPassOpen = false;
+    // Non-null between begin3DFrameToCanvas and the frame's present: the 3D
+    // scene pass renders into this canvas instead of the scene color target.
+    OffscreenCanvas *active3DCanvas = nullptr;
+    // Most recent 3D render target (scene color or canvas), used by the async
+    // frame readback.
+    wgpu::Texture lastReadbackTex;
+    int lastReadbackW = 0;
+    int lastReadbackH = 0;
     glm::mat4 mesh3dViewProj{1.f};
     glm::mat4 mesh3dView{1.f};
     float mesh3dNear = 0.1f, mesh3dFar = 100.f;
