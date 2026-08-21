@@ -187,6 +187,8 @@ fn inverse3x3(m: mat3x3f) -> mat3x3f {
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = ubo.mvp * vec4f(in.pos, 1.0);
+    // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
+    out.pos.y = -out.pos.y;
     let world = ubo.model * vec4f(in.pos, 1.0);
     out.vWorldPos = world.xyz;
     out.vViewPos = (ubo.view * world).xyz;
@@ -427,7 +429,10 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
     // Screen-space ambient occlusion (G-buffer SSAO pass output; strength in
     // texBomb.w is 0 when AO is disabled via RenderControl, which also keeps
     // the binding white in that case).
-    let aoUV = in.fragCoord.xy / vec2f(textureDimensions(aoTex));
+    // AO is rendered at half the scene resolution; map the full-res fragment
+    // coordinate into AO texel space before normalizing, otherwise the UV
+    // overruns into [0,2] and clamps to the AO edge (misaligned occlusion).
+    let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
     color *= mix(1.0, ao, clamp(ubo.texBomb.w, 0.0, 1.0));
     // Match the Vulkan tonemap.glsl: keep values below `white` linear so dim
@@ -488,6 +493,8 @@ fn inverse3x3(m: mat3x3f) -> mat3x3f {
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = ubo.mvp * vec4f(in.pos, 1.0);
+    // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
+    out.pos.y = -out.pos.y;
     let world = ubo.model * vec4f(in.pos, 1.0);
     out.vWorldPos = world.xyz;
     out.vViewPos = (ubo.view * world).xyz;
@@ -695,7 +702,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
         color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
     }
-    let aoUV = in.fragCoord.xy / vec2f(textureDimensions(aoTex));
+    let aoUV = (in.fragCoord.xy * 0.5) / vec2f(textureDimensions(aoTex));
     let ao = textureSampleLevel(aoTex, aoSamp, aoUV, 0.0).r;
     color *= mix(1.0, ao, clamp(ubo.texBomb.w, 0.0, 1.0));
     let white = 0.85;
@@ -718,7 +725,9 @@ struct Push {
 @group(0) @binding(0) var<uniform> pc: Push;
 @vertex
 fn vs_main(in: VSIn) -> @builtin(position) vec4f {
-    return pc.mvp * vec4f(in.pos, 1.0);
+    let clipPos = pc.mvp * vec4f(in.pos, 1.0);
+    // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
+    return vec4f(clipPos.x, -clipPos.y, clipPos.z, clipPos.w);
 }
 )wgsl";
 
@@ -747,6 +756,8 @@ struct VSOut {
 fn vs_main(in: VSIn) -> VSOut {
     var out: VSOut;
     out.pos = pc.mvp * vec4f(in.pos, 1.0);
+    // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
+    out.pos.y = -out.pos.y;
     let nrm = mat3x3f(pc.modelR0.xyz, pc.modelR1.xyz, pc.modelR2.xyz) * in.normal;
     out.vNormal = normalize(nrm);
     out.vNdcZ = out.pos.z;
@@ -905,6 +916,8 @@ fn vs_main(in: VSIn) -> VSOut {
     else if (face == 4) { world += vec3f(u * w, v * h, 0.0); }
     else { world += vec3f(w - u * w, v * h, 0.0); }
     out.pos = pc.viewProj * vec4f(world, 1.0);
+    // WebGPU NDC is Y-up; mirror the Vulkan-convention clip Y.
+    out.pos.y = -out.pos.y;
     let tiles = max(pc.atlasInfo.x, 1.0);
     let tw = 1.0 / tiles;
     let col = floor(tex / tiles);

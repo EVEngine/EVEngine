@@ -387,8 +387,10 @@ void Graphics::createDefaultTextures() {
         defaultShadowTex = gpu;
     }
 
-    // 1x1 white cubemap.
-    uint8_t cubeFace[4] = {255, 255, 255, 255};
+    // Default env cubemap is black so an unset environment (RenderSystem3D
+    // still passes envIntensity=1.0 by default) does not wash the scene
+    // toward white. Only an explicitly set envMap contributes IBL.
+    uint8_t cubeFace[4] = {0, 0, 0, 0};
     uint8_t cubeData[24];
     for (int f = 0; f < 6; ++f) std::memcpy(cubeData + f * 4, cubeFace, 4);
     defaultEnvCubemap =
