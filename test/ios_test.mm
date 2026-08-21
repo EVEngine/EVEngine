@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <os/log.h>
 
+#include <cstdlib>
 #include <string>
 
 namespace eve {
@@ -35,11 +36,15 @@ std::string stagedTestRoot() {
     // pathBesideThisSource() call resolves against the same cached root.
     static const std::string root = []() -> std::string {
         @autoreleasepool {
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(
-                NSCachesDirectory, NSUserDomainMask, YES);
-            if ([paths count] == 0)
+            // Keep in sync with iosTestRoot() in PathBesideSource.h: that
+            // header is included inside anonymous namespaces and cannot
+            // reference this ObjC helper, so it rebuilds the same path from
+            // $HOME (iOS sets HOME to the app sandbox root).
+            const char *home = getenv("HOME");
+            if (home == nullptr)
                 return {};
-            NSString *root = [paths[0] stringByAppendingPathComponent:@"evengine_test"];
+            NSString *root = [NSString stringWithFormat:@"%s/Library/Caches/evengine_test",
+                                                        home];
 
             NSString *bundle = [[NSBundle mainBundle] resourcePath];
             if (bundle == nil)

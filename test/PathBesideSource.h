@@ -13,12 +13,10 @@
 // `eve::window::...` / `eve::image::...` reference in those files.
 
 #include <string>
+#include <cstdlib>
 
 #if defined(EVENGINE_ANDROID)
 #include <SDL2/SDL.h>
-#elif defined(EVENGINE_IOS_TEST_APP)
-#include <SDL2/SDL.h>
-#include "ios_test.h"
 #endif
 
 namespace eve_test_path {
@@ -48,9 +46,16 @@ inline std::string androidSourcePath(const char *file) {
 #elif defined(EVENGINE_IOS_TEST_APP)
 // Same layout as Android: the runner chdirs to the staged root and all test
 // sources are flat in test/, so the basename of __FILE__ is the only
-// meaningful part. See test/ios_test.mm (stagedTestRoot caches the staging).
+// meaningful part. This header is included *inside* anonymous namespaces in
+// several test files, so it cannot include ios_test.h (which declares
+// `namespace eve`); instead the root is recomputed from the same HOME-based
+// path ios_test.mm stages into (iOS sets HOME to the app sandbox root).
 inline std::string iosTestRoot() {
-    return eve::ios_test::stagedTestRoot();
+    static const std::string root = [] {
+        const char *home = std::getenv("HOME");
+        return home ? std::string(home) + "/Library/Caches/evengine_test" : std::string();
+    }();
+    return root;
 }
 
 inline std::string iosSourcePath(const char *file) {
