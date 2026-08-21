@@ -37,13 +37,6 @@ layout(set = 1, binding = 4, std430) readonly buffer Instances {
     GpuInstance instances[];
 };
 
-layout(push_constant) uniform Push {
-    uint firstInstance;
-    uint pad0;
-    uint pad1;
-    uint pad2;
-} pc;
-
 layout(location = 0) out vec3 vNormal;
 layout(location = 1) out vec2 vUV;
 layout(location = 2) out vec4 vTint;
@@ -53,7 +46,10 @@ layout(location = 5) out vec3 vViewPos;
 layout(location = 6) out flat uint vMaterialId;
 
 void main() {
-    uint inst = pc.firstInstance + gl_InstanceIndex;
+    // gl_InstanceIndex already includes VkDrawIndexedIndirectCommand.firstInstance,
+    // and the CPU writes instances in the sorted bucket order with
+    // cmd.firstInstance = bucket start, so this is the direct buffer index.
+    uint inst = gl_InstanceIndex;
     GpuInstance gi = instances[inst];
     GpuMaterialRecord m = materials[gi.materialId];
 

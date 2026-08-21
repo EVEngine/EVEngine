@@ -1,4 +1,5 @@
 #include "common/config.h"
+#include "common/CrashHandler.h"
 #include "cmdline/cmdline.h"
 #include <CLI11.hpp>
 #include <rang.hpp>
@@ -8,17 +9,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
-#define NOMINMAX
-#include <windows.h>
-#include <backward.hpp>
-
-// backward.hpp pulls in <imagehlp.h> with its own packing; declaring the one
-// DbgHelp entry point we call directly avoids including dbghelp.h again.
-extern "C" BOOL WINAPI SymInitialize(HANDLE hProcess, PCSTR UserSearchPath,
-                                     BOOL fInvadeProcess);
-#endif
 
 #if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
 #include <SDL2/SDL.h>
@@ -35,39 +25,6 @@ extern "C" BOOL WINAPI SymInitialize(HANDLE hProcess, PCSTR UserSearchPath,
 
 using namespace eve;
 using namespace std;
-
-#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
-namespace {
-
-// Unhandled-exception filter: print the exception code and a symbolized stack
-// trace (backward-cpp / DbgHelp), then let the OS terminate as usual.
-LONG WINAPI eveCrashHandler(EXCEPTION_POINTERS *ep) {
-    // DbgHelp must be initialized before StackWalk64, otherwise the walk
-    // produces garbage frames. Ignore the "already initialized" failure.
-    SymInitialize(GetCurrentProcess(), nullptr, TRUE);
-    std::fprintf(stderr, "\n[crash] code=0x%08lX at %p\n",
-                 ep->ExceptionRecord->ExceptionCode,
-                 ep->ExceptionRecord->ExceptionAddress);
-    try {
-        backward::StackTrace st;
-        // Walk from the handler's own frame: the exception dispatch ran on the
-        // crashing thread's stack, so the crash site is still in the chain.
-        // Walking from ep->ContextRecord produced garbage frames (0xCC) with
-        // DbgHelp StackWalk64 on this setup.
-        st.load_here(64);
-        backward::Printer p;
-        p.snippet = false;
-        p.color_mode = backward::ColorMode::never;
-        p.print(st, stderr);
-    } catch (...) {
-        std::fprintf(stderr, "[crash] backtrace unavailable\n");
-    }
-    std::fflush(stderr);
-    return EXCEPTION_CONTINUE_SEARCH;
-}
-
-}  // namespace
-#endif
 
 namespace {
 // Earliest code we control: runs during static initialization, before main().
@@ -99,7 +56,7 @@ public:
 int main(int argc, char **argv)
 {
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
-    SetUnhandledExceptionFilter(&eveCrashHandler);
+    eve::installCrashHandler();
     // Diagnostic hook: EVE_TEST_CRASH=1 forces an access violation right after
     // startup so the crash handler output can be verified.
     const char *testCrash = std::getenv("EVE_TEST_CRASH");

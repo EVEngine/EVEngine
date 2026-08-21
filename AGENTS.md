@@ -138,3 +138,86 @@ make wsl/linux-debug
 - Parameter validation and internal invariants use `EV_PARAM_CHECK` / `EV_ASSERT`
   from `src/engine/common/Assert.h` (zeroerr-backed): enabled in Debug, compiled
   out in Release unless the build is configured with `-DEVENGINE_ENABLE_ASSERTS=ON`.
+
+## Debugging playbook
+
+These rules come from hard-won experience on this repo (Vulkan/GPU work on a
+hybrid-GPU Windows host). Follow them before blaming hardware, drivers, or SDK
+versions.
+
+### Principles (user-mandated)
+- **Search first, guess second.** When stuck, look up the actual API contract and
+  constraints (official Vulkan docs, Stack Overflow, vendor release notes) before
+  concluding "driver bug", "GPU poisoned", or "SDK version issue". Unverified
+  device/driver theories are almost always wrong.
+- **Enable the validation layer early.** `EVENGINE_VULKAN_VALIDATION=1`
+  (any value except "0") turns on Khronos validation at instance creation; it
+  prints VUIDs that name the exact rule being violated. It is 5-20x slower, so
+  use it for short targeted test runs only.
+- **Reduce to a minimal reproduction first.** Build the smallest test that
+  exercises the suspected code path before touching production code paths.
+- **Rule out upstream layers before the GPU.** If SDL/third-party/init code is in
+  the path, prove whether it is the cause with a tiny probe before spending time
+  on driver diagnostics.
+- **Empirically verify driver behavior.** Never assert "AMD does X" from memory;
+  check the feature bits, the validation output, and at least one other device
+  (see `EVENGINE_GPU_DEVICE=integrated|discrete|first`) before changing driver-
+  specific branches.
+
+### Repo-specific crash backtrace
+- The engine installs a Windows unhandled-exception filter that prints a
+  symbolized stack trace: `src/engine/common/CrashHandler.h` →
+  `eve::installCrashHandler()`. It is wired into BOTH `src/engine/main.cpp`
+  (the `eve` binary) and `test/main.cpp` (unit_test; `test/CMakeLists.txt`
+  links `EVBacktrace` on WIN32).
+- If a test crashes and prints nothing but a bare exit code (e.g.
+  `0xC0000005` = access violation), the handler is not active in that binary.
+  Verify with `rg -a "\[crash\] code=" <binary>`.
+- `eve` supports `EVE_TEST_CRASH=1` to force an access violation right after
+  startup so the handler output can be verified.
+
+### Reading a backward-cpp stack
+- backward prints "most recent call last": frame #N+1 called #N.
+- Frames below `KiUserExceptionDispatcher` (`RtlLocateExtendedFeature`,
+  `_chkstk`, `_C_specific_handler`, `strncpy`, `UnhandledExceptionFilter`) are
+  exception-dispatch machinery, not the cause. The frame directly ABOVE
+  `KiUserExceptionDispatcher` is the crash site.
+- An AV whose exception address is inside the module usually means a bad memory
+  READ (e.g. dereferencing a NULL/garbage struct member); a low address like
+  `0x0` means call-through-NULL.
+
+### Isolation patterns that work here
+- **Probe test**: a self-contained TEST_CASE that calls the underlying API
+  directly (SDL window + Vulkan surface creation, or a minimal `vkCmdDraw`
+  through the exact pipeline) and ignores the engine state. If the probe passes
+  but the engine path crashes, the bug is in engine state, not the library.
+- **Check what a merged feature actually did**: a commit can be in the branch
+  (`git merge-base --is-ancestor`) yet not affect the binary you run (e.g. the
+  backtrace handler existed for `eve` but not `unit_test`). Verify the produced
+  artifact, not just the git history.
+- **Include-path tracing**: MSVC emits `注意: 包含文件:` (/showIncludes) lines —
+  grep the build log for the header in question to see which copy was picked.
+- **SDL gotcha**: `<SDL2/SDL.h>` does NOT include `SDL_vulkan.h`; include it
+  explicitly for Vulkan entry points, or you get C3861 "identifier not found".
+
+### When behavior regresses mysteriously
+- **Stale objects are a real failure mode here.** The Ninja targets use
+  "unscanned" dependency tracking (`CXX_COMPILER__*_unscanned_Debug`), so a
+  HEADER edit does NOT reliably trigger recompiles of every TU that includes
+  it. After changing a widely-included header (e.g. `vulkan/Graphics.h`), a
+  deterministic nonsense crash (garbage member values, "Invalid device" from a
+  long-stable call) often means some TU still encodes the old class layout.
+  `--target clean` is not enough here: delete the build dir
+  (`Remove-Item build/win32-debug -Recurse -Force`) and reconfigure with
+  `-DEVENGINE_THIRD_PARTY_BINARY_DIR=<prebuilt deps>` plus the download options
+  OFF (assets are pre-seeded), then rebuild, before deep-diving. To make header
+  edits visible again, touch every TU that includes the header (or switch those
+  targets off unscanned mode).
+- The build reuses a read-only prebuilt third-party install
+  (`C:/Users/xiaofans/Workspace/Agents/EVEngine/build/third-party-binary/
+  win32-debug`). Check its lib timestamps (`Get-Item ... | Select LastWriteTime`)
+  when third-party behavior unexpectedly changes.
+- A deterministic crash inside an SDL call that works in a probe points at
+  engine-side state (e.g. `SDL_InitSubSystem`/`SDL_QuitSubSystem` pairing, the
+  SDL global `_this`, or window flags) — instrument the state before touching
+  the SDL/driver layer.

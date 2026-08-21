@@ -229,6 +229,8 @@ public:
     /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
     uint32_t debugBindlessIndex(Texture *tex) const;
     uint32_t debugMeshRecordIndex(Mesh *mesh) const;
+    /** @brief Indirect draws emitted by the last successful GPU-driven submit. */
+    uint32_t debugLastGpuDrivenDrawCount() const { return lastGpuDrivenDrawCount_; }
 
     void drawSolidRect(float x, float y, float w, float h, const Color &color,
                        BlendMode blend = BlendMode::Alpha) override;
@@ -648,6 +650,8 @@ private:
 
     vkb::GenericBuffer meshTableBuffer_;
     std::vector<GpuMeshRecord> meshTableRecords_;
+    /** @brief Parallel to meshTableRecords_: the GpuMesh owning each record (for binding). */
+    std::vector<GpuMesh *> meshRecordOwners_;
     uint32_t meshTableCapacity_ = 0;
 
     vkb::GenericBuffer materialTableBuffer_;
@@ -666,6 +670,7 @@ private:
 
     // ---- GPU-driven (stage 1): opaque forward path ----
     bool gpuDrivenEnabled_ = false;
+    uint32_t lastGpuDrivenDrawCount_ = 0;
     vk::PipelineLayout mesh3dGpuDrivenPipelineLayout = nullptr;
     vk::Pipeline mesh3dGpuDrivenPipeline = nullptr;
     void createMesh3DGpuDrivenPipeline();

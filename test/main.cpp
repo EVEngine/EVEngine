@@ -1,4 +1,5 @@
 #include "zeroerr/unittest.h"
+#include "common/CrashHandler.h"
 
 #if defined(EVENGINE_ANDROID)
 #include <SDL2/SDL.h>
@@ -59,6 +60,12 @@ std::string testRoot() {
 // SDL_main.h so the symbol stays unmangled ("SDL_main" for the SDLActivity JNI
 // dlsym). A `const char**` parameter would become a C++ overload and be mangled.
 int main(int argc, char **argv) {
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+    // Same symbolized crash backtrace as the engine binary (main.cpp), so a
+    // crashing test prints a stack trace instead of a bare access-violation
+    // exit code.
+    eve::installCrashHandler();
+#endif
 #if defined(EVENGINE_ANDROID)
     static LogcatBuf logcatBuf;
     std::cout.rdbuf(&logcatBuf);

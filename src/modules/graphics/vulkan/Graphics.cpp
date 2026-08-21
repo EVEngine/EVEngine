@@ -22,6 +22,7 @@
 #include <unistd.h>
 #endif
 
+#include "common/Assert.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
@@ -857,6 +858,7 @@ uint32_t Graphics::registerMeshRecord(GpuMesh *gpu) {
     if (meshTableRecords_.size() >= meshTableCapacity_) return kInvalidBindlessSlot;
     const uint32_t idx = uint32_t(meshTableRecords_.size());
     meshTableRecords_.push_back(gpu->record);
+    meshRecordOwners_.push_back(gpu);
     gpu->gpuRecordIndex = idx;
     syncMeshTable();
     return idx;
@@ -929,15 +931,9 @@ uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
 
 bool Graphics::gpuDrivenMaterialUsable(Material *material) {
     const uint32_t id = materialTableGetOrCreate(material);
-    if (id == kInvalidBindlessSlot) return false;
-    const GpuMaterialRecord &r = materialTableRecords_[id];
-    // NOTE: the AMD Radeon driver on this machine only returns correct results
-    // for descriptor-array dynamic indexing at element 0. Scenes with more than
-    // one distinct texture therefore fall back to the legacy path; on hardware
-    // with working descriptor indexing this check can be relaxed.
-    const bool albedoOk = r.textureSlots[0] == 0 || r.textureSlots[0] == kInvalidBindlessSlot;
-    return albedoOk && r.textureSlots[1] == kInvalidBindlessSlot &&
-           r.textureSlots[2] == kInvalidBindlessSlot;
+    // Any material with a GPU table record is representable by the bindless
+    // path; descriptor-array indexing handles arbitrary slots.
+    return id != kInvalidBindlessSlot;
 }
 
 bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
@@ -952,6 +948,7 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     }
     const uint32_t drawCount = builder.build(meshTableRecords_);
     if (drawCount == 0) return false;
+    lastGpuDrivenDrawCount_ = drawCount;
     const auto &cmds = builder.commands();
     const auto &order = builder.sortedInstanceOrder();
 
@@ -1037,11 +1034,24 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1,
                           &bindlessSet_, 0, nullptr);
     const vk::DeviceSize stride = sizeof(GpuIndirectCommand);
-    std::array<uint32_t, 4> push{0, 0, 0, 0};
+    // Stage 1 keeps one host buffer pair per mesh (no pool yet), so each draw
+    // group must bind the owning mesh's vertex/index buffers. The builder sorts
+    // by (pipeline, material, mesh), so commands sharing a mesh are contiguous;
+    // bind only when the mesh changes.
+    GpuMesh *boundMesh = nullptr;
     for (uint32_t i = 0; i < drawCount; ++i) {
-        push[0] = cmds[i].firstInstance;
-        cb.pushConstants(mesh3dGpuDrivenPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0,
-                         uint32_t(push.size() * sizeof(uint32_t)), push.data());
+        const GpuInstance &first = sorted[cmds[i].firstInstance];
+        if (first.meshId >= meshRecordOwners_.size()) {
+            EV_ASSERT(false, "indirect draw references an unregistered mesh record");
+            continue;
+        }
+        GpuMesh *mesh = meshRecordOwners_[first.meshId];
+        if (mesh != boundMesh) {
+            const vk::DeviceSize vbOffset = 0;
+            cb.bindVertexBuffers(0, 1, mesh->vertices, &vbOffset);
+            cb.bindIndexBuffer(mesh->indices.buffer, 0, mesh->indexType);
+            boundMesh = mesh;
+        }
         cb.drawIndexedIndirect(arena.buffer(), cmdAlloc.offset + vk::DeviceSize(i) * stride, 1,
                                stride);
     }
@@ -1636,13 +1646,12 @@ void Graphics::createMesh3DGpuDrivenPipeline() {
     if (!mesh3dSetLayout || !bindlessSetLayout_ || !gpuDrivenCaps_.gpuDrivenAvailable()) return;
 
     // Pipeline layout: set0 = per-frame (legacy mesh3d layout), set1 = bindless.
+    // No push constants: instance indexing relies on gl_InstanceIndex, which
+    // already includes the command's firstInstance per the Vulkan spec.
     std::array<vk::DescriptorSetLayout, 2> setLayouts{mesh3dSetLayout, bindlessSetLayout_};
-    vk::PushConstantRange pcr{vk::ShaderStageFlagBits::eVertex, 0, 16};
     vk::PipelineLayoutCreateInfo pli{};
     pli.setLayoutCount = uint32_t(setLayouts.size());
     pli.pSetLayouts = setLayouts.data();
-    pli.pushConstantRangeCount = 1;
-    pli.pPushConstantRanges = &pcr;
     mesh3dGpuDrivenPipelineLayout = device->createPipelineLayout(pli);
     mesh3dGpuDrivenPipeline =
         createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
