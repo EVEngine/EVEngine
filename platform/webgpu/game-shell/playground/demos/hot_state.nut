@@ -25,7 +25,7 @@ eve_init = function() {
 
     if (!("cube" in __pg)) {
         __pg.cube <- eve.Renderable3D();
-        __pg.cube.setMesh(gfx.newMeshCube());
+        __pg.cube.setMesh(gfx.newMeshCube(1.0));
     }
 
     print("hot-state demo init ok\n");

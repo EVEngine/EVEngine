@@ -57,6 +57,8 @@
     }
     #divider { flex: 0 0 6px; cursor: col-resize; background: #262a38; }
     #divider:hover { background: #3a4a6a; }
+    #canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
+    #canvas:focus { outline: none; }
     #stagePane {
       flex: 1 1 auto; min-width: 0; position: relative;
       display: flex; align-items: center; justify-content: center; background: #05060a;
@@ -65,7 +67,6 @@
       position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
       color: #4a5268; font-size: 13px; pointer-events: none; background: #05060a;
     }
-    #canvas { width: 100%; height: 100%; object-fit: contain; display: block; }
 
     .paneTitle {
       flex: 0 0 auto; display: flex; align-items: center; gap: 8px;
@@ -97,8 +98,13 @@
     .tok-o { color: #9aa4b5; }
 
     /* Console + REPL */
+    #consoleResize {
+      flex: 0 0 6px; cursor: row-resize; background: #262a38;
+    }
+    #consoleResize:hover { background: #3a4a6a; }
     #consolePane {
-      flex: 0 0 170px; display: flex; flex-direction: column;
+      flex: 0 1 auto; display: flex; flex-direction: column;
+      height: 170px; max-height: 50%; min-height: 72px;
       background: #0b0d13; border-top: 1px solid #262a38;
     }
     #log {
@@ -169,10 +175,11 @@
       <div id="divider"></div>
       <section id="stagePane">
         <div class="veil">WebGPU 画面</div>
-        <canvas id="canvas" width="800" height="600"></canvas>
+        <canvas id="canvas" width="800" height="600" tabindex="0"></canvas>
       </section>
     </div>
 
+    <div id="consoleResize" title="拖动调整控制台高度"></div>
     <section id="consolePane">
       <div class="paneTitle">
         <b>控制台</b><span class="hint">引擎 print / 脚本错误 / REPL</span>
@@ -191,6 +198,7 @@
       <span id="stEngine">engine: 未就绪</span>
       <span id="stIsolated">crossOriginIsolated=…</span>
       <span id="stAdapter">webgpu=…</span>
+      <span>键盘输入仅在点击渲染画面后生效</span>
       <span>热更新: 开（dofile + eve_reload，__pg 状态保留）</span>
     </footer>
   </div>
@@ -298,6 +306,31 @@
         });
       })();
 
+      // ---- console height (capped) ----------------------------------------
+      (function () {
+        var handle = $('consoleResize'), pane = $('consolePane');
+        handle.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          function move(ev) {
+            var h = window.innerHeight - ev.clientY;
+            h = Math.max(72, Math.min(window.innerHeight * 0.5, h));
+            pane.style.height = h + 'px';
+          }
+          function up() {
+            window.removeEventListener('mousemove', move);
+            window.removeEventListener('mouseup', up);
+          }
+          window.addEventListener('mousemove', move);
+          window.addEventListener('mouseup', up);
+        });
+      })();
+
+      // ---- canvas focus: engine keyboard only while the stage is active ----
+      (function () {
+        var canvas = $('canvas');
+        canvas.addEventListener('click', function () { canvas.focus(); });
+      })();
+
       // ---- JS <-> engine bridge wrappers -----------------------------------
       function withCString(str, fn) {
         var bytes = Module.lengthBytesUTF8(str) + 1;
@@ -309,7 +342,7 @@
         return Module && Module._eve_playground_apply &&
                Module._eve_playground_eval && Module._eve_playground_read &&
                Module._eve_playground_read_bytes && Module._eve_playground_capture &&
-               Module._eve_playground_readback_status;
+               Module._eve_playground_readback_status && Module._eve_playground_reset;
       }
       function pgApply(src) {
         if (!bridgesAvailable()) { pgLog('err', '[playground] 桥接函数缺失：eve.js 版本过旧？'); return; }
@@ -328,6 +361,10 @@
         });
       }
       function pgSetPaused(on) { Module._eve_playground_set_paused(on ? 1 : 0); }
+      function pgReset() {
+        if (!bridgesAvailable()) return;
+        Module._eve_playground_reset();
+      }
       function pgReadBytes(path, cap) {
         if (!bridgesAvailable()) return null;
         var ptr = Module._malloc(cap);
@@ -345,17 +382,26 @@
         try { localStorage.setItem(PG_KEY, ta.value); } catch (e) {}
       }
       function setSave(text) { $('saveState').textContent = text; }
+      // Which demo the running engine currently executes. Switching to a
+      // *different* demo resets the scene first (destroy old entities + clear
+      // __pg); edits to the same script keep hot-reload state.
+      var appliedDemoPath = null;
+      var pendingDemoPath = null;
       function applyNow() {
         if (!engineReady) return;
+        if (pendingDemoPath && pendingDemoPath !== appliedDemoPath) {
+          pgReset();
+          appliedDemoPath = pendingDemoPath;
+        }
         saveLocal();
         pgApply(ta.value);
         setSave('已应用 ' + timeStr());
       }
       function restartNow() {
         if (!engineReady) return;
-        // 清空 playground 约定状态表 __pg → 重新应用脚本 → 重跑 eve_init 重建场景。
-        var r = pgEval('if ("__pg" in getroottable()) delete getroottable().__pg; "state cleared"');
-        pgLog('sys', '[playground] ' + r);
+        // 销毁旧 ECS 实体并清空 __pg → 重新应用脚本 → 重跑 eve_init 重建场景。
+        pgReset();
+        pgLog('sys', '[playground] 状态已清空（旧实体已销毁）');
         saveLocal();
         pgApply(ta.value);
         var r2 = pgEval('if ("eve_init" in getroottable()) { eve_init(); "init re-run"; } else "no eve_init"');
@@ -427,6 +473,7 @@
       $('exampleSel').addEventListener('change', function () {
         var src = pgRead(this.value);
         if (src === '') { pgLog('err', '[playground] 无法读取 ' + this.value); return; }
+        pendingDemoPath = this.value;
         ta.value = src;
         syncEditor();
         saveLocal();
@@ -437,6 +484,7 @@
       function engineUp() {
         if (engineReady) return;
         engineReady = true;
+        appliedDemoPath = 'main.nut';  // 启动时默认运行 /game/main.nut
         var veil = document.querySelector('#stagePane .veil');
         if (veil) veil.style.display = 'none';
         $('stEngine').textContent = 'engine: 已就绪';

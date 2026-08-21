@@ -274,6 +274,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE
             "--preload-file" "${EVENGINE_WEBGPU_GAME_DIR}@/game"
         )
+        # Track the preloaded assets as link inputs so demo/asset edits
+        # regenerate eve.data instead of shipping a stale VFS.
+        file(GLOB_RECURSE _eve_game_files "${EVENGINE_WEBGPU_GAME_DIR}/*")
+        set_property(TARGET ${EVENGINE_NATIVE_TARGET} APPEND PROPERTY
+            LINK_DEPENDS ${_eve_game_files})
     endif()
 endif()
 

@@ -3,8 +3,11 @@
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/config.h"
+#include "common/ECS.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
+#include "graphics/Light.h"
+#include "graphics/RenderSystem3D.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
@@ -227,6 +230,40 @@ void playgroundSetPaused(int paused) {
     sq_newslot(vm, -3, SQFalse);
     sq_settop(vm, top);
 }
+
+// Destroy the ECS entities demos create (renderables, lights, cameras) and
+// drop the playground state table, so applying a *different* demo (or pressing
+// "重置状态") starts from a clean scene instead of stacking entities.
+void playgroundResetScene() {
+    if (!gPlaygroundVm) return;
+    HSQUIRRELVM vm = gPlaygroundVm;
+    const SQInteger top = sq_gettop(vm);
+    try {
+        auto *table = ecs::current();
+        auto destroyAll = [&](auto *mgr) {
+            if (!mgr || !mgr->registy) return;
+            auto *reg = dynamic_cast<ecs::IRegistryComponentBuffer *>(mgr->registy);
+            if (!reg) return;
+            std::vector<ecs::Entity *> entities;
+            const uint32_t n = reg->entity_count();
+            entities.reserve(n);
+            for (uint32_t i = 0; i < n; ++i) {
+                if (ecs::Entity *e = reg->entity_at(i)) entities.push_back(e);
+            }
+            for (ecs::Entity *e : entities) ecs::DestroyEntity(e);
+        };
+        destroyAll(table->getManager<eve::graphics::Renderable3D>());
+        destroyAll(table->getManager<eve::graphics::Light3D>());
+        destroyAll(table->getManager<eve::graphics::Camera3D>());
+
+        sq_pushroottable(vm);
+        sq_pushstring(vm, _SC("__pg"), -1);
+        sq_deleteslot(vm, -2, SQFalse);
+        sq_settop(vm, top);
+    } catch (...) {
+        sq_settop(vm, top);
+    }
+}
 } // namespace
 
 extern "C" {
@@ -244,6 +281,7 @@ EMSCRIPTEN_KEEPALIVE int eve_playground_read_bytes(const char* path, void* dst, 
 EMSCRIPTEN_KEEPALIVE void eve_playground_capture(const char* path) { playgroundCapture(path); }
 EMSCRIPTEN_KEEPALIVE int eve_playground_readback_status() { return playgroundReadbackStatus(); }
 EMSCRIPTEN_KEEPALIVE void eve_playground_set_paused(int paused) { playgroundSetPaused(paused); }
+EMSCRIPTEN_KEEPALIVE void eve_playground_reset() { playgroundResetScene(); }
 
 } // extern "C"
 #endif

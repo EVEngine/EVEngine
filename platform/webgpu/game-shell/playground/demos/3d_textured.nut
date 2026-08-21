@@ -25,7 +25,7 @@ eve_init = function() {
 
     if (!("cube" in __pg)) {
         __pg.cube <- eve.Renderable3D();
-        __pg.cube.setMesh(gfx.newMeshCube());
+        __pg.cube.setMesh(gfx.newMeshCube(1.0));
         __pg.cube.setTexture(gfx.newTextureFromFile("playground/assets/wood.jpg"));
         __pg.cube.setTint(1.0, 0.96, 0.88, 1.0);
         __pg.cube.setRoughness(0.65);
