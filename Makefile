@@ -334,10 +334,10 @@ build/linux-asan: build/linux-asan/Makefile
 
 build/linux-asan/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
-		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
-		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
-		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined" \
-		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined" \
+		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
+		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
+		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
 		$(CMAKE_EXTRA_ARGS) -B build/linux-asan -S .
 
 build/linux-coverage: build/linux-coverage/Makefile

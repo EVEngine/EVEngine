@@ -473,6 +473,29 @@ function(set_include)
     unset(Vulkan_INCLUDE_DIR CACHE)
     unset(Vulkan_LIBRARY CACHE)
     find_package(Vulkan QUIET)
+    if(EVENGINE_ENABLE_STRICT_WARNINGS AND NOT MSVC AND Vulkan_INCLUDE_DIRS)
+        # GCC -isystem demotes a directory below every -I, which would flip
+        # which <vulkan/vulkan.hpp> wins: the vendored third-party tree
+        # (VK_HEADER_VERSION 261, vk::DispatchLoaderDynamic) must keep priority
+        # over the SDK's newer vulkan-hpp (vk::detail::DispatchLoaderDynamic)
+        # or VKBuilder stops compiling. Marking the SDK include as a system dir
+        # AFTER the third-party entries preserves the original search order
+        # while keeping both warning-free. Distro installs resolve Vulkan to
+        # /usr/include, which must NOT be re-marked (it already is system).
+        set(_eve_vk_is_standard_inc FALSE)
+        foreach(_eve_vk_inc IN LISTS Vulkan_INCLUDE_DIRS)
+            if(_eve_vk_inc STREQUAL "/usr/include" OR
+               _eve_vk_inc STREQUAL "/usr/local/include")
+                set(_eve_vk_is_standard_inc TRUE)
+            endif()
+        endforeach()
+        if(NOT _eve_vk_is_standard_inc)
+            target_compile_options(eve_engine_includes INTERFACE
+                "-isystem${Vulkan_INCLUDE_DIRS}")
+        endif()
+        unset(_eve_vk_is_standard_inc)
+        unset(_eve_vk_inc)
+    endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         find_library(ANDROID_VULKAN_LIB vulkan)
         if(NOT ANDROID_VULKAN_LIB)
