@@ -30,7 +30,7 @@ endif()
 
 # Already applied? `git apply --reverse --check` succeeds only then.
 execute_process(
-    COMMAND "${GIT_EXECUTABLE}" apply --reverse --check "${PATCH_ABS}"
+    COMMAND "${GIT_EXECUTABLE}" apply --reverse --check --ignore-space-change "${PATCH_ABS}"
     WORKING_DIRECTORY "${PATCH_DIR_ABS}"
     RESULT_VARIABLE _eve_patch_reverse
     OUTPUT_QUIET ERROR_QUIET)
@@ -41,7 +41,7 @@ endif()
 
 # Apply cleanly, or fail loudly so a stale patch cannot silently bit-rot.
 execute_process(
-    COMMAND "${GIT_EXECUTABLE}" apply --check "${PATCH_ABS}"
+    COMMAND "${GIT_EXECUTABLE}" apply --check --ignore-space-change "${PATCH_ABS}"
     WORKING_DIRECTORY "${PATCH_DIR_ABS}"
     RESULT_VARIABLE _eve_patch_check
     OUTPUT_QUIET ERROR_QUIET)
@@ -52,7 +52,7 @@ if(NOT _eve_patch_check EQUAL 0)
 endif()
 
 execute_process(
-    COMMAND "${GIT_EXECUTABLE}" apply "${PATCH_ABS}"
+    COMMAND "${GIT_EXECUTABLE}" apply --ignore-space-change "${PATCH_ABS}"
     WORKING_DIRECTORY "${PATCH_DIR_ABS}"
     RESULT_VARIABLE _eve_patch_result)
 if(NOT _eve_patch_result EQUAL 0)

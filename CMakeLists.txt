@@ -36,6 +36,9 @@ endif()
 option(EVENGINE_ANDROID_TEST_APP
     "Build the unit_test suite as an Android test app (libmain.so entry replaced by the zeroerr runner)"
     OFF)
+option(EVENGINE_IOS_TEST_APP
+    "Build the unit_test suite as an iOS test app (eve executable replaced by the zeroerr runner)"
+    OFF)
 option(EVENGINE_ENABLE_ASSERTS
     "Keep zeroerr ASSERT checks (parameter validation, invariants) in non-Debug builds.
      Debug builds always enable them; this option is for Release-style builds."
@@ -43,6 +46,7 @@ option(EVENGINE_ENABLE_ASSERTS
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build Demo module: " ${EVENGINE_BUILD_DEMO})
 message("Build Android test app: " ${EVENGINE_ANDROID_TEST_APP})
+message("Build iOS test app: " ${EVENGINE_IOS_TEST_APP})
 message("Enable asserts in non-Debug builds: " ${EVENGINE_ENABLE_ASSERTS})
 if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
@@ -98,8 +102,12 @@ function(main)
         endif()
     endif()
     if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-        set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
-        message(STATUS "iOS build: unit tests disabled")
+        if(EVENGINE_IOS_TEST_APP)
+            message(STATUS "iOS build: unit tests enabled (iOS test app)")
+        else()
+            set(BUILD_TESTING OFF CACHE BOOL "enable testing" FORCE)
+            message(STATUS "iOS build: unit tests disabled")
+        endif()
     endif()
     # WebGPU (browser WASM + native Dawn): unit tests are disabled by default —
     # most tests link Vulkan-only helpers. Native Dawn builds can opt back in
@@ -165,6 +173,20 @@ function(main)
         set(EVENGINE_MODULE_devtools OFF)
     endif()
     eve_resolve_modules()
+
+    # zeroerr's --file=/--testcase-exclude=/--file-exclude= parsing compares
+    # fixed-length prefixes that exclude the '=', so "--file=..." never
+    # matched (off-by-one in the vendored submodule). Patch it at configure
+    # time so the iOS test app's per-file filter (-evengine.test.file) works;
+    # reuses the idempotent third-party patch wrapper.
+    execute_process(COMMAND ${CMAKE_COMMAND}
+        -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/zeroerr-file-filter.patch
+        -DPATCH_DIR=${CMAKE_SOURCE_DIR}/external/zeroerr
+        -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake
+        RESULT_VARIABLE _eve_zeroerr_patch_result)
+    if(NOT _eve_zeroerr_patch_result EQUAL 0)
+        message(FATAL_ERROR "Failed to apply zeroerr file-filter patch")
+    endif()
 
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
@@ -333,6 +355,14 @@ function(set_include)
         #   iOS/lib/.../ios-arm64/MoltenVK.framework  (dynamic; preferred, embeddable)
         #   macOS/lib/.../ios-arm64/libMoltenVK.a      (static; CI zip often only has this)
         # Prefer the framework; fall back to the static archive.
+        # Pick the xcframework slice matching the active SDK: simulator builds
+        # need the universal ios-arm64_x86_64-simulator framework, not the
+        # device-only ios-arm64 one.
+        if(CMAKE_OSX_SYSROOT MATCHES "simulator")
+            set(_eve_mvk_slice "ios-arm64_x86_64-simulator")
+        else()
+            set(_eve_mvk_slice "ios-arm64")
+        endif()
         set(_eve_mvk_candidates "")
         if(DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
             list(APPEND _eve_mvk_candidates
@@ -355,7 +385,7 @@ function(set_include)
             if(NOT EXISTS "${_abs}")
                 continue()
             endif()
-            set(_slice "${_abs}/ios-arm64")
+            set(_slice "${_abs}/${_eve_mvk_slice}")
             if(EXISTS "${_slice}/MoltenVK.framework")
                 set(_eve_moltenvk_xcframework "${_abs}")
                 set(_eve_moltenvk_link_mode "framework")
@@ -766,7 +796,15 @@ function(load_third_party)
     endif()
     message("Build Type: ${CMAKE_BUILD_TYPE} (third-party tree suffix '${DEBUG_APPENDIX}')")
 
-    set(TP_BUILD_PATH ${BUILD_PLATFORM}${DEBUG_APPENDIX})
+    # Simulator builds cannot reuse the device third-party tree (the linker
+    # rejects iphoneos Mach-O slices for an iphonesimulator target), so give
+    # them their own install prefix instead of clobbering build/third-party-binary/ios-debug.
+    if(CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_SYSROOT MATCHES "simulator")
+        set(_eve_tp_platform "ios-simulator")
+    else()
+        set(_eve_tp_platform ${BUILD_PLATFORM})
+    endif()
+    set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)

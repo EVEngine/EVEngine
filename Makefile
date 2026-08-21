@@ -55,6 +55,7 @@ IOS_SDK ?= iphoneos
 # parentheses is the certificate ID and Xcode rejects it as a team.
 IOS_DEVELOPMENT_TEAM ?= $(shell security find-certificate -a -c "Apple Development" -p 2>/dev/null | openssl x509 -noout -subject 2>/dev/null | sed -n 's/.*OU *= *\([A-Z0-9]*\).*/\1/p' | head -1)
 IOS_BUNDLE_ID ?= com.evengine.example
+IOS_TEST_BUNDLE_ID ?= com.evengine.example.test
 # demo  = platform/ios/game-shell (no main.nut → embedded eve.demoScript + particles)
 # example = copy from example/ (box + fire emitter)
 IOS_GAME ?= demo
@@ -63,6 +64,8 @@ IOS_APP ?= build/ios-debug/src/engine/Debug-iphoneos/eve.app
 ifeq ($(wildcard $(IOS_APP)),)
 IOS_APP = build/ios-debug/src/engine/eve.app
 endif
+IOS_TEST_APP ?= build/ios-debug-test/src/engine/Debug-iphoneos/eve.app
+IOS_SIM_TEST_APP ?= build/ios-sim-debug-test/src/engine/Debug-iphonesimulator/eve.app
 
 # ---- Capability detection for `make all` (host + optional cross targets) ----
 # debug/release remain host-only; all builds every available debug target.
@@ -99,6 +102,8 @@ GAME ?=
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
 	build/android-debug-test \
+	build/ios-debug-test \
+	build/ios-sim-debug-test \
 	wsl/linux wsl/linux-debug show-targets \
 	debug release example \
 	run run/win32 run/linux run/macosx \
@@ -106,6 +111,8 @@ GAME ?=
 	sync/android-libs sync/android-assets sync/android-test-assets install/android-debug run/android-debug log/android \
 	run/android-test-debug log/android-test \
 	install/ios-debug run/ios-debug log/ios \
+	install/ios-test-debug run/ios-test-debug log/ios-test \
+	install/ios-sim-test-debug run/ios-sim-test-debug log/ios-sim-test \
 	sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
 	sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug \
 	reinstall/third-party reinstall/third-party/win32 reinstall/third-party/win32-debug \
@@ -315,6 +322,75 @@ build/ios-debug/EVEngine.xcodeproj:
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug -S .
 
+# ---- iOS test app (zeroerr suite as the eve.app executable) ----
+#   make build/ios-debug-test [IOS_DEVELOPMENT_TEAM=<TeamID>]
+#   make run/ios-test-debug [FILTER=math.*]   # install + launch on device
+#   make log/ios-test                          # stream test results
+build/ios-debug-test: build/ios-debug-test/EVEngine.xcodeproj
+	cmake --build build/ios-debug-test --target deps -j $(ANDROID_JOBS)
+	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
+		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
+		cd build/ios-debug-test && xcodebuild -scheme eve -configuration Debug \
+			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
+			CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+			build; \
+	else \
+		cd build/ios-debug-test && xcodebuild -scheme eve -configuration Debug \
+			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
+			DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
+			CODE_SIGN_STYLE=Automatic \
+			-allowProvisioningUpdates \
+			build; \
+	fi
+
+build/ios-debug-test/EVEngine.xcodeproj:
+	cmake -G Xcode \
+		-DCMAKE_SYSTEM_NAME=iOS \
+		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
+		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DCMAKE_OSX_SYSROOT=$(IOS_SDK) \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DBUILD_PLATFORM=ios \
+		-DBUILD_TESTING=ON \
+		-DEVENGINE_IOS_TEST_APP=ON \
+		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
+		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
+		-DEVENGINE_IOS_TEST_BUNDLE_ID=$(IOS_TEST_BUNDLE_ID) \
+		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
+		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(CMAKE_EXTRA_ARGS) \
+		-B build/ios-debug-test -S .
+
+# iOS test app for the simulator (no signing required). Uses its own
+# third-party tree (ios-simulator-debug) so the device deps are not clobbered.
+build/ios-sim-debug-test: build/ios-sim-debug-test/EVEngine.xcodeproj
+	cmake --build build/ios-sim-debug-test --target deps -j $(ANDROID_JOBS)
+	cd build/ios-sim-debug-test && xcodebuild -scheme eve -configuration Debug \
+		-sdk iphonesimulator -arch $(IOS_ARCH) \
+		CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
+		build
+
+build/ios-sim-debug-test/EVEngine.xcodeproj:
+	cmake -G Xcode \
+		-DCMAKE_SYSTEM_NAME=iOS \
+		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
+		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DCMAKE_OSX_SYSROOT=iphonesimulator \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DBUILD_PLATFORM=ios \
+		-DBUILD_TESTING=ON \
+		-DEVENGINE_IOS_TEST_APP=ON \
+		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
+		-DEVENGINE_IOS_TEST_BUNDLE_ID=$(IOS_TEST_BUNDLE_ID) \
+		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
+		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(CMAKE_EXTRA_ARGS) \
+		-B build/ios-sim-debug-test -S .
+
 # Rebuild changed third-party sources and run install again without deleting
 # build/third-party or build/third-party-binary.
 reinstall/third-party: reinstall/third-party/$(PLATFORM)-debug
@@ -461,8 +537,8 @@ install/ios-debug:
 	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-debug first"; exit 1); \
 	  echo "Installing $$APP"; \
 	  if xcrun --find devicectl >/dev/null 2>&1; then \
-	    DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -n 's/.*\([0-9A-Fa-f]\{8\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{12\}\).*connected.*/\1/p' | head -1); \
-	    test -n "$$DEV" || (echo "No connected iOS device found (devicectl)."; exit 1); \
+	    DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
+	    test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
 	    echo "Device $$DEV"; \
 	    xcrun devicectl device install app --device $$DEV "$$APP"; \
 	  elif command -v ios-deploy >/dev/null 2>&1; then \
@@ -473,7 +549,7 @@ install/ios-debug:
 
 run/ios-debug: install/ios-debug
 	@if xcrun --find devicectl >/dev/null 2>&1; then \
-	  DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -n 's/.*\([0-9A-Fa-f]\{8\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{4\}-[0-9A-Fa-f]\{12\}\).*connected.*/\1/p' | head -1); \
+	  DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
 	  xcrun devicectl device process launch --device $$DEV $(IOS_BUNDLE_ID); \
 	elif command -v ios-deploy >/dev/null 2>&1; then \
 	  ios-deploy --justlaunch --bundle "$$(find build/ios-debug -name 'eve.app' -type d | head -1)"; \
@@ -487,6 +563,110 @@ log/ios:
 	else \
 	  log stream --predicate 'processImagePath CONTAINS "eve"' --style compact; \
 	fi
+
+# ---- iOS test app: install / launch / logs (mirrors run/android-test-debug) ----
+install/ios-test-debug:
+	@test -n "$$(security find-identity -v -p codesigning 2>/dev/null | sed -n '/Apple Development/p')" \
+	  || (echo "No Apple Development signing identity. Open Xcode → Settings → Accounts, add Apple ID, then rebuild with IOS_DEVELOPMENT_TEAM=<TeamID>."; exit 1)
+	@APP="$(IOS_TEST_APP)"; \
+	  if [ ! -d "$$APP" ]; then \
+	    APP=$$(find build/ios-debug-test -name 'eve.app' -type d 2>/dev/null | head -1); \
+	  fi; \
+	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-debug-test first"; exit 1); \
+	  echo "Installing $$APP"; \
+	  if xcrun --find devicectl >/dev/null 2>&1; then \
+	    DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
+	    test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
+	    echo "Device $$DEV"; \
+	    xcrun devicectl device install app --device $$DEV "$$APP"; \
+	  elif command -v ios-deploy >/dev/null 2>&1; then \
+	    ios-deploy --bundle "$$APP"; \
+	  else \
+	    echo "Need xcrun devicectl (Xcode 15+) or ios-deploy"; exit 1; \
+	  fi
+
+run/ios-test-debug: install/ios-test-debug
+	@if xcrun --find devicectl >/dev/null 2>&1; then \
+	  DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
+	  if [ -n "$(FILTER)" ]; then \
+	    xcrun devicectl device process launch --terminate-existing --console --device $$DEV $(IOS_TEST_BUNDLE_ID) -- -evengine.test.filter "$(FILTER)"; \
+	  else \
+	    xcrun devicectl device process launch --terminate-existing --console --device $$DEV $(IOS_TEST_BUNDLE_ID); \
+	  fi; \
+	elif command -v ios-deploy >/dev/null 2>&1; then \
+	  if [ -n "$(FILTER)" ]; then \
+	    ios-deploy --justlaunch --bundle "$$(find build/ios-debug-test -name 'eve.app' -type d | head -1)" --args "-evengine.test.filter $(FILTER)"; \
+	  else \
+	    ios-deploy --justlaunch --bundle "$$(find build/ios-debug-test -name 'eve.app' -type d | head -1)"; \
+	  fi; \
+	else \
+	  echo "Need xcrun devicectl (Xcode 15+) or ios-deploy"; exit 1; \
+	fi
+
+# Run the full suite on a device, one test file per app launch. Per-file
+# process isolation mirrors CI's per-case CTest isolation: rapid window
+# create/destroy across hundreds of tests trips the iOS watchdog (SIGKILL), so
+# a crash in one file only loses that file's results.
+IOS_TEST_RESULTS ?= build/ios-test-results
+run/ios-test-all-debug: install/ios-test-debug
+	@mkdir -p "$(IOS_TEST_RESULTS)"; rm -f "$(IOS_TEST_RESULTS)"/*.log; \
+	DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
+	test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
+	ran=0; \
+	for f in test/*.cpp; do \
+	  b=$$(basename "$$f"); \
+	  [ "$$b" = "main.cpp" ] && continue; \
+	  ran=$$((ran+1)); \
+	  echo "== $$b =="; \
+	  xcrun devicectl --timeout 300 device process launch --terminate-existing --console --device "$$DEV" $(IOS_TEST_BUNDLE_ID) -- -evengine.test.file "$$b" > "$(IOS_TEST_RESULTS)/$${b%.cpp}.log" 2>&1 || true; \
+	done; \
+	echo "Ran $$ran test files; logs in $(IOS_TEST_RESULTS)/"; \
+	echo "--- per-file results ---"; \
+	passed=0; crashed=0; failed=0; \
+	for l in "$(IOS_TEST_RESULTS)"/*.log; do \
+	  b=$$(basename "$$l" .log); \
+	  if grep -aq "signal" "$$l"; then \
+	    echo "CRASH $$b ($$(grep -aoE 'signal [0-9]+' "$$l" | head -1))"; \
+	    crashed=$$((crashed+1)); \
+	  elif grep -aq "❌" "$$l"; then \
+	    echo "FAIL  $$b"; \
+	    failed=$$((failed+1)); \
+	  else \
+	    echo "PASS  $$b"; \
+	    passed=$$((passed+1)); \
+	  fi; \
+	done; \
+	echo "--- summary: PASS=$$passed FAIL=$$failed CRASH=$$crashed ---"
+
+log/ios-test:
+	@echo "Streaming iOS test logs (Ctrl-C to stop)..."
+	log stream --predicate 'subsystem == "$(IOS_TEST_BUNDLE_ID)"' --style compact
+
+# ---- iOS simulator test app: install / launch / logs (no signing needed) ----
+install/ios-sim-test-debug:
+	@APP="$(IOS_SIM_TEST_APP)"; \
+	  if [ ! -d "$$APP" ]; then \
+	    APP=$$(find build/ios-sim-debug-test -name 'eve.app' -type d 2>/dev/null | head -1); \
+	  fi; \
+	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-sim-debug-test first"; exit 1); \
+	  SIM=$$(xcrun simctl list devices available 2>/dev/null | sed -n 's/.*(\([0-9A-Fa-f-]\{36\}\)).*/\1/p' | head -1); \
+	  test -n "$$SIM" || (echo "No available iOS simulator"; exit 1); \
+	  xcrun simctl boot "$$SIM" 2>/dev/null || true; \
+	  xcrun simctl bootstatus "$$SIM" -b >/dev/null 2>&1; \
+	  echo "Installing $$APP on simulator $$SIM"; \
+	  xcrun simctl install "$$SIM" "$$APP"
+
+run/ios-sim-test-debug: install/ios-sim-test-debug
+	@SIM=$$(xcrun simctl list devices available 2>/dev/null | sed -n 's/.*(\([0-9A-Fa-f-]\{36\}\)).*/\1/p' | head -1); \
+	  if [ -n "$(FILTER)" ]; then \
+	    xcrun simctl launch "$$SIM" $(IOS_TEST_BUNDLE_ID) -evengine.test.filter "$(FILTER)"; \
+	  else \
+	    xcrun simctl launch "$$SIM" $(IOS_TEST_BUNDLE_ID); \
+	  fi
+
+log/ios-sim-test:
+	@echo "Streaming simulator test logs (Ctrl-C to stop)..."
+	xcrun simctl spawn booted log stream --predicate 'subsystem == "$(IOS_TEST_BUNDLE_ID)"' --style compact
 
 test: test/$(PLATFORM)-debug
 
