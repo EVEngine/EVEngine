@@ -1,0 +1,144 @@
+/* EVEngine static docs layout: a plain-HTML sidebar that works without JS. */
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+#ev-layout {
+    display: flex;
+    min-height: 100vh;
+    align-items: flex-start;
+}
+
+#ev-sidebar {
+    flex: 0 0 310px;
+    width: 310px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 18px 14px 24px 14px;
+    background: var(--side-nav-background, #f7f7f9);
+    border-right: 1px solid var(--side-nav-arrow-opacity, #e2e2e6);
+}
+
+#ev-brand {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+#ev-brand a {
+    color: inherit;
+    text-decoration: none;
+}
+
+#ev-version {
+    font-size: 12px;
+    font-weight: 400;
+    color: #888;
+    margin-left: 6px;
+}
+
+#ev-nav a {
+    display: block;
+    padding: 3px 8px;
+    margin: 1px 0;
+    color: var(--page-foreground-color, #333);
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#ev-nav a:hover {
+    background: var(--side-nav-arrow-opacity, #e8e8ec);
+}
+
+#ev-nav summary {
+    cursor: pointer;
+    padding: 4px 8px;
+    margin: 2px 0;
+    font-weight: 600;
+    color: var(--page-foreground-color, #333);
+    border-radius: 4px;
+}
+
+#ev-nav summary:hover {
+    background: var(--side-nav-arrow-opacity, #e8e8ec);
+}
+
+/* Category headings: the link inside <summary> stays inline so it sits on the
+ * same line as the expand/collapse triangle. */
+#ev-nav summary a {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    font-weight: 600;
+    color: inherit;
+}
+
+#ev-nav summary a:hover {
+    background: none;
+}
+
+#ev-nav details details {
+    margin-left: 10px;
+    border-left: 1px solid var(--side-nav-arrow-opacity, #e2e2e6);
+}
+
+#ev-nav .ev-nav-section {
+    margin: 10px 0 4px 0;
+    padding: 6px 8px 4px 8px;
+    border-top: 1px solid var(--side-nav-arrow-opacity, #e2e2e6);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #888;
+}
+
+#ev-sidebar-note {
+    margin-top: 18px;
+    padding: 8px;
+    font-size: 11px;
+    color: #999;
+    border-top: 1px solid var(--side-nav-arrow-opacity, #e2e2e6);
+}
+
+#ev-content {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    padding: 24px 36px 48px 36px;
+    box-sizing: border-box;
+}
+
+#ev-footer {
+    padding: 12px 36px;
+    font-size: 12px;
+    color: #999;
+    border-top: 1px solid var(--side-nav-arrow-opacity, #e2e2e6);
+}
+
+/* Keep the doc content readable on narrow panels: sidebar stacks on top and
+ * the content follows immediately (no dead space between them). */
+@media screen and (max-width: 900px) {
+    #ev-layout {
+        flex-direction: column;
+    }
+
+    #ev-sidebar {
+        flex: 0 0 auto;
+        width: 100%;
+        position: static;
+        height: auto;
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 1px solid var(--side-nav-arrow-opacity, #e2e2e6);
+    }
+
+    #ev-content {
+        padding: 18px 18px 40px 18px;
+    }
+}
