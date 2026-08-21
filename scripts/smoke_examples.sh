@@ -116,6 +116,8 @@ for name in "${EXAMPLES[@]}"; do
   if [[ -n "$hit" ]]; then
     echo "FAIL  $name  (marker: $hit)"
     grep -nF "$hit" "$log" 2>/dev/null | head -3 | sed 's/^/       /'
+    echo "       --- example output (last 25 lines) ---"
+    tail -n 25 "$log" | sed 's/^/       | /'
     FAILED=$((FAILED + 1))
     FAILED_NAMES+=("$name")
   else
