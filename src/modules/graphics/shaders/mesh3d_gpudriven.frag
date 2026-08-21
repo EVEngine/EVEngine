@@ -255,10 +255,15 @@ void main() {
     }
 
     vec3 N = Ngeom;
-    vec3 nSample = textureCellBomb(textures[normalSlot], uv, bombScale, bombStrength,
-                                   bombRot).xyz;
-    if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
-        N = applyNormalMap(N, nSample, vWorldPos, uv);
+    // Only apply a normal map when the material actually provides one. The
+    // invalid-slot fallback is the white placeholder texture, which must NOT be
+    // interpreted as a flat normal (legacy binds a (128,128,255) flat texture).
+    if (m.textureSlots[1] != kInvalidSlot) {
+        vec3 nSample = textureCellBomb(textures[normalSlot], uv, bombScale, bombStrength,
+                                       bombRot).xyz;
+        if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
+            N = applyNormalMap(N, nSample, vWorldPos, uv);
+    }
     vec3 Lo = vec3(0.0);
     float viewDepth = max(-vViewPos.z, 0.0);
     vec3 primaryL = normalize(ubo.lightDirIntensity.xyz);

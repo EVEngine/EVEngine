@@ -527,26 +527,6 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: swapchain + solid pipelines");
         createSwapchainAndPipeline();
     }
-    // Textures (white placeholder below) require `initialized`, so flip it right
-    // after the swapchain exists; createShadowResources() also needs it.
-    initialized = true;
-    {
-        StartupStage stage("  vulkan: white texture");
-        const uint8_t whitePixel[4] = {255, 255, 255, 255};
-        whiteTexture = newTexture(1, 1, whitePixel);
-        const std::vector<uint8_t> cubePx(6 * 4, 255);
-        defaultBindlessCube = newCubemap(1, cubePx.data());
-    }
-    {
-        StartupStage stage("  vulkan: gpu-driven bindless set");
-        frameArenas_.resize(frameSlotCount());
-        for (auto &arena : frameArenas_)
-            arena.ensure(device, 8u << 20,
-                         vk::BufferUsageFlagBits::eStorageBuffer |
-                             vk::BufferUsageFlagBits::eIndirectBuffer |
-                             vk::BufferUsageFlagBits::eTransferDst);
-        createBindlessSet();
-    }
     {
         StartupStage stage("  vulkan: textured/lit2d pipelines");
         createTexturedPipeline();
@@ -554,7 +534,6 @@ void Graphics::initWithWindow(void *nativeWindow) {
     {
         StartupStage stage("  vulkan: mesh3d pipeline");
         createMesh3DPipeline();
-        createMesh3DGpuDrivenPipeline();
     }
     {
         StartupStage stage("  vulkan: clustered pipeline");
@@ -567,6 +546,32 @@ void Graphics::initWithWindow(void *nativeWindow) {
     {
         StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
         createShadowResources();
+    }
+    // Textures require `initialized`; createShadowResources() also needs it.
+    // Keep white-texture creation after the pipelines (matches the baseline
+    // timing; creating textures right after swapchain hangs this AMD driver).
+    initialized = true;
+    {
+        StartupStage stage("  vulkan: white texture");
+        const uint8_t whitePixel[4] = {255, 255, 255, 255};
+        whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set");
+        frameArenas_.resize(frameSlotCount());
+        for (auto &arena : frameArenas_) {
+            arena.ensure(device, 8u << 20,
+                         vk::BufferUsageFlagBits::eStorageBuffer |
+                             vk::BufferUsageFlagBits::eIndirectBuffer |
+                             vk::BufferUsageFlagBits::eTransferDst);
+        }
+        createBindlessSet();
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven mesh3d pipeline");
+        createMesh3DGpuDrivenPipeline();
     }
 }
 
@@ -711,9 +716,11 @@ void Graphics::createBindlessSet() {
                                     vk::ImageLayout::eShaderReadOnlyOptimal};
     vk::DescriptorImageInfo whiteCubeInfo{whiteCube->sampler, whiteCube->cubeImage.imageView(),
                                           vk::ImageLayout::eShaderReadOnlyOptimal};
-    // Placeholder fill in chunks: the AMD driver in this environment hangs on
-    // single large descriptor-array writes.
-    constexpr uint32_t kDescriptorChunk = 128;
+    // Placeholder fill: this machine's AMD driver hangs when a single
+    // vkUpdateDescriptorSets call writes more than ONE element of the sampler
+    // array binding (counts >= 4 hang; count 1 works). ~1.1k single-element
+    // calls at init cost ~6 ms, which is fine.
+    constexpr uint32_t kDescriptorChunk = 1;
     auto chunkFill = [&](uint32_t binding, uint32_t total,
                          const vk::DescriptorImageInfo &info) {
         for (uint32_t base = 0; base < total; base += kDescriptorChunk) {
@@ -743,14 +750,32 @@ void Graphics::createBindlessSet() {
                                               kHostVisibleCoherent);
     materialTableCapacity_ = kMaxMaterialRecords;
     materialTableRecords_.reserve(kMaxMaterialRecords);
+
+    // Bind the resource tables into the bindless set (bindings 2-5). Binding 4
+    // (per-frame instances) is rewritten before each frame; these writes make
+    // every binding valid so the set is safe to bind at any time.
+    auto tableWrite = [&](uint32_t binding, vk::Buffer buffer) {
+        vk::DescriptorBufferInfo info{buffer, 0, VK_WHOLE_SIZE};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = bindlessSet_;
+        w.dstBinding = binding;
+        w.descriptorCount = 1;
+        w.descriptorType = vk::DescriptorType::eStorageBuffer;
+        w.pBufferInfo = &info;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    };
+    tableWrite(2, meshTableBuffer_.buffer);
+    tableWrite(3, materialTableBuffer_.buffer);
+    tableWrite(4, meshTableBuffer_.buffer);  // placeholder; rewritten per frame
+    tableWrite(5, meshTableBuffer_.buffer);  // unused by shaders
 }
 
 uint32_t Graphics::registerBindlessTexture2D(GpuTexture *tex) {
     if (!tex || !bindlessSet_) return kInvalidBindlessSlot;
     if (tex->bindlessIndex2D != kInvalidBindlessSlot) return tex->bindlessIndex2D;
     if (bindlessFree2D_.empty()) return kInvalidBindlessSlot;
-    const uint32_t slot = bindlessFree2D_.back();
-    bindlessFree2D_.pop_back();
+    const uint32_t slot = bindlessFree2D_.front();
+    bindlessFree2D_.erase(bindlessFree2D_.begin());
     bindlessTextures2D_[slot] = tex;
     tex->bindlessIndex2D = slot;
     vk::DescriptorImageInfo img{tex->sampler, tex->imageView(),
@@ -770,8 +795,8 @@ uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
     if (!tex || !bindlessSet_) return kInvalidBindlessSlot;
     if (tex->bindlessIndexCube != kInvalidBindlessSlot) return tex->bindlessIndexCube;
     if (bindlessFreeCube_.empty()) return kInvalidBindlessSlot;
-    const uint32_t slot = bindlessFreeCube_.back();
-    bindlessFreeCube_.pop_back();
+    const uint32_t slot = bindlessFreeCube_.front();
+    bindlessFreeCube_.erase(bindlessFreeCube_.begin());
     bindlessCubemaps_[slot] = tex;
     tex->bindlessIndexCube = slot;
     vk::DescriptorImageInfo img{tex->sampler, tex->cubeImage.imageView(),
@@ -902,6 +927,19 @@ uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
     return gpu->gpuRecordIndex;
 }
 
+bool Graphics::gpuDrivenMaterialUsable(Material *material) {
+    const uint32_t id = materialTableGetOrCreate(material);
+    if (id == kInvalidBindlessSlot) return false;
+    const GpuMaterialRecord &r = materialTableRecords_[id];
+    // NOTE: the AMD Radeon driver on this machine only returns correct results
+    // for descriptor-array dynamic indexing at element 0. Scenes with more than
+    // one distinct texture therefore fall back to the legacy path; on hardware
+    // with working descriptor indexing this check can be relaxed.
+    const bool albedoOk = r.textureSlots[0] == 0 || r.textureSlots[0] == kInvalidBindlessSlot;
+    return albedoOk && r.textureSlots[1] == kInvalidBindlessSlot &&
+           r.textureSlots[2] == kInvalidBindlessSlot;
+}
+
 bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
     if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable()) return false;
     if (!mesh3dGpuDrivenPipeline || !bindlessSet_ || !meshTableBuffer_.buffer) return false;
@@ -960,7 +998,7 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     ubo.lightDir.w = float(lightCount);
     ubo.cameraPos.w = mesh3dRoughness;
     ubo.lightColor.w = mesh3dEnvIntensity;
-    ubo.ambient.w = mesh3dMetallic;
+    ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), mesh3dMetallic);
     for (int i = 0; i < lightCount; ++i) ubo.lights[i] = mesh3dLighting.lights[i];
     int dirI = -1;
     for (int i = 0; i < lightCount; ++i) {
@@ -979,7 +1017,6 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
         ubo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(lightCount));
         ubo.lightColor = glm::vec4(0.f, 0.f, 0.f, mesh3dEnvIntensity);
     }
-
     auto &fslots = currentMesh3dFrameSlots();
     const size_t slot = fslots.drawIndex++;
     vk::DescriptorSet set =

@@ -4,11 +4,20 @@
 #include <SDL2/SDL.h>
 
 #include "graphics/Graphics.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/GpuDriven.h"
 #include "window/Window.h"
+
+#include <algorithm>
+#include <cmath>
+#include <vector>
 
 using namespace eve::graphics;
 
@@ -86,5 +95,97 @@ TEST_CASE("GpuDriven.meshTableRegistration") {
     CHECK(gpu->record.vertexCount > 0);
     CHECK(gpu->record.indexCount > 0);
     CHECK(gpu->record.boundsCenterRadius.w > 0.f);  // bounds computed at upload
+    win->close();
+}
+
+namespace {
+
+float gdLuma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
+
+void gdWarmPresent(Graphics *gfx) {
+    for (int i = 0; i < 4; ++i) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+    }
+}
+
+std::vector<float> gdCaptureLuma(Graphics *gfx) {
+    const int w = gfx->getWidth();
+    const int h = gfx->getHeight();
+    std::vector<float> out(size_t(w) * size_t(h), 0.f);
+    for (int y = 0; y < h; y += 4) {
+        for (int x = 0; x < w; x += 4) {
+            out[size_t(y * w + x)] = gdLuma(gfx->getPixel(x, y));
+        }
+    }
+    return out;
+}
+
+Texture *gdSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b) {
+    const uint8_t px[4] = {r, g, b, 255};
+    return gfx->newTexture(1, 1, px);
+}
+
+}  // namespace
+
+/**
+ * @brief The opaque forward pass must produce the same image with the legacy
+ * per-draw path and the GPU-driven (indirect + bindless) path.
+ */
+TEST_CASE("GpuDriven.opaqueForwardParity") {
+    eve::window::Window *win = nullptr;
+    Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
+        win->close();
+        return;
+    }
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 3.5f, 5.5f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setAmbient(0.08f, 0.08f, 0.10f);
+
+    Material *ballMat = gfx->newMaterial();
+    ballMat->setAlbedoTexture(gdSolid(gfx, 205, 70, 60));  // single texture -> slot 0
+    ballMat->setNormalTexture(nullptr);
+    ballMat->setRoughness(0.5f);
+    ballMat->setMetallic(0.1f);
+    auto *ball = Renderable3D::create();
+    ball->setMesh(gfx->newMeshSphere(24, 16));
+    ball->setMaterial(ballMat);
+    ball->setPosition(0.f, 0.35f, 0.f);
+    ball->setScale(0.55f, 0.55f, 0.55f);
+
+    auto *sun = Light3D::createLight("dir");
+    sun->setDirection(0.55f, 1.f, 0.35f);
+    sun->setColor(1.f, 1.f, 1.f, 2.5f);
+    sun->setCastShadow(false);  // isolate the direct-light path first
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderControl *rc = gfx->getRenderControl();
+    rc->disable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto legacy = gdCaptureLuma(gfx);
+
+    rc->enable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto gpuDriven = gdCaptureLuma(gfx);
+
+    // Same shading source, different emission path: allow small float noise.
+    float maxDelta = 0.f;
+    const int w = gfx->getWidth();
+    const int h = gfx->getHeight();
+    for (int y = 0; y < h; y += 4) {
+        for (int x = 0; x < w; x += 4) {
+            const size_t i = size_t(y * w + x);
+            const float d = std::fabs(legacy[i] - gpuDriven[i]);
+            maxDelta = std::max(maxDelta, d);
+        }
+    }
+    rc->disable("gpuDriven");
+    CHECK(maxDelta < 0.03f);
     win->close();
 }

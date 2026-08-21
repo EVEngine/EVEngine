@@ -111,6 +111,16 @@ public:
     }
 
     /**
+     * @brief Whether a material can be shaded by the GPU-driven opaque path.
+     * Backends/drivers with descriptor-indexing limitations return false for
+     * materials that would hit the limitation; RenderSystem3D then falls back.
+     */
+    virtual bool gpuDrivenMaterialUsable(Material *material) {
+        (void)material;
+        return false;
+    }
+
+    /**
      * @brief Upload + record GPU-driven opaque draws (call inside the open 3D frame).
      * The backend sorts instances by (material, mesh), merges buckets and emits
      * indirect draws itself; the caller only supplies the raw instance list.

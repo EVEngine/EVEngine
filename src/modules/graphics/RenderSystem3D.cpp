@@ -782,7 +782,8 @@ void RenderSystem3D::render(Graphics &gfx) {
         bool eligible = true;
         for (const auto &item : opaque) {
             if (!item.material || item.mr->camera != nullptr ||
-                item.material->effectiveShader() != nullptr) {
+                item.material->effectiveShader() != nullptr ||
+                !gfx.gpuDrivenMaterialUsable(item.material)) {
                 eligible = false;
                 break;
             }

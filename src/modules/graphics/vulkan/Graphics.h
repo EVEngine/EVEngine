@@ -224,6 +224,7 @@ public:
     uint32_t gpuDrivenMaterialRecord(Material *material) override {
         return materialTableGetOrCreate(material);
     }
+    bool gpuDrivenMaterialUsable(Material *material) override;
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
     /** @brief Test/debug helpers (valid when the GPU-driven path is live). */
     uint32_t debugBindlessIndex(Texture *tex) const;
