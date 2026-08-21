@@ -111,6 +111,7 @@ public:
     void present() override;
     void pushValidationScope() override;
     void popValidationScope() override;
+    void setMsaaSamples(int samples) override;
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
     void setVSync(bool enabled) override;
     int getMsaaSamples() const override { return msaaSamples; }
@@ -419,6 +420,8 @@ private:
 
     // Per-frame command state (single command buffer per frame).
     uint32_t frameIndex = 0;
+    // Slot rendered by the most recent present (the readback source).
+    uint32_t lastPresentSlot = 0;
     static constexpr uint32_t kFramesInFlight = 2;
     std::vector<UboArena> uboArenas;
     std::vector<VertexArena> vertexArenas;

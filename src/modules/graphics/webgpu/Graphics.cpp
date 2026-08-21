@@ -945,7 +945,7 @@ void Graphics::createMesh3DPipelines() {
     pd.primitive.cullMode = WGPUCullMode_None;
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
-    pd.multisample.count = 1;
+    pd.multisample.count = sceneColorSamples;
     // Zero-init would leave mask=0, which discards every fragment
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
@@ -1107,7 +1107,7 @@ void Graphics::createVoxelPipelines() {
     pd.primitive.cullMode = WGPUCullMode_None;
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
-    pd.multisample.count = 1;
+    pd.multisample.count = sceneColorSamples;
     // Zero-init would leave mask=0, which discards every fragment
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
@@ -2507,7 +2507,11 @@ void Graphics::createSceneColorResources(int width, int height) {
     destroySceneColorResources();
     sceneColorWidth = width;
     sceneColorHeight = height;
-    sceneColorSamples = 1;
+    // WebGPU only supports 1x and 4x multisampling; clamp anything >= 2 to 4.
+    const uint32_t want = msaaSamples >= 2 ? 4u : 1u;
+    const uint32_t oldSamples = sceneColorSamples;
+    const bool samplesChanged = oldSamples != want;
+    sceneColorSamples = want;
     sceneColorSlots.reserve(kFramesInFlight);
     for (int s = 0; s < int(kFramesInFlight); ++s) {
         sceneColorSlots.emplace_back();
@@ -2518,13 +2522,32 @@ void Graphics::createSceneColorResources(int width, int height) {
         cd.label = sv("eve_scene_color");
         cd.dimension = WGPUTextureDimension_2D;
         cd.size = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
-        cd.sampleCount = sceneColorSamples;
+        // Single-sample resolve target: composited to the swapchain and used
+        // as the frame-readback source. The multisampled color lives in
+        // msaaColor (created below) and is resolved into this texture.
+        cd.sampleCount = 1;
         cd.format = sceneColorFormat;
         cd.mipLevelCount = 1;
         cd.usage = WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment |
                    WGPUTextureUsage_CopySrc;
         slot.color = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&cd));
         slot.colorView = slot.color.CreateView();
+
+        if (sceneColorSamples > 1) {
+            // Multisampled color target; the scene pass resolves it into the
+            // single-sample `color` above for compositing / readback.
+            WGPUTextureDescriptor mcd{};
+            mcd.label = sv("eve_scene_color_msaa");
+            mcd.dimension = WGPUTextureDimension_2D;
+            mcd.size = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
+            mcd.sampleCount = sceneColorSamples;
+            mcd.format = sceneColorFormat;
+            mcd.mipLevelCount = 1;
+            mcd.usage = WGPUTextureUsage_RenderAttachment;
+            slot.msaaColor =
+                device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&mcd));
+            slot.msaaView = slot.msaaColor.CreateView();
+        }
 
         WGPUTextureDescriptor dd{};
         dd.label = sv("eve_scene_depth");
@@ -2551,11 +2574,27 @@ void Graphics::createSceneColorResources(int width, int height) {
 
     }
     sceneColorTexture = &sceneColorSlots[0].colorTex;
+    // 3D pipelines that render into the scene target must match its sample
+    // count; rebuild them when the count changes (first configure defaults to
+    // 1, then the engine's msaaSamples (default 4) takes effect).
+    if (samplesChanged && mesh3dPipeline) {
+        createMesh3DPipelines();
+        createVoxelPipelines();
+    }
 }
 
 void Graphics::destroySceneColorResources() {
     sceneColorSlots.clear();
     sceneColorTexture = nullptr;
+}
+
+void Graphics::setMsaaSamples(int samples) {
+    msaaSamples = samples > 0 ? samples : 0;
+    if (!initialized || sceneColorWidth <= 0 || sceneColorHeight <= 0) return;
+    // Force the offscreen targets (and the 3D pipelines that bind them) to
+    // rebuild at the new sample count.
+    destroySceneColorResources();
+    createSceneColorResources(sceneColorWidth, sceneColorHeight);
 }
 
 void Graphics::createShadowResources() {
@@ -3011,10 +3050,14 @@ void Graphics::present() {
     if (frameHad3DThisFrame && !sceneColorSlots.empty()) {
         SceneColorSlot &slot = sceneColorSlots[currentFrameSlot()];
         WGPURenderPassColorAttachment colorAtt{};
-        colorAtt.view = slot.colorView.Get();
+        colorAtt.view = slot.sampleCount > 1 ? slot.msaaView.Get() : slot.colorView.Get();
+        colorAtt.resolveTarget = slot.sampleCount > 1 ? slot.colorView.Get() : nullptr;
         colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
         colorAtt.loadOp = WGPULoadOp_Clear;
-        colorAtt.storeOp = WGPUStoreOp_Store;
+        // When resolving to a single-sample target, the multisampled
+        // attachment must be discarded (WebGPU spec).
+        colorAtt.storeOp =
+            slot.sampleCount > 1 ? WGPUStoreOp_Discard : WGPUStoreOp_Store;
         colorAtt.clearValue = {clearColor.r, clearColor.g, clearColor.b, 1.f};
         WGPURenderPassDepthStencilAttachment ds{};
         ds.view = slot.depthView.Get();
@@ -3032,6 +3075,7 @@ void Graphics::present() {
         flushVoxelDraws(pass, sceneColorFormat);
         flushMesh3D(pass, sceneColorFormat);
         pass.End();
+        lastPresentSlot = currentFrameSlot();
         sceneView = slot.colorView;
         sceneTex = slot.color;
     }
@@ -3377,7 +3421,7 @@ bool Graphics::beginFrameReadback(const std::string &path) {
     // A finished readback can be replaced; only refuse while one is in flight.
     if ((pendingReadback_ && !pendingReadback_->done) || !device || sceneColorSlots.empty())
         return false;
-    const uint32_t slot = currentFrameSlot();
+    const uint32_t slot = lastPresentSlot;
     if (slot >= sceneColorSlots.size()) return false;
     wgpu::Texture src = sceneColorSlots[slot].color;
     if (!src) return false;
@@ -3640,13 +3684,15 @@ Shader *Graphics::newMeshShaderFromWgsl(const std::string &vertWgsl, const std::
     gpu->mesh3dPipeline =
         buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, fragWgsl,
                               /*depth*/ true, /*blend*/ false, /*mesh3d*/ true, /*hair*/ false,
-                              /*shadow*/ false, /*gbuffer*/ false, /*sampleCount*/ 1);
+                              /*shadow*/ false, /*gbuffer*/ false,
+                              /*sampleCount*/ sceneColorSamples);
     // X-ray variant: depth test/write off + alpha blend so occluded silhouettes
     // paint over the building (the shader discards visible fragments itself).
     gpu->mesh3dXrayPipeline =
         buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, fragWgsl,
                               /*depth*/ false, /*blend*/ true, /*mesh3d*/ true, /*hair*/ false,
-                              /*shadow*/ false, /*gbuffer*/ false, /*sampleCount*/ 1);
+                              /*shadow*/ false, /*gbuffer*/ false,
+                              /*sampleCount*/ sceneColorSamples);
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
