@@ -369,7 +369,7 @@ build/ios-sim-debug-test: build/ios-sim-debug-test/EVEngine.xcodeproj
 	cmake --build build/ios-sim-debug-test --target deps -j $(ANDROID_JOBS)
 	cd build/ios-sim-debug-test && xcodebuild -scheme eve -configuration Debug \
 		-sdk iphonesimulator -arch $(IOS_ARCH) \
-		CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+		CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
 		build
 
 build/ios-sim-debug-test/EVEngine.xcodeproj:
