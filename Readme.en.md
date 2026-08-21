@@ -1,22 +1,27 @@
-EVEngine
+# EVEngine
+
 =======================
+
 Evolutionary Vision Engine
 
 [中文版](Readme.md)
 
 ## Documentation
 
-- [Game developer docs](docs/usr/README.md): install, run, and project layout; [module handbook](docs/usr/MODULES.md) covers script APIs and examples one by one.
-- [Engine developer docs](docs/dev/README.md): architecture, module design, testing strategy, and implementation notes.
-- [C++ API reference (Doxygen)](docs/api/html/index.html): generated from `src/` and `docs/usr/` — run `make docs` after installing doxygen (config: [`docs/Doxyfile.in`](docs/Doxyfile.in)).
+- [Game developer docs](docs/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/usr/MODULES.md) covers the script APIs and examples one by one.
+- [Online API reference (Doxygen)](https://evengine.github.io/EVEngine/): published continuously to GitHub Pages; includes the C++ API and the user manual.
+- [Engine developer docs](docs/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
 
-Many game engines are slow to iterate, hard to debug, and awkward for rapid prototyping. EVEngine aims to be a simple, practical engine focused on 2D and third-person 3D gameplay components—not a full-featured 3D scene-management suite.
+> **For game developers:** you do **not** need to compile EVEngine. Download the prebuilt SDK for your platform from the [official release page](https://github.com/EVEngine/EVEngine/releases), unzip it, and start creating — no Git, CMake, C++ compiler, or Vulkan SDK required. Only developers who want to modify the engine itself need to read "Building from source" below.
 
+## Introduction
+
+Many game engines are slow to iterate, hard to debug, and awkward for rapid prototyping. EVEngine is designed to be a simple, practical engine focused on 2D, third-person 3D, and mixed 2D/3D gameplay components — not a heavyweight 3D scene-management suite.
 
 Design goals:
 
 1. A Love2D-style interpretive engine that loads scripts and data directly
-2. Many high-performance C++ modules; you can compile other C++ libraries as shared libs and interact with them directly
+2. Many high-performance C++ modules; you can compile your own C++ libraries as shared libs and interact with them directly
 3. A full development stack: your logic can be edited with GUI tools; the editor runtime is the game runtime—only the shipping runtime strips DevTools (or you can keep them for player modding)
 4. Built-in asset management and hot reload—no separate pipeline required
 5. Class scanning with auto-generated editing GUIs
@@ -24,7 +29,6 @@ Design goals:
 7. Pause the game loop for debugging
 8. Independent state-machine models for partial hot updates
 9. Mixed 3D and 2D rendering
-
 
 Built-in systems:
 
@@ -41,14 +45,79 @@ Built-in systems:
 11. Sprite-stacking pseudo-3D
 12. Real 3D model rendering
 
+Build an RPG with minimal ceremony, with fast edit/debug for events, logic, and cutscene scripts — for example, hot-patch a function in a script and re-run it to preview the effect.
 
+## Quick start (game developers: download, no build)
 
-Build an RPG with minimal ceremony, with fast edit/debug for events, logic, and cutscene scripts—for example, hot-patch a function in a script and re-run it to preview the effect.
+### 1. Download the engine from the official site
 
+Go to the [EVEngine release page](https://github.com/EVEngine/EVEngine/releases), pick the latest stable release, and download the SDK archive for your target platform:
 
-## Requirements
+| Target platform | Download | Notes |
+|-----------------|----------|-------|
+| Windows | `eve-sdk-win32-<version>.zip` | Windows 10/11 x64 |
+| Linux | `eve-sdk-linux-<version>.zip` | Ubuntu 20.04+ etc. (requires a Vulkan driver) |
+| macOS | `eve-sdk-macosx-<version>.zip` | macOS 12+ (Apple Silicon / Intel) |
+| Android | `eve-sdk-android-<version>.zip` | Assemble an arm64 APK on a dev machine |
+| iOS | `eve-sdk-ios-<version>.zip` | Assemble an arm64 .app on a macOS dev machine |
 
-### Common dependencies
+Unzipping gives you a self-contained SDK directory — no installation required. Windows example:
+
+```text
+eve-sdk-win32/
+├── bin/eve.exe          # engine runtime
+├── lib/                 # Windows: import lib for plugins; macOS: runtime dylibs
+├── include/eve/         # native plugin headers (not needed for script-only games)
+├── cmake/               # native plugin CMake support (not needed for script-only games)
+├── platform/            # target-platform packaging template (e.g. Android APK project)
+└── share/eve/
+    ├── VERSION          # engine version
+    ├── TARGET_PLATFORM  # target platform marker
+    ├── examples/basic/  # runnable reference game
+    └── licenses/        # engine and third-party licenses
+```
+
+### 2. Run the bundled example to verify
+
+```sh
+# Windows
+bin\eve.exe run share\eve\examples\basic
+
+# macOS / Linux
+bin/eve run share/eve/examples/basic
+```
+
+### 3. Create and run your first game
+
+```sh
+bin\eve.exe create mygame     # Windows (macOS / Linux: bin/eve create mygame)
+bin\eve.exe run mygame
+```
+
+`eve create` generates a minimal game template: `config.nut` (window and dev options) and `main.nut` (game logic). Edit `main.nut`, save, and watch the hot reload in action. For game directory layout, lifecycle callbacks (`eve_init` / `eve_update` / `eve_render`), modules, debugging, and publishing, see the [user guide](docs/usr/README.md).
+
+### What you can do with the engine
+
+- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven from Squirrel scripts. See the [module handbook](docs/usr/MODULES.md).
+- **Hot reload for scripts and assets**: on desktop, edits take effect immediately; on mobile, push changes to the device with the `eve dev` dev server — no reinstall.
+- **Debug**: pause the game loop, breakpoints, watches, snapshots; VS Code debug adapter and AI (MCP) assisted development.
+- **Package and publish**: `eve zip` compresses a game into a `.eve` archive; `eve package --sdk <sdk>` produces a distributable folder containing the runtime and your game; Android/iOS use the SDK's bundled templates to assemble APK / .app.
+- **Native extensions**: when you need C++ performance code, write a plugin dynamic library with the SDK's CMake package (see `examples/native-plugin`) — script-only users never need this.
+
+### What to keep in mind
+
+1. **The runtime needs a Vulkan driver, but not the Vulkan SDK**: rendering is Vulkan-based. Windows GPU drivers usually include the Vulkan runtime; macOS is covered by the bundled MoltenVK; Linux needs `mesa-vulkan-drivers` (AMD/Intel) or the vendor driver (NVIDIA). Installing Git, CMake, a compiler, or the LunarG SDK only matters for building from source.
+2. **SDKs are per-platform and versions must match**: each SDK targets exactly one platform; native plugins must match the host platform and SDK version — mixing platforms or versions is not supported.
+3. **Stable vs. development**: Releases and the `main` branch are the stable line; to try the latest features or modify the engine, build from source and develop on `dev`.
+4. **License**: EVEngine uses a dual license — read the [license](#license) before use; commercial revenue above the free threshold requires a commercial license.
+
+## Building from source (engine developers / contributors)
+
+> The requirements and build steps below are only for developers who need to modify the engine source, contribute to engine development, or build the SDK themselves. Game developers should use the prebuilt version from "Quick start" above.
+
+### Requirements
+
+#### Common dependencies
 
 | Dependency | Version | Notes |
 |------------|---------|-------|
@@ -59,7 +128,7 @@ Build an RPG with minimal ceremony, with fast edit/debug for events, logic, and 
 
 Third-party libraries (SDL2, Box2D, Squirrel, Poco, ImGui, OpenAL Soft, FreeType, GLM, VKBuilder, etc.) are fetched and built automatically via CMake `ExternalProject` from [EVEngine/third-party](https://github.com/EVEngine/third-party). Manual installs are usually unnecessary.
 
-### Windows
+#### Windows
 
 | Component | Recommended |
 |-----------|-------------|
@@ -71,7 +140,7 @@ Third-party libraries (SDL2, Box2D, Squirrel, Poco, ImGui, OpenAL Soft, FreeType
 
 > If you use Visual Studio 2022, change the generator in `Makefile` to `"Visual Studio 17 2022"`.
 
-### Linux
+#### Linux
 
 | Component | Recommended |
 |-----------|-------------|
@@ -98,14 +167,14 @@ sudo apt install -y \
 # Or install the full Vulkan SDK per LunarG docs (includes validation layers)
 ```
 
-### macOS
+#### macOS
 
 | Component | Recommended |
 |-----------|-------------|
 | OS | macOS 12+ (Apple Silicon / Intel) |
 | Toolchain | **Xcode Command Line Tools** (`xcode-select --install`) |
 | CMake | Homebrew: `brew install cmake` (≥ 3.21) |
-| Vulkan | Install the **macOS Vulkan SDK** from [LunarG](https://vulkan.lunarg.com/) (includes **MoltenVK**) |
+| Vulkan | Install the **macOS Vulkan SDK** from [LunarG](https://vulkan.lunarg.com/) (includes **MoltenVK**) — build/development only; `dist/eve-sdk/macosx` bundles the Vulkan loader + MoltenVK, so player machines do not need the SDK |
 
 Set up the environment (run in each new terminal, or add to `~/.zshrc`):
 
@@ -119,7 +188,7 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 
 `setup-env.sh` sets `VULKAN_SDK`, `VK_ICD_FILENAMES` (MoltenVK ICD), and related vars. On Apple hosts, CMake **requires** a successful `find_package(Vulkan)` and will not fall back to Windows `vulkan-1.lib`.
 
-### Android (arm64-v8a Debug APK)
+#### Android (arm64-v8a Debug APK)
 
 | Component | Recommended |
 |-----------|-------------|
@@ -142,7 +211,7 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME
 
 Write `platform/android/apk/local.properties` (**do not commit**):
 
-```
+```text
 sdk.dir=/Users/<you>/Library/Android/sdk
 ```
 
@@ -174,7 +243,7 @@ make run/android-debug
 make log/android
 ```
 
-### iOS / iPadOS (arm64 device, min 13.0)
+#### iOS / iPadOS (arm64 device, min 13.0)
 
 | Component | Recommended |
 |-----------|-------------|
@@ -213,10 +282,10 @@ Troubleshooting:
 1. **Signing**: Sign in via Xcode → Settings → Accounts with an Apple ID that has an Apple Development certificate; `security find-identity -v -p codesigning` should list it. Without `IOS_DEVELOPMENT_TEAM`, `make build/ios-debug` can still produce an unsigned `.app`, but it will not install on device. `No Account for Team "XXXX"` usually means you used a certificate ID instead of the Team ID (`OU` in the certificate subject).
 2. **Device**: USB-connect the iPad, enable Developer Mode, trust the computer; `xcrun devicectl list devices` should show `connected`. If you see `no DDI`, open the device once in Xcode to install the Developer Disk Image.
 3. **Dependencies**: Third-party builds use Ninja + `cmake/ios.toolchain.cmake` (SDL UIKit). On failure, clear `build/third-party/ios-debug` and `build/third-party-binary/ios-debug` and retry.
-4. **MoltenVK**: Current LunarG xcframeworks may require iOS 14+; the device OS must meet that requirement (e.g. iPadOS 26 is fine).
+4. **MoltenVK**: Current LunarG xcframeworks may require iOS 14+; the device OS must meet that requirement.
 5. v1 does not cover simulator, App Store distribution, or multi-arch fat binaries.
 
-### WSL (develop Windows and Linux together)
+#### WSL (develop Windows and Linux together)
 
 Prefer **WSL2 (Ubuntu)** for Linux targets and Visual Studio on the Windows host for Win32. Keep the source on the Windows filesystem (e.g. `C:\Users\...\EVEngine`) and access it from WSL via `/mnt/c/...`.
 
@@ -227,8 +296,7 @@ Notes:
 3. Third-party outputs are per-platform (`build/third-party/win32`, `build/third-party/linux-debug`, etc.) and do not overwrite each other.
 4. Building under `/mnt/c` can be slow; for speed, clone into the WSL native filesystem (e.g. `~/src/EVEngine`) and keep a separate Windows clone if needed.
 
-
-## Get the source
+### Get the source
 
 ```sh
 git clone --recurse-submodules https://github.com/EVEngine/EVEngine
@@ -237,12 +305,11 @@ cd EVEngine
 # git submodule update --init --recursive
 ```
 
-The default clone is `main` (latest release). Engine development happens on `dev`: `git checkout dev && git pull`.
+The default clone is `main` (latest stable release). Engine development happens on `dev`: `git checkout dev && git pull`.
 
 The first CMake configure pulls `third-party` automatically; if the directory already exists with a `CMakeLists.txt`, the local copy is used. ECS uses submodule [`external/ECS.hpp`](https://github.com/sunxfancy/ECS.hpp); IK uses [`external/ik.hpp`](https://github.com/sunxfancy/ik.hpp).
 
-
-## Quick start (recommended: root Makefile)
+### Quick build (recommended: root Makefile)
 
 The root `Makefile` wraps Debug / Release configure and build for Windows / Linux / macOS. With `make` available (Git Bash, WSL, Linux, macOS), from the repo root:
 
@@ -285,10 +352,9 @@ Output layout:
 
 The main executable is usually `eve` (`eve.exe` on Windows; path depends on VS `Release` / `Debug` config subdirs). On Android, SDLActivity loads `libmain.so` (package `com.evengine.example`).
 
+### Step-by-step build
 
-## Step-by-step build
-
-### 1. Configure
+#### 1. Configure
 
 Equivalent to the Makefile configure steps; you can also run manually.
 
@@ -325,7 +391,7 @@ Optional CMake variables:
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
 
-### 2. Build third-party (deps)
+#### 2. Build third-party (deps)
 
 Third-party code builds via custom targets `deps` / `third-party`. After configure:
 
@@ -342,7 +408,7 @@ cmake --build build/macosx-debug --target deps -j 32
 
 The first third-party build takes a while. Outputs land in `build/third-party/<platform>[-debug]/` and `build/third-party-binary/<platform>[-debug]/`. Later incremental builds reuse installed results.
 
-### 3. Build the engine
+#### 3. Build the engine
 
 ```sh
 # Windows (multi-config: pass --config)
@@ -360,8 +426,7 @@ cmake --build build/macosx-debug -j 32
 
 Or use `make build/win32` / `make build/macosx-debug` etc. to configure and build in one step.
 
-
-## Unit tests
+### Unit tests
 
 `BUILD_TESTING` is on by default. After building:
 
@@ -376,8 +441,7 @@ make test/macosx
 
 Or run `unit_test` / `unit_test.exe` from the corresponding path directly.
 
-
-## Docker (optional)
+### Docker (optional)
 
 The repo includes an Ubuntu 20.04 `Dockerfile` (`build-essential`, `cmake`, `clang-12`, etc.) for an isolated Linux build:
 
@@ -388,8 +452,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
 
 Inside the container, configure and build with the Linux flow. You still need to supply Vulkan runtime/SDK yourself (the image does not ship a full Vulkan SDK).
 
-
-## FAQ
+### FAQ
 
 1. **CMake cannot find Vulkan**  
    Confirm the Vulkan SDK is installed and `VULKAN_SDK` points at the right path; on macOS, `source ~/VulkanSDK/<version>/setup-env.sh` before configure. Open a new terminal, then re-run cmake.
@@ -407,7 +470,7 @@ Inside the container, configure and build with the Linux flow. You still need to
    The Makefile defaults to `-j 32`. On machines with fewer cores, use `-j$(nproc)` (Linux) / `-j$(sysctl -n hw.ncpu)` (macOS) or a smaller number to avoid OOM.
 
 6. **macOS window / rendering fails**  
-   Confirm `VK_ICD_FILENAMES` points at the MoltenVK ICD (`setup-env.sh` sets this) and the SDK `lib` is on `DYLD_LIBRARY_PATH`. The engine uses SDL2 Vulkan surface + MoltenVK; no separate Metal backend is required.
+   If the error is `Installed Vulkan doesn't implement the VK_KHR_surface extension` (SDL's wording), the runnable Vulkan lacks surface support — on macOS that means MoltenVK was not loaded. For **distributed builds**, ship the `lib/` folder from `dist/eve-sdk/macosx` (it contains `libvulkan.1.dylib`, `libMoltenVK.dylib` and `MoltenVK_icd.json`); eve points SDL and the loader at these bundled files at startup (`bootstrapBundledVulkan` in `platform/macosx`), so players do not need the SDK. For **dev builds**, confirm `VK_ICD_FILENAMES` points at the MoltenVK ICD (`setup-env.sh` sets this) and the SDK `lib` is on `DYLD_LIBRARY_PATH`. The engine uses SDL2 Vulkan surface + MoltenVK; no separate Metal backend is required.
 
 7. **Android APK / device**  
    Match the NDK version to the Makefile; ensure `local.properties` `sdk.dir` is correct; enable USB debugging and check `adb devices`. v1 expects a Vulkan device; without one, at least verify `make build/android-debug` produces an APK.
@@ -417,7 +480,7 @@ Inside the container, configure and build with the Linux flow. You still need to
 
 ## Project layout (brief)
 
-```
+```text
 EVEngine/
 ├── CMakeLists.txt      # Root CMake: platform detect, third-party, subdirs
 ├── Makefile            # Windows / Linux / macOS / Android / iOS shortcuts
