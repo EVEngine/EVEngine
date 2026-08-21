@@ -14,6 +14,7 @@
 #include "common/Exception.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
+#include "filesystem/FileData.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 
@@ -21,8 +22,11 @@
 
 #include <algorithm>
 #include <cstring>
+#include <fstream>
 #include <map>
+#include <memory>
 #include <mutex>
+#include <vector>
 
 #include <glm/gtc/constants.hpp>
 
@@ -2926,6 +2930,7 @@ void Graphics::popValidationScope() {
 
 void Graphics::present() {
     if (!device || !surface || !swapchainConfigured) return;
+    pumpReadback();
     rebuildSwapchainIfNeeded();
     if (!swapchainConfigured) return;
 
@@ -3312,6 +3317,136 @@ image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
         std::memcpy(img->getData(), rgba.data(), rgba.size());
     }
     return img;
+}
+
+// ---------------------------------------------------------------------------
+// Async frame readback (browser)
+// ---------------------------------------------------------------------------
+
+namespace {
+
+bool encodeRgbaToPng(const std::string &path, int width, int height,
+                     const std::vector<uint8_t> &rgba) {
+    try {
+        image::ImageData img(width, height, "RGBA8");
+        std::memcpy(img.getData(), rgba.data(), rgba.size());
+        std::unique_ptr<eve::filesystem::FileData> png(
+            img.encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false));
+        if (!png) return false;
+        std::ofstream out(path, std::ios::binary);
+        if (!out) return false;
+        out.write(static_cast<const char *>(png->getData()),
+                  static_cast<std::streamsize>(png->getSize()));
+        return out.good();
+    } catch (...) {
+        return false;
+    }
+}
+
+}  // namespace
+
+struct Graphics::PendingReadback {
+    std::string path;
+    int width = 0;
+    int height = 0;
+    uint64_t bytesPerRow = 0;
+    wgpu::Buffer dst;
+    bool mapped = false;
+    bool done = false;
+    bool ok = false;
+};
+
+bool Graphics::beginFrameReadback(const std::string &path) {
+    // A finished readback can be replaced; only refuse while one is in flight.
+    if ((pendingReadback_ && !pendingReadback_->done) || !device || sceneColorSlots.empty())
+        return false;
+    const uint32_t slot = currentFrameSlot();
+    if (slot >= sceneColorSlots.size()) return false;
+    wgpu::Texture src = sceneColorSlots[slot].color;
+    if (!src) return false;
+    const int w = sceneColorWidth > 0 ? sceneColorWidth : 1;
+    const int h = sceneColorHeight > 0 ? sceneColorHeight : 1;
+
+    uint64_t bytesPerRow = static_cast<uint64_t>(w * 4);
+    bytesPerRow = (bytesPerRow + 255) / 256 * 256;
+    const uint64_t size = bytesPerRow * static_cast<uint64_t>(h);
+
+    WGPUBufferDescriptor bd{};
+    bd.label = sv("eve_readback");
+    bd.size = size;
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_MapRead;
+    bd.mappedAtCreation = false;
+    wgpu::Buffer dst = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
+    if (!dst) return false;
+
+    wgpu::CommandEncoder enc = device.CreateCommandEncoder();
+    WGPUTexelCopyTextureInfo from{};
+    from.texture = src.Get();
+    from.mipLevel = 0;
+    from.aspect = WGPUTextureAspect_All;
+    from.origin = {0, 0, 0};
+    WGPUTexelCopyBufferInfo to{};
+    to.buffer = dst.Get();
+    to.layout.offset = 0;
+    to.layout.bytesPerRow = static_cast<uint32_t>(bytesPerRow);
+    to.layout.rowsPerImage = static_cast<uint32_t>(h);
+    WGPUExtent3D extent{static_cast<uint32_t>(w), static_cast<uint32_t>(h), 1};
+    enc.CopyTextureToBuffer(reinterpret_cast<const wgpu::TexelCopyTextureInfo*>(&from),
+                            reinterpret_cast<const wgpu::TexelCopyBufferInfo*>(&to),
+                            reinterpret_cast<const wgpu::Extent3D*>(&extent));
+    wgpu::CommandBuffer cmd = enc.Finish();
+    queue.Submit(1, &cmd);
+
+    auto pr = std::make_unique<PendingReadback>();
+    pr->path = path;
+    pr->width = w;
+    pr->height = h;
+    pr->bytesPerRow = bytesPerRow;
+    pr->dst = dst;
+
+    WGPUBufferMapCallbackInfo cbInfo{};
+    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
+    cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView /*message*/, void *userdata1,
+                         void * /*userdata2*/) {
+        auto *p = static_cast<PendingReadback *>(userdata1);
+        p->mapped = (status == WGPUMapAsyncStatus_Success);
+    };
+    cbInfo.userdata1 = pr.get();
+    wgpuBufferMapAsync(dst.Get(), WGPUMapMode_Read, 0, size, cbInfo);
+
+    pendingReadback_ = std::move(pr);
+    return true;
+}
+
+int Graphics::frameReadbackStatus() const {
+    if (!pendingReadback_) return 0;
+    if (!pendingReadback_->done) return 1;
+    return pendingReadback_->ok ? 2 : 3;
+}
+
+void Graphics::pumpReadback() {
+    if (!pendingReadback_ || pendingReadback_->done) return;
+    auto &pr = *pendingReadback_;
+    if (!pr.mapped) {
+        // The map callback is delivered on the browser event loop between
+        // frames (emdawnwebgpu callUserCallback), so no ASYNCIFY sleep is
+        // needed here — this runs from present() on the main loop.
+#if defined(__EMSCRIPTEN__)
+        wgpuInstanceProcessEvents(instance.Get());
+#endif
+        return;
+    }
+    const uint8_t *data = static_cast<const uint8_t *>(
+        pr.dst.GetConstMappedRange(0, pr.bytesPerRow * static_cast<uint64_t>(pr.height)));
+    std::vector<uint8_t> rgba(static_cast<size_t>(pr.width) * pr.height * 4);
+    if (data) {
+        for (int y = 0; y < pr.height; ++y)
+            std::memcpy(rgba.data() + size_t(y) * pr.width * 4,
+                        data + size_t(y) * pr.bytesPerRow, size_t(pr.width) * 4);
+    }
+    pr.dst.Unmap();
+    pr.ok = data && encodeRgbaToPng(pr.path, pr.width, pr.height, rgba);
+    pr.done = true;
 }
 
 // ---------------------------------------------------------------------------

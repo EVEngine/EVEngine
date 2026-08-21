@@ -598,6 +598,18 @@ public:
     bool saveFramePng(const std::string &path);
 
     /**
+     * @brief Queue an asynchronous readback of the current frame to a PNG file.
+     * @return True when the readback was queued (WebGPU browser backend); poll
+     *         frameReadbackStatus() for completion. Default false elsewhere.
+     */
+    virtual bool beginFrameReadback(const std::string &path) {
+        (void)path;
+        return false;
+    }
+    /** @brief Async readback state: 0=idle, 1=pending, 2=done, 3=failed. */
+    virtual int frameReadbackStatus() const { return 0; }
+
+    /**
      * @brief Prefer uncapped present (IMMEDIATE/MAILBOX) when false, vsync (MAILBOX/FIFO)
      * when true. Takes effect on the next swapchain recreate.
      */

@@ -122,6 +122,14 @@
     }
     #repl:focus { border-color: #5aa9ff; }
 
+    /* Screenshot preview overlay */
+    #shotOverlay {
+      position: fixed; inset: 0; z-index: 60; display: none;
+      align-items: center; justify-content: center;
+      background: rgba(5, 6, 10, 0.82); cursor: zoom-out;
+    }
+    #shotOverlay img { max-width: 92%; max-height: 92%; border: 1px solid #333a4d; }
+
     /* Status bar */
     #statusbar {
       flex: 0 0 auto; display: flex; gap: 16px; padding: 4px 12px;
@@ -143,6 +151,7 @@
       <div class="brand">EVEngine<span>WebGPU Playground</span></div>
       <select id="exampleSel" disabled title="选择示例脚本（载入编辑器，不自动运行）"></select>
       <button id="btnPause" class="btn" disabled title="冻结 eve_update，渲染继续">暂停</button>
+      <button id="btnShot" class="btn" disabled title="保存当前帧为 PNG 并预览">截图</button>
       <button id="btnApply" class="btn primary" disabled title="写入 main.nut 并软热重载（状态保留在 __pg）">应用 Ctrl+Enter</button>
       <button id="btnRestart" class="btn danger" disabled title="清空 __pg 状态表并重建场景">重置状态</button>
       <span id="saveState"></span>
@@ -185,6 +194,7 @@
       <span>热更新: 开（dofile + eve_reload，__pg 状态保留）</span>
     </footer>
   </div>
+  <div id="shotOverlay" title="点击关闭截图预览"><img id="shotImg" alt="screenshot"></div>
 
   <script>
     (function () {
@@ -297,7 +307,9 @@
       }
       function bridgesAvailable() {
         return Module && Module._eve_playground_apply &&
-               Module._eve_playground_eval && Module._eve_playground_read;
+               Module._eve_playground_eval && Module._eve_playground_read &&
+               Module._eve_playground_read_bytes && Module._eve_playground_capture &&
+               Module._eve_playground_readback_status;
       }
       function pgApply(src) {
         if (!bridgesAvailable()) { pgLog('err', '[playground] 桥接函数缺失：eve.js 版本过旧？'); return; }
@@ -316,6 +328,17 @@
         });
       }
       function pgSetPaused(on) { Module._eve_playground_set_paused(on ? 1 : 0); }
+      function pgReadBytes(path, cap) {
+        if (!bridgesAvailable()) return null;
+        var ptr = Module._malloc(cap);
+        try {
+          var n = withCString(path, function (p) {
+            return Module._eve_playground_read_bytes(p, ptr, cap);
+          });
+          if (!n) return null;
+          return new Uint8Array(new Uint8Array(Module.HEAPU8.buffer, ptr, n));
+        } finally { Module._free(ptr); }
+      }
 
       // ---- actions ---------------------------------------------------------
       function saveLocal() {
@@ -341,6 +364,31 @@
       }
       $('btnApply').addEventListener('click', applyNow);
       $('btnRestart').addEventListener('click', restartNow);
+      $('btnShot').addEventListener('click', screenshotNow);
+      $('shotOverlay').addEventListener('click', function () { this.style.display = 'none'; });
+
+      function screenshotNow() {
+        if (!engineReady) return;
+        withCString('screenshot.png', function (p) { Module._eve_playground_capture(p); });
+        pgLog('sys', '[playground] 正在截图…');
+        var tries = 0;
+        var timer = setInterval(function () {
+          tries++;
+          var st = Module._eve_playground_readback_status();
+          if (st === 2 || st === 3 || tries > 40) {
+            clearInterval(timer);
+            if (st !== 2) { pgLog('err', '[playground] 截图失败（状态 ' + st + '）'); return; }
+            var data = pgReadBytes('screenshot.png', 4 * 1024 * 1024);
+            if (!data || !data.length) { pgLog('err', '[playground] 截图失败（读取 PNG 失败）'); return; }
+            var url = URL.createObjectURL(new Blob([data], { type: 'image/png' }));
+            var img = $('shotImg');
+            img.onload = function () { URL.revokeObjectURL(url); };
+            img.src = url;
+            $('shotOverlay').style.display = 'flex';
+            pgLog('sys', '[playground] 截图完成（' + data.length + ' 字节）');
+          }
+        }, 100);
+      }
 
       var paused = false;
       $('btnPause').addEventListener('click', function () {
@@ -396,6 +444,7 @@
         $('btnApply').disabled = false;
         $('btnRestart').disabled = false;
         $('btnPause').disabled = false;
+        $('btnShot').disabled = false;
 
         // 恢复上次会话：localStorage 优先，否则读 /game/main.nut
         var saved = null;

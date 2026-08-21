@@ -229,6 +229,10 @@ public:
 
     Texture *getTexture() override;
     image::ImageData *newImageData() override;
+    bool beginFrameReadback(const std::string &path) override;
+    int frameReadbackStatus() const override;
+    /** @brief Advances a pending frame readback; called every present(). */
+    void pumpReadback();
     void draw(eve::graphics::Graphics *gfx, const glm::mat4 &matrix) const override;
     void draw(Canvas *C, const glm::mat4 &matrix) const override;
     void clear(std::optional<Color> color, std::optional<int> stencil,
@@ -596,6 +600,11 @@ private:
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<Shader>> ownedShaders;
     std::vector<std::unique_ptr<GpuShader>> ownedGpuShaders;
+
+    // Browser async frame readback (avoids ASYNCIFY sleep inside deep
+    // JS->Squirrel->Graphics call chains).
+    struct PendingReadback;
+    std::unique_ptr<PendingReadback> pendingReadback_;
 
     void markSwapchainDirty() override { swapchainConfigured = false; }
     void rebuildSwapchainIfNeeded();

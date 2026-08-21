@@ -233,7 +233,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # The playground shell calls these helpers directly on Module.
         # Emscripten 6 no longer auto-adds _main when EXPORTED_FUNCTIONS is set.
         -sEXPORTED_FUNCTIONS=_main,_malloc,_free
-        -sEXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8,UTF8ToString
+        -sEXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8,UTF8ToString,HEAPU8
         # C++ exceptions can be thrown through ASYNCIFY-wrapped frames (e.g. a
         # module expose() failing); keep JS-side catching enabled so the abort
         # helper is compiled instead of asserting on the first __cxa_throw.
@@ -241,6 +241,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # The WebGPU backend spin-waits for requestAdapter/requestDevice with
         # emscripten_sleep(0); on the main thread that requires ASYNCIFY.
         -sASYNCIFY=1
+        # Frame readback (saveFramePng / getPixel) sleeps inside a deep native
+        # call chain (JS -> Squirrel -> Graphics); the default asyncify stack
+        # overflows ("unreachable") and aborts the runtime.
+        -sASYNCIFY_STACK_SIZE=32768
+        # The same chain (Squirrel VM + readback + LodePNG/zlib encode) exceeds
+        # the 64 KiB default wasm stack; give the main thread room to breathe.
+        -sTOTAL_STACK=1048576
     )
 
     set(EVENGINE_WEBGPU_GAME_DIR "${CMAKE_SOURCE_DIR}/platform/webgpu/game-shell" CACHE PATH

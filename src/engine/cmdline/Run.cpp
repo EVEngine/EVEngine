@@ -29,6 +29,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "graphics/Graphics.h"
+
 namespace {
 // Global frame-loop state: the root script (load.nut) defines a global
 // eve_frame() function; emscripten_set_main_loop drives it per animation frame.
@@ -181,6 +183,38 @@ const char* playgroundRead(const char* path) {
     }
 }
 
+// Binary-safe VFS read (e.g. PNG screenshots): copies up to dstCap bytes into
+// the JS-provided buffer and returns the byte count written.
+int playgroundReadBytes(const char* path, void* dst, int dstCap) {
+    if (!gPlaygroundVm || !path || !dst || dstCap <= 0) return 0;
+    try {
+        std::ifstream in(path, std::ios::binary);
+        if (!in) return 0;
+        std::ostringstream ss;
+        ss << in.rdbuf();
+        const std::string text = ss.str();
+        const int n = std::min<int>(static_cast<int>(text.size()), dstCap);
+        std::memcpy(dst, text.data(), n);
+        return n;
+    } catch (...) {
+        return 0;
+    }
+}
+
+// Queue an async frame readback (PNG). The webgpu backend pumps it from
+// present() so we never sleep inside this JS-initiated call (ASYNCIFY).
+void playgroundCapture(const char* path) {
+    if (!gPlaygroundVm || !path) return;
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    if (gfx) gfx->beginFrameReadback(path);
+}
+
+int playgroundReadbackStatus() {
+    if (!gPlaygroundVm) return 0;
+    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    return gfx ? gfx->frameReadbackStatus() : 0;
+}
+
 // Pause/freeze game updates (eve_update) while the render keeps presenting.
 // load.nut's eve_frame checks the eve_playground_paused root flag.
 void playgroundSetPaused(int paused) {
@@ -204,6 +238,11 @@ EMSCRIPTEN_KEEPALIVE const char* eve_playground_eval(const char* source) {
 EMSCRIPTEN_KEEPALIVE const char* eve_playground_read(const char* path) {
     return playgroundRead(path);
 }
+EMSCRIPTEN_KEEPALIVE int eve_playground_read_bytes(const char* path, void* dst, int dstCap) {
+    return playgroundReadBytes(path, dst, dstCap);
+}
+EMSCRIPTEN_KEEPALIVE void eve_playground_capture(const char* path) { playgroundCapture(path); }
+EMSCRIPTEN_KEEPALIVE int eve_playground_readback_status() { return playgroundReadbackStatus(); }
 EMSCRIPTEN_KEEPALIVE void eve_playground_set_paused(int paused) { playgroundSetPaused(paused); }
 
 } // extern "C"
