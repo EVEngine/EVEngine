@@ -80,11 +80,57 @@ struct EVENGINE_API ReflectedAttribute {
     std::string value;
 };
 
+/** @brief Runtime value kind read from a live script instance slot. */
+enum class EVENGINE_API ReflectedValueKind : uint8_t {
+    None = 0,     /**< @brief Missing / null slot. */
+    Bool = 1,     /**< @brief OT_BOOL. */
+    Integer = 2,  /**< @brief OT_INTEGER. */
+    Float = 3,    /**< @brief OT_FLOAT. */
+    String = 4,   /**< @brief OT_STRING. */
+    Array = 5,    /**< @brief OT_ARRAY (not yet editable). */
+    Table = 6,    /**< @brief OT_TABLE (not yet editable). */
+    Instance = 7, /**< @brief Nested script instance (not yet editable). */
+    Other = 8,    /**< @brief Any other slot kind. */
+};
+
+/**
+ * @brief Typed snapshot of one live instance property.
+ *
+ * `writeProperty()` keeps the script slot's own type, so the numeric member
+ * used to build the value only matters when the slot is null.
+ */
+struct EVENGINE_API ReflectedValue {
+    ReflectedValueKind kind = ReflectedValueKind::None;
+    bool boolean = false;
+    int64_t integer = 0;
+    double floating = 0.0;
+    std::string text;
+
+    /** @brief True when the slot exists and is non-null. */
+    bool empty() const noexcept { return kind == ReflectedValueKind::None; }
+    bool asBool() const noexcept { return boolean; }
+    int64_t asInt() const noexcept { return integer; }
+    double asFloat() const noexcept { return floating; }
+    const std::string& asString() const noexcept { return text; }
+};
+
 struct EVENGINE_API ReflectedMember {
     std::string name;
     ssq::Type type = ssq::Type::NULLPTR;
     bool method = false;
     std::vector<ReflectedAttribute> attributes;
+    ReflectedValue value;  /**< @brief Live value; empty for class-level reflection. */
+
+    /** @brief Looks up an attribute by name; nullptr when absent. */
+    const ReflectedAttribute* findAttribute(const std::string& name) const noexcept;
+    /** @brief Numeric attribute value; `def` when missing or not numeric. */
+    float attrFloat(const std::string& name, float def = 0.f) const noexcept;
+    /** @brief Boolean attribute value; `def` when missing or not boolean. */
+    bool attrBool(const std::string& name, bool def = false) const noexcept;
+    /** @brief Raw string attribute value; `def` when missing. */
+    std::string attrString(const std::string& name, const std::string& def = {}) const;
+    /** @brief Comma-separated string attribute split into trimmed options. */
+    std::vector<std::string> attrOptions(const std::string& name) const;
 };
 
 struct EVENGINE_API ReflectedClass {
@@ -211,6 +257,35 @@ public:
      */
     const ReflectedClass& reflectClass(const std::string& name,
                                        const std::string& source = {});
+    /**
+     * @brief Creates a live instance of a script class (default constructor).
+     * @param name   Class name (must be non-empty).
+     * @param source Optional source label used in errors.
+     * @return A rooted instance; the caller's ssq::Object releases it on destruction.
+     * @throws ScriptException when the class is missing or the constructor fails.
+     */
+    ssq::Object createInstance(const std::string& name, const std::string& source = {});
+    /**
+     * @brief Inspects a live instance: own + inherited members with current values.
+     * @param instance Live script instance.
+     */
+    std::vector<ReflectedMember> reflectInstance(const ssq::Object& instance) const;
+    /**
+     * @brief Reads one property of a live instance.
+     * @return Value snapshot; empty when the slot is missing.
+     */
+    ReflectedValue readProperty(const ssq::Object& instance,
+                                const std::string& name) const;
+    /**
+     * @brief Writes one property of a live instance.
+     *
+     * The existing slot type is preserved (bool stays bool, integer stays
+     * integer, float stays float, string stays string); null slots take the
+     * type of the incoming value.
+     * @return False when the member does not exist or is a method.
+     */
+    bool writeProperty(const ssq::Object& instance, const std::string& name,
+                       const ReflectedValue& value) const;
     /** @brief Recompiles and re-runs a script from its original source. */
     ScriptId reload(ScriptId id);
     /** @brief Unloads a script and removes its declared classes; false if unknown/unloaded. */
@@ -228,8 +303,18 @@ public:
     const ReflectedClass* reflectedClass(const std::string& name) const noexcept;
     /** @brief All reflected classes, sorted by name. */
     std::vector<ReflectedClass> reflectedClasses() const;
+    /**
+     * @brief Scans the root table for script classes and refreshes reflection.
+     *
+     * Picks up classes defined through dofile()/compilestring() outside the
+     * Runtime API and re-inspects classes replaced by hot reload. Returns the
+     * number of classes that were (re)scanned.
+     */
+    size_t scanClasses();
     /** @brief Finds a script class by name (throws if it does not exist). */
     ssq::Class findClass(const std::string& name) const;
+    /** @brief Name of the script class of a live instance ("" when unknown). */
+    std::string classNameOf(const ssq::Object& instance) const;
 
     /** @brief Replaces the handler invoked for script errors at the Runtime boundary. */
     void setErrorHandler(ErrorHandler handler) { error_handler_ = std::move(handler); }
@@ -246,6 +331,7 @@ private:
     std::unordered_map<ScriptId, std::unique_ptr<ScriptRecord>> scripts_;
     std::unordered_map<std::string, ReflectedClass> classes_;
     std::unordered_map<std::string, ScriptId> class_owners_;
+    std::unordered_map<std::string, SQUserPointer> class_identities_;
     ScriptId next_script_id_ = 1;
     bool initialized_ = false;
     bool shutting_down_ = false;
@@ -265,6 +351,8 @@ private:
     std::unordered_map<std::string, SQUserPointer> rootClasses() const;
     ReflectedClass inspectClass(const std::string& name, const ssq::Class& cls,
                                 const std::string& source) const;
+    /** @brief Member metadata of one class (own slots only, no instance values). */
+    std::vector<ReflectedMember> collectClassMembers(const ssq::Class& cls) const;
 };
 
 }  // namespace eve

@@ -1,6 +1,7 @@
 # 声明式游戏 GUI 框架设计
 
-> 状态：B 期已完成（脚本 Component + 高级原语 + 弹性布局）；C 期 DevTools 待做。
+> 状态：B 期已完成（脚本 Component + 高级原语 + 弹性布局）；C 期 DevTools 反射属性面板
+> 已完成（脚本类/属性自动扫描 + MVVM 双向绑定），见 §8 C。
 > 2026-08-18 差距清单补强：两阶段布局（measure/arrange + margin/padding/min/max/百分比/锚点）、
 > Image/九宫格/ImageButton、脚本事件回调、文本换行与 CJK 字体回退、Combo、宿主位移动画、
 > UI JSON 序列化（saveTreeJson/loadTreeJson）、手柄导航与 UI 统计；2026-08-19 补滚动虚拟化
@@ -385,7 +386,17 @@ sequenceDiagram
 
 ### C — DevTools
 
-- 同一 `UISystem`；反射属性面板（见 [界面设计.md](./界面设计.md)）
+- [x] 同一 `UISystem`；反射属性面板（见 [界面设计.md](./界面设计.md)）
+- [x] 脚本类/属性自动扫描：`Runtime::scanClasses()` 随时扫描根表（含
+      `dofile`/`compilestring` 加载的类，热重载自动刷新）；
+      实例级反射 API：`createInstance` / `reflectInstance` / `readProperty` /
+      `writeProperty` / `classNameOf`
+- [x] MVVM 属性面板 `ui.inspect()` / `ui.inspectObject(obj)`：控件变更直接写回
+      脚本实例，`sync()` 每帧把模型值拉回视图（双向绑定）；类/实例下拉 + 新增实例
+- [x] Squirrel 属性元数据选择控件：`</ editor = "slider", min, max />`、
+      `</ editor = "combo", options = "a,b,c" />`、checkbox/input 默认；
+      继承成员按所属基类分组（“父类属性面版”）
+- [x] 示例 `examples/inspector-demo` + 测试 `test/Inspector.cpp`
 - 原始 ImGui 逃生舱仅限 C++ DevTools
 
 

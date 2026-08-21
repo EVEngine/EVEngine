@@ -20,6 +20,7 @@ class Texture;
 
 namespace eve::ui {
 
+class Inspector;
 struct UIEvent;
 
 /**
@@ -260,6 +261,20 @@ public:
     void mountSimple(const std::string &title, const std::string &labelText,
                      const std::string &buttonText);
 
+    // ---- Reflection-driven property inspector (MVVM DevTools) ---------------
+    /** @brief Opens the auto-generated inspector (scans reflected classes). */
+    bool inspectOpen();
+    /** @brief Closes the inspector panel. */
+    void inspectClose();
+    /** @brief Re-scans script classes; true when any class is reflected. */
+    bool inspectRefresh();
+    /** @brief Selects a class in the inspector (creates its first instance). */
+    bool inspectSelectClass(const std::string &name);
+    /** @brief Inspects a caller-provided live script instance. */
+    bool inspectObject(ssq::Object object);
+    /** @brief Creates another instance of the selected inspector class. */
+    bool inspectAddInstance();
+
 private:
     WidgetDesc &currentParent();
     void pushOpen(WidgetDesc d);
@@ -296,6 +311,7 @@ private:
     };
     std::vector<HostTween> hostTweens_;
     void updateHostTweens();
+    std::unique_ptr<Inspector> inspector_;
 };
 
 }  // namespace eve::ui

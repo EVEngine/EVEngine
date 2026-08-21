@@ -1,6 +1,7 @@
 #include "ui/UI.h"
 #include "ui/EditorHostCapabilities.h"
 
+#include "ui/Inspector.h"
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
@@ -177,6 +178,7 @@ void UI::beginFrameAndRender() {
         if (!initBackend()) return;
     }
     updateHostTweens();
+    if (inspector_ && inspector_->isOpen()) inspector_->sync();
     backend_->newFrame();
     UISystem::render();
 }
@@ -1091,6 +1093,38 @@ void UI::mountSimple(const std::string &title, const std::string &labelText,
     mountAs("default", window(title, {text(labelText, "label"), button(buttonText, "btn")}, "root"));
 }
 
+bool UI::inspectOpen() {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->open();
+    return inspector_->isOpen();
+}
+
+void UI::inspectClose() {
+    if (inspector_) inspector_->close();
+}
+
+bool UI::inspectRefresh() {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->refresh();
+    return inspector_->instanceCount() > 0;
+}
+
+bool UI::inspectSelectClass(const std::string &name) {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->open();  // scans classes and mounts the panel if not open yet
+    return inspector_->selectClass(name);
+}
+
+bool UI::inspectObject(ssq::Object object) {
+    if (!inspector_) inspector_ = std::make_unique<Inspector>();
+    inspector_->open();  // scans classes and mounts the panel if not open yet
+    return inspector_->inspectObject(object);
+}
+
+bool UI::inspectAddInstance() {
+    return inspector_ && inspector_->addInstance();
+}
+
 void UI::expose(ssq::Table &table) {
     auto cls = table.addClass(name, UI::create, false);
     expose(cls);
@@ -1197,6 +1231,13 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("viewportWheel", &UI::viewportWheel);
 
     cls.addFunc("mountSimple", &UI::mountSimple);
+
+    cls.addFunc("inspect", &UI::inspectOpen);
+    cls.addFunc("inspectClose", &UI::inspectClose);
+    cls.addFunc("inspectRefresh", &UI::inspectRefresh);
+    cls.addFunc("inspectSelectClass", &UI::inspectSelectClass);
+    cls.addFunc("inspectObject", &UI::inspectObject);
+    cls.addFunc("inspectAddInstance", &UI::inspectAddInstance);
 }
 
 }  // namespace eve::ui
