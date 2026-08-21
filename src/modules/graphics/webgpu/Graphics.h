@@ -307,6 +307,7 @@ private:
     };
     struct VoxelDraw {
         uint32_t instanceBufferOffset = 0;
+        uint32_t aoBufferOffset = 0;
         uint32_t count = 0;
         GpuTexture *atlas = nullptr;
         glm::mat4 viewProj{1.f};
@@ -398,6 +399,11 @@ private:
 
     uint32_t frameSlotCount() const { return kFramesInFlight; }
     uint32_t currentFrameSlot() const { return frameIndex % kFramesInFlight; }
+
+    // Per-frame instance arena for voxel faces (packed rect words).
+    VertexArena voxelInstanceArena;
+    // Parallel per-frame arena for the AO word (2 bits per corner).
+    VertexArena voxelAoArena;
 
     // ---- state ----
     bool initialized = false;
@@ -569,8 +575,6 @@ private:
     std::vector<VoxelDraw> voxelDraws;
     wgpu::Buffer voxelUnitQuadVerts;
     wgpu::Buffer voxelUnitQuadIndices;
-    VertexArena voxelInstanceArena;
-
     // Scene color (offscreen 3D) target.
     struct SceneColorSlot {
         wgpu::Texture msaaColor;

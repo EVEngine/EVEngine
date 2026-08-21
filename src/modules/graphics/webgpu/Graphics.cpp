@@ -1080,21 +1080,37 @@ void Graphics::createVoxelPipelines() {
     voxelSetLayout = makeVoxelBindGroupLayout();
     voxelPipelineLayout = makeVoxelPipelineLayout();
 
-    WGPUVertexAttribute attrs[2] = {};
+    WGPUVertexAttribute attrs[1] = {};
     attrs[0].format = WGPUVertexFormat_Float32x2;  // corner
     attrs[0].offset = 0;
     attrs[0].shaderLocation = 0;
-    attrs[1].format = WGPUVertexFormat_Uint32;  // packed
-    attrs[1].offset = 8;
-    attrs[1].shaderLocation = 1;
     WGPUVertexBufferLayout cornerVb{};
-    fillVertexLayout(cornerVb, 12, attrs, 2);
-    WGPUVertexBufferLayout instanceVb{};
-    instanceVb.arrayStride = 4;
-    instanceVb.stepMode = WGPUVertexStepMode_Instance;
-    instanceVb.attributeCount = 0;
-    instanceVb.attributes = nullptr;
-    WGPUVertexBufferLayout vbs[2] = {cornerVb, instanceVb};
+    cornerVb.arrayStride = 8;
+    cornerVb.stepMode = WGPUVertexStepMode_Vertex;
+    cornerVb.attributeCount = 1;
+    cornerVb.attributes = attrs;
+
+    WGPUVertexAttribute packedAttr{};
+    packedAttr.format = WGPUVertexFormat_Uint32;  // packed rect word
+    packedAttr.offset = 0;
+    packedAttr.shaderLocation = 1;
+    WGPUVertexBufferLayout packedVb{};
+    packedVb.arrayStride = 4;
+    packedVb.stepMode = WGPUVertexStepMode_Instance;
+    packedVb.attributeCount = 1;
+    packedVb.attributes = &packedAttr;
+
+    WGPUVertexAttribute aoAttr{};
+    aoAttr.format = WGPUVertexFormat_Uint32;  // 2 bits per corner
+    aoAttr.offset = 0;
+    aoAttr.shaderLocation = 2;
+    WGPUVertexBufferLayout aoVb{};
+    aoVb.arrayStride = 4;
+    aoVb.stepMode = WGPUVertexStepMode_Instance;
+    aoVb.attributeCount = 1;
+    aoVb.attributes = &aoAttr;
+
+    WGPUVertexBufferLayout vbs[3] = {cornerVb, packedVb, aoVb};
 
     WGPUDepthStencilState ds{};
     ds.format = WGPUTextureFormat_Depth32Float;
@@ -1115,7 +1131,7 @@ void Graphics::createVoxelPipelines() {
     wgpu::ShaderModule fragModule = makeWgslModule(device, kVoxelRectFragWgsl);
     pd.vertex.module = vertModule.Get();
     pd.vertex.entryPoint = sv("vs_main");
-    pd.vertex.bufferCount = 2;
+    pd.vertex.bufferCount = 3;
     pd.vertex.buffers = vbs;
     WGPUFragmentState fs{};
     fs.module = fragModule.Get();
@@ -2617,8 +2633,6 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
                                       Texture *atlas, int tilesPerRow, const uint32_t *ao) {
     if (!device || count <= 0 || !packed) return;
     if (!voxelUnitQuadVerts) return;
-    // TODO(webgpu): bake ao (2 bits per corner) into the WGSL voxel shader.
-    (void)ao;
     frameHad3DThisFrame = true;
     frameHad3D = true;
 
@@ -2639,32 +2653,48 @@ void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float o
     d.instanceBufferOffset = 0;
     d.pushUboOffset = 0;
 
-    // Upload packed instances into the voxel instance arena (per frame slot).
+    // Upload packed instances + the parallel AO word (2 bits per corner) into
+    // the per-frame instance arenas.
     auto &arena = voxelInstanceArena;
-    if (!arena.buffer) {
-        WGPUBufferDescriptor bd{};
-        bd.label = sv("eve_voxel_instances");
-        bd.size = 1u << 20;
-        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-        bd.mappedAtCreation = false;
-        arena.buffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
-        arena.capacity = 1u << 20;
+    auto &aoArena = voxelAoArena;
+    auto ensureArena = [&](VertexArena &a) {
+        if (!a.buffer) {
+            WGPUBufferDescriptor bd{};
+            bd.label = sv("eve_voxel_instances");
+            bd.size = 1u << 20;
+            bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+            bd.mappedAtCreation = false;
+            a.buffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
+            a.capacity = 1u << 20;
+        }
+        uint64_t need = uint64_t(count) * 4;
+        if (a.used + need > a.capacity) {
+            uint64_t cap = a.capacity * 2;
+            WGPUBufferDescriptor bd{};
+            bd.label = sv("eve_voxel_instances");
+            bd.size = cap;
+            bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+            bd.mappedAtCreation = false;
+            a.buffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
+            a.capacity = cap;
+            a.used = 0;
+        }
+    };
+    ensureArena(arena);
+    ensureArena(aoArena);
+    const uint32_t defaultAO = 0xFFu;  // all four corners AO=3 (full bright)
+    std::vector<uint32_t> aoDefaults;
+    if (!ao) {
+        aoDefaults.assign(size_t(count), defaultAO);
+        ao = aoDefaults.data();
     }
-    uint64_t need = uint64_t(count) * 4;
-    if (arena.used + need > arena.capacity) {
-        uint64_t cap = arena.capacity * 2;
-        WGPUBufferDescriptor bd{};
-        bd.label = sv("eve_voxel_instances");
-        bd.size = cap;
-        bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-        bd.mappedAtCreation = false;
-        arena.buffer = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&bd));
-        arena.capacity = cap;
-        arena.used = 0;
-    }
+    const uint64_t need = uint64_t(count) * 4;
     d.instanceBufferOffset = static_cast<uint32_t>(arena.used);
     queue.WriteBuffer(arena.buffer, arena.used, packed, need);
     arena.used += need;
+    d.aoBufferOffset = static_cast<uint32_t>(aoArena.used);
+    queue.WriteBuffer(aoArena.buffer, aoArena.used, ao, need);
+    aoArena.used += need;
     voxelDraws.push_back(d);
 }
 
@@ -3124,6 +3154,8 @@ void Graphics::flushVoxelDraws(wgpu::RenderPassEncoder pass, WGPUTextureFormat f
         pass.SetVertexBuffer(0, voxelUnitQuadVerts, 0, 32);
         pass.SetVertexBuffer(1, voxelInstanceArena.buffer, d.instanceBufferOffset,
                              uint64_t(d.count) * 4);
+        pass.SetVertexBuffer(2, voxelAoArena.buffer, d.aoBufferOffset,
+                             uint64_t(d.count) * 4);
         pass.SetIndexBuffer(voxelUnitQuadIndices, wgpu::IndexFormat::Uint32, 0, 24);
         pass.DrawIndexed(6, d.count, 0, 0, 0);
     }
@@ -3192,6 +3224,7 @@ void Graphics::present() {
     auto &vtxArena = currentVertexArena();
     vtxArena.reset();
     voxelInstanceArena.used = 0;
+    voxelAoArena.used = 0;
     ensureUboArena(uboArena, 4096);
     ensureVertexArena(vtxArena, 4096);
     // Match the desktop (Vulkan) flow: the 3D/swapchain pass clears with the

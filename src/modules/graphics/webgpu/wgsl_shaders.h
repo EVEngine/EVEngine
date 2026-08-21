@@ -594,6 +594,7 @@ inline const char *kVoxelRectVertWgsl = R"wgsl(
 struct VSIn {
     @location(0) corner: vec2f,
     @location(1) packed: u32,
+    @location(2) aoWord: u32,
 };
 struct PC {
     viewProj: mat4x4f,
@@ -605,6 +606,7 @@ struct VSOut {
     @builtin(position) pos: vec4f,
     @location(0) uv: vec2f,
     @location(1) tint: vec4f,
+    @location(2) @interpolate(flat) vAO: f32,
 };
 @group(0) @binding(0) var<uniform> pc: PC;
 @vertex
@@ -617,6 +619,14 @@ fn vs_main(in: VSIn) -> VSOut {
     let w = f32((in.packed >> 15u) & 31u);
     let h = f32((in.packed >> 20u) & 31u);
     let tex = f32((in.packed >> 25u) & 127u);
+    // Per-instance AO word: 2 bits per corner (0..3), Vulkan corner order.
+    let ao0 = in.aoWord & 3u;
+    let ao1 = (in.aoWord >> 2u) & 3u;
+    let ao2 = (in.aoWord >> 4u) & 3u;
+    let ao3 = (in.aoWord >> 6u) & 3u;
+    let aoTop = select(ao1, ao0, in.corner.x < 0.5);
+    let aoBot = select(ao2, ao3, in.corner.x < 0.5);
+    let ao = select(aoBot, aoTop, in.corner.y < 0.5);
     var world: vec3f = pc.chunkOrigin.xyz + vec3f(px, py, pz);
     let face = i32(pc.chunkOrigin.w + 0.5);
     var u: f32 = in.corner.x;
@@ -634,6 +644,7 @@ fn vs_main(in: VSIn) -> VSOut {
     let row = tex - col * tiles;
     out.uv = vec2f((u + row) * tw, (v + col) * tw);
     out.tint = pc.tint;
+    out.vAO = f32(ao) / 3.0;
     return out;
 }
 )wgsl";
@@ -642,12 +653,15 @@ inline const char *kVoxelRectFragWgsl = R"wgsl(
 struct FSIn {
     @location(0) uv: vec2f,
     @location(1) tint: vec4f,
+    @location(2) @interpolate(flat) vAO: f32,
 };
 @group(0) @binding(1) var atlas: texture_2d<f32>;
 @group(0) @binding(2) var atlasSamp: sampler;
 @fragment
 fn fs_main(in: FSIn) -> @location(0) vec4f {
-    return textureSample(atlas, atlasSamp, in.uv) * in.tint;
+    // Vertex ambient occlusion (0..1): darkens corners near other voxels.
+    let aoShade = 0.35 + 0.65 * in.vAO;
+    return textureSample(atlas, atlasSamp, in.uv) * in.tint * aoShade;
 }
 )wgsl";
 
