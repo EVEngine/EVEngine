@@ -1,0 +1,105 @@
+// Stage-3 virtual-geometry cull, recorded in the main frame's compute section.
+//
+// One invocation per cluster: frustum + HZB test against the cluster's bounding
+// sphere transformed by the owning asset's model. Visible clusters are appended
+// to a visible list and get a per-cluster VkDrawIndirectCommand
+// { vertexCount = triCount*3, instanceCount = 1, firstVertex = 0,
+//   firstInstance = clusterId } so the vis pass can draw them with
+// gl_InstanceIndex == clusterId and gl_VertexIndex == triangle corner.
+//
+// First integration draws full detail (no screen-error LOD); the DAG LOD
+// selection is a follow-up.
+#version 450
+
+#extension GL_GOOGLE_include_directive : enable
+#include "gpudriven_tables.glsl"
+#include "gpu_driven_cull_common.glsl"
+
+layout(local_size_x = 64) in;
+
+layout(set = 1, binding = 24, std430) readonly buffer VgClusters {
+    uvec4 vgCl[];
+};
+layout(set = 1, binding = 10, std430) readonly buffer Hzb {
+    float hzb[];
+};
+layout(set = 1, binding = 25, std430) readonly buffer VgClusterAssets {
+    uint vgClusterAssets[];
+};
+layout(set = 1, binding = 26, std430) coherent buffer VgVisible {
+    uint vgCounter;
+    uint vgVis[];
+};
+layout(set = 1, binding = 27, std430) coherent buffer VgIndirect {
+    uvec4 vgCmd[];  // first uvec4 = {vertexCount, instanceCount, firstVertex, firstInstance}
+};
+layout(set = 1, binding = 29, std430) readonly buffer VgAssetModels {
+    mat4 vgAssetModels[];
+};
+
+layout(push_constant) uniform Push {
+    uint clusterCount;
+    uint pad0;
+    uint pad1;
+    uint pad2;
+} pc;
+
+bool vgFrustumTest(vec3 center, float radius) {
+    for (int p = 0; p < 6; ++p) {
+        vec4 pl = params.frustumPlanes[p];
+        if (dot(pl.xyz, center) + pl.w <= -radius) return false;
+    }
+    return true;
+}
+
+bool vgHzbTest(vec3 center, float radius, vec3 eye) {
+    vec4 clip = params.viewProj * vec4(center, 1.0);
+    if (clip.w <= params.clipNearFar.x) return true;  // behind near plane
+    vec3 ndc = clip.xyz / clip.w;
+    if (abs(ndc.x) > 1.0 || abs(ndc.y) > 1.0 || ndc.z > 1.0) return true;
+    vec2 uv = ndc.xy * 0.5 + 0.5;
+    vec3 toEye = normalize(eye - center);
+    vec4 clipFront = params.viewProj * vec4(center + toEye * radius, 1.0);
+    float frontZ = clipFront.z / clipFront.w - 0.002;
+    float viewDepth = length(center - eye);
+    float screenRadius = radius * params.clipNearFar.z / max(viewDepth, 1e-4);
+    float px = max(2.0 * screenRadius, 1.0);
+    uint mip = min(uint(ceil(log2(px))), uint(params.hzbInfo.x));
+    uint mw = max(uint(params.hzbInfo.z) >> mip, 1u);
+    uint mh = max(uint(params.hzbInfo.w) >> mip, 1u);
+    uint off = floatBitsToUint(hzb[uint(params.hzbInfo.y) + mip]);
+    uint base = uint(params.hzbInfo.y) + kHZBHeaderWords + off;
+    int x0 = clamp(int(uv.x * float(mw)) - 1, 0, int(mw) - 1);
+    int y0 = clamp(int(uv.y * float(mh)) - 1, 0, int(mh) - 1);
+    int x1 = min(x0 + 1, int(mw) - 1);
+    int y1 = min(y0 + 1, int(mh) - 1);
+    float a = hzb[base + uint(y0) * mw + uint(x0)];
+    float b = hzb[base + uint(y0) * mw + uint(x1)];
+    float c = hzb[base + uint(y1) * mw + uint(x0)];
+    float d = hzb[base + uint(y1) * mw + uint(x1)];
+    float m = min(min(a, b), min(c, d));
+    if (m < 0.001) return true;
+    return frontZ <= m;
+}
+
+void main() {
+    uint cid = gl_GlobalInvocationID.x;
+    if (cid >= pc.clusterCount) return;
+
+    uint asset = vgClusterAssets[cid];
+    mat4 model = vgAssetModels[asset];
+    vec3 center = vec3(uintBitsToFloat(vgCl[cid * 4u + 0u].x),
+                       uintBitsToFloat(vgCl[cid * 4u + 0u].y),
+                       uintBitsToFloat(vgCl[cid * 4u + 0u].z));
+    float r = uintBitsToFloat(vgCl[cid * 4u + 0u].w);
+
+    vec4 wc4 = model * vec4(center, 1.0);
+    vec3 wc = wc4.xyz / max(wc4.w, 1e-6);
+    if (!vgFrustumTest(wc, r)) return;
+    if (!vgHzbTest(wc, r, params.cameraPos.xyz)) return;
+
+    uint slot = atomicAdd(vgCounter, 1u);
+    vgVis[slot] = cid;
+    uint triCount = vgCl[cid * 4u + 1u].y;
+    vgCmd[slot] = uvec4(triCount * 3u, 1u, 0u, cid);
+}

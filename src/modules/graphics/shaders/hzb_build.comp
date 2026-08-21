@@ -1,0 +1,55 @@
+#version 450
+
+#extension GL_GOOGLE_include_directive : enable
+#include "gpu_driven_cull_common.glsl"
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(set = 1, binding = 11) uniform sampler2D gbufferDepth;
+layout(set = 1, binding = 10, std430) coherent buffer Hzb {
+    float hzb[];
+};
+
+layout(push_constant) uniform PC {
+    uint mip;         // mip level to write (0 = from depth texture)
+    uint width;       // this mip's width
+    uint height;      // this mip's height
+    uint slotBase;    // word base of this slot's header in hzb[]
+    uint prevOffset;  // word offset of mip-1 data (relative to slot data start)
+} pc;
+
+uint hzbOffset(uint mip) {
+    return floatBitsToUint(hzb[pc.slotBase + mip]);
+}
+
+float readHzb(uint base, uint width, uint height, int x, int y) {
+    x = clamp(x, 0, int(width) - 1);
+    y = clamp(y, 0, int(height) - 1);
+    return hzb[base + uint(y) * width + uint(x)];
+}
+
+void main() {
+    uint gx = gl_GlobalInvocationID.x;
+    uint gy = gl_GlobalInvocationID.y;
+    if (gx >= pc.width || gy >= pc.height) return;
+
+    float v;
+    if (pc.mip == 0u) {
+        vec2 uv = (vec2(gx, gy) + 0.5) / vec2(pc.width, pc.height);
+        v = textureLod(gbufferDepth, uv, 0.0).r;
+    } else {
+        uint pw = pc.width * 2u;
+        uint ph = pc.height * 2u;
+        uint prevBase = pc.slotBase + kHZBHeaderWords + pc.prevOffset;
+        int x0 = int(gx * 2u);
+        int y0 = int(gy * 2u);
+        float a = readHzb(prevBase, pw, ph, x0, y0);
+        float b = readHzb(prevBase, pw, ph, x0 + 1, y0);
+        float c = readHzb(prevBase, pw, ph, x0, y0 + 1);
+        float d = readHzb(prevBase, pw, ph, x0 + 1, y0 + 1);
+        v = max(max(a, b), max(c, d));
+    }
+    uint base = pc.slotBase + kHZBHeaderWords + hzbOffset(pc.mip);
+    hzb[base + gy * pc.width + gx] = v;
+}
+

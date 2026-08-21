@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/StateValue.h"
 
 #include <squirrel.h>
 
@@ -230,6 +231,20 @@ public:
     void update(float dt);
     /** @brief 重置舞台与台词状态。 */
     void reset();
+
+    /** @brief Serialize conversation state (vars, rng, phase, choices, stage). */
+    bool captureState(StateValue& out) const;
+
+    /**
+     * @brief Restore conversation state captured by captureState().
+     * @return false when the captured
+     * state is malformed; the reload session
+     *         then falls back to resetToDefaults().
+     */
+    bool restoreState(const StateValue& in, std::string* err = nullptr);
+
+    /** @brief Reset stage and line state (restore fallback). */
+    bool resetToDefaults();
 
 private:
     struct Character {

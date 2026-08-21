@@ -5,6 +5,7 @@ file(GLOB all_test_cpp
   capability.cpp
   data.cpp
   resource.cpp
+  state_value.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
@@ -47,6 +48,10 @@ file(GLOB all_test_cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
+  Inspector.cpp
+  DatabasePanel.cpp
+  EditorShell.cpp
+  ScenePanel.cpp
   scene.cpp
   sceneloader.cpp
   particles.cpp
@@ -59,12 +64,14 @@ file(GLOB all_test_cpp
   map_fov.cpp
   rpg.cpp
   rpg_simulation.cpp
+  rpg_reload.cpp
   hex_level_simulation.cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
   buildingfx.cpp
   card.cpp
+  card_reload.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -83,6 +90,8 @@ file(GLOB all_test_cpp
   virtualgeometry_builder.cpp
   virtualgeometry_gpu.cpp
   gpgpu.cpp
+  gpu_driven.cpp
+  indirect_builder.cpp
   box2d.cpp
   box3d.cpp
   softbody.cpp
@@ -121,6 +130,7 @@ file(GLOB all_test_cpp
   animation_skinned.cpp
   animation_lattice.cpp
   animation_sprite_spine.cpp
+  animation_reload.cpp
   tensor.cpp
   tensor_llm.cpp
   tensor_quant.cpp
@@ -129,6 +139,7 @@ file(GLOB all_test_cpp
   resource_lifetime.cpp
   debugger.cpp
   debugger_audit.cpp
+  reload_script.cpp
   dap.cpp
   mcp.cpp
   console.cpp
@@ -143,7 +154,7 @@ endif()
 # compiled into the Android runtime, so their test files cannot link there.
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp console.cpp)
+  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Android test: removed devtools test files, remaining=${all_test_cpp}")
@@ -340,6 +351,11 @@ if(EVENGINE_ANDROID_TEST_APP)
     VISIBILITY_INLINES_HIDDEN OFF)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  if(WIN32)
+    # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
+    # symbolized stack trace on unhandled exceptions (see test/main.cpp).
+    target_link_libraries(unit_test EVBacktrace)
+  endif()
   target_compile_definitions(unit_test PRIVATE
     EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
     EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")

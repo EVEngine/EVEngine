@@ -1,5 +1,6 @@
 #include "animation/Animation.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimClipRegistry.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
@@ -196,6 +197,7 @@ AnimClip *Animation::newClipFromEvaFile(const std::string &path) {
     AnimClip *clip   = nullptr;
     AnimImporter::importEvaFile(path, &sk, &clip);
     delete sk;
+    if (clip) AnimClipRegistry::registerPath(path, clip);
     return clip;
 }
 
