@@ -41,5 +41,5 @@ std::string stagedTestRoot();
  */
 std::string launchFilter();
 
-} // namespace ios_test
-} // namespace eve
+}  // namespace ios_test
+}  // namespace eve
