@@ -843,13 +843,16 @@ void Graphics::recordDeferredFrameGraph() {
     // keep this slot's graph command buffers safe to reuse two frames later.
     auto *jobs = thread::Thread::create()->getJobSystem();
     jobs->beginFrame();  // idempotent wait; recycles the per-frame arena
-    // Serial recording for now: the parallel executor (jobSystemPassExecutor)
-    // is ready and CPU-tested, but the JobSystem's help-execution path has a
-    // residual arena-lifecycle race that can destroy a job while a worker is
-    // still recording its pass (see JobSystemThreadPool::completeJob fix and
-    // the follow-up note in FrameGraphJobs.h). Enable the executor once that
-    // race is fixed upstream.
-    graph->record();
+    // Re-plan every frame (cheap; device objects are cached) so the graph is
+    // in the compiled phase for this record cycle — vkb::FrameGraph enforces
+    // build -> compile -> record -> submit and record() exactly once per
+    // compile.
+    graph->compile();
+    // Parallel executor: each pass owns a dedicated command pool (one pool per
+    // frame slot per pass), so the workers never share a pool while recording
+    // concurrently — the Vulkan external-synchronization rule for command
+    // pools is satisfied structurally.
+    recordFrameGraphWithJobSystem(*graph, jobs);
     graph->submit();
     jobs->endFrame();
     for (auto &d : shadowCascadeDraws) d.clear();

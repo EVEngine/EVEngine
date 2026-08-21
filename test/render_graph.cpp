@@ -14,6 +14,7 @@
 #include "vkbuilder/framegraph.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -278,4 +279,123 @@ TEST_CASE("render_graph.jobSystemEngineFramePattern") {
     delete jobs;
     CHECK_EQ(failedIter, -1);
     CHECK_EQ(sum.load(), 4000 * 65);
+}
+
+TEST_CASE("render_graph.recordCycleLifecycle") {
+    // vkb::fg::RecordCycle turns the FrameGraph recording contract into
+    // hard errors: build -> compile -> record -> submit, record exactly once
+    // per compile, no mutation while recording.
+    vkb::fg::RecordCycle cycle;
+
+    // record() without compile() is a violation.
+    CHECK_THROWS((cycle.beginRecord(1), false));
+
+    // Happy path: compile -> record every pass once -> submit.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    cycle.claimPass(0);
+    cycle.releasePass(0);
+    cycle.endRecord();
+    CHECK(int(cycle.phase()) == int(vkb::fg::RecordCycle::Phase::kRecorded));
+
+    // A second record() before submit() is a violation.
+    CHECK_THROWS((cycle.beginRecord(1), false));
+    cycle.submitted();
+
+    // record() after submit() without a fresh compile() is a violation.
+    CHECK_THROWS((cycle.beginRecord(1), false));
+
+    // Mutating the graph after compile() without recompiling is a violation.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.markDirty();
+    CHECK_THROWS((cycle.beginRecord(1), false));
+
+    // Mutating the graph while recording is a violation.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    CHECK_THROWS((cycle.markDirty(), false));
+    CHECK_THROWS((cycle.beginCompile(), false));
+    CHECK_THROWS((cycle.submitted(), false));
+    cycle.claimPass(0);
+    cycle.releasePass(0);
+    cycle.endRecord();
+
+    // Mutating between record() and submit() is a violation.
+    CHECK_THROWS((cycle.markDirty(), false));
+    CHECK_THROWS((cycle.beginCompile(), false));
+    cycle.submitted();
+
+    // An executor that skips a pass is caught at endRecord().
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(2);
+    cycle.claimPass(0);
+    cycle.releasePass(0);
+    CHECK_THROWS((cycle.endRecord(), false));
+
+    // abortRecord() (the exception path of record()) forces a fresh compile
+    // before the next attempt.
+    cycle.abortRecord();
+    CHECK_THROWS((cycle.beginRecord(1), false));
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    cycle.claimPass(0);
+    CHECK_THROWS((cycle.claimPass(0), false));  // double claim of the same pass
+    cycle.releasePass(0);
+    cycle.endRecord();
+    cycle.submitted();
+}
+
+TEST_CASE("render_graph.recordCycleConcurrent") {
+    // Concurrent record() on the same graph: exactly one caller wins, the
+    // other gets an exception instead of a data race.
+    vkb::fg::RecordCycle cycle;
+    cycle.beginCompile();
+    cycle.endCompile();
+    std::atomic<int> winners{0};
+    auto tryRecord = [&] {
+        try {
+            cycle.beginRecord(4);
+            winners.fetch_add(1);
+        } catch (...) {
+        }
+    };
+    std::thread a(tryRecord);
+    std::thread b(tryRecord);
+    a.join();
+    b.join();
+    CHECK_EQ(winners.load(), 1);
+
+    // The winner completes a normal cycle; the loser's state was untouched.
+    for (uint32_t i = 0; i < 4; ++i) {
+        cycle.claimPass(i);
+        cycle.releasePass(i);
+    }
+    cycle.endRecord();
+    cycle.submitted();
+
+    // Concurrent claim of the same pass: exactly one succeeds.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    std::atomic<int> claims{0};
+    auto tryClaim = [&] {
+        try {
+            cycle.claimPass(0);
+            claims.fetch_add(1);
+        } catch (...) {
+        }
+    };
+    std::thread c(tryClaim);
+    std::thread d(tryClaim);
+    c.join();
+    d.join();
+    CHECK_EQ(claims.load(), 1);
+    cycle.releasePass(0);
+    cycle.endRecord();
+    cycle.submitted();
 }

@@ -175,8 +175,10 @@ eve_render()                          │
 - **每槽每帧只录一次守卫**：`render3D` 可被脚本一帧调多次（测试里 3 次），
   同帧内不重复录制图 CB（否则 reset 在途 CB 会挂起驱动）。
 - 录制默认**串行**：并行 executor（`jobSystemPassExecutor`）已就绪并通过 CPU
-  压力测试，但 JobSystem 的 help-execution 与 frame arena 生命周期之间还有
-  一个残余竞态（见下），修复前引擎路径用 `graph->record()`。
+  压力测试，但最初直接启用时在 AMD 上崩溃；根因是 vkb::FrameGraph 每个帧槽
+  只建一个 command pool、槽内所有 pass 的 CB 都从它分配，worker 并发录制违反
+  Vulkan 的 external synchronization 规则（详见下文"规范核查"）。VKBuilder
+  侧把 pool 改为每 pass 一个后即可恢复并行。
 
 ### JobSystem 竞态修复（PR #134 的调度器 bug）
 
@@ -187,20 +189,113 @@ eve_render()                          │
 - 新增 `render_graph.jobSystemGroupStress` /
   `render_graph.jobSystemEngineFramePattern` 两个压力测试作为回归覆盖。
 
-### 并行录制的最终结论（WSL/TSan + Windows 驱动对照）
+### 规范核查：并发录制的规则、做法与限制（2026-08-21 修正结论）
 
-- **CPU 侧无数据竞争**：用 WSL + `-fsanitize=thread` 对完整帧模式
-  （beginFrame → light/parallelFor → endFrame + 4 路 fork/join）、真实
-  executor（`jobSystemPassExecutor`）与真实 framegraph 规划（header-only，
-  直接包含）跑 3 万轮 × (硬件并发/4 worker)，零报告、零丢 job。
-- **崩溃在驱动层**：Windows 上并行录制时，两个 worker 的 AV 位于
-  `amdvlk64.dll` 内部，调用栈顶是 `vkb::FrameGraph::record` 的 recordOne；
-  `device->waitIdle()` 后照崩（排除在途 CB 复用），且 Vulkan 规范允许并发
-  录制不同 CB——结论是 AMDVLK 驱动的并发录制缺陷（NVIDIA/Intel 可能正常，
-  需在 CI lavapipe 上验证）。
-- 因此引擎默认**串行录制**（`graph->record()`）；并行 executor 保留并
-  TSan 验证，启用条件：驱动兼容性确认或 VKBuilder 侧把 `cb.reset()` 提到
-  主线程、worker 只做 `vkBeginCommandBuffer + 录制 + end`。
+先前的结论需要更正：**AMD 驱动（AMDVLK）并行录制崩溃不是驱动缺陷，而是我们
+的用法违反了 Vulkan 规范的 external synchronization 规则**。违反规范属于
+未定义行为，驱动可以选择崩溃、挂起或损坏数据。
+
+#### 规范原文（权威依据）
+
+- **Vulkan Spec · Command Buffers → Command Pools**：
+
+  > Command pools are externally synchronized, meaning that a command pool
+  > must not be used concurrently in multiple threads. That includes use via
+  > recording commands on any command buffers allocated from the pool, as well
+  > as operations that allocate, free, and reset command buffers or the pool
+  > itself.
+
+- **Vulkan Guide · Threading → Command Pools**：
+
+  > By using a separate command pool in each host-thread the application can
+  > create multiple command buffers in parallel without any costly locks.
+
+- **Khronos Vulkan-Docs issue #802** 的澄清：任何"需要 external
+  synchronization 的 `commandBuffer` 参数"都隐含其创建时的 `commandPool`
+  也必须同步。即**同一个 pool 下发的任意 CB，同一时刻只能被一个线程
+  reset / begin / record / end**。
+
+因此：并发录制"各自独立的 CB"本身完全合法，前提是这些 CB 来自**不同**的
+pool（per-thread / per-worker pool）；共享一个 pool 时多线程并发录制就是
+未定义行为。
+
+#### 崩溃根因
+
+- vkb::FrameGraph 已提交版（2bd5dd4）`materializeDeviceObjects`：每个帧槽一个
+  pool（`pools_.resize(slotCount)`），槽内**所有 pass 的 CB 都从该 pool
+  分配**。
+- 并行 executor（`jobSystemPassExecutor`）把同一 layer 的多个 pass 分给 4 个
+  worker，各 worker 对自己的 CB 做 `reset → begin → 录制 → end` → 同一 pool
+  被多线程并发使用 → 违反规范。
+- Windows/AMDVLK 崩溃与此吻合：两个 worker 的 AV 都位于 `amdvlk64.dll`
+  内部，调用栈顶是 `FrameGraph::record` 的 recordOne；`device->waitIdle()`
+  不改变结果——这本就是 pool 并发使用问题，与在途 CB 复用无关，waitIdle
+  当然无法缓解。
+- WSL + TSan 全帧模式 3 万轮零报告：TSan 只能检测我们自己代码里的 C++ 数据
+  竞争；pool 的内部状态在驱动进程里，属于规范级 violation，不在 TSan 覆盖
+  范围内。
+
+#### 主流引擎的对照（证明"不是 AMD 的问题"）
+
+- **UE5 / Vulkan RHI**：每个 RHICommandContext（`FVulkanCommandListContext`）
+  持有自己的 command pool（`FVulkanCommandBufferPool`）；并行 translation 时
+  worker 各用自己的 context/pool，`RHIGetCommandContext` 文档明确说明 "called
+  by parallel worker threads, and the render thread"。
+- **Unity**：`NativeGraphicsJobs`（官方支持 DX12/Vulkan）由 render thread 派发
+  多个 worker 转译图形命令，每个 worker 持有独立的 command pool 与 descriptor
+  pool。
+- **Godot**：`RenderingDevice.draw_list_begin_for_thread` 支持多线程 draw
+  list 录制，按 (frame × thread) 分配 command pool（proposal #7163）。
+- **Khronos 官方 sample**（command_buffer_usage）：
+
+  > each frame in the queue manages a collection of pools so that each thread
+  > can own a command pool（另含每线程独立的 descriptor pool / cache 与
+  > buffer pool）。
+
+所以 AMD 驱动（AMDVLK/RADV）完全支持多线程录制；凡是规范正确的引擎在 AMD
+上都不崩。若真是 AMD 驱动缺陷，所有引擎的 AMD 版本都会崩——与事实不符。
+
+#### 修复与用法约束
+
+- **VKBuilder 侧修复（已实现）**：pool 从"每帧槽一个"改为"每 (帧槽, pass)
+  一个"（`pools_.resize(slotCount * plan.passes.size())`，每个 CB 独占一个
+  pool，pass 集合收缩时显式销毁多余 pool）。worker 只碰自己的 pool，满足
+  external synchronization——这是结构保证而非约定，**调用者无论传什么
+  executor 都无法再制造共享 pool 竞态**。
+- **TEMP 串行 reset 已移除**：规范下不是必需——`createCommandPool` 带
+  `RESET_COMMAND_BUFFER_BIT`，worker 对自己专属的 CB 直接
+  `vkBeginCommandBuffer`（隐式 reset）→ 录制 → `vkEndCommandBuffer` 一次完成。
+- **生命周期强制（已实现，`fg::RecordCycle`）**：把 `build → compile →
+  record → submit` 变成状态机，违规抛 `std::runtime_error` 而不是 UB：
+  - 构建 API（`addPass` / `createTexture` / `import*` / `markOutput`）在
+    录制中、以及 `record()` 之后 `submit()` 之前被禁止；
+  - `compile()` 后修改图必须重新 `compile()`，否则 `record()` 抛错；
+  - `record()` 每轮必须"恰好一次"录完每个 pass：executor 跳过、重复（含
+    并发重复）、未 join 就返回都会被检测到；`record()` 本身不可重入、不可
+    并发（第二个调用者得到异常）；
+  - `FrameGraphPassContext` 内部持 `const FrameGraph*`，回调里**编译期**就
+    无法调用构建/编译 API。
+- **其余线程契约不变**（VKBuilder `docs/framegraph.md`）：
+  - 图构建与 `compile()` 在单线程；`record()` 内 pass 回调可并发，回调只能
+    写自己的 CB 和只读数据；
+  - descriptor set 更新必须在 `record()` 之前完成（`vkUpdateDescriptorSets`
+    非线程安全），或使用带锁的 descriptor pool；
+  - 每个 pass 一个 primary CB；同 layer 内无依赖边、无跨 pass barrier；一次
+    `vkQueueSubmit` 按拓扑序提交全部 CB。
+- **验证方式**：validation layers 对"跨线程访问 pool"的检测历史上并不可靠
+  （VVL #9045 为此给每个 CB 加过互斥），最可靠的保证是结构性规则——**每个
+  pool 在同一时刻只有一个 owner 线程**，再在 AMD / NVIDIA / llvmpipe 上跑
+  多轮确认。
+
+#### 下一步
+
+1. ~~保留 per-(slot, pass) pool 修复；移除 TEMP 串行 reset；引擎路径恢复并行
+   executor~~（已完成）。
+2. ~~AMD 机回归：`Shadow3D.dirLightDarkensOccludedGround` ×5~~（已完成，5/5
+   通过）；NVIDIA / llvmpipe 对照仍待 CI。
+3. WSL TSan 全帧模式回归（结构性保证之外的双保险）。
+4. ~~VKBuilder `docs/framegraph.md` 修正"pool 按帧槽分配"表述~~（已完成：
+   per-pass pool + RecordCycle 均已写进文档）。
 
 ## 5. 本分支验证
 
