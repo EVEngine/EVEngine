@@ -48,6 +48,10 @@ file(GLOB all_test_cpp
   UIPhaseB.cpp
   UIPhaseAdv.cpp
   UIOverlaySmoke.cpp
+  Inspector.cpp
+  DatabasePanel.cpp
+  EditorShell.cpp
+  ScenePanel.cpp
   scene.cpp
   sceneloader.cpp
   particles.cpp
