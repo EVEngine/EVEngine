@@ -12,8 +12,8 @@
 // `namespace eve` there would shadow the global ::eve and break every
 // `eve::window::...` / `eve::image::...` reference in those files.
 
-#include <string>
 #include <cstdlib>
+#include <string>
 
 #if defined(EVENGINE_ANDROID)
 #include <SDL2/SDL.h>
@@ -59,12 +59,11 @@ inline std::string iosTestRoot() {
 }
 
 inline std::string iosSourcePath(const char *file) {
-    std::string s = file ? file : "";
+    std::string       s    = file ? file : "";
     const std::string root = iosTestRoot();
-    if (root.empty())
-        return s;
-    size_t slash = s.find_last_of("/\\");
-    std::string rel = (slash == std::string::npos) ? s : s.substr(slash + 1);
+    if (root.empty()) return s;
+    size_t      slash = s.find_last_of("/\\");
+    std::string rel   = (slash == std::string::npos) ? s : s.substr(slash + 1);
     return root + "/" + rel;
 }
 #endif  // EVENGINE_ANDROID / EVENGINE_IOS_TEST_APP
@@ -77,8 +76,8 @@ inline std::string pathBesideSourceImpl(const char *file, const char *relative) 
     return dir + "/" + relative;
 #elif defined(EVENGINE_IOS_TEST_APP)
     std::string source = iosSourcePath(file);
-    size_t slash = source.find_last_of('/');
-    std::string dir = (slash == std::string::npos) ? std::string(".") : source.substr(0, slash);
+    size_t      slash  = source.find_last_of('/');
+    std::string dir    = (slash == std::string::npos) ? std::string(".") : source.substr(0, slash);
     return dir + "/" + relative;
 #else
     std::string here = file ? file : "";

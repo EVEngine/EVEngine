@@ -31,14 +31,15 @@ std::string stagedTestRoot();
 /**
  * @brief Resolves the zeroerr test filter for this launch.
  *
- * Priority: `-evengine.test.filter <pattern>` launch argument (NSArgumentDomain,
- * read through NSUserDefaults, e.g. passed by `devicectl device process launch`
- * or ios-deploy), then `--testcase=<pattern>` on the process argument list.
- * Mirrors the `evengine.test.filter` intent extra on Android.
+ * Priority: `-evengine.test.filter <pattern>` launch argument
+ * (NSArgumentDomain, read through NSUserDefaults, e.g. passed by `devicectl
+ * device process launch` or ios-deploy), then `--testcase=<pattern>` on the
+ * process argument list. Mirrors the `evengine.test.filter` intent extra on
+ * Android.
  *
  * @return the filter pattern, or an empty string to run the full suite.
  */
 std::string launchFilter();
 
-}  // namespace ios_test
-}  // namespace eve
+} // namespace ios_test
+} // namespace eve

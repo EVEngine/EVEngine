@@ -58,12 +58,12 @@ std::string testRoot() {
 #include <SDL2/SDL_main.h>
 #include "ios_test.h"
 
+#include <unistd.h>
 #include <cerrno>
 #include <cstring>
 #include <iostream>
 #include <streambuf>
 #include <string>
-#include <unistd.h>
 #include <vector>
 
 namespace {
@@ -86,8 +86,7 @@ protected:
     }
 
     int sync() override {
-        if (pptr() == pbase())
-            return 0;
+        if (pptr() == pbase()) return 0;
         *pptr() = '\0';
         eve::ios_test::logLine(pbase());
         setp(buffer_, buffer_ + sizeof(buffer_) - 1);
@@ -102,9 +101,7 @@ private:
 // test/ios_test.mm from the app bundle's test/ + examples/ resources. The
 // runner chdirs there so EVENGINE_SOURCE_DIR="." / EVENGINE_TEST_BINARY_DIR="."
 // resolve on-device, exactly like the Android test app.
-std::string testRoot() {
-    return eve::ios_test::stagedTestRoot();
-}
+std::string testRoot() { return eve::ios_test::stagedTestRoot(); }
 
 }  // namespace
 #endif  // EVENGINE_ANDROID / EVENGINE_IOS_TEST_APP
@@ -164,14 +161,14 @@ int main(int argc, char **argv) {
 
     // Inject --testcase=<filter> from the launch arguments / UserDefaults
     // (mirrors the evengine.test.filter intent extra on Android).
-    const std::string filter = eve::ios_test::launchFilter();
+    const std::string  filter = eve::ios_test::launchFilter();
     static std::string filterArg;
     if (!filter.empty()) {
         filterArg = "--testcase=" + filter;
         static std::vector<char *> injected;
         injected = {argc > 0 ? argv[0] : const_cast<char *>("eve"), filterArg.data()};
-        argc = static_cast<int>(injected.size());
-        argv = injected.data();
+        argc     = static_cast<int>(injected.size());
+        argv     = injected.data();
     }
 #endif  // EVENGINE_ANDROID / EVENGINE_IOS_TEST_APP
 
