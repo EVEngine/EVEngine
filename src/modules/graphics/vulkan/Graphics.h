@@ -659,7 +659,13 @@ private:
     vk::UniqueDescriptorSetLayout bindlessSetLayoutUnique_{};
     vk::DescriptorSetLayout bindlessSetLayout_ = nullptr;
     vk::DescriptorPool bindlessPool_ = nullptr;
-    vk::DescriptorSet bindlessSet_ = nullptr;
+    // One bindless set per frame-in-flight slot. A frame rewrites only the set
+    // belonging to its own slot, and only AFTER acquireForFrame() has waited
+    // that slot's fence; pending command buffers therefore never observe a
+    // descriptor set being rewritten (VUID-vkUpdateDescriptorSets-None-03047).
+    // The texture arrays (bindings 0/1) are mirrored into every set at
+    // registration time so any slot can sample any registered texture.
+    std::vector<vk::DescriptorSet> bindlessSets_;
     std::vector<GpuTexture *> bindlessTextures2D_;
     std::vector<uint32_t> bindlessFree2D_;
     std::vector<GpuTexture *> bindlessCubemaps_;
@@ -684,6 +690,8 @@ private:
     void syncMeshTable();
     GpuMaterialRecord buildMaterialRecord(Material *material);
     void createBindlessSet();
+    /** @brief Bindless set owned by the current frame slot (safe to rewrite this frame). */
+    vk::DescriptorSet bindlessSetForFrame() const;
 
     // ---- GPU-driven (stage 1): opaque forward path ----
     bool gpuDrivenEnabled_ = false;

@@ -653,6 +653,11 @@ vkb::FrameSlot Graphics::frameToken() const {
     return vkb::FrameSlot::gpuIdle();
 }
 
+vk::DescriptorSet Graphics::bindlessSetForFrame() const {
+    if (bindlessSets_.empty()) return nullptr;
+    return bindlessSets_[currentFrameSlot() % bindlessSets_.size()];
+}
+
 // ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
 
 FrameArena &Graphics::currentFrameArena() {
@@ -723,23 +728,30 @@ void Graphics::createBindlessSet() {
     bindlessSetLayoutUnique_ = device->createDescriptorSetLayoutUnique(layoutInfo);
     bindlessSetLayout_ = *bindlessSetLayoutUnique_;
 
+    // kAsyncResourceCopies sets: one per frame-in-flight slot, so frame N+1 can
+    // rewrite its own set while frame N's pending command buffers still hold
+    // the previous contents of the other set (no UPDATE_AFTER_BIND required).
+    const uint32_t setCount = kAsyncResourceCopies;
     std::array<vk::DescriptorPoolSize, 3> poolSizes{
         vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
-                               kMaxBindlessTextures + kMaxBindlessCubemaps + 1},
-        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 12},
-        vk::DescriptorPoolSize{vk::DescriptorType::eUniformBuffer, 1},
+                               (kMaxBindlessTextures + kMaxBindlessCubemaps + 1) * setCount},
+        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 12 * setCount},
+        vk::DescriptorPoolSize{vk::DescriptorType::eUniformBuffer, 1 * setCount},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
-    poolInfo.maxSets = 1;
+    poolInfo.maxSets = setCount;
     poolInfo.poolSizeCount = uint32_t(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
     bindlessPool_ = device->createDescriptorPool(poolInfo);
 
-    vk::DescriptorSetAllocateInfo alloc{};
-    alloc.descriptorPool = bindlessPool_;
-    alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts = &bindlessSetLayout_;
-    bindlessSet_ = device->allocateDescriptorSets(alloc).front();
+    {
+        std::vector<vk::DescriptorSetLayout> layouts(setCount, bindlessSetLayout_);
+        vk::DescriptorSetAllocateInfo alloc{};
+        alloc.descriptorPool = bindlessPool_;
+        alloc.descriptorSetCount = setCount;
+        alloc.pSetLayouts = layouts.data();
+        bindlessSets_ = device->allocateDescriptorSets(alloc);
+    }
 
     bindlessTextures2D_.assign(kMaxBindlessTextures, white);
     bindlessCubemaps_.assign(kMaxBindlessCubemaps, whiteCube);
@@ -754,16 +766,14 @@ void Graphics::createBindlessSet() {
                                     vk::ImageLayout::eShaderReadOnlyOptimal};
     vk::DescriptorImageInfo whiteCubeInfo{whiteCube->sampler, whiteCube->cubeImage.imageView(),
                                           vk::ImageLayout::eShaderReadOnlyOptimal};
-    // Placeholder fill: this machine's AMD driver hangs when a single
-    // vkUpdateDescriptorSets call writes more than ONE element of the sampler
-    // array binding (counts >= 4 hang; count 1 works). ~1.1k single-element
-    // calls at init cost ~6 ms, which is fine.
+    // Placeholder fill: single-element writes keep the per-call update tiny;
+    // ~1.1k single-element calls per set at init cost ~6 ms, which is fine.
     constexpr uint32_t kDescriptorChunk = 1;
-    auto chunkFill = [&](uint32_t binding, uint32_t total,
+    auto chunkFill = [&](vk::DescriptorSet set, uint32_t binding, uint32_t total,
                          const vk::DescriptorImageInfo &info) {
         for (uint32_t base = 0; base < total; base += kDescriptorChunk) {
             vk::WriteDescriptorSet w{};
-            w.dstSet = bindlessSet_;
+            w.dstSet = set;
             w.dstBinding = binding;
             w.dstArrayElement = base;
             w.descriptorCount = std::min(kDescriptorChunk, total - base);
@@ -772,8 +782,10 @@ void Graphics::createBindlessSet() {
             device->updateDescriptorSets(1, &w, 0, nullptr);
         }
     };
-    chunkFill(0, kMaxBindlessTextures, white2D);
-    chunkFill(1, kMaxBindlessCubemaps, whiteCubeInfo);
+    for (vk::DescriptorSet set : bindlessSets_) {
+        chunkFill(set, 0, kMaxBindlessTextures, white2D);
+        chunkFill(set, 1, kMaxBindlessCubemaps, whiteCubeInfo);
+    }
 
     // GPU resource tables (fixed capacity at startup; entries registered lazily).
     constexpr uint32_t kMaxMeshRecords = 4096;
@@ -792,50 +804,57 @@ void Graphics::createBindlessSet() {
     // Bind the resource tables into the bindless set (bindings 2-5). Binding 4
     // (per-frame instances) is rewritten before each frame; these writes make
     // every binding valid so the set is safe to bind at any time.
-    auto tableWrite = [&](uint32_t binding, vk::Buffer buffer) {
+    auto tableWrite = [&](vk::DescriptorSet set, uint32_t binding, vk::Buffer buffer) {
         vk::DescriptorBufferInfo info{buffer, 0, VK_WHOLE_SIZE};
         vk::WriteDescriptorSet w{};
-        w.dstSet = bindlessSet_;
+        w.dstSet = set;
         w.dstBinding = binding;
         w.descriptorCount = 1;
         w.descriptorType = vk::DescriptorType::eStorageBuffer;
         w.pBufferInfo = &info;
         device->updateDescriptorSets(1, &w, 0, nullptr);
     };
-    tableWrite(2, meshTableBuffer_.buffer);
-    tableWrite(3, materialTableBuffer_.buffer);
-    tableWrite(4, meshTableBuffer_.buffer);  // placeholder; rewritten per frame
-    tableWrite(5, meshTableBuffer_.buffer);  // unused by shaders
+    for (vk::DescriptorSet set : bindlessSets_) {
+        tableWrite(set, 2, meshTableBuffer_.buffer);
+        tableWrite(set, 3, materialTableBuffer_.buffer);
+        tableWrite(set, 4, meshTableBuffer_.buffer);  // placeholder; rewritten per frame
+        tableWrite(set, 5, meshTableBuffer_.buffer);  // unused by shaders
+    }
     // Stage 2 placeholders: every binding must be valid before the set binds.
     gpuDrivenCullParamsPlaceholder_ =
         vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eUniformBuffer, 256,
                            kHostVisibleCoherent);
     {
         vk::DescriptorBufferInfo ubo{gpuDrivenCullParamsPlaceholder_.buffer, 0, 256};
-        vk::WriteDescriptorSet w{};
-        w.dstSet = bindlessSet_;
-        w.dstBinding = 6;
-        w.descriptorCount = 1;
-        w.descriptorType = vk::DescriptorType::eUniformBuffer;
-        w.pBufferInfo = &ubo;
-        device->updateDescriptorSets(1, &w, 0, nullptr);
+        for (vk::DescriptorSet set : bindlessSets_) {
+            vk::WriteDescriptorSet w{};
+            w.dstSet = set;
+            w.dstBinding = 6;
+            w.descriptorCount = 1;
+            w.descriptorType = vk::DescriptorType::eUniformBuffer;
+            w.pBufferInfo = &ubo;
+            device->updateDescriptorSets(1, &w, 0, nullptr);
+        }
     }
-    for (uint32_t b : {7u, 8u, 9u, 10u, 12u, 13u, 14u, 17u}) tableWrite(b, meshTableBuffer_.buffer);
+    for (uint32_t b : {7u, 8u, 9u, 10u, 12u, 13u, 14u, 17u})
+        for (vk::DescriptorSet set : bindlessSets_) tableWrite(set, b, meshTableBuffer_.buffer);
     {
         vk::DescriptorImageInfo depthInfo{white->sampler, white->imageView(),
                                           vk::ImageLayout::eShaderReadOnlyOptimal};
-        vk::WriteDescriptorSet w{};
-        w.dstSet = bindlessSet_;
-        w.dstBinding = 11;
-        w.descriptorCount = 1;
-        w.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-        w.pImageInfo = &depthInfo;
-        device->updateDescriptorSets(1, &w, 0, nullptr);
+        for (vk::DescriptorSet set : bindlessSets_) {
+            vk::WriteDescriptorSet w{};
+            w.dstSet = set;
+            w.dstBinding = 11;
+            w.descriptorCount = 1;
+            w.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+            w.pImageInfo = &depthInfo;
+            device->updateDescriptorSets(1, &w, 0, nullptr);
+        }
     }
 }
 
 uint32_t Graphics::registerBindlessTexture2D(GpuTexture *tex) {
-    if (!tex || !bindlessSet_) return kInvalidBindlessSlot;
+    if (!tex || bindlessSets_.empty()) return kInvalidBindlessSlot;
     if (tex->bindlessIndex2D != kInvalidBindlessSlot) return tex->bindlessIndex2D;
     if (bindlessFree2D_.empty()) return kInvalidBindlessSlot;
     const uint32_t slot = bindlessFree2D_.front();
@@ -844,19 +863,21 @@ uint32_t Graphics::registerBindlessTexture2D(GpuTexture *tex) {
     tex->bindlessIndex2D = slot;
     vk::DescriptorImageInfo img{tex->sampler, tex->imageView(),
                                 vk::ImageLayout::eShaderReadOnlyOptimal};
-    vk::WriteDescriptorSet write{};
-    write.dstSet = bindlessSet_;
-    write.dstBinding = 0;
-    write.dstArrayElement = slot;
-    write.descriptorCount = 1;
-    write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    write.pImageInfo = &img;
-    device->updateDescriptorSets(1, &write, 0, nullptr);
+    for (vk::DescriptorSet set : bindlessSets_) {
+        vk::WriteDescriptorSet write{};
+        write.dstSet = set;
+        write.dstBinding = 0;
+        write.dstArrayElement = slot;
+        write.descriptorCount = 1;
+        write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        write.pImageInfo = &img;
+        device->updateDescriptorSets(1, &write, 0, nullptr);
+    }
     return slot;
 }
 
 uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
-    if (!tex || !bindlessSet_) return kInvalidBindlessSlot;
+    if (!tex || bindlessSets_.empty()) return kInvalidBindlessSlot;
     if (tex->bindlessIndexCube != kInvalidBindlessSlot) return tex->bindlessIndexCube;
     if (bindlessFreeCube_.empty()) return kInvalidBindlessSlot;
     const uint32_t slot = bindlessFreeCube_.front();
@@ -865,19 +886,21 @@ uint32_t Graphics::registerBindlessTextureCube(GpuTexture *tex) {
     tex->bindlessIndexCube = slot;
     vk::DescriptorImageInfo img{tex->sampler, tex->cubeImage.imageView(),
                                 vk::ImageLayout::eShaderReadOnlyOptimal};
-    vk::WriteDescriptorSet write{};
-    write.dstSet = bindlessSet_;
-    write.dstBinding = 1;
-    write.dstArrayElement = slot;
-    write.descriptorCount = 1;
-    write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-    write.pImageInfo = &img;
-    device->updateDescriptorSets(1, &write, 0, nullptr);
+    for (vk::DescriptorSet set : bindlessSets_) {
+        vk::WriteDescriptorSet write{};
+        write.dstSet = set;
+        write.dstBinding = 1;
+        write.dstArrayElement = slot;
+        write.descriptorCount = 1;
+        write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        write.pImageInfo = &img;
+        device->updateDescriptorSets(1, &write, 0, nullptr);
+    }
     return slot;
 }
 
 void Graphics::unregisterBindlessTexture(GpuTexture *tex) {
-    if (!tex || !bindlessSet_) return;
+    if (!tex || bindlessSets_.empty()) return;
     auto *white = static_cast<GpuTexture *>(whiteTexture->gpuHandle);
     GpuTexture *whiteCube = white;
     if (defaultBindlessCube && defaultBindlessCube->gpuHandle)
@@ -889,14 +912,16 @@ void Graphics::unregisterBindlessTexture(GpuTexture *tex) {
             placeholder->sampler,
             cube ? placeholder->cubeImage.imageView() : placeholder->imageView(),
             vk::ImageLayout::eShaderReadOnlyOptimal};
-        vk::WriteDescriptorSet write{};
-        write.dstSet = bindlessSet_;
-        write.dstBinding = binding;
-        write.dstArrayElement = slot;
-        write.descriptorCount = 1;
-        write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-        write.pImageInfo = &img;
-        device->updateDescriptorSets(1, &write, 0, nullptr);
+        for (vk::DescriptorSet set : bindlessSets_) {
+            vk::WriteDescriptorSet write{};
+            write.dstSet = set;
+            write.dstBinding = binding;
+            write.dstArrayElement = slot;
+            write.descriptorCount = 1;
+            write.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+            write.pImageInfo = &img;
+            device->updateDescriptorSets(1, &write, 0, nullptr);
+        }
     };
 
     if (tex->bindlessIndex2D != kInvalidBindlessSlot) {
@@ -1001,7 +1026,7 @@ bool Graphics::gpuDrivenMaterialUsable(Material *material) {
 
 bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {
     if (!gpuDrivenEnabled() || !gpuDrivenCaps_.gpuDrivenAvailable()) return false;
-    if (!mesh3dGpuDrivenPipeline || !bindlessSet_ || !meshTableBuffer_.buffer) return false;
+    if (!mesh3dGpuDrivenPipeline || bindlessSets_.empty() || !meshTableBuffer_.buffer) return false;
     if (!instances || instanceCount == 0) return false;
 
     // Sort by (material, mesh) and merge buckets using the GPU mesh table.
@@ -1027,10 +1052,13 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     std::memcpy(cmdAlloc.mapped, cmds.data(), drawCount * sizeof(GpuIndirectCommand));
 
     // Bind the arena instance buffer as bindless binding 4 (update before bind,
-    // so UPDATE_AFTER_BIND is not strictly required for this path).
+    // on the current frame slot's set only; the other slot's pending command
+    // buffers keep pointing at their own frame's arena).
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless) return false;
     vk::DescriptorBufferInfo instInfo{arena.buffer(), instAlloc.offset, instAlloc.size};
     vk::WriteDescriptorSet instWrite{};
-    instWrite.dstSet = bindlessSet_;
+    instWrite.dstSet = bindless;
     instWrite.dstBinding = 4;
     instWrite.descriptorCount = 1;
     instWrite.descriptorType = vk::DescriptorType::eStorageBuffer;
@@ -1095,7 +1123,7 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0, 1,
                           &set, 0, nullptr);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1,
-                          &bindlessSet_, 0, nullptr);
+                          &bindless, 0, nullptr);
     const vk::DeviceSize stride = sizeof(GpuIndirectCommand);
     // Stage 1 keeps one host buffer pair per mesh (no pool yet), so each draw
     // group must bind the owning mesh's vertex/index buffers. The builder sorts
@@ -1384,11 +1412,16 @@ bool Graphics::gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanc
     lastGpuDrivenDrawCount_ = bucketCount;  // debug counter: bucket draws the cull path emits
 
     // Cull source buffers: sorted instances (17), bucket ids (12), offsets (13).
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless) {
+        gpuDrivenCullInstanceCount_ = 0;
+        return false;
+    }
     auto bufWrite = [&](uint32_t binding, vk::Buffer buffer, vk::DeviceSize offset,
                         vk::DeviceSize size) {
         vk::DescriptorBufferInfo info{buffer, offset, size};
         vk::WriteDescriptorSet w{};
-        w.dstSet = bindlessSet_;
+        w.dstSet = bindless;
         w.dstBinding = binding;
         w.descriptorCount = 1;
         w.descriptorType = vk::DescriptorType::eStorageBuffer;
@@ -1407,6 +1440,10 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
     gpuDrivenLastCullSlot_ = uint32_t(currentFrameSlot());
     auto &slot = currentGpuDrivenCullSlot();
     auto &cb = currentPresentCb();
+    // This frame's own bindless set: the previous frame that owned this slot
+    // completed at acquireForFrame()'s fence wait, so rewriting it is safe.
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless) return;
 
     // CPU reset of GPU-owned per-slot state (slot's previous frame is complete).
     {
@@ -1448,7 +1485,7 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
                         vk::DeviceSize size, vk::DescriptorType type) {
         vk::DescriptorBufferInfo info{buffer, offset, size};
         vk::WriteDescriptorSet w{};
-        w.dstSet = bindlessSet_;
+        w.dstSet = bindless;
         w.dstBinding = binding;
         w.descriptorCount = 1;
         w.descriptorType = type;
@@ -1473,7 +1510,7 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
             vk::DescriptorImageInfo depthInfo{gbSlot->depthGpu.sampler, gbSlot->depthGpu.imageView(),
                                               vk::ImageLayout::eShaderReadOnlyOptimal};
             vk::WriteDescriptorSet wd{};
-            wd.dstSet = bindlessSet_;
+            wd.dstSet = bindless;
             wd.dstBinding = 11;
             wd.descriptorCount = 1;
             wd.descriptorType = vk::DescriptorType::eCombinedImageSampler;
@@ -1486,7 +1523,7 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
     // whole compute section (the set is not UPDATE_AFTER_BIND, so updating it
     // while bound to a recording command buffer would invalidate the buffer).
     cb.bindDescriptorSets(vk::PipelineBindPoint::eCompute, gpuDrivenComputeLayout, 1, 1,
-                          &bindlessSet_, 0, nullptr);
+                          &bindless, 0, nullptr);
 
     recordGpuDrivenHzbBuild();
 
@@ -1622,8 +1659,10 @@ void Graphics::gpuDrivenDrawOpaque() {
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipeline);
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0, 1,
                           &set, 0, nullptr);
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless) return;
     cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1,
-                          &bindlessSet_, 0, nullptr);
+                          &bindless, 0, nullptr);
 
     const vk::DeviceSize stride = sizeof(GpuIndirectCommand);
     GpuMesh *boundMesh = nullptr;
