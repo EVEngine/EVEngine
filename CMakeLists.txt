@@ -341,6 +341,14 @@ function(set_include)
         #   iOS/lib/.../ios-arm64/MoltenVK.framework  (dynamic; preferred, embeddable)
         #   macOS/lib/.../ios-arm64/libMoltenVK.a      (static; CI zip often only has this)
         # Prefer the framework; fall back to the static archive.
+        # Pick the xcframework slice matching the active SDK: simulator builds
+        # need the universal ios-arm64_x86_64-simulator framework, not the
+        # device-only ios-arm64 one.
+        if(CMAKE_OSX_SYSROOT MATCHES "simulator")
+            set(_eve_mvk_slice "ios-arm64_x86_64-simulator")
+        else()
+            set(_eve_mvk_slice "ios-arm64")
+        endif()
         set(_eve_mvk_candidates "")
         if(DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
             list(APPEND _eve_mvk_candidates
@@ -363,7 +371,7 @@ function(set_include)
             if(NOT EXISTS "${_abs}")
                 continue()
             endif()
-            set(_slice "${_abs}/ios-arm64")
+            set(_slice "${_abs}/${_eve_mvk_slice}")
             if(EXISTS "${_slice}/MoltenVK.framework")
                 set(_eve_moltenvk_xcframework "${_abs}")
                 set(_eve_moltenvk_link_mode "framework")
@@ -774,7 +782,15 @@ function(load_third_party)
     endif()
     message("Build Type: ${CMAKE_BUILD_TYPE} (third-party tree suffix '${DEBUG_APPENDIX}')")
 
-    set(TP_BUILD_PATH ${BUILD_PLATFORM}${DEBUG_APPENDIX})
+    # Simulator builds cannot reuse the device third-party tree (the linker
+    # rejects iphoneos Mach-O slices for an iphonesimulator target), so give
+    # them their own install prefix instead of clobbering build/third-party-binary/ios-debug.
+    if(CMAKE_SYSTEM_NAME STREQUAL "iOS" AND CMAKE_OSX_SYSROOT MATCHES "simulator")
+        set(_eve_tp_platform "ios-simulator")
+    else()
+        set(_eve_tp_platform ${BUILD_PLATFORM})
+    endif()
+    set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)

@@ -65,6 +65,7 @@ ifeq ($(wildcard $(IOS_APP)),)
 IOS_APP = build/ios-debug/src/engine/eve.app
 endif
 IOS_TEST_APP ?= build/ios-debug-test/src/engine/Debug-iphoneos/eve.app
+IOS_SIM_TEST_APP ?= build/ios-sim-debug-test/src/engine/Debug-iphonesimulator/eve.app
 
 # ---- Capability detection for `make all` (host + optional cross targets) ----
 # debug/release remain host-only; all builds every available debug target.
@@ -102,6 +103,7 @@ GAME ?=
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
 	build/android-debug-test \
 	build/ios-debug-test \
+	build/ios-sim-debug-test \
 	wsl/linux wsl/linux-debug show-targets \
 	debug release example \
 	run run/win32 run/linux run/macosx \
@@ -110,6 +112,7 @@ GAME ?=
 	run/android-test-debug log/android-test \
 	install/ios-debug run/ios-debug log/ios \
 	install/ios-test-debug run/ios-test-debug log/ios-test \
+	install/ios-sim-test-debug run/ios-sim-test-debug log/ios-sim-test \
 	sdk/win32 sdk/linux sdk/macosx sdk/android sdk/ios \
 	sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug \
 	reinstall/third-party reinstall/third-party/win32 reinstall/third-party/win32-debug \
@@ -360,6 +363,34 @@ build/ios-debug-test/EVEngine.xcodeproj:
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug-test -S .
 
+# iOS test app for the simulator (no signing required). Uses its own
+# third-party tree (ios-simulator-debug) so the device deps are not clobbered.
+build/ios-sim-debug-test: build/ios-sim-debug-test/EVEngine.xcodeproj
+	cmake --build build/ios-sim-debug-test --target deps -j $(ANDROID_JOBS)
+	cd build/ios-sim-debug-test && xcodebuild -scheme eve -configuration Debug \
+		-sdk iphonesimulator -arch $(IOS_ARCH) \
+		CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+		build
+
+build/ios-sim-debug-test/EVEngine.xcodeproj:
+	cmake -G Xcode \
+		-DCMAKE_SYSTEM_NAME=iOS \
+		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
+		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DCMAKE_OSX_SYSROOT=iphonesimulator \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DBUILD_PLATFORM=ios \
+		-DBUILD_TESTING=ON \
+		-DEVENGINE_IOS_TEST_APP=ON \
+		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
+		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
+		-DEVENGINE_IOS_TEST_BUNDLE_ID=$(IOS_TEST_BUNDLE_ID) \
+		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
+		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(CMAKE_EXTRA_ARGS) \
+		-B build/ios-sim-debug-test -S .
+
 # Rebuild changed third-party sources and run install again without deleting
 # build/third-party or build/third-party-binary.
 reinstall/third-party: reinstall/third-party/$(PLATFORM)-debug
@@ -575,6 +606,32 @@ run/ios-test-debug: install/ios-test-debug
 log/ios-test:
 	@echo "Streaming iOS test logs (Ctrl-C to stop)..."
 	log stream --predicate 'subsystem == "$(IOS_TEST_BUNDLE_ID)"' --style compact
+
+# ---- iOS simulator test app: install / launch / logs (no signing needed) ----
+install/ios-sim-test-debug:
+	@APP="$(IOS_SIM_TEST_APP)"; \
+	  if [ ! -d "$$APP" ]; then \
+	    APP=$$(find build/ios-sim-debug-test -name 'eve.app' -type d 2>/dev/null | head -1); \
+	  fi; \
+	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-sim-debug-test first"; exit 1); \
+	  SIM=$$(xcrun simctl list devices available 2>/dev/null | sed -n 's/.*(\([0-9A-Fa-f-]\{36\}\)).*/\1/p' | head -1); \
+	  test -n "$$SIM" || (echo "No available iOS simulator"; exit 1); \
+	  xcrun simctl boot "$$SIM" 2>/dev/null || true; \
+	  xcrun simctl bootstatus "$$SIM" -b >/dev/null 2>&1; \
+	  echo "Installing $$APP on simulator $$SIM"; \
+	  xcrun simctl install "$$SIM" "$$APP"
+
+run/ios-sim-test-debug: install/ios-sim-test-debug
+	@SIM=$$(xcrun simctl list devices available 2>/dev/null | sed -n 's/.*(\([0-9A-Fa-f-]\{36\}\)).*/\1/p' | head -1); \
+	  if [ -n "$(FILTER)" ]; then \
+	    xcrun simctl launch "$$SIM" $(IOS_TEST_BUNDLE_ID) -evengine.test.filter "$(FILTER)"; \
+	  else \
+	    xcrun simctl launch "$$SIM" $(IOS_TEST_BUNDLE_ID); \
+	  fi
+
+log/ios-sim-test:
+	@echo "Streaming simulator test logs (Ctrl-C to stop)..."
+	xcrun simctl spawn booted log stream --predicate 'subsystem == "$(IOS_TEST_BUNDLE_ID)"' --style compact
 
 test: test/$(PLATFORM)-debug
 
