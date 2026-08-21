@@ -4,7 +4,6 @@
 #include "ui/UIHost.h"
 
 #include <algorithm>
-#include <charconv>
 #include <cstdlib>
 
 namespace eve::ui {
@@ -64,11 +63,7 @@ std::string valueText(const ReflectedValue& value) {
         case ReflectedValueKind::Integer:
             return std::to_string(value.integer);
         case ReflectedValueKind::Float: {
-            char buf[32];
-            const std::to_chars_result res =
-                std::to_chars(buf, buf + sizeof(buf), value.floating);
-            if (res.ec == std::errc()) return std::string(buf, res.ptr);
-            return std::to_string(value.floating);
+            return reflectedFloatString(value.floating);
         }
         case ReflectedValueKind::String:
             return value.text;

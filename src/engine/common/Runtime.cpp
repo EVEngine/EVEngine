@@ -4,7 +4,6 @@
 #include "common/Module.h"
 
 #include <algorithm>
-#include <charconv>
 #include <cstdlib>
 #include <sstream>
 #include <utility>
@@ -40,15 +39,7 @@ std::string valueString(HSQUIRRELVM vm, SQInteger index) {
         case OT_FLOAT: {
             SQFloat value = 0;
             if (SQ_SUCCEEDED(sq_getfloat(vm, index, &value))) {
-                // Shortest round-trip representation (0.1 stays "0.1", not
-                // "0.100000001"): attribute metadata round-trips exactly.
-                char buf[32];
-                const std::to_chars_result res =
-                    std::to_chars(buf, buf + sizeof(buf), value);
-                if (res.ec == std::errc()) return std::string(buf, res.ptr);
-                std::ostringstream out;
-                out << value;
-                return out.str();
+                return reflectedFloatString(value);
             }
             break;
         }
@@ -155,11 +146,7 @@ std::string valueToText(const ReflectedValue& value) {
         case ReflectedValueKind::Bool: return value.boolean ? "true" : "false";
         case ReflectedValueKind::Integer: return std::to_string(value.integer);
         case ReflectedValueKind::Float: {
-            char buf[32];
-            const std::to_chars_result res =
-                std::to_chars(buf, buf + sizeof(buf), value.floating);
-            if (res.ec == std::errc()) return std::string(buf, res.ptr);
-            return std::to_string(value.floating);
+            return reflectedFloatString(value.floating);
         }
         default: return {};
     }

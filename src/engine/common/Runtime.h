@@ -5,8 +5,10 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <cstdio>
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -14,6 +16,21 @@
 #include <vector>
 
 namespace eve {
+
+/**
+ * @brief Shortest round-trip float formatting (portable).
+ *
+ * std::to_chars(float/double) is unavailable on Apple platforms with an iOS
+ * deployment target below 16.3, so reflection/editor code must not use it.
+ * snprintf with max_digits10 guarantees round-tripping at the cost of not
+ * being the shortest spelling.
+ */
+inline std::string reflectedFloatString(double value) {
+    char buf[64];
+    std::snprintf(buf, sizeof(buf), "%.*g",
+                  std::numeric_limits<double>::max_digits10, value);
+    return buf;
+}
 
 enum class ScriptState {
     Compiled,
