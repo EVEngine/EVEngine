@@ -182,6 +182,13 @@ elseif(EVENGINE_IOS_TEST_APP)
   # src/engine/CMakeLists.txt (which owns the bundle id/plist/signing, MoltenVK
   # embedding and the whole-archive link list). Attach the suite sources here;
   # test/main.cpp provides SDL_main for the UIKit entry point.
+  # nut_scripts.cpp is produced by a custom command declared in this directory;
+  # the Xcode generator only wires generated sources into the target that
+  # consumes them when they are declared in the same directory, so route the
+  # generation through an explicit custom target the eve target depends on.
+  add_custom_target(eve_nut_scripts ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp)
+  add_dependencies(eve eve_nut_scripts)
   target_sources(eve PRIVATE
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
