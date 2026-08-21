@@ -78,7 +78,9 @@ eve::image::ImageData *ImageData::clone() const {
 }
 
 void ImageData::create(int w, int h, std::string pixelFormat, void *pixels) {
-    if (w <= 0 || h <= 0)
+    // Reject negative dimensions only: negative ints wrap to huge size_t
+    // allocations. Zero-sized images are valid (e.g. empty font atlases).
+    if (w < 0 || h < 0)
         throw eve::Exception("ImageData: invalid dimensions (%dx%d)", w, h);
     size_t datasize =
         w * h * getPixelFormatSize(getPixelFormatFromName(pixelFormat));
