@@ -122,4 +122,229 @@ int runShell(const std::string& cmd) {
 #endif
 }
 
+namespace {
+
+std::string exeSuffix() {
+#if defined(_WIN32)
+    return ".exe";
+#else
+    return "";
+#endif
+}
+
+// sdkmanager 在 Windows 上是 .bat 脚本，其它平台是无后缀的 sh 脚本。
+std::string sdkmanagerSuffix() {
+#if defined(_WIN32)
+    return ".bat";
+#else
+    return "";
+#endif
+}
+
+// Google 官方 command-line tools 压缩包（按宿主平台）。可用
+// EVE_ANDROID_CMDLINE_TOOLS_URL 覆盖（镜像/测试）。
+std::string androidCmdlineToolsUrl() {
+#if defined(_WIN32)
+    return "https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip";
+#elif defined(__APPLE__)
+    return "https://dl.google.com/android/repository/commandlinetools-mac-11076708_latest.zip";
+#else
+    return "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip";
+#endif
+}
+
+// Eclipse Temurin JDK 17 直链（Adoptium API 重定向到最新 17 GA）。
+// 可用 EVE_JDK17_URL 覆盖（镜像/测试）。
+std::string temurinJdk17Url() {
+    const char* os;
+    const char* arch;
+#if defined(_WIN32)
+    os = "windows";
+    arch = "x64";
+#elif defined(__APPLE__)
+    os = "mac";
+#if defined(__aarch64__)
+    arch = "aarch64";
+#else
+    arch = "x64";
+#endif
+#else
+    os = "linux";
+#if defined(__aarch64__)
+    arch = "aarch64";
+#else
+    arch = "x64";
+#endif
+#endif
+    return std::string("https://api.adoptium.net/v3/binary/latest/17/ga/") + os + "/" + arch +
+           "/jdk/hotspot/normal/eclipse";
+}
+
+// 与仓库 Makefile / APK 工程匹配的 Android SDK 组件版本。
+const char* kAndroidPlatform = "platforms;android-34";
+const char* kAndroidBuildTools = "build-tools;34.0.0";
+const char* kAndroidNdk = "ndk;26.1.10909125";
+
+bool jdkHomeExists(const std::string& home) {
+    std::error_code ec;
+    return std::filesystem::is_regular_file(
+               std::filesystem::path(home) / "bin" / ("java" + exeSuffix()), ec) ||
+           std::filesystem::is_regular_file(
+               std::filesystem::path(home) / "bin" / ("javac" + exeSuffix()), ec);
+}
+
+// 下载一个压缩包并用系统 tar 解压（Windows 10+ 自带 bsdtar）。
+int downloadAndExtract(const std::string& url, const std::string& zipPath,
+                       const std::string& extractDir) {
+    if (runShell("curl -fL --retry 3 -o \"" + zipPath + "\" \"" + url + "\"") != 0) {
+        std::cerr << "eve get: download failed: " << url << std::endl;
+        return 3;
+    }
+    std::error_code ec;
+    std::filesystem::remove_all(extractDir, ec);
+    std::filesystem::create_directories(extractDir, ec);
+    if (runShell("tar -xf \"" + zipPath + "\" -C \"" + extractDir + "\"") != 0) {
+        std::cerr << "eve get: failed to extract " << zipPath
+                  << " (need a zip-capable tar)" << std::endl;
+        return 3;
+    }
+    std::filesystem::remove(zipPath, ec);
+    return 0;
+}
+
+// move 失败（跨盘符等）时退化为递归 copy。
+bool moveOrCopy(const std::filesystem::path& from, const std::filesystem::path& to) {
+    std::error_code ec;
+    std::filesystem::remove_all(to, ec);
+    std::filesystem::rename(from, to, ec);
+    if (!ec) return true;
+    ec.clear();
+    std::filesystem::copy(from, to,
+                          std::filesystem::copy_options::recursive |
+                              std::filesystem::copy_options::overwrite_existing,
+                          ec);
+    return !ec;
+}
+
+int installJdk(const std::string& root) {
+    const std::string url = getEnv("EVE_JDK17_URL", temurinJdk17Url());
+    std::cout << "eve get: downloading JDK 17 (Temurin)...\n";
+    const std::string tmp = root + "/.jdk-extract";
+    if (downloadAndExtract(url, root + "/jdk17.zip", tmp) != 0) return 3;
+    std::error_code ec;
+    std::filesystem::path jdkDir;
+    for (const auto& entry : std::filesystem::directory_iterator(tmp, ec)) {
+        if (entry.is_directory()) {
+            jdkDir = entry.path();
+            break;
+        }
+    }
+    if (jdkDir.empty() || !moveOrCopy(jdkDir, std::filesystem::path(root) / "jdk17")) {
+        std::cerr << "eve get: unexpected JDK archive layout in " << tmp << std::endl;
+        return 3;
+    }
+    std::filesystem::remove_all(tmp, ec);
+    return 0;
+}
+
+}  // namespace
+
+bool isAndroidSdkInstalled(const std::string& root) {
+    std::error_code ec;
+    return std::filesystem::is_regular_file(
+        std::filesystem::path(root) / "cmdline-tools" / "latest" / "bin" /
+            ("sdkmanager" + sdkmanagerSuffix()),
+        ec);
+}
+
+int installAndroidSdk() {
+    const std::string root = androidSdkRoot();
+    std::error_code ec;
+    std::filesystem::create_directories(root, ec);
+    if (ec) {
+        std::cerr << "eve get: cannot create SDK directory " << root << ": "
+                  << ec.message() << std::endl;
+        return 3;
+    }
+
+    const std::string sdkManager =
+        root + "/cmdline-tools/latest/bin/sdkmanager" + sdkmanagerSuffix();
+    if (isAndroidSdkInstalled(root)) {
+        std::cout << "eve get: Android SDK already installed at " << root << "\n";
+    } else {
+        std::cout << "eve get: downloading Android command-line tools...\n";
+        const std::string url =
+            getEnv("EVE_ANDROID_CMDLINE_TOOLS_URL", androidCmdlineToolsUrl());
+        const std::string tmp = root + "/.cmdline-tools-extract";
+        if (downloadAndExtract(url, root + "/cmdline-tools.zip", tmp) != 0) return 3;
+        if (!std::filesystem::is_directory(std::filesystem::path(tmp) / "cmdline-tools", ec)) {
+            std::cerr << "eve get: unexpected command-line tools archive layout in "
+                      << tmp << std::endl;
+            return 3;
+        }
+        if (!moveOrCopy(std::filesystem::path(tmp) / "cmdline-tools",
+                        std::filesystem::path(root) / "cmdline-tools" / "latest")) {
+            std::cerr << "eve get: failed to move cmdline-tools into "
+                      << root << "/cmdline-tools/latest" << std::endl;
+            return 3;
+        }
+        std::filesystem::remove_all(tmp, ec);
+    }
+
+    // JDK 17 优先复用 $JAVA_HOME；否则下载 Temurin 17 到 <sdk>/jdk17。
+    std::string javaHome = getEnv("JAVA_HOME");
+    if (javaHome.empty()) {
+        javaHome = (std::filesystem::path(root) / "jdk17").string();
+        if (!jdkHomeExists(javaHome) && installJdk(root) != 0) return 3;
+    } else if (!jdkHomeExists(javaHome)) {
+        std::cerr << "eve get: warning: JAVA_HOME=" << javaHome
+                  << " does not contain bin/java; make sure it points at a JDK 17+.\n";
+    }
+    setEnv("JAVA_HOME", javaHome);
+
+    // 接受许可并安装组件（sdkmanager 幂等，可重复执行补齐）。
+    const std::string lic = root + "/.eve-licenses.txt";
+    {
+        std::ofstream f(lic, std::ios::binary | std::ios::trunc);
+        for (int i = 0; i < 200; ++i) f << "y\n";
+    }
+#if defined(_WIN32)
+    // cmd /c strips the first/last quote of a command that starts with one, so
+    // batch files with spaces in their path need the `call` prefix.
+    const std::string sdkCmd = "call \"" + sdkManager + "\"";
+#else
+    const std::string sdkCmd = "\"" + sdkManager + "\"";
+#endif
+    std::cout << "eve get: accepting Android SDK licenses...\n";
+    if (runShell(sdkCmd + " --licenses < \"" + lic + "\"") != 0) {
+        std::cerr << "eve get: failed to accept Android SDK licenses" << std::endl;
+        return 3;
+    }
+    std::cout << "eve get: installing SDK packages (platform-tools, android-34, "
+                 "build-tools, NDK)...\n";
+    const std::string packages = "\"platform-tools\" \"" + std::string(kAndroidPlatform) +
+                                 "\" \"" + std::string(kAndroidBuildTools) + "\" \"" +
+                                 std::string(kAndroidNdk) + "\"";
+    if (runShell(sdkCmd + " " + packages) != 0) {
+        std::cerr << "eve get: failed to install Android SDK packages" << std::endl;
+        return 3;
+    }
+    std::filesystem::remove(lic, ec);
+
+    // 记录环境，供 `eve build android` 在环境变量未设置时使用。
+    {
+        std::ofstream f(std::filesystem::path(root) / "eve-android.env",
+                        std::ios::binary | std::ios::trunc);
+        f << "ANDROID_HOME=" << root << "\n"
+          << "ANDROID_SDK_ROOT=" << root << "\n"
+          << "ANDROID_NDK_ROOT=" << root << "/" << kAndroidNdk << "\n"
+          << "JAVA_HOME=" << javaHome << "\n";
+    }
+
+    std::cout << "eve get: Android SDK ready at " << root << "\n"
+              << "eve get: run `eve build android` to build an APK "
+                 "(or `eve build -d android` for a debug APK).\n";
+    return 0;
+}
+
 }  // namespace eve::cmd::sdk

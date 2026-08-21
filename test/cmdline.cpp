@@ -369,3 +369,37 @@ TEST_CASE("cmdline.buildMissingAndroidSdkFails") {
     std::filesystem::remove_all(root, ec);
     std::filesystem::remove_all(sdk, ec);
 }
+
+TEST_CASE("cmdline.getAndroidAlreadyInstalled") {
+    const auto sdk = tempDir("eve_ut_cmdline_android_installed");
+    const auto bin = sdk / "cmdline-tools" / "latest" / "bin";
+    std::error_code ec;
+    std::filesystem::create_directories(bin, ec);
+#if defined(_WIN32)
+    std::ofstream(bin / "sdkmanager.bat", std::ios::binary | std::ios::trunc) << "@exit /b 0\r\n";
+#else
+    std::ofstream(bin / "sdkmanager", std::ios::binary | std::ios::trunc)
+        << "#!/bin/sh\nexit 0\n";
+    std::filesystem::permissions(bin / "sdkmanager",
+                                 std::filesystem::perms::owner_all |
+                                     std::filesystem::perms::group_read |
+                                     std::filesystem::perms::others_read,
+                                 ec);
+#endif
+
+    ScopedEnv sdkEnv("EVENGINE_ANDROID_SDK", sdk.string());
+    ScopedEnv javaEnv("JAVA_HOME", sdk.string());  // non-empty -> skip JDK download
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "get", "android"});
+    CHECK(rc == 0);
+    CHECK(cap.out().find("already installed") != std::string::npos);
+    CHECK(std::filesystem::is_regular_file(sdk / "eve-android.env", ec));
+    std::filesystem::remove_all(sdk, ec);
+}
+
+TEST_CASE("cmdline.getUnsupportedPlatformFails") {
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "get", "ios"});
+    CHECK(rc == 2);
+    CHECK(cap.all().find("not implemented") != std::string::npos);
+}

@@ -54,3 +54,10 @@ NDK + gradlew）产出 APK。构建根目录自动从 cwd 向上查找（含 Mak
 CMakeLists.txt），也可以 `--sdk <dir>` 或 `$EVENGINE_SDK` 指定。
 Windows 宿主上 linux 走 WSL2 目标；macosx/ios 需要 macOS 宿主；android 需要
 先安装 Android SDK（见下）。
+
+获取 SDK（get）：
+`eve get android` 自动下载并安装 Android SDK 工具链：command-line tools、
+platform-tools、platforms;android-34、build-tools;34.0.0、NDK 26.1 以及
+JDK 17（Temurin），默认安装到 `%LOCALAPPDATA%/Android/Sdk`（可用
+`EVENGINE_ANDROID_SDK` 或 `ANDROID_HOME` 覆盖）。完成后 `eve build android`
+即可直接构建 APK。环境变量持久化文件为 `<sdk>/eve-android.env`。

@@ -45,4 +45,11 @@ void applyEnvFile(const std::string& path);
 /** @brief 通过系统 shell 执行命令并返回退出码（POSIX 下归一化 WEXITSTATUS）。 */
 int runShell(const std::string& cmd);
 
+/** @brief 判断 Android SDK 是否已安装（cmdline-tools 的 sdkmanager 存在）。 */
+bool isAndroidSdkInstalled(const std::string& root);
+
+/** @brief 自动下载并安装 Android SDK（cmdline-tools / platform-tools /
+ * build-tools / platform / NDK）和 JDK 17，返回退出码。 */
+int installAndroidSdk();
+
 }  // namespace eve::cmd::sdk
