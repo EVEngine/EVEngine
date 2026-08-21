@@ -333,7 +333,7 @@ std::vector<std::string> Snapshot::resolveRoots(HSQUIRRELVM vm) const {
             if (key && !isEngineName(key)) {
                 const SQObjectType vt = sq_gettype(vm, -1);
                 if (vt == OT_INTEGER || vt == OT_FLOAT || vt == OT_BOOL || vt == OT_STRING || vt == OT_TABLE ||
-                    vt == OT_ARRAY || vt == OT_INSTANCE) {
+                    vt == OT_ARRAY) {
                     out.emplace_back(key);
                 }
             }

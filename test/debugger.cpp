@@ -508,6 +508,27 @@ TEST_CASE("devtools.snapshot.rejectsInstanceRoot") {
     CHECK(err.find("class instance") != std::string::npos);
 }
 
+TEST_CASE("devtools.snapshot.skipsInstanceRootInAutoScan") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    ssq::Script s =
+        vm.compileSource("class Hero { level = 1; } hero <- Hero(); gameState <- { level = 3 };");
+    vm.run(s);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    eve::StateValue out;
+    std::string     err;
+    // Class instances at the root (module singletons, ECS worlds, ...) must not
+    // abort the automatic state scan; plain-data roots are still captured.
+    CHECK(snap.captureState(v, out, &err));
+    CHECK(err.empty());
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    CHECK(roots->find("gameState") != nullptr);
+    CHECK(roots->find("hero") == nullptr);
+}
+
 TEST_CASE("devtools.debugger.normalizeSource") {
     CHECK_EQ(Debugger::normalizeSource("file://./a/b.nut"), std::string("a/b.nut"));
     CHECK_EQ(Debugger::normalizeSource("file://localhost/Users/x/main.nut"),
