@@ -4,6 +4,7 @@
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/ReloadSession.h"
 #include "devtools/RenderVision.hpp"
 
 #include "common/Module.h"
@@ -297,6 +298,8 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
                     [](std::string name) { Snapshot::instance().markRoot(std::move(name)); });
         dev.addFunc("unmarkStateRoot",
                     [](std::string name) { Snapshot::instance().unmarkRoot(name); });
+        dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
+        dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
         dev.addFunc("saveSnapshot", [this](std::string path) {
             std::string err;
             const bool  ok = snapshot().saveFile(vm_, path, &err);
@@ -318,6 +321,21 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             const bool  ok = snapshot().restore(vm_, json, &err);
             if (!ok) return std::string("error:") + err;
             return std::string("ok");
+        });
+        dev.addFunc("beginStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().begin(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+        dev.addFunc("commitStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().commit(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+        dev.addFunc("abortStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().abort(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
         });
 
         // AI / MCP surface (DevTools panel + agent session log).

@@ -5,6 +5,7 @@ file(GLOB all_test_cpp
   capability.cpp
   data.cpp
   resource.cpp
+  state_value.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
@@ -59,12 +60,14 @@ file(GLOB all_test_cpp
   map_fov.cpp
   rpg.cpp
   rpg_simulation.cpp
+  rpg_reload.cpp
   hex_level_simulation.cpp
   hex_level_data.cpp
   inventory.cpp
   building.cpp
   buildingfx.cpp
   card.cpp
+  card_reload.cpp
   i18n.cpp
   i18n_script.cpp
   avatar.cpp
@@ -121,6 +124,7 @@ file(GLOB all_test_cpp
   animation_skinned.cpp
   animation_lattice.cpp
   animation_sprite_spine.cpp
+  animation_reload.cpp
   tensor.cpp
   tensor_llm.cpp
   tensor_quant.cpp
@@ -129,6 +133,7 @@ file(GLOB all_test_cpp
   resource_lifetime.cpp
   debugger.cpp
   debugger_audit.cpp
+  reload_script.cpp
   dap.cpp
   mcp.cpp
   console.cpp
@@ -143,7 +148,7 @@ endif()
 # compiled into the Android runtime, so their test files cannot link there.
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp dap.cpp mcp.cpp console.cpp)
+  foreach(_eve_devtool_test IN ITEMS callgraph.cpp renderflow.cpp debugger.cpp reload_script.cpp dap.cpp mcp.cpp console.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Android test: removed devtools test files, remaining=${all_test_cpp}")
