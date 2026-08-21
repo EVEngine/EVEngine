@@ -14,6 +14,8 @@ file(GLOB all_test_cpp
   model.cpp
   mouse.cpp
   mouse_cpp.cpp
+  image_script.cpp
+  joystick_script.cpp
   keyboard_cpp.cpp
   joystick_cpp.cpp
   touch.cpp
@@ -117,6 +119,7 @@ file(GLOB all_test_cpp
   animation.cpp
   animation_mixamo.cpp
   animation_skinned.cpp
+  animation_lattice.cpp
   animation_sprite_spine.cpp
   tensor.cpp
   tensor_llm.cpp
@@ -151,6 +154,8 @@ file(GLOB all_test_scripts
   graphic.nut
   i18n.nut
   dialogue_proc_script.nut
+  image.nut
+  joystick.nut
   model.nut
   model2.nut
   mouse.nut

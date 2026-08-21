@@ -139,6 +139,14 @@ foreach(_eve_lic_src IN ITEMS
     endif()
 endforeach()
 
+# ---- Reference example ----------------------------------------------------
+# Ship a runnable reference game so SDK consumers can see the layout without
+# cloning the repository. `eve run` in a folder with no main.nut still falls
+# back to the embedded demo.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
+    DESTINATION share/eve/examples
+)
+
 # ---- Target-platform packaging template only ----
 set(_eve_plat_src "${CMAKE_SOURCE_DIR}/platform/${BUILD_PLATFORM}")
 if(EXISTS "${_eve_plat_src}")

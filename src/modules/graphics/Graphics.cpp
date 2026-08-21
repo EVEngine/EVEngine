@@ -48,6 +48,52 @@
 
 namespace eve::graphics {
 
+namespace {
+
+bool copyArrayFloats(ssq::Array arr, std::vector<float> &out) {
+    const size_t n = arr.size();
+    out.resize(n);
+    for (size_t i = 0; i < n; ++i) out[i] = arr.get<float>(i);
+    return n > 0;
+}
+
+bool copyArrayUints(ssq::Array arr, std::vector<uint32_t> &out) {
+    const size_t n = arr.size();
+    out.resize(n);
+    for (size_t i = 0; i < n; ++i) out[i] = static_cast<uint32_t>(arr.get<int>(i));
+    return n > 0;
+}
+
+Mesh *newMeshFromArraysScript(Graphics *gfx, ssq::Array posArr, ssq::Array nrmArr,
+                              ssq::Array uvArr, int vertexCount, ssq::Array idxArr,
+                              int indexCount) {
+    std::vector<float>    pos, nrm, uv;
+    std::vector<uint32_t> idx;
+    copyArrayFloats(posArr, pos);
+    copyArrayFloats(nrmArr, nrm);
+    copyArrayFloats(uvArr, uv);
+    copyArrayUints(idxArr, idx);
+    return gfx->newMeshFromArrays(pos.data(), nrm.empty() ? nullptr : nrm.data(),
+                                  uv.empty() ? nullptr : uv.data(), vertexCount,
+                                  idx.empty() ? nullptr : idx.data(), indexCount);
+}
+
+bool updateMeshVerticesScript(Graphics *gfx, Mesh *mesh, ssq::Array posArr, ssq::Array nrmArr,
+                              ssq::Array uvArr, int vertexCount, ssq::Array idxArr,
+                              int indexCount) {
+    std::vector<float>    pos, nrm, uv;
+    std::vector<uint32_t> idx;
+    copyArrayFloats(posArr, pos);
+    copyArrayFloats(nrmArr, nrm);
+    copyArrayFloats(uvArr, uv);
+    copyArrayUints(idxArr, idx);
+    return gfx->updateMeshVertices(mesh, pos.data(), nrm.empty() ? nullptr : nrm.data(),
+                                   uv.empty() ? nullptr : uv.data(), vertexCount,
+                                   idx.empty() ? nullptr : idx.data(), indexCount);
+}
+
+}  // namespace
+
 Graphics::Graphics() {
     // The window module owns the native window; we own the render surface.
     // Register as its surface host so window never has to include graphics.
@@ -156,6 +202,8 @@ void Graphics::expose(ssq::Table& table) {
 
     auto meshCls = table.addClass<Mesh>("Mesh", std::function<Mesh*()>([]() -> Mesh* { return nullptr; }), true);
     meshCls.addFunc("getVertexCount", &Mesh::getVertexCount);
+    meshCls.addFunc("getIndexCount",
+                    std::function<int(Mesh *)>([](Mesh *mesh) { return mesh->indexCount; }));
     meshCls.addFunc("getMorphCount", &Mesh::getMorphCount);
     meshCls.addFunc("getMorphName", &Mesh::getMorphName);
     meshCls.addFunc("hasMorph", &Mesh::hasMorph);
@@ -643,6 +691,12 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
     cls.addFunc("newMeshCylinder", &Graphics::newMeshCylinder);
     cls.addFunc("newMeshCube", &Graphics::newMeshCube);
+    cls.addFunc("newMeshFromArrays",
+                std::function<Mesh *(Graphics *, ssq::Array, ssq::Array, ssq::Array, int,
+                                    ssq::Array, int)>(newMeshFromArraysScript));
+    cls.addFunc("updateMeshVertices",
+                std::function<bool(Graphics *, Mesh *, ssq::Array, ssq::Array, ssq::Array,
+                                   int, ssq::Array, int)>(updateMeshVerticesScript));
     cls.addFunc("bakeMeshMorph", &Graphics::bakeMeshMorph);
     cls.addFunc("newShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newShader));
     cls.addFunc("newMeshShader", static_cast<Shader* (Graphics::*)(const std::string&)>(&Graphics::newMeshShader));

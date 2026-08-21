@@ -437,7 +437,14 @@ private:
     vkb::BoundSet lit2dSetFor(GpuTexture *albedo, GpuTexture *normal, bool offscreen);
     vkb::BoundSet post2SetFor(GpuTexture *color, GpuTexture *depth);
     void          ensureFlatNormalTexture();
-    void          captureSwapchainImage(uint32_t imageIndex);
+    /** @brief Create/recreate the persistent swapchain-readback staging ring. */
+    void          ensureReadbackSlots();
+    /** @brief Record the swapchain->staging copy into the present command buffer. */
+    bool          recordSwapchainReadback(vk::CommandBuffer cb);
+    /** @brief Wait for the newest captured frame and convert it to RGBA (once). */
+    void          syncReadbackCpu();
+    /** @brief Release the readback staging ring (callers hold waitIdle). */
+    void          destroyReadbackResources();
     void          ensurePresentCaptureHook();
     vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex, GpuTexture *heightTex,
                                GpuTexture *depthTex, Mesh3dFrameSlots &fslots);
@@ -455,6 +462,20 @@ private:
     bool hasPresentedFrame = false;
     float maxSamplerAnisotropy = 1.f;
     std::vector<uint8_t> lastFrameRgba;
+    // Persistent host-visible staging buffers for swapchain readback. The copy
+    // is recorded into the present command buffer (no extra submit / no
+    // per-frame GPU wait), and each present frame slot owns one slot so a
+    // staging buffer is only reused after that slot's fence has signaled.
+    struct ScreenReadbackSlot {
+        vkb::GenericBuffer staging;
+        void *mapped = nullptr;
+    };
+    std::vector<ScreenReadbackSlot> screenReadbackSlots;
+    size_t screenReadbackBytes = 0;
+    size_t readbackWriteSlot = 0;
+    bool readbackReady = false;     // at least one copy submitted
+    bool readbackCpuSynced = false; // newest copy already converted to lastFrameRgba
+    bool readbackBgra = false;      // swapchain format of the newest captured frame
     Canvas *activeCanvas = nullptr;
     bool swapchainDirty = false;
     void markSwapchainDirty() override { swapchainDirty = true; }

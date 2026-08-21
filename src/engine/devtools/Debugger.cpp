@@ -2,6 +2,8 @@
 
 #include "devtools/RenderVision.hpp"
 
+#include "common/ScriptError.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -905,7 +907,12 @@ VariableInfo Debugger::evaluate(const std::string& expression, int frameLevel) c
     if (SQ_FAILED(sq_compilebuffer(vm, src.c_str(), static_cast<SQInteger>(src.size()),
                                    _SC("eval"), SQTrue))) {
         sq_settop(vm, top);
-        return evaluateLegacy(expression);
+        eve::script::ScriptErrorContext ctx = eve::script::captureCompileError(vm);
+        VariableInfo info;
+        info.name = expression;
+        info.type = "error";
+        info.value = ctx.empty() ? "compile error" : eve::script::formatScriptError(ctx);
+        return info;
     }
     // stack: [env, closure]
     sq_push(vm, -2);                 // [env, closure, env]
@@ -916,8 +923,9 @@ VariableInfo Debugger::evaluate(const std::string& expression, int frameLevel) c
     if (SQ_SUCCEEDED(sq_call(vm, 1, SQTrue, SQFalse))) {
         info = describeAt(vm, -1);
     } else {
+        eve::script::ScriptErrorContext ctx = eve::script::takeLastScriptError(vm);
         info.type  = "error";
-        info.value = "eval error";
+        info.value = ctx.empty() ? "eval error" : eve::script::formatScriptError(ctx);
     }
     sq_settop(vm, top);
     return info;
