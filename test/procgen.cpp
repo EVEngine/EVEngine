@@ -1823,7 +1823,6 @@ TEST_CASE("procgen.cloud.viaModule") {
     f->setWorldScale(64.f);
     f->setCoverage(0.5f);
     const float c0 = mod->cloudCoverageAt(f, 2.f, 3.f, 0.f);
-    const float c1 = mod->cloudCoverageAt(f, 2.f, 3.f, 4.f);
     CHECK(c0 >= 0.f);
     CHECK(c0 <= 1.f);
     CHECK(mod->cloudCoverageAt(nullptr, 0.f, 0.f, 0.f) == 0.f);

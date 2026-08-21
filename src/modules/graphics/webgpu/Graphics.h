@@ -99,6 +99,10 @@ struct GpuShader {
 
 class Graphics final : public eve::graphics::Graphics {
 public:
+    // Keep the base draw(Drawable*, mat4) overload visible alongside the
+    // canvas composite overloads below.
+    using eve::graphics::Graphics::draw;
+
     Graphics();
     ~Graphics() override;
 

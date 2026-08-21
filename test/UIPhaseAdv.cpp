@@ -476,7 +476,7 @@ TEST_CASE("UI.p1.comboAndTextWrap") {
         "W",
         {
             ui::combo("Fruit", {"Apple", "Banana", "Cherry"}, 1, "fruit",
-                      [&](int idx) { picked = idx; }),
+                      [&](float idx) { picked = static_cast<int>(idx); }),
             ui::text("long text", "tip").withWrap(120.f),
         },
         "root"));

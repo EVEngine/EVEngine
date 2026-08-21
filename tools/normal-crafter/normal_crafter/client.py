@@ -14,7 +14,7 @@ import io
 import os
 import tempfile
 import zipfile
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 import requests
 

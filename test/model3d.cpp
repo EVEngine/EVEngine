@@ -159,8 +159,8 @@ void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 640, int h
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
     eve::window::WindowSettings s;
-    s.width = w;
-    s.height = h;
+    s.width  = static_cast<uint16_t>(w);
+    s.height = static_cast<uint16_t>(h);
     s.centered = true;
     REQUIRE(win->setWindowSettings(s));
 }

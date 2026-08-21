@@ -316,11 +316,11 @@ public:
 
     // Event bridge: fromEvent(name) returns an Observable that forwards matching
     // messages pushed by pump() (fed from an eve::event::Event queue).
-    ObservableV* fromEvent(const std::string& name) {
+    ObservableV* fromEvent(const std::string& eventName) {
         auto subject = std::make_shared<SubjectV>();
         {
             std::lock_guard<std::mutex> lock(mu_);
-            bridges_[name] = subject;
+            bridges_[eventName] = subject;
         }
         // Return a fresh observable that subscribes to the shared subject. The
         // returned AnonymousObservable is owned by the script; the shared subject
@@ -334,7 +334,7 @@ public:
         if (!ev) return;
         event::Message* msg = nullptr;
         while ((msg = ev->poll()) != nullptr) {
-            std::string name = msg->name;
+            std::string eventName = msg->name;
             std::string data;
             for (const auto& a : msg->args) {
                 if (a.type == event::Variant::Type::String) {
@@ -346,7 +346,7 @@ public:
             std::shared_ptr<SubjectV> subject;
             {
                 std::lock_guard<std::mutex> lock(mu_);
-                auto it = bridges_.find(name);
+                auto it = bridges_.find(eventName);
                 if (it != bridges_.end()) subject = it->second;
             }
             if (subject) subject->onNext(Value::makeString(data));

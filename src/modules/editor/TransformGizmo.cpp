@@ -363,8 +363,8 @@ std::string TransformGizmo::pick(float ox, float oy, float oz, float dx, float d
         float c = glm::dot(oc, oc) - (size_ * 0.06f) * (size_ * 0.06f);
         float disc = b * b - c;
         if (disc >= 0.f) {
-            float t = -b - std::sqrt(disc);
-            if (t >= 0.f) consider("xyz", 0.f, t);
+            float tHit = -b - std::sqrt(disc);
+            if (tHit >= 0.f) consider("xyz", 0.f, tHit);
         }
     } else if (mode_ == "rotate") {
         float t;
@@ -384,8 +384,8 @@ std::string TransformGizmo::pick(float ox, float oy, float oz, float dx, float d
         float c = glm::dot(oc, oc) - rad * rad;
         float disc = b * b - c;
         if (disc >= 0.f) {
-            float t = -b - std::sqrt(disc);
-            if (t >= 0.f) consider("xyz", 0.f, t);
+            float tHit = -b - std::sqrt(disc);
+            if (tHit >= 0.f) consider("xyz", 0.f, tHit);
         }
     } else {
         for (int i = 0; i < static_cast<int>(parts_.size()); ++i) {

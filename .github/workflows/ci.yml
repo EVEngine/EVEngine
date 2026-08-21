@@ -120,6 +120,49 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/release.py check-versions
 
+  python-tools:
+    name: Python tools
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Install Python test dependencies
+        timeout-minutes: 10
+        run: |
+          python3 -m pip install --user --quiet \
+            pytest pydantic requests numpy opencv-python-headless pillow ffmpy ruff
+
+      - name: Ruff lint (scripts + tools)
+        timeout-minutes: 5
+        run: python3 -m ruff check scripts tools
+
+      - name: Test asset-pipeline-agent
+        timeout-minutes: 5
+        run: python3 -m unittest discover -s tools/asset-pipeline-agent/tests -v
+
+      - name: Test scene-qc-agent
+        timeout-minutes: 5
+        run: python3 -m unittest discover -s tools/scene-qc-agent/tests -v
+
+      - name: Test creative-brain
+        timeout-minutes: 5
+        run: cd tools/creative-brain && python3 -m pytest -q
+
+      - name: Test normal-crafter (client)
+        timeout-minutes: 5
+        run: cd tools/normal-crafter && python3 -m pytest -q test
+
+      - name: Test story-scene-agent
+        timeout-minutes: 5
+        run: PYTHONPATH=tools/creative-brain python3 -m pytest -q tools/story-scene-agent/tests
+
+      - name: Test vision-prefilter
+        timeout-minutes: 5
+        run: cd tools/vision-prefilter && python3 -m pytest -q test
+
   windows:
     name: Windows
     if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
@@ -163,7 +206,7 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"
+        run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
 
       - name: Run win32 unit tests
         timeout-minutes: 30
@@ -593,7 +636,7 @@ jobs:
         timeout-minutes: 40
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-debug JOBS="$(nproc)"
+        run: make build/linux-debug JOBS="$(nproc)" CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
 
       - name: Run linux unit tests
         timeout-minutes: 30
@@ -681,6 +724,156 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: xvfb-run -a make test/linux
+
+  linux-asan:
+    name: Linux (ASan+UBSan)
+    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install system packages
+        timeout-minutes: 10
+        run: |
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
+            xvfb
+
+      - name: Install Vulkan SDK
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Build linux debug (ASan+UBSan)
+        timeout-minutes: 40
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make build/linux-asan JOBS="$(nproc)"
+
+      - name: Run linux unit tests (ASan+UBSan)
+        timeout-minutes: 30
+        env:
+          ALSOFT_DRIVERS: "null"
+          ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1"
+          UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
+        run: |
+          xvfb-run -a make test/linux-asan
+
+  linux-coverage:
+    name: Linux (Coverage)
+    # Coverage is a trend signal rather than a per-PR gate; run weekly and on
+    # demand so it does not double CI minutes for every push.
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          submodules: recursive
+
+      - name: Install system packages
+        timeout-minutes: 10
+        run: |
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
+            xvfb gcovr
+
+      - name: Install Vulkan SDK
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Build linux debug (coverage)
+        timeout-minutes: 40
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make build/linux-coverage JOBS="$(nproc)"
+
+      - name: Run linux unit tests (coverage)
+        timeout-minutes: 30
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          xvfb-run -a make test/linux-coverage
+
+      - name: Generate coverage report
+        timeout-minutes: 10
+        run: |
+          gcovr -r . --object-directory build/linux-coverage \
+            --exclude 'build/' --exclude 'external/' --exclude 'test/' \
+            -x build/linux-coverage/coverage.xml
+          gcovr -r . --object-directory build/linux-coverage \
+            --exclude 'build/' --exclude 'external/' --exclude 'test/' \
+            --html --html-details -o build/linux-coverage/coverage.html
+
+      - name: Upload coverage artifact
+        timeout-minutes: 5
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-coverage
+          path: |
+            build/linux-coverage/coverage.xml
+            build/linux-coverage/coverage.html
 
   webgpu:
     name: WebGPU (WASM)

@@ -259,7 +259,8 @@ StateValue varToState(const Poco::Dynamic::Var& var) {
             StateValue             arr = StateValue::array();
             Poco::JSON::Array::Ptr a   = var.extract<Poco::JSON::Array::Ptr>();
             if (a)
-                for (size_t i = 0; i < a->size(); ++i) arr.pushBack(varToState(a->get(i)));
+                for (size_t i = 0; i < a->size(); ++i)
+                    arr.pushBack(varToState(a->get(static_cast<unsigned int>(i))));
             return arr;
         }
     } catch (const Poco::BadCastException&) {

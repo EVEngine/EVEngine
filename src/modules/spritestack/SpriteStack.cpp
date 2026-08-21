@@ -361,7 +361,7 @@ std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *model,
                 const aiVector3D &n = am->mNormals[v];
                 nrm.insert(nrm.end(), {n.x, n.y, n.z});
             }
-            if (am->mColors && am->mColors[0]) {
+            if (am->mColors[0] != nullptr) {
                 const aiColor4D &c = am->mColors[0][v];
                 rgb.insert(rgb.end(), {c.r, c.g, c.b});
             }

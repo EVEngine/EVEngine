@@ -21,17 +21,6 @@
 namespace eve::dev {
 namespace {
 
-constexpr float kPi = 3.14159265358979323846f;
-
-float degToRad(float d) { return d * kPi / 180.f; }
-
-/** Poco::Dynamic::Var -> compact JSON string. */
-std::string mcpStringify(const Poco::Dynamic::Var& v) {
-    std::ostringstream oss;
-    Poco::JSON::Stringifier::stringify(v, oss, 0, 0);
-    return oss.str();
-}
-
 std::string writeTextFile(const std::string& path, const std::string& text) {
     const std::filesystem::path p(path);
     std::error_code             ec;

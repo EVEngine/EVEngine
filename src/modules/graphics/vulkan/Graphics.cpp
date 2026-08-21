@@ -180,7 +180,7 @@ void Graphics::initWithWindow(void *nativeWindow) {
         std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
     }
 #endif
-    for (auto *name : extNames) builder.enable_extension(name);
+    for (auto *extName : extNames) builder.enable_extension(extName);
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
     // SDL already supplies surface extensions; avoid duplicating them via
     // InstanceBuilder's non-headless window path, and enable MoltenVK portability.

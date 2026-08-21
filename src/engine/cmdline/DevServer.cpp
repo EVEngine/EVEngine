@@ -319,7 +319,7 @@ int Cmdline::DevServer(std::string path, int port) {
     }
 
     DevFileServer server;
-    if (!server.start(port, path.empty() ? std::string(".") : path)) {
+    if (!server.start(static_cast<uint16_t>(port), path.empty() ? std::string(".") : path)) {
         cerr << "eve dev: cannot bind port " << port << endl;
         return 2;
     }

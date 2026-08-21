@@ -907,6 +907,8 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Image: return "image";
     case NodeType::ImageButton: return "imageButton";
     case NodeType::Combo: return "combo";
+    case NodeType::ScrollList: return "scrollList";
+    case NodeType::Viewport: return "viewport";
     }
     return "text";
 }
@@ -928,6 +930,8 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "image") return NodeType::Image;
     if (s == "imageButton") return NodeType::ImageButton;
     if (s == "combo") return NodeType::Combo;
+    if (s == "scrollList") return NodeType::ScrollList;
+    if (s == "viewport") return NodeType::Viewport;
     return NodeType::Text;
 }
 
@@ -1082,7 +1086,8 @@ WidgetDesc descFromJson(const Poco::JSON::Object &o) {
     if (o.has("children")) {
         const Poco::JSON::Array::Ptr children = o.getArray("children");
         for (size_t i = 0; i < children->size(); ++i) {
-            const Poco::JSON::Object::Ptr child = children->getObject(i);
+            const Poco::JSON::Object::Ptr child =
+                children->getObject(static_cast<unsigned int>(i));
             if (child) d.children.push_back(descFromJson(*child));
         }
     }

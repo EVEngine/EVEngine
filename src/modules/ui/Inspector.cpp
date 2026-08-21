@@ -297,10 +297,11 @@ WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
             const auto it = std::find(options.begin(), options.end(), current);
             if (it != options.end()) index = int(it - options.begin());
             return combo(label, options, index, id,
-                         [this, name = member.name, kind = value.kind, options](int i) {
+                         [this, name = member.name, kind = value.kind, options](float i) {
+                             const int idx = static_cast<int>(i);
                              ReflectedValue out;
-                             if (i < 0 || i >= int(options.size())) return;
-                             const std::string& option = options[size_t(i)];
+                             if (idx < 0 || idx >= int(options.size())) return;
+                             const std::string& option = options[size_t(idx)];
                              if (kind == ReflectedValueKind::Integer) {
                                  out.kind = ReflectedValueKind::Integer;
                                  out.integer = std::strtoll(option.c_str(), nullptr, 10);
@@ -344,12 +345,7 @@ WidgetDesc Inspector::propertyWidget(const std::string& ownerClass,
                                   openNested(nestedClass, nested);
                               });
             }
-            std::string shown;
-            switch (value.kind) {
-                default:
-                    shown = "null";
-                    break;
-            }
+            std::string shown = "null";
             return text(member.name + " = " + shown, id);
         }
     }
@@ -520,9 +516,10 @@ WidgetDesc Inspector::build() {
             text("Class", "lbl_class"),
             spacer("class_spacer"),
             combo("##class", classNames_, currentClassIndex(), "class",
-                  [this](int index) {
-                      if (index >= 0 && index < int(classNames_.size()))
-                          selectClass(classNames_[size_t(index)]);
+                  [this](float index) {
+                      const int idx = static_cast<int>(index);
+                      if (idx >= 0 && idx < int(classNames_.size()))
+                          selectClass(classNames_[size_t(idx)]);
                   }),
         };
         if (pickScene_) {
@@ -552,7 +549,7 @@ WidgetDesc Inspector::build() {
                 text("Instance", "lbl_instance"),
                 spacer("instance_spacer"),
                 combo("##instance", labels, selectedInstance_, "instance",
-                      [this](int index) { selectInstance(index); }),
+                      [this](float index) { selectInstance(static_cast<int>(index)); }),
                 button("+", "add_instance", [this]() { addInstance(); }),
             },
             "instancerow"));

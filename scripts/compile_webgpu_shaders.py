@@ -20,7 +20,6 @@ Environment overrides: EVENGINE_GLSLC, EVENGINE_TINT.
 
 import argparse
 import os
-import re
 import shutil
 import struct
 import subprocess

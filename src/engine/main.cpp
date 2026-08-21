@@ -31,18 +31,6 @@ namespace {
 const auto gEveStaticInitStart = std::chrono::steady_clock::now();
 }  // namespace
 
-static string get_remaining(CLI::App* sub, string default_path = ".") {
-    auto paths = sub->remaining();
-    if (paths.size() > 1) {
-        cerr << rang::fg::red << "Unknown remaining arguments: " << rang::fg::reset << paths[1] << endl;
-        exit(1);
-    }
-    if (paths.size() == 0) {
-        return default_path;
-    }
-    return paths[0];
-}
-
 class MyFormatter : public CLI::Formatter {
 public:
     std::string make_usage(const CLI::App *app, std::string name) const override {

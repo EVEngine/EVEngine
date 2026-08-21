@@ -2,6 +2,7 @@
 
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
+#include "animation/AnimSkeleton.h"
 
 #include "common/AssetReloader.h"
 #include "common/Capability.h"

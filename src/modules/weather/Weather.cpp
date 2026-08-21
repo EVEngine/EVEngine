@@ -173,7 +173,6 @@ graphics::Mesh *buildBoltMesh(graphics::Graphics *gfx, Lcg &rng, Pt top, Pt grou
     branch.push_back(pts[bStart]);
     Pt bp = pts[bStart];
     for (int i = 1; i <= 8; ++i) {
-        float f = float(i) / 8.f;
         bp.x += rng.range(-0.5f, 0.5f);
         bp.y -= (pts[bStart].y - ground.y) * 0.12f;
         bp.z += rng.range(-0.5f, 0.5f);

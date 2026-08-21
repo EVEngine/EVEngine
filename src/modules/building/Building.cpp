@@ -109,16 +109,16 @@ PlacementSession *Building::newSession() {
     return new PlacementSession();
 }
 
-bool Building::hasValidateRule(const std::string &name) {
-    return PlacementSystem::hasValidateRule(name);
+bool Building::hasValidateRule(const std::string &ruleName) {
+    return PlacementSystem::hasValidateRule(ruleName);
 }
 
-bool Building::hasSnapRule(const std::string &name) {
-    return PlacementSystem::hasSnapRule(name);
+bool Building::hasSnapRule(const std::string &ruleName) {
+    return PlacementSystem::hasSnapRule(ruleName);
 }
 
-bool Building::hasSurface(const std::string &name) {
-    return PlacementSystem::hasSurface(name);
+bool Building::hasSurface(const std::string &surfaceName) {
+    return PlacementSystem::hasSurface(surfaceName);
 }
 
 int Building::getSurfaceCount() {
