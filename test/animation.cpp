@@ -331,6 +331,63 @@ TEST_CASE("animation.stateMachine.triggerAndExitTime") {
     CHECK(sm->getCurrentState() == "Idle");
 }
 
+TEST_CASE("animation.stateMachine.captureRestoreRoundtrip") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip>     idle(makeLocomotionClip("idle", 0.f, 1.f));
+    std::unique_ptr<AnimClip>     walk(makeLocomotionClip("walk", 1.f, 1.f));
+
+    std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(sk.get()));
+    sm->addState("Idle", idle.get());
+    sm->addState("Walk", walk.get());
+    sm->setEntry("Idle");
+    sm->setFloat("speed", 2.5f);
+    sm->setBool("grounded", true);
+    sm->setTrigger("jump");
+    sm->update(0.25f);  // advance stateTime a bit
+
+    eve::StateValue captured;
+    REQUIRE(sm->captureState(captured));
+
+    // Mutate everything, then restore.
+    sm->setFloat("speed", 0.f);
+    sm->setBool("grounded", false);
+    sm->resetTrigger("jump");
+    sm->setEntry("Walk");
+
+    std::string err;
+    CHECK(sm->restoreState(captured, &err));
+    CHECK(err.empty());
+    CHECK(sm->getCurrentState() == "Idle");
+    CHECK(sm->getFloat("speed") == 2.5f);
+    CHECK(sm->getBool("grounded"));
+    CHECK(sm->getTrigger("jump"));
+    CHECK(sm->getStateTime() > 0.1f);
+}
+
+TEST_CASE("animation.stateMachine.restoreUnknownStateFallsBackToEntry") {
+    std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
+    std::unique_ptr<AnimClip>     idle(makeLocomotionClip("idle", 0.f, 1.f));
+    std::unique_ptr<AnimClip>     walk(makeLocomotionClip("walk", 1.f, 1.f));
+
+    std::unique_ptr<AnimStateMachine> src(new AnimStateMachine(sk.get()));
+    src->addState("Idle", idle.get());
+    src->setEntry("Idle");
+
+    std::unique_ptr<AnimStateMachine> dst(new AnimStateMachine(sk.get()));
+    dst->addState("Walk", walk.get());
+    dst->setEntry("Walk");
+
+    eve::StateValue captured;
+    REQUIRE(src->captureState(captured));
+    std::string err;
+    CHECK(!dst->restoreState(captured, &err));  // "Idle" is not defined in dst
+    CHECK(!err.empty());
+
+    dst->resetToDefaults();
+    CHECK(dst->getCurrentState() == "Walk");
+    CHECK(!dst->isBlending());
+}
+
 TEST_CASE("animation.motionMatching.selectsFasterClip") {
     std::unique_ptr<AnimSkeleton> sk(makeTwoBoneSkeleton());
     std::unique_ptr<AnimClip> walk(makeLocomotionClip("walk", 1.f, 1.f));

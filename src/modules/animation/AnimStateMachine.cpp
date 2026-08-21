@@ -2,11 +2,65 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
 
+#include "common/Capability.h"
 #include "common/Exception.h"
+#include "common/IStateProvider.h"
 
+#include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace eve::animation {
+namespace {
+
+std::vector<AnimStateMachine*>& machines() {
+    static std::vector<AnimStateMachine*> instances;
+    return instances;
+}
+
+double stateNumber(const StateValue& v) { return v.isInt() ? static_cast<double>(v.asInt()) : v.asDouble(); }
+
+/** @brief IStateProvider over every live AnimStateMachine (module registry). */
+class AnimStateProvider : public eve::caps::IStateProvider {
+public:
+    const char* stateKind() const override { return "anim"; }
+
+    bool captureState(StateValue& out) override {
+        StateValue arr = StateValue::array();
+        for (AnimStateMachine* m : machines()) {
+            StateValue sv;
+            if (m->captureState(sv)) arr.pushBack(std::move(sv));
+        }
+        out = std::move(arr);
+        return true;
+    }
+
+    bool restoreState(const StateValue& in, std::string* err) override {
+        if (!in.isArray()) {
+            if (err) *err = "anim: expected array of state machines";
+            return false;
+        }
+        const size_t n = std::min(in.arraySize(), machines().size());
+        for (size_t i = 0; i < n; ++i) {
+            if (!machines()[i]->restoreState(in.at(i), err)) return false;
+        }
+        return true;
+    }
+
+    bool resetToDefaults() override {
+        for (AnimStateMachine* m : machines()) m->resetToDefaults();
+        return true;
+    }
+};
+
+struct Register {
+    Register() {
+        static AnimStateProvider provider;
+        eve::cap::addListener<eve::caps::IStateProvider>(&provider);
+    }
+} g_register;
+
+}  // namespace
 
 AnimStateMachine::AnimStateMachine(AnimSkeleton *skeleton) : skeleton_(skeleton) {
     if (!skeleton_) throw Exception("AnimStateMachine: skeleton is null");
@@ -14,6 +68,11 @@ AnimStateMachine::AnimStateMachine(AnimSkeleton *skeleton) : skeleton_(skeleton)
     fromPose_.resize(skeleton_->getBoneCount());
     toPose_.resize(skeleton_->getBoneCount());
     skeleton_->applyBindPose(&pose_);
+    machines().push_back(this);
+}
+
+AnimStateMachine::~AnimStateMachine() {
+    machines().erase(std::remove(machines().begin(), machines().end(), this), machines().end());
 }
 
 void AnimStateMachine::requireState(const std::string &name) const {
@@ -239,6 +298,106 @@ void AnimStateMachine::update(float dt) {
     const State &st = states_.at(currentState_);
     st.clip->sample(stateTime_, &pose_, skeleton_);
     tryTransition();
+}
+
+bool AnimStateMachine::captureState(StateValue& out) const {
+    out = StateValue::object();
+    out.set("currentState", StateValue::string(currentState_));
+    out.set("nextState", StateValue::string(nextState_));
+    out.set("stateTime", StateValue::number(stateTime_));
+    out.set("blendDuration", StateValue::number(blendDuration_));
+    out.set("blendElapsed", StateValue::number(blendElapsed_));
+    out.set("blending", StateValue::boolean(blending_));
+    out.set("started", StateValue::boolean(started_));
+
+    StateValue floats = StateValue::object();
+    for (const auto& kv : floats_) floats.set(kv.first, StateValue::number(kv.second));
+    out.set("floats", std::move(floats));
+
+    StateValue bools = StateValue::object();
+    for (const auto& kv : bools_) bools.set(kv.first, StateValue::boolean(kv.second));
+    out.set("bools", std::move(bools));
+
+    StateValue triggers = StateValue::object();
+    for (const auto& kv : triggers_) triggers.set(kv.first, StateValue::boolean(kv.second));
+    out.set("triggers", std::move(triggers));
+    return true;
+}
+
+bool AnimStateMachine::restoreState(const StateValue& in, std::string* err) {
+    if (!in.isObject()) {
+        if (err) *err = "anim: state is not an object";
+        return false;
+    }
+    const StateValue* current = in.find("currentState");
+    const StateValue* started = in.find("started");
+    if (!current || !current->isString() || !started || !started->isBool()) {
+        if (err) *err = "anim: missing currentState/started";
+        return false;
+    }
+    const std::string stateName  = current->asString();
+    const bool        wasStarted = started->asBool();
+    if (wasStarted && !stateName.empty() && !hasState(stateName)) {
+        if (err) *err = "anim: unknown state '" + stateName + "'";
+        return false;
+    }
+
+    floats_.clear();
+    bools_.clear();
+    triggers_.clear();
+
+    if (const StateValue* floats = in.find("floats"); floats && floats->isObject()) {
+        for (const auto& key : floats->keys()) {
+            const StateValue* v = floats->find(key);
+            if (v && (v->isInt() || v->isFloat())) floats_[key] = static_cast<float>(stateNumber(*v));
+        }
+    }
+    if (const StateValue* bools = in.find("bools"); bools && bools->isObject()) {
+        for (const auto& key : bools->keys()) {
+            const StateValue* v = bools->find(key);
+            if (v && v->isBool()) bools_[key] = v->asBool();
+        }
+    }
+    if (const StateValue* triggers = in.find("triggers"); triggers && triggers->isObject()) {
+        for (const auto& key : triggers->keys()) {
+            const StateValue* v = triggers->find(key);
+            if (v && v->isBool()) triggers_[key] = v->asBool();
+        }
+    }
+
+    currentState_ = stateName;
+    if (const StateValue* ns = in.find("nextState"); ns && ns->isString()) nextState_ = ns->asString();
+    if (const StateValue* st = in.find("stateTime"); st && (st->isInt() || st->isFloat()))
+        stateTime_ = static_cast<float>(stateNumber(*st));
+    if (const StateValue* bd = in.find("blendDuration"); bd && (bd->isInt() || bd->isFloat()))
+        blendDuration_ = static_cast<float>(stateNumber(*bd));
+    if (const StateValue* be = in.find("blendElapsed"); be && (be->isInt() || be->isFloat()))
+        blendElapsed_ = static_cast<float>(stateNumber(*be));
+    if (const StateValue* bl = in.find("blending"); bl && bl->isBool()) blending_ = bl->asBool();
+    started_ = wasStarted;
+
+    if (started_ && !currentState_.empty()) {
+        states_.at(currentState_).clip->sample(stateTime_, &pose_, skeleton_);
+    }
+    return true;
+}
+
+bool AnimStateMachine::resetToDefaults() {
+    floats_.clear();
+    bools_.clear();
+    triggers_.clear();
+    blending_ = false;
+    nextState_.clear();
+    stateTime_     = 0.f;
+    blendDuration_ = 0.f;
+    blendElapsed_  = 0.f;
+    if (!stateOrder_.empty()) {
+        setEntry(stateOrder_.front());
+        return true;
+    }
+    started_ = false;
+    currentState_.clear();
+    return true;
 }
 
 }  // namespace eve::animation

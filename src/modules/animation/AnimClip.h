@@ -17,7 +17,7 @@ class AnimSkeleton;
 class AnimClip {
 public:
     explicit AnimClip(std::string name = "");
-    ~AnimClip() = default;
+    ~AnimClip();
 
     AnimClip(const AnimClip &)            = delete;
     AnimClip &operator=(const AnimClip &) = delete;
@@ -74,6 +74,14 @@ public:
 
     /** @brief Wrap or clamp time according to loop flag. */
     float wrapTime(float time) const;
+
+    /**
+     * @brief Replace this clip's content with `other`'s (payload moved, not
+     *        copied). Used by hot reload so registered clip instances keep
+     *        their identity while their content is refreshed. `other` is left
+     *        drained and is destroyed by the caller.
+     */
+    void adopt(AnimClip& other);
 
 private:
     struct Vec3Key {
