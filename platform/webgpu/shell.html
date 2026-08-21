@@ -212,7 +212,7 @@
       var engineReady = false;
       var PG_KEY = 'eve.playground.main.nut';
       var EXAMPLES = [
-        { path: 'main.nut', label: '3D 旋转球体（默认）' },
+        { path: 'playground/demos/3d_sphere.nut', label: '3D 旋转球体（默认）' },
         { path: 'playground/demos/2d_sprites.nut', label: '2D 精灵 + 键盘' },
         { path: 'playground/demos/3d_textured.nut', label: '3D 纹理立方体' },
         { path: 'playground/demos/hot_state.nut', label: '热更新状态演示' }
@@ -389,12 +389,18 @@
       var pendingDemoPath = null;
       function applyNow() {
         if (!engineReady) return;
-        if (pendingDemoPath && pendingDemoPath !== appliedDemoPath) {
+        var isSwitch = pendingDemoPath && pendingDemoPath !== appliedDemoPath;
+        if (isSwitch) {
           pgReset();
           appliedDemoPath = pendingDemoPath;
         }
         saveLocal();
         pgApply(ta.value);
+        if (isSwitch) {
+          // 热重载只替换脚本、不会自动调用 eve_init；切换 demo 后需要重建场景。
+          var r = pgEval('if ("eve_init" in getroottable()) { eve_init(); "demo applied"; } else "no eve_init"');
+          pgLog('sys', '[playground] ' + r);
+        }
         setSave('已应用 ' + timeStr());
       }
       function restartNow() {
@@ -484,7 +490,9 @@
       function engineUp() {
         if (engineReady) return;
         engineReady = true;
-        appliedDemoPath = 'main.nut';  // 启动时默认运行 /game/main.nut
+        // 启动时运行的 /game/main.nut 与“3D 旋转球体（默认）”demo 内容一致，
+        // 所以默认球体选项不视为一次“切换”，避免首次应用就重置场景。
+        appliedDemoPath = 'playground/demos/3d_sphere.nut';
         var veil = document.querySelector('#stagePane .veil');
         if (veil) veil.style.display = 'none';
         $('stEngine').textContent = 'engine: 已就绪';
