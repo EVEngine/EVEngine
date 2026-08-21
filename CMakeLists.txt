@@ -174,6 +174,20 @@ function(main)
     endif()
     eve_resolve_modules()
 
+    # zeroerr's --file=/--testcase-exclude=/--file-exclude= parsing compares
+    # fixed-length prefixes that exclude the '=', so "--file=..." never
+    # matched (off-by-one in the vendored submodule). Patch it at configure
+    # time so the iOS test app's per-file filter (-evengine.test.file) works;
+    # reuses the idempotent third-party patch wrapper.
+    execute_process(COMMAND ${CMAKE_COMMAND}
+        -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/zeroerr-file-filter.patch
+        -DPATCH_DIR=${CMAKE_SOURCE_DIR}/external/zeroerr
+        -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake
+        RESULT_VARIABLE _eve_zeroerr_patch_result)
+    if(NOT _eve_zeroerr_patch_result EQUAL 0)
+        message(FATAL_ERROR "Failed to apply zeroerr file-filter patch")
+    endif()
+
     add_subdirectory(external/zeroerr)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
