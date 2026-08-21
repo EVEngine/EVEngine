@@ -147,6 +147,13 @@ file(GLOB all_test_cpp
   main.cpp
 )
 
+# Auto-discover newly added test files (CONFIGURE_DEPENDS re-globs at build
+# time), so a new test/*.cpp is picked up without editing this list. demo.cpp
+# stays gated on EVENGINE_BUILD_DEMO below.
+file(GLOB _eve_extra_test_cpp CONFIGURE_DEPENDS *.cpp)
+list(REMOVE_ITEM _eve_extra_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
+list(APPEND all_test_cpp ${_eve_extra_test_cpp})
+
 if(EVENGINE_BUILD_DEMO)
   list(APPEND all_test_cpp demo.cpp)
 endif()

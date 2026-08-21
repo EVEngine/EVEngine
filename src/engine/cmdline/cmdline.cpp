@@ -1,5 +1,6 @@
 #include "cmdline/cmdline.h"
 #include "common/config.h"
+#include "common/Version.h"
 
 #include <CLI11.hpp>
 #include <iostream>
@@ -69,7 +70,7 @@ int Cmdline::runArgs(unsigned argc, char** argv) {
             break;
         }
     }
-    if (version) cout << EVENGINE_VERSION << endl;
+    if (version) cout << eve::buildInfo() << endl;
 
     for (auto* h : handles) delete h;
     return res;

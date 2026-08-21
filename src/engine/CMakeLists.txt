@@ -14,6 +14,7 @@ create_module(EVCmdLine cmdline)
 target_compile_definitions(EVCmdLine PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
 
 set(EVENGINE_IOS_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum iOS/iPadOS deployment target")
 
@@ -111,6 +112,17 @@ if(WIN32 AND TARGET ${EVENGINE_NATIVE_TARGET})
     # classes. Export every symbol from eve.exe so eve.lib satisfies plugins.
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
+# Copy the generated build metadata to the build root after every link so
+# `build/<plat>/build-info.txt` records exactly which engine git commit and
+# third-party version this build corresponds to (same data as `eve --version`).
+if(TARGET ${EVENGINE_NATIVE_TARGET})
+    add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_BINARY_DIR}/common/BuildInfo.h
+            ${CMAKE_BINARY_DIR}/build-info.txt
+        VERBATIM)
 endif()
 
 if(NOT EVENGINE_ANDROID_TEST_APP)
