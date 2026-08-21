@@ -421,7 +421,11 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
         let irr2 = textureSampleLevel(envSampler, mainSamp, n, 5.0).rgb * envIntensity;
         color += albedo * irr2 * (1.0 - metallic) * (1.0 - f) * 0.45;
     }
-    color = color / (color + vec3f(1.0));
+    // Match the Vulkan tonemap.glsl: keep values below `white` linear so dim
+    // scenes stay readable, compress only the HDR remainder into (white, 1].
+    let white = 0.85;
+    let over = max(color - vec3f(white), vec3f(0.0));
+    color = min(color, vec3f(white)) + vec3f(1.0 - white) * (over / (over + vec3f(1.0)));
     // The scene texture's alpha would otherwise carry linear depth, which the
     // swapchain compositor blends as transparency (making the mesh nearly
     // invisible). Output opaque.
