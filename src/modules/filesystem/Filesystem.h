@@ -79,6 +79,8 @@ public:
     /**
      * @brief Sets the path to the game source.
      * This can only be set once.
+     * @return True on success; false when the source was already set or the
+     *         path does not exist (no exception is thrown for these).
      * @param source Path to a directory or a .love-file.
      **/
     virtual bool setSource(std::string source) = 0;
@@ -99,6 +101,11 @@ public:
      **/
     virtual std::string getSource() const = 0;
 
+    /**
+     * @brief Mounts an archive (path or in-memory Data) at a virtual mountpoint.
+     * @return True on success; false when the archive is missing or invalid
+     *         (no exception is thrown for these — check the return value).
+     **/
     virtual bool mount(std::string archive, std::string mountpoint, bool appendToPath = false)                 = 0;
     virtual bool mount(Data *data, std::string archivename, std::string mountpoint, bool appendToPath = false) = 0;
 
@@ -115,7 +122,9 @@ public:
     /** Unmounts a directory previously added via mountRealDirectory(). */
     virtual bool unmountRealDirectory(std::string realDir) = 0;
 
+    /** @brief Unmounts a previously mounted archive. @return True when unmounted. */
     virtual bool unmount(std::string archive) = 0;
+    /** @brief Unmounts a previously mounted in-memory archive. @return True when unmounted. */
     virtual bool unmount(Data *data)          = 0;
 
     /**

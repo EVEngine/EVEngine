@@ -48,7 +48,8 @@ TEST_CASE("graphics.headless.initCanvasDrawAndErrors") {
 
     gfx->setCanvas(rt);
     gfx->clear(Color(0.f, 0.f, 0.f, 1.f), std::nullopt, std::nullopt);
-    gfx->drawSolidRect(8.f, 8.f, 32.f, 32.f, Color(1.f, 0.f, 0.f, 1.f));
+    // RGBA-float overload matches the script-facing drawSolidRect name.
+    gfx->drawSolidRect(8.f, 8.f, 32.f, 32.f, 1.f, 0.f, 0.f, 1.f);
     gfx->setCanvas();
 
     std::unique_ptr<eve::image::ImageData> img(rt->newImageData());
@@ -80,7 +81,8 @@ TEST_CASE("graphics.headless.initCanvasDrawAndErrors") {
     const uint8_t white[4] = {255, 255, 255, 255};
     Texture *tex = gfx->newTexture(1, 1, white);
     REQUIRE(tex != nullptr);
-    gfx->drawTexturedRect(tex, 0.f, 0.f, 16.f, 16.f, Color(1.f, 1.f, 1.f, 1.f));
+    // RGBA-float overload matches the script-facing drawTexturedRect name.
+    gfx->drawTexturedRect(tex, 0.f, 0.f, 16.f, 16.f, 1.f, 1.f, 1.f, 1.f);
     gfx->present();
     gfx->clearScreen();
 }

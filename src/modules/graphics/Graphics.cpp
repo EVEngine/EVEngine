@@ -686,7 +686,9 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newTextureFromFile", &Graphics::newTextureFromFile);
     cls.addFunc("newTextureFromFileRepeated", &Graphics::newTextureFromFileRepeated);
     cls.addFunc("newTextureWithSampler", &Graphics::newTextureWithSampler);
-    cls.addFunc("setTextureSampler", &Graphics::setTextureSamplerParams);
+    cls.addFunc("setTextureSampler",
+                static_cast<void (Graphics::*)(Texture *, const std::string &, const std::string &, float, float)>(
+                    &Graphics::setTextureSampler));
     cls.addFunc("getMaxAnisotropy", &Graphics::getMaxAnisotropy);
     cls.addFunc("newMeshSphere", &Graphics::newMeshSphere);
     cls.addFunc("newMeshCylinder", &Graphics::newMeshCylinder);
@@ -881,6 +883,15 @@ void Graphics::drawTexturedRectRGBA(Texture* texture, float x, float y, float w,
     drawTexturedRect(texture, x, y, w, h, Color(r, g, b, a));
 }
 
+void Graphics::drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a) {
+    drawSolidRectRGBA(x, y, w, h, r, g, b, a);
+}
+
+void Graphics::drawTexturedRect(Texture* texture, float x, float y, float w, float h, float r, float g, float b,
+                                float a) {
+    drawTexturedRectRGBA(texture, x, y, w, h, r, g, b, a);
+}
+
 Texture* Graphics::newTextureFromImageData(image::ImageData* data, bool repeatU, bool repeatV) {
     if (!data) throw eve::Exception("newTextureFromImageData: null ImageData");
     if (data->getFormat() != "RGBA8") throw eve::Exception("newTextureFromImageData: only RGBA8 supported");
@@ -922,9 +933,19 @@ Texture* Graphics::newTextureWithSampler(image::ImageData* data, bool repeatU, b
     return newTextureFromImageData(data, info);
 }
 
-void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filter, const std::string& mipmap,
-                                       float maxAnisotropy, float lodBias) {
+void Graphics::setTextureSampler(Texture* texture, const std::string& filter, const std::string& mipmap,
+                                 float maxAnisotropy, float lodBias) {
     if (!texture) return;
+    // Fail fast on typos instead of silently treating an unknown filter as linear.
+    if (filter != "nearest" && filter != "Nearest" && filter != "NEAREST" &&
+        filter != "linear" && filter != "Linear" && filter != "LINEAR") {
+        throw eve::Exception("Graphics::setTextureSampler: unknown filter '%s'", filter.c_str());
+    }
+    if (mipmap != "none" && mipmap != "None" && mipmap != "NONE" &&
+        mipmap != "nearest" && mipmap != "Nearest" && mipmap != "NEAREST" &&
+        mipmap != "linear" && mipmap != "Linear" && mipmap != "LINEAR") {
+        throw eve::Exception("Graphics::setTextureSampler: unknown mipmap mode '%s'", mipmap.c_str());
+    }
     TextureSampler s = texture->getSampler();
     s.min            = TextureSampler::parseFilter(filter);
     s.mag            = s.min;
@@ -932,6 +953,11 @@ void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filt
     s.maxAnisotropy  = maxAnisotropy;
     s.lodBias        = lodBias;
     setTextureSampler(texture, s);
+}
+
+void Graphics::setTextureSamplerParams(Texture* texture, const std::string& filter, const std::string& mipmap,
+                                       float maxAnisotropy, float lodBias) {
+    setTextureSampler(texture, filter, mipmap, maxAnisotropy, lodBias);
 }
 
 Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
