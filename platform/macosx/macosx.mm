@@ -5,6 +5,7 @@
 
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
+#include <unistd.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -58,6 +59,41 @@ std::string getExecutablePath() {
         return std::string(resolved);
 
     return std::string(buffer.data());
+}
+
+std::string bootstrapBundledVulkan() {
+    const std::string exe = getExecutablePath();
+    if (exe.empty())
+        return {};
+
+    const auto slash = exe.find_last_of('/');
+    if (slash == std::string::npos)
+        return {};
+    const std::string exeDir = exe.substr(0, slash);
+
+    // Packaged EVEngine distributions ship the loader + MoltenVK next to the
+    // executable: ../lib in the flat SDK layout (dist/eve-sdk/macosx), or
+    // ../Frameworks inside an .app bundle.
+    const std::string dir = [&]() -> std::string {
+        for (const char *rel : {"../lib", "../Frameworks"}) {
+            const std::string candidate = exeDir + "/" + rel;
+            if (::access((candidate + "/libvulkan.1.dylib").c_str(), R_OK) == 0)
+                return candidate;
+        }
+        return {};
+    }();
+    if (dir.empty())
+        return {};
+
+    // Make the bundled loader discover the bundled MoltenVK. The manifest's
+    // library_path is relative to the manifest directory, so pointing
+    // VK_ICD_FILENAMES at <dir>/MoltenVK_icd.json is enough. Respect an
+    // explicit user override.
+    const std::string icd = dir + "/MoltenVK_icd.json";
+    if (::access(icd.c_str(), R_OK) == 0 && ::getenv("VK_ICD_FILENAMES") == nullptr)
+        ::setenv("VK_ICD_FILENAMES", icd.c_str(), 1);
+
+    return dir;
 }
 
 void requestAttention(bool continuous) {

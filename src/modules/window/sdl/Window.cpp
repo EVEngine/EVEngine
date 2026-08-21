@@ -523,6 +523,22 @@ bool Window::setIconRGBA(const uint8_t* rgba, int width, int height) {
 }
 
 bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowflags, int msaa, bool stencil, int depth) {
+#ifdef EVENGINE_MACOSX
+    // Packaged macOS builds ship the Vulkan loader + MoltenVK next to the
+    // executable (../lib or ../Frameworks) so players do not need the LunarG
+    // Vulkan SDK. Point SDL at the bundled loader explicitly (SDL would
+    // otherwise only search system locations), and let the bootstrap set
+    // VK_ICD_FILENAMES for the bundled ICD manifest. No-op in dev builds
+    // that rely on the SDK environment.
+    const std::string bundledVulkanDir = eve::macosx::bootstrapBundledVulkan();
+    if (!bundledVulkanDir.empty()) {
+        const std::string loader = bundledVulkanDir + "/libvulkan.1.dylib";
+        if (SDL_Vulkan_LoadLibrary(loader.c_str()) < 0)
+            std::fprintf(stderr, "eve: failed to load bundled Vulkan loader %s (%s)\n",
+                         loader.c_str(), SDL_GetError());
+    }
+#endif
+
     window = SDL_CreateWindow(title.c_str(), x, y, w, h, windowflags);
 
     if (!window) {

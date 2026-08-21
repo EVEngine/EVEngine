@@ -105,7 +105,7 @@ sudo apt install -y \
 | 操作系统 | macOS 12+（Apple Silicon / Intel） |
 | 工具链 | **Xcode Command Line Tools**（`xcode-select --install`） |
 | CMake | Homebrew：`brew install cmake`（≥ 3.21） |
-| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**） |
+| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**），仅**构建/开发**需要；`dist/eve-sdk/macosx` 发布包已内置 Vulkan loader + MoltenVK，玩家机器无需再装 SDK |
 
 配置环境（每次新开终端执行，或写入 `~/.zshrc`）：
 
@@ -427,7 +427,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
    Makefile 默认 `-j 32`。机器核心较少时可改为 `-j$(nproc)`（Linux）/`-j$(sysctl -n hw.ncpu)`（macOS）或较小数字，避免内存不足。
 
 6. **macOS 窗口/渲染失败**  
-   确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
+   如果报错是 `Installed Vulkan doesn't implement the VK_KHR_surface extension`（SDL 原文），说明运行时可用的 Vulkan 没有实现 surface 扩展，macOS 上即 MoltenVK 未被加载。**发布包**请确认把 `dist/eve-sdk/macosx` 的 `lib/` 一起发给玩家（内含 `libvulkan.1.dylib`、`libMoltenVK.dylib`、`MoltenVK_icd.json`），eve 启动时会自动指向这些文件（`platform/macosx` 的 `bootstrapBundledVulkan`），玩家无需安装 SDK。**开发构建**请确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
 
 7. **Android APK / 真机**  
    确认 NDK 版本与 Makefile 一致；`local.properties` 的 `sdk.dir` 正确；设备开启 USB 调试且 `adb devices` 可见。首版要求真机 Vulkan；无设备时至少验证 `make build/android-debug` 产出 APK。
