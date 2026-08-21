@@ -27,6 +27,12 @@ make run/ios-test-debug FILTER=math.*   # only tests matching the filter
 make log/ios-test                    # stream zeroerr results (Ctrl-C to stop)
 ```
 
+`run/ios-test-debug` launches the app with `devicectl --console`, so zeroerr
+results stream straight into the terminal (device logs are not forwarded to the
+host unified log on all setups). The app stays resident after the suite
+finishes (normal iOS lifecycle) — Ctrl-C when the PASSED/FAILED summary
+appears, or open `log/ios-test` in another terminal to follow along.
+
 The test app installs side-by-side with the game shell under a separate bundle
 identifier (`com.evengine.example.test`, override with `IOS_TEST_BUNDLE_ID`).
 The filter is passed as a launch argument (`-evengine.test.filter math.*`,
