@@ -1,6 +1,6 @@
+#include "PathBesideSource.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-#include "PathBesideSource.h"
 
 #include "animation/Animation.h"
 #include "animation/AnimClip.h"

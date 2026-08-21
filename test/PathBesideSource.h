@@ -102,9 +102,9 @@ inline std::string pathBesideTestDir(const char *file, const std::string &relati
     while (rel.rfind("../", 0) == 0) rel = rel.substr(3);
     return iosTestRoot() + "/" + rel;
 #else
-    std::string here = file ? file : "";
-    auto slash = here.find_last_of("/\\");
-    std::string dir = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
+    std::string here  = file ? file : "";
+    auto        slash = here.find_last_of("/\\");
+    std::string dir   = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
     return dir + "/" + relative;
 #endif
 }

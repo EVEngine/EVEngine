@@ -4,9 +4,11 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "PathBesideSource.h"
 #include "data/DataModule.h"
 #include "data/JsonDocument.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/Light.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/Inventory.h"
@@ -19,8 +21,6 @@
 #include "map/TileConfig.h"
 #include "map/TileLayer.h"
 #include "map/TileOrientation.h"
-#include "PathBesideSource.h"
-#include "graphics/Light.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
 #include "procgen/GeneratorRegistry.h"
@@ -48,9 +48,7 @@ using namespace eve::data;
 
 namespace {
 
-std::string hexDataDir() {
-    return eve_test_path::pathBesideTestDir(__FILE__, "../examples/hex-levels/data");
-}
+std::string hexDataDir() { return eve_test_path::pathBesideTestDir(__FILE__, "../examples/hex-levels/data"); }
 
 std::string readTextFile(const std::string &path) {
     std::ifstream in(path);

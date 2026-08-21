@@ -1,7 +1,7 @@
+#include "PathBesideSource.h"
 #include "housegen/HouseComponentLibrary.h"
 #include "housegen/HouseGenerator.h"
 #include "housegen/HouseLayout.h"
-#include "PathBesideSource.h"
 
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
@@ -303,8 +303,8 @@ TEST_CASE("housegen.renderPreview") {
     Mesh *gable = previewGable(gfx);
     REQUIRE(cube != nullptr);
     REQUIRE(gable != nullptr);
-    const std::filesystem::path brickDir = eve_test_path::pathBesideTestDir(
-        __FILE__, "assets/housegen/materials/ambientcg-bricks001");
+    const std::filesystem::path brickDir =
+        eve_test_path::pathBesideTestDir(__FILE__, "assets/housegen/materials/ambientcg-bricks001");
     gBrickColor = loadPreviewTexture(gfx, brickDir / "bricks001-color.jpg");
     gBrickNormal = loadPreviewTexture(gfx, brickDir / "bricks001-normal-gl.jpg");
     gBrickHeight = loadPreviewTexture(gfx, brickDir / "bricks001-height.jpg");
@@ -484,8 +484,8 @@ TEST_CASE("housegen.renderPreview") {
 }
 
 TEST_CASE("housegen.materialPreview") {
-    const std::filesystem::path assetDir = eve_test_path::pathBesideTestDir(
-        __FILE__, "assets/housegen/kenney-modular-buildings");
+    const std::filesystem::path assetDir =
+        eve_test_path::pathBesideTestDir(__FILE__, "assets/housegen/kenney-modular-buildings");
     HouseComponentLibrary library;
     std::string error;
     REQUIRE(library.loadFromFile((assetDir / "components.json").string(), &error));
