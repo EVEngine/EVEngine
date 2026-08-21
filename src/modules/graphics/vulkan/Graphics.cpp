@@ -220,8 +220,38 @@ void Graphics::initWithWindow(void *nativeWindow) {
             } else {
                 maxSamplerAnisotropy = 1.f;
             }
+            // Probe Vulkan 1.2 GPU-driven capabilities (bindless tables + GPU
+            // cull chain). The vendored headers omit `computeShader` / draw
+            // features from VkPhysicalDeviceFeatures; compute is core and
+            // universal, so treat it as present.
+            gpuDrivenCaps_ = GpuDrivenCaps{};
+            vk::PhysicalDeviceVulkan12Features vk12{};
+            vk::PhysicalDeviceFeatures2 features2{};
+            vk12.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+            features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2.pNext = &vk12;
+            phys->getFeatures2(&features2);
+            gpuDrivenCaps_.api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            gpuDrivenCaps_.computeShader = true;
+            gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
+            gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
+                supported.shaderSampledImageArrayDynamicIndexing == VK_TRUE;
+            gpuDrivenCaps_.drawIndirectCount = vk12.drawIndirectCount == VK_TRUE;
+            gpuDrivenCaps_.descriptorIndexing = vk12.descriptorIndexing == VK_TRUE;
+            gpuDrivenCaps_.samplerArrayCapacity =
+                phys.properties.limits.maxPerStageDescriptorSamplers >= kMaxBindlessTextures;
+            if (gpuDrivenCaps_.gpuDrivenAvailable()) {
+                phys.features.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
+                phys.features.shaderStorageBufferArrayDynamicIndexing = VK_TRUE;
+                phys.features.multiDrawIndirect = VK_TRUE;
+            }
         }
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws).
+        vk::PhysicalDeviceVulkan12Features vk12Enable{};
+        vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+        if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
+        deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
     }
@@ -266,6 +296,12 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: white texture");
         const uint8_t whitePixel[4] = {255, 255, 255, 255};
         whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
+        initGpuDrivenResources();
     }
 }
 
@@ -295,6 +331,7 @@ void Graphics::destroySwapchainResources() {
     swapchainPass = {};
     presentModel.destroy();
     presentModel = vkb::Present{};
+    destroyGpuDrivenCullResources();
     depthImage = vkb::DepthStencilImage{};
     destroyReadbackResources();
     // Release reused per-frame vertex buffers. Callers hold a device-wide

@@ -90,6 +90,8 @@ file(GLOB all_test_cpp
   virtualgeometry_builder.cpp
   virtualgeometry_gpu.cpp
   gpgpu.cpp
+  gpu_driven.cpp
+  indirect_builder.cpp
   box2d.cpp
   box3d.cpp
   softbody.cpp
@@ -349,6 +351,11 @@ if(EVENGINE_ANDROID_TEST_APP)
     VISIBILITY_INLINES_HIDDEN OFF)
 else()
   target_link_libraries(unit_test ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
+  if(WIN32)
+    # Crash-backtrace support (backward-cpp / DbgHelp) so unit_test prints a
+    # symbolized stack trace on unhandled exceptions (see test/main.cpp).
+    target_link_libraries(unit_test EVBacktrace)
+  endif()
   target_compile_definitions(unit_test PRIVATE
     EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
     EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
