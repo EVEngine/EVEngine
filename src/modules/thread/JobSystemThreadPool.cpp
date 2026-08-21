@@ -280,9 +280,6 @@ void JobSystemThreadPool::State::completeJob(JobImpl *job, bool ok) {
     {
         std::lock_guard<std::mutex> lock(mu);
         job->status = ok ? JobStatus::Done : JobStatus::Failed;
-        --outstanding;
-        if (job->scope == JobScope::Frame)
-            --outstandingFrame;
     }
     cv.notify_all();
 
@@ -290,6 +287,21 @@ void JobSystemThreadPool::State::completeJob(JobImpl *job, bool ok) {
     // publish results downstream jobs consume.
     fireCompletion(job);
     releaseDependents(job);
+
+    // Decrement the outstanding counters only after the job's completion
+    // callback and dependent release have finished using it. Otherwise a
+    // waiter (beginFrame/endFrame -> waitFrameJobs) can observe
+    // outstandingFrame == 0 and reset the per-frame arena while this worker is
+    // still touching the job (fireCompletion / releaseDependents), destroying
+    // it out from under the worker — a use-after-free that manifests as a
+    // lost forked job (hang) or a crash.
+    {
+        std::lock_guard<std::mutex> lock(mu);
+        --outstanding;
+        if (job->scope == JobScope::Frame)
+            --outstandingFrame;
+    }
+    cv.notify_all();
 }
 
 void JobSystemThreadPool::State::fireCompletion(JobImpl *job) {

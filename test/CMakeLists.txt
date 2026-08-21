@@ -23,6 +23,7 @@ file(GLOB all_test_cpp
   database.cpp
   RenderSystem.cpp
   RenderSystem3D.cpp
+  render_graph.cpp
   Quad.cpp
   TextureCellBomb.cpp
   ParallaxMap.cpp

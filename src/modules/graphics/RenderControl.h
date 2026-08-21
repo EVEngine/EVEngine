@@ -27,6 +27,8 @@ class Graphics;
  *   "clustered"     — prefer clustered forward when light count > 8 (default on)
  *   "ao"            — screen-space AO overlay after FXAA resolve (implies gbuffer; default on)
  *   "outline"       — screen-space model outline from depth+normal (implies gbuffer; default off)
+ *   "frustumCull"   — conservative bounding-sphere frustum culling during the job-ified
+ *                     frame data prep (default off; meshes without bounds are never culled)
  *   "gi"            — enables gbufferAlbedo; mesh hemispheric GI (fullscreen SSGI is not auto-applied)
  *   "aa"            — FXAA resolve of the 3D scene color into the swapchain (default on)
  *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via

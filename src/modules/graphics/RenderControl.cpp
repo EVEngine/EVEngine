@@ -5,7 +5,7 @@ namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
                                 "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
-                                "outline"};
+                                "outline",   "frustumCull"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -29,6 +29,7 @@ RenderControl::RenderControl() {
     features_["aa"] = true;
     features_["msaa"] = true;
     features_["outline"] = false;
+    features_["frustumCull"] = false;  // opt-in: conservative sphere culling in frame prep
     dirty_ = true;
     compiled_ = false;
 }
