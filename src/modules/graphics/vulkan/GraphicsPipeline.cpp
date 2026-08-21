@@ -52,6 +52,10 @@
 #include "graphics/shaders/textured_frag_spv.inc"
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gpudriven_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_vert_spv.inc"
+#include "graphics/shaders/resolve_vis_frag_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
@@ -433,24 +437,38 @@ void Graphics::destroyGBufferResources() {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
         slot.albedoTex.gpuHandle = nullptr;
+        slot.visIDTex.gpuHandle = nullptr;
+        slot.visBaryTex.gpuHandle = nullptr;
         slot.depthTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
         }
+        if (slot.visFramebuffer) {
+            device->destroyFramebuffer(slot.visFramebuffer);
+            slot.visFramebuffer = vk::Framebuffer{};
+        }
         destroySampler(device, slot.normalGpu.sampler);
         destroySampler(device, slot.depthColorGpu.sampler);
         destroySampler(device, slot.albedoGpu.sampler);
+        destroySampler(device, slot.visIDGpu.sampler);
+        destroySampler(device, slot.visBaryGpu.sampler);
         destroySampler(device, slot.depthGpu.sampler);
     }
     gbufferSlots.clear();
     post2Sets.clear();
     destroyPipeline(device, gbufferPipeline);
     destroyPipeline(device, gbufferAlphaPipeline);
+    destroyPipeline(device, gbufferVisPipeline);
+    destroyPipeline(device, gbufferVgVisPipeline);
     destroyPipelineLayout(device, gbufferPipelineLayout);
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
         gbufferRenderPass = {};
+    }
+    if (gbufferVisRenderPass) {
+        device->destroyRenderPass(gbufferVisRenderPass);
+        gbufferVisRenderPass = {};
     }
     gbufferWidth = 0;
     gbufferHeight = 0;
@@ -654,12 +672,16 @@ void Graphics::createGBufferResources(int width, int height) {
     const uint32_t h = uint32_t(height);
     const vk::Format colorFmt = pickGBufferColorFormat(device);
     const vk::Format depthFmt = vk::Format::eD32Sfloat;
+    const vk::Format visIDFmt = vk::Format::eR32G32Uint;
+    const vk::Format visBaryFmt = vk::Format::eR16G16Sfloat;
 
     gbufferSlots.resize(kAsyncResourceCopies);
     for (auto &slot : gbufferSlots) {
         slot.normal = device.createColorTarget(w, h, colorFmt);
         slot.depthColor = device.createColorTarget(w, h, colorFmt);
         slot.albedo = device.createColorTarget(w, h, colorFmt);
+        slot.visID = device.createColorTarget(w, h, visIDFmt);
+        slot.visBary = device.createColorTarget(w, h, visBaryFmt);
         slot.depth = device.createDepthTarget(w, h, depthFmt, true);
     }
 
@@ -756,8 +778,11 @@ void Graphics::createGBufferResources(int width, int height) {
         makeSampleTex(slot.normalGpu, slot.normalTex, slot.normal.imageView());
         makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColor.imageView());
         makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedo.imageView());
+        makeSampleTex(slot.visIDGpu, slot.visIDTex, slot.visID.imageView());
+        makeSampleTex(slot.visBaryGpu, slot.visBaryTex, slot.visBary.imageView());
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
     }
+    createGpuDrivenVisResources(width, height);
 }
 
 void Graphics::createSceneColorResources(int width, int height) {
@@ -940,11 +965,20 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
 
     destroyPipeline(device, mesh3dPipeline);
     destroyPipeline(device, mesh3dClusteredPipeline);
+    destroyPipeline(device, mesh3dGpuDrivenPipeline);
+    destroyPipeline(device, resolveVisPipeline);
     destroyPipeline(device, voxelRectPipeline);
 
     mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
                                                embeddedSpirv(mesh3d_frag_spv),
                                                mesh3dPipelineLayout, target, samples);
+    if (mesh3dGpuDrivenPipelineLayout) {
+        mesh3dGpuDrivenPipeline =
+            createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
+                                      embeddedSpirv(mesh3d_gpudriven_frag_spv),
+                                      mesh3dGpuDrivenPipelineLayout, target, samples);
+        createResolveVisPipeline(target, samples);
+    }
     mesh3dClusteredPipeline =
         createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
                                   embeddedSpirv(mesh3d_clustered_frag_spv),

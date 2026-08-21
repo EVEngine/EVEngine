@@ -5,7 +5,7 @@ namespace {
 
 const char *kKnownFeatures[] = {"depthTest", "shadow",     "gbuffer", "gbufferAlbedo",
                                 "forward",   "hair",       "clustered", "ao", "gi", "aa", "msaa",
-                                "outline"};
+                                "outline",   "gpuDriven", "visResolve", "frustumCull"};
 
 bool isKnownFeature(const std::string &feature) {
     for (const char *f : kKnownFeatures) {
@@ -29,6 +29,9 @@ RenderControl::RenderControl() {
     features_["aa"] = true;
     features_["msaa"] = true;
     features_["outline"] = false;
+    features_["gpuDriven"] = false;  // stage 1 opt-in; off until runtime-verified
+    features_["visResolve"] = false; // stage 3 opt-in; visibility-buffer resolve
+    features_["frustumCull"] = false;  // opt-in: conservative sphere culling in frame prep
     dirty_ = true;
     compiled_ = false;
 }
@@ -49,6 +52,8 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     if (feature == "gbufferAlbedo" && enabled) features_["gbuffer"] = true;
     if (feature == "ao" && enabled) features_["gbuffer"] = true;
     if (feature == "outline" && enabled) features_["gbuffer"] = true;
+    // Stage 2 GPU cull needs the GBuffer depth as its HZB source.
+    if (feature == "gpuDriven" && enabled) features_["gbuffer"] = true;
     if (feature == "gi" && enabled) {
         features_["gbuffer"] = true;
         features_["gbufferAlbedo"] = true;

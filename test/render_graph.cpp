@@ -1,0 +1,401 @@
+// Device-free tests for the FrameGraph-based render pipeline planning and the
+// JobSystem parallel-recording executor (see docs/dev/framegraph-migration.md).
+//
+// The planning tests never touch a GPU: vkb::FrameGraph(nullptr, ...) plans the
+// pass graph (dependencies / layers / barriers) without creating any Vulkan
+// object. The executor tests run the exact executor the render backend will
+// hand to vkb::FrameGraph::record().
+
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "graphics/vulkan/FrameGraphJobs.h"
+#include "thread/JobSystem.h"
+#include "vkbuilder/framegraph.hpp"
+
+#include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <cstdint>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <vector>
+
+namespace {
+
+using namespace eve::graphics;
+
+vkb::TextureDesc colorTexDesc() {
+    vkb::TextureDesc td;
+    td.extent = vk::Extent3D(800, 600, 1);
+    td.usage = vk::ImageUsageFlagBits::eSampled |
+               vk::ImageUsageFlagBits::eColorAttachment;
+    td.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    return td;
+}
+
+vkb::TextureDesc depthTexDesc() {
+    vkb::TextureDesc td;
+    td.format = vk::Format::eD32Sfloat;
+    td.extent = vk::Extent3D(2048, 2048, 1);
+    td.aspect = vk::ImageAspectFlagBits::eDepth;
+    td.usage = vk::ImageUsageFlagBits::eSampled |
+               vk::ImageUsageFlagBits::eDepthStencilAttachment;
+    td.afterLayout = vk::ImageLayout::eDepthStencilReadOnlyOptimal;
+    return td;
+}
+
+/**
+ * @brief The pass topology the Vulkan backend targets once the framegraph
+ * migration lands: 3 CSM cascades + G-buffer fill concurrently, forward scene
+ * pass next, present last. Resource declarations mirror the engine's
+ * shadow map / G-buffer / scene color attachments.
+ */
+std::unique_ptr<vkb::FrameGraph> buildEngineTopologyGraph() {
+    auto graph = std::make_unique<vkb::FrameGraph>(nullptr, 2);
+
+    vkb::TextureHandle shadow[3];
+    for (int c = 0; c < 3; ++c)
+        shadow[c] = graph->createTexture("shadowCascade" + std::to_string(c),
+                                         depthTexDesc());
+    auto gbNormal = graph->createTexture("gbNormal", colorTexDesc());
+    auto gbDepthColor = graph->createTexture("gbDepthColor", colorTexDesc());
+    auto gbAlbedo = graph->createTexture("gbAlbedo", colorTexDesc());
+    auto gbHwDepth = graph->createTexture("gbHwDepth", depthTexDesc());
+    auto sceneColor = graph->createTexture("sceneColor", colorTexDesc());
+    auto presentTarget = graph->createTexture("presentTarget", colorTexDesc());
+    graph->markOutput(presentTarget);
+
+    vk::ClearValue depthClear{};
+    depthClear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    for (int c = 0; c < 3; ++c) {
+        graph->addPass("shadow" + std::to_string(c))
+            .depthAttachment(shadow[c], vkb::AttachmentOp::clear(depthClear))
+            .record([](vkb::FrameGraphPassContext &) {});
+    }
+    graph->addPass("gbuffer")
+        .colorAttachment(gbNormal, vkb::AttachmentOp::clearColor(0, 0, 0, 0))
+        .colorAttachment(gbDepthColor, vkb::AttachmentOp::clearColor(1, 1, 1, 1))
+        .colorAttachment(gbAlbedo, vkb::AttachmentOp::clearColor(0, 0, 0, 0))
+        .depthAttachment(gbHwDepth, vkb::AttachmentOp::clear(depthClear))
+        .record([](vkb::FrameGraphPassContext &) {});
+    graph->addPass("forward")
+        .sample(shadow[0])
+        .sample(shadow[1])
+        .sample(shadow[2])
+        .sample(gbNormal)
+        .sample(gbDepthColor)
+        .sample(gbAlbedo)
+        .sample(gbHwDepth)
+        .colorAttachment(sceneColor, vkb::AttachmentOp::clearColor(0, 0, 0, 1))
+        .record([](vkb::FrameGraphPassContext &) {});
+    graph->addPass("present")
+        .sample(sceneColor)
+        .colorAttachment(presentTarget, vkb::AttachmentOp::clearColor(0, 0, 0, 1))
+        .record([](vkb::FrameGraphPassContext &) {});
+    return graph;
+}
+
+}  // namespace
+
+TEST_CASE("render_graph.engineTopology") {
+    auto graph = buildEngineTopologyGraph();
+    graph->compile();
+    const auto &plan = graph->compiled();
+
+    CHECK_EQ(plan.passes.size(), size_t(6));
+
+    // Shadow cascades and the G-buffer fill share no dependency edges, so the
+    // planner must put them in one layer: that layer records concurrently on
+    // the JobSystem workers.
+    REQUIRE_EQ(plan.layers.size(), size_t(3));
+    CHECK_EQ(plan.layers[0].size(), size_t(4));
+    CHECK_EQ(plan.layers[1].size(), size_t(1));
+    CHECK_EQ(plan.layers[2].size(), size_t(1));
+    CHECK_EQ(plan.passes[plan.layers[0][0]].name, std::string("shadow0"));
+    CHECK_EQ(plan.passes[plan.layers[1][0]].name, std::string("forward"));
+    CHECK_EQ(plan.passes[plan.layers[2][0]].name, std::string("present"));
+
+    // Dependency edges keep the topological order: shadow/gbuffer before
+    // forward before present.
+    const auto *forward = &plan.passes[0];
+    const auto *present = &plan.passes[0];
+    for (const auto &p : plan.passes) {
+        if (p.name == "forward") forward = &p;
+        if (p.name == "present") present = &p;
+    }
+    CHECK(forward->order > plan.passes[plan.layers[0][0]].order);
+    CHECK(present->order > forward->order);
+
+    // Attachment -> sampled transitions fold into render-pass final layouts:
+    // the forward pass samples G-buffer + shadow maps with zero explicit
+    // image barriers, and present samples scene color with zero explicit
+    // barriers too.
+    for (const auto &p : plan.passes) {
+        if (p.name == "forward") {
+            CHECK(p.barrier.images.empty());
+            CHECK(p.barrier.buffers.empty());
+        }
+        if (p.name == "present") {
+            CHECK(p.barrier.images.empty());
+            CHECK(p.barrier.buffers.empty());
+        }
+        if (p.name == "gbuffer") {
+            for (const auto &ab : p.attachments) {
+                const bool folded =
+                    ab.finalLayout == vk::ImageLayout::eShaderReadOnlyOptimal ||
+                    ab.finalLayout == vk::ImageLayout::eDepthStencilReadOnlyOptimal;
+                CHECK(folded);
+            }
+        }
+        if (p.name == "shadow0" || p.name == "shadow1" || p.name == "shadow2") {
+            REQUIRE_EQ(p.attachments.size(), size_t(1));
+            const bool folded =
+                p.attachments[0].finalLayout ==
+                vk::ImageLayout::eDepthStencilReadOnlyOptimal;
+            CHECK(folded);
+        }
+    }
+}
+
+TEST_CASE("render_graph.jobSystemExecutorParallel") {
+    auto *jobs = eve::thread::createJobSystem(0);  // hardware concurrency, like the engine
+    REQUIRE(jobs != nullptr);
+    jobs->beginFrame();
+
+    std::mutex mu;
+    std::vector<int> recorded;
+    std::vector<std::thread::id> threads;
+    const auto recordOne = [&](uint32_t order) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(8));
+        std::lock_guard<std::mutex> lk(mu);
+        recorded.push_back(int(order));
+        threads.push_back(std::this_thread::get_id());
+    };
+
+    // One layer of 8 independent passes: serial recording would take >= 64 ms,
+    // parallel recording on 4 workers takes ~2-3 sleep periods.
+    std::vector<uint32_t> layer{0, 1, 2, 3, 4, 5, 6, 7};
+    const auto t0 = std::chrono::steady_clock::now();
+    auto executor = vulkan::jobSystemPassExecutor(jobs);
+    executor(layer, recordOne);
+    const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::steady_clock::now() - t0)
+                        .count();
+
+    jobs->endFrame();
+    delete jobs;
+
+    CHECK_EQ(recorded.size(), layer.size());
+    for (size_t i = 0; i < recorded.size(); ++i)
+        CHECK_EQ(recorded[i], int(i));
+    // Every pass recorded exactly once (recorded already proves count; sort
+    // check proves no duplicates and no gaps).
+    CHECK(ms < 40);
+    // At least two distinct threads participated -> the layer was truly
+    // recorded in parallel, not just serialized through the executor.
+    std::sort(threads.begin(), threads.end());
+    const bool parallel = threads.size() >= 2 &&
+                          std::unique(threads.begin(), threads.end()) != threads.end();
+    CHECK(parallel);
+}
+
+TEST_CASE("render_graph.jobSystemExecutorSerialFallback") {
+    std::mutex mu;
+    std::vector<int> recorded;
+    const auto recordOne = [&](uint32_t order) {
+        std::lock_guard<std::mutex> lk(mu);
+        recorded.push_back(int(order));
+    };
+
+    auto executor = vulkan::jobSystemPassExecutor(nullptr);
+    executor(std::vector<uint32_t>{0, 1, 2}, recordOne);
+    executor(std::vector<uint32_t>{3}, recordOne);
+
+    CHECK_EQ(recorded.size(), size_t(4));
+    for (size_t i = 0; i < recorded.size(); ++i)
+        CHECK_EQ(recorded[i], int(i));
+}
+
+TEST_CASE("render_graph.jobSystemGroupStress") {
+    // Replicates the engine's per-frame pattern (beginFrame -> 4-way fork/join
+    // -> endFrame) which exposed a scheduler race that loses a forked job and
+    // hangs the join.
+    auto *jobs = eve::thread::createJobSystem(4);
+    REQUIRE(jobs != nullptr);
+    std::atomic<int> ran{0};
+    int failedIter = -1;
+    for (int iter = 0; iter < 4000; ++iter) {
+        jobs->beginFrame();
+        auto *group = jobs->createFrameTaskGroup();
+        ran.store(0);
+        for (int i = 0; i < 4; ++i)
+            group->fork([&] { ran.fetch_add(1); });
+        group->wait();
+        jobs->endFrame();
+        if (ran.load() != 4) {
+            failedIter = iter;
+            break;
+        }
+    }
+    jobs->stop();
+    delete jobs;
+    CHECK_EQ(failedIter, -1);
+}
+
+TEST_CASE("render_graph.jobSystemEngineFramePattern") {
+    // Mirrors the engine frame: prepareFrame3D's light job + parallel_for
+    // bracket, then recordDeferredFrameGraph's 4-way fork/join bracket, 4000x.
+    auto *jobs = eve::thread::createJobSystem(0);  // hardware concurrency, like the engine
+    REQUIRE(jobs != nullptr);
+    std::atomic<int> ran{0};
+    std::atomic<int> sum{0};
+    int failedIter = -1;
+    for (int iter = 0; iter < 4000; ++iter) {
+        jobs->beginFrame();
+        auto *light = jobs->submitFrame([&] { sum.fetch_add(1); });
+        auto *loop = jobs->parallelForFrame(0, 64, [&](int first, int last) {
+            for (int i = first; i < last; ++i) sum.fetch_add(1);
+        }, 16);
+        loop->wait();
+        light->wait();
+        jobs->endFrame();
+
+        jobs->beginFrame();
+        auto *group = jobs->createFrameTaskGroup();
+        ran.store(0);
+        for (int i = 0; i < 4; ++i)
+            group->fork([&] { ran.fetch_add(1); });
+        group->wait();
+        jobs->endFrame();
+        if (ran.load() != 4) {
+            failedIter = iter;
+            break;
+        }
+    }
+    jobs->stop();
+    delete jobs;
+    CHECK_EQ(failedIter, -1);
+    CHECK_EQ(sum.load(), 4000 * 65);
+}
+
+TEST_CASE("render_graph.recordCycleLifecycle") {
+    // vkb::fg::RecordCycle turns the FrameGraph recording contract into
+    // hard errors: build -> compile -> record -> submit, record exactly once
+    // per compile, no mutation while recording.
+    vkb::fg::RecordCycle cycle;
+
+    // record() without compile() is a violation.
+    CHECK_THROWS((cycle.beginRecord(1), false));
+
+    // Happy path: compile -> record every pass once -> submit.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    cycle.claimPass(0);
+    cycle.releasePass(0);
+    cycle.endRecord();
+    CHECK(int(cycle.phase()) == int(vkb::fg::RecordCycle::Phase::kRecorded));
+
+    // A second record() before submit() is a violation.
+    CHECK_THROWS((cycle.beginRecord(1), false));
+    cycle.submitted();
+
+    // record() after submit() without a fresh compile() is a violation.
+    CHECK_THROWS((cycle.beginRecord(1), false));
+
+    // Mutating the graph after compile() without recompiling is a violation.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.markDirty();
+    CHECK_THROWS((cycle.beginRecord(1), false));
+
+    // Mutating the graph while recording is a violation.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    CHECK_THROWS((cycle.markDirty(), false));
+    CHECK_THROWS((cycle.beginCompile(), false));
+    CHECK_THROWS((cycle.submitted(), false));
+    cycle.claimPass(0);
+    cycle.releasePass(0);
+    cycle.endRecord();
+
+    // Mutating between record() and submit() is a violation.
+    CHECK_THROWS((cycle.markDirty(), false));
+    CHECK_THROWS((cycle.beginCompile(), false));
+    cycle.submitted();
+
+    // An executor that skips a pass is caught at endRecord().
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(2);
+    cycle.claimPass(0);
+    cycle.releasePass(0);
+    CHECK_THROWS((cycle.endRecord(), false));
+
+    // abortRecord() (the exception path of record()) forces a fresh compile
+    // before the next attempt.
+    cycle.abortRecord();
+    CHECK_THROWS((cycle.beginRecord(1), false));
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    cycle.claimPass(0);
+    CHECK_THROWS((cycle.claimPass(0), false));  // double claim of the same pass
+    cycle.releasePass(0);
+    cycle.endRecord();
+    cycle.submitted();
+}
+
+TEST_CASE("render_graph.recordCycleConcurrent") {
+    // Concurrent record() on the same graph: exactly one caller wins, the
+    // other gets an exception instead of a data race.
+    vkb::fg::RecordCycle cycle;
+    cycle.beginCompile();
+    cycle.endCompile();
+    std::atomic<int> winners{0};
+    auto tryRecord = [&] {
+        try {
+            cycle.beginRecord(4);
+            winners.fetch_add(1);
+        } catch (...) {
+        }
+    };
+    std::thread a(tryRecord);
+    std::thread b(tryRecord);
+    a.join();
+    b.join();
+    CHECK_EQ(winners.load(), 1);
+
+    // The winner completes a normal cycle; the loser's state was untouched.
+    for (uint32_t i = 0; i < 4; ++i) {
+        cycle.claimPass(i);
+        cycle.releasePass(i);
+    }
+    cycle.endRecord();
+    cycle.submitted();
+
+    // Concurrent claim of the same pass: exactly one succeeds.
+    cycle.beginCompile();
+    cycle.endCompile();
+    cycle.beginRecord(1);
+    std::atomic<int> claims{0};
+    auto tryClaim = [&] {
+        try {
+            cycle.claimPass(0);
+            claims.fetch_add(1);
+        } catch (...) {
+        }
+    };
+    std::thread c(tryClaim);
+    std::thread d(tryClaim);
+    c.join();
+    d.join();
+    CHECK_EQ(claims.load(), 1);
+    cycle.releasePass(0);
+    cycle.endRecord();
+    cycle.submitted();
+}

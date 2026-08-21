@@ -1,10 +1,12 @@
 #include "animation/Animation.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimClipRegistry.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
+#include "animation/AnimLattice.h"
 #include "animation/AnimStateMachine.h"
 #include "animation/AnimTrail.h"
 #include "animation/ControlAnim.h"
@@ -19,10 +21,45 @@
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
 
+#include "common/Exception.h"
+
 #include <algorithm>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::animation {
+
+namespace {
+
+void copyFloatArray(ssq::Array arr, std::vector<float> &out) {
+    const size_t n = arr.size();
+    out.resize(n);
+    for (size_t i = 0; i < n; ++i) out[i] = arr.get<float>(i);
+}
+
+void bindPositionsFromArray(AnimLattice *self, ssq::Array arr) {
+    std::vector<float> pos;
+    copyFloatArray(arr, pos);
+    if (pos.size() % 3u != 0) {
+        throw Exception("AnimLattice.bindPositionsFromArray: array size must be a multiple of 3");
+    }
+    self->bindPositions(pos.data(), static_cast<int>(pos.size() / 3u));
+}
+
+bool updateDeformedPositionsFromArray(AnimLattice *self, ssq::Array arr) {
+    std::vector<float> pos;
+    copyFloatArray(arr, pos);
+    return self->updateDeformedPositions(pos);
+}
+
+bool updateDeformedNormalsFromArray(AnimLattice *self, ssq::Array posArr, ssq::Array nrmArr) {
+    std::vector<float> pos;
+    std::vector<float> nrm;
+    copyFloatArray(posArr, pos);
+    copyFloatArray(nrmArr, nrm);
+    return self->updateDeformedNormals(pos, nrm);
+}
+
+}  // namespace
 
 Module_IMPL(Animation, new Animation());
 
@@ -160,12 +197,22 @@ AnimClip *Animation::newClipFromEvaFile(const std::string &path) {
     AnimClip *clip   = nullptr;
     AnimImporter::importEvaFile(path, &sk, &clip);
     delete sk;
+    if (clip) AnimClipRegistry::registerPath(path, clip);
     return clip;
 }
 
 AnimSkin *Animation::newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
                                       AnimSkeleton *skeleton) {
     return AnimSkin::fromModel(model, meshIndex, skeleton);
+}
+
+AnimLattice *Animation::newLattice(int divX, int divY, int divZ) {
+    return new AnimLattice(divX, divY, divZ);
+}
+
+AnimLattice *Animation::newLatticeFromModel(eve::model3d::ModelData *model, int meshIndex,
+                                            int divX, int divY, int divZ) {
+    return AnimLattice::fromModel(model, meshIndex, divX, divY, divZ);
 }
 
 AnimTrail *Animation::newTrail(int capacity) { return new AnimTrail(capacity); }
@@ -398,6 +445,60 @@ void Animation::expose(ssq::Table &table) {
     skin.addFunc("getSkinnedPositionX", &AnimSkin::getSkinnedPositionX);
     skin.addFunc("getSkinnedPositionY", &AnimSkin::getSkinnedPositionY);
     skin.addFunc("getSkinnedPositionZ", &AnimSkin::getSkinnedPositionZ);
+
+    auto lattice = table.addClass<AnimLattice>(
+        "AnimLattice", std::function<AnimLattice *()>([]() -> AnimLattice * { return nullptr; }),
+        true);
+    lattice.addFunc("setDivisions", &AnimLattice::setDivisions);
+    lattice.addFunc("getDivisionsX", &AnimLattice::getDivisionsX);
+    lattice.addFunc("getDivisionsY", &AnimLattice::getDivisionsY);
+    lattice.addFunc("getDivisionsZ", &AnimLattice::getDivisionsZ);
+    lattice.addFunc("setSize", &AnimLattice::setSize);
+    lattice.addFunc("getSizeX", &AnimLattice::getSizeX);
+    lattice.addFunc("getSizeY", &AnimLattice::getSizeY);
+    lattice.addFunc("getSizeZ", &AnimLattice::getSizeZ);
+    lattice.addFunc("setOrigin", &AnimLattice::setOrigin);
+    lattice.addFunc("getOriginX", &AnimLattice::getOriginX);
+    lattice.addFunc("getOriginY", &AnimLattice::getOriginY);
+    lattice.addFunc("getOriginZ", &AnimLattice::getOriginZ);
+    lattice.addFunc("setClamp", &AnimLattice::setClamp);
+    lattice.addFunc("getClamp", &AnimLattice::getClamp);
+    lattice.addFunc("getPointCount", &AnimLattice::getPointCount);
+    lattice.addFunc("setPointScale", &AnimLattice::setPointScale);
+    lattice.addFunc("setPointOffset", &AnimLattice::setPointOffset);
+    lattice.addFunc("setScale", &AnimLattice::setScale);
+    lattice.addFunc("reset", &AnimLattice::reset);
+    lattice.addFunc("getPointScaleX", &AnimLattice::getPointScaleX);
+    lattice.addFunc("getPointScaleY", &AnimLattice::getPointScaleY);
+    lattice.addFunc("getPointScaleZ", &AnimLattice::getPointScaleZ);
+    lattice.addFunc("getPointOffsetX", &AnimLattice::getPointOffsetX);
+    lattice.addFunc("getPointOffsetY", &AnimLattice::getPointOffsetY);
+    lattice.addFunc("getPointOffsetZ", &AnimLattice::getPointOffsetZ);
+    lattice.addFunc("bindModel", &AnimLattice::bindModel);
+    lattice.addFunc("bindPositionsFromArray",
+                    std::function<void(AnimLattice *, ssq::Array)>(bindPositionsFromArray));
+    lattice.addFunc("clearBind", &AnimLattice::clearBind);
+    lattice.addFunc("getVertexCount", &AnimLattice::getVertexCount);
+    lattice.addFunc("getBindPositionX", &AnimLattice::getBindPositionX);
+    lattice.addFunc("getBindPositionY", &AnimLattice::getBindPositionY);
+    lattice.addFunc("getBindPositionZ", &AnimLattice::getBindPositionZ);
+    lattice.addFunc(
+        "updateDeformedPositions",
+        static_cast<bool (AnimLattice::*)()>(&AnimLattice::updateDeformedPositions));
+    lattice.addFunc(
+        "updateDeformedPositionsFromArray",
+        std::function<bool(AnimLattice *, ssq::Array)>(updateDeformedPositionsFromArray));
+    lattice.addFunc(
+        "updateDeformedNormalsFromArray",
+        std::function<bool(AnimLattice *, ssq::Array, ssq::Array)>(
+            updateDeformedNormalsFromArray));
+    lattice.addFunc("hasDeformedPositions", &AnimLattice::hasDeformedPositions);
+    lattice.addFunc("hasDeformedNormals", &AnimLattice::hasDeformedNormals);
+    lattice.addFunc("getDeformedPositionX", &AnimLattice::getDeformedPositionX);
+    lattice.addFunc("getDeformedPositionY", &AnimLattice::getDeformedPositionY);
+    lattice.addFunc("getDeformedPositionZ", &AnimLattice::getDeformedPositionZ);
+    lattice.addFunc("getDeformedPositions", &AnimLattice::getDeformedPositions);
+    lattice.addFunc("getDeformedNormals", &AnimLattice::getDeformedNormals);
 
     auto player = table.addClass<AnimPlayer>(
         "AnimPlayer", std::function<AnimPlayer *()>([]() -> AnimPlayer * { return nullptr; }),
@@ -779,6 +880,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newSkeletonFromEvaFile", &Animation::newSkeletonFromEvaFile);
     cls.addFunc("newClipFromEvaFile", &Animation::newClipFromEvaFile);
     cls.addFunc("newSkinFromModel", &Animation::newSkinFromModel);
+    cls.addFunc("newLattice", &Animation::newLattice);
+    cls.addFunc("newLatticeFromModel", &Animation::newLatticeFromModel);
     cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);

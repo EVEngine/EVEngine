@@ -81,3 +81,67 @@ TEST_CASE("runtimeWrapsCompileErrorsAndRestoresStack") {
     CHECK(caught);
     CHECK_EQ(runtime.vm().getTop(), top);
 }
+
+TEST_CASE("runtimeRuntimeErrorCarriesLocationAndStack") {
+    Runtime runtime(256, ssq::Libs::ALL);
+    bool caught = false;
+    try {
+        runtime.runSource(R"SQ(
+function boom() { throw "kaboom" }
+function outer() { boom() }
+outer();
+)SQ", "boom.nut");
+    } catch (const ScriptException& error) {
+        caught = true;
+        CHECK_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Execute));
+        CHECK_EQ(error.source(), std::string("boom.nut"));
+        CHECK(error.hasLocation());
+        CHECK(error.line() > 0);
+        CHECK(!error.function().empty());
+        const std::string message = error.what();
+        CHECK(message.find("kaboom") != std::string::npos);
+        CHECK(message.find("boom.nut:") != std::string::npos);
+        CHECK(message.find("Stack:") != std::string::npos);
+        CHECK(!error.stackTrace().empty());
+        CHECK(error.stackTrace().find("boom") != std::string::npos);
+        CHECK(error.stackTrace().find("outer") != std::string::npos);
+    }
+    CHECK(caught);
+}
+
+TEST_CASE("runtimeRuntimeErrorMarksScriptFailedAndRestoresStack") {
+    Runtime runtime(256, ssq::Libs::ALL);
+    const SQInteger top = runtime.vm().getTop();
+    const Runtime::ScriptId id = runtime.compileSource("function bad() { throw \"nope\" }\nbad();\n",
+                                                       "fail.nut");
+    bool caught = false;
+    try {
+        runtime.execute(id);
+    } catch (const ScriptException&) {
+        caught = true;
+    }
+    CHECK(caught);
+    const ScriptInfo* script = runtime.script(id);
+    CHECK(script != nullptr);
+    CHECK(static_cast<int>(script->state) == static_cast<int>(ScriptState::Failed));
+    CHECK(!script->error.empty());
+    CHECK(script->error.find("fail.nut") != std::string::npos);
+    CHECK_EQ(runtime.vm().getTop(), top);
+}
+
+TEST_CASE("runtimeCompileErrorCarriesLineColumnAndSnippet") {
+    Runtime runtime(256, ssq::Libs::ALL);
+    bool caught = false;
+    try {
+        runtime.compileSource("local x = ;\nlocal y = 1;\n", "broken.nut");
+    } catch (const ScriptException& error) {
+        caught = true;
+        CHECK_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Compile));
+        CHECK(error.hasLocation());
+        CHECK(error.line() >= 1);
+        const std::string message = error.what();
+        CHECK(message.find("local x = ;") != std::string::npos);
+        CHECK(message.find("broken.nut:") != std::string::npos);
+    }
+    CHECK(caught);
+}

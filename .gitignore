@@ -24,6 +24,7 @@ test/assets/classic/.downloaded
 .vscode/
 .superpowers/
 artifacts-local-test/
+imgui.ini
 third-party/
 third-party-binary/
 # Moved into the third-party/ aggregate (cloned by CMake); the stale on-disk

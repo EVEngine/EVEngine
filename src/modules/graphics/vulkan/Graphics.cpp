@@ -220,8 +220,38 @@ void Graphics::initWithWindow(void *nativeWindow) {
             } else {
                 maxSamplerAnisotropy = 1.f;
             }
+            // Probe Vulkan 1.2 GPU-driven capabilities (bindless tables + GPU
+            // cull chain). The vendored headers omit `computeShader` / draw
+            // features from VkPhysicalDeviceFeatures; compute is core and
+            // universal, so treat it as present.
+            gpuDrivenCaps_ = GpuDrivenCaps{};
+            vk::PhysicalDeviceVulkan12Features vk12{};
+            vk::PhysicalDeviceFeatures2 features2{};
+            vk12.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+            features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2.pNext = &vk12;
+            phys->getFeatures2(&features2);
+            gpuDrivenCaps_.api12 = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            gpuDrivenCaps_.computeShader = true;
+            gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
+            gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
+                supported.shaderSampledImageArrayDynamicIndexing == VK_TRUE;
+            gpuDrivenCaps_.drawIndirectCount = vk12.drawIndirectCount == VK_TRUE;
+            gpuDrivenCaps_.descriptorIndexing = vk12.descriptorIndexing == VK_TRUE;
+            gpuDrivenCaps_.samplerArrayCapacity =
+                phys.properties.limits.maxPerStageDescriptorSamplers >= kMaxBindlessTextures;
+            if (gpuDrivenCaps_.gpuDrivenAvailable()) {
+                phys.features.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
+                phys.features.shaderStorageBufferArrayDynamicIndexing = VK_TRUE;
+                phys.features.multiDrawIndirect = VK_TRUE;
+            }
         }
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws).
+        vk::PhysicalDeviceVulkan12Features vk12Enable{};
+        vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+        if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
+        deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
     }
@@ -266,6 +296,12 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: white texture");
         const uint8_t whitePixel[4] = {255, 255, 255, 255};
         whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
+        initGpuDrivenResources();
     }
 }
 
@@ -295,7 +331,9 @@ void Graphics::destroySwapchainResources() {
     swapchainPass = {};
     presentModel.destroy();
     presentModel = vkb::Present{};
+    destroyGpuDrivenCullResources();
     depthImage = vkb::DepthStencilImage{};
+    destroyReadbackResources();
     // Release reused per-frame vertex buffers. Callers hold a device-wide
     // waitIdle before this runs.
     for (auto &fb : frame2dBuffers) releaseFrame2dBuffers(fb);
@@ -424,127 +462,12 @@ void Graphics::dropPendingOffscreenPasses() {
     gbufferPassDraws.clear();
 }
 
-void Graphics::recordPendingShadowPasses() {
-    if (shadowPendingMask == 0 || !shadowPipeline || shadowMaps.empty()) {
-        shadowPendingMask = 0;
-        for (auto &d : shadowCascadeDraws) d.clear();
-        return;
-    }
-    auto &slot = currentShadowMap();
-    auto &cb = currentPresentCb();
-    slot.image.beginDepthAttachment();
-    const uint32_t size = uint32_t(ShadowConfig::kMapSize);
-    vk::ClearValue clear{};
-    clear.depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-        if ((shadowPendingMask & (1u << c)) == 0) continue;
-        vk::RenderPassBeginInfo rpBegin{};
-        rpBegin.renderPass = shadowRenderPass;
-        rpBegin.framebuffer = slot.framebuffers[c];
-        rpBegin.renderArea = vk::Rect2D{{0, 0}, {size, size}};
-        rpBegin.clearValueCount = 1;
-        rpBegin.pClearValues = &clear;
-        cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-        setViewportAndScissor(cb, size, size);
-        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, shadowPipeline);
-        bool alphaBound = false;
-        for (const auto &d : shadowCascadeDraws[c]) {
-            if (!d.mesh || !d.mesh->gpuHandle) continue;
-            const bool wantAlpha = d.alphaTest && shadowAlphaPipeline;
-            if (wantAlpha != alphaBound) {
-                cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                wantAlpha ? shadowAlphaPipeline : shadowPipeline);
-                alphaBound = wantAlpha;
-            }
-            auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-            if (wantAlpha) {
-                Texture *alb = d.albedo ? d.albedo : whiteTexture;
-                if (alb && alb->gpuHandle && texSetLayout) {
-                    auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-                    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                          shadowAlphaPipelineLayout, 0, 1,
-                                          gpuTex->descriptorSet.ptr(), 0, nullptr);
-                }
-            }
-            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
-                             vk::ShaderStageFlagBits::eVertex, 0,
-                             sizeof(glm::mat4), &d.mvp);
-            drawIndexedMesh(cb, *gpuMesh);
-        }
-        cb.endRenderPass();
-        shadowCascadeDraws[c].clear();
-    }
-    slot.image.endSampledLayout();
-    shadowPendingMask = 0;
-}
-
-void Graphics::recordPendingGBufferPass() {
-    if (!gbufferPending) return;
-    gbufferPending = false;
-    auto *slot = currentGBufferSlot();
-    if (!slot || !gbufferPipeline || !gbufferRenderPass || !slot->framebuffer) {
-        gbufferPassDraws.clear();
-        return;
-    }
-    auto &cb = currentPresentCb();
-    const uint32_t w = uint32_t(gbufferWidth);
-    const uint32_t h = uint32_t(gbufferHeight);
-    std::array<vk::ClearValue, 4> clears{};
-    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
-    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-    clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
-    vk::RenderPassBeginInfo rpBegin{};
-    rpBegin.renderPass = gbufferRenderPass;
-    rpBegin.framebuffer = slot->framebuffer;
-    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
-    rpBegin.clearValueCount = uint32_t(clears.size());
-    rpBegin.pClearValues = clears.data();
-    slot->normal.beginColorAttachment();
-    slot->depthColor.beginColorAttachment();
-    slot->albedo.beginColorAttachment();
-    slot->depth.beginDepthAttachment();
-    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
-    setViewportAndScissor(cb, w, h);
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
-    bool alphaBound = false;
-    for (const auto &d : gbufferPassDraws) {
-        if (!d.mesh || !d.mesh->gpuHandle) continue;
-        const bool wantAlpha = d.alphaTest && gbufferAlphaPipeline;
-        if (wantAlpha != alphaBound) {
-            cb.bindPipeline(vk::PipelineBindPoint::eGraphics,
-                            wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
-            alphaBound = wantAlpha;
-        }
-        auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
-        Texture *alb = d.albedo ? d.albedo : whiteTexture;
-        if (alb && alb->gpuHandle && texSetLayout) {
-            auto *gpuTex = static_cast<GpuTexture *>(alb->gpuHandle);
-            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
-                                  gpuTex->descriptorSet.ptr(), 0, nullptr);
-        }
-        cb.pushConstants(gbufferPipelineLayout,
-                         vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0,
-                         sizeof(GBufferPush), &d.push);
-        drawIndexedMesh(cb, *gpuMesh);
-    }
-    cb.endRenderPass();
-    gbufferPassDraws.clear();
-    if (slot) {
-        slot->normal.endSampledLayout();
-        slot->depthColor.endSampledLayout();
-        slot->albedo.endSampledLayout();
-        slot->depth.endSampledLayout();
-    }
-}
-
 bool Graphics::beginSwapchainRenderPass() {
     if (!beginPresentCommandBuffer()) {
         dropPendingOffscreenPasses();
         return false;
     }
-    recordPendingShadowPasses();
-    recordPendingGBufferPass();
+    recordDeferredFrameGraph();
     beginSwapchainColorPass();
     return true;
 }

@@ -157,7 +157,65 @@ function track_script(path) {
     watched_scripts.append(p);
 }
 
+// ---------------------------------------------------------------------------
+// State hot reload helpers (capture -> reload -> restore).
+// Old state is authoritative (captured by beginStateReload); fields the new
+// script adds are kept, and scripts may rebuild class instances in
+// eve_after_reload() using migrate_instance / remap_instances.
+// ---------------------------------------------------------------------------
+
+// Copy the enumerable fields of an old instance/table into a fresh instance
+// of NewClass; fields missing on the new class keep their defaults.
+function migrate_instance(old, NewClass) {
+    local n = NewClass();
+    if (old == null) return n;
+    foreach (k, v in old) {
+        try {
+            n[k] <- v;
+        } catch (e) {
+            // Not assignable on the new class; keep the default.
+        }
+    }
+    return n;
+}
+
+// Replace every element/field of an array/table with a migrated instance.
+function remap_instances(container, NewClass) {
+    if (typeof container == "array") {
+        for (local i = 0; i < container.len(); ++i) {
+            container[i] = migrate_instance(container[i], NewClass);
+        }
+    } else if (typeof container == "table") {
+        local keys = [];
+        foreach (k, v in container) keys.append(k);
+        foreach (k in keys) {
+            container[k] = migrate_instance(container[k], NewClass);
+        }
+    }
+    return container;
+}
+
 function soft_reload_scripts() {
+    // ① optional script hook: finalize transient state before capture.
+    if ("eve_before_reload" in getroottable()) {
+        try {
+            eve_before_reload();
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_before_reload failed: " + e + "\n");
+        }
+    }
+    // ② capture: script state roots + native IStateProvider states.
+    local hasSession = ("dev" in eve) && ("beginStateReload" in eve.dev);
+    if (hasSession) {
+        local e = eve.dev.beginStateReload();
+        if (e != "") {
+            if ("dev" in eve) eve.dev.reportError("state reload: capture failed: " + e);
+            print("state reload: capture failed: " + e + "\n");
+            return;
+        }
+    }
+    // ③ reload: re-dofile tracked scripts (fresh definitions).
     foreach (p in watched_scripts) {
         if (!file_exists(p)) continue;
         try {
@@ -166,6 +224,24 @@ function soft_reload_scripts() {
         } catch (e) {
             if ("dev" in eve) eve.dev.reportError("" + e);
             print("hot-reload script failed: " + p + ": " + e + "\n");
+        }
+    }
+    // ④ restore: captured values win, newly added fields kept; native
+    //    providers are restored / reset by the session.
+    if (hasSession) {
+        local e = eve.dev.commitStateReload();
+        if (e != "") {
+            if ("dev" in eve) eve.dev.reportError("state reload: restore failed: " + e);
+            print("state reload: restore failed: " + e + "\n");
+        }
+    }
+    // ⑤ optional script hook: rebuild class instances from restored state.
+    if ("eve_after_reload" in getroottable()) {
+        try {
+            eve_after_reload();
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_after_reload failed: " + e + "\n");
         }
     }
     if ("eve_reload" in getroottable()) {
