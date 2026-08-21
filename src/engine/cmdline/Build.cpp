@@ -4,6 +4,8 @@
 #include <CLI11.hpp>
 #include <rang.hpp>
 
+#include <algorithm>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 
@@ -15,6 +17,26 @@ using std::endl;
 namespace eve::cmd {
 
 namespace {
+
+#if defined(_WIN32)
+// Locate Git for Windows' bash.exe (the Android Makefile recipes use POSIX
+// shell syntax, so `make build/android` needs a sh SHELL instead of cmd.exe).
+std::string findGitBash() {
+    for (const char* pf : {std::getenv("ProgramFiles"), std::getenv("ProgramFiles(x86)")}) {
+        if (!pf) continue;
+        const auto p = std::filesystem::path(pf) / "Git" / "bin" / "bash.exe";
+        std::error_code ec;
+        if (std::filesystem::is_regular_file(p, ec)) return p.string();
+    }
+    return "";
+}
+
+std::string toShPath(const std::string& p) {
+    std::string s = p;
+    std::replace(s.begin(), s.end(), '\\', '/');
+    return s;
+}
+#endif
 
 // Reads the positional arguments of the build subcommand: the first positional
 // is treated as the platform name when it matches a known platform and no
@@ -152,7 +174,20 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
                 return 2;
             }
         }
+#if defined(_WIN32)
+        // cmd.exe's make SHELL cannot run the POSIX-style android recipes
+        // (gradlew env prefixes, cp -R, [ -d ... ]), so prefer Git Bash when
+        // it is installed; fall back to the plain make command otherwise.
+        const std::string bash = findGitBash();
+        if (!bash.empty()) {
+            cmd = "call \"" + bash + "\" -lc \"cd '" + toShPath(root) + "' && make " +
+                  target + " ANDROID_GAME='" + toShPath(game) + "'\"";
+        } else {
+            cmd += " ANDROID_GAME=\"" + game + "\"";
+        }
+#else
         cmd += " ANDROID_GAME=\"" + game + "\"";
+#endif
     }
 
     cout << "eve build: running " << cmd << endl;
