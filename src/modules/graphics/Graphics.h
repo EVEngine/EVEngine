@@ -1,61 +1,75 @@
 #pragma once
 
-#include "common/Module.h"
-#include "graphics/BlendMode.h"
-#include "graphics/Shader.h"
-#include "graphics/Drawable.h"
-#include "graphics/Canvas.h"
-#include "graphics/Texture.h"
-#include "graphics/TextureSampler.h"
-#include "graphics/Mesh.h"
-#include "graphics/Quad.h"
-#include "graphics/Font.h"
-#include "graphics/Light.h"
-#include "graphics/ClusteredLight.h"
-#include "graphics/Shadow.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Grass.h"
-#include "graphics/Waterfall.h"
-#include "graphics/Outline.h"
-#include "graphics/Material.h"
-#include "graphics/GBuffer.h"
-#include "graphics/RenderControl.h"
-#include <vector>
-#include <optional>
-#include <cstdint>
-#include <string>
-#include <memory>
-#include <glm/glm.hpp>
 #include <assimp/matrix4x4.h>
+#include <cstdint>
+#include <glm/glm.hpp>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+#include "common/Module.h"
+#include "common/WindowSurfaceHost.h"
+#include "graphics/BlendMode.h"
+#include "graphics/Canvas.h"
+#include "graphics/Color.h"
+#include "graphics/Font.h"
+#include "graphics/IGraphics2D.h"
+#include "graphics/IGraphics3D.h"
+#include "graphics/IPostFX.h"
+#include "graphics/IResourceFactory.h"
 
 struct aiMesh;
 
 namespace eve::graphics {
 
+class AmbientOcclusion;
+class AntiAliasing;
 class Camera3D;
+class Drawable;
+class GBuffer;
+class GlobalIllumination;
+class GrassField;
+class Material;
+class Mesh;
+class Outline;
+class Quad;
+class RenderControl;
+class ScreenSpaceReflection;
+class Shader;
+class Texture;
+class Volumetric;
+class Water;
+class Waterfall;
+struct ClusteredLightingUpload;
+struct Lighting2DUBO;
+struct Lighting3DPack;
+struct ShadowUpload;
+struct TextureCreateInfo;
+struct TextureSampler;
 
-class Graphics : public Module, public Canvas {
+class Graphics : public Module,
+                 public Canvas,
+                 public IWindowSurfaceHost,
+                 public IGraphics2D,
+                 public IGraphics3D,
+                 public IResourceFactory,
+                 public IPostFX {
 public:
     Module_REG(Graphics);
-    virtual ~Graphics() {}
+    Graphics();
+    ~Graphics() override;
 
     /**
 	 * @brief Resets the current color, background color, line style, and so forth.
 	 **/
-	void reset();
+    virtual void reset();
 
     /** @brief Script-friendly wrappers (r,g,b[,a] floats — no Color type in Squirrel). */
-    void clearScreen();
-    void setBackgroundColorRGBA(float r, float g, float b, float a = 1.f);
-    void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b,
-                           float a = 1.f);
-    void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r,
-                              float g, float b, float a = 1.f);
+    virtual void clearScreen();
+    virtual void setBackgroundColorRGBA(float r, float g, float b, float a = 1.f);
+    virtual void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
+    virtual void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
+                                      float a = 1.f);
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */
@@ -74,8 +88,8 @@ public:
                                    float lodBias = 0.f);
 
     /** @brief Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias). */
-    void setTextureSamplerParams(Texture *texture, const std::string &filter,
-                                 const std::string &mipmap, float maxAnisotropy, float lodBias);
+    virtual void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
+                                         float maxAnisotropy, float lodBias);
 
     virtual void present() = 0;
 
@@ -313,32 +327,31 @@ public:
     }
 
     /** @brief Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
-    void render3D();
+    virtual void render3D();
     /**
      * Preview-quality 3D pass into an offscreen Canvas (editor viewport):
      * renders visible Renderable3D with `camera` into `canvas`, whose texture
      * can then be shown inside a UI Viewport widget. See RenderSystem3D::renderToCanvas.
      */
-    void renderScene3DToCanvas(Canvas *canvas, Camera3D *camera);
-    void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f,
-                             float b = 1.f);
+    virtual void renderScene3DToCanvas(Canvas *canvas, Camera3D *camera);
+    virtual void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f, float b = 1.f);
 
     /**
      * @brief Composite this frame's 3D scene color into a rect (screen or active Canvas).
-     * Call after render3D(); order vs drawSolidRect / drawTexturedRect is preserved.
+     virtual * Call after render3D(); order vs drawSolidRect / drawTexturedRect is preserved.
      * If never called, present() still blits the 3D scene fullscreen under 2D.
      * RGB is blitted opaque (scene A is linear depth, not transparency).
      */
-    void drawScene3DRGBA(float x, float y, float w, float h, float r = 1.f, float g = 1.f,
-                         float b = 1.f, float a = 1.f);
+    virtual void drawScene3DRGBA(float x, float y, float w, float h, float r = 1.f, float g = 1.f, float b = 1.f,
+                                 float a = 1.f);
     /** @brief Script-friendly 4-arg form (simplesquirrel does not apply C++ defaults). */
     void drawScene3D(float x, float y, float w, float h) {
         drawScene3DRGBA(x, y, w, h, 1.f, 1.f, 1.f, 1.f);
     }
 
     /** @brief Draw a Canvas color buffer as a textured rect (same batch order as other 2D). */
-    void drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r = 1.f,
-                        float g = 1.f, float b = 1.f, float a = 1.f);
+    virtual void drawCanvasRGBA(Canvas *canvas, float x, float y, float w, float h, float r = 1.f, float g = 1.f,
+                                float b = 1.f, float a = 1.f);
     void drawCanvas(Canvas *canvas, float x, float y, float w, float h) {
         drawCanvasRGBA(canvas, x, y, w, h, 1.f, 1.f, 1.f, 1.f);
     }
@@ -504,6 +517,13 @@ public:
      */
     virtual void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) = 0;
 
+    /**
+     * @brief Cheap per-draw toggle for the already-uploaded clustered light
+     * table. Unlike setMesh3DClusteredLighting it never re-uploads SSBO data,
+     * so the per-frame clustered build happens exactly once per camera.
+     */
+    virtual void setMesh3DClusteredActive(bool active) = 0;
+
     /** @brief Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
 
@@ -593,7 +613,7 @@ public:
     virtual int getMsaaSamples() const { return msaaSamples; }
 
     /** @brief Pause/resume presenting (Android background / foreground). */
-    void setActive(bool active) {
+    void setActive(bool active) override {
         graphicsActive = active;
         if (active)
             markSwapchainDirty();
@@ -608,7 +628,7 @@ public:
      * (Android background/foreground destroys the native window). Safe to call
      * from a non-render thread; the actual work happens on the render thread.
      */
-    virtual void requestSurfaceRecreate() {}
+    void requestSurfaceRecreate() override {}
 
     /**
      * @brief Called by the Window module when the native window backing the render
@@ -660,27 +680,27 @@ public:
     /**
      * @brief Build a GPU font (glyph atlas texture) from decoded font data.
      * Rasterizes `charset` (UTF-8, default: printable ASCII) up front;
-     * codepoints outside it still advance in print() but aren't drawn.
+     virtual * codepoints outside it still advance in print() but aren't drawn.
      * Caller owns Font* (not tracked by Graphics — unlike newTexture /
      * newMesh / newShader handles, which Graphics owns).
      */
     Font *newFont(font::FontData *data, std::string charset = Font::defaultCharset());
 
     /** @brief Font used by subsequent print() calls; nullptr = none set. */
-    void setFont(Font *font) { currentFont = font; }
+    virtual void setFont(Font *font) { currentFont = font; }
     Font *getFont() const { return currentFont; }
 
     /**
      * @brief Draws UTF-8 `text` with the current font (see setFont), baseline-aligned
      * so that (x,y) is the top-left of the line. Throws if no font is set.
      */
-    void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
-               float scale = 1.f);
+    virtual void print(const std::string &text, float x, float y, const Color &color = Color(1.f, 1.f, 1.f, 1.f),
+                       float scale = 1.f);
 
-	void setShader(Shader *shader);
-	void setShader();
+    virtual void setShader(Shader *shader);
+    virtual void setShader();
 
-	Shader *getShader() const { return currentShader; }
+    Shader *getShader() const { return currentShader; }
 
     /**
      * @brief Create a custom 2D shader from SPIR-V words (vert + frag).
@@ -831,100 +851,101 @@ public:
      */
     AntiAliasing *newAntiAliasing();
 
-    void draw(Drawable *drawable, const glm::mat4 &m);
+    virtual void draw(Drawable *drawable, const glm::mat4 &m);
 
     /**
      * @brief Volumetric occlusion helpers (shadow-pass analogue for light shafts).
      * drawOcclusion skips drawables with castOcclusion=false.
      */
-    void drawOcclusion(Drawable *drawable, const glm::mat4 &m);
-    void drawOcclusionSolid(float x, float y, float w, float h);
-    void drawOcclusionTexture(Texture *texture, float x, float y, float w, float h);
-	// void draw(Texture *texture, Quad *quad, const glm::mat4 &m);
-	// void drawLayer(Texture *texture, int layer, const glm::mat4 &m);
-	// void drawLayer(Texture *texture, int layer, Quad *quad, const glm::mat4 &m);
-	// void drawInstanced(Mesh *mesh, const glm::mat4 &m, int instancecount);
+    virtual void drawOcclusion(Drawable *drawable, const glm::mat4 &m);
+    virtual void drawOcclusionSolid(float x, float y, float w, float h);
+    virtual void drawOcclusionTexture(Texture *texture, float x, float y, float w, float h);
+    // void draw(Texture *texture, Quad *quad, const glm::mat4 &m);
+    // void drawLayer(Texture *texture, int layer, const glm::mat4 &m);
+    // void drawLayer(Texture *texture, int layer, Quad *quad, const glm::mat4 &m);
+    // void drawInstanced(Mesh *mesh, const glm::mat4 &m, int instancecount);
 
 
-	/**
-	 * @brief Draws a series of points at the specified positions.
-	 **/
-	void points(const std::vector<glm::vec2>& positions, const std::vector<Color>& colors);
+    /**
+     * @brief Draws a series of points at the specified positions.
+     **/
+    void points(const std::vector<glm::vec2> &positions, const std::vector<Color> &colors);
 
-	/**
-	 * @brief Draws a series of lines connecting the given vertices.
-	 * @param coords Vertex positions (v1, ..., vn). If v1 == vn the line will be drawn closed.
-	 * @param count Number of vertices.
-	 **/
-	void polyline(const glm::mat4 *vertices, size_t count);
+    /**
+     * @brief Draws a series of lines connecting the given vertices.
+     * @param coords Vertex positions (v1, ..., vn). If v1 == vn the line will be drawn closed.
+     * @param count Number of vertices.
+     **/
+    void polyline(const glm::mat4 *vertices, size_t count);
 
-	/**
-	 * @brief Draws a rectangle.
-	 * @param x Position along x-axis for top-left corner.
-	 * @param y Position along y-axis for top-left corner.
-	 * @param w The width of the rectangle.
-	 * @param h The height of the rectangle.
-	 **/
-	void rectangle(std::string mode, float x, float y, float w, float h);
+    /**
+     * @brief Draws a rectangle.
+     * @param x Position along x-axis for top-left corner.
+     * @param y Position along y-axis for top-left corner.
+     * @param w The width of the rectangle.
+     * @param h The height of the rectangle.
+     **/
+    void rectangle(std::string mode, float x, float y, float w, float h);
 
-	/**
-	 * @brief Variant of rectangle that draws a rounded rectangle.
-	 * @param mode The mode of drawing (line/filled).
-	 * @param x X-coordinate of top-left corner
-	 * @param y Y-coordinate of top-left corner
-	 * @param w The width of the rectangle.
-	 * @param h The height of the rectangle.
-	 * @param rx The radius of the corners on the x axis
-	 * @param ry The radius of the corners on the y axis
-	 * @param points The number of points to use per corner
-	 **/
-	void rectangle(std::string mode, float x, float y, float w, float h, float rx, float ry, int points);
-	void rectangle(std::string mode, float x, float y, float w, float h, float rx, float ry);
+    /**
+     * @brief Variant of rectangle that draws a rounded rectangle.
+     * @param mode The mode of drawing (line/filled).
+     * @param x X-coordinate of top-left corner
+     * @param y Y-coordinate of top-left corner
+     * @param w The width of the rectangle.
+     * @param h The height of the rectangle.
+     * @param rx The radius of the corners on the x axis
+     * @param ry The radius of the corners on the y axis
+     * @param points The number of points to use per corner
+     **/
+    void rectangle(std::string mode, float x, float y, float w, float h, float rx, float ry, int points);
+    void rectangle(std::string mode, float x, float y, float w, float h, float rx, float ry);
 
-	/**
-	 * @brief Draws a circle using the specified arguments.
-	 * @param mode The mode of drawing (line/filled).
-	 * @param x X-coordinate.
-	 * @param y Y-coordinate.
-	 * @param radius Radius of the circle.
-	 * @param points Number of points to use to draw the circle.
-	 **/
-	void circle(std::string mode, float x, float y, float radius, int points);
-	void circle(std::string mode, float x, float y, float radius);
+    /**
+     * @brief Draws a circle using the specified arguments.
+     * @param mode The mode of drawing (line/filled).
+     * @param x X-coordinate.
+     * @param y Y-coordinate.
+     * @param radius Radius of the circle.
+     * @param points Number of points to use to draw the circle.
+     **/
+    void circle(std::string mode, float x, float y, float radius, int points);
+    void circle(std::string mode, float x, float y, float radius);
 
-	/**
-	 * @brief Draws an ellipse using the specified arguments.
-	 * @param mode The mode of drawing (line/filled).
-	 * @param x X-coordinate of center
-	 * @param y Y-coordinate of center
-	 * @param a Radius in x-direction
-	 * @param b Radius in y-direction
-	 * @param points Number of points to use to draw the circle.
-	 **/
-	void ellipse(std::string mode, float x, float y, float a, float b, int points);
-	void ellipse(std::string mode, float x, float y, float a, float b);
+    /**
+     * @brief Draws an ellipse using the specified arguments.
+     * @param mode The mode of drawing (line/filled).
+     * @param x X-coordinate of center
+     * @param y Y-coordinate of center
+     * @param a Radius in x-direction
+     * @param b Radius in y-direction
+     * @param points Number of points to use to draw the circle.
+     **/
+    void ellipse(std::string mode, float x, float y, float a, float b, int points);
+    void ellipse(std::string mode, float x, float y, float a, float b);
 
-	/**
-	 * @brief Draws an arc using the specified arguments.
-	 * @param drawmode The mode of drawing (line/filled).
-	 * @param arcmode The type of arc.
-	 * @param x X-coordinate.
-	 * @param y Y-coordinate.
-	 * @param radius Radius of the arc.
-	 * @param angle1 The angle at which the arc begins.
-	 * @param angle2 The angle at which the arc terminates.
-	 * @param points Number of points to use to draw the arc.
-	 **/
-	void arc(std::string mode, std::string arcmode, float x, float y, float radius, float angle1, float angle2, int points);
-	void arc(std::string mode, std::string arcmode, float x, float y, float radius, float angle1, float angle2);
+    /**
+     * @brief Draws an arc using the specified arguments.
+     * @param drawmode The mode of drawing (line/filled).
+     * @param arcmode The type of arc.
+     * @param x X-coordinate.
+     * @param y Y-coordinate.
+     * @param radius Radius of the arc.
+     * @param angle1 The angle at which the arc begins.
+     * @param angle2 The angle at which the arc terminates.
+     * @param points Number of points to use to draw the arc.
+     **/
+    void arc(std::string mode, std::string arcmode, float x, float y, float radius, float angle1, float angle2,
+             int points);
+    void arc(std::string mode, std::string arcmode, float x, float y, float radius, float angle1, float angle2);
 
-	/**
-	 * @brief Draws a polygon with an arbitrary number of vertices.
-	 * @param mode The type of drawing (line/filled).
-	 * @param coords Vertex positions.
-	 * @param count Vertex array size.
-	 **/
-	void polygon(std::string mode, const std::vector<glm::vec2>& vertices, bool skipLastFilledVertex = true);
+    /**
+     * @brief Draws a polygon with an arbitrary number of vertices.
+     * @param mode The type of drawing (line/filled).
+     * @param coords Vertex positions.
+     * @param count Vertex array size.
+     **/
+    void polygon(std::string mode, const std::vector<glm::vec2> &vertices, bool skipLastFilledVertex = true);
 
 
     void push(bool all);

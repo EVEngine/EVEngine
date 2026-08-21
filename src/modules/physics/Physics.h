@@ -17,7 +17,7 @@ class Fluid;
 class Physics : public Module {
 public:
     Module_REG(Physics);
-    Physics() = default;
+    Physics();
     ~Physics() override = default;
 
     /** @brief Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE). */

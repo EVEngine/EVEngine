@@ -3,13 +3,15 @@
 #include "procgen/Params.h"
 #include "procgen/texture/TextureRecipe.h"
 
-#include "image/ImageData.h"
-
 #include <cstdint>
 #include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+namespace eve::image {
+class ImageData;
+}
 
 namespace eve::procgen {
 

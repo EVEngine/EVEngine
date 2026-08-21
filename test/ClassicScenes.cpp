@@ -27,7 +27,24 @@
 
 #include "data/ByteData.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Material.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
 using eve::graphics::Color;
 #include "graphics/Light.h"
@@ -70,7 +87,6 @@ void openGfxWindow(eve::window::Window *&win, Graphics *&gfx, int w = 960, int h
     gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = w;
     s.height = h;
@@ -1193,11 +1209,9 @@ double benchGltfOrbitScene(Graphics *gfx, const char *relDir, const char *gltfFi
 
         auto path = makeOrbitPath(actors.bounds, elev, distScale);
         const double best = benchAllConfigs(gfx, actors, path, tag, polishMetalsForIbl);
-        delete md;
         return best;
     } catch (const std::exception &ex) {
         std::printf("ClassicScenes.perf[%s]: skip after error: %s\n", tag, ex.what());
-        delete md;
         return 0.0;
     }
 }
@@ -1297,7 +1311,6 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     REQUIRE(botL > 0.02f);
     REQUIRE(topL > 0.01f);
 
-    delete md;
     win->close();
 }
 
@@ -1387,7 +1400,6 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     REQUIRE(L[2] > 0.02f);
     REQUIRE(std::abs(L[2] - L[1]) < 0.45f);
 
-    delete md;
     win->close();
 }
 
@@ -1473,7 +1485,6 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
         auto L = flyThroughConfigs(gfx, actors, path, tag, polishMetalsForIbl);
         expectLightingResponse(L);
 
-        delete md;
         md = nullptr;
         win->close();
         win = nullptr;
@@ -1488,11 +1499,9 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
             // Chaining many large glTF scenes can exhaust device memory / lose the surface.
             std::printf("ClassicScenes.%s: soft-skip after GPU/surface error: %s\n", tag,
                         msg.c_str());
-            delete md;
             if (win) win->close();
             return false;
         }
-        delete md;
         if (win) win->close();
         throw;
     }
@@ -1630,7 +1639,6 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
             setupLights(actors, actors.bounds);
             note("cornell", benchAllConfigs(gfx, actors, makeCornellPath(actors.bounds), "cornell",
                                             true));
-            delete md;
         }
     } catch (const std::exception &ex) {
         std::printf("ClassicScenes.perf[cornell]: skip after error: %s\n", ex.what());
@@ -1654,7 +1662,6 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
             setSunColor(actors, 1.f, 0.98f, 0.94f, 6.f);
             note("sponza", benchAllConfigs(gfx, actors, makeSponzaPath(actors.bounds), "sponza",
                                            false));
-            delete md;
         } else {
             std::printf("ClassicScenes.perf[sponza]: skip (asset not downloaded)\n");
         }

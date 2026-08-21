@@ -1,7 +1,11 @@
 #pragma once
 
+#include <vector>
 #include "map/TileLayer.h"
-#include "graphics/DrawItem2D.h"
+
+namespace eve::graphics {
+struct DrawItem2D;
+}
 
 #include <vector>
 

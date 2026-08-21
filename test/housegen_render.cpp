@@ -2,12 +2,31 @@
 #include "housegen/HouseGenerator.h"
 #include "housegen/HouseLayout.h"
 
+#include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
 #include "graphics/Light.h"
+#include "graphics/Material.h"
 #include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "data/ByteData.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "medialoader/model/ModelLoader.h"
@@ -273,7 +292,6 @@ TEST_CASE("housegen.renderPreview") {
     auto *gfx = Graphics::create();
     REQUIRE(window != nullptr);
     REQUIRE(gfx != nullptr);
-    window->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 960;
     settings.height = 640;
@@ -481,7 +499,6 @@ TEST_CASE("housegen.materialPreview") {
     REQUIRE(window != nullptr);
     REQUIRE(gfx != nullptr);
     REQUIRE(models != nullptr);
-    window->setGraphics(gfx);
     eve::window::WindowSettings settings;
     settings.width = 960;
     settings.height = 640;

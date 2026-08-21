@@ -4,7 +4,7 @@ project(EVEngine)
 set(EVENGINE_MAJOR_VERSION "0")
 set(EVENGINE_MINOR_VERSION "1")
 set(EVENGINE_PATCH_VERSION "0")
-set(EVENGINE_DEV_VERSION "-dev")
+set(EVENGINE_DEV_VERSION "")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
 
@@ -714,6 +714,13 @@ function(check_third_party_project name repo)
         -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-smooth-normals.patch
         -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
         -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Second patch: export squirrel/ssq symbols from the win32 host binary
+    # (paths relative to the third-party aggregate root).
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/third-party-squirrel-ssq-export.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     if(_eve_tp_use_ninja)
         ExternalProject_Add(${name}

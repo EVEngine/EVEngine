@@ -1,8 +1,7 @@
 #pragma once
 
 #include "common/ECS.h"
-#include "graphics/Canvas.h"
-#include "graphics/Texture.h"
+#include "graphics/Color.h"
 #include "map/TileOrientation.h"
 
 #include <cstdint>
@@ -13,6 +12,7 @@ namespace eve::graphics {
 class Graphics;
 class Camera2D;
 class Canvas;
+class Texture;
 }  // namespace eve::graphics
 
 namespace eve::map {

@@ -3,6 +3,7 @@
 
 #include "common/Exception.h"
 #include "data/ByteData.h"
+#include "filesystem/Filesystem.h"
 #include "font/Font.h"
 #include "font/FontData.h"
 #include "image/ImageData.h"
@@ -86,6 +87,32 @@ TEST_CASE("font.newFontData.ttf") {
     CHECK(glyph->getWidth() > 0);
     CHECK(glyph->getHeight() > 0);
     CHECK_EQ(glyph->getFormat(), std::string("RGBA8"));
+}
+
+TEST_CASE("font.newFontDataFromFile.cached") {
+    auto raw = readBinaryFile(pathBesideThisSource("fonts/FontAwesome.ttf"));
+    REQUIRE(!raw.empty());
+
+    auto *fs = eve::filesystem::Filesystem::create();
+    REQUIRE(fs != nullptr);
+    REQUIRE(fs->setIdentity("ev_ut_font_cache", true));
+    REQUIRE(fs->setupWriteDirectory());
+    const char *name = "cached_font.ttf";
+    fs->write(name, raw.data(), raw.size());
+
+    auto *module = fontModule();
+    eve::font::FontData *a = module->newFontDataFromFile(name, 16);
+    eve::font::FontData *b = module->newFontDataFromFile(name, 16);
+    REQUIRE(a != nullptr);
+    CHECK(a == b);  // one decoded face per (path, size)
+    CHECK_EQ(a->getSize(), 16);
+
+    eve::font::FontData *c = module->newFontDataFromFile(name, 24);
+    REQUIRE(c != nullptr);
+    CHECK(c != a);  // different size is a different cache entry
+    CHECK_EQ(c->getSize(), 24);
+
+    fs->remove(name);
 }
 
 TEST_CASE("font.newFontData.invalidSize") {

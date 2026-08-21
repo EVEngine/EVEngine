@@ -25,6 +25,12 @@
 set -euo pipefail
 
 SDK="${1:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
+# find_package(EVEngine) does not resolve a relative EVEngine_DIR; normalize
+# the SDK root to an absolute path so the consumer configure is reproducible.
+case "$SDK" in
+  /*) ;;
+  *) SDK="$(cd "$(dirname "$SDK")" && pwd)/$(basename "$SDK")" ;;
+esac
 PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
 EXPECTED="${3:-}"
 
@@ -96,7 +102,13 @@ echo "== [test-sdk] platform=$PLAT sdk=$SDK runtime=$RUNTIME =="
 [ -x "$SDK/bin/$RUNTIME" ] || fail "missing runtime bin/$RUNTIME"
 [ -d "$SDK/include/eve" ] || fail "missing include/eve"
 [ "$(find "$SDK/include/eve" -name '*.h' | wc -l)" -gt 0 ] || fail "no headers under include/eve"
-[ -d "$SDK/lib" ] || fail "missing lib/"
+case "$PLAT" in
+  win32|android)
+    # Windows ships eve.lib for plugins; Android ships libmain.so + packaging .so.
+    [ -d "$SDK/lib" ] || fail "missing lib/"
+    ;;
+  # linux/macosx have no engine import libs: plugins are built by the consumer.
+esac
 [ -f "$SDK/cmake/EVEngineConfig.cmake" ] || fail "missing cmake/EVEngineConfig.cmake"
 [ -f "$SDK/cmake/EVEnginePlugin.cmake" ] || fail "missing cmake/EVEnginePlugin.cmake"
 [ -d "$SDK/platform" ] || fail "missing platform/"
@@ -115,13 +127,13 @@ fi
 echo "OK: SDK version marker -> $VERSION_FILE"
 
 # --- 2. Host runtime runs ------------------------------------------------------
-VER="$("$SDK/bin/$RUNTIME" -v 2>&1)"
+VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || true
 echo "  eve -v -> ${VER:-<empty>}"
 if [ -n "$EXPECTED" ]; then
   echo "$VER" | grep -qF "$EXPECTED" || \
-    fail "eve -v did not contain expected version '$EXPECTED'"
+    fail "eve -v did not contain expected version '$EXPECTED' (output: $VER)"
 else
-  echo "$VER" | grep -qE '[0-9]+(\.[0-9]+)+' || fail "eve -v did not print a version"
+  echo "$VER" | grep -qE '[0-9]+(\.[0-9]+)+' || fail "eve -v did not print a version (output: $VER)"
 fi
 echo "OK: host runtime executes"
 
@@ -190,7 +202,9 @@ EOF
 
 CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE=Release)
 if [ "$PLAT" = "win32" ]; then
-  CMAKE_ARGS+=(-G "Visual Studio 17 2022" -A x64)
+  # Default generator: GitHub-hosted windows images ship VS 2026, local dev
+  # machines may have 2022/2026. Let CMake pick the installed instance.
+  CMAKE_ARGS+=(-A x64)
 fi
 cmake "${CMAKE_ARGS[@]}" >"$WORK/plugin-cmake.log" 2>&1 || {
   tail -n 30 "$WORK/plugin-cmake.log"

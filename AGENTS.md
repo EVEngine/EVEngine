@@ -5,6 +5,9 @@ build/test/run commands live in [`Readme.en.md`](Readme.en.md) and the root
 [`Makefile`](Makefile) — use those; the notes below cover the non-obvious platform
 caveats. The Cursor Cloud VM is Linux; on a Windows host use the Windows section.
 
+> CI 问题调试：本地复现 / WSL2 / SSH 到 Mac mini 的完整手册见本机
+> `.local-debug/CI-DEBUG-PLAYBOOK.md`（含私有机器信息，**勿提交到 GitHub**）。
+
 ## Cursor Cloud specific instructions
 
 On this Linux VM the host target is `build/linux-debug`.
@@ -138,3 +141,40 @@ make wsl/linux-debug
 - Parameter validation and internal invariants use `EV_PARAM_CHECK` / `EV_ASSERT`
   from `src/engine/common/Assert.h` (zeroerr-backed): enabled in Debug, compiled
   out in Release unless the build is configured with `-DEVENGINE_ENABLE_ASSERTS=ON`.
+
+## Collaboration conventions (multi-agent parallel work)
+
+These rules exist to keep several agents working in the same tree without
+stepping on each other. `docs/dev/模块编排与裁剪架构.md` explains the layering
+model behind them.
+
+- **Cross-module calls go through interfaces, not includes.** When a lower
+  module must reach a higher one (e.g. `filesystem` reaching `graphics`), the
+  consumer declares an interface (in `src/engine/common/` or its own module),
+  the provider registers it via `eve::cap::provide/query`
+  (`src/engine/common/Capability.h`). Do not add a new upward `#include` —
+  `scripts/module_depgraph.py --check` (CI `layering` job) fails on it.
+- **One manifest, one boot list.** New modules are declared only in
+  `cmake/module_manifest.cmake`; the link list, third-party closure and
+  `eve.moduleList` are derived. Do not hand-edit `EVELIBS` / `ThirdParty` /
+  `load.nut` module wiring.
+- **Keep public headers free of cross-module includes.** Prefer forward
+  declarations and Pimpl so a low-level type change does not recompile every
+  dependent module. Check `python3 scripts/module_depgraph.py` for `*` marks
+  (leaks into a module's own headers).
+- **Big files get split, not extended.** A `.cpp` over ~1000 lines is a
+  single-agent-at-a-time file. Split it along existing section comments into
+  multiple TUs (pure moves, no behavior change) instead of appending more
+  methods.
+- **Formatting is enforced on changed lines of existing files.** CI runs
+  `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`) with
+  `git clang-format`; pre-existing debt in untouched regions does not block a
+  PR, and brand-new files are skipped with a warning. Before committing, run
+  `git clang-format` (formats only your changed lines) and format new files by
+  hand; never reformat whole files unrelated to your change.
+- **Tests stay per-module.** New tests go into their own file under `test/`
+  (zeroerr cases; each case is process-isolated via CTest). Do not grow a
+  shared test main.
+- **PR granularity.** An interface change ships as one PR that updates the
+  interface, every backend and every consumer — no intermediate commits that
+  break CI. Use `codex/` branch prefixes for agent work.

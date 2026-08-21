@@ -4,8 +4,10 @@
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
 #include "common/Exception.h"
+#include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/Texture.h"
 
 #include <algorithm>
 #include <cmath>

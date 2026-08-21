@@ -4,6 +4,7 @@ file(GLOB all_test_cpp
   ECS.cpp
   capability.cpp
   data.cpp
+  resource.cpp
   json.cpp
   filesystem.cpp
   filesystem_cpp.cpp
@@ -180,6 +181,19 @@ else()
   target_link_libraries(unit_test eve_engine_includes)
 endif()
 
+# zeroerr's REQUIRE/CHECK/ASSERT are compiled out under ZEROERR_NO_ASSERT
+# (the root CMakeLists strips them from non-Debug builds). That silently
+# deletes test setup calls written as REQUIRE(initSideEffect()), which made
+# every graphics test fail in Release with "graphics not initialized". Keep
+# test assertions live in the test binary so Release CI actually asserts.
+foreach(_eve_test_tgt IN ITEMS unit_test main)
+  if(TARGET ${_eve_test_tgt})
+    target_compile_options(${_eve_test_tgt} PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  endif()
+endforeach()
+
 # Several tests include Poco headers (data, mcp, dap, remotesync). MSVC would
 # otherwise #pragma-comment PocoFoundationd.lib, which the third-party prefix
 # does not ship (it installs PocoFoundationmdd.lib).
@@ -203,7 +217,7 @@ if(WIN32)
     set(ThirdParty ${ThirdParty} physfsmdd medialoader_imagemdd medialoader_modelmdd medialoader_soundmdd assimpmdd zlibstaticd lz4mdd Box2Dmdd box3dd
       vorbis-staticmdd vorbisfile-staticmdd ogg-staticmdd modplug-staticmdd mpg123mdd OpenAL32mdd freetyped)
   else()
-    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstatic lz4md Box2Dmd box3dmd
+    set(ThirdParty ${ThirdParty} physfsmd medialoader_imagemd medialoader_modelmd medialoader_soundmd assimpmd zlibstaticmd lz4md Box2Dmd box3dmd
       vorbis-staticmd vorbisfile-staticmd ogg-staticmd modplug-staticmd mpg123md OpenAL32md freetypemd)
   endif()
 else()
@@ -222,7 +236,7 @@ if(WIN32 AND (${CMAKE_BUILD_TYPE} STREQUAL "Debug"))
     ${SystemLibraries})
 else()
   if(WIN32)
-    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2
+    set(ThirdParty ${ThirdParty} simplesquirrel_staticmd sqstdlib_staticmd squirrel_staticmd SDL2md
       PocoDataSQLitemd PocoDatamd PocoFoundationmd PocoNetmd PocoJSONmd PocoXMLmd
       ${SystemLibraries})
   elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))

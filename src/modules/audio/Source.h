@@ -1,8 +1,6 @@
 #pragma once
 
 #include "common/Object.h"
-#include "sound/SoundData.h"
-#include "sound/Decoder.h"
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -16,6 +14,10 @@
 #include "AudioTypes.h"
 
 namespace eve {
+namespace sound {
+class SoundData;
+class Decoder;
+}  // namespace sound
 namespace audio {
 
 class Audio;

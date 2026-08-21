@@ -19,7 +19,7 @@ namespace eve::particles {
 class Particles : public Module {
 public:
     Module_REG(Particles);
-    Particles() = default;
+    Particles();
     ~Particles() override = default;
 
     ParticleEmitter *newEmitter(int bufferSize = 1000);

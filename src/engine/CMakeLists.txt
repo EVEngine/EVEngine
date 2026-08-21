@@ -98,6 +98,11 @@ if(WIN32 AND TARGET ${EVENGINE_NATIVE_TARGET})
     target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
     # Plain form: the host target's other third-party libs are linked plainly.
     target_link_libraries(${EVENGINE_NATIVE_TARGET} EVBacktrace)
+    # Plugins link against eve.lib and need the host's full symbol surface
+    # (Squirrel C API, ssq, engine internals), not just EVENGINE_API-marked
+    # classes. Export every symbol from eve.exe so eve.lib satisfies plugins.
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
 if(NOT EVENGINE_ANDROID_TEST_APP)

@@ -1,13 +1,33 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "map/Map.h"
-#include "map/TileLayer.h"
-#include "map/Pathfinder.h"
-#include "map/Path.h"
-#include "map/FlowField.h"
-#include "map/TileOrientation.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+#include "map/FlowField.h"
+#include "map/Map.h"
+#include "map/Path.h"
+#include "map/Pathfinder.h"
+#include "map/TileLayer.h"
+#include "map/TileOrientation.h"
 #include "window/Window.h"
 
 #include <SDL2/SDL.h>
@@ -302,7 +322,6 @@ TEST_CASE("map.path.astar.routePreview") {
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
     REQUIRE(gfx != nullptr);
-    win->setGraphics(gfx);
     eve::window::WindowSettings s;
     s.width = 640;
     s.height = 400;

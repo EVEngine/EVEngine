@@ -573,7 +573,6 @@ std::string EditorHost::openWindow(const std::string& title, int width, int heig
     try {
         if (!I.win) I.win = ModuleManager::requireInstance<eve::window::Window>("Window");
         if (!I.gfx) I.gfx = ModuleManager::requireInstance<eve::graphics::Graphics>("Graphics");
-        I.win->setGraphics(I.gfx);
         eve::window::WindowSettings s;
         s.width    = static_cast<uint16_t>(width > 0 ? width : 1280);
         s.height   = static_cast<uint16_t>(height > 0 ? height : 800);

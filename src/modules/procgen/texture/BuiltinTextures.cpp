@@ -4,6 +4,8 @@
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
+#include "image/ImageData.h"
+
 #include <algorithm>
 #include <cmath>
 #include <functional>

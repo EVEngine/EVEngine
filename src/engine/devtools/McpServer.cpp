@@ -12,17 +12,15 @@
 
 #include "scripts.h"
 
+#include "common/AudioQuery.h"
+#include "common/Capability.h"
+#include "common/EditorHost.h"
 #include "common/Module.h"
-#include "audio/Audio.h"
-#include "graphics/Graphics.h"
-#include "image/ImageData.h"
-#include "particles/Particles.h"
-#include "physics/Physics.h"
-#include "physics/World.h"
-#include "procgen/Procgen.h"
-#include "scene/Scene.h"
-#include "scene/SceneHost.h"
-#include "ui/EditorHost.h"
+#include "common/ParticlesQuery.h"
+#include "common/PhysicsQuery.h"
+#include "common/ProcgenQuery.h"
+#include "common/RenderCapture.h"
+#include "common/SceneQuery.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
@@ -47,8 +45,6 @@
 
 namespace eve::dev {
 namespace {
-
-using eve::ui::EditorHost;
 
 std::string mcpStringify(const Poco::Dynamic::Var& v) {
     std::ostringstream oss;
@@ -168,7 +164,8 @@ std::string engineStatusJson(const McpServer& mcp) {
     }
     o->set("dapPort", DebugAdapter::instance().port());
     o->set("gameRoot", mcp.gameRoot());
-    o->set("host", EditorHost::instance().status());
+    o->set("host", eve::cap::query<eve::IEditorHost>() ? eve::cap::query<eve::IEditorHost>()->status()
+                                                       : std::string("unavailable"));
     o->set("callgraphEvents", static_cast<int>(mcpCallgraphEvents()));
     o->set("ai", AiPanel::instance().statusLine());
     return mcpStringify(Poco::Dynamic::Var(o));
@@ -418,36 +415,31 @@ std::string sceneDirectorToolError(const std::string& name, const std::string& e
     return "error: " + name + ": " + (err.empty() ? "unknown" : err);
 }
 
-// --- Game-feature registries (MCP tools create transient worlds/emitters) ---
-std::vector<eve::physics::World*>& mcpPhysicsWorlds() {
-    static std::vector<eve::physics::World*> worlds;
-    return worlds;
-}
-
-eve::physics::World* mcpPhysicsWorld(int id) {
-    auto& ws = mcpPhysicsWorlds();
-    return (id >= 0 && id < static_cast<int>(ws.size())) ? ws[static_cast<size_t>(id)] : nullptr;
-}
-
-std::string renderStatusText(eve::graphics::Graphics* gfx) {
+std::string renderStatusText(eve::IRenderCapture* cap) {
     Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    if (!gfx) {
+    if (!cap) {
         o->set("error", "Graphics module not available");
         return mcpStringify(Poco::Dynamic::Var(o));
     }
-    o->set("width", gfx->getWidth());
-    o->set("height", gfx->getHeight());
-    o->set("pixelWidth", gfx->getPixelWidth());
-    o->set("pixelHeight", gfx->getPixelHeight());
-    o->set("had3DThisFrame", gfx->had3DThisFrame());
-    o->set("readbackEnabled", gfx->isScreenReadbackEnabled());
+    const eve::RenderStatusInfo s = cap->status();
+    o->set("width", s.width);
+    o->set("height", s.height);
+    o->set("pixelWidth", s.pixelWidth);
+    o->set("pixelHeight", s.pixelHeight);
+    o->set("had3DThisFrame", s.had3DThisFrame);
+    o->set("readbackEnabled", s.readbackEnabled);
+    o->set("backend", s.backend);
     o->set("renderFlowEvents", static_cast<int>(DevTool::instance().renderFlow().eventCount()));
     return mcpStringify(Poco::Dynamic::Var(o));
 }
 
-eve::graphics::Graphics* mcpGraphics() {
-    return eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-}
+eve::IRenderCapture*  mcpCapture() { return eve::cap::query<eve::IRenderCapture>(); }
+eve::ISceneQuery*     mcpScene() { return eve::cap::query<eve::ISceneQuery>(); }
+eve::IPhysicsQuery*   mcpPhysics() { return eve::cap::query<eve::IPhysicsQuery>(); }
+eve::IProcgenQuery*   mcpProcgen() { return eve::cap::query<eve::IProcgenQuery>(); }
+eve::IParticlesQuery* mcpParticles() { return eve::cap::query<eve::IParticlesQuery>(); }
+eve::IAudioQuery*     mcpAudio() { return eve::cap::query<eve::IAudioQuery>(); }
+eve::IEditorHost*     mcpHost() { return eve::cap::query<eve::IEditorHost>(); }
 
 std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object::Ptr args) {
     auto& dbg = Debugger::instance();
@@ -457,219 +449,207 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     // ============================= Scene / Entity =============================
     if (name == "eve_scene_status") {
-        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
+        auto*                   scene = mcpScene();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         if (!scene) {
             o->set("error", "Scene module not available");
             return mcpStringify(Poco::Dynamic::Var(o));
         }
-        auto* host = scene->current();
-        if (!host) {
+        const std::string host = scene->activeHost();
+        if (host.empty()) {
             o->set("activeHost", Poco::Dynamic::Var());
             o->set("nodeCount", 0);
             return mcpStringify(Poco::Dynamic::Var(o));
         }
-        o->set("activeHost", host->getName());
-        o->set("nodeCount", host->getNodeCount());
-        o->set("rootId", host->getRoot() ? host->getRoot()->id : std::string(""));
+        o->set("activeHost", host);
+        o->set("nodeCount", scene->nodeCount());
+        o->set("rootId", scene->rootId());
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_scene_nodes") {
-        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
-        if (!scene || !scene->current()) return "error: no active scene host";
-        auto* host = scene->current();
+        auto* scene = mcpScene();
+        if (!scene || scene->activeHost().empty()) return "error: no active scene host";
         const int limit = argInt(args, "limit", 500);
         Poco::JSON::Array::Ptr arr = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-        host->walkDepthFirst([&](eve::scene::SceneHost*, int, eve::scene::SceneNode& n) {
-            if (static_cast<int>(arr->size()) >= limit) return;
+        for (const auto& n : scene->nodes(limit)) {
             Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
             o->set("id", n.id);
             o->set("name", n.name);
-            o->set("path", host->getPathById(n.id));
+            o->set("path", n.path);
             o->set("visible", n.visible);
             arr->add(o);
-        });
+        }
         return mcpStringify(Poco::Dynamic::Var(arr));
     }
 
     if (name == "eve_scene_node_get") {
-        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
-        if (!scene || !scene->current()) return "error: no active scene host";
-        auto* host = scene->current();
+        auto* scene = mcpScene();
+        if (!scene || scene->activeHost().empty()) return "error: no active scene host";
         const std::string id = argString(args, "id");
-        auto* n = id.empty() ? nullptr : host->findById(id);
-        if (!n) return "error: node not found: " + id;
+        eve::SceneNodeInfo n;
+        if (id.empty() || !scene->getNode(id, &n)) return "error: node not found: " + id;
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        o->set("id", n->id);
-        o->set("name", n->name);
-        o->set("path", host->getPathById(id));
-        o->set("visible", n->visible);
-        o->set("x", n->x); o->set("y", n->y); o->set("z", n->z);
-        o->set("yaw", n->yaw); o->set("pitch", n->pitch); o->set("roll", n->roll);
-        o->set("sx", n->sx); o->set("sy", n->sy); o->set("sz", n->sz);
-        auto* parent = host->getParentById(id);
-        o->set("parent", parent ? parent->id : std::string(""));
+        o->set("id", n.id);
+        o->set("name", n.name);
+        o->set("path", n.path);
+        o->set("visible", n.visible);
+        o->set("x", n.x);
+        o->set("y", n.y);
+        o->set("z", n.z);
+        o->set("yaw", n.yaw);
+        o->set("pitch", n.pitch);
+        o->set("roll", n.roll);
+        o->set("sx", n.sx);
+        o->set("sy", n.sy);
+        o->set("sz", n.sz);
+        o->set("parent", n.parent);
         Poco::JSON::Array::Ptr kids = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-        for (int i = 0; i < host->getChildCountById(id); ++i) {
-            auto* c = host->getChildAtById(id, i);
-            if (c) kids->add(c->id);
-        }
+        for (const auto& c : n.children) kids->add(c);
         o->set("children", kids);
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_scene_node_set") {
-        auto* scene = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
-        if (!scene || !scene->current()) return "error: no active scene host";
-        auto* host = scene->current();
+        auto* scene = mcpScene();
+        if (!scene || scene->activeHost().empty()) return "error: no active scene host";
         const std::string id = argString(args, "id");
-        auto* n = id.empty() ? nullptr : host->findById(id);
-        if (!n) return "error: node not found: " + id;
+        if (id.empty()) return "error: node not found: " + id;
         bool changed = false;
         if (args && args->has("x") && args->has("y") && args->has("z")) {
-            n->x = argFloat(args, "x"); n->y = argFloat(args, "y"); n->z = argFloat(args, "z");
-            changed = true;
+            changed = scene->setNodeTransform(id, argFloat(args, "x"), argFloat(args, "y"), argFloat(args, "z"));
         }
         if (args && args->has("visible")) {
-            n->visible = argBool(args, "visible");
-            changed = true;
+            changed = scene->setNodeVisible(id, argBool(args, "visible")) || changed;
         }
-        if (changed) host->markTransformDirty();
-        return "ok";
+        return changed ? "ok" : "error: node not found: " + id;
     }
 
     // ============================= Procgen =============================
     if (name == "eve_procgen_recipes") {
-        auto* pg = eve::ModuleManager::getInstance<eve::procgen::Procgen>("Procgen");
+        auto* pg = mcpProcgen();
         if (!pg) return "error: Procgen module not available";
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        auto addList = [&](const char* key, int count, auto getId) {
+        auto                    addList = [&](const char* key, const std::vector<std::string>& items) {
             Poco::JSON::Array::Ptr a = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-            for (int i = 0; i < count; ++i) a->add(getId(i));
+            for (const auto& it : items) a->add(it);
             o->set(key, a);
         };
-        addList("algorithms", pg->getAlgorithmCount(),
-                [&](int i) { return pg->getAlgorithmId(i); });
-        addList("meshRecipes", pg->getMeshRecipeCount(),
-                [&](int i) { return pg->getMeshRecipeId(i); });
-        addList("textureRecipes", pg->getTextureRecipeCount(),
-                [&](int i) { return pg->getTextureRecipeId(i); });
-        addList("pbrRecipes", pg->getPbrRecipeCount(),
-                [&](int i) { return pg->getPbrRecipeId(i); });
+        addList("algorithms", pg->algorithms());
+        addList("meshRecipes", pg->meshRecipes());
+        addList("textureRecipes", pg->textureRecipes());
+        addList("pbrRecipes", pg->pbrRecipes());
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_procgen_map") {
-        auto* pg = eve::ModuleManager::getInstance<eve::procgen::Procgen>("Procgen");
+        auto* pg = mcpProcgen();
         if (!pg) return "error: Procgen module not available";
         const std::string algorithm = argString(args, "algorithm");
         if (algorithm.empty()) return "error: missing algorithm";
-        auto* params = pg->newParams();
-        params->setSize(argInt(args, "width", 32), argInt(args, "height", 32));
-        if (args && args->has("seed")) params->setSeed(static_cast<uint32_t>(argInt(args, "seed")));
+        std::vector<std::pair<std::string, std::string>> params;
         for (const auto& key : {"roomCount", "roomMin", "roomMax", "corridorWidth", "autotile",
                                 "scale", "octaves"}) {
-            if (args && args->has(key)) params->setInt(key, argInt(args, key));
+            if (args && args->has(key)) params.emplace_back(key, std::to_string(argInt(args, key)));
         }
-        if (args && args->has("corridorStyle"))
-            params->setString("corridorStyle", argString(args, "corridorStyle"));
-        auto* grid = pg->generate(algorithm, params);
-        if (!grid) return "error: generate failed: " + pg->lastError();
-        std::string json = pg->gridToJson(grid);
-        delete grid;
-        return json.empty() ? "error: empty grid" : json;
+        if (args && args->has("corridorStyle")) params.emplace_back("corridorStyle", argString(args, "corridorStyle"));
+        std::string err;
+        std::string json = pg->generateMap(algorithm, argInt(args, "width", 32), argInt(args, "height", 32),
+                                           static_cast<uint32_t>(argInt(args, "seed", 0)), params, &err);
+        if (json.empty()) return "error: " + (err.empty() ? std::string("empty grid") : err);
+        return json;
     }
 
     if (name == "eve_procgen_mesh") {
-        auto* pg = eve::ModuleManager::getInstance<eve::procgen::Procgen>("Procgen");
+        auto* pg = mcpProcgen();
         if (!pg) return "error: Procgen module not available";
         const std::string recipe = argString(args, "recipe");
         if (recipe.empty()) return "error: missing recipe";
-        auto* params = pg->newParams();
-        if (args && args->has("seed")) params->setSeed(static_cast<uint32_t>(argInt(args, "seed")));
-        if (args && args->has("width")) params->setInt("width", argInt(args, "width"));
-        if (args && args->has("height")) params->setInt("height", argInt(args, "height"));
-        if (args && args->has("depth")) params->setInt("depth", argInt(args, "depth"));
-        auto* mesh = pg->buildMesh(recipe, params);
-        if (!mesh) return "error: build failed: " + pg->lastError();
+        std::string err;
+        std::string json =
+            pg->buildMesh(recipe, static_cast<uint32_t>(argInt(args, "seed", 0)), argInt(args, "width", -1),
+                          argInt(args, "height", -1), argInt(args, "depth", -1), &err);
+        if (json.empty()) return "error: " + (err.empty() ? std::string("build failed") : err);
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("recipe", recipe);
-        o->set("vertices", mesh->getVertexCount());
-        o->set("triangles", mesh->getIndexCount() / 3);
-        std::string meta = mesh->getMeta("error", "");
-        if (!meta.empty()) o->set("error", meta);
-        delete mesh;
+        try {
+            Poco::JSON::Parser      parser;
+            Poco::Dynamic::Var      parsed = parser.parse(json);
+            Poco::JSON::Object::Ptr jo     = parsed.extract<Poco::JSON::Object::Ptr>();
+            o->set("vertices", jo->get("vertices"));
+            o->set("triangles", jo->get("triangles"));
+        } catch (...) {
+            return json;
+        }
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     // ============================= Physics =============================
     if (name == "eve_physics_new_world") {
-        auto* ph = eve::ModuleManager::getInstance<eve::physics::Physics>("Physics");
+        auto* ph = mcpPhysics();
         if (!ph) return "error: Physics module not available";
-        eve::physics::World* w =
-            ph->newWorld(argFloat(args, "gravityX", 0.f), argFloat(args, "gravityY", 900.f));
-        auto& ws = mcpPhysicsWorlds();
-        ws.push_back(w);
+        const int id = ph->newWorld(argFloat(args, "gravityX", 0.f), argFloat(args, "gravityY", 900.f));
+        if (id < 0) return "error: failed to create world";
+        float gx = 0.f, gy = 0.f;
+        ph->worldGravity(id, &gx, &gy);
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        o->set("id", static_cast<int>(ws.size()) - 1);
-        o->set("gravityX", w->getGravityX());
-        o->set("gravityY", w->getGravityY());
+        o->set("id", id);
+        o->set("gravityX", gx);
+        o->set("gravityY", gy);
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_physics_list_worlds") {
+        auto* ph = mcpPhysics();
+        if (!ph) return "error: Physics module not available";
         Poco::JSON::Array::Ptr arr = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-        const auto& ws = mcpPhysicsWorlds();
-        for (size_t i = 0; i < ws.size(); ++i) {
-            if (!ws[i]) continue;
+        for (int i = 0; i < ph->worldCount(); ++i) {
+            float gx = 0.f, gy = 0.f;
+            if (!ph->worldGravity(i, &gx, &gy)) continue;
             Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-            o->set("id", static_cast<int>(i));
-            o->set("gravityX", ws[i]->getGravityX());
-            o->set("gravityY", ws[i]->getGravityY());
+            o->set("id", i);
+            o->set("gravityX", gx);
+            o->set("gravityY", gy);
             arr->add(o);
         }
         return mcpStringify(Poco::Dynamic::Var(arr));
     }
 
     if (name == "eve_physics_raycast") {
-        auto* w = mcpPhysicsWorld(argInt(args, "world", 0));
-        if (!w) return "error: unknown physics world id";
-        w->rayCast(argFloat(args, "x1"), argFloat(args, "y1"),
-                   argFloat(args, "x2"), argFloat(args, "y2"));
+        auto* ph = mcpPhysics();
+        if (!ph) return "error: Physics module not available";
+        eve::RayHitInfo h;
+        if (!ph->rayCast(argInt(args, "world", 0), argFloat(args, "x1"), argFloat(args, "y1"), argFloat(args, "x2"),
+                         argFloat(args, "y2"), &h))
+            return "error: unknown physics world id";
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        o->set("hit", w->hasRayHit());
-        if (w->hasRayHit()) {
-            o->set("bodyId", w->getRayHitBodyId());
-            o->set("x", w->getRayHitX());
-            o->set("y", w->getRayHitY());
-            o->set("normalX", w->getRayHitNormalX());
-            o->set("normalY", w->getRayHitNormalY());
-            o->set("fraction", w->getRayHitFraction());
+        o->set("hit", h.hit);
+        if (h.hit) {
+            o->set("bodyId", h.bodyId);
+            o->set("x", h.x);
+            o->set("y", h.y);
+            o->set("normalX", h.normalX);
+            o->set("normalY", h.normalY);
+            o->set("fraction", h.fraction);
         }
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_physics_remove_world") {
-        auto& ws = mcpPhysicsWorlds();
-        const int id = argInt(args, "world", -1);
-        if (id < 0 || id >= static_cast<int>(ws.size()) || !ws[static_cast<size_t>(id)])
-            return "error: unknown physics world id";
-        delete ws[static_cast<size_t>(id)];
-        ws[static_cast<size_t>(id)] = nullptr;
-        return "ok";
+        auto* ph = mcpPhysics();
+        if (!ph) return "error: Physics module not available";
+        return ph->removeWorld(argInt(args, "world", -1)) ? "ok" : "error: unknown physics world id";
     }
 
     // ============================= Render =============================
     if (name == "eve_render_status") {
-        return renderStatusText(mcpGraphics());
+        return renderStatusText(mcpCapture());
     }
 
     if (name == "eve_render_describe") {
         const bool fresh = argBool(args, "fresh", false);
         const std::string reason = argString(args, "reason");
-        return RenderVision::instance().describe(mcpGraphics(), renderStatusText(mcpGraphics()),
-                                                 fresh, reason);
+        return RenderVision::instance().describe(mcpCapture(), renderStatusText(mcpCapture()), fresh, reason);
     }
 
     if (name == "eve_render_vision_config") {
@@ -683,17 +663,13 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_screenshot") {
-        auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-        if (!gfx) return "error: Graphics module not available";
+        auto* cap = mcpCapture();
+        if (!cap) return "error: Graphics module not available";
         std::string path = argString(args, "path");
         if (path.empty()) path = "mcp_screenshot.png";
-        gfx->setScreenReadbackEnabled(true);
-        eve::image::ImageData* img = gfx->newImageData();
-        if (!img) return "error: readback returned no image";
-        const int w = gfx->getPixelWidth();
-        const int h = gfx->getPixelHeight();
-        img->encode(eve::image::ImageData::FormatHandler::ENCODED_PNG, path.c_str(), true);
-        delete img;
+        int         w = 0, h = 0;
+        std::string err;
+        if (!cap->savePng(path, &w, &h, &err)) return "error: " + err;
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("path", path);
         o->set("width", w);
@@ -703,54 +679,52 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     // ============================= Particles / Weather =============================
     if (name == "eve_particles_status") {
-        auto* part = eve::ModuleManager::getInstance<eve::particles::Particles>("Particles");
+        auto*                   part = mcpParticles();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         if (!part) {
             o->set("error", "Particles module not available");
             return mcpStringify(Poco::Dynamic::Var(o));
         }
-        o->set("emitterCount", part->getEmitterCount());
+        o->set("emitterCount", part->emitterCount());
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_particles_emit") {
-        auto* part = eve::ModuleManager::getInstance<eve::particles::Particles>("Particles");
+        auto* part = mcpParticles();
         if (!part) return "error: Particles module not available";
-        auto* em = part->newEmitter(argInt(args, "buffer", 1000));
-        if (!em) return "error: failed to create emitter";
-        em->setPosition(argFloat(args, "x"), argFloat(args, "y"));
-        const std::string preset = argString(args, "preset");
-        if (!preset.empty()) em->applyPreset(preset);
-        em->start();
-        em->emit(argInt(args, "count", 100));
+        float ex = 0.f, ey = 0.f;
+        int   cnt = 0;
+        if (!part->createEmitter(argInt(args, "buffer", 1000), argFloat(args, "x"), argFloat(args, "y"),
+                                 argString(args, "preset"), argInt(args, "count", 100), &ex, &ey, &cnt))
+            return "error: failed to create emitter";
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-        o->set("x", em->getX());
-        o->set("y", em->getY());
-        o->set("count", em->getCount());
+        o->set("x", ex);
+        o->set("y", ey);
+        o->set("count", cnt);
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     // ============================= Audio =============================
     if (name == "eve_audio_status") {
-        auto* audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio");
+        auto*                   audio = mcpAudio();
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         if (!audio) {
             o->set("error", "Audio module not available");
             return mcpStringify(Poco::Dynamic::Var(o));
         }
-        o->set("volume", audio->getVolume());
+        o->set("volume", audio->volume());
         return mcpStringify(Poco::Dynamic::Var(o));
     }
 
     if (name == "eve_audio_set_volume") {
-        auto* audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio");
+        auto* audio = mcpAudio();
         if (!audio) return "error: Audio module not available";
         audio->setVolume(argFloat(args, "volume", 1.f));
         return "ok";
     }
 
     if (name == "eve_audio_stop_all") {
-        auto* audio = eve::ModuleManager::getInstance<eve::audio::Audio>("Audio");
+        auto* audio = mcpAudio();
         if (!audio) return "error: Audio module not available";
         audio->stopAll();
         return "ok";
@@ -758,18 +732,18 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     // ============================= Host UI (headless MCP editor host) =====
     if (name == "eve_host_status") {
-        return EditorHost::instance().status();
+        return mcpHost() ? mcpHost()->status() : "error: ui module not available";
     }
     if (name == "eve_host_window_open") {
         const std::string title = argString(args, "title", "EVEngine AI Host");
-        return EditorHost::instance().openWindow(title, argInt(args, "width", 1280),
-                                                 argInt(args, "height", 800));
+        return mcpHost() ? mcpHost()->openWindow(title, argInt(args, "width", 1280), argInt(args, "height", 800))
+                         : "error: ui module not available";
     }
     if (name == "eve_host_window_close") {
-        return EditorHost::instance().closeWindow();
+        return mcpHost() ? mcpHost()->closeWindow() : "error: ui module not available";
     }
     if (name == "eve_host_window_state") {
-        return EditorHost::instance().windowState();
+        return mcpHost() ? mcpHost()->windowState() : "error: ui module not available";
     }
     if (name == "eve_host_editor_apply") {
         std::string json;
@@ -785,51 +759,51 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             }
         }
         if (json.empty()) return "error: missing editor";
-        return EditorHost::instance().applyEditor(json);
+        return mcpHost() ? mcpHost()->applyEditor(json) : "error: ui module not available";
     }
     if (name == "eve_host_editor_remove") {
-        return EditorHost::instance().removeEditor(argString(args, "id"));
+        return mcpHost() ? mcpHost()->removeEditor(argString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_editor_list") {
-        return EditorHost::instance().listEditors();
+        return mcpHost() ? mcpHost()->listEditors() : "error: ui module not available";
     }
     if (name == "eve_host_editor_state") {
-        return EditorHost::instance().editorState(argString(args, "id"));
+        return mcpHost() ? mcpHost()->editorState(argString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_editor_set_value") {
         if (!args || !args->has("value")) return "error: missing value";
-        return EditorHost::instance().setEditorValue(
-            argString(args, "editor"), argString(args, "widget"),
-            mcpStringify(argVar(args, "value")));
+        return mcpHost() ? mcpHost()->setEditorValue(argString(args, "editor"), argString(args, "widget"),
+                                                     mcpStringify(argVar(args, "value")))
+                         : "error: ui module not available";
     }
     if (name == "eve_host_editor_save") {
-        return EditorHost::instance().saveEditor(argString(args, "id"));
+        return mcpHost() ? mcpHost()->saveEditor(argString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_editor_unload") {
-        return EditorHost::instance().unloadEditor(argString(args, "id"));
+        return mcpHost() ? mcpHost()->unloadEditor(argString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_vm_register") {
-        return EditorHost::instance().registerVM(argString(args, "name"),
-                                                 argString(args, "source"));
+        return mcpHost() ? mcpHost()->registerVM(argString(args, "name"), argString(args, "source"))
+                         : "error: ui module not available";
     }
     if (name == "eve_host_vm_unregister") {
-        return EditorHost::instance().unregisterVM(argString(args, "name"));
+        return mcpHost() ? mcpHost()->unregisterVM(argString(args, "name")) : "error: ui module not available";
     }
     if (name == "eve_host_events") {
-        return EditorHost::instance().consumeEvents(argString(args, "editor"));
+        return mcpHost() ? mcpHost()->consumeEvents(argString(args, "editor")) : "error: ui module not available";
     }
     if (name == "eve_host_widget_rect") {
-        return EditorHost::instance().widgetRect(argString(args, "editor"),
-                                                 argString(args, "widget"));
+        return mcpHost() ? mcpHost()->widgetRect(argString(args, "editor"), argString(args, "widget"))
+                         : "error: ui module not available";
     }
     if (name == "eve_host_capture") {
-        return EditorHost::instance().capture(argString(args, "path"));
+        return mcpHost() ? mcpHost()->capture(argString(args, "path")) : "error: ui module not available";
     }
     if (name == "eve_host_script") {
-        return EditorHost::instance().runScript(argString(args, "source"));
+        return mcpHost() ? mcpHost()->runScript(argString(args, "source")) : "error: ui module not available";
     }
     if (name == "eve_host_shutdown") {
-        EditorHost::instance().requestExit();
+        if (mcpHost()) mcpHost()->requestExit();
         return "ok";
     }
 
@@ -1689,8 +1663,8 @@ void McpServer::poll() {
     // Main-thread hook: run a pending breakpoint/error vision dump (if any) on
     // the render thread where Graphics readback is safe.
     if (RenderVision::instance().pending()) {
-        auto* gfx = mcpGraphics();
-        if (gfx) RenderVision::instance().pollPending(gfx, renderStatusText(gfx));
+        auto* cap = mcpCapture();
+        if (cap) RenderVision::instance().pollPending(cap, renderStatusText(cap));
     }
 }
 

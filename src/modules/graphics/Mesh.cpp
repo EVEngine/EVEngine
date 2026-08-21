@@ -7,6 +7,38 @@
 
 namespace eve::graphics {
 
+void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
+    boundsCx     = 0.f;
+    boundsCy     = 0.f;
+    boundsCz     = 0.f;
+    boundsRadius = 0.f;
+    if (!posXYZ || vertexCount <= 0) return;
+
+    const size_t n = size_t(vertexCount);
+    glm::vec3    c(0.f);
+    for (size_t i = 0; i < n; ++i) {
+        c.x += posXYZ[i * 3u + 0u];
+        c.y += posXYZ[i * 3u + 1u];
+        c.z += posXYZ[i * 3u + 2u];
+    }
+    c /= float(n);
+    boundsCx = c.x;
+    boundsCy = c.y;
+    boundsCz = c.z;
+
+    float r = 0.f;
+    for (size_t i = 0; i < n; ++i) {
+        const float dx = posXYZ[i * 3u + 0u] - c.x;
+        const float dy = posXYZ[i * 3u + 1u] - c.y;
+        const float dz = posXYZ[i * 3u + 2u] - c.z;
+        const float d  = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (d > r) r = d;
+    }
+    // Degenerate (single-point) meshes still get a tiny non-zero sphere so
+    // hasBounds() stays meaningful and the culler never drops point geometry.
+    boundsRadius = r > 0.f ? r : 1e-4f;
+}
+
 void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
     if (!gfx || !getCastOcclusion()) return;
     const float x = matrix[3][0];
