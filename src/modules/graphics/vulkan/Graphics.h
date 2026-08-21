@@ -253,6 +253,15 @@ public:
     }
     void gpuDrivenRecordVisPass() override;
     void gpuDrivenResolve() override;
+    uint32_t gpuDrivenVgUpload(const GpuVgAssetUpload &asset) override;
+    uint32_t gpuDrivenVgAssetId(Mesh *mesh) const override;
+    bool gpuDrivenVgAttachToMesh(Mesh *mesh, uint32_t vgAssetId) override;
+    bool gpuDrivenVgSetInstance(uint32_t vgAssetId, const glm::mat4 &model,
+                                uint32_t materialId) override;
+    void gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                   float fovYDeg, float nearZ, float farZ) override;
+    /** @brief Debug readback: visible VG clusters from the last cull. */
+    uint32_t debugGpuDrivenVgVisibleCount() const;
     /** @brief Debug readback: visible instances / non-empty buckets from the last cull. */
     uint32_t debugGpuDrivenVisibleCount() const;
     uint32_t debugGpuDrivenCulledDrawCount() const;
@@ -718,6 +727,39 @@ private:
     void bindGpuVertexPoolBindless();
     void appendGpuMeshToPool(GpuMesh &gpu);
 
+    // ---- GPU-driven (stage 3): virtual geometry ----
+    static constexpr uint32_t kMaxVgAssets = 64;
+    static constexpr uint32_t kMaxVgClusters = 65536;
+    struct VgGpuBuffers {
+        vkb::GenericBuffer positions;      // float xyz stream (growable)
+        vkb::GenericBuffer triangles;      // u32 global triangle stream
+        vkb::GenericBuffer clusters;       // GpuVgCluster (4 x uvec4)
+        vkb::GenericBuffer clusterAssets;  // u32 per cluster -> asset id
+        vkb::GenericBuffer visible;        // kAsyncResourceCopies x (counter + ids)
+        vkb::GenericBuffer indirect;       // kAsyncResourceCopies x VkDrawIndirectCommand
+        vkb::GenericBuffer assetMaterials; // kAsyncResourceCopies x u32 per asset
+        vkb::GenericBuffer assetModels;    // kAsyncResourceCopies x mat4 per asset
+    };
+    VgGpuBuffers vgGpu_;
+    uint32_t vgClusterCount_ = 0;   // total clusters across uploaded assets
+    uint32_t vgAssetCount_ = 0;
+    uint32_t vgVertexCount_ = 0;    // global position-stream vertices
+    uint32_t vgTriangleCount_ = 0;  // global triangle-stream indices
+    uint32_t vgLastVisible_ = 0;
+    bool vgAnyThisFrame_ = false;
+    ComputePass vgCullPass_;
+    vk::Pipeline gbufferVgVisPipeline = nullptr;
+    void ensureVgBuffers();
+    void growVgBuffers(uint32_t needClusters, uint32_t needVertices, uint32_t needTriangles);
+    /** @brief Rewrite bindless 22-25/28 (static pool ranges) in every slot set. */
+    void bindVgPoolBindless();
+    /** @brief Point bindings 26-29 at the current slot's per-frame ranges. */
+    void bindVgFrameBindless(vk::DescriptorSet bindless, size_t slot);
+    /** @brief Record the VG cluster cull dispatch + barriers (compute section). */
+    void recordVgCull();
+    /** @brief Record VG cluster draws (vis pass) via drawIndirectCount. */
+    void drawVgClusters(vk::CommandBuffer cb);
+
     // ---- GPU-driven (stage 1): opaque forward path ----
     bool gpuDrivenEnabled_ = false;
     uint32_t lastGpuDrivenDrawCount_ = 0;
@@ -735,6 +777,7 @@ private:
         vkb::GenericBuffer visibleFlags;    // uint32 per instance (GPU-written)
         vkb::GenericBuffer compacted;       // GpuInstance per instance (GPU-written)
         vkb::GenericBuffer indirect;        // GpuIndirectCommand per bucket (GPU-written)
+        vkb::GenericBuffer indirectNI;      // VkDrawIndirectCommand per bucket (non-indexed)
         vkb::GenericBuffer bucketCounters;  // uint32 per bucket (GPU atomic, CPU-reset)
         vkb::GenericBuffer hzb;             // header + R32F mip chain (GPU-written)
         vkb::GenericBuffer cullParams;      // GpuCullParams UBO (CPU-written)
@@ -763,6 +806,8 @@ private:
     FrameArena::Alloc gpuDrivenBucketOffAlloc_{};
     void ensureGpuDrivenCullResources(int width, int height);
     void recordGpuDrivenHzbBuild();
+    void gpuDrivenRecordComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                       float fovYDeg, float nearZ, float farZ);
     void destroyGpuDrivenCullResources();
     GpuDrivenCullSlot &currentGpuDrivenCullSlot();
     GpuDrivenCullSlot &gpuDrivenCullSlot(uint32_t frameSlot);

@@ -20,6 +20,7 @@ SHADERS = [
     ("hzb_build.comp", "comp"),
     ("gpu_cull.comp", "comp"),
     ("gpu_emit.comp", "comp"),
+    ("vg_main_cull.comp", "comp"),
 ]
 
 

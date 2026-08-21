@@ -64,6 +64,24 @@ layout(set = 1, binding = 20, std430) readonly buffer VertexUvs {
 layout(set = 1, binding = 21, std430) readonly buffer IndexPool {
     uint indices[];
 };
+layout(set = 1, binding = 22, std430) readonly buffer VgPositions {
+    float vgPos[];
+};
+layout(set = 1, binding = 23, std430) readonly buffer VgTriangles {
+    uint vgTri[];
+};
+layout(set = 1, binding = 24, std430) readonly buffer VgClusters {
+    uvec4 vgCl[];
+};
+layout(set = 1, binding = 25, std430) readonly buffer VgClusterAssets {
+    uint vgClusterAssets[];
+};
+layout(set = 1, binding = 28, std430) readonly buffer VgAssetMaterials {
+    uint vgAssetMaterials[];
+};
+layout(set = 1, binding = 29, std430) readonly buffer VgAssetModels {
+    mat4 vgAssetModels[];
+};
 
 #include "pbr_shade.glsl"
 
@@ -80,35 +98,66 @@ void main() {
     bary = clamp(bary, 0.0, 1.0);
     bary /= max(bary.x + bary.y + bary.z, 1e-6);
 
-    uint inst = vis.x;
-    GpuInstance gi = instances[inst];
-    GpuMeshRecord mesh = meshes[gi.meshId];
-    GpuMaterialRecord m = materials[gi.materialId];
+    vec4 world;
+    vec3 worldN;
+    vec2 uv;
+    GpuMaterialRecord m;
+    vec3 viewPos;
+    if ((vis.x & 0x80000000u) != 0u) {
+        // Virtual-geometry cluster: flat shading from the cluster stream.
+        uint clusterId = vis.x & 0x7FFFFFFFu;
+        uint asset = vgClusterAssets[clusterId];
+        m = materials[vgAssetMaterials[asset]];
+        mat4 model = vgAssetModels[asset];
+        uint triBase = vis.y;
+        uint i0 = vgTri[triBase + 0u];
+        uint i1 = vgTri[triBase + 1u];
+        uint i2 = vgTri[triBase + 2u];
+        vec3 p0 = vec3(vgPos[3u * i0 + 0u], vgPos[3u * i0 + 1u], vgPos[3u * i0 + 2u]);
+        vec3 p1 = vec3(vgPos[3u * i1 + 0u], vgPos[3u * i1 + 1u], vgPos[3u * i1 + 2u]);
+        vec3 p2 = vec3(vgPos[3u * i2 + 0u], vgPos[3u * i2 + 1u], vgPos[3u * i2 + 2u]);
+        vec4 w0 = model * vec4(p0, 1.0);
+        vec4 w1 = model * vec4(p1, 1.0);
+        vec4 w2 = model * vec4(p2, 1.0);
+        world = w0 * bary.x + w1 * bary.y + w2 * bary.z;
+        // Same face normal the vis pass computed (world-space edges).
+        worldN = normalize(cross(w1.xyz - w0.xyz, w2.xyz - w0.xyz));
+        uv = vec2(0.0);
+        viewPos = (ubo.view * world).xyz;
+    } else {
+        uint inst = vis.x;
+        GpuInstance gi = instances[inst];
+        GpuMeshRecord mesh = meshes[gi.meshId];
+        m = materials[gi.materialId];
 
-    uint tri = vis.y;
-    uint i0 = indices[tri + 0u];
-    uint i1 = indices[tri + 1u];
-    uint i2 = indices[tri + 2u];
-    vec3 objPos = positions[mesh.vertexOffset + i0].xyz * bary.x +
-                  positions[mesh.vertexOffset + i1].xyz * bary.y +
-                  positions[mesh.vertexOffset + i2].xyz * bary.z;
-    vec3 objNrm = normals[mesh.vertexOffset + i0].xyz * bary.x +
-                  normals[mesh.vertexOffset + i1].xyz * bary.y +
-                  normals[mesh.vertexOffset + i2].xyz * bary.z;
-    vec2 uv = uvs[mesh.vertexOffset + i0].xy * bary.x +
-              uvs[mesh.vertexOffset + i1].xy * bary.y +
-              uvs[mesh.vertexOffset + i2].xy * bary.z;
+        uint tri = vis.y;
+        uint i0 = indices[tri + 0u];
+        uint i1 = indices[tri + 1u];
+        uint i2 = indices[tri + 2u];
+        vec3 objPos = positions[mesh.vertexOffset + i0].xyz * bary.x +
+                      positions[mesh.vertexOffset + i1].xyz * bary.y +
+                      positions[mesh.vertexOffset + i2].xyz * bary.z;
+        vec3 objNrm = normals[mesh.vertexOffset + i0].xyz * bary.x +
+                      normals[mesh.vertexOffset + i1].xyz * bary.y +
+                      normals[mesh.vertexOffset + i2].xyz * bary.z;
+        uv = uvs[mesh.vertexOffset + i0].xy * bary.x +
+             uvs[mesh.vertexOffset + i1].xy * bary.y +
+             uvs[mesh.vertexOffset + i2].xy * bary.z;
+        world = gi.model * vec4(objPos, 1.0);
+        mat3 normalMat = transpose(inverse(mat3(gi.model)));
+        worldN = normalize(normalMat * objNrm);
+        viewPos = (ubo.view * world).xyz;
+    }
 
-    vec4 world = gi.model * vec4(objPos, 1.0);
     vec3 worldPos = world.xyz;
-    vec3 viewPos = (ubo.view * world).xyz;
-    mat3 normalMat = transpose(inverse(mat3(gi.model)));
-    vec3 N = normalize(normalMat * objNrm);
+    vec3 N = worldN;
     vec3 V = normalize(ubo.cameraPos.xyz - worldPos);
     if (dot(N, V) < 0.0)
         N = -N;
 
-    vec3 color = shadeGpuDrivenPixel(m, N, V, worldPos, viewPos, uv);
+    vec3 color = (vis.x & 0x80000000u) != 0u
+                     ? shadeGpuDrivenPixelFlat(m, N, V, worldPos, viewPos)
+                     : shadeGpuDrivenPixel(m, N, V, worldPos, viewPos, uv);
 
     // Write the same depth the forward pass would have: hair/transparent
     // geometry later in the scene pass depth-tests against the opaque depth.

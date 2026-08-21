@@ -178,6 +178,51 @@ public:
     /** @brief Record the fullscreen vis resolve inside the open scene color pass. */
     virtual void gpuDrivenResolve() {}
 
+    // ---- GPU-driven rendering (stage 3): virtual-geometry seam ----
+    // Backends without VG support return kInvalidGpuDrivenSlot / false; the
+    // renderer then draws the mesh through the normal GPU-driven path.
+
+    /** @brief Upload a virtual-geometry asset into the shared cluster pool. */
+    virtual std::uint32_t gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
+        (void)asset;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /** @brief VG asset id attached to a mesh (kInvalidGpuDrivenSlot when none). */
+    virtual std::uint32_t gpuDrivenVgAssetId(Mesh *mesh) const {
+        (void)mesh;
+        return kInvalidGpuDrivenSlot;
+    }
+
+    /** @brief Attach an uploaded VG asset to a mesh (routes it to the VG path). */
+    virtual bool gpuDrivenVgAttachToMesh(Mesh *mesh, std::uint32_t vgAssetId) {
+        (void)mesh;
+        (void)vgAssetId;
+        return false;
+    }
+
+    /**
+     * @brief Register one instance of a VG asset this frame (model + material).
+     * The first instance per asset wins; returns false for unknown assets.
+     */
+    virtual bool gpuDrivenVgSetInstance(std::uint32_t vgAssetId, const glm::mat4 &model,
+                                        std::uint32_t materialId) {
+        (void)vgAssetId;
+        (void)model;
+        (void)materialId;
+        return false;
+    }
+
+    /** @brief Record the HZB build + cull-params section (VG-only frames). */
+    virtual void gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                           float fovYDeg, float nearZ, float farZ) {
+        (void)viewProj;
+        (void)eye;
+        (void)fovYDeg;
+        (void)nearZ;
+        (void)farZ;
+    }
+
     /**
      * @brief Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
      * Must be called after the window exists (SDL_WINDOW_VULKAN).

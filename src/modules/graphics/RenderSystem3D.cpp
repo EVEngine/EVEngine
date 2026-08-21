@@ -814,7 +814,26 @@ void RenderSystem3D::render(Graphics &gfx) {
             std::vector<eve::graphics::GpuInstance> instances;
             instances.reserve(opaque.size());
             bool recordsOk = true;
+            bool vgAny = false;
+            const bool resolveWanted = gfx.gpuDrivenResolveWanted();
             for (const auto &item : opaque) {
+                // Stage 3 VG: meshes with a virtual-geometry asset are culled /
+                // drawn through the cluster path, not the instance chain. Only
+                // when the vis+resolve path is active; otherwise the mesh keeps
+                // the normal GPU-driven / legacy forward path.
+                const uint32_t vgAsset =
+                    resolveWanted ? gfx.gpuDrivenVgAssetId(item.mesh)
+                                  : eve::graphics::kInvalidGpuDrivenSlot;
+                if (vgAsset != eve::graphics::kInvalidGpuDrivenSlot) {
+                    const uint32_t matId = gfx.gpuDrivenMaterialRecord(item.material);
+                    if (matId == eve::graphics::kInvalidGpuDrivenSlot) {
+                        recordsOk = false;
+                        break;
+                    }
+                    vgAny |= gfx.gpuDrivenVgSetInstance(
+                        vgAsset, modelFromTransform(*item.xf), matId);
+                    continue;
+                }
                 eve::graphics::GpuInstance inst{};
                 inst.model = modelFromTransform(*item.xf);
                 inst.meshId = gfx.gpuDrivenMeshRecord(item.mesh);
@@ -828,7 +847,7 @@ void RenderSystem3D::render(Graphics &gfx) {
             }
             if (recordsOk) {
                 // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
-                if (gfx.gpuDrivenCullEnabled() &&
+                if (gfx.gpuDrivenCullEnabled() && !instances.empty() &&
                     gfx.gpuDrivenCullBegin(instances.data(), uint32_t(instances.size()))) {
                     auto cd = defaultCam->data();
                     const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
@@ -843,6 +862,15 @@ void RenderSystem3D::render(Graphics &gfx) {
                         gfx.gpuDrivenOpenScenePass();
                         gfx.gpuDrivenDrawOpaque();
                     }
+                    gpuDrivenUsed = true;
+                } else if (gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
+                    // VG-only frame: no instance chain, but the vis pass still
+                    // runs the VG cluster cull + draws + resolve.
+                    gfx.gpuDrivenVgComputeSection(projM * viewM, eye, cd->fovYDeg, cd->nearZ,
+                                                  cd->farZ);
+                    gfx.gpuDrivenRecordVisPass();
+                    gfx.gpuDrivenOpenScenePass();
+                    gfx.gpuDrivenResolve();
                     gpuDrivenUsed = true;
                 } else {
                     // Deferred scene pass must be open before stage-1 recording.

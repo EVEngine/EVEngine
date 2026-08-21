@@ -36,6 +36,8 @@ SHADERS = [
     ("mesh3d_gbuffer_alpha.frag", "frag"),
     ("mesh3d_gbuffer_vis.vert", "vert"),
     ("mesh3d_gbuffer_vis.frag", "frag"),
+    ("mesh3d_gbuffer_vgvis.vert", "vert"),
+    ("mesh3d_gbuffer_vgvis.frag", "frag"),
     ("resolve_vis.vert", "vert"),
     ("resolve_vis.frag", "frag"),
     ("mesh3d_toon.vert", "vert"),

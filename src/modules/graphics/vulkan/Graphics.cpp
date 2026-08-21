@@ -44,6 +44,7 @@
 #include "graphics/shaders/hzb_build_comp_spv.inc"
 #include "graphics/shaders/gpu_cull_comp_spv.inc"
 #include "graphics/shaders/gpu_emit_comp_spv.inc"
+#include "graphics/shaders/vg_main_cull_comp_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_vert_spv.inc"
 #include "graphics/shaders/mesh3d_clustered_frag_spv.inc"
 #include "graphics/shaders/mesh3d_shadow_vert_spv.inc"
@@ -55,6 +56,8 @@
 #include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_vis_vert_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_vis_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vgvis_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vgvis_frag_spv.inc"
 #include "graphics/shaders/resolve_vis_vert_spv.inc"
 #include "graphics/shaders/resolve_vis_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
@@ -527,6 +530,13 @@ void Graphics::initWithWindow(void *nativeWindow) {
             phys.features.shaderStorageBufferArrayDynamicIndexing = VK_TRUE;
             phys.features.multiDrawIndirect = VK_TRUE;
         }
+        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (used by the stage-3 VG
+        // cluster draw). Chained directly on VkDeviceCreateInfo's pNext; the
+        // 1.0 pEnabledFeatures stay enabled through the classic struct.
+        vk::PhysicalDeviceVulkan12Features vk12Enable{};
+        vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
+        if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
+        deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
     }
@@ -734,6 +744,17 @@ void Graphics::createBindlessSet() {
         storageBinding(19, vertFrag),  // pooled vertex normals
         storageBinding(20, vertFrag),  // pooled vertex uvs
         storageBinding(21, vertFrag),  // pooled indices
+        storageBinding(22, allStages),  // VG position stream (float xyz)
+        storageBinding(23, allStages),  // VG triangle stream (u32)
+        storageBinding(24, allStages),  // VG cluster table (uvec4 x 4)
+        storageBinding(25, allStages),  // VG cluster -> asset id
+        storageBinding(26, allStages),  // VG visible list (per slot)
+        storageBinding(27, allStages),  // VG indirect commands (per slot)
+        storageBinding(28, vk::ShaderStageFlagBits::eFragment),  // VG asset -> material
+        storageBinding(29, vk::ShaderStageFlagBits::eVertex |
+                               vk::ShaderStageFlagBits::eFragment |
+                               vk::ShaderStageFlagBits::eCompute),  // VG asset models
+        storageBinding(30, computeOnly),  // non-indexed indirect commands (vis pass)
     };
 
     vk::DescriptorSetLayoutCreateInfo layoutInfo{};
@@ -749,7 +770,7 @@ void Graphics::createBindlessSet() {
     std::array<vk::DescriptorPoolSize, 3> poolSizes{
         vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
                                (kMaxBindlessTextures + kMaxBindlessCubemaps + 3) * setCount},
-        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 16 * setCount},
+        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 25 * setCount},
         vk::DescriptorPoolSize{vk::DescriptorType::eUniformBuffer, 1 * setCount},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
@@ -883,6 +904,9 @@ void Graphics::createBindlessSet() {
     // Pooled vertex/index buffers for the vis resolve (grows lazily).
     ensureGpuVertexPool();
     bindGpuVertexPoolBindless();
+    // Shared virtual-geometry cluster pool (grows lazily on upload).
+    ensureVgBuffers();
+    bindVgPoolBindless();
 }
 
 void Graphics::ensureGpuVertexPool() {
@@ -1016,6 +1040,8 @@ void Graphics::appendGpuMeshToPool(GpuMesh &gpu) {
         const auto *src32 = static_cast<const uint32_t *>(iMap);
         for (uint32_t i = 0; i < nInds; ++i) idxDst[i] = src32[i];
     }
+    const uint32_t firstIdx = static_cast<const uint32_t *>(iMap)[0];
+    const glm::vec3 firstPos = verts[0].pos;
     gpuVertexPool_.positions.unmap();
     gpuVertexPool_.normals.unmap();
     gpuVertexPool_.uvs.unmap();
@@ -1117,6 +1143,253 @@ void Graphics::unregisterBindlessTexture(GpuTexture *tex) {
         restore(1, slot, whiteCube, true);
         tex->bindlessIndexCube = kInvalidBindlessSlot;
     }
+}
+
+void Graphics::ensureVgBuffers() {
+    if (vgGpu_.positions.buffer) return;
+    const auto hostMem = kHostVisibleCoherent;
+    constexpr uint32_t kInitClusters = 16384;
+    constexpr uint32_t kInitVertFloats = 1u << 20;   // ~1M floats (~4MB)
+    constexpr uint32_t kInitTriangles = 2u << 20;    // ~2M u32 indices
+    vgGpu_.positions = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                                          kInitVertFloats * sizeof(float), hostMem);
+    vgGpu_.triangles = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                                          kInitTriangles * sizeof(uint32_t), hostMem);
+    vgGpu_.clusters = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                                         kInitClusters * sizeof(GpuVgCluster), hostMem);
+    vgGpu_.clusterAssets =
+        vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                           kInitClusters * sizeof(uint32_t), hostMem);
+    constexpr uint32_t kVisBytes = (kMaxVgClusters + 1) * sizeof(uint32_t);
+    constexpr uint32_t kIndBytes = kMaxVgClusters * sizeof(glm::uvec4);
+    vgGpu_.visible = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer |
+                                                    vk::BufferUsageFlagBits::eIndirectBuffer,
+                                        kVisBytes * kAsyncResourceCopies, hostMem);
+    vgGpu_.indirect = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer |
+                                                     vk::BufferUsageFlagBits::eIndirectBuffer,
+                                         kIndBytes * kAsyncResourceCopies, hostMem);
+    vgGpu_.assetMaterials =
+        vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                           kMaxVgAssets * sizeof(uint32_t) * kAsyncResourceCopies, hostMem);
+    vgGpu_.assetModels =
+        vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                           kMaxVgAssets * sizeof(glm::mat4) * kAsyncResourceCopies, hostMem);
+    {
+        void *m = vgGpu_.visible.map();
+        std::memset(m, 0, kVisBytes * kAsyncResourceCopies);
+        vgGpu_.visible.unmap();
+        m = vgGpu_.assetMaterials.map();
+        std::memset(m, 0, kMaxVgAssets * sizeof(uint32_t) * kAsyncResourceCopies);
+        vgGpu_.assetMaterials.unmap();
+        m = vgGpu_.assetModels.map();
+        for (size_t s = 0; s < kAsyncResourceCopies; ++s)
+            for (uint32_t a = 0; a < kMaxVgAssets; ++a)
+                static_cast<glm::mat4 *>(m)[s * kMaxVgAssets + a] = glm::mat4(1.f);
+        vgGpu_.assetModels.unmap();
+    }
+    bindVgPoolBindless();
+}
+
+void Graphics::growVgBuffers(uint32_t needClusters, uint32_t needVertices,
+                             uint32_t needTriangles) {
+    device->waitIdle();
+    const auto hostMem = kHostVisibleCoherent;
+    auto growBuffer = [&](vkb::GenericBuffer &dst, uint32_t elementSize, uint32_t oldElems,
+                          uint32_t newElems) {
+        if (newElems <= oldElems) return;
+        vkb::GenericBuffer grown(device, vk::BufferUsageFlagBits::eStorageBuffer,
+                                 vk::DeviceSize(newElems) * elementSize, hostMem);
+        if (oldElems > 0) {
+            void *srcMap = dst.map();
+            void *dstMap = grown.map();
+            std::memcpy(dstMap, srcMap, vk::DeviceSize(oldElems) * elementSize);
+            grown.unmap();
+            dst.unmap();
+        }
+        dst.release();
+        dst = std::move(grown);
+    };
+    const uint32_t curClusters = uint32_t(vgGpu_.clusters.size / sizeof(GpuVgCluster));
+    const uint32_t curVertFloats = uint32_t(vgGpu_.positions.size / sizeof(float));
+    const uint32_t curTriangles = uint32_t(vgGpu_.triangles.size / sizeof(uint32_t));
+    growBuffer(vgGpu_.clusters, uint32_t(sizeof(GpuVgCluster)), curClusters,
+               std::max(needClusters, curClusters * 2u));
+    growBuffer(vgGpu_.clusterAssets, uint32_t(sizeof(uint32_t)), curClusters,
+               std::max(needClusters, curClusters * 2u));
+    growBuffer(vgGpu_.positions, uint32_t(sizeof(float)), curVertFloats,
+               std::max(needVertices, curVertFloats * 2u));
+    growBuffer(vgGpu_.triangles, uint32_t(sizeof(uint32_t)), curTriangles,
+               std::max(needTriangles, curTriangles * 2u));
+    bindVgPoolBindless();
+}
+
+void Graphics::bindVgPoolBindless() {
+    if (bindlessSets_.empty() || !vgGpu_.positions.buffer) return;
+    auto bufWrite = [&](vk::DescriptorSet set, uint32_t binding, vk::Buffer buffer,
+                        vk::DeviceSize offset, vk::DeviceSize size) {
+        vk::DescriptorBufferInfo info{buffer, offset, size};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = set;
+        w.dstBinding = binding;
+        w.descriptorCount = 1;
+        w.descriptorType = vk::DescriptorType::eStorageBuffer;
+        w.pBufferInfo = &info;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    };
+    const vk::DeviceSize posBytes = vgGpu_.positions.size;
+    const vk::DeviceSize triBytes = vgGpu_.triangles.size;
+    const vk::DeviceSize clBytes = vgGpu_.clusters.size;
+    const vk::DeviceSize claBytes = vgGpu_.clusterAssets.size;
+    for (vk::DescriptorSet set : bindlessSets_) {
+        bufWrite(set, 22, vgGpu_.positions.buffer, 0, posBytes);
+        bufWrite(set, 23, vgGpu_.triangles.buffer, 0, triBytes);
+        bufWrite(set, 24, vgGpu_.clusters.buffer, 0, clBytes);
+        bufWrite(set, 25, vgGpu_.clusterAssets.buffer, 0, claBytes);
+        bufWrite(set, 28, vgGpu_.assetMaterials.buffer, 0, vgGpu_.assetMaterials.size);
+        bufWrite(set, 29, vgGpu_.assetModels.buffer, 0, vgGpu_.assetModels.size);
+        bufWrite(set, 26, vgGpu_.visible.buffer, 0, vgGpu_.visible.size);
+        bufWrite(set, 27, vgGpu_.indirect.buffer, 0, vgGpu_.indirect.size);
+    }
+}
+
+void Graphics::bindVgFrameBindless(vk::DescriptorSet bindless, size_t slot) {
+    if (!bindless || !vgGpu_.visible.buffer) return;
+    const vk::DeviceSize slotVis = (vk::DeviceSize(kMaxVgClusters) + 1) * sizeof(uint32_t);
+    const vk::DeviceSize slotInd = vk::DeviceSize(kMaxVgClusters) * sizeof(glm::uvec4);
+    const vk::DeviceSize slotMat = vk::DeviceSize(kMaxVgAssets) * sizeof(uint32_t);
+    const vk::DeviceSize slotModel = vk::DeviceSize(kMaxVgAssets) * sizeof(glm::mat4);
+    const vk::DeviceSize visOff = slotVis * slot;
+    const vk::DeviceSize indOff = slotInd * slot;
+    const vk::DeviceSize matOff = slotMat * slot;
+    const vk::DeviceSize modelOff = slotModel * slot;
+    vk::DescriptorBufferInfo infos[4]{
+        {vgGpu_.visible.buffer, visOff, slotVis},
+        {vgGpu_.indirect.buffer, indOff, slotInd},
+        {vgGpu_.assetMaterials.buffer, matOff, slotMat},
+        {vgGpu_.assetModels.buffer, modelOff, slotModel},
+    };
+    vk::WriteDescriptorSet w[4]{};
+    const uint32_t bindings[4] = {26, 27, 28, 29};
+    for (int i = 0; i < 4; ++i) {
+        w[i].dstSet = bindless;
+        w[i].dstBinding = bindings[i];
+        w[i].descriptorCount = 1;
+        w[i].descriptorType = vk::DescriptorType::eStorageBuffer;
+        w[i].pBufferInfo = &infos[i];
+    }
+    device->updateDescriptorSets(4, w, 0, nullptr);
+}
+
+uint32_t Graphics::gpuDrivenVgUpload(const GpuVgAssetUpload &asset) {
+    if (!asset.positions || asset.vertexCount <= 0 || !asset.triangles ||
+        asset.triangleCount <= 0 || !asset.clusters || asset.clusterCount <= 0)
+        return kInvalidBindlessSlot;
+    if (vgAssetCount_ >= kMaxVgAssets) return kInvalidBindlessSlot;
+    ensureVgBuffers();
+
+    const uint32_t assetId = vgAssetCount_;
+    const uint32_t vertBase = vgVertexCount_;   // global vertex index base
+    const uint32_t triBase = vgTriangleCount_;  // global triangle (u32) base
+    const uint32_t clusterBase = vgClusterCount_;
+    const uint32_t needClusters = clusterBase + uint32_t(asset.clusterCount);
+    const uint32_t needVerts = uint32_t(vertBase + uint32_t(asset.vertexCount)) * 3;
+    const uint32_t needTris = triBase + uint32_t(asset.triangleCount);
+    const uint32_t curClusters = uint32_t(vgGpu_.clusters.size / sizeof(GpuVgCluster));
+    const uint32_t curVerts = uint32_t(vgGpu_.positions.size / sizeof(float));
+    const uint32_t curTris = uint32_t(vgGpu_.triangles.size / sizeof(uint32_t));
+    if (needClusters > curClusters || needVerts > curVerts || needTris > curTris)
+        growVgBuffers(needClusters, needVerts, needTris);
+
+    void *posMap = vgGpu_.positions.map();
+    void *triMap = vgGpu_.triangles.map();
+    void *clMap = vgGpu_.clusters.map();
+    void *claMap = vgGpu_.clusterAssets.map();
+    if (!posMap || !triMap || !clMap || !claMap) {
+        if (posMap) vgGpu_.positions.unmap();
+        if (triMap) vgGpu_.triangles.unmap();
+        if (clMap) vgGpu_.clusters.unmap();
+        if (claMap) vgGpu_.clusterAssets.unmap();
+        return kInvalidBindlessSlot;
+    }
+    std::memcpy(static_cast<char *>(posMap) + size_t(vertBase) * 3 * sizeof(float), asset.positions,
+                size_t(asset.vertexCount) * 3 * sizeof(float));
+    {
+        auto *dst = static_cast<uint32_t *>(triMap) + triBase;
+        for (int i = 0; i < asset.triangleCount; ++i) dst[i] = asset.triangles[i] + vertBase;
+    }
+    std::memcpy(static_cast<char *>(clMap) + vgClusterCount_ * sizeof(GpuVgCluster),
+                asset.clusters, size_t(asset.clusterCount) * sizeof(GpuVgCluster));
+    {
+        auto *dst = static_cast<GpuVgCluster *>(clMap) + vgClusterCount_;
+        for (int i = 0; i < asset.clusterCount; ++i) {
+            dst[i].u1[0] += triBase;  // triStart -> global triangle stream
+        }
+    }
+    auto *cla = static_cast<uint32_t *>(claMap);
+    for (int i = 0; i < asset.clusterCount; ++i) cla[vgClusterCount_ + uint32_t(i)] = assetId;
+    vgGpu_.positions.unmap();
+    vgGpu_.triangles.unmap();
+    vgGpu_.clusters.unmap();
+    vgGpu_.clusterAssets.unmap();
+
+    vgClusterCount_ = needClusters;
+    vgVertexCount_ = vertBase + uint32_t(asset.vertexCount);
+    vgTriangleCount_ = needTris;
+    vgAssetCount_ = assetId + 1;
+    // Default identity model per slot; vgSetInstance overwrites the current slot.
+    {
+        void *m = vgGpu_.assetModels.map();
+        auto *models = static_cast<glm::mat4 *>(m);
+        for (size_t s = 0; s < kAsyncResourceCopies; ++s)
+            models[s * kMaxVgAssets + assetId] = glm::mat4(1.f);
+        vgGpu_.assetModels.unmap();
+    }
+    return assetId;
+}
+
+uint32_t Graphics::gpuDrivenVgAssetId(Mesh *mesh) const {
+    if (!mesh || !mesh->gpuHandle) return kInvalidBindlessSlot;
+    const auto *gpu = static_cast<const GpuMesh *>(mesh->gpuHandle);
+    return gpu->record.vgAssetId;
+}
+
+bool Graphics::gpuDrivenVgAttachToMesh(Mesh *mesh, uint32_t vgAssetId) {
+    if (!mesh || !mesh->gpuHandle) return false;
+    if (vgAssetId >= vgAssetCount_ || vgAssetId >= kMaxVgAssets) return false;
+    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
+    gpu->record.vgAssetId = vgAssetId;
+    if (gpu->gpuRecordIndex != kInvalidBindlessSlot &&
+        gpu->gpuRecordIndex < meshTableRecords_.size()) {
+        meshTableRecords_[gpu->gpuRecordIndex].vgAssetId = vgAssetId;
+        syncMeshTable();
+    }
+    return true;
+}
+
+bool Graphics::gpuDrivenVgSetInstance(uint32_t vgAssetId, const glm::mat4 &model,
+                                      uint32_t materialId) {
+    if (vgAssetId >= vgAssetCount_ || vgAssetId >= kMaxVgAssets) return false;
+    if (vgGpu_.assetModels.buffer) {
+        const size_t slot = currentFrameSlot() % kAsyncResourceCopies;
+        void *m = vgGpu_.assetModels.map();
+        static_cast<glm::mat4 *>(m)[slot * kMaxVgAssets + vgAssetId] = model;
+        vgGpu_.assetModels.unmap();
+        void *am = vgGpu_.assetMaterials.map();
+        static_cast<uint32_t *>(am)[slot * kMaxVgAssets + vgAssetId] = materialId;
+        vgGpu_.assetMaterials.unmap();
+    }
+    vgAnyThisFrame_ = true;
+    return true;
+}
+
+uint32_t Graphics::debugGpuDrivenVgVisibleCount() const {
+    if (!vgGpu_.visible.buffer || vgAssetCount_ == 0) return 0;
+    void *map = vgGpu_.visible.map();
+    if (!map) return 0;
+    const size_t slot = vgLastVisible_ % kAsyncResourceCopies;
+    const uint32_t count = static_cast<const uint32_t *>(map)[slot * (kMaxVgClusters + 1)];
+    vgGpu_.visible.unmap();
+    return count;
 }
 
 uint32_t Graphics::registerMeshRecord(GpuMesh *gpu) {
@@ -1396,6 +1669,7 @@ void Graphics::ensureGpuDrivenCullResources(int width, int height) {
     const vk::DeviceSize flagBytes = kMaxGpuDrivenInstances * sizeof(uint32_t);
     const vk::DeviceSize compactBytes = kMaxGpuDrivenInstances * sizeof(GpuInstance);
     const vk::DeviceSize indirectBytes = kMaxGpuDrivenBuckets * sizeof(GpuIndirectCommand);
+    const vk::DeviceSize indirectNIBytes = kMaxGpuDrivenBuckets * sizeof(glm::uvec4);
     const vk::DeviceSize counterBytes = kMaxGpuDrivenBuckets * sizeof(uint32_t);
     const vk::DeviceSize hzbBytes = totalWords * sizeof(uint32_t);
 
@@ -1409,6 +1683,9 @@ void Graphics::ensureGpuDrivenCullResources(int width, int height) {
         slot.indirect = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer |
                                                        vk::BufferUsageFlagBits::eIndirectBuffer,
                                            indirectBytes, kHostVisibleCoherent);
+        slot.indirectNI = vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer |
+                                                         vk::BufferUsageFlagBits::eIndirectBuffer,
+                                             indirectNIBytes, kHostVisibleCoherent);
         slot.bucketCounters =
             vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eStorageBuffer, counterBytes,
                                kHostVisibleCoherent);
@@ -1450,6 +1727,8 @@ void Graphics::ensureGpuDrivenCullResources(int width, int height) {
                      spvOf(gpu_cull_comp_spv, gpu_cull_comp_spv_count));
     emitPass_.create(device, gpuDrivenComputeLayout,
                      spvOf(gpu_emit_comp_spv, gpu_emit_comp_spv_count));
+    vgCullPass_.create(device, gpuDrivenComputeLayout,
+                       spvOf(vg_main_cull_comp_spv, vg_main_cull_comp_spv_count));
     gpuDrivenCullReady_ =
         hzbBuildPass_.pipeline() && cullPass_.pipeline() && emitPass_.pipeline();
 }
@@ -1458,6 +1737,7 @@ void Graphics::destroyGpuDrivenCullResources() {
     hzbBuildPass_ = ComputePass{};
     cullPass_ = ComputePass{};
     emitPass_ = ComputePass{};
+    vgCullPass_ = ComputePass{};
     if (gpuDrivenComputeLayout) {
         device->destroyPipelineLayout(gpuDrivenComputeLayout);
         gpuDrivenComputeLayout = nullptr;
@@ -1470,6 +1750,7 @@ void Graphics::destroyGpuDrivenCullResources() {
         slot.visibleFlags.release();
         slot.compacted.release();
         slot.indirect.release();
+        slot.indirectNI.release();
         slot.bucketCounters.release();
         slot.hzb.release();
         slot.cullParams.release();
@@ -1616,32 +1897,46 @@ bool Graphics::gpuDrivenCullBegin(const GpuInstance *instances, uint32_t instanc
     return true;
 }
 
-void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
-                                 float nearZ, float farZ) {
-    if (!gpuDrivenCullReady_ || gpuDrivenCullInstanceCount_ == 0) return;
-    gpuDrivenLastCullSlot_ = uint32_t(currentFrameSlot());
+void Graphics::gpuDrivenRecordComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                             float fovYDeg, float nearZ, float farZ) {
+    if (!gpuDrivenCullReady_) return;
     auto &slot = currentGpuDrivenCullSlot();
     auto &cb = currentPresentCb();
-    // This frame's own bindless set: the previous frame that owned this slot
-    // completed at acquireForFrame()'s fence wait, so rewriting it is safe.
     const vk::DescriptorSet bindless = bindlessSetForFrame();
     if (!bindless) return;
-
-    // CPU reset of GPU-owned per-slot state (slot's previous frame is complete).
+    // Lazily-created defaults register into the bindless set (bindings 0/1);
+    // do it BEFORE the set is bound to the recording command buffer.
+    ensureFlatNormalTexture3D();
+    ensureFlatHeightTexture3D();
+    ensureDefaultEnvCubemap();
+    // Per-frame bindless updates must happen BEFORE the set is bound to the
+    // recording command buffer (no UPDATE_AFTER_BIND): updating it afterwards
+    // invalidates the command buffer (VUID-vkCmdBindPipeline-commandBuffer-recording).
+    createGBufferResources(gbufferWidth > 0 ? gbufferWidth : int(swapchain.extent.width),
+                           gbufferHeight > 0 ? gbufferHeight : int(swapchain.extent.height));
     {
-        void *flagsMap = slot.visibleFlags.map();
-        std::memset(flagsMap, 0, kMaxGpuDrivenInstances * sizeof(uint32_t));
-        slot.visibleFlags.unmap();
-        void *counterMap = slot.bucketCounters.map();
-        std::memset(counterMap, 0, kMaxGpuDrivenBuckets * sizeof(uint32_t));
-        slot.bucketCounters.unmap();
-        // The emit pass only writes buckets that survived culling; clear the
-        // commands so a stale instanceCount from an earlier frame cannot make
-        // a culled bucket draw again (readbacks / validation read this too).
-        void *cmdMap = slot.indirect.map();
-        std::memset(cmdMap, 0, kMaxGpuDrivenBuckets * sizeof(GpuIndirectCommand));
-        slot.indirect.unmap();
+        auto *gbSlot = currentGBufferSlot();
+        if (gbSlot && gbSlot->visIDGpu.sampler && gbSlot->visBaryGpu.sampler) {
+            vk::DescriptorImageInfo visIDInfo{gbSlot->visIDGpu.sampler, gbSlot->visIDGpu.imageView(),
+                                              vk::ImageLayout::eShaderReadOnlyOptimal};
+            vk::DescriptorImageInfo visBaryInfo{gbSlot->visBaryGpu.sampler,
+                                                gbSlot->visBaryGpu.imageView(),
+                                                vk::ImageLayout::eShaderReadOnlyOptimal};
+            vk::WriteDescriptorSet w[2]{};
+            w[0].dstSet = bindless;
+            w[0].dstBinding = 15;
+            w[0].descriptorCount = 1;
+            w[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+            w[0].pImageInfo = &visIDInfo;
+            w[1].dstSet = bindless;
+            w[1].dstBinding = 16;
+            w[1].descriptorCount = 1;
+            w[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+            w[1].pImageInfo = &visBaryInfo;
+            device->updateDescriptorSets(2, w, 0, nullptr);
+        }
     }
+    bindVgFrameBindless(bindless, currentFrameSlot() % kAsyncResourceCopies);
 
     GpuCullParams params{};
     params.viewProj = viewProj;
@@ -1680,6 +1975,7 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
              vk::DescriptorType::eStorageBuffer);
     bufWrite(8, slot.compacted.buffer, 0, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);
     bufWrite(9, slot.indirect.buffer, 0, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);
+    bufWrite(30, slot.indirectNI.buffer, 0, VK_WHOLE_SIZE, vk::DescriptorType::eStorageBuffer);
     bufWrite(14, slot.bucketCounters.buffer, 0, VK_WHOLE_SIZE,
              vk::DescriptorType::eStorageBuffer);
     // The draw consumes the compacted buffer as its instance source (binding 4).
@@ -1709,7 +2005,6 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
 
     recordGpuDrivenHzbBuild();
 
-    const uint32_t groups = (gpuDrivenCullInstanceCount_ + 63u) / 64u;
     // HZB build writes (storage buffer) -> cull reads.
     {
         vk::BufferMemoryBarrier bmb{};
@@ -1721,6 +2016,43 @@ void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye
                            vk::PipelineStageFlagBits::eComputeShader, {}, 0, nullptr, 1, &bmb, 0,
                            nullptr);
     }
+}
+
+void Graphics::gpuDrivenVgComputeSection(const glm::mat4 &viewProj, const glm::vec3 &eye,
+                                         float fovYDeg, float nearZ, float farZ) {
+    gpuDrivenRecordComputeSection(viewProj, eye, fovYDeg, nearZ, farZ);
+}
+
+void Graphics::gpuDrivenCullEmit(const glm::mat4 &viewProj, const glm::vec3 &eye, float fovYDeg,
+                                 float nearZ, float farZ) {
+    if (!gpuDrivenCullReady_ || gpuDrivenCullInstanceCount_ == 0) return;
+    gpuDrivenLastCullSlot_ = uint32_t(currentFrameSlot());
+    auto &slot = currentGpuDrivenCullSlot();
+    auto &cb = currentPresentCb();
+    // This frame's own bindless set: the previous frame that owned this slot
+    // completed at acquireForFrame()'s fence wait, so rewriting it is safe.
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless) return;
+
+    // CPU reset of GPU-owned per-slot state (slot's previous frame is complete).
+    {
+        void *flagsMap = slot.visibleFlags.map();
+        std::memset(flagsMap, 0, kMaxGpuDrivenInstances * sizeof(uint32_t));
+        slot.visibleFlags.unmap();
+        void *counterMap = slot.bucketCounters.map();
+        std::memset(counterMap, 0, kMaxGpuDrivenBuckets * sizeof(uint32_t));
+        slot.bucketCounters.unmap();
+        // The emit pass only writes buckets that survived culling; clear the
+        // commands so a stale instanceCount from an earlier frame cannot make
+        // a culled bucket draw again (readbacks / validation read this too).
+        void *cmdMap = slot.indirect.map();
+        std::memset(cmdMap, 0, kMaxGpuDrivenBuckets * sizeof(GpuIndirectCommand));
+        slot.indirect.unmap();
+    }
+
+    gpuDrivenRecordComputeSection(viewProj, eye, fovYDeg, nearZ, farZ);
+
+    const uint32_t groups = (gpuDrivenCullInstanceCount_ + 63u) / 64u;
     // Arena host writes + previous-frame HZB shader writes visible to cull.
     {
         vk::BufferMemoryBarrier bmb{};
@@ -1869,7 +2201,8 @@ void Graphics::gpuDrivenDrawOpaque() {
 }
 
 void Graphics::gpuDrivenRecordVisPass() {
-    if (!gpuDrivenCullReady_ || gpuDrivenBucketCount_ == 0) return;
+    if (!gpuDrivenCullReady_) return;
+    if (gpuDrivenBucketCount_ == 0 && !vgAnyThisFrame_) return;
     // The vis attachments live in the GBuffer slot set; make sure it exists
     // even when the AO/gbuffer feature is off (resolve needs it anyway).
     createGBufferResources(gbufferWidth > 0 ? gbufferWidth : int(swapchain.extent.width),
@@ -1878,6 +2211,8 @@ void Graphics::gpuDrivenRecordVisPass() {
     if (!slot || !gbufferVisPipeline || !gbufferVisRenderPass || !slot->visFramebuffer) return;
     auto &cull = currentGpuDrivenCullSlot();
     auto &cb = currentPresentCb();
+    // Stage 3 VG: cluster cull (frustum + HZB) runs right before the vis pass.
+    recordVgCull();
 
     const uint32_t w = uint32_t(gbufferWidth);
     const uint32_t h = uint32_t(gbufferHeight);
@@ -1911,10 +2246,11 @@ void Graphics::gpuDrivenRecordVisPass() {
                               1, &set, 0, nullptr);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1,
                               1, &bindless, 0, nullptr);
-        const vk::DeviceSize stride = sizeof(GpuIndirectCommand);
+        const vk::DeviceSize stride = sizeof(glm::uvec4);
         for (uint32_t b = 0; b < gpuDrivenBucketCount_; ++b) {
-            cb.drawIndirect(cull.indirect.buffer, vk::DeviceSize(b) * stride, 1, stride);
+            cb.drawIndirect(cull.indirectNI.buffer, vk::DeviceSize(b) * stride, 1, stride);
         }
+        if (vgAnyThisFrame_) drawVgClusters(cb);
     }
     cb.endRenderPass();
     slot->normal.endSampledLayout();
@@ -1926,35 +2262,15 @@ void Graphics::gpuDrivenRecordVisPass() {
 }
 
 void Graphics::gpuDrivenResolve() {
-    if (!gpuDrivenCullReady_ || gpuDrivenBucketCount_ == 0) return;
+    if (!gpuDrivenCullReady_) return;
+    if (gpuDrivenBucketCount_ == 0 && !vgAnyThisFrame_) return;
     if (!swapchainPassOpen && !sceneColorPassOpen) return;
     if (!resolveVisPipeline || !mesh3dGpuDrivenPipelineLayout) return;
     auto *slot = currentGBufferSlot();
     if (!slot || !slot->visIDGpu.sampler || !slot->visBaryGpu.sampler) return;
     auto &cb = currentPresentCb();
-
-    // Point bindless 15/16 at this frame's GBuffer vis attachments (updated
-    // before the resolve binds the set; per-slot set keeps this fence-safe).
     const vk::DescriptorSet bindless = bindlessSetForFrame();
     if (!bindless) return;
-    {
-        vk::DescriptorImageInfo visIDInfo{slot->visIDGpu.sampler, slot->visIDGpu.imageView(),
-                                          vk::ImageLayout::eShaderReadOnlyOptimal};
-        vk::DescriptorImageInfo visBaryInfo{slot->visBaryGpu.sampler, slot->visBaryGpu.imageView(),
-                                            vk::ImageLayout::eShaderReadOnlyOptimal};
-        vk::WriteDescriptorSet w[2]{};
-        w[0].dstSet = bindless;
-        w[0].dstBinding = 15;
-        w[0].descriptorCount = 1;
-        w[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-        w[0].pImageInfo = &visIDInfo;
-        w[1].dstSet = bindless;
-        w[1].dstBinding = 16;
-        w[1].descriptorCount = 1;
-        w[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-        w[1].pImageInfo = &visBaryInfo;
-        device->updateDescriptorSets(2, w, 0, nullptr);
-    }
 
     const vk::DescriptorSet set = gpuDrivenFrameSet0();
     if (!set) return;
@@ -1994,6 +2310,67 @@ void Graphics::createResolveVisPipeline(const vkb::BuiltRenderPass &rp,
             .build(rp);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
+}
+
+void Graphics::recordVgCull() {
+    if (!gpuDrivenCullReady_ || vgAssetCount_ == 0 || vgClusterCount_ == 0) return;
+    if (!vgCullPass_.pipeline() || !vgGpu_.visible.buffer) return;
+    auto &cb = currentPresentCb();
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless) return;
+
+    const size_t slot = currentFrameSlot() % kAsyncResourceCopies;
+    vgLastVisible_ = uint32_t(slot);
+
+    // Reset this slot's visible counter (the slot's fence was waited at frame
+    // begin, so the previous use of this slot's buffers has completed).
+    {
+        const vk::DeviceSize slotVis = (vk::DeviceSize(kMaxVgClusters) + 1) * sizeof(uint32_t);
+        void *map = vgGpu_.visible.map();
+        if (!map) return;
+        std::memset(static_cast<char *>(map) + slotVis * slot, 0, sizeof(uint32_t));
+        vgGpu_.visible.unmap();
+    }
+
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eCompute, gpuDrivenComputeLayout, 1, 1,
+                          &bindless, 0, nullptr);
+    const uint32_t push[4]{vgClusterCount_, 0u, 0u, 0u};
+    cb.pushConstants(gpuDrivenComputeLayout, vk::ShaderStageFlagBits::eCompute, 0, sizeof(push),
+                     push);
+    vgCullPass_.record(cb, (vgClusterCount_ + 63u) / 64u);
+
+    // VG cull writes (visible + indirect) -> vertex read + indirect read.
+    {
+        vk::BufferMemoryBarrier bmb[2]{};
+        bmb[0].buffer = vgGpu_.visible.buffer;
+        bmb[0].size = VK_WHOLE_SIZE;
+        bmb[0].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+        bmb[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
+        bmb[1].buffer = vgGpu_.indirect.buffer;
+        bmb[1].size = VK_WHOLE_SIZE;
+        bmb[1].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+        bmb[1].dstAccessMask = vk::AccessFlagBits::eIndirectCommandRead;
+        cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
+                           vk::PipelineStageFlagBits::eVertexShader |
+                               vk::PipelineStageFlagBits::eDrawIndirect,
+                           {}, 0, nullptr, 2, bmb, 0, nullptr);
+    }
+}
+
+void Graphics::drawVgClusters(vk::CommandBuffer cb) {
+    if (!gbufferVgVisPipeline || vgAssetCount_ == 0 || vgClusterCount_ == 0) return;
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless || !mesh3dGpuDrivenPipelineLayout) return;
+    if (!gpuDrivenCaps_.drawIndirectCount) return;
+
+    const size_t slot = currentFrameSlot() % kAsyncResourceCopies;
+    const vk::DeviceSize slotInd = vk::DeviceSize(kMaxVgClusters) * sizeof(glm::uvec4);
+    const vk::DeviceSize slotVis = (vk::DeviceSize(kMaxVgClusters) + 1) * sizeof(uint32_t);
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferVgVisPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1,
+                          &bindless, 0, nullptr);
+    cb.drawIndirectCount(vgGpu_.indirect.buffer, slotInd * slot, vgGpu_.visible.buffer,
+                         slotVis * slot, kMaxVgClusters, sizeof(glm::uvec4));
 }
 
 uint32_t Graphics::debugGpuDrivenVisibleCount() const {
@@ -2714,6 +3091,7 @@ void Graphics::destroyGBufferResources() {
     destroyPipeline(device, gbufferPipeline);
     destroyPipeline(device, gbufferAlphaPipeline);
     destroyPipeline(device, gbufferVisPipeline);
+    destroyPipeline(device, gbufferVgVisPipeline);
     destroyPipelineLayout(device, gbufferPipelineLayout);
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
@@ -3077,6 +3455,31 @@ void Graphics::createGBufferResources(int width, int height) {
                 .build(gbufferVisRenderPass);
         device->destroyShaderModule(visVertModule);
         device->destroyShaderModule(visFragModule);
+
+        // VG variant: same vis attachments, cluster-stream fetch (no vertex
+        // input). gl_InstanceIndex == cluster id (drawIndirectCount commands).
+        std::vector<uint32_t> vgVisVert(mesh3d_gbuffer_vgvis_vert_spv,
+                                        mesh3d_gbuffer_vgvis_vert_spv +
+                                            mesh3d_gbuffer_vgvis_vert_spv_count);
+        std::vector<uint32_t> vgVisFrag(mesh3d_gbuffer_vgvis_frag_spv,
+                                        mesh3d_gbuffer_vgvis_frag_spv +
+                                            mesh3d_gbuffer_vgvis_frag_spv_count);
+        vk::ShaderModule vgVisVertModule =
+            vkb::PipelineBuilder::createShaderModule(device.instance, vgVisVert);
+        vk::ShaderModule vgVisFragModule =
+            vkb::PipelineBuilder::createShaderModule(device.instance, vgVisFrag);
+        gbufferVgVisPipeline =
+            device.createPipeline()
+                .useClassicPipeline(vgVisVertModule, vgVisFragModule)
+                .setPipelineLayout(mesh3dGpuDrivenPipelineLayout)
+                .setDynamicStatesViewportScissor()
+                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                               vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+                .setDepthStencil(true, true, vk::CompareOp::eLess)
+                .setColorAttachmentCount(5)
+                .build(gbufferVisRenderPass);
+        device->destroyShaderModule(vgVisVertModule);
+        device->destroyShaderModule(vgVisFragModule);
     }
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
@@ -5389,6 +5792,7 @@ void Graphics::begin3DFrame() {
     currentFrameArena().reset();
     recordPendingShadowPasses();
     recordPendingGBufferPass();
+    vgAnyThisFrame_ = false;
 
     // 3D pass clears with backgroundColor (setBackgroundColor), not a stale 2D clear.
     clearColor = backgroundColor;

@@ -190,42 +190,20 @@ vec4 fetchAlbedo(GpuMaterialRecord m, vec3 N, vec3 V, vec3 worldPos, vec2 uv) {
            m.tint;
 }
 
-// Full GPU-driven opaque shading (forward + resolve share this). Returns the
-// tonemapped color; caller appends the linear-depth alpha channel.
-vec3 shadeGpuDrivenPixel(GpuMaterialRecord m, vec3 Ngeom, vec3 V, vec3 worldPos, vec3 viewPos,
-                         vec2 uv) {
-    float bombScale = m.texBomb.x;
-    float bombStrength = m.texBomb.y;
-    float bombRot = m.texBomb.z;
+// Lighting / GI / env core shared by the textured and flat shading paths.
+// `albedo` is the final pre-lighting albedo (textured or flat tint).
+vec3 shadePbrCore(GpuMaterialRecord m, vec3 N, vec3 V, vec3 worldPos, vec3 viewPos,
+                  vec3 albedo) {
     float metallic = clamp(m.pbr.x, 0.0, 1.0);
     float roughness = clamp(m.pbr.y, 0.04, 1.0);
     bool receiveLight = m.pbr.w > 0.5;
-    uint albedoSlot = m.textureSlots[0] == kInvalidSlot ? 0u : m.textureSlots[0];
-    uint normalSlot = m.textureSlots[1] == kInvalidSlot ? 0u : m.textureSlots[1];
-    uint heightSlot = m.textureSlots[2] == kInvalidSlot ? 0u : m.textureSlots[2];
     int envSlot = ubo.bindlessEnv.x == kInvalidSlot ? 0 : int(ubo.bindlessEnv.x);
 
-    vec3 N = Ngeom;
-    vec2 muv = parallaxMappedUV(textures[heightSlot], uv, N, worldPos, V, m.parallax.x,
-                                m.parallax.y, m.parallax.z);
-    vec4 base = textureCellBomb(textures[albedoSlot], muv, bombScale, bombStrength, bombRot) *
-                m.tint;
-    if (base.a < 0.5)
-        discard;
-    vec3 albedo = base.rgb;
     int count = int(ubo.lightDirIntensity.w + 0.5);
     vec3 ambient = ubo.ambient.rgb;
     if (!receiveLight) {
         count = 0;
         ambient = vec3(1.0);
-    }
-
-    // Only apply a normal map when the material actually provides one.
-    if (m.textureSlots[1] != kInvalidSlot) {
-        vec3 nSample = textureCellBomb(textures[normalSlot], muv, bombScale, bombStrength,
-                                       bombRot).xyz;
-        if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
-            N = applyNormalMap(N, nSample, worldPos, muv);
     }
     vec3 Lo = vec3(0.0);
     float viewDepth = max(-viewPos.z, 0.0);
@@ -280,4 +258,42 @@ vec3 shadeGpuDrivenPixel(GpuMaterialRecord m, vec3 Ngeom, vec3 V, vec3 worldPos,
     }
 
     return tonemapPeak(color);
+}
+
+// Full GPU-driven opaque shading (forward + resolve share this). Returns the
+// tonemapped color; caller appends the linear-depth alpha channel.
+vec3 shadeGpuDrivenPixel(GpuMaterialRecord m, vec3 Ngeom, vec3 V, vec3 worldPos, vec3 viewPos,
+                         vec2 uv) {
+    float bombScale = m.texBomb.x;
+    float bombStrength = m.texBomb.y;
+    float bombRot = m.texBomb.z;
+    uint albedoSlot = m.textureSlots[0] == kInvalidSlot ? 0u : m.textureSlots[0];
+    uint normalSlot = m.textureSlots[1] == kInvalidSlot ? 0u : m.textureSlots[1];
+    uint heightSlot = m.textureSlots[2] == kInvalidSlot ? 0u : m.textureSlots[2];
+
+    vec3 N = Ngeom;
+    vec2 muv = parallaxMappedUV(textures[heightSlot], uv, N, worldPos, V, m.parallax.x,
+                                m.parallax.y, m.parallax.z);
+    vec4 base = textureCellBomb(textures[albedoSlot], muv, bombScale, bombStrength, bombRot) *
+                m.tint;
+    if (base.a < 0.5)
+        discard;
+    vec3 albedo = base.rgb;
+
+    // Only apply a normal map when the material actually provides one.
+    if (m.textureSlots[1] != kInvalidSlot) {
+        vec3 nSample = textureCellBomb(textures[normalSlot], muv, bombScale, bombStrength,
+                                       bombRot).xyz;
+        if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
+            N = applyNormalMap(N, nSample, worldPos, muv);
+    }
+    return shadePbrCore(m, N, V, worldPos, viewPos, albedo);
+}
+
+// Flat shading for virtual-geometry clusters (no uv/normal/texture streams):
+// same lighting / GI / env, albedo = material tint.
+vec3 shadeGpuDrivenPixelFlat(GpuMaterialRecord m, vec3 Ngeom, vec3 V, vec3 worldPos,
+                             vec3 viewPos) {
+    vec3 N = Ngeom;
+    return shadePbrCore(m, N, V, worldPos, viewPos, m.tint.rgb);
 }
