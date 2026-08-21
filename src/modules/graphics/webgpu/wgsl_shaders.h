@@ -800,7 +800,8 @@ struct VSOut {
 struct AOUniforms {
     params: vec4f,    // x = radius (UV offset scale), y = power, z = nearZ (hw), w = farZ (hw)
     intensity: f32,   // 0 = off
-    _pad: vec2f,
+    invScale: f32,    // AO target size / depth size (0.5 = half-res AO)
+    _pad: f32,
 };
 @group(0) @binding(0) var<uniform> ubo: AOUniforms;
 @group(0) @binding(1) var depthTex: texture_depth_2d;
@@ -819,7 +820,9 @@ fn linearizeDepth(z: f32) -> f32 {
 @fragment
 fn fs_main(in: VSOut) -> @location(0) vec4f {
     let dims = vec2f(textureDimensions(depthTex));
-    let uv = (in.pos.xy + vec2f(0.5)) / dims;
+    // AO runs at half resolution; the upsampled bilinear fetch in the mesh
+    // pass acts as a cheap 2x2 blur, which removes the per-pixel grain.
+    let uv = (in.pos.xy + vec2f(0.5)) / (dims * ubo.invScale);
     // Hardware depth (Depth32Float, NDC z in [0,1], 0 = near, 1 = far) —
     // linearized to world units so the occlusion delta is not crushed by
     // perspective (hw depth deltas near the far plane are ~1e-4).
@@ -836,16 +839,17 @@ fn fs_main(in: VSOut) -> @location(0) vec4f {
     var occ = 0.0;
     for (var i = 0; i < 12; i = i + 1) {
         let f = (f32(i) + 0.5) / 12.0;
-        let ang = 6.2831853 * f + hash12(uv * 311.7 + vec2f(f32(i), 0.0)) * 1.7;
+        let ang = 6.2831853 * f + hash12(uv * 311.7 + vec2f(f32(i), 0.0)) * 0.9;
         let r = rad * (0.25 + 0.75 * f);
         let sampleUV = clamp(uv + vec2f(cos(ang), sin(ang)) * r, vec2f(0.001), vec2f(0.999));
         let sampleDepth = linearizeDepth(textureLoad(depthTex, vec2<i32>(sampleUV * dims), 0));
         if (sampleDepth >= farZ * 0.99) { continue; }
         // The sample is occluded when it is closer than the center surface
-        // (positive diff in world units); weight by how much closer.
+        // (positive diff in world units); smoothstep softens the hard cutoff
+        // that turned tiny depth deltas into per-pixel speckle.
         let diff = centerDepth - sampleDepth;
         let delta = diff / max(centerDepth, 1e-4);
-        occ += clamp(delta * 80.0, 0.0, 1.0);
+        occ += smoothstep(0.0, 0.4, delta * 35.0);
     }
     let ao = pow(clamp(1.0 - occ / 12.0, 0.0, 1.0), ubo.params.y);
     return vec4f(vec3f(mix(1.0, ao, ubo.intensity)), 1.0);

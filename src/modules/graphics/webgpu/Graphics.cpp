@@ -1404,7 +1404,10 @@ void Graphics::ensureAOResources(int width, int height) {
             WGPUTextureDescriptor td{};
             td.label = sv("eve_ao");
             td.dimension = WGPUTextureDimension_2D;
-            td.size = {static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1};
+            // Half-resolution AO: the bilinear upsample in the mesh pass blurs
+            // the per-pixel sampling grain that otherwise reads as noise.
+            td.size = {static_cast<uint32_t>((width + 1) / 2),
+                       static_cast<uint32_t>((height + 1) / 2), 1};
             td.sampleCount = 1;
             td.format = WGPUTextureFormat_RGBA8Unorm;
             td.mipLevelCount = 1;
@@ -3666,12 +3669,15 @@ void Graphics::present() {
                 struct AOUbo {
                     glm::vec4 params;  // radius, power, nearZ, farZ
                     float intensity;
-                    float pad[2];
+                    float invScale;    // AO target size / depth size
+                    float pad;
                 } aou;
                 // Near/far are passed so the shader can linearize the
                 // hardware depth into world units for the occlusion delta.
-                aou.params = glm::vec4(0.09f, 1.1f, mesh3dNear, mesh3dFar);
+                aou.params = glm::vec4(0.05f, 1.1f, mesh3dNear, mesh3dFar);
                 aou.intensity = 1.0f;
+                aou.invScale = 0.5f;
+                aou.pad = 0.f;
                 queue.WriteBuffer(aoUbo, 0, &aou, sizeof(aou));
                 wgpu::BindGroup aoBg = makeAOBindGroup(gslot.depthView);
 
