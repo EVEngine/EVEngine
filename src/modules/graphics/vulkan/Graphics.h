@@ -245,6 +245,14 @@ public:
                            float nearZ, float farZ);
     void gpuDrivenOpenScenePass();
     void gpuDrivenDrawOpaque();
+    /** @brief Stage 3: vis+resolve live for this frame (opt-in, 1x scene pass). */
+    bool gpuDrivenResolveWanted() const override {
+        return gpuDrivenEnabled_ && gpuDrivenCaps_.gpuDrivenCullAvailable() &&
+               renderControl_ && renderControl_->isEnabled("visResolve") &&
+               sceneColorSamples == vk::SampleCountFlagBits::e1;
+    }
+    void gpuDrivenRecordVisPass() override;
+    void gpuDrivenResolve() override;
     /** @brief Debug readback: visible instances / non-empty buckets from the last cull. */
     uint32_t debugGpuDrivenVisibleCount() const;
     uint32_t debugGpuDrivenCulledDrawCount() const;
@@ -693,12 +701,34 @@ private:
     /** @brief Bindless set owned by the current frame slot (safe to rewrite this frame). */
     vk::DescriptorSet bindlessSetForFrame() const;
 
+    // ---- GPU-driven (stage 3): pooled vertices + visibility buffer ----
+    /** @brief Interleaved pools (SoA) for the resolve to fetch attributes by index. */
+    struct GpuVertexPool {
+        vkb::GenericBuffer positions;  // vec4 per vertex (16B; w unused)
+        vkb::GenericBuffer normals;    // vec4 per vertex
+        vkb::GenericBuffer uvs;        // vec2 per vertex (8B)
+        vkb::GenericBuffer indices;    // uint32 (u16 meshes converted)
+        uint32_t vertexCount = 0;
+        uint32_t indexCount = 0;
+    };
+    GpuVertexPool gpuVertexPool_;
+    void ensureGpuVertexPool();
+    void growGpuVertexPool(uint32_t needVertices, uint32_t needIndices);
+    /** @brief Rewrite bindless bindings 18-21 (pool buffers) in every slot set. */
+    void bindGpuVertexPoolBindless();
+    void appendGpuMeshToPool(GpuMesh &gpu);
+
     // ---- GPU-driven (stage 1): opaque forward path ----
     bool gpuDrivenEnabled_ = false;
     uint32_t lastGpuDrivenDrawCount_ = 0;
     vk::PipelineLayout mesh3dGpuDrivenPipelineLayout = nullptr;
     vk::Pipeline mesh3dGpuDrivenPipeline = nullptr;
+    vk::Pipeline resolveVisPipeline = nullptr;
     void createMesh3DGpuDrivenPipeline();
+    /** @brief Per-frame set0 (Frame UBO + shadow) shared by forward/vis/resolve. */
+    vk::DescriptorSet gpuDrivenFrameSet0();
+    void createResolveVisPipeline(const vkb::BuiltRenderPass &rp,
+                                  vk::SampleCountFlagBits samples);
 
     // ---- GPU-driven (stage 2): HZB + GPU cull ----
     struct GpuDrivenCullSlot {
@@ -781,24 +811,33 @@ private:
         vkb::ColorTarget normal;
         vkb::ColorTarget depthColor;
         vkb::ColorTarget albedo;
+        vkb::ColorTarget visID;    // R32G32UI: x = instance, y = pooled index offset
+        vkb::ColorTarget visBary;  // R16G16F: barycentric (u, v)
         vkb::DepthTarget depth;
         vk::Framebuffer framebuffer{};
+        vk::Framebuffer visFramebuffer{};
         GpuTexture normalGpu{};
         GpuTexture depthColorGpu{};
         GpuTexture albedoGpu{};
+        GpuTexture visIDGpu{};
+        GpuTexture visBaryGpu{};
         GpuTexture depthGpu{};
         Texture normalTex{};
         Texture depthColorTex{};
         Texture albedoTex{};
+        Texture visIDTex{};
+        Texture visBaryTex{};
         Texture depthTex{};
     };
     int gbufferWidth = 0;
     int gbufferHeight = 0;
     std::vector<GBufferSlot> gbufferSlots;
     vkb::BuiltRenderPass gbufferRenderPass{};
+    vkb::BuiltRenderPass gbufferVisRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
     vk::Pipeline gbufferAlphaPipeline{};
+    vk::Pipeline gbufferVisPipeline = nullptr;
     bool gbufferPassActive = false;
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;

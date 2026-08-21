@@ -833,8 +833,16 @@ void RenderSystem3D::render(Graphics &gfx) {
                     auto cd = defaultCam->data();
                     const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
                     gfx.gpuDrivenCullEmit(projM * viewM, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
-                    gfx.gpuDrivenOpenScenePass();
-                    gfx.gpuDrivenDrawOpaque();
+                    if (gfx.gpuDrivenResolveWanted()) {
+                        // Stage 3: opaque goes to the GBuffer vis pass, the
+                        // scene color pass runs the fullscreen material resolve.
+                        gfx.gpuDrivenRecordVisPass();
+                        gfx.gpuDrivenOpenScenePass();
+                        gfx.gpuDrivenResolve();
+                    } else {
+                        gfx.gpuDrivenOpenScenePass();
+                        gfx.gpuDrivenDrawOpaque();
+                    }
                     gpuDrivenUsed = true;
                 } else {
                     // Deferred scene pass must be open before stage-1 recording.

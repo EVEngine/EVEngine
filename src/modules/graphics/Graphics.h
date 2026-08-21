@@ -165,6 +165,19 @@ public:
     /** @brief Draw the opaque geometry with GPU-written indirect commands. */
     virtual void gpuDrivenDrawOpaque() {}
 
+    // ---- GPU-driven rendering (stage 3): visibility buffer + resolve seam ----
+    // Backends without the resolve path return false / no-op; the renderer
+    // keeps using gpuDrivenDrawOpaque (forward shading).
+
+    /** @brief True when the stage-3 vis+resolve path should run this frame. */
+    virtual bool gpuDrivenResolveWanted() const { return false; }
+
+    /** @brief Record the GBuffer vis pass (opaque indirect draws write visID/visBary). */
+    virtual void gpuDrivenRecordVisPass() {}
+
+    /** @brief Record the fullscreen vis resolve inside the open scene color pass. */
+    virtual void gpuDrivenResolve() {}
+
     /**
      * @brief Bind to an existing native window (SDL_Window*) and create Vulkan device/swapchain.
      * Must be called after the window exists (SDL_WINDOW_VULKAN).

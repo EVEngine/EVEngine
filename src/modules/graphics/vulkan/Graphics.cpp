@@ -53,6 +53,10 @@
 #include "graphics/shaders/mesh3d_gbuffer_vert_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vis_vert_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_vis_frag_spv.inc"
+#include "graphics/shaders/resolve_vis_vert_spv.inc"
+#include "graphics/shaders/resolve_vis_frag_spv.inc"
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
 #include "graphics/shaders/lit2d_vert_spv.inc"
@@ -343,6 +347,8 @@ Graphics::~Graphics() {
     if (texPipelineLayout) device->destroyPipelineLayout(texPipelineLayout);
     if (shaderPipelineLayout) device->destroyPipelineLayout(shaderPipelineLayout);
     if (mesh3dPipeline) device->destroyPipeline(mesh3dPipeline);
+    if (mesh3dGpuDrivenPipeline) device->destroyPipeline(mesh3dGpuDrivenPipeline);
+    if (resolveVisPipeline) device->destroyPipeline(resolveVisPipeline);
     destroyOffscreen3DResources();
     if (mesh3dPipelineLayout) device->destroyPipelineLayout(mesh3dPipelineLayout);
     if (mesh3dShaderPipelineLayout) device->destroyPipelineLayout(mesh3dShaderPipelineLayout);
@@ -703,6 +709,8 @@ void Graphics::createBindlessSet() {
                                            vk::ShaderStageFlagBits::eFragment |
                                            vk::ShaderStageFlagBits::eCompute;
     const vk::ShaderStageFlags computeOnly = vk::ShaderStageFlagBits::eCompute;
+    const vk::ShaderStageFlags vertFrag =
+        vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
     std::vector<vk::DescriptorSetLayoutBinding> bindings{
         samplerBinding(0, kMaxBindlessTextures, allStages),
         samplerBinding(1, kMaxBindlessCubemaps, allStages),
@@ -719,7 +727,13 @@ void Graphics::createBindlessSet() {
         storageBinding(12, computeOnly),
         storageBinding(13, computeOnly),
         storageBinding(14, computeOnly),
+        samplerBinding(15, 1, vk::ShaderStageFlagBits::eFragment),  // visID (resolve)
+        samplerBinding(16, 1, vk::ShaderStageFlagBits::eFragment),  // visBary (resolve)
         storageBinding(17, computeOnly),
+        storageBinding(18, vertFrag),  // pooled vertex positions
+        storageBinding(19, vertFrag),  // pooled vertex normals
+        storageBinding(20, vertFrag),  // pooled vertex uvs
+        storageBinding(21, vertFrag),  // pooled indices
     };
 
     vk::DescriptorSetLayoutCreateInfo layoutInfo{};
@@ -734,8 +748,8 @@ void Graphics::createBindlessSet() {
     const uint32_t setCount = kAsyncResourceCopies;
     std::array<vk::DescriptorPoolSize, 3> poolSizes{
         vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
-                               (kMaxBindlessTextures + kMaxBindlessCubemaps + 1) * setCount},
-        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 12 * setCount},
+                               (kMaxBindlessTextures + kMaxBindlessCubemaps + 3) * setCount},
+        vk::DescriptorPoolSize{vk::DescriptorType::eStorageBuffer, 16 * setCount},
         vk::DescriptorPoolSize{vk::DescriptorType::eUniformBuffer, 1 * setCount},
     };
     vk::DescriptorPoolCreateInfo poolInfo{};
@@ -851,6 +865,171 @@ void Graphics::createBindlessSet() {
             device->updateDescriptorSets(1, &w, 0, nullptr);
         }
     }
+    // Stage 3 placeholders: visID/visBary are rewritten per frame by the
+    // resolve; keep them valid so the set is safe to bind anywhere.
+    for (vk::DescriptorSet set : bindlessSets_) {
+        vk::DescriptorImageInfo visInfo{white->sampler, white->imageView(),
+                                        vk::ImageLayout::eShaderReadOnlyOptimal};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = set;
+        w.dstBinding = 15;
+        w.descriptorCount = 1;
+        w.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        w.pImageInfo = &visInfo;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+        w.dstBinding = 16;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    }
+    // Pooled vertex/index buffers for the vis resolve (grows lazily).
+    ensureGpuVertexPool();
+    bindGpuVertexPoolBindless();
+}
+
+void Graphics::ensureGpuVertexPool() {
+    if (gpuVertexPool_.positions.buffer) return;
+    constexpr uint32_t kInitialVertices = 256u << 10;   // 256k verts (~11 MB total)
+    constexpr uint32_t kInitialIndices = 768u << 10;    // 768k u32 indices (3 MB)
+    const auto hostMem = kHostVisibleCoherent;
+    gpuVertexPool_.positions = vkb::GenericBuffer(
+        device, vk::BufferUsageFlagBits::eStorageBuffer, kInitialVertices * sizeof(glm::vec4),
+        hostMem);
+    gpuVertexPool_.normals = vkb::GenericBuffer(
+        device, vk::BufferUsageFlagBits::eStorageBuffer, kInitialVertices * sizeof(glm::vec4),
+        hostMem);
+    gpuVertexPool_.uvs = vkb::GenericBuffer(
+        device, vk::BufferUsageFlagBits::eStorageBuffer, kInitialVertices * sizeof(glm::vec2),
+        hostMem);
+    gpuVertexPool_.indices = vkb::GenericBuffer(
+        device, vk::BufferUsageFlagBits::eStorageBuffer, kInitialIndices * sizeof(uint32_t),
+        hostMem);
+    gpuVertexPool_.vertexCount = 0;
+    gpuVertexPool_.indexCount = 0;
+}
+
+void Graphics::growGpuVertexPool(uint32_t needVertices, uint32_t needIndices) {
+    // Pool growth reallocates the buffers; a pending frame may still be reading
+    // them, so drain the GPU first (rare path: first-time mesh registration).
+    device->waitIdle();
+    const uint32_t oldVerts = gpuVertexPool_.vertexCount;
+    const uint32_t oldInds = gpuVertexPool_.indexCount;
+    const auto hostMem = kHostVisibleCoherent;
+    auto copyInto = [&](vkb::GenericBuffer &dst, vkb::GenericBuffer &src, vk::DeviceSize oldBytes,
+                        vk::DeviceSize newBytes) {
+        vkb::GenericBuffer grown(device, vk::BufferUsageFlagBits::eStorageBuffer, newBytes,
+                                 hostMem);
+        if (oldBytes > 0) {
+            void *srcMap = src.map();
+            void *dstMap = grown.map();
+            std::memcpy(dstMap, srcMap, oldBytes);
+            grown.unmap();
+            src.unmap();
+        }
+        src.release();
+        dst = std::move(grown);
+    };
+    const uint32_t newVerts = std::max(needVertices, oldVerts * 2u);
+    const uint32_t newInds = std::max(needIndices, oldInds * 2u);
+    copyInto(gpuVertexPool_.positions, gpuVertexPool_.positions,
+             vk::DeviceSize(oldVerts) * sizeof(glm::vec4),
+             vk::DeviceSize(newVerts) * sizeof(glm::vec4));
+    copyInto(gpuVertexPool_.normals, gpuVertexPool_.normals,
+             vk::DeviceSize(oldVerts) * sizeof(glm::vec4),
+             vk::DeviceSize(newVerts) * sizeof(glm::vec4));
+    copyInto(gpuVertexPool_.uvs, gpuVertexPool_.uvs,
+             vk::DeviceSize(oldVerts) * sizeof(glm::vec2),
+             vk::DeviceSize(newVerts) * sizeof(glm::vec2));
+    copyInto(gpuVertexPool_.indices, gpuVertexPool_.indices,
+             vk::DeviceSize(oldInds) * sizeof(uint32_t),
+             vk::DeviceSize(newInds) * sizeof(uint32_t));
+    bindGpuVertexPoolBindless();
+}
+
+void Graphics::bindGpuVertexPoolBindless() {
+    if (bindlessSets_.empty() || !gpuVertexPool_.positions.buffer) return;
+    auto bufWrite = [&](vk::DescriptorSet set, uint32_t binding, vk::Buffer buffer,
+                        vk::DeviceSize size) {
+        vk::DescriptorBufferInfo info{buffer, 0, size};
+        vk::WriteDescriptorSet w{};
+        w.dstSet = set;
+        w.dstBinding = binding;
+        w.descriptorCount = 1;
+        w.descriptorType = vk::DescriptorType::eStorageBuffer;
+        w.pBufferInfo = &info;
+        device->updateDescriptorSets(1, &w, 0, nullptr);
+    };
+    const uint32_t cap = [&]() {
+        const vk::DeviceSize bytes = gpuVertexPool_.positions.size;
+        return uint32_t(bytes / sizeof(glm::vec4));
+    }();
+    const uint32_t indCap = uint32_t(gpuVertexPool_.indices.size / sizeof(uint32_t));
+    for (vk::DescriptorSet set : bindlessSets_) {
+        bufWrite(set, 18, gpuVertexPool_.positions.buffer,
+                 vk::DeviceSize(cap) * sizeof(glm::vec4));
+        bufWrite(set, 19, gpuVertexPool_.normals.buffer, vk::DeviceSize(cap) * sizeof(glm::vec4));
+        bufWrite(set, 20, gpuVertexPool_.uvs.buffer, vk::DeviceSize(cap) * sizeof(glm::vec2));
+        bufWrite(set, 21, gpuVertexPool_.indices.buffer,
+                 vk::DeviceSize(indCap) * sizeof(uint32_t));
+    }
+}
+
+void Graphics::appendGpuMeshToPool(GpuMesh &gpu) {
+    if (!gpu.vertices.buffer || !gpu.indices.buffer) return;
+    ensureGpuVertexPool();
+    const uint32_t nVerts = gpu.record.vertexCount;
+    const uint32_t nInds = gpu.record.indexCount;
+    if (nVerts == 0 || nInds == 0) return;
+    const uint32_t newVerts = gpuVertexPool_.vertexCount + nVerts;
+    const uint32_t newInds = gpuVertexPool_.indexCount + nInds;
+    const uint32_t capVerts =
+        uint32_t(gpuVertexPool_.positions.size / sizeof(glm::vec4));
+    const uint32_t capInds = uint32_t(gpuVertexPool_.indices.size / sizeof(uint32_t));
+    if (newVerts > capVerts || newInds > capInds) {
+        growGpuVertexPool(newVerts, newInds);
+    }
+
+    void *vMap = gpu.vertices.map();
+    void *iMap = gpu.indices.map();
+    if (!vMap || !iMap) return;
+    auto *verts = static_cast<const MeshVertex *>(vMap);
+    auto *posDst = static_cast<glm::vec4 *>(gpuVertexPool_.positions.map());
+    auto *nrmDst = static_cast<glm::vec4 *>(gpuVertexPool_.normals.map());
+    auto *uvDst = static_cast<glm::vec2 *>(gpuVertexPool_.uvs.map());
+    auto *idxDst = static_cast<uint32_t *>(gpuVertexPool_.indices.map());
+    if (!posDst || !nrmDst || !uvDst || !idxDst) {
+        gpu.vertices.unmap();
+        gpu.indices.unmap();
+        return;
+    }
+    posDst += gpuVertexPool_.vertexCount;
+    nrmDst += gpuVertexPool_.vertexCount;
+    uvDst += gpuVertexPool_.vertexCount;
+    idxDst += gpuVertexPool_.indexCount;
+    for (uint32_t i = 0; i < nVerts; ++i) {
+        posDst[i] = glm::vec4(verts[i].pos, 0.f);
+        nrmDst[i] = glm::vec4(verts[i].normal, 0.f);
+        uvDst[i] = verts[i].uv;
+    }
+    if (gpu.indexType == vk::IndexType::eUint16) {
+        const auto *src16 = static_cast<const uint16_t *>(iMap);
+        for (uint32_t i = 0; i < nInds; ++i) idxDst[i] = uint32_t(src16[i]);
+    } else {
+        const auto *src32 = static_cast<const uint32_t *>(iMap);
+        for (uint32_t i = 0; i < nInds; ++i) idxDst[i] = src32[i];
+    }
+    gpuVertexPool_.positions.unmap();
+    gpuVertexPool_.normals.unmap();
+    gpuVertexPool_.uvs.unmap();
+    gpuVertexPool_.indices.unmap();
+    gpu.vertices.unmap();
+    gpu.indices.unmap();
+
+    // Pool offsets are vertex/index counts, resolved by the vis shaders.
+    gpu.record.vertexOffset = gpuVertexPool_.vertexCount;
+    gpu.record.indexOffset = gpuVertexPool_.indexCount;
+    gpu.record.firstIndex = 0;  // vis pass draws non-indexed from the pool
+    gpu.record.vertexBase = 0;
+    gpuVertexPool_.vertexCount = newVerts;
+    gpuVertexPool_.indexCount = newInds;
 }
 
 uint32_t Graphics::registerBindlessTexture2D(GpuTexture *tex) {
@@ -944,6 +1123,9 @@ uint32_t Graphics::registerMeshRecord(GpuMesh *gpu) {
     if (!gpu) return kInvalidBindlessSlot;
     if (gpu->gpuRecordIndex != kInvalidBindlessSlot) return gpu->gpuRecordIndex;
     if (meshTableRecords_.size() >= meshTableCapacity_) return kInvalidBindlessSlot;
+    // Stage 3: lazily pool the mesh's vertices/indices so the vis resolve can
+    // fetch attributes by (pool offset + triangle + barycentric).
+    appendGpuMeshToPool(*gpu);
     const uint32_t idx = uint32_t(meshTableRecords_.size());
     meshTableRecords_.push_back(gpu->record);
     meshRecordOwners_.push_back(gpu);
@@ -1596,11 +1778,7 @@ void Graphics::gpuDrivenOpenScenePass() {
     swapchainPassOpen = true;
 }
 
-void Graphics::gpuDrivenDrawOpaque() {
-    if (!gpuDrivenCullReady_ || gpuDrivenBucketCount_ == 0) return;
-    if (!swapchainPassOpen && !sceneColorPassOpen) return;
-    auto &slot = currentGpuDrivenCullSlot();
-
+vk::DescriptorSet Graphics::gpuDrivenFrameSet0() {
     // Per-frame set0 + UBO (same shading state as the stage-1 path).
     ensureFlatNormalTexture3D();
     ensureFlatHeightTexture3D();
@@ -1654,6 +1832,16 @@ void Graphics::gpuDrivenDrawOpaque() {
     }
     shadowUbo.bias.z = mesh3dShadowReceive ? 1.f : 0.f;
     fslots.slots[setSlot].shadowUbo.updateLocal(frameToken(), shadowUbo);
+    return set;
+}
+
+void Graphics::gpuDrivenDrawOpaque() {
+    if (!gpuDrivenCullReady_ || gpuDrivenBucketCount_ == 0) return;
+    if (!swapchainPassOpen && !sceneColorPassOpen) return;
+    auto &slot = currentGpuDrivenCullSlot();
+
+    const vk::DescriptorSet set = gpuDrivenFrameSet0();
+    if (!set) return;
 
     auto &cb = currentPresentCb();
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipeline);
@@ -1678,6 +1866,134 @@ void Graphics::gpuDrivenDrawOpaque() {
         }
         cb.drawIndexedIndirect(slot.indirect.buffer, vk::DeviceSize(b) * stride, 1, stride);
     }
+}
+
+void Graphics::gpuDrivenRecordVisPass() {
+    if (!gpuDrivenCullReady_ || gpuDrivenBucketCount_ == 0) return;
+    // The vis attachments live in the GBuffer slot set; make sure it exists
+    // even when the AO/gbuffer feature is off (resolve needs it anyway).
+    createGBufferResources(gbufferWidth > 0 ? gbufferWidth : int(swapchain.extent.width),
+                           gbufferHeight > 0 ? gbufferHeight : int(swapchain.extent.height));
+    auto *slot = currentGBufferSlot();
+    if (!slot || !gbufferVisPipeline || !gbufferVisRenderPass || !slot->visFramebuffer) return;
+    auto &cull = currentGpuDrivenCullSlot();
+    auto &cb = currentPresentCb();
+
+    const uint32_t w = uint32_t(gbufferWidth);
+    const uint32_t h = uint32_t(gbufferHeight);
+    std::array<vk::ClearValue, 6> clears{};
+    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[1].color = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
+    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[3].color = vk::ClearColorValue(std::array<uint32_t, 4>{0xFFFFFFFFu, 0u, 0u, 0u});
+    clears[4].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[5].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = gbufferVisRenderPass;
+    rpBegin.framebuffer = slot->visFramebuffer;
+    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+    rpBegin.clearValueCount = uint32_t(clears.size());
+    rpBegin.pClearValues = clears.data();
+    slot->normal.beginColorAttachment();
+    slot->depthColor.beginColorAttachment();
+    slot->albedo.beginColorAttachment();
+    slot->visID.beginColorAttachment();
+    slot->visBary.beginColorAttachment();
+    slot->depth.beginDepthAttachment();
+    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(cb, w, h);
+
+    const vk::DescriptorSet set = gpuDrivenFrameSet0();
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (set && bindless) {
+        cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferVisPipeline);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0,
+                              1, &set, 0, nullptr);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1,
+                              1, &bindless, 0, nullptr);
+        const vk::DeviceSize stride = sizeof(GpuIndirectCommand);
+        for (uint32_t b = 0; b < gpuDrivenBucketCount_; ++b) {
+            cb.drawIndirect(cull.indirect.buffer, vk::DeviceSize(b) * stride, 1, stride);
+        }
+    }
+    cb.endRenderPass();
+    slot->normal.endSampledLayout();
+    slot->depthColor.endSampledLayout();
+    slot->albedo.endSampledLayout();
+    slot->visID.endSampledLayout();
+    slot->visBary.endSampledLayout();
+    slot->depth.endSampledLayout();
+}
+
+void Graphics::gpuDrivenResolve() {
+    if (!gpuDrivenCullReady_ || gpuDrivenBucketCount_ == 0) return;
+    if (!swapchainPassOpen && !sceneColorPassOpen) return;
+    if (!resolveVisPipeline || !mesh3dGpuDrivenPipelineLayout) return;
+    auto *slot = currentGBufferSlot();
+    if (!slot || !slot->visIDGpu.sampler || !slot->visBaryGpu.sampler) return;
+    auto &cb = currentPresentCb();
+
+    // Point bindless 15/16 at this frame's GBuffer vis attachments (updated
+    // before the resolve binds the set; per-slot set keeps this fence-safe).
+    const vk::DescriptorSet bindless = bindlessSetForFrame();
+    if (!bindless) return;
+    {
+        vk::DescriptorImageInfo visIDInfo{slot->visIDGpu.sampler, slot->visIDGpu.imageView(),
+                                          vk::ImageLayout::eShaderReadOnlyOptimal};
+        vk::DescriptorImageInfo visBaryInfo{slot->visBaryGpu.sampler, slot->visBaryGpu.imageView(),
+                                            vk::ImageLayout::eShaderReadOnlyOptimal};
+        vk::WriteDescriptorSet w[2]{};
+        w[0].dstSet = bindless;
+        w[0].dstBinding = 15;
+        w[0].descriptorCount = 1;
+        w[0].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        w[0].pImageInfo = &visIDInfo;
+        w[1].dstSet = bindless;
+        w[1].dstBinding = 16;
+        w[1].descriptorCount = 1;
+        w[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        w[1].pImageInfo = &visBaryInfo;
+        device->updateDescriptorSets(2, w, 0, nullptr);
+    }
+
+    const vk::DescriptorSet set = gpuDrivenFrameSet0();
+    if (!set) return;
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, resolveVisPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 0, 1,
+                          &set, 0, nullptr);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh3dGpuDrivenPipelineLayout, 1, 1,
+                          &bindless, 0, nullptr);
+    const uint32_t w =
+        uint32_t(sceneColorPassOpen ? sceneColorWidth : int(swapchain.extent.width));
+    const uint32_t h =
+        uint32_t(sceneColorPassOpen ? sceneColorHeight : int(swapchain.extent.height));
+    setViewportAndScissor(cb, w, h);
+    cb.draw(3, 1, 0, 0);
+}
+
+void Graphics::createResolveVisPipeline(const vkb::BuiltRenderPass &rp,
+                                        vk::SampleCountFlagBits samples) {
+    destroyPipeline(device, resolveVisPipeline);
+    if (!mesh3dGpuDrivenPipelineLayout) return;
+    std::vector<uint32_t> vert(resolve_vis_vert_spv, resolve_vis_vert_spv +
+                                                         resolve_vis_vert_spv_count);
+    std::vector<uint32_t> frag(resolve_vis_frag_spv, resolve_vis_frag_spv +
+                                                         resolve_vis_frag_spv_count);
+    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
+    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
+    resolveVisPipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(mesh3dGpuDrivenPipelineLayout)
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                           vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+            .setMultisampler(false, samples)
+            .setDepthStencil(true, true, vk::CompareOp::eLessOrEqual)
+            .setColorAttachmentCount(1)
+            .build(rp);
+    device->destroyShaderModule(vertModule);
+    device->destroyShaderModule(fragModule);
 }
 
 uint32_t Graphics::debugGpuDrivenVisibleCount() const {
@@ -2375,24 +2691,37 @@ void Graphics::destroyGBufferResources() {
         slot.normalTex.gpuHandle = nullptr;
         slot.depthColorTex.gpuHandle = nullptr;
         slot.albedoTex.gpuHandle = nullptr;
+        slot.visIDTex.gpuHandle = nullptr;
+        slot.visBaryTex.gpuHandle = nullptr;
         slot.depthTex.gpuHandle = nullptr;
         if (slot.framebuffer) {
             device->destroyFramebuffer(slot.framebuffer);
             slot.framebuffer = vk::Framebuffer{};
         }
+        if (slot.visFramebuffer) {
+            device->destroyFramebuffer(slot.visFramebuffer);
+            slot.visFramebuffer = vk::Framebuffer{};
+        }
         destroySampler(device, slot.normalGpu.sampler);
         destroySampler(device, slot.depthColorGpu.sampler);
         destroySampler(device, slot.albedoGpu.sampler);
+        destroySampler(device, slot.visIDGpu.sampler);
+        destroySampler(device, slot.visBaryGpu.sampler);
         destroySampler(device, slot.depthGpu.sampler);
     }
     gbufferSlots.clear();
     post2Sets.clear();
     destroyPipeline(device, gbufferPipeline);
     destroyPipeline(device, gbufferAlphaPipeline);
+    destroyPipeline(device, gbufferVisPipeline);
     destroyPipelineLayout(device, gbufferPipelineLayout);
     if (gbufferRenderPass) {
         device->destroyRenderPass(gbufferRenderPass);
         gbufferRenderPass = {};
+    }
+    if (gbufferVisRenderPass) {
+        device->destroyRenderPass(gbufferVisRenderPass);
+        gbufferVisRenderPass = {};
     }
     gbufferWidth = 0;
     gbufferHeight = 0;
@@ -2611,12 +2940,16 @@ void Graphics::createGBufferResources(int width, int height) {
     const uint32_t h = uint32_t(height);
     const vk::Format colorFmt = pickGBufferColorFormat(device);
     const vk::Format depthFmt = vk::Format::eD32Sfloat;
+    const vk::Format visIDFmt = vk::Format::eR32G32Uint;
+    const vk::Format visBaryFmt = vk::Format::eR16G16Sfloat;
 
     gbufferSlots.resize(kAsyncResourceCopies);
     for (auto &slot : gbufferSlots) {
         slot.normal = device.createColorTarget(w, h, colorFmt);
         slot.depthColor = device.createColorTarget(w, h, colorFmt);
         slot.albedo = device.createColorTarget(w, h, colorFmt);
+        slot.visID = device.createColorTarget(w, h, visIDFmt);
+        slot.visBary = device.createColorTarget(w, h, visBaryFmt);
         slot.depth = device.createDepthTarget(w, h, depthFmt, true);
     }
 
@@ -2641,6 +2974,33 @@ void Graphics::createGBufferResources(int width, int height) {
             device, w, h,
             {slot.normal.asAttachment(), slot.depthColor.asAttachment(), slot.albedo.asAttachment(),
              slot.depth.asAttachment()});
+    }
+
+    // Stage 3 vis variant: same geometry, 5 color outputs (normal/depth/albedo
+    // + visID/visBary). Only the GPU-driven opaque instances use it.
+    gbufferVisRenderPass =
+        device.createRenderPass()
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(visIDFmt)
+            .addSampledColorAttachment(visBaryFmt)
+            .addSampledDepthAttachment(depthFmt)
+            .addSubpass(vkb::SubpassBuilder()
+                            .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(1, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(2, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(3, vk::ImageLayout::eColorAttachmentOptimal)
+                            .addAttachmentRef(4, vk::ImageLayout::eColorAttachmentOptimal)
+                            .setDepthStencilAttachment(
+                                5, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+            .addExternalShaderReadDependencies()
+            .build();
+    for (auto &slot : gbufferSlots) {
+        slot.visFramebuffer = gbufferVisRenderPass.createFramebuffer(
+            device, w, h,
+            {slot.normal.asAttachment(), slot.depthColor.asAttachment(), slot.albedo.asAttachment(),
+             slot.visID.asAttachment(), slot.visBary.asAttachment(), slot.depth.asAttachment()});
     }
 
     auto layoutBuilder = device.createPipelineLayout();
@@ -2692,6 +3052,33 @@ void Graphics::createGBufferResources(int width, int height) {
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
 
+    // Vis pipeline: no vertex input (fetches from the pooled buffers via
+    // gl_VertexIndex); draws non-indexed with the cull chain's indirect commands.
+    if (mesh3dGpuDrivenPipelineLayout) {
+        std::vector<uint32_t> visVert(mesh3d_gbuffer_vis_vert_spv,
+                                      mesh3d_gbuffer_vis_vert_spv +
+                                          mesh3d_gbuffer_vis_vert_spv_count);
+        std::vector<uint32_t> visFrag(mesh3d_gbuffer_vis_frag_spv,
+                                      mesh3d_gbuffer_vis_frag_spv +
+                                          mesh3d_gbuffer_vis_frag_spv_count);
+        vk::ShaderModule visVertModule =
+            vkb::PipelineBuilder::createShaderModule(device.instance, visVert);
+        vk::ShaderModule visFragModule =
+            vkb::PipelineBuilder::createShaderModule(device.instance, visFrag);
+        gbufferVisPipeline =
+            device.createPipeline()
+                .useClassicPipeline(visVertModule, visFragModule)
+                .setPipelineLayout(mesh3dGpuDrivenPipelineLayout)
+                .setDynamicStatesViewportScissor()
+                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                               vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+                .setDepthStencil(true, true, vk::CompareOp::eLess)
+                .setColorAttachmentCount(5)
+                .build(gbufferVisRenderPass);
+        device->destroyShaderModule(visVertModule);
+        device->destroyShaderModule(visFragModule);
+    }
+
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
         vkb::SamplerBuilder sb;
         gpu.sampler = sb.nearestClamp().build(device);
@@ -2713,6 +3100,8 @@ void Graphics::createGBufferResources(int width, int height) {
         makeSampleTex(slot.normalGpu, slot.normalTex, slot.normal.imageView());
         makeSampleTex(slot.depthColorGpu, slot.depthColorTex, slot.depthColor.imageView());
         makeSampleTex(slot.albedoGpu, slot.albedoTex, slot.albedo.imageView());
+        makeSampleTex(slot.visIDGpu, slot.visIDTex, slot.visID.imageView());
+        makeSampleTex(slot.visBaryGpu, slot.visBaryTex, slot.visBary.imageView());
         makeSampleTex(slot.depthGpu, slot.depthTex, slot.depth.imageView());
     }
 }
@@ -2898,6 +3287,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     destroyPipeline(device, mesh3dPipeline);
     destroyPipeline(device, mesh3dClusteredPipeline);
     destroyPipeline(device, mesh3dGpuDrivenPipeline);
+    destroyPipeline(device, resolveVisPipeline);
     destroyPipeline(device, voxelRectPipeline);
 
     mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
@@ -2907,6 +3297,7 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
         createMesh3DStylePipeline(embeddedSpirv(mesh3d_gpudriven_vert_spv),
                                   embeddedSpirv(mesh3d_gpudriven_frag_spv),
                                   mesh3dGpuDrivenPipelineLayout, target, samples);
+    createResolveVisPipeline(target, samples);
     mesh3dClusteredPipeline =
         createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
                                   embeddedSpirv(mesh3d_clustered_frag_spv),
