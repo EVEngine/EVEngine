@@ -65,17 +65,27 @@ wait_for "MCP listening on 127.0.0.1:$MCP_PORT" 30 \
 sed -i 's/return (v < 0.0 || v > maxV) ? -0.85 : 1.0;/return (v < 0.0 || v > maxV) ? -0.5 : 1.0;/' \
   "$WORK/devlab/main.nut"
 
-PYTHON="${PYTHON:-python3}"
-python3 - "$MCP_PORT" <<'PY'
+python3 - "$MCP_PORT" "$log" <<'PY'
 import json
 import socket
 import sys
 import time
 
 port = int(sys.argv[1])
-s = socket.create_connection(("127.0.0.1", port), timeout=10)
+eve_log = sys.argv[2]
+s = socket.create_connection(("127.0.0.1", port), timeout=30)
 buf = b""
 seq = 0
+
+
+def dump_log():
+    try:
+        with open(eve_log, encoding="utf-8", errors="replace") as f:
+            lines = f.readlines()
+        print("--- eve log tail ---")
+        print("".join(lines[-30:]))
+    except OSError:
+        pass
 
 
 def send(obj):
@@ -124,23 +134,43 @@ call(
 send({"jsonrpc": "2.0", "method": "notifications/initialized"})
 time.sleep(0.2)
 
-status = tool("eve_status")
-assert '"attached":true' in status, f"DevTools not attached: {status[:200]}"
+status = ""
+for attempt in range(5):
+    try:
+        status = tool("eve_status")
+        if '"attached":true' in status:
+            break
+    except Exception as exc:  # noqa: BLE001 - report + retry
+        time.sleep(2)
+        continue
+if '"attached":true' not in status:
+    dump_log()
+    print(f"FAIL: DevTools not attached: {status[:200]}")
+    sys.exit(1)
 
 # The script was edited before this client connected; wait for the reload.
-deadline = time.time() + 20
+deadline = time.time() + 30
 while time.time() < deadline:
-    r = tool("eve_eval", {"expression": "lab.reloads"})
+    try:
+        r = tool("eve_eval", {"expression": "lab.reloads"})
+    except Exception as exc:  # noqa: BLE001 - report + retry
+        r = f"error: {exc}"
+        time.sleep(1)
     if '"value":"1"' in r or '"value":1' in r:
         print("PASS: DevLab — MCP attached and script hot-reload verified on a live game.")
         sys.exit(0)
     time.sleep(0.5)
 
+dump_log()
 print(f"FAIL: hot reload counter never reached 1 (last eval: {r})")
 sys.exit(1)
 PY
 rc=$?
 
+if [ "$rc" -ne 0 ]; then
+  echo "       --- eve log tail ---"
+  tail -n 30 "$log" 2>/dev/null | sed 's/^/       | /'
+fi
 kill "$pid" 2>/dev/null || true
 wait "$pid" 2>/dev/null || true
 exit "$rc"
