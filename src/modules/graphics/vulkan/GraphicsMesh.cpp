@@ -126,6 +126,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     handle->markMorphClean();
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -236,6 +237,7 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     raw->computeBounds(posXYZ, vertexCount);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -414,6 +416,7 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -523,6 +526,7 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
+    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;

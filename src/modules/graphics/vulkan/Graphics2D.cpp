@@ -607,6 +607,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 
     gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
+    registerBindlessTexture2D(gpu.get());
 
     auto tex = std::make_unique<Texture>();
     tex->width = w;
@@ -660,6 +661,7 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
 
     gpu->sampler = createVkSampler(info.sampler, mipLevels);
     // Cubemap sampled via mesh3d descriptor sets — no 2D texSetLayout binding required here.
+    registerBindlessTextureCube(gpu.get());
 
     auto tex = std::make_unique<Texture>();
     tex->width = faceSize;
@@ -742,6 +744,7 @@ bool Graphics::releaseTexture(Texture *texture) {
 
     // In-flight frames may still sample the image / sampler; drain first.
     waitForSharedGpuResources();
+    unregisterBindlessTexture(gpu);
     if ((*gpuIt)->sampler) device->destroySampler((*gpuIt)->sampler);
     texture->gpuHandle = nullptr;
     ownedGpuTextures.erase(gpuIt);
@@ -784,6 +787,7 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
 
     gpu->descriptorSet = vkb::BoundSet{sets[0]};
     writeCombinedImageDescriptor(gpu.get());
+    registerBindlessTexture2D(gpu.get());
 
     void *oldHandle = tex->gpuHandle;
     for (auto &owned : ownedGpuTextures) {
@@ -791,6 +795,7 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
         // Destroying the old image/sampler while an in-flight frame still
         // samples it is a typical TDR. Drain first, then drop cached sets.
         waitForSharedGpuResources();
+        unregisterBindlessTexture(static_cast<GpuTexture *>(oldHandle));
         if (owned->sampler) device->destroySampler(owned->sampler);
         owned = std::move(gpu);
         tex->gpuHandle = owned.get();
@@ -800,12 +805,14 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
         tex->pixelHeight = h;
         tex->mipmapCount = int(mipLevels);
         tex->sampler = info.sampler;
+        registerBindlessTexture2D(owned.get());
         invalidateTextureBindings();
         return true;
     }
 
     // Texture not in owned list — attach as new ownership.
     tex->gpuHandle = gpu.get();
+    registerBindlessTexture2D(static_cast<GpuTexture *>(tex->gpuHandle));
     tex->width = w;
     tex->height = h;
     tex->pixelWidth = w;
