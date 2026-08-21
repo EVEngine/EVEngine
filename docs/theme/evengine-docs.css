@@ -1,5 +1,18 @@
 /* EVEngine static docs layout: a plain-HTML sidebar that works without JS. */
 
+/* Dark theme fallback: follow the OS/app color scheme even when the
+ * doxygen-awesome dark-mode toggle script cannot run (e.g. file:// with
+ * scripting disabled). The script adds html.dark-mode / html.light-mode and
+ * takes precedence when it does run. */
+@media (prefers-color-scheme: dark) {
+    html:not(.light-mode) {
+        --page-background-color: #1C1D1F;
+        --page-foreground-color: #d2dbde;
+        --side-nav-background: #252628;
+        --side-nav-arrow-opacity: #3a3d42;
+    }
+}
+
 html, body {
     margin: 0;
     padding: 0;
