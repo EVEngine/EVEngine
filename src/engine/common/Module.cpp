@@ -27,6 +27,13 @@ void ModuleManager::insert(const char* name, Module* instance) {
     inst().registered_modules[name].instance = instance;
 }
 
+void ModuleManager::requireAll() {
+    for (auto& entry : inst().registered_modules) {
+        if (!entry.second.instance && entry.second.creator)
+            entry.second.instance = entry.second.creator();
+    }
+}
+
 void ModuleManager::register_module(const char* name, creator_t c, exposer_t e) {
     EV_PARAM_CHECK(name != nullptr, "module name must not be null");
     const bool hasCreator = c != nullptr;  // function pointers can't be printed by zeroerr

@@ -105,7 +105,7 @@ GAME ?=
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
 	wsl/linux wsl/linux-debug show-targets \
-	debug release example \
+	debug release example devlab \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
 	sync/android-libs sync/android-assets sync/android-test-assets install/android-debug run/android-debug log/android \
@@ -864,28 +864,28 @@ run: run/$(PLATFORM)-debug
 #   make run/macosx-debug GAME=examples/rpg
 #   make run              # current host platform, debug, embedded demo
 run/win32-debug: ensure-built/win32-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run; \
-	else build/win32-debug/src/engine/eve.exe; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux-debug: ensure-built/linux-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run; \
-	else build/linux-debug/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx-debug: ensure-built/macosx-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run; \
-	else build/macosx-debug/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/win32: ensure-built/win32
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run; \
-	else build/win32/src/engine/eve.exe; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run $(RUN_ARGS); \
+	else build/win32/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux: ensure-built/linux
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run; \
-	else build/linux/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run $(RUN_ARGS); \
+	else build/linux/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx: ensure-built/macosx
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run; \
-	else build/macosx/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
+	else build/macosx/src/engine/eve $(RUN_ARGS); fi
 
 tools/debug:
 	cd tools/vscode-eve-debug && npx @vscode/vsce package 
@@ -913,6 +913,9 @@ sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug
 
 basic:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/basic
+
+devlab:
+	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/devlab RUN_ARGS="--debug"
 
 rpg:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/rpg

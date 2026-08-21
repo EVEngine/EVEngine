@@ -570,11 +570,27 @@ bool Debugger::onScriptLine(const SourceLoc& loc) {
 }
 
 void Debugger::waitWhilePaused(const std::function<void()>& pump) {
-    while (mode_.load() == RunMode::Paused) {
-        if (pump) pump();
-        else if (pump_) pump_();
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        if (!vm_) break;
+    // Re-entrancy guard: evaluating an expression (eve_eval / watches /
+    // breakpoint conditions) while already paused runs bytecode on this VM,
+    // whose line hook reports "paused" and would otherwise block again on the
+    // same thread — deadlocking the pause pump. The nested caller only wants
+    // the eval to finish, so let it run instead of blocking a second time.
+    static thread_local int pausePumpDepth = 0;
+    if (pausePumpDepth > 0) return;
+    ++pausePumpDepth;
+    struct Guard {
+        ~Guard() { --pausePumpDepth; }
+    } guard;
+    try {
+        while (mode_.load() == RunMode::Paused) {
+            if (pump) pump();
+            else if (pump_) pump_();
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            if (!vm_) break;
+        }
+    } catch (...) {
+        // Keep the pump re-entrancy state consistent; the caller's hook is
+        // responsible for surfacing the failure.
     }
 }
 

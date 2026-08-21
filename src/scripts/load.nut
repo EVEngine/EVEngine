@@ -38,6 +38,40 @@ function has_module(slot) {
     return slot in getroottable() && getroottable()[slot] != null;
 }
 
+// ---------------------------------------------------------------------------
+// 通用游戏开发辅助（在 main.nut 之前定义；示例脚本可直接使用，
+// 游戏脚本里可以按需用同名定义覆盖）。
+// ---------------------------------------------------------------------------
+
+_input_edge_state <- { };
+
+// 边沿检测：只在“刚按下”的那一帧返回 true。用于按键（可带备用键名）。
+// 状态跨热重载保留，所以改脚本保存后不会丢按键边沿。
+function key_just_pressed(name, alternate = "") {
+    local down = keyboard.isDown(name) ||
+                 (alternate != "" && keyboard.isDown(alternate));
+    local key = (alternate == "") ? ("k_" + name) : (name + ":" + alternate);
+    local was = (key in _input_edge_state) ? _input_edge_state[key] : false;
+    _input_edge_state[key] <- down;
+    return down && !was;
+}
+
+// 数值裁剪。
+function clampf(v, lo, hi) {
+    if (v < lo) return lo;
+    if (v > hi) return hi;
+    return v;
+}
+
+// 热重载持久化：name 已存在于根表则直接返回，否则调用 init() 创建并保存。
+// 约定：`x <- persist("x", function() { return <初始值>; });`
+function persist(name, init) {
+    local root = getroottable();
+    if (!(name in root))
+        root[name] <- init();
+    return root[name];
+}
+
 config <- {
     width = 800
     height = 600

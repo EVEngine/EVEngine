@@ -34,7 +34,7 @@ local yaw = 0.0;
 // Called each frame from the host loop.
 function vg_step() {
     yaw += 0.012;
-    renderer.setCameraSimple(0.0, 0.0, camDist);
+    renderer.setCameraSimple(0.0, 0.0, camDist, 0.1, 100.0);
     renderer.setModelYaw(yaw);
 
     // GPU-driven culling + software rasterization into the visibility buffer.

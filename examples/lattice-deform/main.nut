@@ -21,16 +21,11 @@ if (!("mode" in getroottable())) mode <- 1;
 if (!("animT" in getroottable())) animT <- 0.0;
 if (!("paused" in getroottable())) paused <- false;
 if (!("squashTween" in getroottable())) squashTween <- null;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
 
 const PI = 3.14159265358979;
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
 function buildSphere(radius, stacks, slices) {

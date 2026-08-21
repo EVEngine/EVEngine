@@ -10,7 +10,9 @@
 // is baked into the engine from src/scripts/scene_director.nut.
 if ("sceneDirectorScript" in eve && eve.sceneDirectorScript != "") {
     try {
-        compilestring(eve.sceneDirectorScript)();
+        local fn = compilestring(eve.sceneDirectorScript);
+        if (fn != null) fn();
+        else print("scene_director install failed: compilestring returned null\n");
     } catch (e) {
         print("scene_director install failed: " + e + "\n");
     }
@@ -22,6 +24,7 @@ if ("sceneDirectorScript" in eve && eve.sceneDirectorScript != "") {
     }
 }
 
+if (!("scene_director" in getroottable())) scene_director <- null;
 if (!("sd" in getroottable())) sd <- null;
 if (scene_director != null) sd = scene_director;
 
