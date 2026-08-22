@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "Fixtures.h"
 #include "common/Exception.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -42,22 +43,6 @@ using namespace eve::graphics;
 
 namespace {
 
-struct GraphicsFixture {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
-
-    GraphicsFixture(int w = 320, int h = 240) {
-        win = eve::window::Window::create();
-        gfx = Graphics::create();
-        eve::window::WindowSettings s;
-        s.width = static_cast<uint16_t>(w);
-        s.height = static_cast<uint16_t>(h);
-        s.centered = true;
-        win->setWindowSettings(s);
-    }
-    ~GraphicsFixture() { win->close(); }
-};
-
 std::vector<uint8_t> makeSolid(int w, int h, uint8_t r, uint8_t g, uint8_t b) {
     std::vector<uint8_t> px(size_t(w) * size_t(h) * 4);
     for (size_t i = 0; i < px.size(); i += 4) {
@@ -92,7 +77,7 @@ TEST_CASE("TextureSampler.parseFilterAndMipmap") {
 }
 
 TEST_CASE("GraphicsSmoke.textureMipmapsAndAnisotropy") {
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     auto px = makeSolid(64, 64, 200, 40, 40);
 
     TextureCreateInfo info = TextureCreateInfo::withMipmaps(true, 8.f);
@@ -118,7 +103,7 @@ TEST_CASE("GraphicsSmoke.textureMipmapsAndAnisotropy") {
 }
 
 TEST_CASE("GraphicsSmoke.setTextureSamplerValidatesStrings") {
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     auto px = makeSolid(16, 16, 120, 120, 120);
     Texture *tex = fx.gfx->newTexture(16, 16, px.data());
     REQUIRE(tex != nullptr);
@@ -149,7 +134,7 @@ TEST_CASE("GraphicsSmoke.setTextureSamplerValidatesStrings") {
 }
 
 TEST_CASE("GraphicsSmoke.cubemapGeneratesMipChain") {
-    GraphicsFixture fx;
+    GfxFixture fx(320, 240, /*useHeadless=*/true);
     const int face = 16;
     std::vector<uint8_t> faces(size_t(face) * face * 4 * 6, 128);
     Texture *cube = fx.gfx->newCubemap(face, faces.data());

@@ -25,8 +25,8 @@ bool expectException(const std::function<void()> &fn) {
 
 }  // namespace
 
-// One case so the shared Graphics singleton is initialized exactly once even in
-// bundle mode (bundle/graphics_headless). Error contracts run before init.
+// initHeadless is re-entrant (the shared Graphics singleton persists across
+// test cases): a second call updates the viewport instead of throwing.
 TEST_CASE("graphics.headless.initCanvasDrawAndErrors") {
     auto *gfx = Graphics::create();
     REQUIRE(gfx != nullptr);
@@ -40,7 +40,13 @@ TEST_CASE("graphics.headless.initCanvasDrawAndErrors") {
     CHECK(gfx->getBackendName() == "vulkan");
     CHECK(gfx->getWidth() == 320);
     CHECK(gfx->getHeight() == 240);
-    CHECK(expectException([&] { gfx->initHeadless(320, 240); }));
+    // Re-entrant initHeadless resizes the logical viewport.
+    gfx->initHeadless(640, 480);
+    CHECK(gfx->getWidth() == 640);
+    CHECK(gfx->getHeight() == 480);
+    gfx->initHeadless(320, 240);
+    CHECK(gfx->getWidth() == 320);
+    CHECK(gfx->getHeight() == 240);
 
     // Render a solid rect into an offscreen canvas and read it back.
     Canvas *rt = gfx->newCanvas(64, 64);
