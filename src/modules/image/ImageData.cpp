@@ -280,8 +280,8 @@ static void setPixelRG16(const Colorf &c, ImageData::Pixel *p) {
 
 static void setPixelRGBA16(const Colorf &c, ImageData::Pixel *p) {
     p->rgba16[0] = (uint16_t)(clamp01(c.r) * 65535.0f + 0.5f);
-    p->rgba16[1] = (uint16_t)(clamp01(c.b) * 65535.0f + 0.5f);
-    p->rgba16[2] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[1] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[2] = (uint16_t)(clamp01(c.b) * 65535.0f + 0.5f);
     p->rgba16[3] = (uint16_t)(clamp01(c.a) * 65535.0f + 0.5f);
 }
 
@@ -483,23 +483,27 @@ static void getPixelRG11B10F(const ImageData::Pixel *p, Colorf &c) {
 void ImageData::setPixel(int x, int y, const Colorf &c) {
     if (!inside(x, y)) throw eve::Exception("Attempt to set out-of-range pixel!");
 
-    size_t pixelsize = getPixelSize();
-    Pixel *p         = (Pixel *)(data + ((y * width + x) * pixelsize));
-
     if (pixelSetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::setPixel", format.c_str());
 
-    pixelSetFunction(c, p);
+    // Packed formats (RGBA4 / RGB5A1 / RGB565) place pixels at 2-byte
+    // granularity, which can violate the Pixel union's 4-byte alignment.
+    // Encode into an aligned local and copy the bytes back instead of
+    // accessing a possibly-misaligned union member (UBSan).
+    const size_t pixelsize = getPixelSize();
+    Pixel tmp;
+    pixelSetFunction(c, &tmp);
+    std::memcpy(data + ((y * width + x) * pixelsize), &tmp, pixelsize);
 }
 
 void ImageData::getPixel(int x, int y, Colorf &c) const {
     if (!inside(x, y)) throw eve::Exception("Attempt to get out-of-range pixel!");
 
-    size_t       pixelsize = getPixelSize();
-    const Pixel *p         = (const Pixel *)(data + ((y * width + x) * pixelsize));
-
     if (pixelGetFunction == nullptr) throw eve::Exception("Unhandled pixel format %s in ImageData::getPixel", format.c_str());
 
-    pixelGetFunction(p, c);
+    const size_t pixelsize = getPixelSize();
+    Pixel tmp;
+    std::memcpy(&tmp, data + ((y * width + x) * pixelsize), pixelsize);
+    pixelGetFunction(&tmp, c);
 }
 
 Colorf ImageData::getPixel(int x, int y) const {
