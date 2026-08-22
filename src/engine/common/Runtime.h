@@ -181,7 +181,7 @@ public:
         StackGuard(const StackGuard&) = delete;
         StackGuard& operator=(const StackGuard&) = delete;
 
-        int top() const noexcept { return top_; }
+        int top() const noexcept { return static_cast<int>(top_); }
         void dismiss() noexcept { vm_ = nullptr; }
 
     private:

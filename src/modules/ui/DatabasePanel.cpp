@@ -177,8 +177,9 @@ WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
         if (it != options.end()) index = int(it - options.begin());
         cell = combo(label, options, index, id,
                      [this, entryId = entry.id, name = member.name,
-                      kind = value.kind, options](int i) {
-                         if (i < 0 || i >= int(options.size())) return;
+                      kind = value.kind, options](float i) {
+                         const int idx = static_cast<int>(i);
+                         if (idx < 0 || idx >= int(options.size())) return;
                          const ObjectEntry* e =
                              ObjectRegistry::instance().entry(entryId);
                          if (!e) return;
@@ -186,14 +187,14 @@ WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
                          if (kind == ReflectedValueKind::Integer) {
                              out.kind = ReflectedValueKind::Integer;
                              out.integer =
-                                 std::strtoll(options[size_t(i)].c_str(), nullptr, 10);
+                                 std::strtoll(options[size_t(idx)].c_str(), nullptr, 10);
                          } else if (kind == ReflectedValueKind::Float) {
                              out.kind = ReflectedValueKind::Float;
                              out.floating =
-                                 std::strtod(options[size_t(i)].c_str(), nullptr);
+                                 std::strtod(options[size_t(idx)].c_str(), nullptr);
                          } else {
                              out.kind = ReflectedValueKind::String;
-                             out.text = options[size_t(i)];
+                             out.text = options[size_t(idx)];
                          }
                          ModuleManager::runtime()->writeProperty(e->object, name, out);
                      });
@@ -244,9 +245,10 @@ WidgetDesc DatabasePanel::build() {
                 text("Class", "db_lbl_class"),
                 spacer("db_class_spacer"),
                 combo("##db_class", classNames_, classIndex, "db_class",
-                      [this](int index) {
-                          if (index >= 0 && index < int(classNames_.size()))
-                              selectClass(classNames_[size_t(index)]);
+                      [this](float index) {
+                          const int idx = static_cast<int>(index);
+                          if (idx >= 0 && idx < int(classNames_.size()))
+                              selectClass(classNames_[size_t(idx)]);
                       }),
                 button("+", "db_add", [this]() { createInstance(); }),
             },

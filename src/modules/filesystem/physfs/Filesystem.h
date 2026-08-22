@@ -23,7 +23,7 @@ public:
 
     void init(const char* arg0) override;
 
-    void setFused(bool fused) override;
+    void setFused(bool value) override;
     bool isFused() const override;
 
     bool setupWriteDirectory() override;

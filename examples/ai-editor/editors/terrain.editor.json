@@ -1,0 +1,27 @@
+{
+  "id": "terrain",
+  "title": "Terrain Editor",
+  "vm": "TerrainVM",
+  "x": 120,
+  "y": 80,
+  "width": 520,
+  "height": 560,
+  "layout": "vertical",
+  "theme": {
+    "preset": "dark",
+    "accent": [0.2, 0.7, 0.45],
+    "bg": [0.10, 0.11, 0.14],
+    "panel": [0.14, 0.15, 0.18],
+    "text": [0.92, 0.93, 0.95],
+    "radius": 4.0,
+    "fontScale": 1.0
+  },
+  "children": [
+    { "type": "text", "id": "title", "text": "Terrain Editor — 由 AI 提交的 JSON View 现场生成" },
+    { "type": "slider", "id": "strength", "label": "Strength", "bind": "vm.strength", "min": 0.0, "max": 1.0 },
+    { "type": "slider", "id": "brush", "label": "Brush radius", "bind": "vm.brushSize", "min": 1.0, "max": 32.0 },
+    { "type": "checkbox", "id": "wireframe", "label": "Wireframe", "bind": "vm.wireframe" },
+    { "type": "dropdown", "id": "tool", "label": "Tool", "bind": "vm.tool", "options": ["Raise", "Flatten", "Carve", "Smooth"] },
+    { "type": "button", "id": "apply", "label": "Apply", "command": "apply" }
+  ]
+}

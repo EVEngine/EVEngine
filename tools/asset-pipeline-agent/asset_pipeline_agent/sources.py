@@ -12,7 +12,7 @@ import os
 import urllib.request
 import urllib.parse
 import urllib.error
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .report import ALLOWED_LICENSES, Candidate
 

@@ -98,7 +98,6 @@ TEST_CASE("audio.streamSource.pump") {
     auto *audio = tryCreateAudio();
     if (!audio)
         return;
-    auto *sound = eve::sound::Sound::create();
     auto wav = makeSilentWav(44100);
     eve::data::ByteData data(wav.data(), wav.size());
     auto *src = audio->newSourceFromData(&data, "stream");

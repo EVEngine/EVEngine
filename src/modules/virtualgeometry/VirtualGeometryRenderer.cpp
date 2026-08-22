@@ -207,7 +207,9 @@ bool VirtualGeometryRenderer::resolve(unsigned char *outRgba, int &outW, int &ou
         }
         // Stable per-cluster color hash.
         std::uint32_t h = cid * 2654435761u;
-        float cr = (h >> 16) & 0xFFu, cg = (h >> 8) & 0xFFu, cb = h & 0xFFu;
+        float cr = static_cast<float>((h >> 16) & 0xFFu),
+              cg = static_cast<float>((h >> 8) & 0xFFu),
+              cb = static_cast<float>(h & 0xFFu);
         float mx = std::max({cr, cg, cb, 1.f});
         float depthF = static_cast<float>(depth) / 65535.f;
         float shade = 0.35f + 0.65f * (1.f - depthF);

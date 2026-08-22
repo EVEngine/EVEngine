@@ -47,6 +47,11 @@ eve_init = function() {
 eve_update = function(dt) {
     fallTime += dt;
     if (fall != null) fall.update(dt);
+    // 手动保存当前帧（头部注释约定）。
+    if (keyboard.isDown("F") || keyboard.isDown("f")) {
+        if (gfx.saveFramePng("/tmp/waterfall_demo.png"))
+            print("waterfall frame saved: /tmp/waterfall_demo.png\n");
+    }
 };
 
 eve_render = function() {

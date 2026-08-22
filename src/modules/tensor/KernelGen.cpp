@@ -409,7 +409,7 @@ bool genConv(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     os << "  uint i_ = gl_GlobalInvocationID.x;\n";
     os << "  if (i_ >= " << g.node(grp.outputNode).size << "u) return;\n";
     if (is1d) {
-        const int N = X.dims[0], C = X.dims[1], L = X.dims[2];
+        const int C = X.dims[1], L = X.dims[2];
         const int F = Wt.dims[0], K = Wt.dims[2];
         os << "  uint n_ = i_ / (" << F << "u * " << cn.dims[2] << "u);\n";
         os << "  uint rem = i_ % (" << F << "u * " << cn.dims[2] << "u);\n";
@@ -425,7 +425,7 @@ bool genConv(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
         os << "    }\n";
         os << "  }\n";
     } else {
-        const int N = X.dims[0], C = X.dims[1], H = X.dims[2], W = X.dims[3];
+        const int C = X.dims[1], H = X.dims[2], W = X.dims[3];
         const int F = Wt.dims[0], KH = Wt.dims[2], KW = Wt.dims[3];
         os << "  uint n_ = i_ / (" << F << "u * " << cn.dims[2] << "u * " << cn.dims[3] << "u);\n";
         os << "  uint rem = i_ % (" << F << "u * " << cn.dims[2] << "u * " << cn.dims[3] << "u);\n";
@@ -464,7 +464,7 @@ bool genPool(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     const GraphNode &pn = g.node(grp.outputNode);
     const GraphNode &X = g.node(pn.in0);
     const int ksize = pn.i0, stride = pn.i1, pad = pn.i2;
-    const int N = X.dims[0], C = X.dims[1], H = X.dims[2], W = X.dims[3];
+    const int C = X.dims[1], H = X.dims[2], W = X.dims[3];
     const int OH = pn.dims[2], OW = pn.dims[3];
     const bool maxPool = pn.type == OpType::MaxPool2d;
     std::ostringstream os;
@@ -711,7 +711,6 @@ bool genReduceOrArgmax(const Graph &g, const FusedGroup &grp, bool argmax, Kerne
 bool genEmbedding(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     const GraphNode &en = g.node(grp.outputNode);
     const GraphNode &T = g.node(en.in0);
-    const GraphNode &I = g.node(en.in1);
     const bool tQuant = q::isQuantDType(static_cast<DType>(T.dtype)) && !T.constBytes.empty();
     const bool tInt = T.dtype != static_cast<int>(DType::Fp16);
     const int vocab = T.dims[0], dim = T.dims[1];
@@ -909,7 +908,6 @@ bool genSdpa(const Graph &g, const FusedGroup &grp, KernelSpec &out) {
     if (S > 2048 || D > 512) return false;  // shared-memory limits -> CPU fallback
     const float scale = qn.s0;
     const bool masked = grp.masked;
-    const int bindingMask = masked ? 3 : -1;
     const int bindingOut = masked ? 4 : 3;
     std::ostringstream os;
     os << header(128);

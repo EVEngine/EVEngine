@@ -29,7 +29,6 @@ if (!("wave" in getroottable())) wave <- 1;
 if (!("score" in getroottable())) score <- 0;
 if (!("gameOver" in getroottable())) gameOver <- false;
 if (!("battleLog" in getroottable())) battleLog <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("hitFlash" in getroottable())) hitFlash <- { player = 0.0, enemy = 0.0 };
 
 const PLAYER_MAX_HP = 100.0;
@@ -61,65 +60,51 @@ function roundi(v) {
     return floor(v + 0.5).tointeger();
 }
 
-function clampf(v, lo, hi) {
-    if (v < lo) return lo;
-    if (v > hi) return hi;
-    return v;
-}
-
 function logLine(text) {
     battleLog.push(text);
     while (battleLog.len() > 6)
         battleLog.remove(0);
 }
 
+// 部分构建的脚本绑定不含 isCastingSkill / getCastProgress（ECS 实体反射差异），
+// 用 feature-detect 兜底，保证示例在任意构建下都能运行。
+function actorCasting(actor) {
+    return actor != null && ("isCastingSkill" in actor) && actor.isCastingSkill();
+}
+
+function actorCastProgress(actor) {
+    if (actor == null || !("getCastProgress" in actor)) return 0.0;
+    return actor.getCastProgress();
+}
+
 // ---------------------------------------------------------------------------
 // 数据驱动内容：效果 / 技能定义。注册接口是幂等的（按 id 覆盖），软重载时
 // 重复调用也没问题，方便边跑边改数值。
+// 内容从 data/*.json 读取——改数值不用碰脚本，保存即热重载。
 // ---------------------------------------------------------------------------
+function readTextFile(path) {
+    local handle = file(path, "r");
+    if (handle == null) return null;
+    local content = handle.read();
+    handle.close();
+    return content;
+}
+
 function registerContent() {
     rpg.clearEffectDefinitions();
-    local effectsLoaded = rpg.registerEffectsFromJson(@"[
-        {""id"":""buff.power_stance"",""durationPolicy"":""duration"",""duration"":6.0,
-         ""stackPolicy"":""refresh"",
-         ""modifiers"":[{""attribute"":""attack"",""op"":""add"",""value"":8.0}],
-         ""tags"":[""buff""],
-         ""extra"":{""icon"":""ui/power_stance.png""}},
-        {""id"":""debuff.weaken"",""durationPolicy"":""duration"",""duration"":4.0,
-         ""stackPolicy"":""refresh"",
-         ""modifiers"":[{""attribute"":""defense"",""op"":""add"",""value"":-4.0}],
-         ""tags"":[""debuff""],
-         ""extra"":{""icon"":""ui/weaken.png""}},
-        {""id"":""dot.burn"",""durationPolicy"":""duration"",""duration"":3.0,""period"":1.0,
-         ""stackPolicy"":""stack"",""maxStacks"":3,""tags"":[""dot"",""debuff""],
-         ""extra"":{""icon"":""ui/burn.png""}},
-        {""id"":""instant.heal_potion"",""durationPolicy"":""instant"",
-         ""modifiers"":[{""attribute"":""health"",""op"":""add"",""value"":25.0}]},
-        {""id"":""passive.regen"",""durationPolicy"":""duration"",""duration"":999999.0,
-         ""period"":2.0,""tags"":[""regen""]}
-    ]");
+    local effectsJson = readTextFile("data/effects.json");
+    local effectsLoaded = (effectsJson != null) ? rpg.registerEffectsFromJson(effectsJson) : 0;
+    if (effectsJson == null)
+        print("rpg: missing data/effects.json\n");
 
     rpg.clearSkillDefinitions();
-    local skillsLoaded = rpg.registerSkillsFromJson(@"[
-        {""id"":""player.strike"",""cooldown"":0.4,""castTime"":0.0,
-         ""costs"":[],""grantedEffects"":[],""tags"":[""attack""]},
-        {""id"":""player.fireball"",""cooldown"":3.0,""castTime"":0.6,
-         ""costs"":[{""attribute"":""mana"",""amount"":15.0}],
-         ""grantedEffects"":[""dot.burn""],""tags"":[""attack"",""magic""]},
-        {""id"":""player.power_stance"",""cooldown"":8.0,""castTime"":0.0,
-         ""costs"":[{""attribute"":""stamina"",""amount"":10.0}],
-         ""grantedEffects"":[""buff.power_stance""],""tags"":[""buff""]},
-        {""id"":""player.potion"",""cooldown"":6.0,""castTime"":0.0,
-         ""costs"":[],""grantedEffects"":[""instant.heal_potion""],""tags"":[""item""]},
-        {""id"":""enemy.claw"",""cooldown"":1.2,""castTime"":0.0,
-         ""costs"":[],""grantedEffects"":[],""tags"":[""attack""]},
-        {""id"":""enemy.roar"",""cooldown"":6.0,""castTime"":0.5,
-         ""costs"":[],""grantedEffects"":[""debuff.weaken""],""tags"":[""debuff""]}
-    ]");
+    local skillsJson = readTextFile("data/skills.json");
+    local skillsLoaded = (skillsJson != null) ? rpg.registerSkillsFromJson(skillsJson) : 0;
+    if (skillsJson == null)
+        print("rpg: missing data/skills.json\n");
 
     print(format("RPG content loaded: %d effects, %d skills\n", effectsLoaded, skillsLoaded));
 }
-
 // ---------------------------------------------------------------------------
 // Actor 构建：把 health/mana/stamina 的 base 值钳在 [0, max]。
 // clampMin/clampMax 是永久 modifier（source="system"，高优先级），装一次
@@ -186,10 +171,7 @@ function applyDamage(target, isPlayerTarget, dmg) {
 // 玩家输入：边沿检测（仅在“刚按下”那一帧触发），避免长按重复施法。
 // ---------------------------------------------------------------------------
 function keyPressed(key) {
-    local down = keyboard.isDown(key);
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(key);
 }
 
 function tryPlayerSkill(skillId, target, label) {
@@ -206,7 +188,7 @@ function tryPlayerSkill(skillId, target, label) {
 // 敌人 AI：简单的冷却+概率决策，学到的两个技能都靠 SkillSystem 管理冷却/读条。
 // ---------------------------------------------------------------------------
 function updateEnemyAI() {
-    if (enemy.isCastingSkill()) return;
+    if (actorCasting(enemy)) return;
     if (enemy.canCastSkill("enemy.roar") && randf(0.0, 1.0) < 0.35) {
         enemy.beginCastSkill("enemy.roar", player);
         return;
@@ -369,7 +351,7 @@ function refreshHud() {
     ui.setText("sttext", "耐力 " + roundi(st) + "/" + roundi(PLAYER_MAX_STAMINA));
     ui.setText("pstatus", statusLines(player));
 
-    local hint1 = player.isCastingSkill() ? format("读条中 %.0f%%", player.getCastProgress() * 100.0) : "";
+    local hint1 = actorCasting(player) ? format("读条中 %.0f%%", actorCastProgress(player) * 100.0) : "";
     ui.setText("s1", "[1] 普通攻击" + (player.getSkillCooldown("player.strike") > 0.0 ? format(" (CD %.1fs)", player.getSkillCooldown("player.strike")) : ""));
     ui.setText("s2", "[2] 火球术 (MP15)" + (player.getSkillCooldown("player.fireball") > 0.0 ? format(" (CD %.1fs)", player.getSkillCooldown("player.fireball")) : "") + (hint1 != "" ? "  " + hint1 : ""));
     ui.setText("s3", "[3] 力量姿态 (耐力10)" + (player.getSkillCooldown("player.power_stance") > 0.0 ? format(" (CD %.1fs)", player.getSkillCooldown("player.power_stance")) : ""));
@@ -479,8 +461,8 @@ eve_render = function() {
     local pf = hitFlash.player > 0.0 ? 0.6 : 0.0;
     gfx.drawSolidRect(px - 30.0, py, 60.0, 90.0, 0.25 + pf, 0.45 + pf, 0.8 + pf, 1.0);
     gfx.drawSolidRect(px - 16.0, py - 34.0, 32.0, 32.0, 0.35 + pf, 0.55 + pf, 0.85 + pf, 1.0);
-    if (player != null && player.isCastingSkill()) {
-        local prog = player.getCastProgress();
+    if (actorCasting(player)) {
+        local prog = actorCastProgress(player);
         gfx.drawSolidRect(px - 30.0, py - 46.0, 60.0, 6.0, 0.2, 0.2, 0.25, 1.0);
         gfx.drawSolidRect(px - 30.0, py - 46.0, 60.0 * prog, 6.0, 0.95, 0.75, 0.25, 1.0);
     }
@@ -494,9 +476,9 @@ eve_render = function() {
     gfx.drawSolidRect(ex - esize * 0.5, ey, esize, esize, 0.75 + ef, 0.25 + ef, 0.2 + ef, 1.0);
     gfx.drawSolidRect(ex - esize * 0.22, ey + esize * 0.25, esize * 0.14, esize * 0.14, 1.0, 1.0, 0.6, 1.0);
     gfx.drawSolidRect(ex + esize * 0.08, ey + esize * 0.25, esize * 0.14, esize * 0.14, 1.0, 1.0, 0.6, 1.0);
-    if (enemy != null && enemy.isCastingSkill()) {
+    if (actorCasting(enemy)) {
         gfx.drawSolidRect(ex - esize * 0.5, ey - 12.0, esize, 6.0, 0.2, 0.2, 0.25, 1.0);
-        gfx.drawSolidRect(ex - esize * 0.5, ey - 12.0, esize * enemy.getCastProgress(), 6.0, 0.9, 0.35, 0.35, 1.0);
+        gfx.drawSolidRect(ex - esize * 0.5, ey - 12.0, esize * actorCastProgress(enemy), 6.0, 0.9, 0.35, 0.35, 1.0);
     }
 
     ui.beginFrameAndRender();

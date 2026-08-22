@@ -16,6 +16,8 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "animation/AnimImporter.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/AnimClip.h"
 #include "thread/ThreadPool.h"
 #include "common/ECS.h"
 #include "common/Resource.h"
@@ -1112,6 +1114,12 @@ void SceneLoader::expose(ssq::Table &table) {
 
 void SceneLoader::expose(ssq::Class &cls) {
     cls.addFunc("getName", &SceneLoader::getName);
+    cls.addFunc("load",
+                std::function<scene::SceneHost *(SceneLoader *, const std::string &)>(
+                    [](SceneLoader *sl, const std::string &path) -> scene::SceneHost * {
+                        return sl ? sl->load(path) : nullptr;
+                    }));
+    cls.addFunc("host", &SceneLoader::host);
     cls.addFunc("reloadChecked", &SceneLoader::reloadChecked);
     cls.addFunc("nodeCount", &SceneLoader::nodeCount);
     cls.addFunc("loaded", &SceneLoader::loaded);

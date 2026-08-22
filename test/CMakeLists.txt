@@ -11,6 +11,7 @@ file(GLOB all_test_cpp
   filesystem_cpp.cpp
   graphic.cpp
   graphics_font.cpp
+  graphics_headless.cpp
   medialoader_model_link.cpp
   model.cpp
   mouse.cpp
@@ -54,6 +55,7 @@ file(GLOB all_test_cpp
   ScenePanel.cpp
   scene.cpp
   sceneloader.cpp
+  service_mocks.cpp
   particles.cpp
   particles_attach_skin.cpp
   particles_dynamic_bones.cpp
@@ -94,6 +96,7 @@ file(GLOB all_test_cpp
   indirect_builder.cpp
   box2d.cpp
   box3d.cpp
+  binding_selfcheck.cpp
   softbody.cpp
   hotreload.cpp
   remotesync.cpp

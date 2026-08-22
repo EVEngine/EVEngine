@@ -77,8 +77,13 @@ eve::image::ImageData *ImageData::clone() const {
     }
 }
 
-void ImageData::create(int width, int height, std::string format, void *data) {
-    size_t datasize = width * height * getPixelFormatSize(getPixelFormatFromName(format));
+void ImageData::create(int w, int h, std::string pixelFormat, void *pixels) {
+    // Reject negative dimensions only: negative ints wrap to huge size_t
+    // allocations. Zero-sized images are valid (e.g. empty font atlases).
+    if (w < 0 || h < 0)
+        throw eve::Exception("ImageData: invalid dimensions (%dx%d)", w, h);
+    size_t datasize =
+        w * h * getPixelFormatSize(getPixelFormatFromName(pixelFormat));
 
     try {
         this->data = new unsigned char[datasize];
@@ -86,16 +91,16 @@ void ImageData::create(int width, int height, std::string format, void *data) {
         throw eve::Exception("Out of memory");
     }
 
-    if (data) memcpy(this->data, data, datasize);
+    if (pixels) memcpy(this->data, pixels, datasize);
 
     decodeHandler = nullptr;
-    this->format  = format;
+    this->format  = pixelFormat;
 
-    pixelSetFunction = getPixelSetFunction(format);
-    pixelGetFunction = getPixelGetFunction(format);
+    pixelSetFunction = getPixelSetFunction(pixelFormat);
+    pixelGetFunction = getPixelGetFunction(pixelFormat);
 }
 
-void ImageData::decode(Data *data) {
+void ImageData::decode(Data *source) {
     FormatHandler              *decoder = nullptr;
     FormatHandler::DecodedImage decodedimage;
 
@@ -104,16 +109,17 @@ void ImageData::decode(Data *data) {
     if (module == nullptr) throw eve::Exception("eve.image must be loaded in order to decode an ImageData.");
 
     for (FormatHandler *handler : module->getFormatHandlers()) {
-        if (handler->canDecode((const char*)data->getData(), data->getSize())) {
+        if (handler->canDecode((const char*)source->getData(), source->getSize())) {
             decoder = handler;
             break;
         }
     }
 
-    if (decoder) decodedimage = decoder->decode((const char*)data->getData(), data->getSize());
+    if (decoder)
+        decodedimage = decoder->decode((const char*)source->getData(), source->getSize());
 
     if (decodedimage.data == nullptr) {
-        auto filedata = dynamic_cast<filesystem::FileData *>(data);
+        auto filedata = dynamic_cast<filesystem::FileData *>(source);
 
         if (filedata != nullptr) {
             const std::string &name = filedata->getFilename();
@@ -122,7 +128,9 @@ void ImageData::decode(Data *data) {
             throw eve::Exception("Could not decode data to ImageData: unsupported encoded format");
     }
 
-    if (decodedimage.size != decodedimage.width * decodedimage.height * getPixelFormatSize(decodedimage.format)) {
+    if (decodedimage.size !=
+        size_t(decodedimage.width) * size_t(decodedimage.height) *
+            size_t(getPixelFormatSize(decodedimage.format))) {
         decoder->freeRawPixels(decodedimage.data);
         throw eve::Exception("Could not convert image!");
     }

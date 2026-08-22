@@ -160,7 +160,7 @@ TEST_CASE("animation.lattice.normals") {
     lat.setOrigin(0.f, 0.f, 0.f);
     lat.setScale(2.f, 1.f, 1.f);
 
-    const float pos[3] = {0.5f, 0.5f, 0.5f};
+    const float pos[9] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
     const float nrm[9] = {1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f};
     float       out[9];
     REQUIRE(lat.deformNormals(pos, nrm, out, 3));

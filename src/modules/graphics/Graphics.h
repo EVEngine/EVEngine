@@ -71,6 +71,11 @@ public:
     virtual void drawSolidRectRGBA(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
     virtual void drawTexturedRectRGBA(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
                                       float a = 1.f);
+    /** @brief RGBA-float overload matching the script-facing drawSolidRect name. */
+    virtual void drawSolidRect(float x, float y, float w, float h, float r, float g, float b, float a = 1.f);
+    /** @brief RGBA-float overload matching the script-facing drawTexturedRect name. */
+    virtual void drawTexturedRect(Texture *texture, float x, float y, float w, float h, float r, float g, float b,
+                                  float a = 1.f);
     /** Upload RGBA8 ImageData; optional seamless repeat on U/V.
      *  Borrowed handle: Graphics owns the texture (freed at shutdown or via
      *  releaseTexture); callers must not delete it. */
@@ -88,9 +93,20 @@ public:
                                    const std::string &filter, const std::string &mipmap,
                                    float lodBias = 0.f);
 
-    /** @brief Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias). */
-    virtual void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
-                                         float maxAnisotropy, float lodBias);
+    /**
+     * @brief Update sampler state without re-uploading pixels (filter / mip / aniso / LOD bias).
+     * Script-facing name is `setTextureSampler` (see Graphics::expose); this string
+     * overload keeps the C++ name identical to the script API.
+     * @param filter "nearest" or "linear" (case-insensitive).
+     * @param mipmap "none", "nearest" or "linear" (case-insensitive).
+     * @throws eve::Exception on an unknown filter/mipmap string.
+     */
+    virtual void setTextureSampler(Texture *texture, const std::string &filter, const std::string &mipmap,
+                                   float maxAnisotropy, float lodBias);
+
+    /** @deprecated Use setTextureSampler() with the same arguments. */
+    void setTextureSamplerParams(Texture *texture, const std::string &filter, const std::string &mipmap,
+                                 float maxAnisotropy, float lodBias);
 
     virtual void present() = 0;
 
@@ -244,6 +260,20 @@ public:
      * Must be called after the window exists (SDL_WINDOW_VULKAN).
      **/
     virtual void initWithWindow(void *nativeWindow) = 0;
+
+    /**
+     * @brief Initialize the renderer without a window or swapchain (headless mode).
+     * Creates a GPU device and offscreen render targets; present() becomes a no-op.
+     * Rendering goes through Canvas + readback (newImageData / readPixels).
+     * @param width Logical viewport width in pixels (must be > 0).
+     * @param height Logical viewport height in pixels (must be > 0).
+     * @throws eve::Exception when the backend does not support headless init,
+     *         or when graphics is already initialized.
+     */
+    virtual void initHeadless(int width, int height);
+
+    /** @brief True when the renderer was initialized via initHeadless(). */
+    virtual bool isHeadless() const { return false; }
 
     /**
      * @brief Sets the current graphics display viewport dimensions.
@@ -580,11 +610,11 @@ public:
         glm::vec4 idColor{0.f, 0.f, 0.f, 1.f};
     };
     virtual image::ImageData *renderEntityIdMask(const std::vector<EntityIdDraw> &draws,
-                                                 const glm::mat4 &viewProj, int width, int height) {
+                                                 const glm::mat4 &viewProj, int w, int h) {
         (void)draws;
         (void)viewProj;
-        (void)width;
-        (void)height;
+        (void)w;
+        (void)h;
         return nullptr;
     }
 
@@ -594,8 +624,8 @@ public:
      * Valid only after a G-buffer or entity-ID offscreen pass filled it.
      * Caller owns the returned ImageData*. Returns nullptr when unsupported.
      */
-    virtual image::ImageData *readGBufferToImageData(const std::string &name) {
-        (void)name;
+    virtual image::ImageData *readGBufferToImageData(const std::string &attachment) {
+        (void)attachment;
         return nullptr;
     }
 
@@ -659,6 +689,12 @@ public:
      * so the per-frame clustered build happens exactly once per camera.
      */
     virtual void setMesh3DClusteredActive(bool active) = 0;
+
+    /**
+     * @brief Sets the screen-space ambient-occlusion strength applied in the
+     * forward mesh pass. 0 disables SSAO (default).
+     */
+    virtual void setMesh3DSSAO(float intensity) = 0;
 
     /** @brief Directional light for subsequent drawMesh calls (world-space direction toward surface). */
     virtual void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) = 0;
@@ -732,6 +768,18 @@ public:
      * if needed. Returns false if no presented frame is available or encoding fails.
      */
     bool saveFramePng(const std::string &path);
+
+    /**
+     * @brief Queue an asynchronous readback of the current frame to a PNG file.
+     * @return True when the readback was queued (WebGPU browser backend); poll
+     *         frameReadbackStatus() for completion. Default false elsewhere.
+     */
+    virtual bool beginFrameReadback(const std::string &path) {
+        (void)path;
+        return false;
+    }
+    /** @brief Async readback state: 0=idle, 1=pending, 2=done, 3=failed. */
+    virtual int frameReadbackStatus() const { return 0; }
 
     /**
      * @brief Prefer uncapped present (IMMEDIATE/MAILBOX) when false, vsync (MAILBOX/FIFO)
@@ -857,6 +905,16 @@ public:
      */
     virtual Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     Shader *newShader(const std::string &fragGlsl) { return newShader(std::string(), fragGlsl); }
+
+    /**
+     * @brief Create a 2D custom shader from WGSL source (WebGPU backend).
+     * Empty vert → default textured vertex shader. The fragment WGSL declares
+     * the shared 2D bindings (color texture 0, depth texture 1, sampler 2,
+     * depth sampler 3, Externals UBO 4) and vs_main/fs_main entry points.
+     * Vulkan throws (uses SPIR-V via newShaderFromSpv).
+     */
+    virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                                      const std::string &fragWgsl) = 0;
 
     /**
      * @brief Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo).

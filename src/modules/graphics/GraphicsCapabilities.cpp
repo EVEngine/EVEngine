@@ -107,7 +107,10 @@ public:
         try {
             frame = g->newImageData();
         } catch (...) {
-            if (err) *err = "no presented frame";
+            if (err)
+                *err = "no presented frame yet: readback was just enabled and the "
+                       "copy lands on the next present — call again after one frame "
+                       "(screenshots need a running, presented game loop)";
             return false;
         }
         if (!frame) {

@@ -101,11 +101,12 @@ GAME ?=
 
 .PHONY: all build/win32 build/linux build/macosx build/android build/ios \
 	build/win32-debug build/linux-debug build/macosx-debug build/android-debug build/ios-debug \
+	build/linux-asan build/linux-coverage \
 	build/android-debug-test \
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
 	wsl/linux wsl/linux-debug show-targets \
-	debug release example \
+	debug release example devlab \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
 	sync/android-libs sync/android-assets sync/android-test-assets install/android-debug run/android-debug log/android \
@@ -150,6 +151,12 @@ check/test-manifest:
 # Verify module includes never climb above the declared manifest LAYER.
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
+
+# Verify every script-facing addFunc in the newly-authored doc chapters is
+# actually documented (see docs/usr/REVIEW.md). Existing chapters have known
+# debt and are reported as warnings; pass --modules to extend the gate.
+check/bindings:
+	python3 scripts/check_bindings.py --strict --modules avatar,buildingfx,camera,database,dialogue,grid,housegen,sceneloader,stylize,virtualgeometry
 
 # Worktree/agent setup: initialize the pinned git submodules (external/*).
 # third-party/ itself is fetched by the first cmake configure at the pinned
@@ -326,6 +333,30 @@ build/linux-debug/Makefile:
 	cmake $(LINUX_DEBUG_CMAKE_ARGS)
 
 ensure-built/linux-debug: build/linux-debug
+
+build/linux-asan: build/linux-asan/Makefile
+	cmake --build $@ --target deps -j $(JOBS)
+	cmake --build $@ -j $(JOBS)
+
+build/linux-asan/Makefile:
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
+		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
+		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer" \
+		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
+		$(CMAKE_EXTRA_ARGS) -B build/linux-asan -S .
+
+build/linux-coverage: build/linux-coverage/Makefile
+	cmake --build $@ --target deps -j $(JOBS)
+	cmake --build $@ -j $(JOBS)
+
+build/linux-coverage/Makefile:
+	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
+		-DCMAKE_C_FLAGS="--coverage -O0" \
+		-DCMAKE_CXX_FLAGS="--coverage -O0" \
+		-DCMAKE_EXE_LINKER_FLAGS="--coverage" \
+		-DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
+		$(CMAKE_EXTRA_ARGS) -B build/linux-coverage -S .
 
 build/macosx-debug: build/macosx-debug/Makefile
 	$(call reconfigure-if-args-changed,build/macosx-debug,cmake $(MACOSX_DEBUG_CMAKE_ARGS))
@@ -864,6 +895,15 @@ test/linux: ensure-built/linux
 test/linux-debug: ensure-built/linux-debug
 	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
+# Sanitizer (ASan+UBSan) and coverage builds are opt-in Linux variants; CI
+# uses them for the quality-gate jobs. Runtime env for tests:
+#   ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1
+test/linux-asan:
+	$(CTEST_ENV) ctest --test-dir build/linux-asan --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
+
+test/linux-coverage:
+	$(CTEST_ENV) ctest --test-dir build/linux-coverage --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
+
 test/macosx: ensure-built/macosx
 	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER)
 
@@ -889,28 +929,28 @@ run: run/$(PLATFORM)-debug
 #   make run/macosx-debug GAME=examples/rpg
 #   make run              # current host platform, debug, embedded demo
 run/win32-debug: ensure-built/win32-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run; \
-	else build/win32-debug/src/engine/eve.exe; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux-debug: ensure-built/linux-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run; \
-	else build/linux-debug/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx-debug: ensure-built/macosx-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run; \
-	else build/macosx-debug/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/win32: ensure-built/win32
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run; \
-	else build/win32/src/engine/eve.exe; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run $(RUN_ARGS); \
+	else build/win32/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux: ensure-built/linux
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run; \
-	else build/linux/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run $(RUN_ARGS); \
+	else build/linux/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx: ensure-built/macosx
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run; \
-	else build/macosx/src/engine/eve; fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
+	else build/macosx/src/engine/eve $(RUN_ARGS); fi
 
 tools/debug:
 	cd tools/vscode-eve-debug && npx @vscode/vsce package 
@@ -938,6 +978,9 @@ sdk/win32-debug sdk/linux-debug sdk/macosx-debug sdk/android-debug sdk/ios-debug
 
 basic:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/basic
+
+devlab:
+	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/devlab RUN_ARGS="--debug"
 
 rpg:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/rpg

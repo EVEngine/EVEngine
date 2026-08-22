@@ -11,7 +11,9 @@
 #include <webgpu/webgpu_cpp.h>
 
 #include <atomic>
+#include <map>
 #include <memory>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 #include <cstdint>
@@ -44,6 +46,27 @@ struct Mesh3DUBO {
     glm::vec4 cloudWind{4.f, 0.f, 0.55f, 0.5f};  // xy=wind vel, z=coverage, w=detail
 };
 static_assert(sizeof(Mesh3DUBO) == 608, "Mesh3DUBO layout must match the WGSL Frame block");
+
+/**
+ * @brief Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and
+ * the WGSL clustered Frame block).
+ */
+struct Mesh3DClusteredUBO {
+    glm::mat4 mvp{1.f};
+    glm::mat4 model{1.f};
+    glm::mat4 view{1.f};
+    glm::vec4 lightDir{0.4f, 1.f, 0.3f, 0.f};   // xyz = primary dir; w = 1 if valid
+    glm::vec4 lightColor{1.f, 1.f, 1.f, 0.f};    // rgb = primary; w = envIntensity
+    glm::vec4 tint{1.f, 1.f, 1.f, 1.f};
+    glm::vec4 cameraPos{0.f, 0.f, 3.f, 0.45f};   // xyz = eye; w = roughness
+    glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f}; // rgb = ambient; w = metallic
+    glm::vec4 gridInfo{16.f, 9.f, 24.f, 0.f};    // tilesX, tilesY, slices, pointCount
+    glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};   // near, far, screenW, screenH
+    glm::vec4 texBomb{4.f, 0.f, 1.f, 0.f};       // x=cellScale, y=strength, z=rotAmount, w=AO
+    glm::vec4 parallax{0.f, 8.f, 32.f, 0.f};     // x=scale, y=minLayers, z=maxLayers
+};
+static_assert(sizeof(Mesh3DClusteredUBO) == 336,
+              "Mesh3DClusteredUBO layout must match the WGSL clustered Frame block");
 
 /**
  * @brief Texture resources backed by a wgpu texture + view + sampler + bind groups.
@@ -99,6 +122,10 @@ struct GpuShader {
 
 class Graphics final : public eve::graphics::Graphics {
 public:
+    // Keep the base draw(Drawable*, mat4) overload visible alongside the
+    // canvas composite overloads below.
+    using eve::graphics::Graphics::draw;
+
     Graphics();
     ~Graphics() override;
 
@@ -109,6 +136,7 @@ public:
     void present() override;
     void pushValidationScope() override;
     void popValidationScope() override;
+    void setMsaaSamples(int samples) override;
     void requestSurfaceRecreate() override { surfaceNeedsRecreate = true; }
     void setVSync(bool enabled) override;
     int getMsaaSamples() const override { return msaaSamples; }
@@ -158,6 +186,8 @@ public:
     Shader *newShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                              const std::vector<uint32_t> &fragSpv) override;
     Shader *newShaderFromSpvFile(const std::string &vertPath, const std::string &fragPath) override;
+    Shader *newShaderFromWgsl(const std::string &vertWgsl,
+                              const std::string &fragWgsl) override;
     Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) override;
     Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                  const std::vector<uint32_t> &fragSpv) override;
@@ -203,6 +233,7 @@ public:
                          float detail) override;
     void setMesh3DClusteredLighting(const ClusteredLightingUpload &upload) override;
     void setMesh3DClusteredActive(bool active) override;
+    void setMesh3DSSAO(float intensity) override { (void)intensity; }
     void setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) override;
     void setMesh3DCameraPos(const glm::vec3 &eye) override;
     void setMesh3DEnv(Texture *cube, float intensity) override;
@@ -229,6 +260,10 @@ public:
 
     Texture *getTexture() override;
     image::ImageData *newImageData() override;
+    bool beginFrameReadback(const std::string &path) override;
+    int frameReadbackStatus() const override;
+    /** @brief Advances a pending frame readback; called every present(). */
+    void pumpReadback();
     void draw(eve::graphics::Graphics *gfx, const glm::mat4 &matrix) const override;
     void draw(Canvas *C, const glm::mat4 &matrix) const override;
     void clear(std::optional<Color> color, std::optional<int> stencil,
@@ -282,6 +317,7 @@ private:
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
         uint32_t shadowUboOffset = 0;
+        uint32_t clusteredUboOffset = 0;
     };
     struct ShadowDraw {
         Mesh *mesh = nullptr;
@@ -299,6 +335,7 @@ private:
     };
     struct VoxelDraw {
         uint32_t instanceBufferOffset = 0;
+        uint32_t aoBufferOffset = 0;
         uint32_t count = 0;
         GpuTexture *atlas = nullptr;
         glm::mat4 viewProj{1.f};
@@ -317,6 +354,7 @@ private:
     void createPipelineResources();
     void create2DPipelines();
     void createMesh3DPipelines();
+    void createMesh3DClusteredPipeline();
     void createShadowPipelines();
     void createGbufferPipelines();
     void createVoxelPipelines();
@@ -333,11 +371,13 @@ private:
                                                  wgpu::PipelineLayout layout);
     wgpu::BindGroupLayout make2DBindGroupLayout();
     wgpu::BindGroupLayout makeMesh3DBindGroupLayout();
+    wgpu::BindGroupLayout makeMesh3DClusteredBindGroupLayout();
     wgpu::BindGroupLayout makeShadowBindGroupLayout();
     wgpu::BindGroupLayout makeGbufferBindGroupLayout();
     wgpu::BindGroupLayout makeVoxelBindGroupLayout();
     wgpu::PipelineLayout make2DPipelineLayout();
     wgpu::PipelineLayout makeMesh3DPipelineLayout();
+    wgpu::PipelineLayout makeMesh3DClusteredPipelineLayout();
     wgpu::PipelineLayout makeShadowPipelineLayout();
     wgpu::PipelineLayout makeGbufferPipelineLayout();
     wgpu::PipelineLayout makeVoxelPipelineLayout();
@@ -349,6 +389,11 @@ private:
                                       GpuTexture *height, GpuTexture *depth,
                                       uint32_t frameUboOffset, uint32_t shadowUboOffset,
                                       uint32_t pushUboOffset);
+    wgpu::BindGroup makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTexture *normal,
+                                                 GpuTexture *env, GpuTexture *height,
+                                                 GpuTexture *depth, wgpu::TextureView aoView,
+                                                 uint32_t frameUboOffset, uint32_t shadowUboOffset);
+    void uploadClusteredLighting(const ClusteredLightingUpload &upload);
     void ensureMeshBindGroupsForDraw(Mesh3dDraw &d);
     wgpu::Sampler makeSampler(const TextureSampler &sampler, uint32_t mipLevels) const;
 
@@ -360,7 +405,8 @@ private:
                            WGPUTextureFormat format, bool offscreen);
     void drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch &lb, int viewW, int viewH,
                       WGPUTextureFormat format);
-    void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format);
+    void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
+                     bool canvasTarget = false);
     void flushShadowPass(wgpu::RenderPassEncoder pass);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushVoxelDraws(wgpu::RenderPassEncoder pass, WGPUTextureFormat format);
@@ -390,6 +436,11 @@ private:
     uint32_t frameSlotCount() const { return kFramesInFlight; }
     uint32_t currentFrameSlot() const { return frameIndex % kFramesInFlight; }
 
+    // Per-frame instance arena for voxel faces (packed rect words).
+    VertexArena voxelInstanceArena;
+    // Parallel per-frame arena for the AO word (2 bits per corner).
+    VertexArena voxelAoArena;
+
     // ---- state ----
     bool initialized = false;
     bool deviceInitDone = false;
@@ -413,6 +464,8 @@ private:
 
     // Per-frame command state (single command buffer per frame).
     uint32_t frameIndex = 0;
+    // Slot rendered by the most recent present (the readback source).
+    uint32_t lastPresentSlot = 0;
     static constexpr uint32_t kFramesInFlight = 2;
     std::vector<UboArena> uboArenas;
     std::vector<VertexArena> vertexArenas;
@@ -431,10 +484,28 @@ private:
     GpuTexture *flatDepthTexture3D = nullptr;
     GpuTexture *defaultEnvCubemap = nullptr;
     GpuTexture *shadowDepthArray = nullptr;
+    // 1x1x3 depth-array + comparison sampler used for the mesh3d shadow
+    // bindings (5/8) when no shadow map exists yet — the bind group layout
+    // requires those bindings on every draw.
+    GpuTexture *defaultShadowTex = nullptr;
 
     // Pipelines / layouts.
     wgpu::PipelineLayout tex2DPipelineLayout;
     wgpu::PipelineLayout mesh3dPipelineLayout;
+    wgpu::RenderPipeline mesh3dCanvasPipeline;
+    wgpu::BindGroupLayout mesh3dClusteredSetLayout;
+    wgpu::PipelineLayout mesh3dClusteredPipelineLayout;
+    wgpu::RenderPipeline mesh3dClusteredPipeline;
+    // Double-buffered storage ring for the clustered-forward SSBOs (lights /
+    // cluster table / light indices), one slot per frame in flight.
+    struct ClusteredStorage {
+        wgpu::Buffer lights;
+        wgpu::Buffer table;
+        wgpu::Buffer indices;
+        uint64_t lightsCap = 0;
+        uint64_t tableCap = 0;
+        uint64_t indicesCap = 0;
+    } clusteredStorage[kFramesInFlight];
     wgpu::PipelineLayout shadowPipelineLayout;
     wgpu::PipelineLayout gbufferPipelineLayout;
     wgpu::PipelineLayout voxelPipelineLayout;
@@ -443,6 +514,20 @@ private:
     wgpu::BindGroupLayout shadowSetLayout;
     wgpu::BindGroupLayout gbufferSetLayout;
     wgpu::BindGroupLayout voxelSetLayout;
+
+    // SSAO (screen-space ambient occlusion) resources. The AO pass runs after
+    // the G-buffer fill and writes aoTex[aoWriteIndex]; the forward mesh pass
+    // samples the other slot (one frame of latency).
+    wgpu::PipelineLayout aoPipelineLayout;
+    wgpu::RenderPipeline aoPipeline;
+    wgpu::BindGroupLayout aoSetLayout;
+    wgpu::Texture aoTex[2];
+    wgpu::TextureView aoView[2];
+    uint32_t aoWriteIndex = 0;
+    bool aoReady = false;
+    wgpu::Buffer aoUbo;
+    void ensureAOResources(int width, int height);
+    wgpu::BindGroup makeAOBindGroup(wgpu::TextureView depthView);
     // Shared filtering sampler for bindings declared as `sampler` in WGSL
     // (e.g. mesh3d's @binding(7) mainSamp).
     wgpu::Sampler mainSampler;
@@ -491,6 +576,14 @@ private:
     // 3D frame state.
     bool frame3DStarted = false;
     bool sceneColorPassOpen = false;
+    // Non-null between begin3DFrameToCanvas and the frame's present: the 3D
+    // scene pass renders into this canvas instead of the scene color target.
+    OffscreenCanvas *active3DCanvas = nullptr;
+    // Most recent 3D render target (scene color or canvas), used by the async
+    // frame readback.
+    wgpu::Texture lastReadbackTex;
+    int lastReadbackW = 0;
+    int lastReadbackH = 0;
     glm::mat4 mesh3dViewProj{1.f};
     glm::mat4 mesh3dView{1.f};
     float mesh3dNear = 0.1f, mesh3dFar = 100.f;
@@ -531,8 +624,6 @@ private:
     std::vector<VoxelDraw> voxelDraws;
     wgpu::Buffer voxelUnitQuadVerts;
     wgpu::Buffer voxelUnitQuadIndices;
-    VertexArena voxelInstanceArena;
-
     // Scene color (offscreen 3D) target.
     struct SceneColorSlot {
         wgpu::Texture msaaColor;
@@ -592,6 +683,21 @@ private:
     std::vector<std::unique_ptr<GpuMesh>> ownedGpuMeshes;
     std::vector<std::unique_ptr<Shader>> ownedShaders;
     std::vector<std::unique_ptr<GpuShader>> ownedGpuShaders;
+
+    // Browser async frame readback (avoids ASYNCIFY sleep inside deep
+    // JS->Squirrel->Graphics call chains).
+    struct PendingReadback;
+    std::unique_ptr<PendingReadback> pendingReadback_;
+
+    // Cached mesh3d bind groups keyed by the texture views + shadow resources.
+    // Dynamic UBO offsets are passed at SetBindGroup time, so one bind group
+    // serves every draw that uses the same texture set (per-draw creation was
+    // a hot path: makeMeshBindGroup ran once per mesh draw per frame).
+    using MeshBindGroupKey = std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t,
+                                        uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
+    std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
+    static constexpr size_t kMaxMeshBindGroupCache = 128;
+    void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }
 
     void markSwapchainDirty() override { swapchainConfigured = false; }
     void rebuildSwapchainIfNeeded();

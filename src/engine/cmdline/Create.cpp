@@ -35,9 +35,9 @@ CMD_REG(CreateArgs);
 
 
 // create a new project
-int Cmdline::Create(std::string path, std::string name) {
-    if (name.empty()) name = "mygame";
-    std::filesystem::path dir = std::filesystem::path(path) / name;
+int Cmdline::Create(std::string path, std::string projectName) {
+    if (projectName.empty()) projectName = "mygame";
+    std::filesystem::path dir = std::filesystem::path(path) / projectName;
     std::error_code ec;
     std::filesystem::create_directories(dir, ec);
     if (ec) {
@@ -45,7 +45,7 @@ int Cmdline::Create(std::string path, std::string name) {
         return 1;
     }
 
-    const std::string config = R"(config = { width=800 height=600 title=")" + name +
+    const std::string config = R"(config = { width=800 height=600 title=")" + projectName +
                                R"(" hotReload=true };)";
     const std::string main = R"(// EVEngine minimal game template.
 // Frame: eve_init (once) -> eve_update(dt) -> eve_render().

@@ -3,7 +3,7 @@
 import unittest
 
 from scene_qc_agent import fusion as F
-from scene_qc_agent.report import GeometryInfo, Issue, LocalEval, VlmReview, SceneReport, FrameVerdict
+from scene_qc_agent.report import GeometryInfo, Issue, LocalEval, VlmReview, FrameVerdict
 
 W = {"geometry": 0.35, "local": 0.35, "vlm": 0.30}
 

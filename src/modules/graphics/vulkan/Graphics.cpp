@@ -136,37 +136,8 @@ Graphics::~Graphics() {
     if (surface) inst.instance.destroySurfaceKHR(surface);
 }
 
-void Graphics::initWithWindow(void *nativeWindow) {
-    StartupStage initStage("graphics: initWithWindow (total)");
-    if (initialized) {
-        // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
-        // The Vulkan surface is tied to the native window. SDL can hand back the
-        // same pointer for a freshly recreated window, so pointer identity alone
-        // can't tell whether the surface is still valid: Window::close() drops it
-        // via onNativeWindowDestroyed(), and a missing surface must be rebuilt too.
-        if (sdlWindow == nativeWindow && surface) return;
-        sdlWindow = nativeWindow;
-        recreateSurfaceForResume();
-        // Restore the initWithWindow contract (device + swapchain valid on
-        // return): rebuild the swapchain synchronously. On desktop this runs
-        // immediately; on Android/iOS isRenderSurfaceStable() defers it until
-        // the native surface settles, leaving swapchainDirty set (same as before).
-        rebuildSwapchainIfNeeded();
-        return;
-    }
-    sdlWindow = nativeWindow;
-    auto *window = static_cast<SDL_Window *>(nativeWindow);
-    ASSERT(window != nullptr);
-    if (!window) throw Exception("Graphics::initWithWindow: null SDL_Window");
-
-    unsigned int count = 0;
-    if (!SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr))
-        throw Exception("SDL_Vulkan_GetInstanceExtensions failed: %s", SDL_GetError());
-
-    std::vector<const char *> extNames(count);
-    if (!SDL_Vulkan_GetInstanceExtensions(window, &count, extNames.data()))
-        throw Exception("SDL_Vulkan_GetInstanceExtensions failed: %s", SDL_GetError());
-
+void Graphics::createInstanceAndDevice(const std::vector<const char *> &extNames, void *nativeWindow,
+                                       vk::SurfaceKHR *surfaceOut) {
     vkb::InstanceBuilder builder;
     builder.require_api_version(1, 0);
 #if !defined(EVENGINE_IOS)
@@ -180,7 +151,10 @@ void Graphics::initWithWindow(void *nativeWindow) {
         std::printf("EVEngine: Vulkan validation layers enabled (EVENGINE_VULKAN_VALIDATION)\n");
     }
 #endif
-    for (auto *name : extNames) builder.enable_extension(name);
+    for (auto *extName : extNames) builder.enable_extension(extName);
+    // No window / no surface: create a truly headless instance so the device
+    // selector does not demand a presentable queue family or a VkSurfaceKHR.
+    if (nativeWindow == nullptr) builder.set_headless(true);
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
     // SDL already supplies surface extensions; avoid duplicating them via
     // InstanceBuilder's non-headless window path, and enable MoltenVK portability.
@@ -197,16 +171,29 @@ void Graphics::initWithWindow(void *nativeWindow) {
         StartupStage stage("  vulkan: instance + surface");
         inst = builder.build();
 
-        VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
-        if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
-            throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
-        surface = rawSurface;
+        if (nativeWindow != nullptr && surfaceOut != nullptr) {
+            auto *window = static_cast<SDL_Window *>(nativeWindow);
+            VkSurfaceKHR rawSurface = VK_NULL_HANDLE;
+            if (!SDL_Vulkan_CreateSurface(window, static_cast<VkInstance>(inst.instance), &rawSurface))
+                throw Exception("SDL_Vulkan_CreateSurface failed: %s", SDL_GetError());
+            surface = rawSurface;
+            *surfaceOut = rawSurface;
+        }
     }
 
     {
         StartupStage stage("  vulkan: physical device + device");
         auto selector = inst.selectPhysicalDevice();
-        selector.set_surface(surface).set_minimum_version(1, 0);
+        selector.set_minimum_version(1, 0);
+        if (surface) {
+            selector.set_surface(surface);
+        } else {
+            // Headless: pick a device without requiring a presentable surface.
+            // VKBuilder's instance.headless flag is not propagated from
+            // InstanceBuilder, so defer_surface_initialization() is the
+            // supported way to select a device with no VkSurfaceKHR.
+            selector.defer_surface_initialization();
+        }
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
         selector.add_required_extension("VK_KHR_portability_subset");
 #endif
@@ -255,6 +242,105 @@ void Graphics::initWithWindow(void *nativeWindow) {
         device = deviceBuilder.build();
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
     }
+}
+
+void Graphics::initHeadless(int width, int height) {
+    StartupStage initStage("graphics: initHeadless (total)");
+    if (initialized) throw Exception("Graphics::initHeadless: already initialized");
+    if (width <= 0 || height <= 0) throw Exception("Graphics::initHeadless: invalid size");
+
+    // No window, no surface extensions, no swapchain: a bare Vulkan device that
+    // renders into offscreen canvases and reads pixels back on the CPU.
+    createInstanceAndDevice({}, nullptr, nullptr);
+
+    uploadPool = device.createCommandPool();
+    setViewportSize(width, height, width, height);
+    headless_ = true;
+
+    {
+        StartupStage stage("  vulkan: headless renderpass + pipelines");
+        // Plain color+depth render pass mirroring the swapchain pass format so
+        // the shared pipeline builders can reuse it; nothing is ever presented.
+        vkb::RenderPassBuilder rpBuilder{device};
+        renderpass =
+            rpBuilder.addPresentAttachment(vk::Format::eB8G8R8A8Unorm, vk::AttachmentLoadOp::eClear)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addDependency(VK_SUBPASS_EXTERNAL, 0,
+                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                               {},
+                               vk::AccessFlagBits::eColorAttachmentRead |
+                                   vk::AccessFlagBits::eColorAttachmentWrite |
+                                   vk::AccessFlagBits::eDepthStencilAttachmentWrite)
+                .build();
+        depthImage = vkb::DepthStencilImage{device, uint32_t(width), uint32_t(height), depthFormat};
+        pipelineLayout = createPipelineLayout(device);
+        createTexturedPipeline();
+        createMesh3DPipeline();
+        createMesh3DClusteredPipeline();
+        createVoxelRectPipeline();
+    }
+
+    // Must be set before createShadowResources(): it clears the shadow cascade
+    // layers by calling beginShadowPass()/endShadowPass(), and beginShadowPass()
+    // asserts `initialized` is already true.
+    initialized = true;
+    {
+        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        createShadowResources();
+    }
+    {
+        StartupStage stage("  vulkan: white texture");
+        const uint8_t whitePixel[4] = {255, 255, 255, 255};
+        whiteTexture = newTexture(1, 1, whitePixel);
+        const std::vector<uint8_t> cubePx(6 * 4, 255);
+        defaultBindlessCube = newCubemap(1, cubePx.data());
+    }
+    {
+        StartupStage stage("  vulkan: gpu-driven bindless set + pipeline");
+        initGpuDrivenResources();
+    }
+}
+
+void Graphics::initWithWindow(void *nativeWindow) {
+    StartupStage initStage("graphics: initWithWindow (total)");
+    if (initialized) {
+        // Window module may destroy/recreate the SDL window (tests, setWindowSettings).
+        // The Vulkan surface is tied to the native window. SDL can hand back the
+        // same pointer for a freshly recreated window, so pointer identity alone
+        // can't tell whether the surface is still valid: Window::close() drops it
+        // via onNativeWindowDestroyed(), and a missing surface must be rebuilt too.
+        if (sdlWindow == nativeWindow && surface) return;
+        sdlWindow = nativeWindow;
+        recreateSurfaceForResume();
+        // Restore the initWithWindow contract (device + swapchain valid on
+        // return): rebuild the swapchain synchronously. On desktop this runs
+        // immediately; on Android/iOS isRenderSurfaceStable() defers it until
+        // the native surface settles, leaving swapchainDirty set (same as before).
+        rebuildSwapchainIfNeeded();
+        return;
+    }
+    sdlWindow = nativeWindow;
+    auto *window = static_cast<SDL_Window *>(nativeWindow);
+    ASSERT(window != nullptr);
+    if (!window) throw Exception("Graphics::initWithWindow: null SDL_Window");
+
+    unsigned int count = 0;
+    if (!SDL_Vulkan_GetInstanceExtensions(window, &count, nullptr))
+        throw Exception("SDL_Vulkan_GetInstanceExtensions failed: %s", SDL_GetError());
+
+    std::vector<const char *> extNames(count);
+    if (!SDL_Vulkan_GetInstanceExtensions(window, &count, extNames.data()))
+        throw Exception("SDL_Vulkan_GetInstanceExtensions failed: %s", SDL_GetError());
+
+    createInstanceAndDevice(extNames, nativeWindow, &surface);
 
     uploadPool = device.createCommandPool();
 
@@ -596,6 +682,7 @@ void Graphics::recreateSurfaceForResume() {
 
 void Graphics::present() {
     if (!initialized) return;
+    if (headless_) return;
     if (!isActive()) return;
     if (isCanvasActive()) throw Exception("present: cannot present while a Canvas is active");
     if (!isRenderSurfaceReady()) {

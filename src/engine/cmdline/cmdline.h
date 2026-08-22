@@ -15,7 +15,7 @@ namespace CLI
 namespace eve::cmd {
 
 class Cmdline;
-class Register;
+struct Register;
 
 /** @brief One `eve <subcommand>` handler: CLI setup + argument parsing. */
 struct Handler {
@@ -68,7 +68,7 @@ public:
     int Create(std::string path, std::string name);
 
     /** @brief 解析并执行传入的 argv。 */
-    int runArgs(unsigned argc, char** argv);
+    int runArgs(unsigned argcIn, char** argvIn);
 
     /** @brief 第 i 个原始 argv（physfs 文件系统用）。 */
     std::string getArgv(unsigned i) {

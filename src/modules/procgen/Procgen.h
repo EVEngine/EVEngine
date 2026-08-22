@@ -25,7 +25,7 @@ class ImageData;
 }  // namespace eve::image
 
 namespace eve::procgen {
-class PbrTextureSet;
+struct PbrTextureSet;
 
 /**
  * @brief Procedural generation module.

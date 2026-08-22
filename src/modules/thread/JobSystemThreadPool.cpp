@@ -104,6 +104,15 @@ struct JobSystemThreadPool::State {
     std::deque<JobImpl *> ready;
     int outstanding = 0;
     int outstandingFrame = 0;
+    // Number of jobs currently between status=Done/Failed and the tail of
+    // completeJob (fireCompletion / releaseDependents / counter decrement).
+    // waitFrameJobs() must not reset the frame arena while this is > 0:
+    // a child releases its join before its own counters are decremented, so
+    // another thread can finish the join, drive outstandingFrame to 0 and
+    // reset the arena while this worker is still touching the child (a
+    // use-after-free that shows up as a null std::function call in
+    // fireCompletion under concurrent GPU work).
+    int completing = 0;
     int workerCount = 0;
     bool stopping = false;
     FrameArena arena;
@@ -155,6 +164,10 @@ struct JobImpl final : public Job {
     JobStatus status = JobStatus::Pending;
     bool scheduled = false;
     bool enqueued = false;
+    // Set under mu at the very end of completeJob. waitJob() waits on this
+    // (not just status) so a caller that deletes a join job never frees a
+    // child while a worker is still in the child's completeJob tail.
+    bool completionDone = false;
     std::string error;
 };
 
@@ -280,26 +293,30 @@ void JobSystemThreadPool::State::completeJob(JobImpl *job, bool ok) {
     {
         std::lock_guard<std::mutex> lock(mu);
         job->status = ok ? JobStatus::Done : JobStatus::Failed;
+        ++completing;
     }
     cv.notify_all();
 
     // Completion callback runs before dependents are released so it can
     // publish results downstream jobs consume.
     fireCompletion(job);
-    releaseDependents(job);
 
-    // Decrement the outstanding counters only after the job's completion
-    // callback and dependent release have finished using it. Otherwise a
-    // waiter (beginFrame/endFrame -> waitFrameJobs) can observe
-    // outstandingFrame == 0 and reset the per-frame arena while this worker is
-    // still touching the job (fireCompletion / releaseDependents), destroying
-    // it out from under the worker — a use-after-free that manifests as a
-    // lost forked job (hang) or a crash.
+    // Decrement the outstanding counters while the job is still pinned by
+    // `completing` (waitFrameJobs waits on it too), then mark the job's own
+    // memory as finished. Dependents are released only after that, so a join
+    // can never become runnable (and later be deleted) while this job is
+    // still writing its own fields.
     {
         std::lock_guard<std::mutex> lock(mu);
         --outstanding;
         if (job->scope == JobScope::Frame)
             --outstandingFrame;
+        job->completionDone = true;
+    }
+    releaseDependents(job);
+    {
+        std::lock_guard<std::mutex> lock(mu);
+        --completing;
     }
     cv.notify_all();
 }
@@ -345,13 +362,13 @@ void JobSystemThreadPool::State::releaseDependents(JobImpl *job) {
 
 void JobSystemThreadPool::State::waitJob(JobImpl *job) {
     std::unique_lock<std::mutex> lock(mu);
-    if (isDoneStatus(job->status))
+    if (job->completionDone)
         return;
     if (tlsCurrentJob == job)
         throw eve::Exception("JobSystem: a job cannot wait on itself");
 
     for (;;) {
-        if (isDoneStatus(job->status))
+        if (job->completionDone)
             return;
         if (!ready.empty()) {
             JobImpl *next = ready.front();
@@ -369,7 +386,7 @@ void JobSystemThreadPool::State::waitJob(JobImpl *job) {
 
 void JobSystemThreadPool::State::waitFrameJobs() {
     std::unique_lock<std::mutex> lock(mu);
-    while (outstandingFrame > 0) {
+    while (outstandingFrame > 0 || completing > 0) {
         if (!ready.empty()) {
             JobImpl *next = ready.front();
             ready.pop_front();
@@ -416,7 +433,7 @@ void JobImpl::wait() {
 
 bool JobImpl::isDone() const {
     std::lock_guard<std::mutex> lock(state->mu);
-    return isDoneStatus(status);
+    return completionDone;
 }
 
 bool JobImpl::hasFailed() const {

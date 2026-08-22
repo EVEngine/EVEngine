@@ -527,8 +527,6 @@ void Graphics::appendGpuMeshToPool(GpuMesh &gpu) {
         const auto *src32 = static_cast<const uint32_t *>(iMap);
         for (uint32_t i = 0; i < nInds; ++i) idxDst[i] = src32[i];
     }
-    const uint32_t firstIdx = static_cast<const uint32_t *>(iMap)[0];
-    const glm::vec3 firstPos = verts[0].pos;
     gpuVertexPool_.positions.unmap();
     gpuVertexPool_.normals.unmap();
     gpuVertexPool_.uvs.unmap();
@@ -1098,7 +1096,7 @@ Graphics::GpuDrivenCullSlot &Graphics::gpuDrivenCullSlot(uint32_t frameSlot) {
 }
 
 Graphics::GpuDrivenCullSlot &Graphics::currentGpuDrivenCullSlot() {
-    return gpuDrivenCullSlot(currentFrameSlot());
+    return gpuDrivenCullSlot(static_cast<uint32_t>(currentFrameSlot()));
 }
 
 void Graphics::ensureGpuDrivenCullResources(int width, int height) {

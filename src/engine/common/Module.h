@@ -88,6 +88,14 @@ public:
         return static_cast<T*>(D.creator());
     }
 
+    /** @brief Instantiates every registered module through its factory.
+     *
+     * Mirrors what load.nut's module-binding loop does for `eve run`, so
+     * embedders that never run load.nut (e.g. the headless `eve mcp` host)
+     * still get the capability providers (IEditorHost, IRenderCapture, ...).
+     */
+    static void requireAll();
+
 protected:
     static void exposeVM(ssq::VM& vm);
 

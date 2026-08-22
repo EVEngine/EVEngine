@@ -60,13 +60,13 @@ static inline int openWebPage(string url) {
 #endif
 }
 
-int Cmdline::Doc(std::string name, bool noOpen) {
+int Cmdline::Doc(std::string symbol, bool noOpen) {
     // The user/API manual lives on the organization GitHub Pages site.
     // Doxygen has no stable per-symbol URL, so open the manual root and echo
     // the requested symbol (useful for headless/agent invocations).
     string url = "https://evengine.github.io/EVEngine/";
-    if (!name.empty())
-        cout << "EVEngine docs for '" << name << "': " << url << "\n";
+    if (!symbol.empty())
+        cout << "EVEngine docs for '" << symbol << "': " << url << "\n";
     else
         cout << "EVEngine docs: " << url << "\n";
     if (noOpen) return 0;

@@ -1074,7 +1074,20 @@ std::string Dialogue::getDisplayName(const std::string &id) const {
 bool Dialogue::bindAvatar(const std::string &id, avatar::AvatarInstance *av) {
     Character *c = findCharacter(id);
     if (!c) return false;
+    // Drop the previous binding's destroy hook before replacing the pointer,
+    // otherwise the old avatar's hook would null the new binding on destroy.
+    if (c->avatar && c->avatarHook) {
+        c->avatar->removeDestroyHook(*c->avatarHook);
+        c->avatarHook.reset();
+    }
     c->avatar = av;
+    if (av) {
+        const std::string key = id;
+        c->avatarHook = av->addDestroyHook([this, key](avatar::AvatarInstance *) {
+            if (Character *ch = findCharacter(key))
+                ch->avatar = nullptr;
+        });
+    }
     return true;
 }
 
