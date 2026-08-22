@@ -341,6 +341,18 @@ FluidSimulator* Fluids::newSimulator(int maxParticles) {
 
 int Fluids::getSimulatorCount() const { return int(simulators_.size()); }
 
+FluidSurfaceRenderer* Fluids::newSurfaceRenderer(int width, int height) {
+    FluidSurfaceParams params;
+    params.width              = std::max(8, width);
+    params.height             = std::max(8, height);
+    auto                  r   = std::make_unique<FluidSurfaceRenderer>(params, true);
+    FluidSurfaceRenderer* raw = r.get();
+    renderers_.push_back(std::move(r));
+    return raw;
+}
+
+int Fluids::getRendererCount() const { return int(renderers_.size()); }
+
 void Fluids::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Fluids::create, false);
     expose(cls);
@@ -361,12 +373,25 @@ void Fluids::expose(ssq::Table& table) {
     sim.addFunc("getParticleCount", &FluidSimulator::getParticleCount);
     sim.addFunc("getMaxParticles", &FluidSimulator::getMaxParticles);
     sim.addFunc("usingGpu", &FluidSimulator::usingGpu);
+
+    auto surf = table.addClass<FluidSurfaceRenderer>(
+        "FluidSurface", std::function<FluidSurfaceRenderer*()>([]() -> FluidSurfaceRenderer* { return nullptr; }),
+        true);
+    surf.addFunc("render", &FluidSurfaceRenderer::renderFrom);
+    surf.addFunc("setMode", &FluidSurfaceRenderer::setMode);
+    surf.addFunc("setCamera", &FluidSurfaceRenderer::setCamera);
+    surf.addFunc("getWidth", &FluidSurfaceRenderer::getWidth);
+    surf.addFunc("getHeight", &FluidSurfaceRenderer::getHeight);
+    surf.addFunc("usingGpu", &FluidSurfaceRenderer::usingGpu);
+    surf.addFunc("writePpm", &FluidSurfaceRenderer::writePpm);
 }
 
 void Fluids::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Fluids::getName);
     cls.addFunc("newSimulator", &Fluids::newSimulator);
     cls.addFunc("getSimulatorCount", &Fluids::getSimulatorCount);
+    cls.addFunc("newSurfaceRenderer", &Fluids::newSurfaceRenderer);
+    cls.addFunc("getRendererCount", &Fluids::getRendererCount);
 }
 
 }  // namespace eve::fluids

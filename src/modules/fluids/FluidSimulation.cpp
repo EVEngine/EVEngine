@@ -197,11 +197,12 @@ void FluidSimulation::integrate(float dt) {
         glm::vec3 p = particles_[size_t(i)].pos;
         glm::vec3 v = particles_[size_t(i)].vel;
 
-        // XSPH viscosity + Akinci-style cohesion, one neighbor pass.
-        if (params_.viscosity > 0.f || params_.cohesion > 0.f) {
+        // XSPH viscosity + Bingham yield stress + Akinci-style cohesion.
+        if (params_.viscosity > 0.f || params_.cohesion > 0.f || params_.yieldStress > 0.f) {
             glm::vec3        viscAcc(0.f);
             glm::vec3        cohesionAcc(0.f);
-            const glm::ivec3 c = grid_.cellOf(p);
+            float            shearAcc = 0.f;
+            const glm::ivec3 c        = grid_.cellOf(p);
             for (int z = -1; z <= 1; ++z) {
                 for (int y = -1; y <= 1; ++y) {
                     for (int x = -1; x <= 1; ++x) {
@@ -217,6 +218,8 @@ void FluidSimulation::integrate(float dt) {
                             if (r2 < h2) {
                                 if (params_.viscosity > 0.f)
                                     viscAcc += (particles_[size_t(j)].vel - v) * fluidPoly6(r2, h);
+                                if (params_.yieldStress > 0.f)
+                                    shearAcc += glm::length(particles_[size_t(j)].vel - v) * fluidPoly6(r2, h);
                                 if (params_.cohesion > 0.f) {
                                     const float r = std::sqrt(r2);
                                     cohesionAcc += -params_.cohesion * fluidCohesionKernel(r, h) * (dx / r);
@@ -226,7 +229,11 @@ void FluidSimulation::integrate(float dt) {
                     }
                 }
             }
-            v += viscAcc * (params_.viscosity * dt);
+            // Bingham plastic: effective viscosity grows as shear rate drops,
+            // so low-shear mud "freezes" and piles up instead of spreading.
+            float effectiveViscosity = params_.viscosity;
+            if (params_.yieldStress > 0.f && shearAcc > 1e-6f) effectiveViscosity += params_.yieldStress / shearAcc;
+            v += viscAcc * (effectiveViscosity * dt);
             v += cohesionAcc * dt;
         }
 

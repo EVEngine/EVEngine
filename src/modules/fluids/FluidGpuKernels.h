@@ -334,10 +334,12 @@ void main() {
     vec3 v = vel.v[i].xyz;
 
     float visc = pc.d[8];
+    float yield = pc.d[9];
     float coh = pc.d[10];
-    if (visc > 0.0 || coh > 0.0) {
+    if (visc > 0.0 || coh > 0.0 || yield > 0.0) {
         vec3 viscAcc = vec3(0.0);
         vec3 cohAcc = vec3(0.0);
+        float shearAcc = 0.0;
         vec3 origin = vec3(pc.d[17], pc.d[18], pc.d[19]);
         float cs = pc.d[20];
         ivec3 dim = ivec3(int(pc.d[14]), int(pc.d[15]), int(pc.d[16]));
@@ -355,6 +357,7 @@ void main() {
                         float r2 = dot(dx, dx);
                         if (r2 < h2) {
                             if (visc > 0.0) viscAcc += (vel.v[j].xyz - v) * poly6(r2, h);
+                            if (yield > 0.0) shearAcc += length(vel.v[j].xyz - v) * poly6(r2, h);
                             if (coh > 0.0) {
                                 float r = sqrt(r2);
                                 cohAcc += -coh * cohesionKernel(r, h) * (dx / r);
@@ -364,7 +367,9 @@ void main() {
                 }
             }
         }
-        v += viscAcc * (visc * dt);
+        float effVisc = visc;
+        if (yield > 0.0 && shearAcc > 1e-6) effVisc += yield / shearAcc;
+        v += viscAcc * (effVisc * dt);
         v += cohAcc * dt;
     }
 

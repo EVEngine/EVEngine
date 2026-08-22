@@ -14,6 +14,7 @@
 #include "fluids/FluidMath.h"
 #include "fluids/FluidSdf.h"
 #include "fluids/FluidSimulation.h"
+#include "fluids/FluidSurfaceRenderer.h"
 
 #include <glm/glm.hpp>
 
@@ -78,6 +79,9 @@ public:
 
     /** @return mutable tuning parameters. */
     FluidParams& params() { return sim_.params(); }
+
+    /** @return tuning parameters (read-only). */
+    const FluidParams& params() const { return sim_.params(); }
 
     /** @brief Set the gravity vector. */
     void setGravity(float x, float y, float z);
@@ -161,11 +165,23 @@ public:
      */
     FluidSimulator* newSimulator(int maxParticles = 8192);
 
+    /**
+     * @brief Create a screen-space fluid renderer.
+     * @param width target width in pixels.
+     * @param height target height in pixels.
+     * @return renderer owned by the module.
+     */
+    FluidSurfaceRenderer* newSurfaceRenderer(int width = 160, int height = 160);
+
     /** @return number of live simulators owned by the module. */
     int getSimulatorCount() const;
 
+    /** @return number of live renderers owned by the module. */
+    int getRendererCount() const;
+
 private:
-    std::vector<std::unique_ptr<FluidSimulator>> simulators_;
+    std::vector<std::unique_ptr<FluidSimulator>>       simulators_;
+    std::vector<std::unique_ptr<FluidSurfaceRenderer>> renderers_;
 };
 
 }  // namespace eve::fluids

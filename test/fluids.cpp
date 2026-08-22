@@ -8,8 +8,11 @@
 #include "graphics/Graphics.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
+#include <fstream>
 #include <utility>
 #include <vector>
 
@@ -201,6 +204,12 @@ TEST_CASE("fluids.module.create") {
     CHECK_EQ(sim->getMaxParticles(), 1024);
     CHECK_EQ(mod->getSimulatorCount(), 1);
     CHECK_EQ(sim->getParticleCount(), 0);
+    FluidSurfaceRenderer* r = mod->newSurfaceRenderer(32, 32);
+    REQUIRE(r != nullptr);
+    CHECK_EQ(mod->getRendererCount(), 1);
+    CHECK_EQ(r->getWidth(), 32);
+    r->render(*sim);
+    CHECK_EQ(r->getHeight(), 32);
 }
 
 TEST_CASE("fluids.cpu.pbfSeparatesCompressedParticles") {
@@ -278,6 +287,77 @@ TEST_CASE("fluids.cpu.adhesionKeepsDropOnUpsideDownSurface") {
     CHECK(meanR < 1.08f);
 }
 
+TEST_CASE("fluids.cpu.yieldStressFreezesLowShearMotion") {
+    auto run = [&](float yield) {
+        FluidParams params;
+        params.gravity       = glm::vec3(0.f);
+        params.viscosity     = 0.01f;
+        params.yieldStress   = yield;
+        params.damping       = 0.f;
+        params.pbfIterations = 0;
+        FluidSimulation sim(64, params);
+        sim.setSdf(MeshSdf::makePlane(-2.f, glm::ivec3(8), 2.f));
+        REQUIRE(sim.spawnDrop(glm::vec3(0.f), 0.12f, 8) == 8);
+        // Small deterministic velocities -> low shear rate.
+        for (int i = 0; i < sim.particleCount(); ++i) {
+            const float a                  = 0.02f;
+            sim.particles()[size_t(i)].vel = glm::vec3(std::sin(float(i + 1)) * a, std::cos(float(i + 1) * 2.f) * a,
+                                                       std::sin(float(i + 1) * 3.f) * a);
+        }
+        for (int s = 0; s < 30; ++s) sim.step(1.f / 60.f);
+        float ke = 0.f;
+        for (int i = 0; i < sim.particleCount(); ++i)
+            ke += 0.5f * glm::dot(sim.particles()[size_t(i)].vel, sim.particles()[size_t(i)].vel);
+        return ke;
+    };
+
+    const float keFree = run(0.f);
+    const float keMud  = run(10.f);
+    // Bingham yield stress turns low-shear flow into a quasi-solid.
+    CHECK(keMud < keFree * 0.2f);
+}
+
+TEST_CASE("fluids.ssf.cpu.singleParticleDepthAndNormal") {
+    FluidSurfaceParams params;
+    params.width            = 64;
+    params.height           = 64;
+    params.eye              = glm::vec3(0.f, 0.f, -3.f);
+    params.particleRadius   = 0.08f;
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer r(params, false);
+    r.render(std::vector<glm::vec3>{glm::vec3(0.f)}, 0.08f);
+
+    const int cx = 32;
+    const int cy = 32;
+    CHECK(std::fabs(r.depth()[size_t(cy * 64 + cx)] - 3.f) < 0.15f);
+    const glm::vec3 n = r.normals()[size_t(cy * 64 + cx)];
+    CHECK(n.z > 0.9f);
+    CHECK(r.thickness()[size_t(cy * 64 + cx)] > 0.f);
+    CHECK(r.color()[size_t(cy * 64 + cx) * 4u + 3] > 0u);
+}
+
+TEST_CASE("fluids.ssf.cpu.waterVsMudShading") {
+    auto renderMode = [](int mode) {
+        FluidSurfaceParams params;
+        params.width            = 64;
+        params.height           = 64;
+        params.eye              = glm::vec3(0.f, 0.f, -3.f);
+        params.particleRadius   = 0.08f;
+        params.smoothIterations = 0;
+        params.mode             = mode;
+        FluidSurfaceRenderer r(params, false);
+        r.render(std::vector<glm::vec3>{glm::vec3(0.f)}, 0.08f);
+        const size_t idx = size_t(32 * 64 + 32) * 4u;
+        return std::array<uint8_t, 3>{r.color()[idx], r.color()[idx + 1], r.color()[idx + 2]};
+    };
+
+    const auto water = renderMode(0);
+    const auto mud   = renderMode(1);
+    // Water is blue-dominant; mud is brown-dominant (red > blue).
+    CHECK(water[2] > water[0]);
+    CHECK(mud[0] > mud[2]);
+}
+
 TEST_CASE("fluids.gpu.surfaceFlow") {
     if (!tryInitHeadlessGfx()) return;
     FluidParams params;
@@ -352,4 +432,32 @@ TEST_CASE("fluids.gpu.pbfCohesionCluster") {
         if (distToCenter(p) < 1.f - 0.06f) allOnSurface = false;
     }
     CHECK(allOnSurface);
+}
+
+TEST_CASE("fluids.ssf.gpu.pipeline") {
+    if (!tryInitHeadlessGfx()) return;
+    FluidSurfaceParams params;
+    params.width            = 64;
+    params.height           = 64;
+    params.eye              = glm::vec3(0.f, 0.f, -3.f);
+    params.particleRadius   = 0.08f;
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer r(params, true);
+    r.render(std::vector<glm::vec3>{glm::vec3(0.f)}, 0.08f);
+    if (!r.usingGpu()) return;
+
+    const int cx = 32;
+    const int cy = 32;
+    CHECK(std::fabs(r.depth()[size_t(cy * 64 + cx)] - 3.f) < 0.25f);
+    CHECK(r.normals()[size_t(cy * 64 + cx)].z > 0.8f);
+    CHECK(r.thickness()[size_t(cy * 64 + cx)] > 0.f);
+    CHECK(r.color()[size_t(cy * 64 + cx) * 4u + 3] > 0u);
+
+    r.writePpm("fluid_ssf_gpu.ppm");
+    std::ifstream f("fluid_ssf_gpu.ppm", std::ios::binary | std::ios::ate);
+    REQUIRE(f.good());
+    const long size = long(f.tellg());
+    f.close();
+    CHECK(size > 100);
+    std::remove("fluid_ssf_gpu.ppm");
 }
