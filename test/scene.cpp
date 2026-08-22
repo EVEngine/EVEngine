@@ -1292,3 +1292,36 @@ TEST_CASE("Scene.nodeRef.invalidRefs") {
     CHECK(emptyRef.getNodeId().empty());
     CHECK(!emptyRef.isValid());
 }
+
+TEST_CASE("Scene.api.hostManagement") {
+    Scene *mod = Scene::create();
+    CHECK(!mod->select("nope"));
+    CHECK_EQ(mod->findHost("nope"), nullptr);
+    CHECK_EQ(mod->findHostByOwner(0), nullptr);  // owner id 0 never resolves
+
+    SceneHost *h = mod->mountAs("mgmt", node("root"));
+    REQUIRE(h != nullptr);
+    CHECK(mod->select("mgmt"));
+    CHECK_EQ(mod->current(), h);
+
+    mod->bindOwner(99);
+    CHECK_EQ(mod->findHostByOwner(99), h);
+    CHECK_EQ(h->getOwnerId(), 99u);
+    mod->bindOwner(0);
+    CHECK_EQ(mod->findHostByOwner(0), nullptr);
+
+    mod->setHostVisible(false);
+    CHECK(!h->meta()->visible);
+    mod->setHostVisible(true);
+    CHECK(h->meta()->visible);
+    mod->setHostLayer(5);
+    CHECK_EQ(h->meta()->layer, 5);
+
+    // Transform propagation over the whole tree must not crash with/without a
+    // selected host.
+    mod->updateTransforms();
+    mod->updateTransformsAll();
+    mod->select("nope");
+    mod->updateTransforms();
+    mod->updateTransformsAll();
+}
