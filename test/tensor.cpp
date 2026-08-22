@@ -40,16 +40,12 @@ using namespace eve::tensor;
 
 namespace {
 
-/** GPU tensor tests need a live Vulkan device, which only exists after a window is created. */
-bool tryInitGpuWindow() {
-    auto *win = eve::window::Window::create();
+/** GPU tensor tests need a live Vulkan device; headless init is enough. */
+bool tryInitHeadlessGfx() {
     auto *gfx = eve::graphics::Graphics::create();
-    if (!win || !gfx) return false;
-    eve::window::WindowSettings s;
-    s.width = 320;
-    s.height = 240;
-    s.centered = true;
-    return win->setWindowSettings(s);
+    if (!gfx) return false;
+    gfx->initHeadless(320, 240);
+    return true;
 }
 
 }  // namespace
@@ -209,7 +205,7 @@ TEST_CASE("tensor.func.symbolicReadThrows") {
 // does support it, CompiledFunction::getDevice() should report "gpu".
 
 TEST_CASE("tensor.gpu.compiledFunctionElementwiseAndMatmul") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
 
     auto *tf = TF::create();
 
@@ -258,7 +254,7 @@ TEST_CASE("tensor.gpu.compiledFunctionElementwiseAndMatmul") {
 }
 
 TEST_CASE("tensor.gpu.compiledFunctionWhereTranspose") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
 
     auto *tf = TF::create();
 
@@ -291,7 +287,7 @@ TEST_CASE("tensor.gpu.compiledFunctionWhereTranspose") {
 }
 
 TEST_CASE("tensor.gpu.reduceLargeTensor") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
 
     auto *tf = TF::create();
     const int n = 20000;  // above the GPU-reduce size threshold
@@ -716,7 +712,7 @@ TEST_CASE("tensor.func.fiveSixInputs") {
 TEST_CASE("tensor.func.transformerBlockInference") {
     // A general neural-network inference graph: layernorm -> SDPA attention ->
     // residual -> MLP(gelu) -> residual -> classifier softmax. Verified against
-    // the eager reference and (when a window exists) on the generated GPU kernels.
+    // the eager reference and (when a live Vulkan device exists) on the generated GPU kernels.
     auto *tf = TF::create();
     const int B = 1, T = 2, D = 4, C = 3;
     const float scale = 1.f / std::sqrt(float(D));
@@ -777,7 +773,7 @@ TEST_CASE("tensor.func.transformerBlockInference") {
     REQUIRE_EQ(out->getDim0(), B * T);
     REQUIRE_EQ(out->getDim1(), C);
     for (int i = 0; i < out->getSize(); ++i)
-        // Compiled may run on GPU (an earlier test's window may still be alive):
+        // Compiled may run on GPU (the headless device persists across cases):
         // float32 layernorm/softmax/matmul accumulation order differs slightly.
         CHECK(std::fabs(out->get(i) - ref->get(i)) < 1e-2f);
     CHECK(std::fabs(out->reduceSum() - float(B * T)) < 1e-2f);
@@ -787,10 +783,10 @@ TEST_CASE("tensor.func.transformerBlockInference") {
     REQUIRE_EQ(action->getSize(), B * T);
 }
 
-// --- new-op GPU paths (only run with a live Vulkan window) -----------------
+// --- new-op GPU paths (only run with a live Vulkan device; headless) -------
 
 TEST_CASE("tensor.gpu.fusedElementwiseChain") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *tf = TF::create();
     std::unique_ptr<Func> fn(tf->func());
     Tensor *x = fn->input2(4, 4);
@@ -813,7 +809,7 @@ TEST_CASE("tensor.gpu.fusedElementwiseChain") {
 }
 
 TEST_CASE("tensor.gpu.softmaxLayernormConv") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *tf = TF::create();
     std::unique_ptr<Tensor> w(tf->fill4(2, 1, 3, 3, 0.1f));
 
@@ -841,7 +837,7 @@ TEST_CASE("tensor.gpu.softmaxLayernormConv") {
 }
 
 TEST_CASE("tensor.gpu.transformerBlockInference") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *tf = TF::create();
     const int B = 1, T = 4, D = 8, C = 3;
     const float scale = 1.f / std::sqrt(float(D));
@@ -907,7 +903,7 @@ TEST_CASE("tensor.gpu.transformerBlockInference") {
 }
 
 TEST_CASE("tensor.gpu.sdpaMatchesCpu") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *tf = TF::create();
     const int B = 1, H = 1, T = 4, S = 4, D = 8;
     std::unique_ptr<Tensor> q(tf->randomNormal4(B, H, T, D));
@@ -956,7 +952,7 @@ void checkGpuGraphMatchesEager(TF *tf, const std::function<Tensor *(Tensor *)> &
 }  // namespace
 
 TEST_CASE("tensor.gpu.stageBisect") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *tf = TF::create();
     const int T = 4, D = 8;
     std::unique_ptr<Tensor> x(tf->randomNormal3(1, T, D));

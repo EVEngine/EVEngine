@@ -39,15 +39,12 @@ using namespace eve::gpgpu;
 
 namespace {
 
-bool tryInitGpuWindow() {
-    auto *win = eve::window::Window::create();
+/** Compute tests only need a live Vulkan device; headless init is enough. */
+bool tryInitHeadlessGfx() {
     auto *gfx = eve::graphics::Graphics::create();
-    if (!win || !gfx) return false;
-    eve::window::WindowSettings s;
-    s.width = 320;
-    s.height = 240;
-    s.centered = true;
-    return win->setWindowSettings(s);
+    if (!gfx) return false;
+    gfx->initHeadless(320, 240);
+    return true;
 }
 
 const char *kScaleKernel = R"(#version 450
@@ -127,14 +124,14 @@ TEST_CASE("gpgpu.module.create") {
 }
 
 TEST_CASE("gpgpu.graphics.backendName") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *gfx = eve::graphics::Graphics::create();
     REQUIRE(gfx != nullptr);
     CHECK_EQ(gfx->getBackendName(), std::string("vulkan"));
 }
 
 TEST_CASE("gpgpu.newShaderFromSpvFile.delegatesWhenMissing") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *mod = Gpgpu::create();
     if (!mod->isAvailable()) return;
     bool threw = false;
@@ -147,7 +144,7 @@ TEST_CASE("gpgpu.newShaderFromSpvFile.delegatesWhenMissing") {
 }
 
 TEST_CASE("gpgpu.dispatch.scaleFloats") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *mod = Gpgpu::create();
     REQUIRE(mod->isAvailable());
 
@@ -182,7 +179,7 @@ TEST_CASE("gpgpu.dispatch.scaleFloats") {
 }
 
 TEST_CASE("gpgpu.sequence.dispatchScale") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *mod = Gpgpu::create();
     REQUIRE(mod->isAvailable());
 
@@ -235,7 +232,7 @@ TEST_CASE("gpgpu.sequence.dispatchScale") {
 }
 
 TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *mod = Gpgpu::create();
     REQUIRE(mod->isAvailable());
 
@@ -302,7 +299,7 @@ TEST_CASE("gpgpu.sequence.singleSubmitChainedDispatches") {
 }
 
 TEST_CASE("gpgpu.shaderSystem.ecsMove") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *mod = Gpgpu::create();
     REQUIRE(mod->isAvailable());
 
@@ -345,7 +342,7 @@ TEST_CASE("gpgpu.shaderSystem.ecsMove") {
 }
 
 TEST_CASE("gpgpu.buffer.bulkFloats") {
-    if (!tryInitGpuWindow()) return;
+    if (!tryInitHeadlessGfx()) return;
     auto *mod = Gpgpu::create();
     REQUIRE(mod->isAvailable());
 
