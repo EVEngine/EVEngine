@@ -6,7 +6,6 @@
 
 #include "graphics/vulkan/Graphics.h"
 #include "common/Exception.h"
-#include "filesystem/Filesystem.h"
 
 #include <algorithm>
 #include <cmath>
@@ -391,84 +390,6 @@ std::string normalizeTexPath(std::string path) {
     while (path.size() > 1 && path.back() == '/') path.pop_back();
     return path;
 }
-
-
-
-std::vector<uint32_t> loadSpirvBytes(const void *data, size_t size) {
-    if (!data || size < 4 || (size % 4) != 0)
-        throw Exception("SPIR-V: invalid size %zu", size);
-    const auto *words = static_cast<const uint32_t *>(data);
-    if (words[0] != 0x07230203)
-        throw Exception("SPIR-V: bad magic (expected 0x07230203)");
-    return std::vector<uint32_t>(words, words + size / 4);
-}
-
-std::vector<uint32_t> readSpirvFile(const std::string &path) {
-    auto *fs = filesystem::Filesystem::create();
-    std::unique_ptr<filesystem::FileData> fd(fs->read(path));
-    if (!fd) throw Exception("newShaderFromSpvFile: failed to read '%s'", path.c_str());
-    return loadSpirvBytes(fd->getData(), fd->getSize());
-}
-
-std::vector<uint32_t> compileGlslWithGlslc(const std::string &source, const char *stage) {
-    if (source.empty()) throw Exception("newShader: empty %s GLSL", stage);
-#if defined(_WIN32)
-    (void)source;
-    (void)stage;
-    throw Exception("newShader: GLSL compile via glslc is not supported on Windows; "
-                    "use newShaderFromSpv / newShaderFromSpvFile");
-#else
-    char inPath[] = "/tmp/eve_shader_XXXXXX";
-    int fd = mkstemp(inPath);
-    if (fd < 0) throw Exception("newShader: mkstemp failed");
-    std::string outPath = std::string(inPath) + ".spv";
-    {
-        ssize_t n = write(fd, source.data(), source.size());
-        close(fd);
-        if (n < 0 || size_t(n) != source.size()) {
-            unlink(inPath);
-            throw Exception("newShader: failed to write temp GLSL");
-        }
-    }
-
-    std::string cmd = std::string("glslc -fshader-stage=") + stage + " \"" + inPath + "\" -o \"" +
-                      outPath + "\" 2>&1";
-    FILE *pipe = popen(cmd.c_str(), "r");
-    std::string err;
-    if (pipe) {
-        char buf[256];
-        while (fgets(buf, sizeof(buf), pipe)) err += buf;
-        int status = pclose(pipe);
-        unlink(inPath);
-        if (status != 0) {
-            unlink(outPath.c_str());
-            throw Exception("newShader: glslc failed for %s:\n%s", stage, err.c_str());
-        }
-    } else {
-        unlink(inPath);
-        throw Exception("newShader: glslc not available (popen failed)");
-    }
-
-    FILE *f = fopen(outPath.c_str(), "rb");
-    if (!f) {
-        unlink(outPath.c_str());
-        throw Exception("newShader: failed to open compiled SPIR-V");
-    }
-    fseek(f, 0, SEEK_END);
-    long sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    std::vector<uint8_t> bytes(static_cast<size_t>(sz > 0 ? sz : 0));
-    if (sz > 0 && fread(bytes.data(), 1, static_cast<size_t>(sz), f) != static_cast<size_t>(sz)) {
-        fclose(f);
-        unlink(outPath.c_str());
-        throw Exception("newShader: failed to read compiled SPIR-V");
-    }
-    fclose(f);
-    unlink(outPath.c_str());
-    return loadSpirvBytes(bytes.data(), bytes.size());
-#endif
-}
-
 
 }  // namespace
 }  // namespace eve::graphics::vulkan
