@@ -23,6 +23,9 @@ constexpr int kPushGravityX    = 5;
 constexpr int kPushGravityY    = 6;
 constexpr int kPushGravityZ    = 7;
 constexpr int kPushViscosity   = 8;
+constexpr int kPushYield       = 9;
+constexpr int kPushCohesion    = 10;
+constexpr int kPushAdhesion    = 11;
 constexpr int kPushDamping     = 12;
 constexpr int kPushMaxVelocity = 13;
 constexpr int kPushGridResX    = 14;
@@ -42,6 +45,7 @@ constexpr int kPushSdfCell     = 27;
 constexpr int kPushIterations  = 28;
 constexpr int kPushMode        = 29;
 constexpr int kPushTime        = 30;
+constexpr int kPushPbf         = 31;
 
 int groupsFor(int count, int localSize = 64) { return (count + localSize - 1) / localSize; }
 
@@ -53,13 +57,17 @@ FluidSimulator::FluidSimulator(int maxParticles, const FluidParams& params, bool
 FluidSimulator::~FluidSimulator() {
     delete seq_;
     delete shIntegrate_;
-    delete shDensity_;
+    delete shApply_;
+    delete shDelta_;
+    delete shDensityLambda_;
     delete shBuild_;
     delete shClear_;
     delete stageDens_;
     delete stageVel_;
     delete stagePos_;
     delete bufSdf_;
+    delete bufGrad_;
+    delete bufLambda_;
     delete bufDens_;
     delete bufNext_;
     delete bufHead_;
@@ -75,20 +83,24 @@ void FluidSimulator::setSdf(const MeshSdf& sdf) {
         // Grid and SDF buffers depend on the field; rebuild them.
         delete seq_;
         delete shIntegrate_;
-        delete shDensity_;
+        delete shApply_;
+        delete shDelta_;
+        delete shDensityLambda_;
         delete shBuild_;
         delete shClear_;
         delete stageDens_;
         delete stageVel_;
         delete stagePos_;
         delete bufSdf_;
+        delete bufGrad_;
+        delete bufLambda_;
         delete bufDens_;
         delete bufNext_;
         delete bufHead_;
         delete bufVel_;
         delete bufPos_;
-        shClear_ = shBuild_ = shDensity_ = shIntegrate_ = nullptr;
-        bufPos_ = bufVel_ = bufHead_ = bufNext_ = bufDens_ = bufSdf_ = nullptr;
+        shClear_ = shBuild_ = shDensityLambda_ = shDelta_ = shApply_ = shIntegrate_ = nullptr;
+        bufPos_ = bufVel_ = bufHead_ = bufNext_ = bufDens_ = bufLambda_ = bufGrad_ = bufSdf_ = nullptr;
         stagePos_ = stageVel_ = stageDens_ = nullptr;
         seq_                               = nullptr;
         gpuOk_                             = false;
@@ -113,15 +125,26 @@ void FluidSimulator::step(float dt) {
 
     seq_->begin();
     uploadParticles();
+    const int pbf = std::max(0, sim_.params().pbfIterations);
     for (int it = 0; it < iters; ++it) {
         setCommonConstants(shClear_, sub);
         seq_->recordDispatch(shClear_, groupsFor(grid_.cellCount()));
         setCommonConstants(shBuild_, sub);
         seq_->recordDispatch(shBuild_, groupsFor(sim_.maxParticles()));
-        setCommonConstants(shDensity_, sub);
-        seq_->recordDispatch(shDensity_, groupsFor(sim_.maxParticles()));
         setCommonConstants(shIntegrate_, sub);
         seq_->recordDispatch(shIntegrate_, groupsFor(sim_.maxParticles()));
+        for (int k = 0; k < pbf; ++k) {
+            setCommonConstants(shClear_, sub);
+            seq_->recordDispatch(shClear_, groupsFor(grid_.cellCount()));
+            setCommonConstants(shBuild_, sub);
+            seq_->recordDispatch(shBuild_, groupsFor(sim_.maxParticles()));
+            setCommonConstants(shDensityLambda_, sub);
+            seq_->recordDispatch(shDensityLambda_, groupsFor(sim_.maxParticles()));
+            setCommonConstants(shDelta_, sub);
+            seq_->recordDispatch(shDelta_, groupsFor(sim_.maxParticles()));
+            setCommonConstants(shApply_, sub);
+            seq_->recordDispatch(shApply_, groupsFor(sim_.maxParticles()));
+        }
     }
     downloadParticles();
     seq_->submit();
@@ -158,6 +181,9 @@ void FluidSimulator::readDensities(std::vector<float>& out) const {
 void FluidSimulator::setGravity(float x, float y, float z) { sim_.params().gravity = glm::vec3(x, y, z); }
 
 void FluidSimulator::setViscosity(float viscosity) { sim_.params().viscosity = viscosity; }
+void FluidSimulator::setCohesion(float cohesion) { sim_.params().cohesion = cohesion; }
+void FluidSimulator::setAdhesion(float adhesion) { sim_.params().adhesion = adhesion; }
+void FluidSimulator::setPbfIterations(int passes) { sim_.params().pbfIterations = std::max(0, passes); }
 void FluidSimulator::setDamping(float damping) { sim_.params().damping = damping; }
 void FluidSimulator::setParticleRadius(float radius) { sim_.params().particleRadius = std::max(1e-4f, radius); }
 void FluidSimulator::setSupportRadius(float h) {
@@ -177,20 +203,24 @@ bool FluidSimulator::ensureGpu() {
 
     const int max = sim_.maxParticles();
     try {
-        shClear_     = gpgpu_->newShader(kFluidClearGrid);
-        shBuild_     = gpgpu_->newShader(kFluidBuildGrid);
-        shDensity_   = gpgpu_->newShader(kFluidDensity);
-        shIntegrate_ = gpgpu_->newShader(kFluidIntegrate);
-        bufPos_      = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "storage");
-        bufVel_      = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "storage");
-        bufHead_     = gpgpu_->newBuffer(grid_.cellCount() * int(sizeof(int)), "storage");
-        bufNext_     = gpgpu_->newBuffer(max * int(sizeof(int)), "storage");
-        bufDens_     = gpgpu_->newBuffer(max * int(sizeof(float)), "storage");
-        bufSdf_      = gpgpu_->newBuffer(sim_.sdf().voxelCount() * int(sizeof(float)), "storage");
-        stagePos_    = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "staging");
-        stageVel_    = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "staging");
-        stageDens_   = gpgpu_->newBuffer(max * int(sizeof(float)), "staging");
-        seq_         = gpgpu_->newSequence();
+        shClear_         = gpgpu_->newShader(kFluidClearGrid);
+        shBuild_         = gpgpu_->newShader(kFluidBuildGrid);
+        shDensityLambda_ = gpgpu_->newShader(kFluidDensityLambda);
+        shDelta_         = gpgpu_->newShader(kFluidComputeDelta);
+        shApply_         = gpgpu_->newShader(kFluidApplyDelta);
+        shIntegrate_     = gpgpu_->newShader(kFluidIntegrate);
+        bufPos_          = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "storage");
+        bufVel_          = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "storage");
+        bufHead_         = gpgpu_->newBuffer(grid_.cellCount() * int(sizeof(int)), "storage");
+        bufNext_         = gpgpu_->newBuffer(max * int(sizeof(int)), "storage");
+        bufDens_         = gpgpu_->newBuffer(max * int(sizeof(float)), "storage");
+        bufLambda_       = gpgpu_->newBuffer(max * int(sizeof(float)), "storage");
+        bufGrad_         = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "storage");
+        bufSdf_          = gpgpu_->newBuffer(sim_.sdf().voxelCount() * int(sizeof(float)), "storage");
+        stagePos_        = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "staging");
+        stageVel_        = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "staging");
+        stageDens_       = gpgpu_->newBuffer(max * int(sizeof(float)), "staging");
+        seq_             = gpgpu_->newSequence();
     } catch (...) {
         return false;
     }
@@ -201,10 +231,22 @@ bool FluidSimulator::ensureGpu() {
     shBuild_->bindBuffer(0, bufPos_);
     shBuild_->bindBuffer(2, bufHead_);
     shBuild_->bindBuffer(3, bufNext_);
-    shDensity_->bindBuffer(0, bufPos_);
-    shDensity_->bindBuffer(2, bufHead_);
-    shDensity_->bindBuffer(3, bufNext_);
-    shDensity_->bindBuffer(4, bufDens_);
+    shDensityLambda_->bindBuffer(0, bufPos_);
+    shDensityLambda_->bindBuffer(2, bufHead_);
+    shDensityLambda_->bindBuffer(3, bufNext_);
+    shDensityLambda_->bindBuffer(4, bufDens_);
+    shDensityLambda_->bindBuffer(6, bufLambda_);
+    shDensityLambda_->bindBuffer(7, bufGrad_);
+    shDelta_->bindBuffer(0, bufPos_);
+    shDelta_->bindBuffer(2, bufHead_);
+    shDelta_->bindBuffer(3, bufNext_);
+    shDelta_->bindBuffer(6, bufLambda_);
+    shDelta_->bindBuffer(7, bufGrad_);
+    shApply_->bindBuffer(0, bufPos_);
+    shApply_->bindBuffer(2, bufHead_);
+    shApply_->bindBuffer(3, bufNext_);
+    shApply_->bindBuffer(7, bufGrad_);
+    shApply_->bindBuffer(5, bufSdf_);
     shIntegrate_->bindBuffer(0, bufPos_);
     shIntegrate_->bindBuffer(1, bufVel_);
     shIntegrate_->bindBuffer(2, bufHead_);
@@ -260,6 +302,9 @@ void FluidSimulator::setCommonConstants(gpgpu::ComputeShader* shader, float dt) 
     shader->setFloat(kPushGravityY, p.gravity.y);
     shader->setFloat(kPushGravityZ, p.gravity.z);
     shader->setFloat(kPushViscosity, p.viscosity);
+    shader->setFloat(kPushYield, p.yieldStress);
+    shader->setFloat(kPushCohesion, p.cohesion);
+    shader->setFloat(kPushAdhesion, p.adhesion);
     shader->setFloat(kPushDamping, p.damping);
     shader->setFloat(kPushMaxVelocity, p.maxVelocity);
     shader->setFloat(kPushGridResX, float(grid_.dims.x));
@@ -279,6 +324,7 @@ void FluidSimulator::setCommonConstants(gpgpu::ComputeShader* shader, float dt) 
     shader->setFloat(kPushIterations, float(p.iterations));
     shader->setFloat(kPushMode, 0.f);
     shader->setFloat(kPushTime, 0.f);
+    shader->setFloat(kPushPbf, float(p.pbfIterations));
 }
 
 Fluids::Fluids()  = default;
@@ -304,6 +350,9 @@ void Fluids::expose(ssq::Table& table) {
     sim.addFunc("setSdfSphere", &FluidSimulator::setSdfSphere);
     sim.addFunc("setGravity", &FluidSimulator::setGravity);
     sim.addFunc("setViscosity", &FluidSimulator::setViscosity);
+    sim.addFunc("setCohesion", &FluidSimulator::setCohesion);
+    sim.addFunc("setAdhesion", &FluidSimulator::setAdhesion);
+    sim.addFunc("setPbfIterations", &FluidSimulator::setPbfIterations);
     sim.addFunc("setDamping", &FluidSimulator::setDamping);
     sim.addFunc("setParticleRadius", &FluidSimulator::setParticleRadius);
     sim.addFunc("setSupportRadius", &FluidSimulator::setSupportRadius);

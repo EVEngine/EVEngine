@@ -4,9 +4,10 @@
  * @brief CPU reference fluid solver for surface flows.
  *
  * This is the executable spec for the GPU kernels in FluidGpuKernels: uniform
- * grid neighbor search, SPH density, XSPH viscosity, gravity, surface
- * projection through the mesh SDF and velocity decomposition. Tests exercise
- * it numerically; the GLSL kernels mirror it 1:1.
+ * grid neighbor search, SPH density, PBF density constraints, XSPH viscosity,
+ * Akinci-style cohesion/adhesion, gravity, surface projection through the mesh
+ * SDF and velocity decomposition. Tests exercise it numerically; the GLSL
+ * kernels mirror it 1:1.
  */
 
 #include "fluids/FluidMath.h"
@@ -99,7 +100,9 @@ public:
 
 private:
     void rebuildGrid();
-    void computeDensities();
+    void computeDensitiesAndGrads();
+    void computeLambdas();
+    void applyPositionCorrections();
     void integrate(float dt);
 
     FluidParams                params_;
@@ -109,6 +112,8 @@ private:
     int                        count_        = 0;
     std::vector<FluidParticle> particles_;
     std::vector<float>         densities_;
+    std::vector<float>         lambdas_;
+    std::vector<glm::vec3>     gradSums_;
     std::vector<int>           cellHead_;
     std::vector<int>           cellNext_;
 };

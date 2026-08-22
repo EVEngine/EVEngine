@@ -46,6 +46,8 @@ struct FluidParams {
     float maxVelocity = 20.f;
     /** @brief Solver substeps per call to step(dt). */
     int iterations = 1;
+    /** @brief PBF density-constraint relaxation passes per substep. */
+    int pbfIterations = 2;
 };
 
 /** @brief One simulated particle (CPU reference layout). */
@@ -91,6 +93,18 @@ inline glm::vec3 fluidSpikyGrad(const glm::vec3& dx, float h) {
 inline float fluidViscLaplacian(float r, float h) {
     if (r >= h || r <= 1e-9f) return 0.f;
     return 45.f / (3.14159265358979f * std::pow(h, 6.f)) * (1.f - r / h);
+}
+
+/**
+ * @brief Akinci-style cohesion kernel C(r) for droplet surface tension.
+ * @param r distance between two particles.
+ * @param h support radius.
+ * @return kernel value, 0 outside the support.
+ */
+inline float fluidCohesionKernel(float r, float h) {
+    if (r >= h || r <= 1e-9f) return 0.f;
+    const float q = h - r;
+    return 32.f / (3.14159265358979f * std::pow(h, 9.f)) * q * q * q * r * r * r;
 }
 
 /**

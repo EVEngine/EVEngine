@@ -203,6 +203,81 @@ TEST_CASE("fluids.module.create") {
     CHECK_EQ(sim->getParticleCount(), 0);
 }
 
+TEST_CASE("fluids.cpu.pbfSeparatesCompressedParticles") {
+    FluidParams params;
+    params.gravity       = glm::vec3(0.f);
+    params.viscosity     = 0.02f;
+    params.damping       = 0.2f;
+    params.pbfIterations = 4;
+    params.iterations    = 1;
+    FluidSimulation sim(64, params);
+    sim.setSdf(MeshSdf::makePlane(-2.f, glm::ivec3(8), 2.f));
+    REQUIRE(sim.spawnDrop(glm::vec3(0.f), 0.03f, 12) == 12);
+
+    auto meanPairDist = [&]() {
+        double sum = 0.0;
+        int    n   = 0;
+        for (int i = 0; i < sim.particleCount(); ++i) {
+            for (int j = i + 1; j < sim.particleCount(); ++j) {
+                sum += glm::length(sim.particles()[size_t(i)].pos - sim.particles()[size_t(j)].pos);
+                ++n;
+            }
+        }
+        return float(sum / double(std::max(n, 1)));
+    };
+
+    const float before = meanPairDist();
+    for (int s = 0; s < 40; ++s) sim.step(1.f / 60.f);
+    const float after = meanPairDist();
+    // A compressed cloud must relax toward rest density (particles spread).
+    CHECK(after > before * 1.2f);
+}
+
+TEST_CASE("fluids.cpu.cohesionClumpsScatteredParticles") {
+    FluidParams params;
+    params.gravity       = glm::vec3(0.f);
+    params.viscosity     = 0.08f;
+    params.cohesion      = 0.5f;
+    params.pbfIterations = 0;  // isolate the cohesion force
+    params.damping       = 0.05f;
+    FluidSimulation sim(64, params);
+    sim.setSdf(MeshSdf::makePlane(-2.f, glm::ivec3(8), 2.f));
+    REQUIRE(sim.spawnDrop(glm::vec3(0.f), 0.15f, 12) == 12);
+
+    auto meanToCentroid = [&]() {
+        glm::vec3 c(0.f);
+        for (int i = 0; i < sim.particleCount(); ++i) c += sim.particles()[size_t(i)].pos;
+        c /= float(sim.particleCount());
+        double sum = 0.0;
+        for (int i = 0; i < sim.particleCount(); ++i) sum += glm::length(sim.particles()[size_t(i)].pos - c);
+        return float(sum / double(sim.particleCount()));
+    };
+
+    const float before = meanToCentroid();
+    for (int s = 0; s < 90; ++s) sim.step(1.f / 60.f);
+    const float after = meanToCentroid();
+    // Surface tension (cohesion) pulls the scattered film into a tighter drop.
+    CHECK(after < before * 0.75f);
+}
+
+TEST_CASE("fluids.cpu.adhesionKeepsDropOnUpsideDownSurface") {
+    FluidParams sticky;
+    sticky.gravity       = glm::vec3(0.f, -9.8f, 0.f);
+    sticky.viscosity     = 0.05f;
+    sticky.adhesion      = 1.5f;
+    sticky.pbfIterations = 2;
+    FluidSimulation sim(128, sticky);
+    sim.setSdf(MeshSdf::makeSphere(glm::vec3(0.f), 1.f, glm::ivec3(32)));
+    REQUIRE(sim.spawnDrop(glm::vec3(0.f, -1.45f, 0.f), 0.2f, 64) == 64);
+    for (int s = 0; s < 90; ++s) sim.step(1.f / 60.f);
+
+    float meanR = 0.f;
+    for (int i = 0; i < sim.particleCount(); ++i) meanR += distToCenter(sim.particles()[size_t(i)].pos);
+    meanR /= float(sim.particleCount());
+    // Adhesion holds the drop on the underside of the sphere.
+    CHECK(meanR < 1.08f);
+}
+
 TEST_CASE("fluids.gpu.surfaceFlow") {
     if (!tryInitHeadlessGfx()) return;
     FluidParams params;
@@ -237,5 +312,44 @@ TEST_CASE("fluids.gpu.surfaceFlow") {
     }
     meanY1 /= float(pos.size());
     CHECK(meanY1 < meanY0 - 0.05f);
+    CHECK(allOnSurface);
+}
+
+TEST_CASE("fluids.gpu.pbfCohesionCluster") {
+    if (!tryInitHeadlessGfx()) return;
+    FluidParams params;
+    params.gravity       = glm::vec3(0.f, -9.8f, 0.f);
+    params.viscosity     = 0.05f;
+    params.cohesion      = 0.5f;
+    params.adhesion      = 0.5f;
+    params.pbfIterations = 2;
+    FluidSimulator sim(1024, params, true);
+    sim.setSdfSphere(0.f, 0.f, 0.f, 1.f, 32);
+    sim.spawnDrop(glm::vec3(0.f, 1.45f, 0.f), 0.22f, 128);
+    sim.step(1.f / 60.f);
+    if (!sim.usingGpu()) return;
+
+    auto clusterRadius = [&]() {
+        std::vector<glm::vec3> pos;
+        sim.readPositions(pos);
+        glm::vec3 c(0.f);
+        for (const glm::vec3& p : pos) c += p;
+        c /= float(pos.size());
+        double sum = 0.0;
+        for (const glm::vec3& p : pos) sum += glm::length(p - c);
+        return float(sum / double(pos.size()));
+    };
+
+    const float before = clusterRadius();
+    for (int s = 0; s < 60; ++s) sim.step(1.f / 60.f);
+    const float after = clusterRadius();
+    CHECK(after < before * 0.9f);
+
+    std::vector<glm::vec3> pos;
+    sim.readPositions(pos);
+    bool allOnSurface = true;
+    for (const glm::vec3& p : pos) {
+        if (distToCenter(p) < 1.f - 0.06f) allOnSurface = false;
+    }
     CHECK(allOnSurface);
 }

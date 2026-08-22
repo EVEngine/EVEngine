@@ -85,6 +85,15 @@ public:
     /** @brief Set XSPH viscosity strength. */
     void setViscosity(float viscosity);
 
+    /** @brief Set Akinci-style fluid-fluid cohesion strength. */
+    void setCohesion(float cohesion);
+
+    /** @brief Set fluid-surface adhesion strength. */
+    void setAdhesion(float adhesion);
+
+    /** @brief Set PBF density-constraint passes per substep. */
+    void setPbfIterations(int passes);
+
     /** @brief Set linear air damping. */
     void setDamping(float damping);
 
@@ -116,21 +125,25 @@ private:
     bool            gpuOk_     = false;
     bool            sdfDirty_  = true;
 
-    eve::gpgpu::Gpgpu*         gpgpu_       = nullptr;
-    eve::gpgpu::ComputeShader* shClear_     = nullptr;
-    eve::gpgpu::ComputeShader* shBuild_     = nullptr;
-    eve::gpgpu::ComputeShader* shDensity_   = nullptr;
-    eve::gpgpu::ComputeShader* shIntegrate_ = nullptr;
-    eve::gpgpu::GpuBuffer*     bufPos_      = nullptr;
-    eve::gpgpu::GpuBuffer*     bufVel_      = nullptr;
-    eve::gpgpu::GpuBuffer*     bufHead_     = nullptr;
-    eve::gpgpu::GpuBuffer*     bufNext_     = nullptr;
-    eve::gpgpu::GpuBuffer*     bufDens_     = nullptr;
-    eve::gpgpu::GpuBuffer*     bufSdf_      = nullptr;
-    eve::gpgpu::GpuBuffer*     stagePos_    = nullptr;
-    eve::gpgpu::GpuBuffer*     stageVel_    = nullptr;
-    eve::gpgpu::GpuBuffer*     stageDens_   = nullptr;
-    eve::gpgpu::Sequence*      seq_         = nullptr;
+    eve::gpgpu::Gpgpu*         gpgpu_           = nullptr;
+    eve::gpgpu::ComputeShader* shClear_         = nullptr;
+    eve::gpgpu::ComputeShader* shBuild_         = nullptr;
+    eve::gpgpu::ComputeShader* shDensityLambda_ = nullptr;
+    eve::gpgpu::ComputeShader* shDelta_         = nullptr;
+    eve::gpgpu::ComputeShader* shApply_         = nullptr;
+    eve::gpgpu::ComputeShader* shIntegrate_     = nullptr;
+    eve::gpgpu::GpuBuffer*     bufPos_          = nullptr;
+    eve::gpgpu::GpuBuffer*     bufVel_          = nullptr;
+    eve::gpgpu::GpuBuffer*     bufHead_         = nullptr;
+    eve::gpgpu::GpuBuffer*     bufNext_         = nullptr;
+    eve::gpgpu::GpuBuffer*     bufDens_         = nullptr;
+    eve::gpgpu::GpuBuffer*     bufLambda_       = nullptr;
+    eve::gpgpu::GpuBuffer*     bufGrad_         = nullptr;
+    eve::gpgpu::GpuBuffer*     bufSdf_          = nullptr;
+    eve::gpgpu::GpuBuffer*     stagePos_        = nullptr;
+    eve::gpgpu::GpuBuffer*     stageVel_        = nullptr;
+    eve::gpgpu::GpuBuffer*     stageDens_       = nullptr;
+    eve::gpgpu::Sequence*      seq_             = nullptr;
     SimGrid                    grid_;
 };
 
