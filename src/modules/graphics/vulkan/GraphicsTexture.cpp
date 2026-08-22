@@ -1,56 +1,23 @@
-// Vulkan backend implementation — 2D drawing, textures and batching.
+// Vulkan backend implementation — texture creation, upload and reload.
 //
-// Re-split from the merged dev single-TU Graphics.cpp (pure move;
-// dev changes preserved). Shared helpers live in GraphicsInternal.h.
+// Split out of Graphics2D.cpp (pure move; shared helpers live in
+// GraphicsInternal.h). Keep the include list tight: the embedded shader
+// .inc arrays are unused here and would trip -Wunused-const-variable under
+// strict-warning CI builds.
 
 #include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/Canvas.h"
-#include "graphics/Light.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/RenderControl.h"
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
-
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstdint>
-#include <cstring>
-#include <functional>
-#include <stdexcept>
-#include <string>
-#include <vector>
-#if !defined(_WIN32)
-#include <unistd.h>
-#endif
+#include "graphics/vulkan/GraphicsInternal.h"
 
 #include "common/Exception.h"
-#include "common/StartupTiming.h"
-#include "common/config.h"
-#include "filesystem/Filesystem.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
-
-
-#include <assimp/mesh.h>
-#include <assimp/matrix3x3.h>
-#include <assimp/matrix4x4.h>
-#include <assimp/vector3.h>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include "graphics/shaders/textured_vert_spv.inc"
-#include "graphics/shaders/textured_frag_spv.inc"
-#include "graphics/shaders/mesh3d_vert_spv.inc"
-#include "graphics/shaders/mesh3d_frag_spv.inc"
-#include "graphics/shaders/mesh3d_hair_vert_spv.inc"
-#include "graphics/shaders/mesh3d_hair_frag_spv.inc"
-#include "graphics/vulkan/GraphicsInternal.h"
+#include <string>
+#include <vector>
 
 
 namespace eve::graphics::vulkan {
