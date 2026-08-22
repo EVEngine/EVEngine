@@ -11,14 +11,18 @@ Exit code is non-zero when a bound name is missing from its doc chapter
 reported as warnings so the doc can be cleaned up without blocking.
 
 Existing chapters document a subset of their bindings (a large pre-existing
-debt), so by default missing names are warnings and the exit code stays 0.
-Pass --strict to turn missing names into failures; --modules limits the check
-to the given module dirs (used by CI to gate newly-authored chapters).
+debt). That debt is recorded in scripts/check_bindings_gaps.txt as
+"module:name" lines (regenerate with --write-gaps). Under --strict, a bound
+name missing from its doc chapter fails **unless** it is listed there, so the
+debt stays visible as warnings while new drift blocks CI. --modules limits the
+check to the given module dirs.
 
 Usage:
     python3 scripts/check_bindings.py                 # report all gaps (exit 0)
     python3 scripts/check_bindings.py --strict        # fail on any gap
     python3 scripts/check_bindings.py --strict --modules avatar,database
+    python3 scripts/check_bindings.py --strict --write-gaps
+                                                      # rewrite the known-gaps file
     python3 scripts/check_bindings.py --quiet         # only print problems
 """
 
@@ -32,6 +36,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MODULES = ROOT / "src" / "modules"
 DOCS = ROOT / "docs" / "usr" / "modules"
+GAPS_FILE = Path(__file__).resolve().parent / "check_bindings_gaps.txt"
 
 # Module dir -> user-doc chapter (doc filename without .md).
 DOC_ALIASES = {
@@ -42,6 +47,27 @@ DOC_ALIASES = {
 }
 
 ADDFUNC_RE = re.compile(r'\badd(?:Func|Var)\(\s*"([^"]+)"')
+
+
+def load_gaps() -> set[str]:
+    if not GAPS_FILE.is_file():
+        return set()
+    gaps: set[str] = set()
+    for line in GAPS_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            gaps.add(line)
+    return gaps
+
+
+def write_gaps(entries: list[str]) -> None:
+    GAPS_FILE.write_text(
+        "# Known 'bound but not documented' gaps (module:binding), one per line.\n"
+        "# Regenerate with: python3 scripts/check_bindings.py --strict --write-gaps\n"
+        "# Remove a line when the doc chapter catches up; new gaps not listed here\n"
+        "# fail the CI binding check.\n" + "\n".join(sorted(set(entries))) + "\n",
+        encoding="utf-8",
+    )
 
 
 def iter_modules() -> list[tuple[str, Path]]:
@@ -76,12 +102,16 @@ def main() -> int:
                         help="exit non-zero when a bound name is missing from its doc")
     parser.add_argument("--modules", default="",
                         help="comma-separated module dirs to check (default: all)")
+    parser.add_argument("--write-gaps", action="store_true",
+                        help="rewrite check_bindings_gaps.txt from the current gaps")
     args = parser.parse_args()
 
     selected = {m.strip() for m in args.modules.split(",") if m.strip()}
+    gaps = load_gaps()
 
     failures: list[str] = []
     warnings: list[str] = []
+    gap_entries: list[str] = []
     checked = 0
 
     for module, d in iter_modules():
@@ -98,8 +128,14 @@ def main() -> int:
         missing = sorted(n for n in names if n not in text)
         checked += len(names)
         if missing:
-            msg = f"{module} ({doc.name}): bound but not documented: {', '.join(missing)}"
-            (failures if args.strict else warnings).append(msg)
+            for name in missing:
+                gap_entries.append(f"{module}:{name}")
+                if f"{module}:{name}" in gaps:
+                    warnings.append(f"{module} ({doc.name}): known gap (document it): {name}")
+                elif args.strict:
+                    failures.append(f"{module} ({doc.name}): NEW gap, document it: {name}")
+                else:
+                    warnings.append(f"{module} ({doc.name}): bound but not documented: {name}")
         else:
             if not args.quiet:
                 print(f"ok  {module}: {len(names)} bindings documented")
@@ -123,6 +159,9 @@ def main() -> int:
         print(f"FAIL {f}")
 
     print(f"checked {checked} bindings across {len(iter_modules())} module dirs")
+    if args.write_gaps:
+        write_gaps(gap_entries)
+        print(f"wrote {len(set(gap_entries))} known gaps to {GAPS_FILE}")
     return 1 if failures else 0
 
 
