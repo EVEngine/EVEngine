@@ -272,8 +272,8 @@ static void setPixelRG16(const Colorf &c, ImageData::Pixel *p) {
 
 static void setPixelRGBA16(const Colorf &c, ImageData::Pixel *p) {
     p->rgba16[0] = (uint16_t)(clamp01(c.r) * 65535.0f + 0.5f);
-    p->rgba16[1] = (uint16_t)(clamp01(c.b) * 65535.0f + 0.5f);
-    p->rgba16[2] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[1] = (uint16_t)(clamp01(c.g) * 65535.0f + 0.5f);
+    p->rgba16[2] = (uint16_t)(clamp01(c.b) * 65535.0f + 0.5f);
     p->rgba16[3] = (uint16_t)(clamp01(c.a) * 65535.0f + 0.5f);
 }
 
